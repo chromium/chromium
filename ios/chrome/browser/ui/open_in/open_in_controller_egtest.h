@@ -35,6 +35,11 @@ extern NSString* kPNGFilename;
 // finished.
 - (BOOL)shouldSkipIpad;
 
+// YES if should run all tests, depending on variant. Default value is YES.
+// TODO(crbug.com/1357553): Remove when Open In download experiment is
+// finished and iOS 14 is not supported anymore.
+- (BOOL)shouldRunTests;
+
 // Asserts the activity service is visible.
 - (void)assertActivityServiceVisible;
 
