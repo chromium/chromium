@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "components/power_scheduler/power_mode.h"
 #include "content/common/process_visibility_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,20 +38,11 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
 
   base::WaitableEvent event;
 
-  power_scheduler::PowerModeArbiter arbiter;
-  EXPECT_EQ(arbiter.GetActiveModeForTesting(),
-            power_scheduler::PowerMode::kCharging);
-
-  // Clear the initial kCharging vote.
-  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
-  EXPECT_EQ(arbiter.GetActiveModeForTesting(),
-            power_scheduler::PowerMode::kIdle);
-
   // Create the ProcessCpuTimeMetrics instance and register it as the process
   // visibility observer.
   ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
   std::unique_ptr<ProcessCpuTimeMetrics> metrics =
-      ProcessCpuTimeMetrics::CreateForTesting(&arbiter);
+      ProcessCpuTimeMetrics::CreateForTesting();
   metrics->WaitForCollectionForTesting();
 
   // Start out in the foreground and spend one CPU second there.
@@ -86,11 +76,6 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
       "Power.CpuTimeSecondsPerProcessType.Foreground", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_foreground, 1);
 
-  int browser_cpu_seconds_power_mode_idle =
-      histograms.GetBucketCount("Power.CpuTimeSecondsPerPowerMode.Browser",
-                                internal::PowerModeForUma::kIdle);
-  EXPECT_GE(browser_cpu_seconds_power_mode_idle, 1);
-
   // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =
       histograms.GetBucketCount("Power.CpuTimeSecondsPerThreadType.Browser",
@@ -123,26 +108,15 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
 
   base::WaitableEvent event;
 
-  power_scheduler::PowerModeArbiter arbiter;
-  EXPECT_EQ(arbiter.GetActiveModeForTesting(),
-            power_scheduler::PowerMode::kCharging);
-  auto voter = arbiter.NewVoter("Background");
-
-  // Clear the initial kCharging vote.
-  arbiter.SetOnBatteryPowerForTesting(/*on_battery_power=*/true);
-  EXPECT_EQ(arbiter.GetActiveModeForTesting(),
-            power_scheduler::PowerMode::kIdle);
-
   // Create the ProcessCpuTimeMetrics instance and register it as the process
   // visibility observer.
   ProcessCpuTimeMetrics::SetIgnoreHistogramAllocatorForTesting(true);
   std::unique_ptr<ProcessCpuTimeMetrics> metrics =
-      ProcessCpuTimeMetrics::CreateForTesting(&arbiter);
+      ProcessCpuTimeMetrics::CreateForTesting();
   metrics->WaitForCollectionForTesting();
 
   // Start out in the background and spend one CPU second there.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(false);
-  voter->VoteFor(power_scheduler::PowerMode::kBackground);
   metrics->WaitForCollectionForTesting();
 
   thread1.task_runner()->PostTask(
@@ -154,7 +128,6 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   // Update the state to foreground to trigger the collection of high level
   // metrics.
   ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(true);
-  voter->VoteFor(power_scheduler::PowerMode::kIdle);
   metrics->WaitForCollectionForTesting();
 
   // The test process has no process-type command line flag, so is recognized as
@@ -172,11 +145,6 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   int browser_cpu_seconds_background = histograms.GetBucketCount(
       "Power.CpuTimeSecondsPerProcessType.Background", kBrowserProcessBucket);
   EXPECT_GE(browser_cpu_seconds_background, 1);
-
-  int browser_cpu_seconds_power_mode_background =
-      histograms.GetBucketCount("Power.CpuTimeSecondsPerPowerMode.Browser",
-                                internal::PowerModeForUma::kBackground);
-  EXPECT_GE(browser_cpu_seconds_power_mode_background, 1);
 
   // Thread breakdown requires periodic collection.
   int thread_cpu_seconds =

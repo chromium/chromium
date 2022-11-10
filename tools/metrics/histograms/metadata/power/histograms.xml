@@ -1114,6 +1114,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
     enum="PowerMode" expires_after="2023-03-31">
+  <obsolete>
+    Deprecated in 11/2022 without replacement.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>oksamyt@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1664,6 +1667,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.IdleCpuLoad.{ProcessType}" units="%"
     expires_after="2023-07-31">
+  <obsolete>
+    Deprecated in 11/2022 without replacement.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -2022,6 +2028,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Power.PowerScheduler.ProcessPowerModeChange.{ProcessType}"
     enum="PowerMode" expires_after="2023-03-31">
+  <obsolete>
+    Deprecated in 11/2022 without replacement.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

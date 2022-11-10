@@ -16,8 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/time/time.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/common/process_visibility_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,42 +43,16 @@ enum class ProcessTypeForUma {
   kMaxValue = kPpapiBroker,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Keep in sync with power_scheduler::PowerMode.
-enum class PowerModeForUma {
-  kIdle = 0,
-  kAudible = 1,
-  kLoading = 2,
-  kAnimation = 3,
-  kResponse = 4,
-  kNonWebActivity = 5,
-  kBackground = 6,
-  kCharging = 7,
-  kNopAnimation = 8,
-  kVideoPlayback = 9,
-  kLoadingAnimation = 10,
-  kMainThreadAnimation = 11,
-  kSmallAnimation = 12,
-  kMediumAnimation = 13,
-  kSmallMainThreadAnimation = 14,
-  kMediumMainThreadAnimation = 15,
-  kScriptExecution = 16,
-  kMaxValue = kScriptExecution,
-};
-
 // Samples the process's CPU time after a specific number of task were executed
 // on the current thread (process main). The number of tasks is a crude proxy
 // for CPU activity within this process. We sample more frequently when the
 // process is more active, thus ensuring we lose little CPU time attribution
 // when the process is terminated, even after it was very active.
 //
-// Also samples some of the breakdowns when the process's visibility or
-// PowerMode change.
+// Also samples some of the breakdowns when the process's visibility changes.
 class CONTENT_EXPORT ProcessCpuTimeMetrics
     : public base::TaskObserver,
-      public ProcessVisibilityTracker::ProcessVisibilityObserver,
-      public power_scheduler::PowerModeArbiter::Observer {
+      public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
   static ProcessCpuTimeMetrics* GetInstance();
 
@@ -95,15 +67,10 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
   void OnVisibilityChanged(bool visible) override;
 
-  // power_scheduler::PowerModeArbiter::Observer implementation:
-  void OnPowerModeChanged(power_scheduler::PowerMode old_mode,
-                          power_scheduler::PowerMode new_mode) override;
-
   void PerformFullCollectionForTesting();
   void WaitForCollectionForTesting() const;
 
-  static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting(
-      power_scheduler::PowerModeArbiter* arbiter);
+  static std::unique_ptr<ProcessCpuTimeMetrics> CreateForTesting();
   static void SetIgnoreHistogramAllocatorForTesting(bool ignore);
 
  private:
@@ -111,7 +78,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
 
   class DetailedCpuTimeMetrics;
 
-  explicit ProcessCpuTimeMetrics(power_scheduler::PowerModeArbiter* arbiter);
+  explicit ProcessCpuTimeMetrics();
 
   void InitializeOnThreadPool();
   void PerformFullCollectionOnThreadPool();
@@ -128,7 +95,6 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
       base::Seconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const raw_ptr<power_scheduler::PowerModeArbiter> arbiter_;
 
   // Accessed on main thread.
   SEQUENCE_CHECKER(main_thread_);
@@ -139,13 +105,10 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   SEQUENCE_CHECKER(thread_pool_);
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
   absl::optional<bool> is_visible_;
-  absl::optional<power_scheduler::PowerMode> power_mode_;
   ProcessTypeForUma process_type_;
   base::TimeDelta reported_cpu_time_;
   base::TimeDelta cpu_time_on_last_load_report_;
   base::TimeTicks cpu_load_report_time_;
-  base::TimeDelta cpu_time_for_idle_cpu_;
-  base::TimeTicks timestamp_for_idle_cpu_;
 
   // Lives on |task_runner_| after construction.
   std::unique_ptr<DetailedCpuTimeMetrics> detailed_metrics_;
