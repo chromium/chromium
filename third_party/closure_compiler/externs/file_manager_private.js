@@ -57,9 +57,8 @@ chrome.fileManagerPrivate.DriveOfflineReason = {
 
 /** @enum {string} */
 chrome.fileManagerPrivate.MountCondition = {
-  UNKNOWN: 'unknown',
-  UNSUPPORTED: 'unsupported',
-  IN_PROGRESS: 'in_progress',
+  ERROR_UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
+  ERROR_UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
 };
 
 /** @enum {string} */
@@ -77,6 +76,7 @@ chrome.fileManagerPrivate.MountCompletedEventType = {
 /** @enum {string} */
 chrome.fileManagerPrivate.MountCompletedStatus = {
   SUCCESS: 'success',
+  IN_PROGRESS: 'in_progress',
   ERROR_UNKNOWN: 'error_unknown',
   ERROR_INTERNAL: 'error_internal',
   ERROR_INVALID_ARGUMENT: 'error_invalid_argument',
@@ -92,7 +92,6 @@ chrome.fileManagerPrivate.MountCompletedStatus = {
   ERROR_UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
   ERROR_UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
   ERROR_NEED_PASSWORD: 'error_need_password',
-  ERROR_IN_PROGRESS: 'error_in_progress',
   ERROR_CANCELLED: 'error_cancelled',
   ERROR_BUSY: 'error_busy',
 };

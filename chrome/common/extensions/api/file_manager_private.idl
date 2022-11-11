@@ -62,7 +62,10 @@ enum DriveOfflineReason {NOT_READY, NO_NETWORK, NO_SERVICE};
 
 // Additional data about mount, for example, that the filesystem is not
 // supported.
-enum MountCondition { unknown, unsupported, in_progress };
+enum MountCondition {
+  error_unknown_filesystem,
+  error_unsupported_filesystem
+};
 
 // Additional information of the context the volume was mounted.
 enum MountContext { user, auto };
@@ -74,6 +77,7 @@ enum MountCompletedEventType { mount, unmount };
 // occurred. It also specifies the error.
 enum MountCompletedStatus {
   success,
+  in_progress,
   error_unknown,
   error_internal,
   error_invalid_argument,
@@ -89,7 +93,6 @@ enum MountCompletedStatus {
   error_unknown_filesystem,
   error_unsupported_filesystem,
   error_need_password,
-  error_in_progress,
   error_cancelled,
   error_busy
 };

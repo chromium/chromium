@@ -492,7 +492,7 @@ file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
     case ash::MountError::kNeedPassword:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
     case ash::MountError::kInProgress:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
+      return file_manager_private::MOUNT_COMPLETED_STATUS_IN_PROGRESS;
     case ash::MountError::kCancelled:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
     case ash::MountError::kBusy:
