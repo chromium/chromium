@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 22
+// Next MinVersion: 23
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -121,6 +121,14 @@ struct PasspointCredentials {
 
   // Package name of the App that provided these credentials.
   string package_name@7;
+
+  // Friendly name of the home service provider.
+  [MinVersion=22] string? friendly_name@8;
+
+  // The time this subscription will expire or minimum value of 64-bit int to
+  // indicate unset value. It is in the format of number of milliseconds since
+  // January 1, 1970, 00:00:00 GMT.
+  [MinVersion=22] int64 subscription_expiration_time_ms@9;
 };
 
 // Values to be used to remove matching Passpoint credentials.
