@@ -3462,14 +3462,6 @@
     ],
   },
   'trace_test': {
-    'remove_from': [
-      # Trace tests currently don't work on non-rooted devices due to a private
-      # directory being used for storing the trace config file.
-      # TODO(crbug.com/1358240): Enable this test on these bots once tracing is
-      # updated to work properly without root.
-      'Android FYI Release (Samsung A13)',
-      'Android FYI Release (Samsung A23)',
-    ],
     'modifications': {
       'fuchsia-x64-chrome-rel': { # https://crbug.com/1269976
         'experiment_percentage': 100,
