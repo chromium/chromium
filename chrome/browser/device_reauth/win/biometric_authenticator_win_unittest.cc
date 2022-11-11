@@ -65,10 +65,7 @@ class BiometricAuthenticatorWinTest : public testing::Test {
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
-  void SetBiometricAvailability(bool available) {
-    testing_local_state_.Get()->SetBoolean(
-        password_manager::prefs::kIsBiometricAvailable, available);
-  }
+  ScopedTestingLocalState& local_state() { return testing_local_state_; }
 
   void ExpectAuthenticationAndSetResult(bool result) {
     EXPECT_CALL(system_authenticator(), AuthenticateUser)
@@ -165,11 +162,13 @@ TEST_F(BiometricAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
 
 // Checks if CanAuthenticate returns a valid pref value.
 TEST_F(BiometricAuthenticatorWinTest, CanAuthenticate) {
-  SetBiometricAvailability(true);
+  local_state().Get()->SetBoolean(
+      password_manager::prefs::kIsBiometricAvailable, true);
   EXPECT_TRUE(authenticator()->CanAuthenticate(
       BiometricAuthRequester::kPasswordsInSettings));
 
-  SetBiometricAvailability(false);
+  local_state().Get()->SetBoolean(
+      password_manager::prefs::kIsBiometricAvailable, false);
   EXPECT_FALSE(authenticator()->CanAuthenticate(
       BiometricAuthRequester::kPasswordsInSettings));
 }
@@ -199,6 +198,9 @@ TEST_P(BiometricAuthenticatorWinTestAvailability, AvailabilityCheck) {
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticate(
                 BiometricAuthRequester::kPasswordsInSettings));
+  EXPECT_EQ(test_case.expected_result,
+            local_state().Get()->GetBoolean(
+                password_manager::prefs::kHadBiometricsAvailable));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);
 }

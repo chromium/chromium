@@ -7,7 +7,10 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/browser_process.h"
 #include "components/device_reauth/biometric_authenticator.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "device/fido/mac/touch_id_context.h"
 
 BiometricAuthenticatorMac::BiometricAuthenticatorMac() = default;
@@ -22,6 +25,10 @@ bool BiometricAuthenticatorMac::CanAuthenticate(
                            error:nil];
   base::UmaHistogramBoolean("PasswordManager.CanUseBiometricsMac",
                             is_available);
+  if (is_available) {
+    g_browser_process->local_state()->SetBoolean(
+        password_manager::prefs::kHadBiometricsAvailable, is_available);
+  }
   return is_available;
 }
 

@@ -417,10 +417,6 @@ bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
       !authenticator) {
     return false;
   }
-  if (authenticator->CanAuthenticate(requester)) {
-    client->GetLocalStatePrefs()->SetBoolean(
-        password_manager::prefs::kHadBiometricsAvailable, true);
-  }
   return client->GetPasswordFeatureManager()
       ->IsBiometricAuthenticationBeforeFillingEnabled();
 #else
