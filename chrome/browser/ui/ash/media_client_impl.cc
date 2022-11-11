@@ -560,7 +560,7 @@ void MediaClientImpl::ShowCameraOffNotification(
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),
-          vector_icons::kVideocamOffIcon,
+          vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }

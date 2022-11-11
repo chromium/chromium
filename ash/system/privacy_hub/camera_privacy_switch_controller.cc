@@ -248,8 +248,7 @@ void CameraPrivacySwitchController::ShowNotification(
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
               catalog),
-          notification_data, std::move(delegate),
-          vector_icons::kVideocamOffIcon,
+          notification_data, std::move(delegate), vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
