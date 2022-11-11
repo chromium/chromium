@@ -315,7 +315,7 @@ GbmDevice* WaylandBufferManagerGpu::GetGbmDevice() {
     return nullptr;
   }
 
-  gbm_device_ = CreateGbmDevice(drm_render_node_fd_.release());
+  gbm_device_ = CreateGbmDevice(drm_render_node_fd_.get());
   if (!gbm_device_) {
     supports_dmabuf_ = false;
     LOG(WARNING) << "Failed to initialize gbm device.";
