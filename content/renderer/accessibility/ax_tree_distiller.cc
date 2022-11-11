@@ -34,8 +34,6 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kContentInfo,
     ax::mojom::Role::kFooter,
     ax::mojom::Role::kFooterAsNonLandmark,
-    ax::mojom::Role::kHeader,
-    ax::mojom::Role::kHeaderAsNonLandmark,
     ax::mojom::Role::kImage,
     ax::mojom::Role::kLabelText,
     ax::mojom::Role::kNavigation,

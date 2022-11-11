@@ -85,20 +85,20 @@ const TestCase kDistillWebPageTestCases[] = {
       <body>)HTML",
      {"Test"}},
     /* ----------------------- */
-    {"simple_page_two_paragraphs",
+    {"simple_page_with_content",
      R"HTML(<!doctype html>
       <body role="main">
         <h1>Heading</h1>
         <p>Test 1</p>
         <p>Test 2</p>
+        <div role='header'><h2>Header</h2></div>
       <body>)HTML",
-     {"Heading", "Test 1", "Test 2"}},
+     {"Heading", "Test 1", "Test 2", "Header"}},
     /* ----------------------- */
     {"simple_page_no_content",
      R"HTML(<!doctype html>
       <body>
         <main>
-          <header>Header</header>
           <div role='banner'>Banner</div>
           <div role="navigation'>Navigation</div>
           <audio>Audio</audio>
