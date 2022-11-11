@@ -33,7 +33,6 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
-#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -317,62 +316,15 @@ class MetricsServiceTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-class MetricsServiceTestWithConsolidateInitialLogLogicFeature
-    : public MetricsServiceTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  MetricsServiceTestWithConsolidateInitialLogLogicFeature() = default;
-  ~MetricsServiceTestWithConsolidateInitialLogLogicFeature() override = default;
-
-  bool ShouldConsolidateInitialLogLogic() { return GetParam(); }
-
-  void SetUp() override {
-    MetricsServiceTest::SetUp();
-    if (ShouldConsolidateInitialLogLogic()) {
-      feature_list_.InitWithFeatures(
-          {features::kConsolidateMetricsServiceInitialLogLogic}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kConsolidateMetricsServiceInitialLogLogic});
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 struct StartupVisibilityTestParams {
   const std::string test_name;
   metrics::StartupVisibility startup_visibility;
-  bool consolidate_initial_log_logic;
   bool expected_beacon_value;
 };
 
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<StartupVisibilityTestParams> {
- public:
-  MetricsServiceTestWithStartupVisibility() = default;
-  ~MetricsServiceTestWithStartupVisibility() override = default;
-
-  bool ShouldConsolidateInitialLogLogic() {
-    return GetParam().consolidate_initial_log_logic;
-  }
-
-  void SetUp() override {
-    MetricsServiceTest::SetUp();
-    if (ShouldConsolidateInitialLogLogic()) {
-      feature_list_.InitWithFeatures(
-          {features::kConsolidateMetricsServiceInitialLogLogic}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kConsolidateMetricsServiceInitialLogLogic});
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
 
 class ExperimentTestMetricsProvider : public TestMetricsProvider {
  public:
@@ -413,13 +365,7 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-    testing::Bool());
-
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       InitialStabilityLogAfterCleanShutDown) {
+TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
   // Write a beacon file indicating that Chrome exited cleanly. Note that the
@@ -460,8 +406,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       InitialStabilityLogAtProviderRequest) {
+TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
 
@@ -533,8 +478,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
                                      StabilityEventType::kBrowserCrash, 0);
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       IndependentLogAtProviderRequest) {
+TEST_F(MetricsServiceTest, IndependentLogAtProviderRequest) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -596,32 +540,14 @@ INSTANTIATE_TEST_SUITE_P(
         StartupVisibilityTestParams{
             .test_name = "UnknownVisibility",
             .startup_visibility = StartupVisibility::kUnknown,
-            .consolidate_initial_log_logic = false,
             .expected_beacon_value = true},
         StartupVisibilityTestParams{
             .test_name = "BackgroundVisibility",
             .startup_visibility = StartupVisibility::kBackground,
-            .consolidate_initial_log_logic = false,
             .expected_beacon_value = true},
         StartupVisibilityTestParams{
             .test_name = "ForegroundVisibility",
             .startup_visibility = StartupVisibility::kForeground,
-            .consolidate_initial_log_logic = false,
-            .expected_beacon_value = false},
-        StartupVisibilityTestParams{
-            .test_name = "UnknownVisibilityConsolidateInitialLogLogic",
-            .startup_visibility = StartupVisibility::kUnknown,
-            .consolidate_initial_log_logic = true,
-            .expected_beacon_value = true},
-        StartupVisibilityTestParams{
-            .test_name = "BackgroundVisibilityConsolidateInitialLogLogic",
-            .startup_visibility = StartupVisibility::kBackground,
-            .consolidate_initial_log_logic = true,
-            .expected_beacon_value = true},
-        StartupVisibilityTestParams{
-            .test_name = "ForegroundVisibilityConsolidateInitialLogLogic",
-            .startup_visibility = StartupVisibility::kForeground,
-            .consolidate_initial_log_logic = true,
             .expected_beacon_value = false}),
     [](const ::testing::TestParamInfo<StartupVisibilityTestParams>& params) {
       return params.param.test_name;
@@ -736,8 +662,7 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
                                      StabilityEventType::kBrowserCrash, 1);
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       InitialLogsHaveOnDidCreateMetricsLogHistograms) {
+TEST_F(MetricsServiceTest, InitialLogsHaveOnDidCreateMetricsLogHistograms) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -785,8 +710,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_TRUE(test_provider->record_histogram_snapshots_called());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       MarkCurrentHistogramsAsReported) {
+TEST_F(MetricsServiceTest, MarkCurrentHistogramsAsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -818,16 +742,11 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       LogHasUserActions) {
+TEST_F(MetricsServiceTest, LogHasUserActions) {
   // This test verifies that user actions are properly captured in UMA logs.
   // In particular, it checks that the first log has actions, a behavior that
   // was buggy in the past, plus additional checks for subsequent logs with
-  // different numbers of actions. This behavior is only fixed after
-  // consolidating the initial log logic.
-  if (!ShouldConsolidateInitialLogLogic())
-    return;
-
+  // different numbers of actions.
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -872,8 +791,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_EQ(2, GetNumberOfUserActions(test_log_store));
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       FirstLogCreatedBeforeUnsentLogsSent) {
+TEST_F(MetricsServiceTest, FirstLogCreatedBeforeUnsentLogsSent) {
   // This test checks that we will create and serialize the first ongoing log
   // before starting to send unsent logs from the past session. The latter is
   // simulated by injecting some fake ongoing logs into the MetricsLogStore.
@@ -908,7 +826,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
+TEST_F(MetricsServiceTest,
        MetricsProviderOnRecordingDisabledCalledOnInitialStop) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -924,8 +842,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_TRUE(test_provider->on_recording_disabled_called());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       MetricsProvidersInitialized) {
+TEST_F(MetricsServiceTest, MetricsProvidersInitialized) {
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
                              GetLocalState());
@@ -941,8 +858,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
 
 // Verify that FieldTrials activated by a MetricsProvider are reported by the
 // FieldTrialsProvider.
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       ActiveFieldTrialsReported) {
+TEST_F(MetricsServiceTest, ActiveFieldTrialsReported) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -978,8 +894,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
       IsFieldTrialPresent(uma_log.system_profile(), trial_name2, group_name2));
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       SystemProfileDataProvidedOnEnableRecording) {
+TEST_F(MetricsServiceTest, SystemProfileDataProvidedOnEnableRecording) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1003,7 +918,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_FALSE(service.persistent_system_profile_complete());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature, SplitRotation) {
+TEST_F(MetricsServiceTest, SplitRotation) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1045,8 +960,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature, SplitRotation) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       LastLiveTimestamp) {
+TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1089,8 +1003,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       EnablementObserverNotification) {
+TEST_F(MetricsServiceTest, EnablementObserverNotification) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1116,8 +1029,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // ResetClientId is only enabled on certain targets.
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       SetClientIdToExternalId) {
+TEST_F(MetricsServiceTest, SetClientIdToExternalId) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,
@@ -1137,7 +1049,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
+TEST_F(MetricsServiceTest,
        OngoingLogNotFlushedBeforeInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1174,7 +1086,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   EXPECT_EQ(1u, alternate_ongoing_log_store_ptr->size());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
+TEST_F(MetricsServiceTest,
        OngoingLogFlushedAfterInitialLogWhenUserLogStoreSet) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1207,8 +1119,7 @@ TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
   ASSERT_EQ(2u, test_log_store->ongoing_log_count());
 }
 
-TEST_P(MetricsServiceTestWithConsolidateInitialLogLogicFeature,
-       OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
+TEST_F(MetricsServiceTest, OngoingLogDiscardedAfterEarlyUnsetUserLogStore) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(), &client,

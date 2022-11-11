@@ -7,10 +7,6 @@
 
 #include "base/feature_list.h"
 
-namespace metrics::features {
-// Determines whether the initial log should use the same logic as subsequent
-// logs when building it.
-BASE_DECLARE_FEATURE(kConsolidateMetricsServiceInitialLogLogic);
-}  // namespace metrics::features
+namespace metrics::features {}  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

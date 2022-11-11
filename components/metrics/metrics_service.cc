@@ -79,32 +79,31 @@
 //  CONSTRUCTED,          // Constructor was called.
 //  INITIALIZED,          // InitializeMetricsRecordingState() was called.
 //  INIT_TASK_SCHEDULED,  // Waiting for deferred init tasks to finish.
-//  INIT_TASK_DONE,       // Waiting for timer to send initial log.
+//  INIT_TASK_DONE,       // Waiting for timer to send the first ongoing log.
 //  SENDING_LOGS,         // Sending logs and creating new ones when we run out.
 //
 // In more detail, we have:
 //
 //    INIT_TASK_SCHEDULED,    // Waiting for deferred init tasks to finish.
-// Typically about 30 seconds after startup, a task is sent to a second thread
-// (the file thread) to perform deferred (lower priority and slower)
-// initialization steps such as getting the list of plugins.  That task will
-// (when complete) make an async callback (via a Task) to indicate the
-// completion.
+// Typically about 30 seconds after startup, a task is sent to a background
+// thread to perform deferred (lower priority and slower) initialization steps
+// such as getting the list of plugins.  That task will (when complete) make an
+// async callback (via a Task) to indicate the completion.
 //
-//    INIT_TASK_DONE,         // Waiting for timer to send initial log.
-// The callback has arrived, and it is now possible for an initial log to be
+//    INIT_TASK_DONE,         // Waiting for timer to send first ongoing log.
+// The callback has arrived, and it is now possible for an ongoing log to be
 // created.  This callback typically arrives back less than one second after
 // the deferred init task is dispatched.
 //
-//    SENDING_LOGS,  // Sending logs an creating new ones when we run out.
-// Logs from previous sessions have been loaded, and initial logs have been
-// created (an optional stability log and the first metrics log).  We will
-// send all of these logs, and when run out, we will start cutting new logs
-// to send.  We will also cut a new log if we expect a shutdown.
+//    SENDING_LOGS,  // Sending logs and creating new ones when we run out.
+// Logs from previous sessions have been loaded, and an optional initial
+// stability log has been created. We will send all of these logs, and when
+// they run out, we will start cutting new logs to send.  We will also cut a new
+// log if we expect a shutdown.
 //
 // The progression through the above states is simple, and sequential.
-// States proceed from INITIAL to SENDING_LOGS, and remain in the latter until
-// shutdown.
+// States proceed from INITIALIZED to SENDING_LOGS, and remain in the latter
+// until shutdown.
 //
 // Also note that whenever we successfully send a log, we mirror the list
 // of logs into the PrefService. This ensures that IF we crash, we won't start
@@ -721,21 +720,6 @@ void MetricsService::OnUserAction(const std::string& action,
 void MetricsService::FinishedInitTask() {
   DCHECK_EQ(INIT_TASK_SCHEDULED, state_);
   state_ = INIT_TASK_DONE;
-
-  if (!base::FeatureList::IsEnabled(
-          features::kConsolidateMetricsServiceInitialLogLogic)) {
-    // Create the initial log.
-    if (!initial_metrics_log_) {
-      initial_metrics_log_ = CreateLog(MetricsLog::ONGOING_LOG);
-      // Note: We explicitly do not call OnDidCreateMetricsLog() here, as this
-      // function would have already been called in Start() and this log will
-      // already contain any histograms logged there. OnDidCreateMetricsLog()
-      // will be called again after the initial log is closed, for the next log.
-      // TODO(crbug.com/1171830): Consider getting rid of
-      // |initial_metrics_log_|.
-    }
-  }
-
   rotation_scheduler_->InitTaskComplete();
 }
 
@@ -904,8 +888,8 @@ void MetricsService::StartSchedulerIfNecessary() {
     return;
 
   // Even if reporting is disabled, the scheduler is needed to trigger the
-  // creation of the initial log, which must be done in order for any logs to be
-  // persisted on shutdown or backgrounding.
+  // creation of the first ongoing log, which must be done in order for any logs
+  // to be persisted on shutdown or backgrounding.
   if (recording_active() && (reporting_active() || state_ < SENDING_LOGS)) {
     rotation_scheduler_->Start();
     reporting_service_.Start();
@@ -920,8 +904,9 @@ void MetricsService::StartScheduledUpload() {
   // it's possible the computer is about to go to sleep, so don't upload and
   // stop the scheduler.
   // If recording has been turned off, the scheduler doesn't need to run.
-  // If reporting is off, proceed if the initial log hasn't been created, since
-  // that has to happen in order for logs to be cut and stored when persisting.
+  // If reporting is off, proceed if the first ongoing log hasn't been created,
+  // since that has to happen in order for logs to be cut and stored when
+  // persisting.
   // TODO(stuartmorgan): Call Stop() on the scheduler when reporting and/or
   // recording are turned off instead of letting it fire and then aborting.
   if (idle_since_last_transmission_ || !recording_active() ||
@@ -931,26 +916,17 @@ void MetricsService::StartScheduledUpload() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kConsolidateMetricsServiceInitialLogLogic)) {
-    // The first ongoing log should be collected prior to sending any unsent
-    // logs.
-    if (state_ == INIT_TASK_DONE) {
-      client_->CollectFinalMetricsForLog(
-          base::BindOnce(&MetricsService::OnFinalLogInfoCollectionDone,
-                         self_ptr_factory_.GetWeakPtr()));
-      return;
-    }
+  // The first ongoing log should be collected prior to sending any unsent logs.
+  if (state_ == INIT_TASK_DONE) {
+    client_->CollectFinalMetricsForLog(
+        base::BindOnce(&MetricsService::OnFinalLogInfoCollectionDone,
+                       self_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   // If there are unsent logs, send the next one. If not, start the asynchronous
   // process of finalizing the current log for upload.
-  bool send_unsent_logs =
-      base::FeatureList::IsEnabled(
-          features::kConsolidateMetricsServiceInitialLogLogic)
-          ? has_unsent_logs()
-          : state_ == SENDING_LOGS && has_unsent_logs();
-  if (send_unsent_logs) {
+  if (has_unsent_logs()) {
     reporting_service_.Start();
     rotation_scheduler_->RotationFinished();
   } else {
@@ -963,11 +939,8 @@ void MetricsService::StartScheduledUpload() {
 
 void MetricsService::OnFinalLogInfoCollectionDone() {
   DVLOG(1) << "OnFinalLogInfoCollectionDone";
-  if (base::FeatureList::IsEnabled(
-          features::kConsolidateMetricsServiceInitialLogLogic)) {
-    DCHECK(state_ >= INIT_TASK_DONE);
-    state_ = SENDING_LOGS;
-  }
+  DCHECK(state_ >= INIT_TASK_DONE);
+  state_ = SENDING_LOGS;
 
   // Abort if metrics were turned off during the final info gathering.
   if (!recording_active()) {
@@ -976,27 +949,16 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kConsolidateMetricsServiceInitialLogLogic)) {
-    CloseCurrentLog();
-    OpenNewLog();
-    // Trim and store unsent logs, including the log that was just closed, so
-    // that they're not lost in case of a crash before upload time. However, the
-    // in-memory log store is unchanged. I.e., logs that are trimmed will still
-    // be available in memory. This is to give the log that was just created a
-    // chance to be sent in case it is trimmed. After uploading (whether
-    // successful or not), the log store is trimmed and stored again, and at
-    // that time, the in-memory log store will be updated.
-    log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/false);
-  } else {
-    if (state_ == INIT_TASK_DONE) {
-      PrepareInitialMetricsLog();
-    } else {
-      DCHECK_EQ(SENDING_LOGS, state_);
-      CloseCurrentLog();
-      OpenNewLog();
-    }
-  }
+  CloseCurrentLog();
+  OpenNewLog();
+  // Trim and store unsent logs, including the log that was just closed, so that
+  // they're not lost in case of a crash before upload time. However, the
+  // in-memory log store is unchanged. I.e., logs that are trimmed will still be
+  // available in memory. This is to give the log that was just created a chance
+  // to be sent in case it is trimmed. After uploading (whether successful or
+  // not), the log store is trimmed and stored again, and at that time, the
+  // in-memory log store will be updated.
+  log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/false);
 
   reporting_service_.Start();
   rotation_scheduler_->RotationFinished();
@@ -1039,51 +1001,6 @@ bool MetricsService::PrepareInitialStabilityLog(
   log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
   return true;
-}
-
-void MetricsService::PrepareInitialMetricsLog() {
-  DCHECK_EQ(INIT_TASK_DONE, state_);
-
-  std::unique_ptr<MetricsLog> initial_metrics_log =
-      std::move(initial_metrics_log_);
-  RecordCurrentEnvironment(initial_metrics_log.get(), /*complete=*/true);
-  base::TimeDelta incremental_uptime;
-  base::TimeDelta uptime;
-  GetUptimes(local_state_, &incremental_uptime, &uptime);
-
-  // Some stability providers may record stability stats via histograms.
-  initial_metrics_log->RecordCurrentSessionData(
-      base::TimeDelta(), base::TimeDelta(), &delegating_provider_,
-      local_state_);
-
-  auto log_histogram_writer =
-      std::make_unique<MetricsLogHistogramWriter>(initial_metrics_log.get());
-
-  // Let metrics providers provide histogram snapshots independently if they
-  // have any. This is done synchronously.
-  delegating_provider_.RecordHistogramSnapshots(
-      log_histogram_writer->histogram_snapshot_manager());
-
-  MetricsLog::LogType log_type = initial_metrics_log->log_type();
-  std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
-  FinalizedLog finalized_log = SnapshotHistogramsAndFinalizeLog(
-      std::move(log_histogram_writer), std::move(initial_metrics_log),
-      /*truncate_events=*/false, client_->GetVersionString(),
-      std::move(signing_key));
-  StoreFinalizedLog(log_type, base::DoNothing(), std::move(finalized_log));
-
-  // We call OnDidCreateMetricsLog() here for the next log. Normally, this is
-  // called when the log is created, but in this special case, the current log
-  // was created much earlier - by Start(). The histograms that were recorded
-  // via OnDidCreateMetricsLog() are now in the initial metrics log we just
-  // processed, so we need to record new ones for the next log.
-  delegating_provider_.OnDidCreateMetricsLog();
-
-  // Store unsent logs, including the initial log that was just saved, so
-  // that they're not lost in case of a crash before upload time.
-  log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
-
-  state_ = SENDING_LOGS;
 }
 
 void MetricsService::RegisterMetricsProvider(

@@ -4,8 +4,4 @@
 
 #include "components/metrics/metrics_features.h"
 
-namespace metrics::features {
-BASE_FEATURE(kConsolidateMetricsServiceInitialLogLogic,
-             "ConsolidateMetricsServiceInitialLogLogic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace metrics::features
+namespace metrics::features {}  // namespace metrics::features
