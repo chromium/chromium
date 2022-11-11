@@ -53,7 +53,10 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   ~CaptivePortalDetector();
 
   // Triggers a check for a captive portal. After completion, runs the
-  // |callback|.
+  // |callback|. Only one detection attempt is expected to be in progress.
+  // If called again before |callback| is invoked, Cancel() should be called
+  // first, otherwise the first request and callback will be implicitly
+  // cancelled. and an ERROR will be logged
   void DetectCaptivePortal(
       const GURL& url,
       DetectionCallback callback,
