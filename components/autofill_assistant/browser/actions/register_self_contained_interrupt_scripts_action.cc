@@ -73,6 +73,7 @@ void RegisterSelfContainedInterruptScriptsAction::InternalProcessAction(
         supports_site_script.path(),
         supports_site_script.presentation().precondition());
     script->handle.path = supports_site_script.path();
+    script->handle.interrupt = true;
 
     delegate_->AddInterruptScript(
         std::move(script),

@@ -49,6 +49,7 @@ void RegisterJsInterruptForParentJsFlowAction::InternalProcessAction(
   auto* supports_site_script = supports_site_response->add_scripts();
   supports_site_script->set_path(
       proto_.register_js_interrupt_for_flow().path());
+  supports_site_script->mutable_presentation()->set_interrupt(true);
   *supports_site_script->mutable_presentation()
        ->mutable_precondition()
        ->mutable_element_condition() =
