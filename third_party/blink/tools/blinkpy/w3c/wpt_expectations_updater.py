@@ -1196,7 +1196,6 @@ class WPTExpectationsUpdater(object):
             blink_tool,
             'rebaseline-cl',
             '--no-trigger-jobs',
-            '--fill-missing',
         ]
         if self.options.verbose:
             command.append('--verbose')
