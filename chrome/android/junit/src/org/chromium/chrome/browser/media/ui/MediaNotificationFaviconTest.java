@@ -99,14 +99,13 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
         assertEquals(mFavicon, getDisplayedIcon());
     }
 
-    // TODO(crbug.com/729029): Specify O-SDK.
     @Test
+    @Config(sdk = Build.VERSION_CODES.O)
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testSetNotificationIcon_lowMem_O() {
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
-        assertEquals(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? null : mFavicon,
-                getDisplayedIcon());
+        assertEquals(null, getDisplayedIcon());
     }
 
     @Test
