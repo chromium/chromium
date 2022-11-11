@@ -1,3 +1,4 @@
+src/common/framework/data_cache.ts
 src/common/framework/test_config.ts
 src/external/petamoriken/float16/float16.d.ts
 src/common/internal/version.ts
@@ -41,6 +42,7 @@ src/common/runtime/helper/test_worker-worker.ts
 src/common/tools/checklist.ts
 src/common/tools/crawl.ts
 src/common/tools/dev_server.ts
+src/common/tools/gen_cache.ts
 src/common/tools/gen_listings.ts
 src/common/tools/gen_wpt_cts_html.ts
 src/common/tools/presubmit.ts
@@ -117,6 +119,10 @@ src/unittests/params_builder_toplevel.spec.ts
 src/unittests/preprocessor.spec.ts
 src/unittests/query_compare.spec.ts
 src/unittests/query_string.spec.ts
+src/webgpu/shader/execution/expression/expression.ts
+src/webgpu/util/compare.ts
+src/webgpu/shader/execution/expression/case_cache.ts
+src/unittests/serialization.spec.ts
 src/unittests/test_group.spec.ts
 src/unittests/test_query.spec.ts
 src/webgpu/examples.spec.ts
@@ -283,8 +289,6 @@ src/webgpu/shader/execution/evaluation_order.spec.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
-src/webgpu/util/compare.ts
-src/webgpu/shader/execution/expression/expression.ts
 src/webgpu/shader/execution/expression/binary/binary.ts
 src/webgpu/shader/execution/expression/binary/bitwise.spec.ts
 src/webgpu/shader/execution/expression/binary/bool_logical.spec.ts
