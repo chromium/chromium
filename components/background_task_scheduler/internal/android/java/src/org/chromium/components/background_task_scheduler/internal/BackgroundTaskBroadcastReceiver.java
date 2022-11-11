@@ -7,7 +7,6 @@ package org.chromium.components.background_task_scheduler.internal;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -186,16 +185,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
         BatteryManager batteryManager =
                 (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return ApiHelperForM.isCharging(batteryManager);
-        }
-
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus =
-                ContextUtils.registerProtectedBroadcastReceiver(context, null, intentFilter);
-        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-        return status == BatteryManager.BATTERY_STATUS_CHARGING
-                || status == BatteryManager.BATTERY_STATUS_FULL;
+        return batteryManager.isCharging();
     }
 
     private @Nullable @TaskInfo.NetworkType Integer convertToTaskInfoNetworkType(

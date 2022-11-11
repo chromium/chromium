@@ -14,7 +14,6 @@ import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.BatteryManager;
 import android.os.Build;
 import android.os.PowerManager;
 import android.os.Process;
@@ -167,11 +166,6 @@ public final class ApiHelperForM {
     /** See {@link Display.Mode#getPhysicalHeight() }. */
     public static int getModePhysicalHeight(Display.Mode mode) {
         return mode.getPhysicalHeight();
-    }
-
-    /** See {@link BatteryManager#isCharging() }. */
-    public static boolean isCharging(BatteryManager batteryManager) {
-        return batteryManager.isCharging();
     }
 
     /** See {@link Icon#createWithBitmap(Bitmap) }. */
