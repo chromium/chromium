@@ -7423,3 +7423,6 @@ crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/req
 # Missing priority hints interfaces.
 crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
 crbug.com/1301942 external/wpt/priority-hints/service-worker-fetch-request-priority.tentative.https.html [ Failure ]
+
+# Sheriff 2022-11-31
+crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
