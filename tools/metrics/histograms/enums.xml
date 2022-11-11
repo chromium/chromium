@@ -63315,6 +63315,7 @@ from previous Chrome versions.
   <int value="1178640449" label="ProductivityLauncher:disabled"/>
   <int value="1179013979"
       label="OmniboxUIExperimentMaxAutocompleteMatches:enabled"/>
+  <int value="1179295522" label="WebAssemblyRelaxedSimd:enabled"/>
   <int value="1179407596" label="PreemptiveLinkToTextGeneration:enabled"/>
   <int value="1179587141" label="CommerceMerchantViewer:enabled"/>
   <int value="1179936481" label="enable-android-pay-integration-v1"/>
@@ -64863,6 +64864,7 @@ from previous Chrome versions.
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
   <int value="2107942975" label="ApnRevamp:disabled"/>
+  <int value="2110109003" label="WebAssemblyRelaxedSimd:disabled"/>
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
   <int value="2113804526" label="EnableAppShortcutSearch:enabled"/>

@@ -1262,6 +1262,11 @@ BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable the use of WebAssembly Relaxed SIMD operations
+BASE_FEATURE(kWebAssemblyRelaxedSimd,
+             "WebAssemblyRelaxedSimd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 BASE_FEATURE(kWebAssemblyTiering,
              "WebAssemblyTiering",

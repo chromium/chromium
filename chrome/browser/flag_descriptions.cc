@@ -1401,6 +1401,10 @@ const char kEnableWasmLazyCompilationName[] = "WebAssembly lazy compilation";
 const char kEnableWasmLazyCompilationDescription[] =
     "Enables lazy (JIT on first call) compilation of WebAssembly modules.";
 
+const char kEnableWasmRelaxedSimdName[] = "WebAssembly Relaxed SIMD";
+const char kEnableWasmRelaxedSimdDescription[] =
+    "Enables the use of WebAssembly vector operations with relaxed semantics";
+
 const char kEnableWasmTieringName[] = "WebAssembly tiering";
 const char kEnableWasmTieringDescription[] =
     "Enables tiered compilation of WebAssembly (will tier up to TurboFan if "

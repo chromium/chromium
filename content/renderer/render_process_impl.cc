@@ -174,6 +174,11 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfNotFeature(features::kWebAssemblyLazyCompilation,
                         "--no-wasm-lazy-compilation");
 
+  SetV8FlagIfFeature(features::kWebAssemblyRelaxedSimd,
+                     "--experimental-wasm-relaxed-simd");
+  SetV8FlagIfNotFeature(features::kWebAssemblyRelaxedSimd,
+                        "--no-experimental-wasm-relaxed-simd");
+
   constexpr char kImportAssertionsFlag[] = "--harmony-import-assertions";
   v8::V8::SetFlagsFromString(kImportAssertionsFlag,
                              sizeof(kImportAssertionsFlag));

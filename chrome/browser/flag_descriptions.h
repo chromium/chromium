@@ -784,6 +784,9 @@ extern const char kEnableWasmBaselineDescription[];
 extern const char kEnableWasmLazyCompilationName[];
 extern const char kEnableWasmLazyCompilationDescription[];
 
+extern const char kEnableWasmRelaxedSimdName[];
+extern const char kEnableWasmRelaxedSimdDescription[];
+
 extern const char kEnableWasmTieringName[];
 extern const char kEnableWasmTieringDescription[];
 
