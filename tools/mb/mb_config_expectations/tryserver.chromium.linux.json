@@ -489,24 +489,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-wayland-rel-orchestrator": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "ozone_auto_platforms": false,
-      "ozone_platform": "wayland",
-      "ozone_platform_headless": true,
-      "ozone_platform_wayland": true,
-      "proprietary_codecs": true,
-      "remoting_use_wayland": true,
-      "symbol_level": 0,
-      "use_bundled_weston": true,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-webkit-msan-rel": {
     "gn_args": {
       "dcheck_always_on": false,

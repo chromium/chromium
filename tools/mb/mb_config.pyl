@@ -1077,8 +1077,6 @@
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
-      # TODO (crbug.com/1287228): Remove when orchestrator is verified
-      'linux-lacros-rel-orchestrator': 'lacros_on_linux_release_trybot',
       'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_trybot',
     },
 
@@ -1113,13 +1111,13 @@
       'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver',
       'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
+      'fuchsia-arm64-rel-orchestrator': 'release_trybot_fuchsia_arm64',
       'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
-      'fuchsia-x64-cast-receiver-rel-orchestrator': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_workstation',
@@ -1169,8 +1167,6 @@
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-viz-rel': 'release_trybot',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
-      # TODO (crbug.com/1287228): Remove when orchestrator is verified
-      'linux-wayland-rel-orchestrator': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot_reclient',
