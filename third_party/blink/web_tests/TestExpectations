@@ -7420,3 +7420,7 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-ori
 crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
+
+# Missing priority hints interfaces.
+crbug.com/1345601 external/wpt/priority-hints/iframe-attr-fetchpriority.tentative.html [ Failure ]
+crbug.com/1301942 external/wpt/priority-hints/service-worker-fetch-request-priority.tentative.https.html [ Failure ]
