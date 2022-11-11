@@ -1007,7 +1007,6 @@
       'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
-      'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell',
       'android-x64-cast': 'android_cast_debug_static_bot_compile_only',
       'android_archive_rel_ng': 'android_release_trybot',
