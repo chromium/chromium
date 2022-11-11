@@ -2166,6 +2166,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmStreamingInputType" enum="WasmStreamingInputType"
+    expires_after="2023-08-01">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>wasm-runtime@google.com</owner>
+  <summary>
+    Classification of the argument to the streaming WebAssembly APIs
+    (WebAssembly.compileStreaming and WebAssembly.instantiateStreaming).
+    Recorded on each invocation of this API.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmStreamingUntilCompilationFinishedMilliSeconds"
     units="ms" expires_after="2023-08-01">
   <owner>ahaas@chromium.org</owner>

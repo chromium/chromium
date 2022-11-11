@@ -105268,6 +105268,19 @@ others/histograms.xml -->
   <int value="3" label="kNoCacheHandler"/>
 </enum>
 
+<enum name="WasmStreamingInputType">
+  <int value="0" label="kNoResponse"/>
+  <int value="1" label="kResponseNotOK"/>
+  <int value="2" label="kWrongMimeType"/>
+  <int value="3" label="kResponseEmpty"/>
+  <int value="4" label="kResponseLocked"/>
+  <int value="5" label="kNoURL"/>
+  <int value="6" label="kValidHttp"/>
+  <int value="7" label="kValidHttps"/>
+  <int value="8" label="kValidDataURL"/>
+  <int value="9" label="kValidOtherProtocol"/>
+</enum>
+
 <enum name="WaylandTimingEvent">
 <!--
   WaylandTimingEvent values from components/arc/mojom/metrics.mojom

@@ -522,9 +522,28 @@ void StreamFromResponseCallback(
     return;
   }
 
+  // The enum values need to match "WasmStreamingInputType" in
+  // tools/metrics/histograms/enums.xml.
+  enum class WasmStreamingInputType {
+    kNoResponse = 0,
+    kResponseNotOK = 1,
+    kWrongMimeType = 2,
+    kReponseEmpty = 3,
+    kReponseLocked = 4,
+    kNoURL = 5,
+    kValidHttp = 6,
+    kValidHttps = 7,
+    kValidDataURL = 8,
+    kValidOtherProtocol = 9,
+
+    kMaxValue = kValidOtherProtocol
+  };
+
   Response* response =
       V8Response::ToImplWithTypeCheck(args.GetIsolate(), args[0]);
   if (!response) {
+    base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
+                                  WasmStreamingInputType::kNoResponse);
     exception_state.ThrowTypeError(
         "An argument must be provided, which must be a "
         "Response or Promise<Response> object");
@@ -532,6 +551,8 @@ void StreamFromResponseCallback(
   }
 
   if (!response->ok()) {
+    base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
+                                  WasmStreamingInputType::kResponseNotOK);
     exception_state.ThrowTypeError("HTTP status code is not ok");
     return;
   }
@@ -540,23 +561,42 @@ void StreamFromResponseCallback(
   // so we check against ContentType() rather than MimeType(), which
   // implicitly strips extras.
   if (response->ContentType().LowerASCII() != "application/wasm") {
+    base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
+                                  WasmStreamingInputType::kWrongMimeType);
     exception_state.ThrowTypeError(
         "Incorrect response MIME type. Expected 'application/wasm'.");
     return;
   }
 
   if (response->IsBodyLocked() || response->IsBodyUsed()) {
+    base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
+                                  WasmStreamingInputType::kReponseLocked);
     exception_state.ThrowTypeError(
         "Cannot compile WebAssembly.Module from an already read Response");
     return;
   }
 
   if (!response->BodyBuffer()) {
+    base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
+                                  WasmStreamingInputType::kReponseEmpty);
     // Since the status is 2xx (ok), this must be status 204 (No Content),
     // status 205 (Reset Content) or a malformed status 200 (OK).
     exception_state.ThrowWasmCompileError("Empty WebAssembly module");
     return;
   }
+
+  auto protocol_type = WasmStreamingInputType::kNoURL;
+  if (const KURL* kurl = response->GetResponse()->Url()) {
+    String protocol = kurl->Protocol();
+    // Http and https can be cached; we expect most other protocols to be
+    // "data". Thus track those three protocols.
+    protocol_type = protocol == "http"    ? WasmStreamingInputType::kValidHttp
+                    : protocol == "https" ? WasmStreamingInputType::kValidHttps
+                    : protocol == "data"
+                        ? WasmStreamingInputType::kValidDataURL
+                        : WasmStreamingInputType::kValidOtherProtocol;
+  }
+  base::UmaHistogramEnumeration("V8.WasmStreamingInputType", protocol_type);
 
   String url = response->url();
   const std::string& url_utf8 = url.Utf8();
