@@ -224,6 +224,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> text_color_;
   absl::optional<SkColor> icon_color_;
+
+  // Called to update background color when the button is enabled/disabled.
+  base::CallbackListSubscription enabled_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PillButton, views::LabelButton)
