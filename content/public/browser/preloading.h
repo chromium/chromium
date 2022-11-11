@@ -9,6 +9,11 @@
 
 namespace content {
 
+// If you change any of the following enums, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in
+// dashboard, or if you are not a Googler, please file an FYI bug on
+// https://crbug.new with component Internals>Preload.
+
 // Defines the different types of preloading speedup techniques. Preloading is a
 // holistic term to define all the speculative operations the browser does for
 // loading content before a page navigates to make navigation faster.

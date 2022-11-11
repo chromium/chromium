@@ -15,6 +15,11 @@
 class TemplateURLService;
 using content::PreloadingPredictor;
 
+// If you change any of the following emums, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in
+// dashboard, or if you are not a Googler, please file an FYI bug on
+// https://crbug.new with component Internals>Preload.
+
 // Defines various embedder triggering mechanisms which triggers different
 // preloading operations mentioned in //content/public/browser/preloading.h.
 
