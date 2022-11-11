@@ -8,6 +8,7 @@
 import {Msgs} from '../../common/msgs.js';
 
 import {OutputFormatParserObserver} from './output_format_parser.js';
+import {OutputFormatTree} from './output_format_tree.js';
 import {OutputInterface} from './output_interface.js';
 import * as outputTypes from './output_types.js';
 
@@ -57,7 +58,7 @@ export class OutputFormatter {
       // children.
       this.formatNameOrDescendants_(this.params_, token, options);
     } else if (token === 'indexInParent') {
-      this.output_.formatIndexInParent_(this.params_, token, tree, options);
+      this.formatIndexInParent_(this.params_, token, tree, options);
     } else if (token === 'restriction') {
       this.output_.formatRestriction_(this.params_, token);
     } else if (token === 'checked') {
@@ -159,6 +160,20 @@ export class OutputFormatter {
   }
 
   /**
+   * @param {!OutputFormatTree} tree
+   * @return {!Set}
+   * @private
+   */
+  createRoles_(tree) {
+    const roles = new Set();
+    for (let currentNode = tree.firstChild; currentNode;
+         currentNode = currentNode.nextSibling) {
+      roles.add(currentNode.value);
+    }
+    return roles;
+  }
+
+  /**
    * @param {!outputTypes.OutputFormattingData} data
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
@@ -176,6 +191,42 @@ export class OutputFormatter {
     options.annotation.push(token);
     this.output_.append_(buff, node.description || '', options);
     formatLog.writeTokenWithValue(token, node.description);
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatIndexInParent_(data, token, tree, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (node.parent) {
+      options.annotation.push(token);
+      let roles;
+      if (tree.firstChild) {
+        roles = this.createRoles_(tree);
+      } else {
+        roles = new Set();
+        roles.add(node.role);
+      }
+
+      let count = 0;
+      for (let i = 0, child; child = node.parent.children[i]; i++) {
+        if (roles.has(child.role)) {
+          count++;
+        }
+        if (node === child) {
+          break;
+        }
+      }
+      this.output_.append_(buff, String(count));
+      formatLog.writeTokenWithValue(token, String(count));
+    }
   }
 
   /**

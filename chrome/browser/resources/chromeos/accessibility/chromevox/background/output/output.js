@@ -680,36 +680,6 @@ export class Output {
   }
 
   /** @override */
-  formatIndexInParent_(data, token, tree, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.parent) {
-      options.annotation.push(token);
-      let roles;
-      if (tree.firstChild) {
-        roles = this.createRoles_(tree);
-      } else {
-        roles = new Set();
-        roles.add(node.role);
-      }
-
-      let count = 0;
-      for (let i = 0, child; child = node.parent.children[i]; i++) {
-        if (roles.has(child.role)) {
-          count++;
-        }
-        if (node === child) {
-          break;
-        }
-      }
-      this.append_(buff, String(count));
-      formatLog.writeTokenWithValue(token, String(count));
-    }
-  }
-
-  /** @override */
   formatRestriction_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
@@ -1296,20 +1266,6 @@ export class Output {
 
     this.append_(buff, msg, options);
     formatLog.write(': ' + msg + '\n');
-  }
-
-  /**
-   * @param {!OutputFormatTree} tree
-   * @return {!Set}
-   * @private
-   */
-  createRoles_(tree) {
-    const roles = new Set();
-    let currentNode = tree.firstChild;
-    for (; currentNode; currentNode = currentNode.nextSibling) {
-      roles.add(currentNode.value);
-    }
-    return roles;
   }
 
   /**
