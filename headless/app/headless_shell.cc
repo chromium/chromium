@@ -242,6 +242,8 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   }
 #endif
 
+  devtools_client_.InitBrowserMainThread();
+
   file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
@@ -307,17 +309,18 @@ void HeadlessShell::ShutdownSoon() {
   if (shutdown_pending_)
     return;
   shutdown_pending_ = true;
+
   DCHECK(browser_);
-  if (web_contents_)
-    web_contents_->Close();
-  DCHECK(!web_contents_);
   browser_->BrowserMainThread()->PostTask(
       FROM_HERE,
       base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
 }
 
 void HeadlessShell::Shutdown() {
+  if (web_contents_)
+    web_contents_->Close();
   DCHECK(!web_contents_);
+
   browser_->Shutdown();
 }
 
