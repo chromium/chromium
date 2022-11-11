@@ -127,14 +127,14 @@ class CORE_EXPORT NGLogicalAnchorQuery
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
   absl::optional<LayoutUnit> EvaluateAnchor(
-      const ScopedCSSName& anchor_name,
+      const ScopedCSSName* anchor_name,
       AnchorValue anchor_value,
       LayoutUnit available_size,
       const WritingModeConverter& container_converter,
       const PhysicalOffset& offset_to_padding_box,
       bool is_y_axis,
       bool is_right_or_bottom) const;
-  absl::optional<LayoutUnit> EvaluateSize(const ScopedCSSName& anchor_name,
+  absl::optional<LayoutUnit> EvaluateSize(const ScopedCSSName* anchor_name,
                                           AnchorSizeValue anchor_size_value,
                                           WritingMode container_writing_mode,
                                           WritingMode self_writing_mode) const;
@@ -202,10 +202,10 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
  private:
   const NGLogicalAnchorQuery* AnchorQuery() const;
 
-  absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName& anchor_name,
+  absl::optional<LayoutUnit> EvaluateAnchor(const ScopedCSSName* anchor_name,
                                             AnchorValue anchor_value) const;
   absl::optional<LayoutUnit> EvaluateAnchorSize(
-      const ScopedCSSName& anchor_name,
+      const ScopedCSSName* anchor_name,
       AnchorSizeValue anchor_size_value) const;
 
   mutable const NGLogicalAnchorQuery* anchor_query_ = nullptr;

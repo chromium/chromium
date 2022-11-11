@@ -1103,7 +1103,7 @@ bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
 
 CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     CSSAnchorQueryType type,
-    const CSSCustomIdentValue& anchor_name,
+    const CSSCustomIdentValue* anchor_name,
     const CSSValue& value,
     const CSSPrimitiveValue* fallback)
     : CSSMathExpressionNode(kCalcPercentLength, false /* has_comparisons */),
@@ -1115,8 +1115,10 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
 String CSSMathExpressionAnchorQuery::CustomCSSText() const {
   StringBuilder result;
   result.Append(IsAnchor() ? "anchor(" : "anchor-size(");
-  result.Append(anchor_name_->CustomCSSText());
-  result.Append(" ");
+  if (anchor_name_) {
+    result.Append(anchor_name_->CustomCSSText());
+    result.Append(" ");
+  }
   result.Append(value_->CssText());
   if (fallback_) {
     result.Append(", ");
@@ -1190,8 +1192,10 @@ AnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  ScopedCSSName* anchor_name = MakeGarbageCollected<ScopedCSSName>(
-      anchor_name_->Value(), length_resolver.GetTreeScope());
+  ScopedCSSName* anchor_name =
+      anchor_name_ ? MakeGarbageCollected<ScopedCSSName>(
+                         anchor_name_->Value(), length_resolver.GetTreeScope())
+                   : nullptr;
   Length fallback = fallback_ ? fallback_->ConvertToLength(length_resolver)
                               : Length::Fixed(0);
 
@@ -1200,17 +1204,17 @@ CSSMathExpressionAnchorQuery::ToCalculationExpression(
             DynamicTo<CSSPrimitiveValue>(*value_)) {
       DCHECK(percentage->IsPercentage());
       return CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-          *anchor_name, percentage->GetFloatValue(), fallback);
+          anchor_name, percentage->GetFloatValue(), fallback);
     }
     const CSSIdentifierValue& side = To<CSSIdentifierValue>(*value_);
     return CalculationExpressionAnchorQueryNode::CreateAnchor(
-        *anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
+        anchor_name, CSSValueIDToAnchorValueEnum(side.GetValueID()), fallback);
   }
 
   DCHECK_EQ(type_, CSSAnchorQueryType::kAnchorSize);
   const CSSIdentifierValue& size = To<CSSIdentifierValue>(*value_);
   return CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-      *anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
+      anchor_name, CSSValueIDToAnchorSizeValueEnum(size.GetValueID()),
       fallback);
 }
 
@@ -1277,8 +1281,7 @@ class CSSMathExpressionNodeParser {
 
     const CSSCustomIdentValue* anchor_name =
         css_parsing_utils::ConsumeDashedIdent(tokens, context_);
-    if (!anchor_name)
-      return nullptr;
+    // |anchor_name| may be omitted for the implicit anchor elements
 
     tokens.ConsumeWhitespace();
     const CSSValue* value = nullptr;
@@ -1317,7 +1320,7 @@ class CSSMathExpressionNodeParser {
     if (!tokens.AtEnd())
       return nullptr;
     return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        anchor_query_type, *anchor_name, *value, fallback);
+        anchor_query_type, anchor_name, *value, fallback);
   }
 
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
@@ -1671,15 +1674,15 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     CSSAnchorQueryType type = anchor_query.Type() == AnchorQueryType::kAnchor
                                   ? CSSAnchorQueryType::kAnchor
                                   : CSSAnchorQueryType::kAnchorSize;
-    // TODO(1380112): Handle implicit anchor name.
     CSSCustomIdentValue* anchor_name =
-        MakeGarbageCollected<CSSCustomIdentValue>(
-            anchor_query.AnchorName().GetName());
+        anchor_query.AnchorName() ? MakeGarbageCollected<CSSCustomIdentValue>(
+                                        anchor_query.AnchorName()->GetName())
+                                  : nullptr;
     CSSValue* value = AnchorQueryValueToCSSValue(anchor_query);
     CSSPrimitiveValue* fallback = CSSPrimitiveValue::CreateFromLength(
         anchor_query.GetFallback(), /* zoom */ 1);
-    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
-        type, *anchor_name, *value, fallback);
+    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(type, anchor_name,
+                                                              *value, fallback);
   }
 
   DCHECK(node.IsOperation());

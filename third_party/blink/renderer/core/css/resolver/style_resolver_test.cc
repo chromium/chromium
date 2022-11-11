@@ -2974,7 +2974,7 @@ static const TreeScope* GetAnchorQueryTreeScope(const Length& length) {
   DCHECK(length.GetCalculationValue().IsExpression());
   const auto& query = To<CalculationExpressionAnchorQueryNode>(
       *length.GetCalculationValue().GetOrCreateExpression());
-  return query.AnchorName().GetTreeScope();
+  return query.AnchorName() ? query.AnchorName()->GetTreeScope() : nullptr;
 }
 
 TEST_F(StyleResolverTest, ScopedAnchorFunction) {

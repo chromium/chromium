@@ -10,7 +10,7 @@ namespace blink {
 
 // static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
-CalculationExpressionAnchorQueryNode::CreateAnchor(const ScopedCSSName& name,
+CalculationExpressionAnchorQueryNode::CreateAnchor(const ScopedCSSName* name,
                                                    AnchorValue side,
                                                    const Length& fallback) {
   AnchorQueryValue value = {.anchor_side = side};
@@ -21,7 +21,7 @@ CalculationExpressionAnchorQueryNode::CreateAnchor(const ScopedCSSName& name,
 // static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
-    const ScopedCSSName& name,
+    const ScopedCSSName* name,
     float percentage,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_side = AnchorValue::kPercentage};
@@ -32,7 +32,7 @@ CalculationExpressionAnchorQueryNode::CreateAnchorPercentage(
 //  static
 scoped_refptr<const CalculationExpressionAnchorQueryNode>
 CalculationExpressionAnchorQueryNode::CreateAnchorSize(
-    const ScopedCSSName& name,
+    const ScopedCSSName* name,
     AnchorSizeValue size,
     const Length& fallback) {
   AnchorQueryValue value = {.anchor_size = size};
@@ -69,7 +69,7 @@ bool CalculationExpressionAnchorQueryNode::operator==(
 scoped_refptr<const CalculationExpressionNode>
 CalculationExpressionAnchorQueryNode::Zoom(double factor) const {
   return base::MakeRefCounted<CalculationExpressionAnchorQueryNode>(
-      type_, *anchor_name_, value_, side_percentage_, fallback_.Zoom(factor));
+      type_, anchor_name_, value_, side_percentage_, fallback_.Zoom(factor));
 }
 
 float CalculationExpressionAnchorQueryNode::Evaluate(

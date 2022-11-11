@@ -187,14 +187,18 @@ void NGLogicalAnchorQuery::SetFromPhysical(
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
-    const ScopedCSSName& anchor_name,
+    const ScopedCSSName* anchor_name,
     AnchorValue anchor_value,
     LayoutUnit available_size,
     const WritingModeConverter& container_converter,
     const PhysicalOffset& offset_to_padding_box,
     bool is_y_axis,
     bool is_right_or_bottom) const {
-  const NGLogicalAnchorReference* reference = AnchorReference(anchor_name);
+  // TODO(crbug.com/1380112): Evaluate implicit anchor.
+  if (!anchor_name)
+    return absl::nullopt;
+
+  const NGLogicalAnchorReference* reference = AnchorReference(*anchor_name);
   if (!reference)
     return absl::nullopt;  // No targets.
 
@@ -240,11 +244,15 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
-    const ScopedCSSName& anchor_name,
+    const ScopedCSSName* anchor_name,
     AnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
-  const NGLogicalAnchorReference* reference = AnchorReference(anchor_name);
+  // TODO(crbug.com/1380112): Evaluate implicit anchor.
+  if (!anchor_name)
+    return absl::nullopt;
+
+  const NGLogicalAnchorReference* reference = AnchorReference(*anchor_name);
   if (!reference)
     return absl::nullopt;  // No targets.
 
@@ -304,10 +312,9 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::Evaluate(
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
-    const ScopedCSSName& anchor_name,
+    const ScopedCSSName* anchor_name,
     AnchorValue anchor_value) const {
   has_anchor_functions_ = true;
-  // TODO(crbug.com/1380112): Support implicit anchor.
   if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
     return anchor_query->EvaluateAnchor(
         anchor_name, anchor_value, available_size_, container_converter_,
@@ -317,10 +324,9 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
-    const ScopedCSSName& anchor_name,
+    const ScopedCSSName* anchor_name,
     AnchorSizeValue anchor_size_value) const {
   has_anchor_functions_ = true;
-  // TODO(crbug.com/1380112): Support implicit anchor.
   if (const NGLogicalAnchorQuery* anchor_query = AnchorQuery()) {
     return anchor_query->EvaluateSize(anchor_name, anchor_size_value,
                                       container_converter_.GetWritingMode(),

@@ -15,20 +15,20 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
     : public CalculationExpressionNode {
  public:
   static scoped_refptr<const CalculationExpressionAnchorQueryNode> CreateAnchor(
-      const ScopedCSSName& name,
+      const ScopedCSSName* name,
       AnchorValue side,
       const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
-  CreateAnchorPercentage(const ScopedCSSName& name,
+  CreateAnchorPercentage(const ScopedCSSName* name,
                          float percentage,
                          const Length& fallback);
   static scoped_refptr<const CalculationExpressionAnchorQueryNode>
-  CreateAnchorSize(const ScopedCSSName& name,
+  CreateAnchorSize(const ScopedCSSName* name,
                    AnchorSizeValue size,
                    const Length& fallback);
 
   AnchorQueryType Type() const { return type_; }
-  const ScopedCSSName& AnchorName() const { return *anchor_name_; }
+  const ScopedCSSName* AnchorName() const { return anchor_name_; }
   AnchorValue AnchorSide() const {
     DCHECK_EQ(type_, AnchorQueryType::kAnchor);
     return value_.anchor_side;
@@ -64,7 +64,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
   };
 
   CalculationExpressionAnchorQueryNode(AnchorQueryType type,
-                                       const ScopedCSSName& anchor_name,
+                                       const ScopedCSSName* anchor_name,
                                        AnchorQueryValue value,
                                        float side_percentage,
                                        const Length& fallback)

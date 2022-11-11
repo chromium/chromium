@@ -313,7 +313,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
     : public CSSMathExpressionNode {
  public:
   CSSMathExpressionAnchorQuery(CSSAnchorQueryType type,
-                               const CSSCustomIdentValue& anchor_name,
+                               const CSSCustomIdentValue* anchor_name,
                                const CSSValue& value,
                                const CSSPrimitiveValue* fallback);
 
