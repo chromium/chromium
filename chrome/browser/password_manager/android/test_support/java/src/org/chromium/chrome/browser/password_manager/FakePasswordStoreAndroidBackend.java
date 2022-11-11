@@ -9,6 +9,8 @@ import android.accounts.Account;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Predicate;
 import org.chromium.base.task.PostTask;
@@ -24,7 +26,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Fake {@link PasswordStoreAndroidBackend} to be used in integration tests.

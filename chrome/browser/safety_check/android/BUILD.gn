@@ -55,6 +55,7 @@ android_library("java") {
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/signin/public/android:java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",

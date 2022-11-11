@@ -13,6 +13,7 @@ import android.accounts.Account;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
+import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,7 +35,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.signin.AccountUtils;
 
-import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
@@ -137,7 +137,7 @@ public class PasswordSettingsUpdaterBridgeTest {
                 .getOfferToSavePasswords(eq(sTestAccount), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
-        successCallback.getValue().onResult(Optional.empty());
+        successCallback.getValue().onResult(Optional.absent());
         verify(mBridgeJniMock)
                 .onSettingValueAbsent(
                         sDummyNativePointer, PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS);
@@ -189,7 +189,7 @@ public class PasswordSettingsUpdaterBridgeTest {
         verify(mAccessorMock).getAutoSignIn(eq(sTestAccount), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
-        successCallback.getValue().onResult(Optional.empty());
+        successCallback.getValue().onResult(Optional.absent());
         verify(mBridgeJniMock)
                 .onSettingValueAbsent(sDummyNativePointer, PasswordManagerSetting.AUTO_SIGN_IN);
 

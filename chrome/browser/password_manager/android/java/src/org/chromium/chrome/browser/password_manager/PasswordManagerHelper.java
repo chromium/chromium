@@ -21,6 +21,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,7 +44,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Optional;
 
 /**
  * A helper class for showing PasswordSettings.
@@ -197,7 +197,7 @@ public class PasswordManagerHelper {
 
         Optional<String> account = hasChosenToSyncPasswords(syncService)
                 ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
-                : Optional.empty();
+                : Optional.absent();
 
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
@@ -236,7 +236,7 @@ public class PasswordManagerHelper {
         checkupClient.runPasswordCheckupInBackground(referrer, accountName,
                 result
                 -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
                     successCallback.onResult(result);
                 },
                 error -> {
@@ -274,7 +274,7 @@ public class PasswordManagerHelper {
         checkupClient.getBreachedCredentialsCount(referrer, accountName,
                 result
                 -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
                     successCallback.onResult(result);
                 },
                 error -> {
@@ -437,7 +437,7 @@ public class PasswordManagerHelper {
         checkupClient.getPasswordCheckupIntent(referrer, account,
                 (intent)
                         -> {
-                    passwordCheckupMetricsRecorder.recordMetrics(Optional.empty());
+                    passwordCheckupMetricsRecorder.recordMetrics(Optional.absent());
                     maybeLaunchIntentWithLoadingDialog(loadingDialogCoordinator, intent,
                             PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
                             LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM);

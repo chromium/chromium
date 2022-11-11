@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.app.PendingIntent;
 
-import org.chromium.base.Callback;
+import com.google.common.base.Optional;
 
-import java.util.Optional;
+import org.chromium.base.Callback;
 
 /**
  * Fake {@link PasswordCheckupClientHelper} to be used in integration tests.

@@ -11,6 +11,8 @@ import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.test.filters.LargeTest;
 
+import com.google.common.base.Optional;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,8 +37,6 @@ import org.chromium.components.sync.protocol.FeatureSpecificFields;
 import org.chromium.components.sync.protocol.SyncEnums.DeviceType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
-
-import java.util.Optional;
 
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)

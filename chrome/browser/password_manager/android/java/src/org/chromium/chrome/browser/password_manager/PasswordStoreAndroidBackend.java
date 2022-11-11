@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 
 import java.util.Date;
-import java.util.Optional;
 
 /**
  * Interface to send backend requests to a downstream implementation to fulfill password store
@@ -56,15 +57,8 @@ public interface PasswordStoreAndroidBackend {
      * data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getAllLogins(com.google.common.base.Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getAllLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback) {
-        getAllLogins(OptionalUtils.toGuavaOptional(syncingAccount), loginsReply, failureCallback);
-    }
+    void getAllLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve all logins withing given time frame.
@@ -77,17 +71,9 @@ public interface PasswordStoreAndroidBackend {
      *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getAllLoginsBetween(Date createdAfter, Date createdBefore,
-            com.google.common.base.Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getAllLoginsBetween(Date createdAfter, Date createdBefore,
+    void getAllLoginsBetween(Date createdAfter, Date createdBefore,
             Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
@@ -99,16 +85,8 @@ public interface PasswordStoreAndroidBackend {
      * data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getAutofillableLogins(com.google.common.base.Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getAutofillableLogins(Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        getAutofillableLogins(
-                OptionalUtils.toGuavaOptional(syncingAccount), loginsReply, failureCallback);
-    }
+    void getAutofillableLogins(Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve logins with matching signon realm.
@@ -122,17 +100,8 @@ public interface PasswordStoreAndroidBackend {
      * data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getLoginsForSignonRealm(String signonRealm,
-            com.google.common.base.Optional<Account> syncingAccount, Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getLoginsForSignonRealm(String signonRealm, Optional<Account> syncingAccount,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
-        getLoginsForSignonRealm(signonRealm, OptionalUtils.toGuavaOptional(syncingAccount),
-                loginsReply, failureCallback);
-    }
+    void getLoginsForSignonRealm(String signonRealm, Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply, Callback<Exception> failureCallback);
 
     /**
      * Triggers an async call to add a login to the store.
@@ -143,17 +112,8 @@ public interface PasswordStoreAndroidBackend {
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void addLogin(byte[] pwdWithLocalData,
-            com.google.common.base.Optional<Account> syncingAccount, Runnable successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void addLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        addLogin(pwdWithLocalData, OptionalUtils.toGuavaOptional(syncingAccount), successCallback,
-                failureCallback);
-    }
+    void addLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
+            Runnable successCallback, Callback<Exception> failureCallback);
 
     /**
      * Triggers an async call to update a login in the store.
@@ -165,17 +125,8 @@ public interface PasswordStoreAndroidBackend {
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void updateLogin(byte[] pwdWithLocalData,
-            com.google.common.base.Optional<Account> syncingAccount, Runnable successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void updateLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        updateLogin(pwdWithLocalData, OptionalUtils.toGuavaOptional(syncingAccount),
-                successCallback, failureCallback);
-    }
+    void updateLogin(byte[] pwdWithLocalData, Optional<Account> syncingAccount,
+            Runnable successCallback, Callback<Exception> failureCallback);
 
     /**
      * Triggers an async call to remove a login from store.
@@ -186,15 +137,6 @@ public interface PasswordStoreAndroidBackend {
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void removeLogin(byte[] pwdSpecificsData,
-            com.google.common.base.Optional<Account> syncingAccount, Runnable successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void removeLogin(byte[] pwdSpecificsData, Optional<Account> syncingAccount,
-            Runnable successCallback, Callback<Exception> failureCallback) {
-        removeLogin(pwdSpecificsData, OptionalUtils.toGuavaOptional(syncingAccount),
-                successCallback, failureCallback);
-    }
+    void removeLogin(byte[] pwdSpecificsData, Optional<Account> syncingAccount,
+            Runnable successCallback, Callback<Exception> failureCallback);
 }

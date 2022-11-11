@@ -5,10 +5,10 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.app.PendingIntent;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-
-import java.util.Optional;
 
 /**
  * Interface for the helper responsible for Password Checkup operations.
@@ -36,18 +36,8 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with the intent if the retrieving was successful
      * @param failureCallback callback called if the retrieving failed with the encountered error.
      */
-    default void getPasswordCheckupIntent(@PasswordCheckReferrer int referrer,
-            com.google.common.base.Optional<String> accountName,
-            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getPasswordCheckupIntent(@PasswordCheckReferrer int referrer,
-            Optional<String> accountName, Callback<PendingIntent> successCallback,
-            Callback<Exception> failureCallback) {
-        getPasswordCheckupIntent(referrer, OptionalUtils.toGuavaOptional(accountName),
-                successCallback, failureCallback);
-    }
+    void getPasswordCheckupIntent(@PasswordCheckReferrer int referrer, Optional<String> accountName,
+            Callback<PendingIntent> successCallback, Callback<Exception> failureCallback);
 
     /**
      * Asynchronously runs Password Checkup and stores the result in PasswordSpecifics then saves it
@@ -59,18 +49,9 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with Password Check started successful
      * @param failureCallback callback called if encountered an error.
      */
-    default void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
-            com.google.common.base.Optional<String> accountName, Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
+    void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
             Optional<String> accountName, Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        runPasswordCheckupInBackground(referrer, OptionalUtils.toGuavaOptional(accountName),
-                successCallback, failureCallback);
-    }
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously returns the number of breached credentials for the provided account.
@@ -81,16 +62,7 @@ public interface PasswordCheckupClientHelper {
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
-    default void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
-            com.google.common.base.Optional<String> accountName, Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
+    void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
             Optional<String> accountName, Callback<Integer> successCallback,
-            Callback<Exception> failureCallback) {
-        getBreachedCredentialsCount(referrer, OptionalUtils.toGuavaOptional(accountName),
-                successCallback, failureCallback);
-    }
+            Callback<Exception> failureCallback);
 }

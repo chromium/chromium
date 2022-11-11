@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import android.accounts.Account;
 import android.content.Context;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,7 +25,6 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Coordinator for displaying the send tab to self feature.

@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
+import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,8 +42,6 @@ import org.chromium.components.password_manager.core.browser.proto.ListPasswords
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
-
-import java.util.Optional;
 
 /**
  * Tests that bridge calls as invoked by the password store reach the backend and return correctly.
@@ -114,7 +113,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
+        verify(mBackendMock).getAllLogins(eq(Optional.absent()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new Exception("Sample failure");
@@ -151,7 +150,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
+        verify(mBackendMock).getAllLogins(eq(Optional.absent()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new ApiException(
@@ -171,7 +170,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
+        verify(mBackendMock).getAllLogins(eq(Optional.absent()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
@@ -192,7 +191,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAutofillableLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
-                .getAutofillableLogins(eq(Optional.empty()), successCallback.capture(), any());
+                .getAutofillableLogins(eq(Optional.absent()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
@@ -229,7 +228,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
                 .getLoginsForSignonRealm(
-                        any(), eq(Optional.empty()), successCallback.capture(), any());
+                        any(), eq(Optional.absent()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
@@ -267,7 +266,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.addLogin(kTestTaskId, pwdWithLocalData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .addLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+                .addLogin(any(), eq(Optional.absent()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
@@ -302,7 +301,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.updateLogin(kTestTaskId, pwdWithLocalData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .updateLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+                .updateLogin(any(), eq(Optional.absent()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
@@ -337,7 +336,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.removeLogin(kTestTaskId, pwdSpecificsData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
-                .removeLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
+                .removeLogin(any(), eq(Optional.absent()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();

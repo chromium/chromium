@@ -10,12 +10,11 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerSettin
 import android.accounts.Account;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.common.base.Optional;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccountUtils;
-
-import java.util.Optional;
 
 /**
  * Java-counterpart of the native PasswordSettingsUpdaterAndroidBridgeImpl. It forwards passwords
@@ -160,7 +159,7 @@ public class PasswordSettingsUpdaterBridge {
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
-        if (syncingAccount == null) return Optional.empty();
+        if (syncingAccount == null) return Optional.absent();
         return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
     }
 

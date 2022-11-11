@@ -31,6 +31,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
+import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,7 +77,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.OptionalInt;
 
 /** Tests for password manager helper methods. */

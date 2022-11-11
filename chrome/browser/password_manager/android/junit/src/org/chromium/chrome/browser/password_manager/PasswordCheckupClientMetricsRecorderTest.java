@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
+import com.google.common.base.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 
-import java.util.Optional;
 import java.util.OptionalInt;
 
 /**
@@ -96,7 +96,7 @@ public class PasswordCheckupClientMetricsRecorderTest {
         int operation = PasswordCheckOperation.RUN_PASSWORD_CHECKUP;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(Optional.empty());
+        metricsRecorder.recordMetrics(Optional.absent());
         checkHistogramsOnSuccess(operation);
     }
 
@@ -106,7 +106,7 @@ public class PasswordCheckupClientMetricsRecorderTest {
         int operation = PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(Optional.empty());
+        metricsRecorder.recordMetrics(Optional.absent());
         checkHistogramsOnSuccess(operation);
     }
 
@@ -116,7 +116,7 @@ public class PasswordCheckupClientMetricsRecorderTest {
         int operation = PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(operation);
-        metricsRecorder.recordMetrics(Optional.empty());
+        metricsRecorder.recordMetrics(Optional.absent());
         checkHistogramsOnSuccess(operation);
     }
 
