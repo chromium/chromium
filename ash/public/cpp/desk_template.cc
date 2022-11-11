@@ -135,6 +135,9 @@ std::string DeskTemplate::GetDeskTemplateInfo(bool for_debugging) const {
     case DeskTemplateType::kSaveAndRecall:
       result += "save and recall\n";
       break;
+    case DeskTemplateType::kFloatingWorkspace:
+      result += "floating workspace\n";
+      break;
     case DeskTemplateType::kUnknown:
       result += "unknown\n";
       break;

@@ -19,7 +19,8 @@ enum class DesksCreationRemovalSource {
   kSaveAndRecall = 5,
   kApi = 6,
   kEnsureDefaultDesk = 7,
-  kMaxValue = kEnsureDefaultDesk,
+  kFloatingWorkspace = 8,
+  kMaxValue = kFloatingWorkspace,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and

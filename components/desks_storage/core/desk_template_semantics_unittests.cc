@@ -96,6 +96,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         desk_test_util::kValidPolicyTemplateBrowser,
         desk_test_util::kValidPolicyTemplateBrowserMinimized,
-        desk_test_util::kValidPolicyTemplateChromeAndProgressive));
+        desk_test_util::kValidPolicyTemplateChromeAndProgressive,
+        desk_test_util::kValidPolicyTemplateChromeForFloatingWorkspace));
 
 }  // namespace desks_storage

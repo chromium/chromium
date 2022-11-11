@@ -25551,6 +25551,7 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="Desk Save and Recall"/>
   <int value="6" label="API invoked"/>
   <int value="7" label="Create a new desk to ensure the default desk exists"/>
+  <int value="8" label="Desk Floating Workspace"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">

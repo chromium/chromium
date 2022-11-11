@@ -253,6 +253,7 @@ message WorkspaceDeskSpecifics {
     UNKNOWN_TYPE = 0;
     TEMPLATE = 1;
     SAVE_AND_RECALL = 2;
+    FLOATING_WORKSPACE = 3;
   }
 
   // Enumerates the possible colors that a tab group can have.  This mirrors

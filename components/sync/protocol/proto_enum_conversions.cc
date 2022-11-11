@@ -817,11 +817,12 @@ const char* ProtoEnumToString(
 
 const char* ProtoEnumToString(sync_pb::WorkspaceDeskSpecifics::DeskType type) {
   ASSERT_ENUM_BOUNDS(sync_pb::WorkspaceDeskSpecifics, DeskType, UNKNOWN_TYPE,
-                     SAVE_AND_RECALL);
+                     FLOATING_WORKSPACE);
   switch (type) {
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, UNKNOWN_TYPE);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, TEMPLATE);
     ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, SAVE_AND_RECALL);
+    ENUM_CASE(sync_pb::WorkspaceDeskSpecifics, FLOATING_WORKSPACE);
   }
   NOTREACHED();
   return "";

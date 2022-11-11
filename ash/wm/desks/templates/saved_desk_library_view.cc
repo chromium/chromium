@@ -104,7 +104,8 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
       case DeskTemplateType::kSaveAndRecall:
         grouped.save_and_recall.push_back(saved_desk);
         break;
-      // Do nothing in the case of an unknown template.
+      // Do nothing in the case of an unknown template or floating workspace.
+      case DeskTemplateType::kFloatingWorkspace:
       case DeskTemplateType::kUnknown:
         break;
     }

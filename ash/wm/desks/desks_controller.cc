@@ -561,7 +561,8 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
   // DESK_TEMPLATES_MODE_ENTERED alert triggered in
   // OverviewSession::ShowDesksTemplatesGrids should be shown instead.
   if (source != DesksCreationRemovalSource::kLaunchTemplate &&
-      source != DesksCreationRemovalSource::kSaveAndRecall) {
+      source != DesksCreationRemovalSource::kSaveAndRecall &&
+      source != DesksCreationRemovalSource::kFloatingWorkspace) {
     auto* shell = Shell::Get();
     shell->accessibility_controller()->TriggerAccessibilityAlertWithMessage(
         l10n_util::GetStringFUTF8(IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED,
@@ -1128,6 +1129,9 @@ const Desk* DesksController::CreateNewDeskForTemplate(
     case DeskTemplateType::kSaveAndRecall:
       NewDesk(DesksCreationRemovalSource::kSaveAndRecall);
       break;
+    case DeskTemplateType::kFloatingWorkspace:
+      NewDesk(DesksCreationRemovalSource::kFloatingWorkspace);
+      break;
     case DeskTemplateType::kUnknown:
       return nullptr;
   }
@@ -1144,7 +1148,8 @@ const Desk* DesksController::CreateNewDeskForTemplate(
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
-  if (template_type == DeskTemplateType::kTemplate) {
+  if (template_type == DeskTemplateType::kTemplate ||
+      template_type == DeskTemplateType::kFloatingWorkspace) {
     // We're staying in overview mode, so move desks bar window and the save
     // template button to the new desk. They would otherwise disappear when the
     // new desk is activated.
@@ -2046,6 +2051,7 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     case DesksCreationRemovalSource::kDragToNewDeskButton:
     case DesksCreationRemovalSource::kLaunchTemplate:
     case DesksCreationRemovalSource::kDesksRestore:
+    case DesksCreationRemovalSource::kFloatingWorkspace:
     case DesksCreationRemovalSource::kEnsureDefaultDesk:
       break;
   }

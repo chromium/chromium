@@ -67,6 +67,24 @@ inline constexpr char kValidPolicyTemplateChromeAndProgressive[] =
     "\"test_pwa_app_1\",\"window_id\":1,\"display_id\":\"100\",\"event_flag\":"
     "0}]}}";
 
+inline constexpr char kValidPolicyTemplateChromeForFloatingWorkspace[] =
+    "{\"version\":1,\"uuid\":\"7f4b7ff0-970a-41bb-aa91-f6c3e2724207\",\"name\":"
+    "\"FloatingWorkspaceChromeAppTest\",\"created_time_usec\":"
+    "\"1633535632000\",\"updated_time_"
+    "usec\": "
+    "\"1633535632\",\"desk_type\":\"FLOATING_WORKSPACE\",\"desk\":{\"apps\":[{"
+    "\"window_"
+    "bound\":{"
+    "\"left\":200,\"top\":200,\"height\":1000,\"width\":1000},\"window_state\":"
+    "\"PRIMARY_SNAPPED\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":"
+    "\"test_chrome_app_1\",\"window_id\":0,\"display_id\":\"100\",\"event_"
+    "flag\":0, "
+    "\"snap_percent\":75},{\"window_"
+    "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"CHROME_APP\",\"app_id\":"
+    "\"test_pwa_app_1\",\"window_id\":1,\"display_id\":\"100\",\"event_flag\":"
+    "0}]}}";
+
 inline constexpr char kPolicyTemplateWithoutType[] =
     "{\"version\":1,\"uuid\":\"040b6112-67f2-4d3c-8ba8-53a117272eba\",\"name\":"
     "\"BrowserTest\",\"created_time_usec\":\"1633535632\",\"updated_time_"

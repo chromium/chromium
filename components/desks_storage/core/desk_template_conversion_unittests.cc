@@ -406,4 +406,24 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
   EXPECT_EQ(expected_value, desk_template_value);
 }
 
+TEST_F(DeskTemplateConversionTest,
+       DeskTemplateFromFloatingWorkspaceJsonAppTest) {
+  base::expected<base::Value, base::JSONReader::Error> parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+          desk_test_util::kValidPolicyTemplateChromeForFloatingWorkspace));
+
+  ASSERT_TRUE(parsed_json.has_value());
+  ASSERT_TRUE(parsed_json->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      desk_template_conversion::ParseDeskTemplateFromSource(
+          *parsed_json, ash::DeskTemplateSource::kPolicy);
+
+  base::Value desk_template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), GetAppsCache(account_id_));
+
+  EXPECT_EQ(*parsed_json, desk_template_value);
+}
+
 }  // namespace desks_storage

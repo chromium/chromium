@@ -45,7 +45,8 @@ base::Time ProtoTimeToTime(int64_t proto_time);
 int64_t TimeToProtoTime(const base::Time& t);
 
 // Converts a JSON desk template to an ash desk template. The returned desk
-// template will have source set to `source`.
+// template will have source set to `source`. The policy associated is
+// PreconfiguredDeskTemplates.
 std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
     const base::Value& policy_json,
     ash::DeskTemplateSource source);

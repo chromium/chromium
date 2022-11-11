@@ -37,6 +37,9 @@ enum class ASH_PUBLIC_EXPORT DeskTemplateType {
   // Desk saved for Save & Recall.
   kSaveAndRecall,
 
+  // Desk saved for Floating Workspace.
+  kFloatingWorkspace,
+
   // Unknown desk type. This desk is probably created by a later version and
   // should be ignored.
   kUnknown,
