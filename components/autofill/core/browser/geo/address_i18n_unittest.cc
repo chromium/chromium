@@ -18,6 +18,12 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
+namespace i18n::addressinput {
+
+using ::operator<<;
+
+}  // namespace i18n::addressinput
+
 namespace autofill {
 namespace i18n {
 
