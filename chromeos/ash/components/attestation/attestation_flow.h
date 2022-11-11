@@ -215,6 +215,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
+  //   profile_specific_data - Optional certificate profile specific data. The
+  //                           type must correspond to `certificate_profile`.
   //   callback - Called when the operation completes.
   //   enrolled - Success or failure of the enrollment phase.
   void StartCertificateRequest(
@@ -224,6 +226,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       bool generate_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
+      const absl::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       bool enrolled);
 
@@ -238,16 +241,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
+  //   profile_specific_data - Optional certificate profile specific data. The
+  //                           type must correspond to `certificate_profile`.
   //   callback - Called when the operation completes.
   //   reply - The reply of `GetKeyInfo()`.
-  void OnGetKeyInfoComplete(AttestationCertificateProfile certificate_profile,
-                            const AccountId& account_id,
-                            const std::string& request_origin,
-                            ::attestation::KeyType key_crypto_type,
-                            const std::string& key_name,
-                            AttestationKeyType key_type,
-                            CertificateCallback callback,
-                            const ::attestation::GetKeyInfoReply& reply);
+  void OnGetKeyInfoComplete(
+      AttestationCertificateProfile certificate_profile,
+      const AccountId& account_id,
+      const std::string& request_origin,
+      ::attestation::KeyType key_crypto_type,
+      const std::string& key_name,
+      AttestationKeyType key_type,
+      const absl::optional<CertProfileSpecificData>& profile_specific_data,
+      CertificateCallback callback,
+      const ::attestation::GetKeyInfoReply& reply);
 
   // Called when the attestation daemon has finished creating a certificate
   // request for the Privacy CA.  The request is asynchronously forwarded as-is

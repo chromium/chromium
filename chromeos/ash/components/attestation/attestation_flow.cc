@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -109,7 +110,8 @@ void AttestationFlow::GetCertificate(
   base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
       &AttestationFlow::StartCertificateRequest, weak_factory_.GetWeakPtr(),
       certificate_profile, account_id, request_origin, force_new_key,
-      key_crypto_type, attestation_key_name, std::move(callback));
+      key_crypto_type, attestation_key_name, profile_specific_data,
+      std::move(callback));
 
   // If this device has not enrolled with the Privacy CA, we need to do that
   // first.  Once enrolled we can proceed with the certificate request.
@@ -237,6 +239,7 @@ void AttestationFlow::StartCertificateRequest(
     bool generate_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
+    const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     bool enrolled) {
   if (!enrolled) {
@@ -265,6 +268,28 @@ void AttestationFlow::StartCertificateRequest(
     request.set_key_type(key_crypto_type);
     request.set_aca_type(ToAcaType(server_proxy_->GetType()));
 
+    if (attestation_profile ==
+        ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE) {
+      DCHECK(profile_specific_data.has_value())
+          << "profile_specific_data must be provided for "
+             "DEVICE_SETUP_CERTIFICATE";
+      DCHECK(absl::holds_alternative<
+             ::attestation::DeviceSetupCertificateRequestMetadata>(
+          profile_specific_data.value()))
+          << "profile_specific_data must be of type "
+             "::attestation::DeviceSetupCertificateRequestMetadata";
+
+      request.mutable_device_setup_certificate_request_metadata()->set_id(
+          absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+              profile_specific_data.value())
+              .id());
+      request.mutable_device_setup_certificate_request_metadata()
+          ->set_content_binding(
+              absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+                  profile_specific_data.value())
+                  .content_binding());
+    }
+
     attestation_client_->CreateCertificateRequest(
         request, base::BindOnce(&AttestationFlow::SendCertificateRequestToPCA,
                                 weak_factory_.GetWeakPtr(), key_type,
@@ -278,10 +303,11 @@ void AttestationFlow::StartCertificateRequest(
   }
   request.set_key_label(key_name);
   attestation_client_->GetKeyInfo(
-      request, base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
-                              weak_factory_.GetWeakPtr(), certificate_profile,
-                              account_id, request_origin, key_crypto_type,
-                              key_name, key_type, std::move(callback)));
+      request,
+      base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
+                     weak_factory_.GetWeakPtr(), certificate_profile,
+                     account_id, request_origin, key_crypto_type, key_name,
+                     key_type, profile_specific_data, std::move(callback)));
 }
 
 void AttestationFlow::OnGetKeyInfoComplete(
@@ -291,6 +317,7 @@ void AttestationFlow::OnGetKeyInfoComplete(
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     AttestationKeyType key_type,
+    const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     const ::attestation::GetKeyInfoReply& reply) {
   // If the key already exists, return the existing certificate.
@@ -304,7 +331,9 @@ void AttestationFlow::OnGetKeyInfoComplete(
   if (reply.status() == ::attestation::STATUS_INVALID_PARAMETER) {
     StartCertificateRequest(certificate_profile, account_id, request_origin,
                             /*generate_new_key=*/true, key_crypto_type,
-                            key_name, std::move(callback), /*enrolled=*/true);
+                            key_name, profile_specific_data,
+                            std::move(callback),
+                            /*enrolled=*/true);
     return;
   }
 
