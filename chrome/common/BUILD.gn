@@ -530,6 +530,7 @@ static_library("non_code_constants") {
 
   public_deps = [
     "//build:branding_buildflags",
+    "//chrome/browser/chrome_for_testing:buildflags",
     "//printing/buildflags",
     "//ui/base:buildflags",
   ]
