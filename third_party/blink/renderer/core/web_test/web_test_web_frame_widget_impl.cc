@@ -114,8 +114,8 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
 
 void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
     base::OnceClosure callback) {
-  LayerTreeHost()->RequestPresentationTimeForNextFrame(WTF::BindOnce(
-      [](base::OnceClosure callback, const gfx::PresentationFeedback&) {
+  LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(WTF::BindOnce(
+      [](base::OnceClosure callback, base::TimeTicks presentation_timestamp) {
         std::move(callback).Run();
       },
       std::move(callback)));
