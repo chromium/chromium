@@ -106,7 +106,7 @@ void SVGCircleElement::SvgAttributeChanged(
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(params);
+  SVGGeometryElement::SvgAttributeChanged(params);
 }
 
 bool SVGCircleElement::SelfHasRelativeLengths() const {
