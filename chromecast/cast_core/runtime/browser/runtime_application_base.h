@@ -5,8 +5,10 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
+
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +19,6 @@
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
-#include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace content {
@@ -40,15 +41,23 @@ class RuntimeApplicationBase
   // details required for functionality of a RuntimeApplicationBase instance.
   class Delegate {
    public:
+    enum class ApplicationStopReason {
+      kUndefined = 0,
+      kApplicationRequest,
+      kIdleTimeout,
+      kUserRequest,
+      kHttpError,
+      kRuntimeError
+    };
+
     virtual ~Delegate();
 
     // Notifies the Cast agent that application has started.
     virtual void NotifyApplicationStarted() = 0;
 
     // Notifies the Cast agent that application has stopped.
-    virtual void NotifyApplicationStopped(
-        cast::common::StopReason::Type stop_reason,
-        int32_t net_error_code) = 0;
+    virtual void NotifyApplicationStopped(ApplicationStopReason stop_reason,
+                                          int32_t net_error_code) = 0;
 
     // Notifies the Cast agent about media playback state changed.
     virtual void NotifyMediaPlaybackChanged(bool playing) = 0;
@@ -96,13 +105,13 @@ class RuntimeApplicationBase
       url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules);
 
   // Sets media playback state.
-  void SetMediaState(cast::common::MediaState::Type media_state);
+  void SetMediaBlocking(bool load_blocked, bool start_blocked);
 
   // Sets visibility state.
-  void SetVisibility(cast::common::Visibility::Type visibility);
+  void SetVisibility(bool is_visible);
 
   // Sets touch input.
-  void SetTouchInput(cast::common::TouchInput::Type touch_input);
+  void SetTouchInputEnabled(bool enabled);
 
   // Returns if current session is enabled for dev.
   //
@@ -143,7 +152,7 @@ class RuntimeApplicationBase
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
-  virtual void StopApplication(cast::common::StopReason::Type stop_reason,
+  virtual void StopApplication(Delegate::ApplicationStopReason stop_reason,
                                int32_t net_error_code);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
@@ -208,15 +217,19 @@ class RuntimeApplicationBase
   // Flags whether the application is running or stopped.
   bool is_application_running_ = false;
 
-  cast::common::MediaState::Type media_state_ =
-      cast::common::MediaState::LOAD_BLOCKED;
-  cast::common::Visibility::Type visibility_ = cast::common::Visibility::HIDDEN;
-  cast::common::TouchInput::Type touch_input_ =
-      cast::common::TouchInput::DISABLED;
+  // Media-related states of the application.
+  bool is_media_load_blocked_ = true;
+  bool is_media_start_blocked_ = true;
+  bool is_visible_ = false;
+  bool is_touch_input_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    RuntimeApplicationBase::Delegate::ApplicationStopReason reason);
 
 }  // namespace chromecast
 

@@ -9,7 +9,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"
-#include "chromecast/browser/visibility_types.h"
 #include "chromecast/common/feature_constants.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "content/public/browser/web_contents.h"
@@ -87,7 +86,8 @@ void RuntimeApplicationBase::Load(StatusCallback callback) {
 
 void RuntimeApplicationBase::Stop(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::common::StopReason::USER_REQUEST, /*net_error_code=*/0);
+  StopApplication(Delegate::ApplicationStopReason::kUserRequest,
+                  /*net_error_code=*/0);
   std::move(callback).Run(cast_receiver::OkStatus());
 }
 
@@ -256,14 +256,14 @@ void RuntimeApplicationBase::OnPageLoaded() {
   auto* window_controls = delegate_->GetContentWindowControls();
   DCHECK(window_controls);
   window_controls->AddVisibilityChangeObserver(*this);
-  if (touch_input_ == cast::common::TouchInput::ENABLED) {
+  if (is_touch_input_enabled_) {
     window_controls->EnableTouchInput();
   } else {
     window_controls->DisableTouchInput();
   }
 
   // Create the window and show the web view.
-  if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
+  if (is_visible_) {
     LOG(INFO) << "Loading page in full screen: " << *this;
     window_controls->ShowWindow();
   } else {
@@ -287,17 +287,14 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
   cast_web_contents->SetUrlRewriteRules(std::move(mojom_rules));
 }
 
-void RuntimeApplicationBase::SetMediaState(
-    cast::common::MediaState::Type media_state) {
+void RuntimeApplicationBase::SetMediaBlocking(bool load_blocked,
+                                              bool start_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (media_state == cast::common::MediaState::UNDEFINED) {
-    return;
-  }
 
-  media_state_ = media_state;
-  LOG(INFO) << "Media state updated: state="
-            << cast::common::MediaState::Type_Name(media_state_) << ", "
-            << *this;
+  is_media_load_blocked_ = load_blocked;
+  is_media_start_blocked_ = start_blocked;
+  LOG(INFO) << "Media state updated: is_load_blocked=" << load_blocked
+            << ", is_start_blocked=" << start_blocked << ", " << *this;
 
   if (!delegate_->GetWebContents()) {
     return;
@@ -307,38 +304,17 @@ void RuntimeApplicationBase::SetMediaState(
   DCHECK(application_controls);
   media_control::MediaBlocker& media_blocker =
       application_controls->GetMediaBlocker();
-  switch (media_state_) {
-    case cast::common::MediaState::LOAD_BLOCKED:
-      media_blocker.BlockMediaLoading(true);
-      // TODO(crbug.com/1359584): Block media starting.
-      break;
 
-    case cast::common::MediaState::START_BLOCKED:
-      media_blocker.BlockMediaLoading(false);
-      // TODO(crbug.com/1359584): Block media starting.
-      break;
+  media_blocker.BlockMediaLoading(is_media_load_blocked_);
 
-    case cast::common::MediaState::UNBLOCKED:
-      media_blocker.BlockMediaLoading(false);
-      // TODO(crbug.com/1359584): Allow media starting.
-      break;
-
-    default:
-      NOTREACHED();
-  }
+  // TODO(crbug.com/1359584): Block media starting.
 }
 
-void RuntimeApplicationBase::SetVisibility(
-    cast::common::Visibility::Type visibility) {
+void RuntimeApplicationBase::SetVisibility(bool is_visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (visibility == cast::common::Visibility::UNDEFINED) {
-    // No actual update happened.
-    return;
-  }
 
-  visibility_ = visibility;
-  LOG(INFO) << "Visibility updated: state="
-            << cast::common::Visibility::Type_Name(visibility_) << ", "
+  is_visible_ = is_visible;
+  LOG(INFO) << "Visibility updated: is_visible_=" << is_visible_ << ", "
             << *this;
 
   auto* window_controls = delegate_->GetContentWindowControls();
@@ -346,39 +322,26 @@ void RuntimeApplicationBase::SetVisibility(
     return;
   }
 
-  switch (visibility_) {
-    case cast::common::Visibility::FULL_SCREEN:
-      window_controls->ShowWindow();
-      break;
-
-    case cast::common::Visibility::HIDDEN:
-      window_controls->HideWindow();
-      break;
-
-    default:
-      NOTREACHED();
+  if (is_visible_) {
+    window_controls->ShowWindow();
+  } else {
+    window_controls->HideWindow();
   }
 }
 
-void RuntimeApplicationBase::SetTouchInput(
-    cast::common::TouchInput::Type touch_input) {
+void RuntimeApplicationBase::SetTouchInputEnabled(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (touch_input == cast::common::TouchInput::UNDEFINED) {
-    // No actual update happened.
-    return;
-  }
 
-  touch_input_ = touch_input;
-  LOG(INFO) << "Touch input updated: state= "
-            << cast::common::TouchInput::Type_Name(touch_input_) << ", "
-            << *this;
+  is_touch_input_enabled_ = enabled;
+  LOG(INFO) << "Touch input updated: is_touch_input_enabled_= "
+            << is_touch_input_enabled_ << ", " << *this;
 
   auto* window_controls = delegate_->GetContentWindowControls();
   if (!window_controls) {
     return;
   }
 
-  if (touch_input_ == cast::common::TouchInput::ENABLED) {
+  if (is_touch_input_enabled_) {
     window_controls->EnableTouchInput();
   } else {
     window_controls->DisableTouchInput();
@@ -394,7 +357,7 @@ mojom::RendererType RuntimeApplicationBase::GetRendererType() const {
 }
 
 void RuntimeApplicationBase::StopApplication(
-    cast::common::StopReason::Type stop_reason,
+    Delegate::ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -418,8 +381,7 @@ void RuntimeApplicationBase::StopApplication(
 
   delegate().NotifyApplicationStopped(stop_reason, net_error_code);
 
-  LOG(INFO) << "Application is stopped: stop_reason="
-            << cast::common::StopReason::Type_Name(stop_reason) << ", "
+  LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
             << *this;
 }
 
@@ -448,6 +410,26 @@ void RuntimeApplicationBase::OnWindowShown() {
 
 void RuntimeApplicationBase::OnWindowHidden() {
   SetWebVisibilityAndPaint(false);
+}
+
+std::ostream& operator<<(
+    std::ostream& os,
+    RuntimeApplicationBase::Delegate::ApplicationStopReason reason) {
+  switch (reason) {
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUndefined:
+      return os << "Undefined";
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::
+        kApplicationRequest:
+      return os << "Application Request";
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kIdleTimeout:
+      return os << "Idle Timeout";
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest:
+      return os << "Use Request";
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError:
+      return os << "HTTP Error";
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError:
+      return os << "Runtime Error";
+  }
 }
 
 }  // namespace chromecast

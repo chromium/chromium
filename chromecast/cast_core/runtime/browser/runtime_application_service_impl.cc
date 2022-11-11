@@ -80,6 +80,25 @@ class CastContentWindowControls : public cast_receiver::ContentWindowControls,
   base::raw_ref<CastContentWindow> content_window_;
 };
 
+cast::common::StopReason::Type ToProtoType(
+    RuntimeApplicationBase::Delegate::ApplicationStopReason reason) {
+  switch (reason) {
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUndefined:
+      return cast::common::StopReason::UNDEFINED;
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::
+        kApplicationRequest:
+      return cast::common::StopReason::APPLICATION_REQUEST;
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kIdleTimeout:
+      return cast::common::StopReason::IDLE_TIMEOUT;
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest:
+      return cast::common::StopReason::USER_REQUEST;
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError:
+      return cast::common::StopReason::HTTP_ERROR;
+    case RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError:
+      return cast::common::StopReason::RUNTIME_ERROR;
+  }
+}
+
 }  // namespace
 
 RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
@@ -190,9 +209,9 @@ void RuntimeApplicationServiceImpl::Launch(
 
   // TODO(b/244455581): Configure multizone.
 
-  runtime_application_->SetMediaState(request.media_state());
-  runtime_application_->SetVisibility(request.visibility());
-  runtime_application_->SetTouchInput(request.touch_input());
+  SetMediaBlocking(request.media_state());
+  SetVisibility(request.visibility());
+  SetTouchInput(request.touch_input());
 
   runtime_application_->Launch(std::move(callback));
 }
@@ -242,6 +261,57 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
+void RuntimeApplicationServiceImpl::SetTouchInput(
+    cast::common::TouchInput::Type state) {
+  switch (state) {
+    case cast::common::TouchInput::ENABLED:
+      runtime_application_->SetTouchInputEnabled(true);
+      break;
+    case cast::common::TouchInput::DISABLED:
+      runtime_application_->SetTouchInputEnabled(false);
+      break;
+    case cast::common::TouchInput::UNDEFINED:
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void RuntimeApplicationServiceImpl::SetVisibility(
+    cast::common::Visibility::Type state) {
+  switch (state) {
+    case cast::common::Visibility::FULL_SCREEN:
+      runtime_application_->SetVisibility(true);
+      break;
+    case cast::common::Visibility::HIDDEN:
+      runtime_application_->SetVisibility(false);
+      break;
+    case cast::common::Visibility::UNDEFINED:
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+void RuntimeApplicationServiceImpl::SetMediaBlocking(
+    cast::common::MediaState::Type state) {
+  switch (state) {
+    case cast::common::MediaState::LOAD_BLOCKED:
+      runtime_application_->SetMediaBlocking(true, true);
+      break;
+    case cast::common::MediaState::START_BLOCKED:
+      runtime_application_->SetMediaBlocking(false, true);
+      break;
+    case cast::common::MediaState::UNBLOCKED:
+      runtime_application_->SetMediaBlocking(false, false);
+      break;
+    case cast::common::MediaState::UNDEFINED:
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
     cast::v2::SetUrlRewriteRulesRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
@@ -269,7 +339,7 @@ void RuntimeApplicationServiceImpl::HandleSetMediaState(
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  runtime_application_->SetMediaState(request.media_state());
+  SetMediaBlocking(request.media_state());
   reactor->Write(cast::v2::SetMediaStateResponse());
 }
 
@@ -279,7 +349,7 @@ void RuntimeApplicationServiceImpl::HandleSetVisibility(
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  runtime_application_->SetVisibility(request.visibility());
+  SetVisibility(request.visibility());
   reactor->Write(cast::v2::SetVisibilityResponse());
 }
 
@@ -289,7 +359,7 @@ void RuntimeApplicationServiceImpl::HandleSetTouchInput(
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  runtime_application_->SetTouchInput(request.touch_input());
+  SetTouchInput(request.touch_input());
   reactor->Write(cast::v2::SetTouchInputResponse());
 }
 
@@ -312,7 +382,7 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStarted() {
 }
 
 void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
-    cast::common::StopReason::Type stop_reason,
+    ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
@@ -320,10 +390,11 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
   LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
             << *runtime_application_;
 
+  auto proto_stop_reason = ToProtoType(stop_reason);
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
   call.request().set_cast_session_id(runtime_application_->GetCastSessionId());
-  call.request().set_stop_reason(stop_reason);
+  call.request().set_stop_reason(proto_stop_reason);
   call.request().set_error_code(net_error_code);
   std::move(call).InvokeAsync(base::BindOnce(
       [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStoppedResponse>

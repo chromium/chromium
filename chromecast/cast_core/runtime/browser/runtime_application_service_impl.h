@@ -55,7 +55,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
 
   // RuntimeApplication::Delegate implementation:
   void NotifyApplicationStarted() override;
-  void NotifyApplicationStopped(cast::common::StopReason::Type stop_reason,
+  void NotifyApplicationStopped(ApplicationStopReason stop_reason,
                                 int32_t net_error_code) override;
   void NotifyMediaPlaybackChanged(bool playing) override;
   void GetAllBindings(GetAllBindingsCallback callback) override;
@@ -68,6 +68,11 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
  private:
   // Creates the root CastWebView for this Cast session.
   CastWebView::Scoped CreateCastWebView();
+
+  // Helper functions for processing proto types.
+  void SetTouchInput(cast::common::TouchInput::Type state);
+  void SetVisibility(cast::common::Visibility::Type state);
+  void SetMediaBlocking(cast::common::MediaState::Type state);
 
   // RuntimeApplicationService handlers:
   void HandleSetUrlRewriteRules(

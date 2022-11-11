@@ -30,7 +30,9 @@ WebRuntimeApplication::WebRuntimeApplication(
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
+  StopApplication(
+      RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest,
+      net::OK);
 }
 
 bool WebRuntimeApplication::OnMessagePortMessage(cast::web::Message message) {
@@ -122,7 +124,9 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!status.ok()) {
     LOG(ERROR) << "Failed to get all bindings: " << status;
-    StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
+    StopApplication(
+        RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
+        net::ERR_FAILED);
     return;
   }
 
@@ -146,7 +150,9 @@ void WebRuntimeApplication::OnPageLoadComplete() {
 
 void WebRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::common::StopReason::RUNTIME_ERROR, 0);
+  StopApplication(
+      RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
+      0);
 }
 
 void WebRuntimeApplication::OnPageStopped(StopReason reason,
@@ -154,14 +160,19 @@ void WebRuntimeApplication::OnPageStopped(StopReason reason,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (reason) {
     case cast_receiver::PageStateObserver::StopReason::kUnknown:
-      StopApplication(cast::common::StopReason::RUNTIME_ERROR, error_code);
+      StopApplication(RuntimeApplicationBase::Delegate::ApplicationStopReason::
+                          kRuntimeError,
+                      error_code);
       break;
     case cast_receiver::PageStateObserver::StopReason::kApplicationRequest:
-      StopApplication(cast::common::StopReason::APPLICATION_REQUEST,
+      StopApplication(RuntimeApplicationBase::Delegate::ApplicationStopReason::
+                          kApplicationRequest,
                       error_code);
       break;
     case cast_receiver::PageStateObserver::StopReason::kHttpError:
-      StopApplication(cast::common::StopReason::HTTP_ERROR, error_code);
+      StopApplication(
+          RuntimeApplicationBase::Delegate::ApplicationStopReason::kHttpError,
+          error_code);
       break;
   }
 }

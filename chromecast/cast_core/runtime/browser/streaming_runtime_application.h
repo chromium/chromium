@@ -33,8 +33,9 @@ class StreamingRuntimeApplication final
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;
   bool OnMessagePortMessage(cast::web::Message message) override;
-  void StopApplication(cast::common::StopReason::Type stop_reason,
-                       int32_t net_error_code) override;
+  void StopApplication(
+      RuntimeApplicationBase::Delegate::ApplicationStopReason stop_reason,
+      int32_t net_error_code) override;
   bool IsStreamingApplication() const override;
 
   // StreamingReceiverSessionClient::Handler implementation:

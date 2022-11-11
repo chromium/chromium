@@ -43,7 +43,9 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
+  StopApplication(
+      RuntimeApplicationBase::Delegate::ApplicationStopReason::kUserRequest,
+      net::OK);
 }
 
 bool StreamingRuntimeApplication::OnMessagePortMessage(
@@ -63,7 +65,9 @@ void StreamingRuntimeApplication::OnStreamingSessionStarted() {
 void StreamingRuntimeApplication::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
-  StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
+  StopApplication(
+      RuntimeApplicationBase::Delegate::ApplicationStopReason::kRuntimeError,
+      net::ERR_FAILED);
 }
 
 void StreamingRuntimeApplication::StartAvSettingsQuery(
@@ -113,7 +117,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
 }
 
 void StreamingRuntimeApplication::StopApplication(
-    cast::common::StopReason::Type stop_reason,
+    RuntimeApplicationBase::Delegate::ApplicationStopReason stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receiver_session_client_) {
