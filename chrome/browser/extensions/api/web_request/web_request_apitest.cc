@@ -5201,13 +5201,11 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
 }
 
 class ExtensionWebRequestApiFencedFrameTest
-    : public ExtensionWebRequestApiTest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+    : public ExtensionWebRequestApiTest {
  protected:
   ExtensionWebRequestApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+        {{blink::features::kFencedFrames, {{}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
     // Fenced frames are only allowed in secure contexts.
@@ -5219,26 +5217,20 @@ class ExtensionWebRequestApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest, Load) {
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.extension_url = "test_fenced_frames.html",
-                     .custom_arg = !GetParam() ? R"({"mparch": true})" : ""}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.extension_url = "test_fenced_frames.html"}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest,
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiFencedFrameTest,
                        DeclarativeSendMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.extension_url = "test_fenced_frames_send_message.html",
-                     .custom_arg = !GetParam() ? R"({"mparch": true})" : ""}))
+      "webrequest", {.extension_url = "test_fenced_frames_send_message.html"}))
       << message_;
 }
-
-INSTANTIATE_TEST_SUITE_P(ExtensionWebRequestApiFencedFrameTest,
-                         ExtensionWebRequestApiFencedFrameTest,
-                         testing::Bool());
 
 class ExtensionWebRequestApiPrerenderingTest
     : public ExtensionWebRequestApiTest {

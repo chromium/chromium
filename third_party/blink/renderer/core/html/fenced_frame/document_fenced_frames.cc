@@ -37,7 +37,6 @@ DocumentFencedFrames::DocumentFencedFrames(Document& document)
 
 void DocumentFencedFrames::RegisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
-  DCHECK(features::IsFencedFramesMPArchBased());
   fenced_frames_.push_back(fenced_frame);
 
   LocalFrame* frame = GetSupplementable()->GetFrame();
@@ -49,7 +48,6 @@ void DocumentFencedFrames::RegisterFencedFrame(
 
 void DocumentFencedFrames::DeregisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
-  DCHECK(features::IsFencedFramesMPArchBased());
   wtf_size_t index = fenced_frames_.Find(fenced_frame);
   if (index != WTF::kNotFound) {
     fenced_frames_.EraseAt(index);

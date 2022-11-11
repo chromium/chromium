@@ -14,7 +14,6 @@ loadScript.then(async function() {
   let URL_INTERMEDIATE_IFRAME = getURL('iframe.html');
   let URL_FENCED_FRAME = 'https://a.test:' + port +
       '/extensions/api_test/webnavigation/fencedFrames/frame.html';
-  var mparchEnabled = config.customArg == 'MPArch';
 
   chrome.test.runTests([
     // Navigates from an extension page to a HTTP page to contain
@@ -120,7 +119,7 @@ loadScript.then(async function() {
           event: 'onBeforeNavigate',
           details: { documentLifecycle: "active",
                      frameId: 2,
-                     frameType: mparchEnabled ? "fenced_frame" : "sub_frame",
+                     frameType: "fenced_frame",
                      parentDocumentId: 2,
                      parentFrameId: 1,
                      processId: -1,
@@ -212,7 +211,7 @@ loadScript.then(async function() {
               {errorOccurred: false,
                 documentId: 3,
                 documentLifecycle: "active",
-                frameId: mparchEnabled ? 6 : 5,
+                frameId: 6,
                 frameType: "fenced_frame",
                 parentDocumentId: 2,
                 parentFrameId: 4,

@@ -23,9 +23,7 @@ namespace test {
 // frames.
 class FencedFrameTestHelper {
  public:
-  enum class FencedFrameType { kShadowDOM, kMPArch };
-  explicit FencedFrameTestHelper(
-      FencedFrameType type = FencedFrameType::kMPArch);
+  explicit FencedFrameTestHelper();
   ~FencedFrameTestHelper();
   FencedFrameTestHelper(const FencedFrameTestHelper&) = delete;
   FencedFrameTestHelper& operator=(const FencedFrameTestHelper&) = delete;
@@ -69,7 +67,6 @@ class FencedFrameTestHelper {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  FencedFrameType type_;
 };
 
 // This helper method creates a fenced frame urn to url mapping and returns the

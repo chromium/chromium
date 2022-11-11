@@ -20,13 +20,6 @@ namespace blink {
 FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
     HTMLFencedFrameElement* outer_element)
     : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
-  DCHECK_EQ(outer_element->GetDocument()
-                .GetFrame()
-                ->GetPage()
-                ->FencedFramesImplementationType()
-                .value(),
-            features::FencedFramesImplementationType::kMPArch);
-
   DocumentFencedFrames::GetOrCreate(GetElement().GetDocument())
       .RegisterFencedFrame(&GetElement());
   mojo::PendingAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote;

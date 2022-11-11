@@ -205,11 +205,6 @@ FrameTree::FrameTree(
       type_(type),
       focused_frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       load_progress_(0.0),
-      fenced_frames_impl_(
-          blink::features::IsFencedFramesEnabled()
-              ? absl::optional<blink::features::FencedFramesImplementationType>(
-                    blink::features::kFencedFramesImplementationTypeParam.Get())
-              : absl::nullopt),
       root_(this,
             nullptr,
             // The top-level frame must always be in a

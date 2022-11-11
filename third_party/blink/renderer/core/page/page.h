@@ -222,11 +222,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return window_features_;
   }
 
-  const absl::optional<features::FencedFramesImplementationType>&
-  FencedFramesImplementationType() const {
-    return fenced_frames_impl_;
-  }
-
   PageScaleConstraintsSet& GetPageScaleConstraintsSet();
   const PageScaleConstraintsSet& GetPageScaleConstraintsSet() const;
 
@@ -435,9 +430,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // breaks this cycle, so the frame is still properly destroyed once no
   // longer needed.
   Member<Frame> main_frame_;
-
-  // The type of fenced frames being used.
-  absl::optional<features::FencedFramesImplementationType> fenced_frames_impl_;
 
   Member<AgentGroupScheduler> agent_group_scheduler_;
   Member<PageAnimator> animator_;

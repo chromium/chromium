@@ -23,7 +23,6 @@ function createExpectedSender(frameId, url) {
   return {frameId: frameId, url: url};
 }
 
-var mparchEnabled;
 var serverOrigin;
 var serverURL;
 
@@ -54,8 +53,7 @@ var tests = [
       });
     });
     await messagePromise;
-    expectedSender = createExpectedSender(
-        mparchEnabled ? 5 : 4, serverURL + 'fenced_frame.html');
+    expectedSender = createExpectedSender(5, serverURL + 'fenced_frame.html');
     compareSenders(expectedSender, actualSender);
     chrome.test.succeed();
   },
@@ -78,7 +76,6 @@ var tests = [
 ];
 
 chrome.test.getConfig(async (config) => {
-  mparchEnabled = config.customArg == 'MPArch';
   serverOrigin = `http://localhost:${config.testServer.port}`;
   serverURL = serverOrigin + '/extensions/api_test/messaging/'
                            + 'connect_fenced_frames/';

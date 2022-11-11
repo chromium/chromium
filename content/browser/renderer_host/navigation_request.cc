@@ -2147,21 +2147,7 @@ FencedFrameURLMapping& NavigationRequest::GetFencedFrameURLMap() {
 
 bool NavigationRequest::NeedFencedFrameURLMapping() {
   if (frame_tree_node_->IsFencedFrameRoot()) {
-    if (blink::features::IsFencedFramesMPArchBased()) {
-      // Once ShadowDOM and loading urns in iframes are disabled, this should
-      // be the only case that remains. The other cases are a bit hacky, but we
-      // expect them to go away soon.
-      return is_embedder_initiated_fenced_frame_opaque_url_navigation_;
-    } else {
-      // In ShadowDOM, embedder-initiated navigations can take different paths
-      // for local or remote Frames, so we detect it here.
-      // Any urn:uuid navigation is assumed to be initiated by the embedder,
-      // even though we know this is not necessarily the case in ShadowDOM.
-      // But it is true in all intended use cases.
-      is_embedder_initiated_fenced_frame_navigation_ =
-          blink::IsValidUrnUuidURL(common_params_->url);
-      return is_embedder_initiated_fenced_frame_navigation_;
-    }
+    return is_embedder_initiated_fenced_frame_opaque_url_navigation_;
   } else if (!frame_tree_node_->IsMainFrame() &&
              blink::features::IsAllowURNsInIframeEnabled()) {
     // In iframes, we want to ensure that fenced frame properties are respected
@@ -2200,8 +2186,7 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
       fenced_frame_properties_->partition_nonce = absl::nullopt;
     }
   } else {
-    if (frame_tree_node_->IsFencedFrameRoot() &&
-        frame_tree_node_->frame_tree()->IsFencedFramesMPArchBased()) {
+    if (frame_tree_node_->IsFencedFrameRoot()) {
       StartNavigation();
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
@@ -5541,19 +5526,15 @@ net::Error NavigationRequest::CheckCSPDirectives(
 
   // [frame-src] or [fenced-frame-src]
   if (parent_policies) {
-    bool is_opaque_fenced_frame =
-        frame_tree_node_->frame_tree()->IsFencedFramesShadowDOMBased()
-            ? (frame_tree_node_->IsFencedFrameRoot() &&
-               frame_tree_node_->GetFencedFrameMode() ==
-                   blink::mojom::FencedFrameMode::kOpaqueAds)
-            : is_target_fenced_frame_root_originating_from_opaque_url_;
     if (!IsAllowedByCSPDirective(
             parent_policies->content_security_policies, &parent_context,
             frame_tree_node_->IsFencedFrameRoot()
                 ? network::mojom::CSPDirectiveName::FencedFrameSrc
                 : network::mojom::CSPDirectiveName::FrameSrc,
             has_followed_redirect, url_upgraded_after_redirect,
-            is_response_check, is_opaque_fenced_frame, disposition)) {
+            is_response_check,
+            is_target_fenced_frame_root_originating_from_opaque_url_,
+            disposition)) {
       error = net::ERR_BLOCKED_BY_CSP;
     }
   }

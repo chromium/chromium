@@ -1820,7 +1820,6 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
  public:
   FencedFrameTaskBrowserTest() {
     EXPECT_TRUE(blink::features::IsFencedFramesEnabled());
-    EXPECT_TRUE(blink::features::IsFencedFramesMPArchBased());
   }
   FencedFrameTaskBrowserTest(const FencedFrameTaskBrowserTest&) = delete;
   FencedFrameTaskBrowserTest& operator=(const FencedFrameTaskBrowserTest&) =

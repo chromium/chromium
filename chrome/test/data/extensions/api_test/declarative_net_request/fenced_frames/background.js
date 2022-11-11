@@ -21,7 +21,6 @@ var onRuleMatchedDebugCallback = (rule) => {
 };
 
 var testServerPort;
-var mparchEnabled;
 function getServerURL(host) {
   if (!testServerPort)
     throw new Error('Called getServerURL outside of runTests.');
@@ -84,9 +83,9 @@ var tests = [
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.test'),
+          initiator: kOpaqueInitiator,
           method: 'GET',
-          frameId: mparchEnabled ? 5 : 4,
+          frameId: 5,
           documentLifecycle: 'active',
           frameType: 'fenced_frame',
           parentDocumentId: 1,
@@ -137,9 +136,9 @@ var tests = [
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.test'),
+          initiator: kOpaqueInitiator,
           method: 'GET',
-          frameId: mparchEnabled ? 7 : 5,
+          frameId: 7,
           documentLifecycle: 'active',
           frameType: 'fenced_frame',
           parentDocumentId: 2,
@@ -148,7 +147,7 @@ var tests = [
           tabId: tab.id,
           url: fencedFrameUrl
         },
-        rule: {ruleId: mparchEnabled ? 4 : 3, rulesetId: 'rules'}
+        rule: {ruleId: 4, rulesetId: 'rules'}
       };
       verifyExpectedRuleInfo(expectedRuleInfo);
       chrome.test.succeed();
@@ -169,7 +168,7 @@ var tests = [
           initiator: getServerURL('a.test'),
           method: 'GET',
           documentId: 4,
-          frameId: mparchEnabled ? 9 : 6,
+          frameId: 9,
           documentLifecycle: 'active',
           frameType: 'fenced_frame',
           parentDocumentId: 3,
@@ -199,7 +198,7 @@ var tests = [
           initiator: getServerURL('a.test'),
           method: 'GET',
           documentId: 6,
-          frameId: mparchEnabled ? 11 : 7,
+          frameId: 11,
           documentLifecycle: 'active',
           frameType: 'fenced_frame',
           parentDocumentId: 5,
@@ -218,7 +217,6 @@ var tests = [
 
 chrome.test.getConfig(async (config) => {
   testServerPort = config.testServer.port;
-  mparchEnabled = config.customArg == 'MPArch';
   tab = await new Promise(function(resolve, reject) {
     chrome.tabs.create({"url": "about:blank"}, (value) => {
       resolve(value);

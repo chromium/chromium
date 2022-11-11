@@ -162,11 +162,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
         (new_host->GetFrameOwnerElementType() !=
              blink::FrameOwnerElementType::kPortal &&
          new_host->GetFrameOwnerElementType() !=
-             blink::FrameOwnerElementType::kFencedframe) ||
-        (new_host->GetFrameOwnerElementType() ==
-             blink::FrameOwnerElementType::kFencedframe &&
-         blink::features::kFencedFramesImplementationTypeParam.Get() ==
-             blink::features::FencedFramesImplementationType::kShadowDOM);
+             blink::FrameOwnerElementType::kFencedframe);
     if (is_render_frame_created_needed_for_child) {
       AssertRenderFrameExists(new_host);
     }

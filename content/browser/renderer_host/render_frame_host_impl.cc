@@ -3982,15 +3982,12 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   // from this RFHI's FrameTreeNode with FrameTreeNode::GetFencedFrameNonce().
   //
   // Note that MPArch will ensure that fenced frame tree within an anonymous
-  // iframe does not have `is_anonymous` set to true. The ShadowDOM architecture
-  // cannot make the same guarantee that MPArch will, and therefore the shadow
-  // DOM version and will lead to the anonymous iframe nonce being used
-  // (crbug.com/1249865).
-  // The nonce was moved from PageImpl to RenderFrameHostImpl to fix
-  // crbug.com/1287458. In the case of an anonymous iframe embedded in a fenced
-  // frame, we get the anonymous_iframes_nonce of the fenced frame root to
-  // prevent anonymous iframes embedded inside a fenced frame from sharing nonce
-  // with anonymous iframes outside the fenced frame.
+  // iframe does not have `is_anonymous` set to true. The nonce was moved from
+  // PageImpl to RenderFrameHostImpl to fix crbug.com/1287458. In the case of an
+  // anonymous iframe embedded in a fenced frame, we get the
+  // `anonymous_iframes_nonce_` of the fenced frame root to prevent anonymous
+  // iframes embedded inside a fenced frame from sharing nonce with anonymous
+  // iframes outside the fenced frame.
   if (fenced_frame_nonce_for_navigation.has_value()) {
     return fenced_frame_nonce_for_navigation;
   }
@@ -6741,8 +6738,7 @@ void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
       return;
     }
 
-    proxy = frame_tree_->IsFencedFramesMPArchBased() ? GetProxyToOuterDelegate()
-                                                     : GetProxyToParent();
+    proxy = GetProxyToOuterDelegate();
   } else {
     proxy = GetProxyToParent();
   }
@@ -6765,9 +6761,7 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
   // that a keyboard event was recently sent. https://crbug.com/1123606. I&S
   // tracker row 191.
   RenderFrameProxyHost* proxy =
-      (IsFencedFrameRoot() && frame_tree_->IsFencedFramesMPArchBased())
-          ? GetProxyToOuterDelegate()
-          : GetProxyToParent();
+      IsFencedFrameRoot() ? GetProxyToOuterDelegate() : GetProxyToParent();
 
   if (!proxy) {
     // Only frames with an out-of-process parent frame should be sending this
@@ -7581,7 +7575,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
                                     bad_message::FF_CREATE_WHILE_PRERENDERING);
     return;
   }
-  if (!frame_tree_->IsFencedFramesMPArchBased()) {
+  if (!blink::features::IsFencedFramesEnabled()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
     return;

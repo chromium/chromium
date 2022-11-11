@@ -812,45 +812,18 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, ErrorBaseURL) {
 }
 
 class NavigationMhtmlFencedFrameBrowserTest
-    : public NavigationMhtmlBrowserTest,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+    : public NavigationMhtmlBrowserTest {
  public:
-  // Provides meaningful param names instead of /0 and /1.
-  static std::string DescribeParams(
-      const ::testing::TestParamInfo<ParamType>& info) {
-    switch (info.param) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        return "ShadowDOM";
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        return "MPArch";
-    }
-  }
-
   NavigationMhtmlFencedFrameBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type",
-            GetParam() ==
-                    blink::features::FencedFramesImplementationType::kShadowDOM
-                ? "shadow_dom"
-                : "mparch"}}}},
-        /*disabled_features=*/{});
+        {{blink::features::kFencedFrames, {}}}, /*disabled_features=*/{});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NavigationMhtmlFencedFrameBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &NavigationMhtmlFencedFrameBrowserTest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(NavigationMhtmlFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlFencedFrameBrowserTest,
                        MhtmlCannotCreateFencedFrame) {
   MhtmlArchive mhtml_archive;
   mhtml_archive.AddHtmlDocument(

@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_ad_sizes.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_mparch_delegate.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_shadow_dom_delegate.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -73,42 +72,6 @@ String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
 bool ParentModeIsDifferent(mojom::blink::FencedFrameMode current_mode,
                            LocalFrame& frame) {
   Page* ancestor_page = frame.GetPage();
-
-  if (ancestor_page->FencedFramesImplementationType() ==
-      features::FencedFramesImplementationType::kShadowDOM) {
-    // ShadowDOM check.
-    Frame* ancestor = &frame;
-    // This loop is only relevant for fenced frames based on ShadowDOM, since
-    // it has to do with the `FramePolicy::is_fenced` bit. We have to keep
-    // traversing up the tree to see if we ever come across a fenced frame of
-    // another mode. In that case, we stop `this` frame from being fully
-    // created, since nested fenced frames of differing modes are not allowed.
-    while (ancestor && ancestor->Owner()) {
-      bool is_ancestor_fenced = ancestor->Owner()->GetFramePolicy().is_fenced;
-      // Note that this variable is only meaningful if `is_ancestor_fenced`
-      // above is true.
-      mojom::blink::FencedFrameMode ancestor_mode =
-          ancestor->Owner()->GetFramePolicy().fenced_frame_mode;
-
-      if (is_ancestor_fenced && ancestor_mode != current_mode) {
-        return true;
-      }
-
-      // If this loop found a fenced ancestor whose mode is compatible with
-      // `current_mode`, it is not necessary to look further up the ancestor
-      // chain. This is because this loop already ran during the creation of
-      // the compatible fenced ancestor, so it is guaranteed that the rest of
-      // the ancestor chain has already been checked and approved for
-      // compatibility.
-      if (is_ancestor_fenced && ancestor_mode == current_mode) {
-        return false;
-      }
-
-      ancestor = ancestor->Tree().Parent();
-    }
-    return false;
-  }
-  // MPArch check.
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
          ancestor_page->FencedFrameMode() != current_mode;
 }
@@ -286,18 +249,9 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
 
-  Page* ancestor_page = outer_element->GetDocument().GetFrame()->GetPage();
-
   if (HasDifferentModeThanParent(*outer_element)) {
     mojom::blink::FencedFrameMode parent_mode =
-        ancestor_page->FencedFramesImplementationType() ==
-                features::FencedFramesImplementationType::kShadowDOM
-            ? outer_element->GetDocument()
-                  .GetFrame()
-                  ->Owner()
-                  ->GetFramePolicy()
-                  .fenced_frame_mode
-            : outer_element->GetDocument().GetPage()->FencedFrameMode();
+        outer_element->GetDocument().GetPage()->FencedFrameMode();
 
     outer_element->GetDocument().AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
@@ -310,11 +264,6 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     RecordFencedFrameCreationOutcome(
         FencedFrameCreationOutcome::kIncompatibleMode);
     return nullptr;
-  }
-
-  if (ancestor_page->FencedFramesImplementationType() ==
-      features::FencedFramesImplementationType::kShadowDOM) {
-    return MakeGarbageCollected<FencedFrameShadowDOMDelegate>(outer_element);
   }
 
   return MakeGarbageCollected<FencedFrameMPArchDelegate>(outer_element);
@@ -582,14 +531,7 @@ bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
-  Page* page = GetDocument().GetFrame()->GetPage();
-
-  if (page->FencedFramesImplementationType() ==
-      features::FencedFramesImplementationType::kMPArch) {
-    return MakeGarbageCollected<LayoutIFrame>(this);
-  }
-
-  return HTMLFrameOwnerElement::CreateLayoutObject(style, legacy_layout);
+  return MakeGarbageCollected<LayoutIFrame>(this);
 }
 
 bool HTMLFencedFrameElement::SupportsFocus() const {
@@ -795,16 +737,10 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     FreezeFrameSize(content_rect_->size);
     return;
   }
-  Page* page = GetDocument().GetFrame()->GetPage();
-  if (frozen_frame_size_ &&
-      page->FencedFramesImplementationType() ==
-          features::FencedFramesImplementationType::kShadowDOM) {
-    UpdateInnerStyleOnFrozenInternalFrame();
-  }
 }
 
+// TODO(domfarolino): Remove this.
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
-  DCHECK(!features::IsFencedFramesMPArchBased());
   DCHECK(content_rect_);
   const absl::optional<PhysicalSize> frozen_size = frozen_frame_size_;
   DCHECK(frozen_size);

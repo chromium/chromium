@@ -2127,23 +2127,11 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 
-class PrintFencedFrameBrowserTest
-    : public testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType>,
-      public PrintBrowserTest {
+class PrintFencedFrameBrowserTest : public PrintBrowserTest {
  public:
   PrintFencedFrameBrowserTest() {
-    if (GetParam() ==
-        blink::features::FencedFramesImplementationType::kMPArch) {
-      fenced_frame_helper_ =
-          std::make_unique<content::test::FencedFrameTestHelper>();
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {::features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
-    }
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
   }
   ~PrintFencedFrameBrowserTest() override = default;
 
@@ -2237,19 +2225,13 @@ class PrintFencedFrameBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, ScriptedPrint) {
+IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, ScriptedPrint) {
   RunPrintTest("window.print();");
 }
 
-IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, DocumentExecCommand) {
+IN_PROC_BROWSER_TEST_F(PrintFencedFrameBrowserTest, DocumentExecCommand) {
   RunPrintTest("document.execCommand('print');");
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    PrintFencedFrameBrowserTest,
-    PrintFencedFrameBrowserTest,
-    testing::Values(blink::features::FencedFramesImplementationType::kShadowDOM,
-                    blink::features::FencedFramesImplementationType::kMPArch));
 
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.

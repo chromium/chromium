@@ -597,8 +597,7 @@ WebViewImpl::WebViewImpl(
   // page.
   SetInsidePortal(is_inside_portal);
 
-  if (fenced_frame_mode && features::IsFencedFramesEnabled() &&
-      features::IsFencedFramesMPArchBased()) {
+  if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
     page_->SetIsMainFrameFencedFrameRoot();
     page_->SetFencedFrameMode(*fenced_frame_mode);
   } else {

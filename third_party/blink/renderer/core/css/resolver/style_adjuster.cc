@@ -167,47 +167,6 @@ void AdjustAnchorQueryStyles(ComputedStyleBuilder& builder) {
   }
 }
 
-// Returns the `<display-outside>` for a `EDisplay` value.
-// https://drafts.csswg.org/css-display-3/#propdef-display
-EDisplay DisplayOutside(EDisplay display) {
-  switch (display) {
-    case EDisplay::kBlock:
-    case EDisplay::kTable:
-    case EDisplay::kWebkitBox:
-    case EDisplay::kFlex:
-    case EDisplay::kGrid:
-    case EDisplay::kBlockMath:
-    case EDisplay::kListItem:
-    case EDisplay::kFlowRoot:
-    case EDisplay::kLayoutCustom:
-    case EDisplay::kTableRowGroup:
-    case EDisplay::kTableHeaderGroup:
-    case EDisplay::kTableFooterGroup:
-    case EDisplay::kTableRow:
-    case EDisplay::kTableColumnGroup:
-    case EDisplay::kTableColumn:
-    case EDisplay::kTableCell:
-    case EDisplay::kTableCaption:
-      return EDisplay::kBlock;
-    case EDisplay::kInline:
-    case EDisplay::kInlineBlock:
-    case EDisplay::kInlineTable:
-    case EDisplay::kWebkitInlineBox:
-    case EDisplay::kInlineFlex:
-    case EDisplay::kInlineGrid:
-    case EDisplay::kInlineLayoutCustom:
-    case EDisplay::kMath:
-      return EDisplay::kInline;
-    case EDisplay::kNone:
-    case EDisplay::kContents:
-      // These values don't have `<display-outside>`.
-      // Returns the original value.
-      return display;
-  }
-  NOTREACHED();
-  return EDisplay::kBlock;
-}
-
 }  // namespace
 
 static EDisplay EquivalentBlockDisplay(EDisplay display) {
@@ -462,25 +421,6 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // comes from user intervention. crbug.com/1285327
     builder.SetEffectiveZoom(
         element.GetDocument().GetStyleResolver().InitialZoom());
-
-    if (!features::IsFencedFramesMPArchBased()) {
-      // Force the inside-display to `flow`, but honors the outside-display.
-      switch (DisplayOutside(style.Display())) {
-        case EDisplay::kInline:
-        case EDisplay::kContents:
-          builder.SetDisplay(EDisplay::kInlineBlock);
-          break;
-        case EDisplay::kBlock:
-          builder.SetDisplay(EDisplay::kBlock);
-          break;
-        case EDisplay::kNone:
-          break;
-        default:
-          NOTREACHED();
-          builder.SetDisplay(EDisplay::kInlineBlock);
-          break;
-      }
-    }
   }
 
   if (IsA<HTMLRTElement>(element)) {

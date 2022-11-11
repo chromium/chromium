@@ -1185,23 +1185,6 @@
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride"]
   },
   {
-    "prefix": "shared-storage-fenced-frame-shadow-dom",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "wpt_internal/shared_storage",
-      "external/wpt/shared-storage",
-      "http/tests/inspector-protocol/storage/shared-storage.js",
-      "http/tests/inspector-protocol/storage/shared-storage-delete.js",
-      "http/tests/inspector-protocol/storage/shared-storage-set.js",
-      "http/tests/inspector-protocol/storage/shared-storage-tracking-disabled.js"
-    ],
-    "exclusive_tests": [
-      "wpt_internal/shared_storage",
-      "external/wpt/shared-storage"
-    ],
-    "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride"]
-  },
-  {
     "prefix": "task-tracking",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/task-tracking"],
@@ -1223,21 +1206,6 @@
       "http/tests/inspector-protocol/fenced-frame"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies"]
-  },
-  {
-    "prefix": "fenced-frame-shadow-dom",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "http/tests/fenced_frame",
-      "wpt_internal/fenced_frame",
-      "external/wpt/html/anonymous-iframe"
-    ],
-    "exclusive_tests": [
-      "http/tests/fenced_frame",
-      "wpt_internal/fenced_frame"
-    ],
-    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies",
-             "--force-renderer-accessibility"]
   },
   {
     "prefix": "cors-non-wildcard-request-headers",

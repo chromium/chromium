@@ -508,22 +508,6 @@ class CONTENT_EXPORT FrameTree {
   // each inner FrameTree is attached.
   void FocusOuterFrameTrees();
 
-  absl::optional<blink::features::FencedFramesImplementationType>
-  FencedFramesImplementationType() const {
-    return fenced_frames_impl_;
-  }
-
-  bool IsFencedFramesMPArchBased() const {
-    return fenced_frames_impl_.has_value() &&
-           fenced_frames_impl_.value() ==
-               blink::features::FencedFramesImplementationType::kMPArch;
-  }
-  bool IsFencedFramesShadowDOMBased() const {
-    return fenced_frames_impl_.has_value() &&
-           fenced_frames_impl_.value() ==
-               blink::features::FencedFramesImplementationType::kShadowDOM;
-  }
-
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -575,9 +559,6 @@ class CONTENT_EXPORT FrameTree {
 
   // Overall load progress.
   double load_progress_;
-
-  absl::optional<blink::features::FencedFramesImplementationType>
-      fenced_frames_impl_;
 
   // Whether the initial empty page has been accessed by another page, making it
   // unsafe to show the pending URL. Usually false unless another window tries

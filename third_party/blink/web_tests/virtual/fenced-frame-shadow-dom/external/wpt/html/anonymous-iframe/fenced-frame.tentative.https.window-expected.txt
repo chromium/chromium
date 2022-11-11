@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS FencedFrame within an AnonymousIframe is not anonymous
-Harness: the test ran to completion.
-

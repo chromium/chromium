@@ -139,32 +139,11 @@ FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
     RenderFrameHostImpl* parent,
     const blink::FramePolicy& frame_policy) {
   using FencedFrameStatus = FrameTreeNode::FencedFrameStatus;
-  if (blink::features::IsFencedFramesEnabled()) {
-    switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-      case blink::features::FencedFramesImplementationType::kMPArch: {
-        if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
-          if (!parent)
-            return FencedFrameStatus::kFencedFrameRoot;
-          return FencedFrameStatus::kIframeNestedWithinFencedFrame;
-        } else {
-          return FencedFrameStatus::kNotNestedInFencedFrame;
-        }
-      }
-      case blink::features::FencedFramesImplementationType::kShadowDOM: {
-        // Different from the MPArch case, the ShadowDOM implementation of
-        // fenced frame lives in the same FrameTree as its parent, so we need to
-        // check its effective frame policy instead.
-        if (frame_policy.is_fenced) {
-          return FencedFrameStatus::kFencedFrameRoot;
-        } else if (parent && parent->IsNestedWithinFencedFrame()) {
-          return FencedFrameStatus::kIframeNestedWithinFencedFrame;
-        }
-        return FencedFrameStatus::kNotNestedInFencedFrame;
-      }
-      default: {
-        return FencedFrameStatus::kNotNestedInFencedFrame;
-      }
-    }
+  if (blink::features::IsFencedFramesEnabled() &&
+      frame_tree->type() == FrameTree::Type::kFencedFrame) {
+    if (!parent)
+      return FencedFrameStatus::kFencedFrameRoot;
+    return FencedFrameStatus::kIframeNestedWithinFencedFrame;
   }
 
   return FencedFrameStatus::kNotNestedInFencedFrame;
@@ -404,13 +383,6 @@ FrameType FrameTreeNode::GetFrameType() const {
     case FrameTree::Type::kPrerender:
       return FrameType::kPrerenderMainFrame;
     case FrameTree::Type::kFencedFrame:
-      // We also have FencedFramesImplementationType::kShadowDOM for a
-      // fenced frame implementation based on <iframe> + shadowDOM,
-      // which will return kSubframe as it's a modified <iframe> rather
-      // than a dedicated FrameTree. This returns kSubframe for the
-      // shadow dom implementation in order to keep consistency (i.e.
-      // NavigationHandle::GetParentFrame returning non-null value for
-      // shadow-dom based FFs).
       return FrameType::kFencedFrameRoot;
   }
 }
@@ -500,23 +472,16 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   // kFencedFrameForcedSandboxFlags. This is to allow the sandbox flags to
   // be set initially (go from kNone -> kFencedFrameForcedSandboxFlags). Once
   // it has been set, it cannot change to another value.
-  // Note: The bad message is only expected to hit for ShadowDOM fenced frames.
-  // For MPArch, the RFHI will detect that the change is not coming from the
-  // frame's parent in DidChangeFramePolicy() (an MPArch fenced frame parent
-  // is null since it's the root frame in its tree) and terminate the
-  // renderer before we reach this point.
-  // TODO(crbug.com/1262022) When ShadowDOM is removed, turn this into a DCHECK
-  // and remove the BadMessage call.
-  if (IsFencedFrameRoot() &&
-      pending_frame_policy_.sandbox_flags ==
-          blink::kFencedFrameForcedSandboxFlags &&
-      frame_policy.sandbox_flags != blink::kFencedFrameForcedSandboxFlags) {
-    DCHECK(frame_tree()->IsFencedFramesShadowDOMBased());
-    bad_message::ReceivedBadMessage(
-        current_frame_host()->GetProcess(),
-        bad_message::FF_FROZEN_SANDBOX_FLAGS_CHANGED);
-    return;
-  }
+  // If the flags do change via a compromised fenced frame, then
+  // `RenderFrameHostImpl::DidChangeFramePolicy()` will detect that the change
+  // wasn't initiated by the parent, and will terminate the renderer before we
+  // reach this point, so we can CHECK() here.
+  bool fenced_frame_sandbox_flags_changed =
+      (IsFencedFrameRoot() &&
+       pending_frame_policy_.sandbox_flags ==
+           blink::kFencedFrameForcedSandboxFlags &&
+       frame_policy.sandbox_flags != blink::kFencedFrameForcedSandboxFlags);
+  CHECK(!fenced_frame_sandbox_flags_changed);
 
   pending_frame_policy_.sandbox_flags = frame_policy.sandbox_flags;
 
@@ -740,16 +705,6 @@ void FrameTreeNode::BeforeUnloadCanceled() {
 
 bool FrameTreeNode::NotifyUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {
-  // User activation notifications shouldn't propagate into/out of fenced
-  // frames.
-  // For ShadowDOM, fenced frames are in the same frame tree as their embedder,
-  // so we need to perform additional checks to enforce the boundary.
-  // For MPArch, fenced frames have a separate frame tree, so this boundary is
-  // enforced by default.
-  // https://docs.google.com/document/d/1WnIhXOFycoje_sEoZR3Mo0YNSR2Ki7LABIC_HEWFaog
-  bool shadow_dom_fenced_frame_enabled =
-      frame_tree()->IsFencedFramesShadowDOMBased();
-
   // User Activation V2 requires activating all ancestor frames in addition to
   // the current frame. See
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
@@ -757,18 +712,10 @@ bool FrameTreeNode::NotifyUserActivation(
        rfh = rfh->GetParent()) {
     rfh->DidReceiveUserActivation();
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
-
-    if (shadow_dom_fenced_frame_enabled &&
-        rfh->frame_tree_node()->IsFencedFrameRoot()) {
-      break;
-    }
   }
 
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
       true);
-
-  absl::optional<base::UnguessableToken> originator_nonce =
-      GetFencedFrameNonce();
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
@@ -777,11 +724,6 @@ bool FrameTreeNode::NotifyUserActivation(
     const url::Origin& current_origin =
         this->current_frame_host()->GetLastCommittedOrigin();
     for (FrameTreeNode* node : frame_tree()->Nodes()) {
-      if (shadow_dom_fenced_frame_enabled &&
-          node->GetFencedFrameNonce() != originator_nonce) {
-        continue;
-      }
-
       if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
               current_origin)) {
         node->user_activation_state_.Activate(notification_type);
@@ -796,25 +738,8 @@ bool FrameTreeNode::NotifyUserActivation(
 }
 
 bool FrameTreeNode::ConsumeTransientUserActivation() {
-  // User activation consumptions shouldn't propagate into/out of fenced
-  // frames.
-  // For ShadowDOM, fenced frames are in the same frame tree as their embedder,
-  // so we need to perform additional checks to enforce the boundary.
-  // For MPArch, fenced frames have a separate frame tree, so this boundary is
-  // enforced by default.
-  // https://docs.google.com/document/d/1WnIhXOFycoje_sEoZR3Mo0YNSR2Ki7LABIC_HEWFaog
-  bool shadow_dom_fenced_frame_enabled =
-      frame_tree()->IsFencedFramesShadowDOMBased();
-  absl::optional<base::UnguessableToken> originator_nonce =
-      GetFencedFrameNonce();
-
   bool was_active = user_activation_state_.IsActive();
   for (FrameTreeNode* node : frame_tree()->Nodes()) {
-    if (shadow_dom_fenced_frame_enabled &&
-        node->GetFencedFrameNonce() != originator_nonce) {
-      continue;
-    }
-
     node->user_activation_state_.ConsumeIfActive();
   }
   current_frame_host()->browsing_context_state()->set_has_active_user_gesture(
@@ -952,32 +877,12 @@ FrameTreeNode::GetFencedFrameProperties() {
     return fenced_frame_properties_;
   }
 
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch: {
-      // Because we already confirmed we're in a fenced frame tree, we know
-      // there must be a fenced frame root with properties stored.
-      CHECK(frame_tree());
-      CHECK(frame_tree()->root());
-      CHECK(frame_tree()->root()->fenced_frame_properties_.has_value());
-      return frame_tree()->root()->fenced_frame_properties_;
-    }
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      FrameTreeNode* node = this;
-
-      while (true) {
-        if (node->IsFencedFrameRoot()) {
-          // Because non-opaque url navigations in ShadowDOM fenced frames
-          // do not install fenced frame properties, this may be absl::nullopt
-          // underneath.
-          return node->fenced_frame_properties_;
-        }
-
-        CHECK(node->parent());
-        CHECK(node->parent()->frame_tree_node());
-        node = node->parent()->frame_tree_node();
-      }
-    }
-  }
+  // Because we already confirmed we're in a fenced frame tree, we know
+  // there must be a fenced frame root with properties stored.
+  CHECK(frame_tree());
+  CHECK(frame_tree()->root());
+  CHECK(frame_tree()->root()->fenced_frame_properties_.has_value());
+  return frame_tree()->root()->fenced_frame_properties_;
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth() {
@@ -1024,25 +929,13 @@ FrameTreeNode::GetFencedFrameMode() {
     return absl::nullopt;
   }
 
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch: {
-      FrameTreeNode* outer_delegate_node =
-          render_manager()->GetOuterDelegateNode();
-      DCHECK(outer_delegate_node);
+  FrameTreeNode* outer_delegate_node = render_manager()->GetOuterDelegateNode();
+  DCHECK(outer_delegate_node);
 
-      FencedFrame* fenced_frame = FindFencedFrame(outer_delegate_node);
-      DCHECK(fenced_frame);
+  FencedFrame* fenced_frame = FindFencedFrame(outer_delegate_node);
+  DCHECK(fenced_frame);
 
-      return fenced_frame->mode();
-    }
-    case blink::features::FencedFramesImplementationType::kShadowDOM: {
-      FrameTreeNode* node = this;
-      while (!node->IsFencedFrameRoot()) {
-        node = node->parent()->frame_tree_node();
-      }
-      return node->pending_frame_policy_.fenced_frame_mode;
-    }
-  }
+  return fenced_frame->mode();
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {

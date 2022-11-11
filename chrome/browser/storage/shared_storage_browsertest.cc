@@ -2205,30 +2205,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest,
             histogram_tester_.GetAllSamples(kTimingWorkletSetHistogram).size());
 }
 
-struct SharedStorageFencedFrameChromeBrowserParams {
-  blink::features::FencedFramesImplementationType impl_type;
-};
-
-// Used by `testing::PrintToStringParamName()`.
-std::string PrintToString(
-    const SharedStorageFencedFrameChromeBrowserParams& p) {
-  return (p.impl_type ==
-          blink::features::FencedFramesImplementationType::kShadowDOM)
-             ? "ShadowDOM"
-             : "MPArch";
-}
-
-std::vector<SharedStorageFencedFrameChromeBrowserParams>
-GetSharedStorageFencedFrameChromeBrowserParams() {
-  return std::vector<SharedStorageFencedFrameChromeBrowserParams>(
-      {{blink::features::FencedFramesImplementationType::kShadowDOM},
-       {blink::features::FencedFramesImplementationType::kMPArch}});
-}
-
 class SharedStorageFencedFrameChromeBrowserTest
-    : public SharedStorageChromeBrowserTest,
-      public testing::WithParamInterface<
-          SharedStorageFencedFrameChromeBrowserParams> {
+    : public SharedStorageChromeBrowserTest {
  public:
   SharedStorageFencedFrameChromeBrowserTest() {
     base::test::TaskEnvironment task_environment;
@@ -2237,12 +2215,7 @@ class SharedStorageFencedFrameChromeBrowserTest
         /*enabled_features=*/
         {{blink::features::kSharedStorageAPI,
           {{"SharedStorageBitBudget", base::NumberToString(kBudgetAllowed)}}},
-         {blink::features::kFencedFrames,
-          {{"implementation_type",
-            GetParam().impl_type ==
-                    blink::features::FencedFramesImplementationType::kShadowDOM
-                ? "shadow_dom"
-                : "mparch"}}},
+         {blink::features::kFencedFrames, {}},
          {privacy_sandbox::kPrivacySandboxSettings3, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{});
@@ -2290,13 +2263,7 @@ class SharedStorageFencedFrameChromeBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SharedStorageFencedFrameChromeBrowserTest,
-    testing::ValuesIn(GetSharedStorageFencedFrameChromeBrowserParams()),
-    testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
+IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
                        FencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(GetActiveWebContents(), main_url));
@@ -2344,7 +2311,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameChromeBrowserTest,
   EXPECT_EQ(2, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SharedStorageFencedFrameChromeBrowserTest,
     TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
   GURL main_url = https_server()->GetURL(kSimpleTestHost, kSimplePagePath);

@@ -197,10 +197,7 @@ void WebAppNavigationBrowserTest::SetUp() {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-        if (blink::features::IsFencedFramesEnabled() &&
-            blink::features::IsFencedFramesMPArchBased()) {
-          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-        }
+        response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
         return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
             std::move(response));
       }));

@@ -712,15 +712,11 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Xslt) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/xslt")) << message_;
 }
 
-class WebNavigationApiFencedFrameTest
-    : public WebNavigationApiTest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+class WebNavigationApiFencedFrameTest : public WebNavigationApiTest {
  protected:
   WebNavigationApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kFencedFrames,
-                               {{"implementation_type",
-                                 GetParam() ? "shadow_dom" : "mparch"}}},
+        /*enabled_features=*/{{blink::features::kFencedFrames, {}},
                               {features::kPrivacySandboxAdsAPIsOverride, {}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
     // Fenced frames are only allowed in a secure context.
@@ -732,23 +728,14 @@ class WebNavigationApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, Load) {
+IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames",
-                               {.custom_arg = !GetParam() ? "MPArch" : ""}))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
 }
-
-INSTANTIATE_TEST_SUITE_P(WebNavigationApiFencedFrameTest,
-                         WebNavigationApiFencedFrameTest,
-                         testing::Bool());
 
 // Tests that the actual url of a fenced frame navaigation is visible to the
 // extensions
-IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, MappedURL) {
-  EXPECT_TRUE(GetParam() ? blink::features::IsFencedFramesShadowDOMBased()
-                         : blink::features::IsFencedFramesMPArchBased());
-
+IN_PROC_BROWSER_TEST_F(WebNavigationApiFencedFrameTest, MappedURL) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   GURL main_url = embedded_test_server()->GetURL(
@@ -772,7 +759,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, MappedURL) {
                         .AppendASCII("fencedFramesMappedURL"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
-  background_page_read.Reply(GetParam() ? "shadow_dom" : "mparch");
+  background_page_read.Reply("mparch");
   background_page_read.Reset();
   ASSERT_TRUE(background_page_read.WaitUntilSatisfied());
   background_page_read.Reply("");

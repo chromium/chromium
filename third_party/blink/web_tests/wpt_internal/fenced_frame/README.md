@@ -200,13 +200,7 @@ For a good test example, see
 ## Underlying implementations
 
 This directory contains <fencedframe> tests that exercise the
-`blink::features::kFencedFrames` feature. Specifically, they exercise the
-default implementation mode of fenced frames, which is
-`blink::features::FencedFramesImplementationType::kShadowDOM`.
-
-The test are also run exercising the MPArch implementation path
-(`blink::features::FencedFramesImplementationType::kMPArch`) via the virtual
-test suite (see the `VirtualTestSuites` file).
+`blink::features::kFencedFrames` feature.
 
 ## Wrap lines at 80 columns
 

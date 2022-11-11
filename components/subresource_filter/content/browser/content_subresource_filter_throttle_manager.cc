@@ -870,14 +870,6 @@ void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
     return;
   }
 
-  if (blink::features::kFencedFramesImplementationTypeParam.Get() !=
-      blink::features::FencedFramesImplementationType::kMPArch) {
-    mojo::ReportBadMessage(
-        "AdScriptDidCreateFencedFrame can only be called in MPArch-based "
-        "fenced frames.");
-    return;
-  }
-
   // This method is called from the renderer when it creates a new MPArch-based
   // fenced frame while an ad script was on the v8 stack.
   //

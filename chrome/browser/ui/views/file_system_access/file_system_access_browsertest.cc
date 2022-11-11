@@ -1035,22 +1035,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderFileSystemAccessBrowserTest,
 }
 
 class FencedFrameFileSystemAccessBrowserTest
-    : public testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType>,
-      public FileSystemAccessBrowserTest {
+    : public FileSystemAccessBrowserTest {
  public:
   FencedFrameFileSystemAccessBrowserTest() {
-    if (GetParam() ==
-        blink::features::FencedFramesImplementationType::kMPArch) {
-      fenced_frame_helper_ =
-          std::make_unique<content::test::FencedFrameTestHelper>();
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
-    }
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
   }
 
   void SetUpOnMainThread() override {
@@ -1101,7 +1090,7 @@ class FencedFrameFileSystemAccessBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
       std::make_unique<ChromeFileSystemAccessPermissionContext>(
@@ -1154,12 +1143,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
   EXPECT_EQ(future.Get<>(), content::FileSystemAccessPermissionGrant::
                                 PermissionRequestOutcome::kInvalidFrame);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    FencedFrameFileSystemAccessBrowserTest,
-    FencedFrameFileSystemAccessBrowserTest,
-    testing::Values(blink::features::FencedFramesImplementationType::kShadowDOM,
-                    blink::features::FencedFramesImplementationType::kMPArch));
 
 // The helper methods in this class uses ExecuteScriptXXX, because WebUI has
 // a Content Security Policy that interferes with ExecJs and EvalJs.

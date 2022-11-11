@@ -3253,7 +3253,6 @@ crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visib
 crbug.com/626703 [ Mac10.15 ] virtual/view-transition/external/wpt/css/css-view-transitions/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/view-transition/external/wpt/css/css-view-transitions/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/geolocation-api/watchPosition-page-visibility.https.html [ Timeout ]
@@ -6111,9 +6110,6 @@ crbug.com/1259133 [ Mac10.14 ] external/wpt/html/canvas/offscreen/manual/the-off
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.https.html [ Timeout ]
 
-# Fragment navigations are treated as same-document in ShadowDOM because it doesn't distinguish embedder-initiated navigations.
-crbug.com/1262022 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/fragment-navigation.https.html [ Timeout ]
-
 # Sheriff 2021-10-15, 2021-12-07
 crbug.com/1256763 [ Win ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1256763 [ Mac ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
@@ -6366,11 +6362,6 @@ crbug.com/1295707 http/tests/devtools/elements/elements-treeoutline-copy.js [ Fa
 # Disable to skip performance test caused by potential O(n^2) problem in AXObjectCacheImpl::ChildrenChanged
 crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ Pass Failure Timeout Crash ]
 
-# Sheriff 2022-02-16
-crbug.com/1297416 [ Mac Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
-crbug.com/1297416 [ Linux Release ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
-crbug.com/1297416 [ Release Win10.20h2 ] virtual/fenced-frame-shadow-dom/http/tests/fenced_frame/coop-bcg-swap-rendering.https.html [ Failure Pass ]
-
 # Sheriff 2022-02-22
 crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocors-base-https-other-https.html [ Pass Timeout ]
@@ -6399,7 +6390,6 @@ crbug.com/1298836 virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/resp
 # request hangs indefinitely.
 crbug.com/1285275 external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
 crbug.com/1285275 virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
-crbug.com/1285275 virtual/fenced-frame-shadow-dom/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
 crbug.com/1285275 virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/cache-storage.tentative.https.window.html [ Pass Timeout ]
 
 # Sheriff 2022-03-10
@@ -6409,7 +6399,6 @@ crbug.com/1304956 storage/indexeddb/dont-wedge.html [ Failure Pass ]
 crbug.com/626703 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Pass Timeout ]
 crbug.com/1269534 fast/spatial-navigation/snav-zero-margin-content.html [ Failure Pass ]
 crbug.com/1295980 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/user-activation.https.html [ Failure Pass Timeout ]
-crbug.com/1295980 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/user-activation.https.html [ Failure Pass Timeout ]
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
 # Sheriff 2022-03-18
@@ -6481,8 +6470,6 @@ crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox
 crbug.com/1314314 virtual/percent-based-scrolling/fast/scrolling/scrollbars/mouse-autoscrolling-on-deleted-scrollbar.html [ Pass Failure Timeout Crash ]
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Pass Failure Timeout Crash ]
 
-crbug.com/1313970 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/visual-viewport.https.html [ Failure ]
-
 # Sheriff 2022-04-08
 crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-1.html [ Failure Pass ]
 crbug.com/1314514 [ Mac ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
@@ -6508,7 +6495,6 @@ crbug.com/1315300 [ Linux ] http/tests/devtools/elements/styles-3/styles-disable
 crbug.com/1147859 virtual/css-highlight-overlay-painting/wpt_internal/css/css-pseudo/target-text-001.html [ Failure ]
 
 crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
-crbug.com/1316341 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-04-18, failing on Mac and WebKit Win10 builders.
 crbug.com/1317007 external/wpt/mimesniff/mime-types/charset-parameter.window.html [ Failure Pass ]
@@ -6555,8 +6541,6 @@ crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-l
 # Sheriff 2022-04-26
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disallowed-navigations.https.html [ Pass Timeout ]
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Pass Timeout ]
-crbug.com/1320140 [ Win ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/disallowed-navigations.https.html [ Pass Timeout ]
-crbug.com/1320140 [ Win ] virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Pass Timeout ]
 crbug.com/1288741 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Pass Timeout ]
 
 # Sheriff 2022-04-28
@@ -6794,8 +6778,6 @@ virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/ds
 virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/dsf-ready/mouse-interactions-dsf-2.html [ Pass ]
 
 # Sheriff 2022-08-24
-crbug.com/1356118 [ Mac ] virtual/fenced-frame-shadow-dom/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
-crbug.com/1356118 [ Linux ] virtual/fenced-frame-shadow-dom/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
 crbug.com/1356118 [ Mac ] virtual/async-script-scheduling-finished-parsing/wpt_internal/async-script-scheduling/execution-order.sub.html [ Failure Pass ]
 crbug.com/1356118 [ Linux ] virtual/async-script-scheduling-finished-parsing/wpt_internal/async-script-scheduling/execution-order.sub.html [ Failure Pass ]
 

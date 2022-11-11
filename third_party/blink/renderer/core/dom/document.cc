@@ -3725,11 +3725,8 @@ static bool AllDescendantsAreComplete(Document* document) {
   if (!frame)
     return true;
 
-  // TODO(crbug.com/1262022): Remove this Fenced FrameTreeBoundary when Fenced
-  // Frames transition to MPArch completely.
-  for (Frame* child = frame->Tree().FirstChild(FrameTreeBoundary::kFenced);
-       child;
-       child = child->Tree().TraverseNext(frame, FrameTreeBoundary::kFenced)) {
+  for (Frame* child = frame->Tree().FirstChild(); child;
+       child = child->Tree().TraverseNext(frame)) {
     if (child->IsLoading())
       return false;
   }

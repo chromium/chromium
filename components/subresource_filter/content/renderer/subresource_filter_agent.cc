@@ -35,12 +35,7 @@
 
 namespace {
 
-bool IsMPArchFencedFrameRoot(content::RenderFrame* frame) {
-  if (blink::features::kFencedFramesImplementationTypeParam.Get() !=
-      blink::features::FencedFramesImplementationType::kMPArch) {
-    return false;
-  }
-
+bool IsFencedFrameRoot(content::RenderFrame* frame) {
   // Unit tests may have a nullptr render_frame.
   if (!frame)
     return false;
@@ -78,7 +73,7 @@ void SubresourceFilterAgent::Initialize() {
   // to match previous behaviour, and because this frame will always exist.
   // Whereas the provisional frame would only be created to perform the
   // navigation conditionally, so we ignore sending the IPC there.
-  if (IsSubresourceFilterChild() && !IsMPArchFencedFrameRoot(render_frame()) &&
+  if (IsSubresourceFilterChild() && !IsFencedFrameRoot(render_frame()) &&
       !IsProvisional()) {
     // Note: We intentionally exclude fenced-frame roots here since they do not
     // create a RenderFrame in the creating renderer. By the time the fenced
@@ -145,7 +140,7 @@ bool SubresourceFilterAgent::IsSubresourceFilterChild() {
 bool SubresourceFilterAgent::IsParentAdFrame() {
   // A fenced frame root should never ask this since it can't see the outer
   // frame tree. Its AdEvidence is always computed by the browser.
-  DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
+  DCHECK(!IsFencedFrameRoot(render_frame()));
   return render_frame()->GetWebFrame()->Parent()->IsAdFrame();
 }
 
@@ -154,7 +149,7 @@ bool SubresourceFilterAgent::IsProvisional() {
 }
 
 bool SubresourceFilterAgent::IsFrameCreatedByAdScript() {
-  DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
+  DCHECK(!IsFencedFrameRoot(render_frame()));
   return render_frame()->GetWebFrame()->IsFrameCreatedByAdScript();
 }
 
@@ -180,7 +175,7 @@ void SubresourceFilterAgent::SendFrameIsAd() {
 }
 
 void SubresourceFilterAgent::SendFrameWasCreatedByAdScript() {
-  DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
+  DCHECK(!IsFencedFrameRoot(render_frame()));
   GetSubresourceFilterHost()->FrameWasCreatedByAdScript();
 }
 
@@ -208,7 +203,7 @@ mojom::ActivationState SubresourceFilterAgent::GetInheritedActivationState(
   // the parent's activation state. However, that's ok because the embedder
   // cannot script the fenced frame so we can wait until a navigation to set
   // activation state.
-  if (IsMPArchFencedFrameRoot(render_frame))
+  if (IsFencedFrameRoot(render_frame))
     return mojom::ActivationState();
 
   blink::WebFrame* frame_to_inherit_from =
@@ -292,7 +287,7 @@ void SubresourceFilterAgent::OnDestruct() {
 void SubresourceFilterAgent::SetAdEvidenceForInitialEmptySubframe() {
   DCHECK(!IsAdFrame());
   DCHECK(!AdEvidence().has_value());
-  DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
+  DCHECK(!IsFencedFrameRoot(render_frame()));
 
   blink::FrameAdEvidence ad_evidence(IsParentAdFrame());
   ad_evidence.set_created_by_ad_script(

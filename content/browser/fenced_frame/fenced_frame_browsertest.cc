@@ -94,16 +94,9 @@ GURL GenerateAndVerifyPendingMappedURN(
 
 class FencedFrameBrowserTestBase : public ContentBrowserTest {
  public:
-  using FencedFrameType = test::FencedFrameTestHelper::FencedFrameType;
   using ServerType = net::EmbeddedTestServer::Type;
-  FencedFrameBrowserTestBase() = delete;
-  explicit FencedFrameBrowserTestBase(
-      absl::optional<FencedFrameType> fenced_frame_type)
-      : https_server_(ServerType::TYPE_HTTPS) {
-    if (fenced_frame_type.has_value()) {
-      fenced_frame_test_helper_ = std::make_unique<test::FencedFrameTestHelper>(
-          fenced_frame_type.value());
-    }
+  FencedFrameBrowserTestBase() : https_server_(ServerType::TYPE_HTTPS) {
+    fenced_frame_test_helper_ = std::make_unique<test::FencedFrameTestHelper>();
   }
 
   // Defines the skeleton of set up method.
@@ -150,8 +143,7 @@ class FencedFrameBrowserTestBase : public ContentBrowserTest {
 
 class FencedFrameMPArchBrowserTest : public FencedFrameBrowserTestBase {
  protected:
-  FencedFrameMPArchBrowserTest()
-      : FencedFrameBrowserTestBase(FencedFrameType::kMPArch) {}
+  FencedFrameMPArchBrowserTest() = default;
 
   base::HistogramTester histogram_tester_;
 
@@ -1655,11 +1647,9 @@ const std::vector<FrameTypeWithOrigin> kTestParameters[] = {
      FrameTypeWithOrigin::kCrossOriginIframe}};
 
 static std::string TestParamToString(
-    ::testing::TestParamInfo<std::tuple<std::vector<FrameTypeWithOrigin>,
-                                        bool /* shadow_dom_fenced_frame */>>
-        param_info) {
-  std::string out;
-  for (const auto& frame_type : std::get<0>(param_info.param)) {
+    ::testing::TestParamInfo<std::vector<FrameTypeWithOrigin>> param_info) {
+  std::string out = "Top_";
+  for (const auto& frame_type : param_info.param) {
     switch (frame_type) {
       case FrameTypeWithOrigin::kSameOriginIframe:
         out += "SameI_";
@@ -1674,11 +1664,6 @@ static std::string TestParamToString(
         out += "CrossF_";
         break;
     }
-  }
-  if (std::get<1>(param_info.param)) {
-    out += "ShadowDOM";
-  } else {
-    out += "MPArch";
   }
   return out;
 }
@@ -1716,14 +1701,9 @@ bool IsFencedFrameType(FrameTypeWithOrigin type) {
 
 class FencedFrameNestedFrameBrowserTest
     : public FencedFrameBrowserTestBase,
-      public testing::WithParamInterface<
-          std::tuple<std::vector<FrameTypeWithOrigin>,
-                     bool /* shadow_dom_fenced_frame */>> {
+      public testing::WithParamInterface<std::vector<FrameTypeWithOrigin>> {
  protected:
-  FencedFrameNestedFrameBrowserTest()
-      : FencedFrameBrowserTestBase(std::get<1>(GetParam())
-                                       ? FencedFrameType::kShadowDOM
-                                       : FencedFrameType::kMPArch) {}
+  FencedFrameNestedFrameBrowserTest() = default;
 
   RenderFrameHostImpl* LoadNestedFrame() {
     const GURL main_url =
@@ -1732,7 +1712,7 @@ class FencedFrameNestedFrameBrowserTest
     RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
         web_contents()->GetPrimaryMainFrame());
     int depth = 0;
-    for (const auto& type : std::get<0>(GetParam())) {
+    for (const auto& type : GetParam()) {
       ++depth;
       frame = CreateFrame(frame, type, depth);
     }
@@ -1740,7 +1720,7 @@ class FencedFrameNestedFrameBrowserTest
   }
 
   bool IsInFencedFrameTest() {
-    for (const auto& type : std::get<0>(GetParam())) {
+    for (const auto& type : GetParam()) {
       if (IsFencedFrameType(type))
         return true;
     }
@@ -1775,16 +1755,14 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedFrameBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,
                          FencedFrameNestedFrameBrowserTest,
-                         testing::Combine(testing::ValuesIn(kTestParameters),
-                                          testing::Bool()),
+                         testing::ValuesIn(kTestParameters),
                          TestParamToString);
 
 namespace {
 
 static std::string ModeTestParamToString(
     ::testing::TestParamInfo<std::tuple<blink::mojom::FencedFrameMode,
-                                        blink::mojom::FencedFrameMode,
-                                        bool /* shadow_dom_fenced_frame */>>
+                                        blink::mojom::FencedFrameMode>>
         param_info) {
   std::string out = "ParentMode";
   switch (std::get<0>(param_info.param)) {
@@ -1807,14 +1785,6 @@ static std::string ModeTestParamToString(
       break;
   }
 
-  out += "_Arch";
-
-  if (std::get<2>(param_info.param)) {
-    out += "ShadowDOM";
-  } else {
-    out += "MPArch";
-  }
-
   return out;
 }
 
@@ -1824,21 +1794,14 @@ class FencedFrameNestedModesTest
     : public FencedFrameBrowserTestBase,
       public testing::WithParamInterface<
           std::tuple<blink::mojom::FencedFrameMode,
-                     blink::mojom::FencedFrameMode,
-                     bool /*shadow_dom_fenced_frame*/>> {
+                     blink::mojom::FencedFrameMode>> {
  protected:
-  FencedFrameNestedModesTest()
-      : FencedFrameBrowserTestBase(
-            std::get<2>(GetParam())
-                ? absl::nullopt
-                : absl::make_optional(FencedFrameType::kMPArch)) {
-    if (std::get<2>(GetParam())) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
-    }
+  FencedFrameNestedModesTest() {
+    // TODO(domfarolino): Maybe we don't need this?
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
   }
 
   std::string GetParentMode() { return ModeToString(std::get<0>(GetParam())); }
@@ -1891,12 +1854,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_EQ(1u, primary_main_frame_host()->child_count());
   RenderFrameHostImpl* parent_fenced_frame_rfh =
       primary_main_frame_host()->child_at(0)->current_frame_host();
-  if (blink::features::IsFencedFramesMPArchBased()) {
-    int inner_node_id =
-        parent_fenced_frame_rfh->inner_tree_main_frame_tree_node_id();
-    parent_fenced_frame_rfh =
-        FrameTreeNode::GloballyFindByID(inner_node_id)->current_frame_host();
-  }
+  int inner_node_id =
+      parent_fenced_frame_rfh->inner_tree_main_frame_tree_node_id();
+  parent_fenced_frame_rfh =
+      FrameTreeNode::GloballyFindByID(inner_node_id)->current_frame_host();
   ASSERT_TRUE(parent_fenced_frame_rfh);
 
   // 2.) Attempt to create the child fenced frame.
@@ -1936,51 +1897,25 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
 INSTANTIATE_TEST_SUITE_P(
     FencedFrameNestedModesTest,
     FencedFrameNestedModesTest,
-    testing::Combine(/*parent mode=*/testing::Values(
-                         blink::mojom::FencedFrameMode::kDefault,
-                         blink::mojom::FencedFrameMode::kOpaqueAds),
-                     /*child mode=*/
-                     testing::Values(blink::mojom::FencedFrameMode::kDefault,
-                                     blink::mojom::FencedFrameMode::kOpaqueAds),
-                     /*is_shadowdom=*/testing::Bool()),
+    testing::Combine(
+        /*parent mode=*/testing::Values(
+            blink::mojom::FencedFrameMode::kDefault,
+            blink::mojom::FencedFrameMode::kOpaqueAds),
+        /*child mode=*/
+        testing::Values(blink::mojom::FencedFrameMode::kDefault,
+                        blink::mojom::FencedFrameMode::kOpaqueAds)),
     ModeTestParamToString);
 
-class FencedFrameParameterizedBrowserTest
-    : public FencedFrameBrowserTestBase,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+// TODO(domfarolino): Rename this.
+class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
  public:
-  // Provides meaningful param names instead of /0 and /1.
-  static std::string DescribeParams(
-      const ::testing::TestParamInfo<ParamType>& info) {
-    switch (info.param) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        return "ShadowDOM";
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        return "MPArch";
-    }
-  }
-
-  FencedFrameParameterizedBrowserTest()
-      : FencedFrameBrowserTestBase(absl::nullopt) {
+  FencedFrameParameterizedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type",
-            GetParam() ==
-                    blink::features::FencedFramesImplementationType::kShadowDOM
-                ? "shadow_dom"
-                : "mparch"}}},
+        {{blink::features::kFencedFrames, {}},
          {net::features::kThirdPartyStoragePartitioning, {}},
          {net::features::kNoncedPartitionedCookies, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
-  }
-
-  net::Error InvalidUrnError() {
-    return GetParam() ==
-                   blink::features::FencedFramesImplementationType::kShadowDOM
-               ? net::ERR_ABORTED
-               : net::ERR_INVALID_URL;
   }
 
   // This is needed because `TestFrameNavigationObserver` doesn't work properly
@@ -2138,20 +2073,10 @@ class FencedFrameParameterizedBrowserTest
                                  int mparch_cnt) const {
     // Wait for web content to stop loading.
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    if (GetParam() ==
-        blink::features::FencedFramesImplementationType::kShadowDOM) {
-      // ShadowDOM fenced frames have the same NavigationController as the
-      // top-level frame, therefore checking `root->navigator().controller()`.
-      EXPECT_EQ(shadowdom_cnt, root->navigator().controller().GetEntryCount());
-      // Sanity check since root's and fenced_frame's controllers are the same.
-      EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-                fenced_frame->navigator().controller().GetEntryCount());
-    } else {
-      // MPArch fenced frame has its own NavigationController so checking
-      // `fenced_frame->navigator().controller()`.
-      EXPECT_EQ(mparch_cnt,
-                fenced_frame->navigator().controller().GetEntryCount());
-    }
+    // MPArch fenced frame has its own NavigationController so checking
+    // `fenced_frame->navigator().controller()`.
+    EXPECT_EQ(mparch_cnt,
+              fenced_frame->navigator().controller().GetEntryCount());
   }
 
  private:
@@ -2170,7 +2095,7 @@ class FencedFrameParameterizedBrowserTest
 };
 
 // Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckFencedFrameNavigationWithUUID) {
   base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -2260,7 +2185,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        SharedStorageMetadataInNestedFencedFrame) {
   GURL main_url = https_server()->GetURL("a.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2334,7 +2259,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_DOUBLE_EQ(metadata[1]->budget_to_charge, 2.0);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     FencedFrameParameterizedBrowserTest,
     TwoFencedFrameNavigationToSameSharedStorageOriginatedUUID_SameMetadata) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -2398,7 +2323,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
 // the mapped url is a valid one. The navigation is expected to succeed.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     FencedFrameParameterizedBrowserTest,
     FencedFrameNavigationWithPendingMappedUUID_MappingSuccess_ValidURL) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -2477,7 +2402,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
 // the mapped url is invalid. The navigation is expected to fail.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     FencedFrameParameterizedBrowserTest,
     FencedFrameNavigationWithPendingMappedUUID_MappingSuccess_InvalidURL) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -2547,7 +2472,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(metadata.size(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     FencedFrameParameterizedBrowserTest,
     FencedFrameNavigationWithPendingMappedUUID_NavigationCanceledDuringDeferring) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -2615,7 +2540,7 @@ IN_PROC_BROWSER_TEST_P(
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckFencedFrameCookiesNavigation) {
   // Create an a.test main page and set cookies. Then create a same-origin
   // fenced frame. Its request should not carry the cookies that were set.
@@ -2698,7 +2623,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_TRUE(CheckAndClearCookieHeader(image_url, "B=2; C=2"));
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckPartitionedCookiesWithNonce) {
   // Create an a.test main page and set cookies. Then create a same-origin
   // fenced frame.
@@ -2795,7 +2720,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
 // Tests when a frame is considered a fenced frame or being inside a fenced
 // frame tree.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckIsFencedFrame) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2845,7 +2770,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 }
 
 // Tests a nonce is correctly set in the isolation info for a fenced frame tree.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckIsolationInfoAndStorageKeyNonce) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -2977,7 +2902,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
 // Tests that a fenced frame and a same-origin iframe at the same level do not
 // share the same storage partition.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckUniqueStorage) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3051,7 +2976,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ("a", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckFencedFrameNotNavigatedWithoutOptIn) {
   base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -3108,7 +3033,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       blink::FencedFrameCreationOutcome::kResponseHeaderNotOptIn, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckNestedIframeNotNavigatedWithoutOptIn) {
   base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
@@ -3170,7 +3095,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       blink::FencedFrameCreationOutcome::kResponseHeaderNotOptIn, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckSecFetchDestHeader) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3208,7 +3133,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "fencedframe"));
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckOpaqueUrlFlag) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3245,10 +3170,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, fenced_frame_url, navigate_script);
 
-  EXPECT_EQ(
-      fenced_frame_root_node->current_frame_host()
-          ->is_fenced_frame_root_originating_from_opaque_url(),
-      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
+  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
+                  ->is_fenced_frame_root_originating_from_opaque_url());
 
   // Navigate the fenced frame again, but toward a non-opaque URL. Since this
   // is initiated from the embedder, the new document must commit with
@@ -3263,7 +3186,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
                    ->is_fenced_frame_root_originating_from_opaque_url());
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CancelledNavigationCheckOpaqueUrlFlag) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3297,10 +3220,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame_root_node, fenced_frame_url, navigate_script);
 
-  EXPECT_EQ(
-      fenced_frame_root_node->current_frame_host()
-          ->is_fenced_frame_root_originating_from_opaque_url(),
-      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
+  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
+                  ->is_fenced_frame_root_originating_from_opaque_url());
 
   // Navigate the fenced frame again, but toward a non-opaque URL and the
   // navigation is cancelled. The navigation is not committed and therefore
@@ -3329,10 +3250,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(fenced_frame_root_node->current_frame_host()->GetLastCommittedURL(),
             redirect_url);
 
-  EXPECT_EQ(
-      fenced_frame_root_node->current_frame_host()
-          ->is_fenced_frame_root_originating_from_opaque_url(),
-      GetParam() == blink::features::FencedFramesImplementationType::kMPArch);
+  EXPECT_TRUE(fenced_frame_root_node->current_frame_host()
+                  ->is_fenced_frame_root_originating_from_opaque_url());
 }
 
 namespace {
@@ -3419,7 +3338,7 @@ class FencedFrameIgnoreCertErrors : public FencedFrameParameterizedBrowserTest {
   std::unique_ptr<WebContents> web_contents_;
 };
 
-IN_PROC_BROWSER_TEST_P(FencedFrameIgnoreCertErrors, FencedframeHasCertError) {
+IN_PROC_BROWSER_TEST_F(FencedFrameIgnoreCertErrors, FencedframeHasCertError) {
   CreateWebContents();
   // Allow insecure content.
   ScopedInsecureContentTestContentBrowserClient scoped_content_browser_client;
@@ -3503,7 +3422,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
 // Test that navigation in fenced frame happens regardless of dialogs.
 // It should also keep the dialogs as-is.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        ShouldIgnoreJsDialog) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3575,7 +3494,7 @@ class AlwaysAutoSubframeNavigationObserver : public WebContentsObserver {
 
 // Tests that any navigation or history API calls always replace the current
 // entry and do not increase the back/forward entries.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        NavigationAndHistoryShouldBeReplaceOnly) {
   GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -3600,14 +3519,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   AlwaysAutoSubframeNavigationObserver auto_subframe_observer(
       shell()->web_contents());
 
-  // ShadowDOM fenced frames have the same NavigationController as the top-level
-  // frame, therefore the count here is 1 because of the navigation of the
-  // top-level frame. MPArch fenced frame has its own NavigationController.
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
-  } else if (blink::features::IsInitialNavigationEntryEnabled()) {
+  // MPArch fenced frame has its own NavigationController.
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
     EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
   } else {
     EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
@@ -3710,7 +3623,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 }
 
 // Tests successfully going back to a page with a fenced frame.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        GoBackToPageWithFencedFrame) {
   GURL main_url(https_server()->GetURL(
       "a.test", "/fenced_frames/basic_fenced_frame_src.html"));
@@ -3773,8 +3686,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   // its own NavigationController which is not retained when the top-level page
   // navigates. Therefore going back lands on the initial navigation in the
   // Fenced Frame.
+  // TODO(domfarolino): Before merge remove stuff about shadowdom.
   CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/2,
                             /*mparch_cnt=*/1);
+
   if (BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     EXPECT_EQ(fenced_frame_url_2,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
@@ -3784,7 +3699,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        ReloadPageWithFencedFrame) {
   GURL main_url(
       https_server()->GetURL("a.test", "/fenced_frames/opaque_ads.html"));
@@ -3808,7 +3723,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(fenced_frame_url, fenced_frame->current_url());
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        NavigateUnfencedTopAndGoBack) {
   GURL main_url(
       https_server()->GetURL("a.test", "/fenced_frames/opaque_ads.html"));
@@ -3853,7 +3768,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 // Simulates the crash in crbug.com/1317642 by disabling BFCache and going back
 // to a page with a fenced frame navigation, which in shadowDOM FFs will lead to
 // a AUTO_SUBFRAME navigation initiated in the browser.
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        GoBackToPageWithFencedFrameNavigationNoBFCache) {
   GURL main_url(https_server()->GetURL(
       "a.test",
@@ -3872,14 +3787,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
   // Since the fenced frame is not yet navigated, it's specific controller
   // should have no entries, or should be on the initial NavigationEntry.
-  if (GetParam() == blink::features::FencedFramesImplementationType::kMPArch) {
-    EXPECT_TRUE(
-        !fenced_frame->navigator().controller().GetLastCommittedEntry() ||
-        fenced_frame->navigator()
-            .controller()
-            .GetLastCommittedEntry()
-            ->IsInitialEntry());
-  }
+  EXPECT_TRUE(!fenced_frame->navigator().controller().GetLastCommittedEntry() ||
+              fenced_frame->navigator()
+                  .controller()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 
   TestFrameNavigationObserver observer(fenced_frame);
   EXPECT_TRUE(
@@ -3924,21 +3836,14 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   // initial fenced frame without any navigation.
   CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/2,
                             /*mparch_cnt=*/1);
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(fenced_frame_url_1,
-              fenced_frame->current_frame_host()->GetLastCommittedURL());
-  } else {
-    EXPECT_TRUE(
-        !fenced_frame->navigator().controller().GetLastCommittedEntry() ||
-        fenced_frame->navigator()
-            .controller()
-            .GetLastCommittedEntry()
-            ->IsInitialEntry());
-  }
+  EXPECT_TRUE(!fenced_frame->navigator().controller().GetLastCommittedEntry() ||
+              fenced_frame->navigator()
+                  .controller()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        RestorePageWithFencedFrameNavigation) {
   GURL main_url(https_server()->GetURL(
       "a.test",
@@ -4014,29 +3919,20 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   NavigationEntryImpl* new_entry = controller.GetLastCommittedEntry();
   EXPECT_EQ(main_url, new_entry->root_node()->frame_entry->url());
 
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    // ShadowDOM FF gets restored as it is part of the restored NavigationEntry
-    // from the primary FrameTree's NavigationController
-    ASSERT_EQ(1U, new_entry->root_node()->children.size());
-    EXPECT_EQ(fenced_frame_url_1,
-              new_entry->root_node()->children[0]->frame_entry->url());
-  } else {
-    // MPArch navigation controller wouldn't have any entry since it's not
-    // restored. Therefore we will only have the initial fenced frame without
-    // any navigation.
-    ASSERT_EQ(0U, new_entry->root_node()->children.size());
-    EXPECT_TRUE(!restored_fenced_frame->navigator()
-                     .controller()
-                     .GetLastCommittedEntry() ||
-                restored_fenced_frame->navigator()
-                    .controller()
-                    .GetLastCommittedEntry()
-                    ->IsInitialEntry());
-  }
+  // MPArch navigation controller wouldn't have any entry since it's not
+  // restored. Therefore we will only have the initial fenced frame without
+  // any navigation.
+  ASSERT_EQ(0U, new_entry->root_node()->children.size());
+  EXPECT_TRUE(!restored_fenced_frame->navigator()
+                   .controller()
+                   .GetLastCommittedEntry() ||
+              restored_fenced_frame->navigator()
+                  .controller()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckInvalidUrnError) {
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -4060,10 +3956,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
-      fenced_frame_root_node, urn_uuid, navigate_urn_script, InvalidUrnError());
+      fenced_frame_root_node, urn_uuid, navigate_urn_script,
+      net::ERR_INVALID_URL);
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        CheckCSPFencedFrameSrcOpaqueURL) {
   const struct {
     const char* csp;
@@ -4137,7 +4034,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        FenceUserActivation) {
   // This test exercises browser-side user activation in the following layout:
   // A: Top-level page    (origin 1)
@@ -4371,7 +4268,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 #else
 #define MAYBE_FencedAdSizes FencedAdSizes
 #endif
-IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                        MAYBE_FencedAdSizes) {
   // This test exercises restrictions on fenced frame sizes in opaque-ads mode.
   // See the design document for more details on intended semantics:
@@ -4567,22 +4464,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
                std::get<4>(test_case));
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FencedFrameParameterizedBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &FencedFrameParameterizedBrowserTest::DescribeParams);
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FencedFrameIgnoreCertErrors,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &FencedFrameParameterizedBrowserTest::DescribeParams);
 
 class FencedFrameReportEventBrowserTest
     : public FencedFrameParameterizedBrowserTest {
@@ -4813,7 +4694,7 @@ class FencedFrameReportEventBrowserTest
 };
 
 // The simplest test case: URN navigation into reportEvent.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderURNNavigation) {
   std::vector<Step> config = {
       {
@@ -4827,7 +4708,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 }
 
 // reportEvent should work in same-origin subframes.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventNestedIframeSameOriginNavigation) {
   std::vector<Step> config = {
       {
@@ -4846,7 +4727,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 }
 
 // reportEvent shouldn't work in cross-origin subframes.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     FencedFrameReportEventBrowserTest,
     FencedFrameReportEventNestedIframeCrossOriginNavigation) {
   std::vector<Step> config = {
@@ -4867,7 +4748,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Reporting metadata should persist across FF-initiated same-origin
 // navigations.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventFFSameOriginNavigation) {
   std::vector<Step> config = {
       {
@@ -4886,7 +4767,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 
 // Reporting metadata should be dropped upon cross-origin navigations,
 // but come back upon new URN navigations.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventFFCrossOriginNavigation) {
   std::vector<Step> config = {
       {
@@ -4910,17 +4791,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 }
 
 // Embedder-initiated URL navigations should always be considered cross-origin.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderURLNavigation) {
-  // In ShadowDOM, embedder-initiated navigations aren't given a unique
-  // initiator origin, so we have to disable this test.
-  // (Same-origin embedder-initiated navigations will be considered
-  // same-origin, and therefore the reporting metadata will remain.)
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    return;
-  }
-
   std::vector<Step> config = {
       {
           .is_embedder_initiated = true,
@@ -4940,7 +4812,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 
 // Same-origin redirects in the initial URN navigation shouldn't affect
 // reporting metadata.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderSameOriginRedirect) {
   std::vector<Step> config = {
       {
@@ -4960,7 +4832,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 
 // Cross-origin redirects in the initial URN navigation shouldn't affect
 // reporting metadata either.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventEmbedderCrossOriginRedirect) {
   std::vector<Step> config = {
       {
@@ -4980,7 +4852,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 
 // Metadata should be preserved if all URLs in an FF-initiated redirect chain
 // are same-origin.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventFFSameOriginRedirect) {
   std::vector<Step> config = {
       {
@@ -5004,7 +4876,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 
 // Metadata should be dropped if any URLs in an FF-initiated redirect chain
 // are cross-origin.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        FencedFrameReportEventFFCrossOriginRedirect) {
   std::vector<Step> config = {
       {
@@ -5032,7 +4904,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
 // the registered reporting url.
 // TODO(crbug.com/1123606): Disable window.fence.reportEvent in iframes.
 // Remove this test once the FLEDGE origin trial stops supporting iframes.
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        IframeReportingMetadata) {
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/title2.html");
@@ -5096,19 +4968,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
   EXPECT_EQ(response.http_request()->content, event_data);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FencedFrameReportEventBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &FencedFrameParameterizedBrowserTest::DescribeParams);
-
 // Parameterized on whether the feature is enabled or not.
 class UUIDFrameTreeBrowserTest : public FencedFrameBrowserTestBase,
                                  public ::testing::WithParamInterface<bool> {
  public:
-  UUIDFrameTreeBrowserTest() : FencedFrameBrowserTestBase(absl::nullopt) {
+  UUIDFrameTreeBrowserTest() {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
           blink::features::kAllowURNsInIframes);

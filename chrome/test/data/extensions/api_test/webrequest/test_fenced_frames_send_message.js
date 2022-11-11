@@ -26,7 +26,7 @@ runTests([
       if (EVENT_MESSAGE_EXTENSION_STRING != details.message) {
         chrome.test.fail('Invalid message: ' + details.message);
       }
-      chrome.test.assertEq(mparchEnabled ? 6 : 5, details.frameId);
+      chrome.test.assertEq(6, details.frameId);
       chrome.test.assertEq(4, details.parentFrameId);
       chrome.test.assertEq('sub_frame', details.type);
       chrome.test.assertEq('fenced_frame', details.frameType);

@@ -1341,22 +1341,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
 }
 
-class AttributionSrcFencedFrameBrowserTest
-    : public AttributionSrcBrowserTest,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {
  public:
   AttributionSrcFencedFrameBrowserTest() {
-    switch (GetParam()) {
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
-            test::FencedFrameTestHelper::FencedFrameType::kMPArch);
-        break;
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
-            test::FencedFrameTestHelper::FencedFrameType::kShadowDOM);
-        break;
-    }
+    fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
   }
 
   ~AttributionSrcFencedFrameBrowserTest() override = default;
@@ -1365,14 +1353,7 @@ class AttributionSrcFencedFrameBrowserTest
   std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AttributionSrcFencedFrameBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch));
-
-IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
                        DefaultMode_SourceNotRegistered) {
   GURL main_url = https_server()->GetURL("b.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1401,7 +1382,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 }
 
-IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
                        OpaqueAdsMode_SourceRegistered) {
   GURL main_url = https_server()->GetURL("b.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

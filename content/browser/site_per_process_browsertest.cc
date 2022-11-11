@@ -3469,23 +3469,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(named_frame_url, foo_root->current_url());
 }
 
-class SitePerProcessFencedFrameTest
-    : public SitePerProcessBrowserTestBase,
-      public testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+class SitePerProcessFencedFrameTest : public SitePerProcessBrowserTestBase {
  public:
   SitePerProcessFencedFrameTest() {
-    if (GetParam() ==
-        blink::features::FencedFramesImplementationType::kMPArch) {
-      fenced_frame_helper_ =
-          std::make_unique<content::test::FencedFrameTestHelper>();
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
-    }
+    fenced_frame_helper_ =
+        std::make_unique<content::test::FencedFrameTestHelper>();
   }
 
   void SetUpOnMainThread() override {
@@ -3524,13 +3512,7 @@ class SitePerProcessFencedFrameTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    SitePerProcessFencedFrameTest,
-    SitePerProcessFencedFrameTest,
-    testing::Values(blink::features::FencedFramesImplementationType::kShadowDOM,
-                    blink::features::FencedFramesImplementationType::kMPArch));
-
-IN_PROC_BROWSER_TEST_P(SitePerProcessFencedFrameTest,
+IN_PROC_BROWSER_TEST_F(SitePerProcessFencedFrameTest,
                        PopupFromFencedFrameDoesNotCreateProxy) {
   GURL main_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

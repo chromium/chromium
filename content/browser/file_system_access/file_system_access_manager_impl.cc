@@ -94,8 +94,6 @@ void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
 
   DCHECK(outermost_rfh->IsInPrimaryMainFrame());
 
-  // TODO(crbug.com/1249865): could check browsing contexts vs a fenced frame
-  // check with MPArch fenced frames.
   if (rfh->IsNestedWithinFencedFrame()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(

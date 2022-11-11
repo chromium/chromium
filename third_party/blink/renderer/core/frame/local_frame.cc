@@ -1661,8 +1661,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   }
 
   const bool target_escapes_fenced_frame =
-      IsInFencedFrameTree() && (Tree().Top(FrameTreeBoundary::kFenced) !=
-                                Tree().Top(FrameTreeBoundary::kFenced));
+      IsInFencedFrameTree() && (Tree().Top() != Tree().Top());
 
   // If the target frame is outside the fenced frame, the only way that should
   // be possible is through the '_unfencedTop' reserved frame name.
@@ -1709,8 +1708,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     // Sandboxed frames can also navigate popups, if the
     // 'allow-sandbox-escape-via-popup' flag is specified, or if
     // 'allow-popups' flag is specified and the popup's opener is the frame.
-    if (target_is_outermost_frame &&
-        target_frame != Tree().Top(FrameTreeBoundary::kIgnoreFence) &&
+    if (target_is_outermost_frame && target_frame != Tree().Top() &&
         GetSecurityContext()->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::
                 kPropagatesToAuxiliaryBrowsingContexts) &&
@@ -1729,7 +1727,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     // then if the ancestor chain allowed to navigate the top frame.
     // Note: We don't check root fenced frames for kTop* flags since the kTop*
     // flags imply the actual top-level page.
-    if ((target_frame == Tree().Top(FrameTreeBoundary::kIgnoreFence)) &&
+    if ((target_frame == Tree().Top()) &&
         !target_frame.GetPage()->IsMainFrameFencedFrameRoot()) {
       if (GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::kTopNavigation) &&

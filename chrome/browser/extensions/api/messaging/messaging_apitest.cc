@@ -1540,14 +1540,11 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, LargeMessages) {
   ASSERT_TRUE(RunExtensionTest("messaging/large_messages"));
 }
 
-class MessagingApiFencedFrameTest
-    : public MessagingApiTest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+class MessagingApiFencedFrameTest : public MessagingApiTest {
  protected:
   MessagingApiFencedFrameTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+        {{blink::features::kFencedFrames, {{}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
   }
@@ -1557,15 +1554,10 @@ class MessagingApiFencedFrameTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(MessagingApiFencedFrameTest, Load) {
-  ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames",
-                               {.custom_arg = GetParam() ? "" : "MPArch"}))
+IN_PROC_BROWSER_TEST_F(MessagingApiFencedFrameTest, Load) {
+  ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames", {}))
       << message_;
 }
-
-INSTANTIATE_TEST_SUITE_P(MessagingApiFencedFrameTest,
-                         MessagingApiFencedFrameTest,
-                         testing::Bool());
 
 }  // namespace
 

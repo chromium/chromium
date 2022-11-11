@@ -1088,11 +1088,7 @@ void FrameLoader::CommitNavigation(
   if (is_requestor_same_origin) {
     const mojom::blink::FencedFrameReportingPtr& old_fenced_frame_reporting =
         document_loader_->FencedFrameReporting();
-    // TODO(crbug.com/1277593): In ShadowDOM self-urn navigations are allowed,
-    // so we need to keep this check in the `if` condition for now.
-    if (blink::features::IsFencedFramesMPArchBased()) {
-      DCHECK(!navigation_params->fenced_frame_reporting);
-    }
+    DCHECK(!navigation_params->fenced_frame_reporting);
     if (!navigation_params->fenced_frame_reporting &&
         old_fenced_frame_reporting) {
       navigation_params->fenced_frame_reporting.emplace();

@@ -83,8 +83,7 @@ void Fence::reportEvent(ScriptState* script_state,
       return;
     }
 
-    Frame* possibly_remote_fenced_frame =
-        DomWindow()->GetFrame()->Top(FrameTreeBoundary::kFenced);
+    Frame* possibly_remote_fenced_frame = DomWindow()->GetFrame()->Top();
     if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
             possibly_remote_fenced_frame->GetSecurityContext()
                 ->GetSecurityOrigin())) {

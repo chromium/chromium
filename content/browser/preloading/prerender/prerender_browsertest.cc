@@ -8253,26 +8253,21 @@ IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
   }
 }
 
-class PrerenderFencedFrameBrowserTest
-    : public PrerenderBrowserTest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frames */> {
+class PrerenderFencedFrameBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderFencedFrameBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+        {{blink::features::kFencedFrames, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
   }
   ~PrerenderFencedFrameBrowserTest() override = default;
 
-  bool IsShadowDomImpl() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PrerenderFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderFencedFrameBrowserTest,
                        PrerenderFencedFrameBrowserTest) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
@@ -8283,9 +8278,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderFencedFrameBrowserTest,
     document.body.appendChild(fenced_frame);
   })";
 
-  // We see a navigation to about:blank for Shadow DOM, but not MPArch, so we
-  // need to account for another navigation with that implementation.
-  const int kNumNavigations = IsShadowDomImpl() ? 4 : 3;
+  const int kNumNavigations = 3;
   TestNavigationObserver nav_observer(web_contents(), kNumNavigations);
 
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -8310,10 +8303,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderFencedFrameBrowserTest,
   nav_observer.Wait();
   EXPECT_EQ(kFencedFrameUrl, nav_observer.last_navigation_url());
 }
-
-INSTANTIATE_TEST_SUITE_P(PrerenderFencedFrameBrowserTest,
-                         PrerenderFencedFrameBrowserTest,
-                         testing::Bool());
 
 namespace {
 

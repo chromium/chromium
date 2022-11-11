@@ -84,9 +84,6 @@ enum ChildFrameOwnerElementType {
   kObject,
   kEmbed,
   kFrame,
-  // Note that only Fenced Frames based on Shadow DOM may create child frames.
-  // See crbug.com/1123606.
-  kFencedframe
 };
 
 struct CreateViewParams {

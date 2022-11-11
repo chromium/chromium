@@ -116,14 +116,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
 }
 
 class DeclarativeNetRequestApiFencedFrameTest
-    : public DeclarativeNetRequestApiTest,
-      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+    : public DeclarativeNetRequestApiTest {
  protected:
   DeclarativeNetRequestApiFencedFrameTest()
       : DeclarativeNetRequestApiTest(ContextType::kPersistentBackground) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+        {{blink::features::kFencedFrames, {{}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
     // Fenced frames are only allowed in secure contexts.
@@ -132,26 +130,13 @@ class DeclarativeNetRequestApiFencedFrameTest
 
   ~DeclarativeNetRequestApiFencedFrameTest() override = default;
 
-  void SetUpOnMainThread() override {
-    DeclarativeNetRequestApiTest::SetUpOnMainThread();
-    // Give the test knowledge if we are in MPArch or not. As the frame
-    // ids will be different because of ShadowDOM.
-    if (!GetParam()) {
-      SetCustomArg("MPArch");
-    }
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiFencedFrameTest, Load) {
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
 }
-
-INSTANTIATE_TEST_SUITE_P(DeclarativeNetRequestApiFencedFrameTest,
-                         DeclarativeNetRequestApiFencedFrameTest,
-                         testing::Bool());
 
 class DeclarativeNetRequestApiPrerenderingTest
     : public DeclarativeNetRequestLazyApiTest {

@@ -371,31 +371,19 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* Opener() const { return opener_; }
 
   // Returns the parent frame or null if this is the top-most frame.
-  // When `frame_tree_boundary` is `kFenced`, returns null if this is a fenced
-  // frame root.
-  Frame* Parent(FrameTreeBoundary frame_tree_boundary =
-                    FrameTreeBoundary::kIgnoreFence) const;
+  Frame* Parent() const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
-  // When `frame_tree_boundary` is `kFenced`, does not traverse out of fenced
-  // frame root nodes.
-  Frame* Top(
-      FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
+  Frame* Top();
 
   // Returns the first child frame.
-  // When `frame_tree_boundary` is `kFenced`, skips over children that are
-  // fenced frame roots.
-  Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
-                        FrameTreeBoundary::kIgnoreFence) const;
+  Frame* FirstChild() const;
 
   // Returns the previous sibling frame.
   Frame* PreviousSibling() const { return previous_sibling_; }
 
   // Returns the next sibling frame.
-  // When `frame_tree_boundary` is `kFenced`, skips over siblings that are
-  // fenced frame roots.
-  Frame* NextSibling(FrameTreeBoundary frame_tree_boundary =
-                         FrameTreeBoundary::kIgnoreFence) const;
+  Frame* NextSibling() const;
 
   // Returns the last child frame.
   Frame* LastChild() const { return last_child_; }
@@ -512,12 +500,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // child after |previous_sibling|, or first child if |previous_sibling| is
   // null. The child frame's parent must be set in the constructor.
   void InsertAfter(Frame* new_child, Frame* previous_sibling);
-
-  // Returns true if this frame pulling focus will cause focus to traverse
-  // across a fenced frame boundary. This handles checking for focus entering
-  // a fenced frame, as well as focus leaving a fenced frames.
-  // Note: This is only called if fenced frames are enabled with ShadowDOM
-  bool FocusCrossesFencedBoundary();
 
   void CancelFormSubmissionWithVersion(uint64_t version);
 

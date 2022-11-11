@@ -735,19 +735,6 @@ const FeatureEntry::FeatureVariation kMBIModeVariations[] = {
     {"per site instance", kMBIModeEnabledPerSiteInstance,
      std::size(kMBIModeEnabledPerSiteInstance), nullptr}};
 
-const FeatureEntry::FeatureParam kFencedFramesImplementationTypeShadowDOM[] = {
-    {"implementation_type", "shadow_dom"}};
-const FeatureEntry::FeatureParam kFencedFramesImplementationTypeMPArch[] = {
-    {"implementation_type", "mparch"}};
-
-const FeatureEntry::FeatureVariation
-    kFencedFramesImplementationTypeVariations[] = {
-        {"with ShadowDOM", kFencedFramesImplementationTypeShadowDOM,
-         std::size(kFencedFramesImplementationTypeShadowDOM), nullptr},
-        {"with multiple page architecture",
-         kFencedFramesImplementationTypeMPArch,
-         std::size(kFencedFramesImplementationTypeMPArch), nullptr}};
-
 const FeatureEntry::FeatureParam kSearchSuggestionPrerenderUsingPrefetch[] = {
     {"implementation_type", "use_prefetch"}};
 const FeatureEntry::FeatureParam kSearchSuggestionPrerenderIgnoringPrefetch[] =
@@ -7207,9 +7194,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,
      flag_descriptions::kEnableFencedFramesDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kFencedFrames,
-                                    kFencedFramesImplementationTypeVariations,
-                                    "FencedFrames")},
+     FEATURE_VALUE_TYPE(blink::features::kFencedFrames)},
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,
      flag_descriptions::kEnablePortalsDescription, kOsAll,

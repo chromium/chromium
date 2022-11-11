@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = ResizeObserver loop limit exceeded
-FAIL fenced frame-initiated self urn navigation assert_equals: expected (string) "NOT LOADED" but got (undefined) undefined
-Harness: the test ran to completion.
-

@@ -181,11 +181,6 @@ Page::Page(base::PassKey<Page>,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
-      fenced_frames_impl_(
-          features::IsFencedFramesEnabled()
-              ? absl::optional<features::FencedFramesImplementationType>(
-                    features::kFencedFramesImplementationTypeParam.Get())
-              : absl::nullopt),
       agent_group_scheduler_(agent_group_scheduler),
       animator_(MakeGarbageCollected<PageAnimator>(*this)),
       autoscroll_controller_(MakeGarbageCollected<AutoscrollController>(*this)),

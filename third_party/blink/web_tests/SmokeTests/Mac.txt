@@ -1457,7 +1457,6 @@ virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream
 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html
 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unique-cookie-partition.https.html
-virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/script-focus.https.html
 virtual/fledge/http/tests/inspector-protocol/storage/interest-groups.js
 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-interested-element-indicated.html
 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-01.html
@@ -1618,7 +1617,6 @@ virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opa
 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-opacity.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html
 virtual/scalefactor200/fast/hidpi/static/validation-bubble-appearance-hidpi.html
-virtual/shared-storage-fenced-frame-shadow-dom/wpt_internal/shared_storage/run-url-selection-operation.https.html
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-mi_error.tentative.html
 virtual/stable/media/stable/video-object-fit-stable.html

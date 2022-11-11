@@ -1234,19 +1234,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
 }
 
 class FencedFrameReduceAcceptLanguageBrowserTest
-    : public ReduceAcceptLanguageBrowserTest,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+    : public ReduceAcceptLanguageBrowserTest {
  public:
-  static std::string DescribeParams(
-      const ::testing::TestParamInfo<ParamType>& info) {
-    switch (info.param) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        return "ShadowDOM";
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        return "MPArch";
-    }
-  }
+  static constexpr char kFirstPartyOriginUrl[] = "https://127.0.0.1:44444";
+  static constexpr char kThirdPartyOriginUrl[] = "https://my-site.com:44444";
 
   GURL SameOriginFencedFrameUrl() const {
     return GURL(
@@ -1270,27 +1261,14 @@ class FencedFrameReduceAcceptLanguageBrowserTest
  protected:
   void EnabledFeatures() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type",
-            GetParam() ==
-                    blink::features::FencedFramesImplementationType::kShadowDOM
-                ? "shadow_dom"
-                : "mparch"}}},
+        {{blink::features::kFencedFrames, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {network::features::kReduceAcceptLanguage, {}}},
         {/* disabled_features */});
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FencedFrameReduceAcceptLanguageBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch),
-    &FencedFrameReduceAcceptLanguageBrowserTest::DescribeParams);
-
-IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
                        CrossOriginFencedFrame) {
   base::HistogramTester histograms;
 
@@ -1332,7 +1310,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
 }
 
-IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
+IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
                        SameOriginFencedFrame) {
   base::HistogramTester histograms;
 

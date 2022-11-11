@@ -103,9 +103,8 @@ DOMStringList* Location::ancestorOrigins() const {
   auto* origins = MakeGarbageCollected<DOMStringList>();
   if (!IsAttached())
     return origins;
-  for (Frame* frame =
-           dom_window_->GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
-       frame; frame = frame->Tree().Parent(FrameTreeBoundary::kFenced)) {
+  for (Frame* frame = dom_window_->GetFrame()->Tree().Parent(); frame;
+       frame = frame->Tree().Parent()) {
     origins->Append(
         frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
   }

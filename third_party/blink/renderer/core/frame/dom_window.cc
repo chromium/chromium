@@ -170,7 +170,7 @@ DOMWindow* DOMWindow::parent() const {
       WebFeature::kWindowProxyCrossOriginAccessParent,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent);
 
-  Frame* parent = GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
+  Frame* parent = GetFrame()->Tree().Parent();
   return parent ? parent->DomWindow() : GetFrame()->DomWindow();
 }
 
@@ -182,7 +182,7 @@ DOMWindow* DOMWindow::top() const {
       WebFeature::kWindowProxyCrossOriginAccessTop,
       WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop);
 
-  return GetFrame()->Tree().Top(FrameTreeBoundary::kFenced).DomWindow();
+  return GetFrame()->Tree().Top().DomWindow();
 }
 
 void DOMWindow::postMessage(v8::Isolate* isolate,

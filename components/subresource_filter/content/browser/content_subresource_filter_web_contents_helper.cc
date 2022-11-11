@@ -553,21 +553,12 @@ bool IsSubresourceFilterRoot(content::RenderFrameHost* rfh) {
 }
 
 content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh) {
-  bool mparch_fenced_frames_enabled =
-      blink::features::IsFencedFramesEnabled() &&
-      blink::features::kFencedFramesImplementationTypeParam.Get() ==
-          blink::features::FencedFramesImplementationType::kMPArch;
-
-  // ShadowDOM fenced frames do not have a nested frame tree so there's no need
-  // to escape an inner page.
-  if (mparch_fenced_frames_enabled) {
-    // This only "breaks out" from fenced frames since the desired behavior in
-    // other nested frame trees (e.g. portals) isn't clear. Otherwise we could
-    // just use GetOutermostMainFrame.
-    while (rfh->IsNestedWithinFencedFrame()) {
-      rfh = rfh->GetMainFrame()->GetParentOrOuterDocument();
-      DCHECK(rfh);
-    }
+  // This only "breaks out" from fenced frames since the desired behavior in
+  // other nested frame trees (e.g. portals) isn't clear. Otherwise we could
+  // just use GetOutermostMainFrame.
+  while (rfh->IsNestedWithinFencedFrame()) {
+    rfh = rfh->GetMainFrame()->GetParentOrOuterDocument();
+    DCHECK(rfh);
   }
 
   return rfh->GetPage();

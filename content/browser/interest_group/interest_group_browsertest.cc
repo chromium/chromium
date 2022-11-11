@@ -1063,28 +1063,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 // At the moment, InterestGroups use URN urls when fenced frames are enabled,
 // and normal URLs when not. This means they require ads be loaded in fenced
 // frames when Chrome is running with the option enabled.
-class InterestGroupFencedFrameBrowserTest
-    : public InterestGroupBrowserTest,
-      public ::testing::WithParamInterface<
-          blink::features::FencedFramesImplementationType> {
+class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
  public:
   InterestGroupFencedFrameBrowserTest() {
-    // Tests are run with both the ShadowDOM and MPArch ("Multi-Page
-    // Architecture") fenced frames implementations.
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kFencedFrames,
-          {{"implementation_type", GetFencedFrameFeatureParam()}}},
+        {{blink::features::kFencedFrames, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
         {/* disabled_features */});
-  }
-
-  const char* GetFencedFrameFeatureParam() const {
-    switch (GetParam()) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM:
-        return "shadow_dom";
-      case blink::features::FencedFramesImplementationType::kMPArch:
-        return "mparch";
-    }
   }
 
   ~InterestGroupFencedFrameBrowserTest() override = default;
@@ -1167,28 +1152,13 @@ class InterestGroupFencedFrameBrowserTest
   // which is assumed to contain only one fenced frame and no iframes.
   RenderFrameHostImpl* GetFencedFrameRenderFrameHost(
       const ToRenderFrameHost& execution_target) {
-    switch (GetParam()) {
-      case blink::features::FencedFramesImplementationType::kShadowDOM: {
-        // Make sure there's only one child frame.
-        CHECK(!ChildFrameAt(execution_target, 1));
-        CHECK(ChildFrameAt(execution_target, 0));
-
-        return static_cast<RenderFrameHostImpl*>(
-            ChildFrameAt(execution_target, 0));
-      }
-      case blink::features::FencedFramesImplementationType::kMPArch: {
-        return GetFencedFrame(execution_target)->GetInnerRoot();
-      }
-    }
+    return GetFencedFrame(execution_target)->GetInnerRoot();
   }
 
   // Returns FencedFrame in `execution_target` frame. Requires that
   // `execution_target` have one and only one FencedFrame. MPArch only, as the
   // ShadowDOM implementation doesn't use the FencedFrame class.
   FencedFrame* GetFencedFrame(const ToRenderFrameHost& execution_target) {
-    CHECK_EQ(GetParam(),
-             blink::features::FencedFramesImplementationType::kMPArch);
-
     std::vector<FencedFrame*> fenced_frames =
         static_cast<RenderFrameHostImpl*>(execution_target.render_frame_host())
             ->GetFencedFrames();
@@ -1409,13 +1379,6 @@ class InterestGroupRestrictedPermissionsPolicyBrowserTest
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InterestGroupFencedFrameBrowserTest,
-    ::testing::Values(
-        blink::features::FencedFramesImplementationType::kShadowDOM,
-        blink::features::FencedFramesImplementationType::kMPArch));
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        SameOriginJoinLeaveInterestGroup) {
@@ -3896,7 +3859,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 // but runs with fenced frames enabled and expects to receive a URN URL to be
 // used. After the auction, loads the URL in a fenced frame, and expects the
 // correct URL is loaded.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -4038,7 +4001,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                 ->trusted_params->isolation_info.network_isolation_key());
 }
 
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerReplacedURN) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -4103,7 +4066,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 // succeed and are then loaded in separate fenced frames. Both auctions try to
 // leave the interest group, but only the one whose ad matches the joining
 // origin should succeed.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunTwoAdAuctionWithWinnerLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -4246,7 +4209,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 // from a nested iframe.
 //
 // TODO(crbug.com/1320438): Re-enable the test.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerNestedLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -4316,7 +4279,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
 // Creates a Fenced Frame and then tries to use the leaveAdInterestGroup API.
 // Leaving the interest group should silently fail.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        LeaveAdInterestGroupNoAuction) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -4362,7 +4325,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
 // Use different origins for publisher, bidder, and seller, and make sure
 // everything works as expected.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
   const char kPublisher[] = "a.test";
   const char kBidder[] = "b.test";
   const char kSeller[] = "c.test";
@@ -4618,7 +4581,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
 
 // Test running auctions in cross-site iframes, and loading the winner into a
 // nested fenced frame.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, Iframe) {
   // Use different hostnames for each participant.
   const char kTopFrameHost[] = "a.test";
   const char kBidderHost[] = "b.test";
@@ -5777,7 +5740,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
 
 // Test that when there are no ad components, an array of ad components is still
 // available, and they're all mapped to about:blank.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
   GURL test_url =
       https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -5834,7 +5797,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
 // Test with an ad component. Run an auction with an ad component, load the ad
 // in a fenced frame, and the ad component in a nested fenced frame. Fully
 // exercise navigator.adAuctionComponents() on the main ad's fenced frame.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponents) {
   GURL ad_component_url = https_server_->GetURL(
       "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
   ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
@@ -5868,7 +5831,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
 // * The fenced frame the ad component is loaded in, though it will have a list
 //   of URNs that map to about:blank.
 // * The ad fenced frame itself, after a renderer-initiated navigation.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        AdComponentsNotLeaked) {
   GURL ad_component_url =
       https_server_->GetURL("d.test", "/fenced_frames/opaque_ads.html");
@@ -5931,7 +5894,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
 // Test with an ad component that tries to leave the group. Verify that leaving
 // the group from within an ad component has no effect
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
   url::Origin test_origin =
       url::Origin::Create(https_server_->GetURL("a.test", "/"));
   GURL ad_component_url = https_server_->GetURL(
@@ -5955,7 +5918,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
 // Test navigating multiple fenced frames to the same render URL from a single
 // auction, when the winning bid included ad components. All fenced frames
 // navigated to the URL should get ad component URLs from the winning bid.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        AdComponentsMainAdLoadedInMultipleFrames) {
   GURL ad_component_url = https_server_->GetURL(
       "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
@@ -6022,7 +5985,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
 
 // Test with multiple ad components. Also checks that ad component metadata is
 // passed in correctly.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        MultipleAdComponents) {
   // Note that the extra "&1" and the like are added to make the URLs unique.
   // They have no impact on the returned result, since they aren't a
@@ -8647,7 +8610,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
 // Runs auction like Just like
 // InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
 // an ad beacon that is sent by the render URL.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerRegisterAdBeaconBuyer) {
   URLLoaderMonitor url_loader_monitor;
 
