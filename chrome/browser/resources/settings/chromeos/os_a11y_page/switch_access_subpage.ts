@@ -25,10 +25,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {getTemplate} from './switch_access_subpage.html.js';
@@ -63,14 +63,12 @@ interface SettingsSwitchAccessSubpageElement {
 
 const SettingsSwitchAccessSubpageElementBase =
     mixinBehaviors(
-        [
-          DeepLinkingBehavior,
-          PrefsBehavior,
-        ],
-        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+        [DeepLinkingBehavior],
+        PrefsMixin(RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & RouteObserverMixinInterface &
-          DeepLinkingBehaviorInterface & PrefsBehaviorInterface,
+          PrefsMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsSwitchAccessSubpageElement extends

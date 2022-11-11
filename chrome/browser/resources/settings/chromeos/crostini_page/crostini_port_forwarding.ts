@@ -24,14 +24,14 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_port_forwarding.html.js';
@@ -48,10 +48,7 @@ interface CrostiniPortForwardingElement {
 }
 
 const CrostiniPortForwardingBase =
-    mixinBehaviors([PrefsBehavior], WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & PrefsBehaviorInterface &
-          WebUiListenerMixinInterface,
-    };
+    PrefsMixin(WebUiListenerMixin(PolymerElement));
 
 class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   static get is() {

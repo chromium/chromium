@@ -32,10 +32,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_page.html.js';
@@ -44,12 +44,12 @@ const SettingsCrostiniPageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          PrefsBehavior,
         ],
-        RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          I18nMixinInterface & PrefsBehaviorInterface &
-          RouteObserverMixinInterface & WebUiListenerMixinInterface,
+        PrefsMixin(RouteObserverMixin(
+            I18nMixin(WebUiListenerMixin(PolymerElement))))) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          I18nMixinInterface & RouteObserverMixinInterface &
+          PrefsMixinInterface & DeepLinkingBehaviorInterface,
     };
 
 class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {

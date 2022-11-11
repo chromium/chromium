@@ -19,10 +19,10 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
@@ -37,17 +37,17 @@ interface TimezoneSubpageElement {
   };
 }
 
-const TimezoneSubpageElementBase = mixinBehaviors(
-                                       [
-                                         DeepLinkingBehavior,
-                                         PrefsBehavior,
-                                         RouteObserverBehavior,
-                                       ],
-                                       WebUiListenerMixin(PolymerElement)) as {
-  new (): PolymerElement & DeepLinkingBehaviorInterface &
-      PrefsBehaviorInterface & RouteObserverBehaviorInterface &
-      WebUiListenerMixinInterface,
-};
+const TimezoneSubpageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          RouteObserverBehavior,
+        ],
+        PrefsMixin(WebUiListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          PrefsMixinInterface & DeepLinkingBehaviorInterface &
+          RouteObserverBehaviorInterface,
+    };
 
 class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {

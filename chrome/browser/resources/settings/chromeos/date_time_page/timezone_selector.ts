@@ -9,20 +9,17 @@
 import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../../i18n_setup.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 import {getTemplate} from './timezone_selector.html.js';
 
-const TimezoneSelectorElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement) as {
-      new (): PolymerElement & PrefsBehaviorInterface,
-    };
+const TimezoneSelectorElementBase = PrefsMixin(PolymerElement);
 
 export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
   static get is() {

@@ -16,13 +16,13 @@ import '../os_icons.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {SettingsSwitchAccessActionAssignmentPaneElement} from './switch_access_action_assignment_pane.js';
 import {actionToPref, AssignmentContext, AUTO_SCAN_ENABLED_PREF, AUTO_SCAN_KEYBOARD_SPEED_PREF, AUTO_SCAN_SPEED_PREF, AUTO_SCAN_SPEED_RANGE_MS, DEFAULT_AUTO_SCAN_SPEED_MS, SwitchAccessCommand} from './switch_access_constants.js';
@@ -148,9 +148,7 @@ interface SettingsSwitchAccessSetupGuideDialogElement {
 }
 
 const SettingsSwitchAccessSetupGuideDialogElementBase =
-    mixinBehaviors([PrefsBehavior], I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface & PrefsBehaviorInterface,
-    };
+    PrefsMixin(I18nMixin(PolymerElement));
 
 class SettingsSwitchAccessSetupGuideDialogElement extends
     SettingsSwitchAccessSetupGuideDialogElementBase {

@@ -16,7 +16,7 @@ import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behavio
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './settings_scheduler_slider.html.js';
 
@@ -72,9 +72,9 @@ function modulo(x: number, y: number): number {
 
 const SettingsSchedulerSliderElementBase =
     mixinBehaviors(
-        [PrefsBehavior, IronResizableBehavior, PaperRippleBehavior],
-        I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface & PrefsBehaviorInterface &
+        [IronResizableBehavior, PaperRippleBehavior],
+        PrefsMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface & PrefsMixinInterface &
           IronResizableBehavior & PaperRippleBehavior,
     };
 

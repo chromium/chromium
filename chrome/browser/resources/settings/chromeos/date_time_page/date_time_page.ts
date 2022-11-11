@@ -24,10 +24,10 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './date_time_page.html.js';
@@ -37,13 +37,12 @@ const SettingsDateTimePageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          PrefsBehavior,
           RouteObserverBehavior,
         ],
-        I18nMixin(WebUiListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          PrefsBehaviorInterface & RouteObserverBehaviorInterface &
-          I18nMixinInterface & WebUiListenerMixinInterface,
+        PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          I18nMixinInterface & PrefsMixinInterface &
+          DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface,
     };
 
 class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {

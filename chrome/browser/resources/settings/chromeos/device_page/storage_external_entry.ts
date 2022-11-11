@@ -12,19 +12,16 @@ import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './storage_external_entry.html.js';
 
 const StorageExternalEntryElementBase =
-    mixinBehaviors([PrefsBehavior], WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          PrefsBehaviorInterface,
-    };
+    PrefsMixin(WebUiListenerMixin(PolymerElement));
 
 class StorageExternalEntryElement extends StorageExternalEntryElementBase {
   static get is() {

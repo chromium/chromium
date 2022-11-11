@@ -24,13 +24,13 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route, Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo} from './crostini_browser_proxy.js';
@@ -48,13 +48,12 @@ const SettingsCrostiniSubpageElementBase =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          PrefsBehavior,
           RouteOriginBehavior,
         ],
-        WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          PrefsBehaviorInterface & RouteOriginBehaviorInterface &
-          WebUiListenerMixinInterface,
+        PrefsMixin(WebUiListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUiListenerMixinInterface &
+          PrefsMixinInterface & DeepLinkingBehaviorInterface &
+          RouteOriginBehaviorInterface,
     };
 
 class SettingsCrostiniSubpageElement extends
