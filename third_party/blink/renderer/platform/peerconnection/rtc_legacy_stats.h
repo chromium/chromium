@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_LEGACY_STATS_H_
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/webrtc/api/stats_types.h"
+#include "third_party/webrtc/api/legacy_stats_types.h"
 
 namespace blink {
 
