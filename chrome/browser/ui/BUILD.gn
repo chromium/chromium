@@ -1968,8 +1968,6 @@ static_library("ui") {
       "app_list/app_list_model_updater_observer.h",
       "app_list/app_list_notifier_impl.cc",
       "app_list/app_list_notifier_impl.h",
-      "app_list/app_list_notifier_impl_old.cc",
-      "app_list/app_list_notifier_impl_old.h",
       "app_list/app_list_sync_model_sanitizer.cc",
       "app_list/app_list_sync_model_sanitizer.h",
       "app_list/app_list_syncable_service.cc",
