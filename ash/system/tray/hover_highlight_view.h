@@ -94,6 +94,7 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   views::View* left_view() { return left_view_; }
   views::View* right_view() { return right_view_; }
   views::View* sub_row() { return sub_row_; }
+  TriView* tri_view() { return tri_view_; }
 
  protected:
   // Override from Button to also set the tooltip for all child elements.
@@ -102,8 +103,6 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
-
-  TriView* tri_view() { return tri_view_; }
 
  private:
   friend class TrayAccessibilityTest;

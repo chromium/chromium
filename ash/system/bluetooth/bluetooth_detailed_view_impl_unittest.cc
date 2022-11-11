@@ -7,10 +7,14 @@
 #include <memory>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,7 +35,9 @@ class FakeBluetoothDetailedViewDelegate
   ~FakeBluetoothDetailedViewDelegate() override = default;
 
   // BluetoothDetailedView::Delegate:
-  void OnToggleClicked(bool new_state) override {}
+  void OnToggleClicked(bool new_state) override {
+    last_toggle_state_ = new_state;
+  }
 
   void OnPairNewDeviceRequested() override {
     ++pair_new_device_requested_count_;
@@ -42,6 +48,7 @@ class FakeBluetoothDetailedViewDelegate
     last_device_list_item_selected_ = mojo::Clone(device);
   }
 
+  bool last_toggle_state_ = false;
   int pair_new_device_requested_count_ = 0;
   PairedBluetoothDevicePropertiesPtr last_device_list_item_selected_;
 };
@@ -87,6 +94,18 @@ class BluetoothDetailedViewImplTest : public AshTestBase {
     return bluetooth_detailed_view_->settings_button_;
   }
 
+  HoverHighlightView* GetToggleRow() {
+    return bluetooth_detailed_view_->toggle_row_;
+  }
+
+  views::ToggleButton* GetToggleButton() {
+    return bluetooth_detailed_view_->toggle_button_;
+  }
+
+  RoundedContainer* GetMainContainer() {
+    return bluetooth_detailed_view_->main_container_;
+  }
+
   views::Button* GetPairNewDeviceView() {
     return bluetooth_detailed_view_->pair_new_device_view_;
   }
@@ -113,6 +132,49 @@ TEST_F(BluetoothDetailedViewImplTest, PressingSettingsButtonOpensSettings) {
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(1, detailed_view_delegate_.close_bubble_count_);
+}
+
+TEST_F(BluetoothDetailedViewImplTest,
+       UpdateBluetoothEnabledStateChangesUIState) {
+  HoverHighlightView* toggle_row = GetToggleRow();
+  views::ToggleButton* toggle_button = GetToggleButton();
+  RoundedContainer* main_container = GetMainContainer();
+
+  bluetooth_detailed_view_->UpdateBluetoothEnabledState(true);
+
+  EXPECT_EQ(u"On", toggle_row->text_label()->GetText());
+  EXPECT_TRUE(toggle_button->GetIsOn());
+  EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is on.",
+            toggle_button->GetTooltipText());
+  EXPECT_TRUE(main_container->GetVisible());
+
+  bluetooth_detailed_view_->UpdateBluetoothEnabledState(false);
+
+  EXPECT_EQ(u"Off", toggle_row->text_label()->GetText());
+  EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is off.",
+            toggle_button->GetTooltipText());
+  EXPECT_FALSE(main_container->GetVisible());
+}
+
+TEST_F(BluetoothDetailedViewImplTest, PressingToggleRowNotifiesDelegate) {
+  HoverHighlightView* toggle_row = GetToggleRow();
+  EXPECT_FALSE(bluetooth_detailed_view_delegate_.last_toggle_state_);
+
+  LeftClickOn(toggle_row);
+
+  EXPECT_TRUE(bluetooth_detailed_view_delegate_.last_toggle_state_);
+}
+
+TEST_F(BluetoothDetailedViewImplTest, PressingToggleButtonNotifiesDelegate) {
+  views::ToggleButton* toggle_button = GetToggleButton();
+  EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_FALSE(bluetooth_detailed_view_delegate_.last_toggle_state_);
+
+  LeftClickOn(toggle_button);
+
+  EXPECT_TRUE(toggle_button->GetIsOn());
+  EXPECT_TRUE(bluetooth_detailed_view_delegate_.last_toggle_state_);
 }
 
 TEST_F(BluetoothDetailedViewImplTest, PressingPairNewDeviceNotifiesDelegate) {

@@ -31,6 +31,9 @@ class ASH_EXPORT RoundedContainer : public views::View {
   RoundedContainer& operator=(const RoundedContainer& other) = delete;
   ~RoundedContainer() override;
 
+  // Sets the corner behavior.
+  void SetBehavior(Behavior behavior);
+
   // Sets the empty border insets.
   void SetBorderInsets(const gfx::Insets& insets);
 

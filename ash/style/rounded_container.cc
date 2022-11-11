@@ -37,6 +37,12 @@ RoundedContainer::RoundedContainer(Behavior corner_behavior)
 
 RoundedContainer::~RoundedContainer() = default;
 
+void RoundedContainer::SetBehavior(Behavior behavior) {
+  corner_behavior_ = behavior;
+  layer()->SetRoundedCornerRadius(GetRoundedCorners());
+  SchedulePaint();
+}
+
 void RoundedContainer::SetBorderInsets(const gfx::Insets& insets) {
   SetBorder(views::CreateEmptyBorder(insets));
 }
