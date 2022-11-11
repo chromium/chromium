@@ -168,6 +168,9 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
   // and does not work. See crbug.com/1317431.
   web_prefs->databases_enabled = false;
 
+  // TODO(crbug.com/1382970): Remove once supported in WebEngine.
+  web_prefs->disable_webauthn = true;
+
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   static bool allow_insecure_content =
       base::CommandLine::ForCurrentProcess()->HasSwitch(

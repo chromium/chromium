@@ -346,9 +346,13 @@ struct WebPreferences {
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
 
+  // Disable the Web Authentication (WebAuthn) API.
+  // TODO(crbug.com/1284805): Remove once WebView supports WebAuthn.
   [EnableIf=is_android]
-  // Disable the Web Authentication (WebAuthn) API. Only enabled on Android
-  // because the only context where it might be disabled is WebView/WebLayer.
+  bool disable_webauthn;
+  // TODO(crbug.com/1382970): Remove once all Content embedders on Fuchsia
+  // support WebAuthn.
+  [EnableIf=is_fuchsia]
   bool disable_webauthn;
 
   // Enable forcibly modifying content rendering to result in a light on dark

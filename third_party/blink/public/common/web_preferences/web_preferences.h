@@ -253,9 +253,15 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// TODO(crbug.com/1284805): Remove IS_ANDROID once WebView supports WebAuthn.
+// TODO(crbug.com/1382970): Remove IS_FUCHSIA and merge with the block above
+// once all Content embedders on Fuchsia support WebAuthn.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   // Disable the Web Authentication API.
   bool disable_webauthn = false;
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
   // Enable forcibly modifying content rendering to result in a light on dark
   // color scheme.

@@ -4073,6 +4073,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   // Disable WebSQL support since it is being removed from the web platform
   // and does not work. See crbug.com/1317431.
   web_prefs->databases_enabled = false;
+
+  // TODO(crbug.com/1311019): Implement WebAuthn integration and remove.
+  web_prefs->disable_webauthn = true;
 #endif
 
   for (ChromeContentBrowserClientParts* parts : extra_parts_)
