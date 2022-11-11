@@ -217,7 +217,8 @@ TEST_F(FontDescriptionTest, ToString) {
       "numeric_spacing=NormalSpacing, numeric_fraction=Normal, ordinal=Off, "
       "slashed_zero=Off], variant_east_asian=[form=Normal, width=Normal, "
       "ruby=false], font_optical_sizing=Auto, font_synthesis_weight=Auto, "
-      "font_synthesis_style=Auto",
+      "font_synthesis_style=Auto, font_synthesis_small_caps=Auto, "
+      "font_variant_position=Normal",
       description.ToString());
 }
 

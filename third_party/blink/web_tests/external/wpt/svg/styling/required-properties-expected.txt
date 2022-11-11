@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 82 tests; 78 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 82 tests; 79 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property "alignment-baseline" is supported
 PASS Property "baseline-shift" is supported
 PASS Property "clip" is supported
@@ -31,7 +31,7 @@ PASS Property "font-variant-caps" is supported
 PASS Property "font-variant-east-asian" is supported
 PASS Property "font-variant-ligatures" is supported
 PASS Property "font-variant-numeric" is supported
-FAIL Property "font-variant-position" is supported assert_true: expected true got false
+PASS Property "font-variant-position" is supported
 PASS Property "font-weight" is supported
 FAIL Property "glyph-orientation-vertical" is supported assert_true: expected true got false
 PASS Property "image-rendering" is supported

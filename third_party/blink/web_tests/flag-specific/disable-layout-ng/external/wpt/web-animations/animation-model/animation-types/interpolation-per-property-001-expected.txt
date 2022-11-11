@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 377 tests; 365 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 381 tests; 369 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testInterpolation function
 PASS align-content uses discrete animation when animating between "flex-start" and "flex-end" with linear easing
@@ -326,6 +326,10 @@ PASS font-variant-numeric (type: discrete) has testInterpolation function
 PASS font-variant-numeric uses discrete animation when animating between "lining-nums" and "oldstyle-nums" with linear easing
 PASS font-variant-numeric uses discrete animation when animating between "lining-nums" and "oldstyle-nums" with effect easing
 PASS font-variant-numeric uses discrete animation when animating between "lining-nums" and "oldstyle-nums" with keyframe easing
+PASS font-variant-position (type: discrete) has testInterpolation function
+PASS font-variant-position uses discrete animation when animating between "sub" and "super" with linear easing
+PASS font-variant-position uses discrete animation when animating between "sub" and "super" with effect easing
+PASS font-variant-position uses discrete animation when animating between "sub" and "super" with keyframe easing
 PASS font-variation-settings (type: fontVariationSettings) has testInterpolation function
 PASS font-variation-settings supports animation as float
 PASS font-variation-settings supports animation as float with multiple tags

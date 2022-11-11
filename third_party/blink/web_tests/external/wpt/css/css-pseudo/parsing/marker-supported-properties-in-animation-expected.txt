@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 94 tests; 90 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 94 tests; 92 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Animation of font in ::marker
 PASS Animation of font-family in ::marker
 PASS Animation of font-feature-settings in ::marker
@@ -17,7 +17,7 @@ PASS Animation of font-variant-caps in ::marker
 PASS Animation of font-variant-east-asian in ::marker
 PASS Animation of font-variant-ligatures in ::marker
 PASS Animation of font-variant-numeric in ::marker
-FAIL Animation of font-variant-position in ::marker assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+PASS Animation of font-variant-position in ::marker
 PASS Animation of font-weight in ::marker
 PASS Animation of line-height in ::marker
 FAIL Animation of white-space in ::marker assert_equals: expected "nowrap" but got "pre"
@@ -64,7 +64,7 @@ PASS Transition of font-variant-caps in ::marker
 PASS Transition of font-variant-east-asian in ::marker
 PASS Transition of font-variant-ligatures in ::marker
 PASS Transition of font-variant-numeric in ::marker
-FAIL Transition of font-variant-position in ::marker assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+PASS Transition of font-variant-position in ::marker
 PASS Transition of font-weight in ::marker
 PASS Transition of line-height in ::marker
 FAIL Transition of white-space in ::marker assert_equals: expected "nowrap" but got "pre"

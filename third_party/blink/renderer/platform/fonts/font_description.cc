@@ -112,6 +112,7 @@ FontDescription::FontDescription()
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
+  fields_.variant_position_ = kNormalVariantPosition;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -689,6 +690,18 @@ String FontDescription::FamilyDescription::ToString() const {
       family.ToString().Ascii().c_str());
 }
 
+String FontDescription::ToString(FontVariantPosition variant_position) {
+  switch (variant_position) {
+    case FontVariantPosition::kNormalVariantPosition:
+      return "Normal";
+    case FontVariantPosition::kSubVariantPosition:
+      return "Sub";
+    case FontVariantPosition::kSuperVariantPosition:
+      return "Super";
+  }
+  return "Unknown";
+}
+
 static const char* ToBooleanString(bool value) {
   return value ? "true" : "false";
 }
@@ -708,7 +721,8 @@ String FontDescription::ToString() const {
       "synthetic_bold=%s, synthetic_italic=%s, subpixel_positioning=%s, "
       "subpixel_ascent_descent=%s, variant_numeric=[%s], "
       "variant_east_asian=[%s], font_optical_sizing=%s, "
-      "font_synthesis_weight=%s, font_synthesis_style=%s",
+      "font_synthesis_weight=%s, font_synthesis_style=%s, "
+      "font_synthesis_small_caps=%s, font_variant_position=%s",
       family_list_.ToString().Ascii().c_str(),
       (feature_settings_ ? feature_settings_->ToString().Ascii().c_str() : ""),
       (variation_settings_ ? variation_settings_->ToString().Ascii().c_str()
@@ -739,7 +753,9 @@ String FontDescription::ToString() const {
       VariantEastAsian().ToString().Ascii().c_str(),
       blink::ToString(FontOpticalSizing()).Ascii().c_str(),
       FontDescription::ToString(GetFontSynthesisWeight()).Ascii().c_str(),
-      FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str());
+      FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisSmallCaps()).Ascii().c_str(),
+      FontDescription::ToString(VariantPosition()).Ascii().c_str());
 }
 
 }  // namespace blink

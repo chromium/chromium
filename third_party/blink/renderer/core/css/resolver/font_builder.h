@@ -83,6 +83,7 @@ class CORE_EXPORT FontBuilder {
   void SetFontOpticalSizing(OpticalSizing);
   void SetFontSmoothing(FontSmoothingMode);
   void SetVariationSettings(scoped_refptr<FontVariationSettings>);
+  void SetVariantPosition(FontDescription::FontVariantPosition);
 
   // FIXME: These need to just vend a Font object eventually.
   void UpdateFontDescription(FontDescription&,
@@ -139,6 +140,9 @@ class CORE_EXPORT FontBuilder {
   InitialFontSynthesisSmallCaps() {
     return FontDescription::kAutoFontSynthesisSmallCaps;
   }
+  static FontDescription::FontVariantPosition InitialVariantPosition() {
+    return FontDescription::kNormalVariantPosition;
+  }
 
  private:
   void SetFamilyDescription(FontDescription&,
@@ -177,6 +181,7 @@ class CORE_EXPORT FontBuilder {
     kVariantEastAsian,
     kVariantLigatures,
     kVariantNumeric,
+    kVariantPosition,
     kVariationSettings,
     kTextRendering,
     kKerning,

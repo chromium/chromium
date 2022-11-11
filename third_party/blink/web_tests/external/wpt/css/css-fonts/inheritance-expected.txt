@@ -32,8 +32,8 @@ PASS Property font-variant-ligatures has initial value normal
 PASS Property font-variant-ligatures inherits
 PASS Property font-variant-numeric has initial value normal
 PASS Property font-variant-numeric inherits
-FAIL Property font-variant-position has initial value normal assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
-FAIL Property font-variant-position inherits assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variant-position has initial value normal
+PASS Property font-variant-position inherits
 PASS Property font-variation-settings has initial value normal
 PASS Property font-variation-settings inherits
 PASS Property font-weight has initial value 400

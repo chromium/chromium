@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 
 namespace blink {
@@ -114,6 +115,13 @@ class PLATFORM_EXPORT FontDescription {
     kNoneFontSynthesisSmallCaps
   };
   static String ToString(FontSynthesisSmallCaps);
+
+  enum FontVariantPosition {
+    kNormalVariantPosition,
+    kSubVariantPosition,
+    kSuperVariantPosition
+  };
+  static String ToString(FontVariantPosition);
 
   FontDescription();
   FontDescription(const FontDescription&);
@@ -319,6 +327,9 @@ class PLATFORM_EXPORT FontDescription {
   FontVariationSettings* VariationSettings() const {
     return variation_settings_.get();
   }
+  FontVariantPosition VariantPosition() const {
+    return static_cast<FontVariantPosition>(fields_.variant_position_);
+  }
 
   float EffectiveFontSize()
       const;  // Returns either the computedSize or the computedPixelSize
@@ -390,6 +401,9 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetVariationSettings(scoped_refptr<FontVariationSettings> settings) {
     variation_settings_ = std::move(settings);
+  }
+  void SetVariantPosition(FontVariantPosition variant_position) {
+    fields_.variant_position_ = variant_position;
   }
   void SetWordSpacing(float s) { word_spacing_ = s; }
   void SetLetterSpacing(float s) {
@@ -527,6 +541,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned subpixel_ascent_descent_ : 1;
     unsigned font_optical_sizing_ : 1;
     unsigned has_size_adjust_descriptor_ : 1;
+    unsigned variant_position_ : 2;
 
     unsigned hash_category_ : 2;  // HashCategory
   };

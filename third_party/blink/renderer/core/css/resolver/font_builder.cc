@@ -263,6 +263,13 @@ void FontBuilder::SetSize(FontDescription& font_description,
   font_description.SetIsAbsoluteSize(size.is_absolute);
 }
 
+void FontBuilder::SetVariantPosition(
+    FontDescription::FontVariantPosition variant_position) {
+  Set(PropertySetFlag::kVariantPosition);
+
+  font_description_.SetVariantPosition(variant_position);
+}
+
 float FontBuilder::GetComputedSizeFromSpecifiedSize(
     FontDescription& font_description,
     float effective_zoom,
@@ -435,6 +442,9 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
   if (IsSet(PropertySetFlag::kTextOrientation) ||
       IsSet(PropertySetFlag::kWritingMode))
     description.SetOrientation(font_orientation);
+  if (IsSet(PropertySetFlag::kVariantPosition)) {
+    description.SetVariantPosition(font_description_.VariantPosition());
+  }
 
   float size = description.SpecifiedSize();
   if (!size && description.KeywordSize()) {

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 304 tests; 302 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 307 tests; 305 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testAddition function
 PASS align-content: "flex-end" onto "flex-start"
@@ -267,6 +267,9 @@ PASS font-variant-ligatures: "common-ligatures" onto "no-common-ligatures"
 PASS font-variant-numeric (type: discrete) has testAddition function
 PASS font-variant-numeric: "oldstyle-nums" onto "lining-nums"
 PASS font-variant-numeric: "lining-nums" onto "oldstyle-nums"
+PASS font-variant-position (type: discrete) has testAddition function
+PASS font-variant-position: "super" onto "sub"
+PASS font-variant-position: "sub" onto "super"
 PASS font-variation-settings (type: fontVariationSettings) has testAddition function
 PASS font-variation-settings with composite type add
 PASS font-variation-settings (type: discrete) has testAddition function

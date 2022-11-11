@@ -3263,6 +3263,15 @@ const CSSValue* FontSynthesisSmallCaps::CSSValueFromComputedStyleInternal(
       style.GetFontDescription().GetFontSynthesisSmallCaps());
 }
 
+const CSSValue* FontVariantPosition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  DCHECK(RuntimeEnabledFeatures::FontVariantPositionEnabled());
+  return CSSIdentifierValue::Create(
+      style.GetFontDescription().VariantPosition());
+}
+
 const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

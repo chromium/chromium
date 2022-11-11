@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_reflection_direction.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -945,6 +946,44 @@ inline FontSmoothingMode CSSIdentifierValue::ConvertTo() const {
 
   NOTREACHED();
   return kAutoSmoothing;
+}
+
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontVariantPosition variant_position)
+    : CSSValue(kIdentifierClass) {
+  switch (variant_position) {
+    case FontDescription::kNormalVariantPosition:
+      value_id_ = CSSValueID::kNormal;
+      return;
+    case FontDescription::kSubVariantPosition:
+      value_id_ = CSSValueID::kSub;
+      return;
+    case FontDescription::kSuperVariantPosition:
+      value_id_ = CSSValueID::kSuper;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kNormal;
+}
+
+template <>
+inline FontDescription::FontVariantPosition CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kNormal:
+      return FontDescription::kNormalVariantPosition;
+    case CSSValueID::kSub:
+      return FontDescription::kSubVariantPosition;
+    case CSSValueID::kSuper:
+      return FontDescription::kSuperVariantPosition;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kNormalVariantPosition;
 }
 
 template <>
