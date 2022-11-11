@@ -37,6 +37,7 @@ namespace chromecast {
 
 class CastContentWindow;
 class MessagePortService;
+class MessagePortServiceGrpc;
 class RuntimeApplicationBase;
 
 class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate,
@@ -75,6 +76,10 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate,
   void LoadPage(const GURL& url) override;
 
  private:
+  // Gets the current |message_port_service_|, attempting to create it if it
+  // does not yet exist.
+  MessagePortServiceGrpc* GetMessagePortServiceGrpc();
+
   // Creates the root CastWebView for this Cast session.
   CastWebView::Scoped CreateCastWebView();
 
@@ -154,7 +159,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate,
 
   // Shared MessagePortService implementation for this application instance to
   // use.
-  std::unique_ptr<MessagePortService> message_port_service_;
+  std::unique_ptr<MessagePortServiceGrpc> message_port_service_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;
   absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;

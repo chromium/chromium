@@ -29,11 +29,6 @@ void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_script) {
   bindings_[base::NumberToString(id)] = std::string(binding_script);
 }
 
-cast_receiver::Status BindingsManagerWebRuntime::HandleMessage(
-    cast::web::Message message) {
-  return message_port_service_->HandleMessage(std::move(message));
-}
-
 void BindingsManagerWebRuntime::ConfigureWebContents(
     content::WebContents* web_contents) {
   DCHECK(!message_port_connector_);

@@ -45,17 +45,6 @@ StreamingRuntimeApplication::~StreamingRuntimeApplication() {
       net::OK);
 }
 
-bool StreamingRuntimeApplication::OnMessagePortMessage(
-    cast::web::Message message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto* message_port_service = delegate().GetMessagePortService();
-  if (!message_port_service) {
-    return false;
-  }
-  return message_port_service->HandleMessage(std::move(message)).ok();
-}
-
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnPageLoaded();

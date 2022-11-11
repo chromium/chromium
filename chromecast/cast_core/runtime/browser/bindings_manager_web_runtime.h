@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/api_bindings/manager.h"
 #include "components/cast_receiver/browser/bindings_message_port_connector.h"
 #include "components/cast_receiver/common/public/status.h"
@@ -52,7 +51,6 @@ class BindingsManagerWebRuntime final
   BindingsManagerWebRuntime& operator=(BindingsManagerWebRuntime&&) = delete;
 
   void AddBinding(base::StringPiece binding_script);
-  cast_receiver::Status HandleMessage(cast::web::Message message);
 
   // Configures the |message_port_connector_| for use with this |web_contents|
   // and connects it to the bindings service.

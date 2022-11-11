@@ -18,7 +18,6 @@
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
-#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace cast_receiver {
 class StreamingConfigManager;
@@ -130,9 +129,6 @@ class RuntimeApplicationBase
   // Called to launch the application. The |callback| will be called indicating
   // if the operation succeeded or not.
   virtual void Launch(StatusCallback callback) = 0;
-
-  // Notifies a message port message needs to be handled.
-  virtual bool OnMessagePortMessage(cast::web::Message message) = 0;
 
   // Partial RuntimeApplication implementation:
   // IsStreamingApplication must be implemented in inherited classes.

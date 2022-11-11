@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "components/cast_receiver/common/public/status.h"
-#include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace cast_api_bindings {
 class MessagePort;
@@ -27,12 +26,6 @@ class MessagePortService {
       std::unique_ptr<cast_api_bindings::MessagePort>*)>;
 
   virtual ~MessagePortService() = default;
-
-  // Handles a message incoming over RPC. The message will be routed to the
-  // appropriate destination based on its channel ID. Returns |true| in the case
-  // that this message was successfully processed, and false in all other cases
-  // including the case that there's no handler for the incoming channel ID.
-  virtual cast_receiver::Status HandleMessage(cast::web::Message message) = 0;
 
   // Connects |port| to the remote port with name |port_name| asynchronously.
   virtual void ConnectToPortAsync(

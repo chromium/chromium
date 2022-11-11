@@ -33,7 +33,6 @@ class StreamingRuntimeApplication final
  private:
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;
-  bool OnMessagePortMessage(cast::web::Message message) override;
   void StopApplication(
       RuntimeApplicationBase::Delegate::ApplicationStopReason stop_reason,
       int32_t net_error_code) override;

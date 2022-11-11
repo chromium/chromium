@@ -275,16 +275,21 @@ void RuntimeApplicationServiceImpl::HandlePostMessage(
     return;
   }
 
-  const auto success =
-      runtime_application_->OnMessagePortMessage(std::move(request));
-  if (success) {
-    cast::web::MessagePortStatus message_port_status;
-    message_port_status.set_status(cast::web::MessagePortStatus::OK);
-    reactor->Write(std::move(message_port_status));
-  } else {
-    reactor->Write(
-        grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to post message"));
+  auto* message_port_service = GetMessagePortServiceGrpc();
+  if (message_port_service) {
+    auto status = message_port_service->HandleMessage(std::move(request));
+    if (status) {
+      cast::web::MessagePortStatus message_port_status;
+      message_port_status.set_status(cast::web::MessagePortStatus::OK);
+      reactor->Write(std::move(message_port_status));
+      return;
+    }
+
+    LOG(INFO) << "Failed to post message port message: " << status;
   }
+
+  reactor->Write(
+      grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to post message"));
 }
 
 CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
@@ -489,7 +494,8 @@ void RuntimeApplicationServiceImpl::GetAllBindings(
                      weak_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-MessagePortService* RuntimeApplicationServiceImpl::GetMessagePortService() {
+MessagePortServiceGrpc*
+RuntimeApplicationServiceImpl::GetMessagePortServiceGrpc() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!core_message_port_app_stub_) {
     return nullptr;
@@ -500,6 +506,11 @@ MessagePortService* RuntimeApplicationServiceImpl::GetMessagePortService() {
         &core_message_port_app_stub_.value());
   }
   return message_port_service_.get();
+}
+
+MessagePortService* RuntimeApplicationServiceImpl::GetMessagePortService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetMessagePortServiceGrpc();
 }
 
 std::unique_ptr<content::WebUIControllerFactory>

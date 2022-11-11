@@ -39,7 +39,6 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
 
   // RuntimeApplicationBase implementation:
   void Launch(StatusCallback callback) override;
-  bool OnMessagePortMessage(cast::web::Message message) override;
   bool IsStreamingApplication() const override;
 
   // cast_receiver::PageStateObserver implementation:

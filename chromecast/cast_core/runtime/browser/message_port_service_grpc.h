@@ -31,8 +31,13 @@ class MessagePortServiceGrpc : public MessagePortService {
       cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub);
   ~MessagePortServiceGrpc() override;
 
+  // Handles a message incoming over RPC. The message will be routed to the
+  // appropriate destination based on its channel ID. Returns |true| in the case
+  // that this message was successfully processed, and false in all other cases
+  // including the case that there's no handler for the incoming channel ID.
+  cast_receiver::Status HandleMessage(cast::web::Message message);
+
   // MessagePortService implementation:
-  cast_receiver::Status HandleMessage(cast::web::Message message) override;
   void ConnectToPortAsync(
       base::StringPiece port_name,
       std::unique_ptr<cast_api_bindings::MessagePort> port) override;

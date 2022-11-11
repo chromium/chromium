@@ -35,14 +35,6 @@ WebRuntimeApplication::~WebRuntimeApplication() {
       net::OK);
 }
 
-bool WebRuntimeApplication::OnMessagePortMessage(cast::web::Message message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!bindings_manager_) {
-    return false;
-  }
-  return bindings_manager_->HandleMessage(std::move(message)).ok();
-}
-
 void WebRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
