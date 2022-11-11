@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -95,6 +96,9 @@ constexpr int kAutofillPopupPasswordMaxWidth = 108;
 constexpr int kAutofillExperimentalPopupMinWidth = 0;
 // Max width for address profile suggestion text.
 constexpr int kAutofillPopupAddressProfileMaxWidth = 192;
+// Max width for address credit card suggestion text.
+constexpr int kAutofillPopupCreditCardMaxWidth =
+    kAutofillPopupWidthMultiple * 16;
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 22;
@@ -394,7 +398,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   virtual std::unique_ptr<views::Label> CreateMainTextView();
   // Returns a minor text label view. The label is shown side by side with the
   // main text view, but in a secondary style. Can be nullptr.
-  virtual std::unique_ptr<views::View> CreateMinorTextView();
+  virtual std::unique_ptr<views::Label> CreateMinorTextView();
   // The description view can be nullptr.
   virtual std::unique_ptr<views::View> CreateDescriptionView();
 
@@ -733,7 +737,6 @@ void AutofillPopupItemView::CreateContent() {
 
   std::unique_ptr<views::ImageView> icon =
       GetIconImageView(suggestions[GetLineNumber()]);
-
   if (icon) {
     AddChildView(std::move(icon));
     AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
@@ -837,14 +840,11 @@ std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
 
 std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
-  std::u16string text =
-      popup_view()->controller()->GetSuggestionMainTextAt(GetLineNumber());
-  if (!popup_view()
-           ->controller()
-           ->GetSuggestionAt(GetLineNumber())
-           .main_text.is_primary) {
+  const Suggestion::Text& main_text =
+      popup_view()->controller()->GetSuggestionAt(GetLineNumber()).main_text;
+  if (!main_text.is_primary) {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
-        text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
         UseImprovedSuggestionUi() ? views::style::STYLE_PRIMARY
                                   : views::style::STYLE_SECONDARY);
     KeepLabel(label.get());
@@ -864,7 +864,7 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
   return label;
 }
 
-std::unique_ptr<views::View> AutofillPopupItemView::CreateMinorTextView() {
+std::unique_ptr<views::Label> AutofillPopupItemView::CreateMinorTextView() {
   std::u16string text =
       popup_view()->controller()->GetSuggestionMinorTextAt(GetLineNumber());
   if (text.empty())
@@ -998,6 +998,18 @@ AutofillPopupSuggestionView::CreateMainTextView() {
   if (popup_type_ == PopupType::kAddresses &&
       base::FeatureList::IsEnabled(features::kAutofillTypeSpecificPopupWidth)) {
     label->SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
+  } else if (popup_type_ == PopupType::kCreditCards &&
+             popup_view()
+                 ->controller()
+                 ->GetSuggestionAt(GetLineNumber())
+                 .main_text.should_truncate.value()) {
+    // should_truncate should only be set to true iff the experiments are
+    // enabled.
+    DCHECK(base::FeatureList::IsEnabled(
+        autofill::features::kAutofillEnableVirtualCardMetadata));
+    DCHECK(base::FeatureList::IsEnabled(
+        autofill::features::kAutofillEnableCardProductName));
+    label->SetMaximumWidthSingleLine(kAutofillPopupCreditCardMaxWidth);
   }
   return label;
 }
@@ -1005,29 +1017,49 @@ AutofillPopupSuggestionView::CreateMainTextView() {
 std::vector<std::unique_ptr<views::View>>
 AutofillPopupSuggestionView::CreateSubtextViews() {
   std::vector<std::unique_ptr<views::View>> subtext_view;
-  std::vector<std::vector<Suggestion::Text>> label_matrix =
-      popup_view()->controller()->GetSuggestionLabelsAt(GetLineNumber());
-
-  for (auto& label_row : label_matrix) {
-    // TODO(crbug.com/1313616): Allow displaying more than one entry for each
-    // row once the card name is populated.
-    DCHECK_EQ(label_row.size(), 1U);
-    const std::u16string& text = label_row[0].value;
-    // If a row is missing, do not include any further rows.
-    if (text.empty())
-      return subtext_view;
-
-    auto label_view = CreateLabelWithStyleAndContext(
-        text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY);
-    KeepLabel(label_view.get());
-    if (popup_type_ == PopupType::kAddresses &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillTypeSpecificPopupWidth)) {
-      label_view->SetMaximumWidthSingleLine(
-          kAutofillPopupAddressProfileMaxWidth);
+  for (const std::vector<Suggestion::Text>& label_row :
+       popup_view()->controller()->GetSuggestionLabelsAt(GetLineNumber())) {
+    DCHECK_LE(label_row.size(), 2U);
+    DCHECK(!label_row.empty());
+    if (base::ranges::all_of(label_row, &std::u16string::empty,
+                             &Suggestion::Text::value)) {
+      // If a row is empty, do not include any further rows.
+      break;
     }
-    subtext_view.emplace_back(std::move(label_view));
+
+    auto label_row_container_view = std::make_unique<views::BoxLayoutView>();
+    label_row_container_view->SetOrientation(
+        views::BoxLayout::Orientation::kHorizontal);
+    label_row_container_view->SetBetweenChildSpacing(
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+    for (const auto& label : label_row) {
+      // If a column is empty, do not include any further columns.
+      if (label.value.empty())
+        break;
+
+      auto* label_view =
+          label_row_container_view->AddChildView(CreateLabelWithStyleAndContext(
+              label.value, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+              views::style::STYLE_SECONDARY));
+      KeepLabel(label_view);
+      if (popup_type_ == PopupType::kAddresses &&
+          base::FeatureList::IsEnabled(
+              features::kAutofillTypeSpecificPopupWidth)) {
+        label_view->SetMaximumWidthSingleLine(
+            kAutofillPopupAddressProfileMaxWidth);
+      } else if (popup_type_ == PopupType::kCreditCards &&
+                 label.should_truncate.value()) {
+        // should_truncate should only be set to true iff the experiments are
+        // enabled.
+        DCHECK(base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableVirtualCardMetadata));
+        DCHECK(base::FeatureList::IsEnabled(
+            autofill::features::kAutofillEnableCardProductName));
+        label_view->SetMaximumWidthSingleLine(kAutofillPopupCreditCardMaxWidth);
+      }
+    }
+    subtext_view.push_back(std::move(label_row_container_view));
   }
 
   return subtext_view;
