@@ -213,6 +213,8 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   page_action_icon_controller_->SetIconColor(foreground_color_);
   if (web_app_menu_button_)
     web_app_menu_button_->SetColor(foreground_color_);
+  if (download_button_)
+    download_button_->SetIconColor(foreground_color_);
 }
 
 views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {

@@ -72,6 +72,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   DownloadDisplayController* display_controller() { return controller_.get(); }
 
+  SkColor GetIconColor() const;
+  void SetIconColor(SkColor color);
+
  private:
   // views::Button overrides:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -95,6 +98,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<View> primary_view_ = nullptr;
   raw_ptr<DownloadBubbleSecurityView> security_view_ = nullptr;
+
+  // Override for the icon color. Used for PWAs, which don't have full
+  // ThemeProvider color support.
+  absl::optional<SkColor> icon_color_;
 
   gfx::SlideAnimation scanning_animation_{this};
 

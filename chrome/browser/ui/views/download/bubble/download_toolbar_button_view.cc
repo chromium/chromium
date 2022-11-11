@@ -88,17 +88,18 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   SkColor background_color, progress_color;
   if (is_disabled) {
     background_color = GetForegroundColor(ButtonState::STATE_DISABLED);
-    progress_color = GetForegroundColor(ButtonState::STATE_DISABLED);
+    progress_color =
+        icon_color_.value_or(GetForegroundColor(ButtonState::STATE_DISABLED));
   } else if (!is_active) {
     background_color =
         GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
-    progress_color =
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+    progress_color = icon_color_.value_or(
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
   } else {
     background_color =
         GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
-    progress_color =
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
+    progress_color = icon_color_.value_or(
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive));
   }
 
   int ring_radius = ui::TouchUiController::Get()->touch_ui()
@@ -188,10 +189,7 @@ void DownloadToolbarButtonView::UpdateIcon() {
 
   DownloadDisplayController::IconInfo icon_info = controller_->GetIconInfo();
   const gfx::VectorIcon* new_icon;
-  SkColor icon_color =
-      icon_info.is_active
-          ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
-          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+  SkColor icon_color = GetIconColor();
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (icon_info.icon_state == download::DownloadIconState::kProgress ||
       icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
@@ -338,6 +336,20 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
   scroll_view->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kEnabled);
   return std::move(scroll_view);
+}
+
+SkColor DownloadToolbarButtonView::GetIconColor() const {
+  return icon_color_.value_or(
+      controller_->GetIconInfo().is_active
+          ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
+          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
+}
+
+void DownloadToolbarButtonView::SetIconColor(SkColor color) {
+  if (icon_color_ == color)
+    return;
+  icon_color_ = color;
+  UpdateIcon();
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
