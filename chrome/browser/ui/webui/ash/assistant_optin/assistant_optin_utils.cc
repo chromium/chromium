@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
+#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 
 #include <utility>
 
@@ -29,20 +29,7 @@
 using AssistantActivityControlConsent =
     sync_pb::UserConsentTypes::AssistantActivityControlConsent;
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): move to forward declaration
-namespace assistant {
-using ::ash::assistant::ActivityControlSettingsUiSelector;
-using ::ash::assistant::ClassicActivityControlUiTexts;
-using ::ash::assistant::ConsentFlowUi;
-using ::ash::assistant::ConsentFlowUiSelector;
-using ::ash::assistant::ConsentFlowUiUpdate;
-using ::ash::assistant::SettingSetId;
-using ::ash::assistant::SettingsUi;
-using ::ash::assistant::SettingsUiSelector;
-using ::ash::assistant::SettingsUiUpdate;
-}  // namespace assistant
+namespace ash {
 
 namespace {
 
@@ -154,7 +141,7 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
     data.Set(
         "nativeIconType",
         static_cast<int>(SettingIdToIconType(setting_zippy.setting_set_id())));
-    data.Set("useNativeIcons", ash::features::IsAssistantNativeIconsEnabled());
+    data.Set("useNativeIcons", features::IsAssistantNativeIconsEnabled());
     data.Set("popupLink", l10n_util::GetStringUTF16(
                               IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK));
     if (is_minor_mode) {
@@ -244,7 +231,7 @@ void RecordActivityControlConsent(
 }
 
 bool IsHotwordDspAvailable() {
-  return chromeos::CrasAudioHandler::Get()->HasHotwordDevice();
+  return CrasAudioHandler::Get()->HasHotwordDevice();
 }
 
 bool IsVoiceMatchEnforcedOff(const PrefService* prefs,
@@ -280,4 +267,4 @@ GetActivityControlConsentSettingType(const SettingZippyList& setting_zippy) {
   return AssistantActivityControlConsent::SETTING_TYPE_UNSPECIFIED;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_
 
 #include <vector>
 
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-#include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 class AssistantOptInUI;
 
@@ -58,17 +58,17 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
   AssistantOptInDialog& operator=(const AssistantOptInDialog&) = delete;
 
   // Shows the assistant optin dialog.
-  static void Show(ash::FlowType type = ash::FlowType::kConsentFlow,
-                   ash::AssistantSetup::StartAssistantOptInFlowCallback
-                       callback = base::DoNothing());
+  static void Show(FlowType type = FlowType::kConsentFlow,
+                   AssistantSetup::StartAssistantOptInFlowCallback callback =
+                       base::DoNothing());
 
   // Returns true and bounces the window if the dialog is active.
   static bool BounceIfActive();
 
  protected:
   AssistantOptInDialog(
-      ash::FlowType type,
-      ash::AssistantSetup::StartAssistantOptInFlowCallback callback);
+      FlowType type,
+      AssistantSetup::StartAssistantOptInFlowCallback callback);
   ~AssistantOptInDialog() override;
 
   // SystemWebDialogDelegate
@@ -84,9 +84,9 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
   AssistantOptInUI* assistant_ui_ = nullptr;
 
   // Callback to run if the flow is completed.
-  ash::AssistantSetup::StartAssistantOptInFlowCallback callback_;
+  AssistantSetup::StartAssistantOptInFlowCallback callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UI_H_

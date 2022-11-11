@@ -19,7 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
+#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -109,7 +109,7 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantVoiceMatchTitleForChild",
                IDS_ASSISTANT_VOICE_MATCH_TITLE_CHILD);
   builder->AddF("assistantVoiceMatchMessage", IDS_ASSISTANT_VOICE_MATCH_MESSAGE,
-                chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
+                IsHotwordDspAvailable() || !DeviceHasBattery()
                     ? IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE
                     : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE);
   // Keep the child name placeholder as `$1`, so it could be set correctly
@@ -118,7 +118,7 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
       "assistantVoiceMatchMessageForChild",
       IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD, u"$1",
       ui::GetChromeOSDeviceName(),
-      chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
+      IsHotwordDspAvailable() || !DeviceHasBattery()
           ? l10n_util::GetStringUTF16(
                 IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE_CHILD)
           : l10n_util::GetStringUTF16(

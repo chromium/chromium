@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@
 class PrefService;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Type of Assistant opt-in flow status. This enum is used to back an UMA
 // histogram and should be treated as append-only.
@@ -53,16 +53,16 @@ void RecordAssistantActivityControlOptInStatus(
     bool opted_in);
 
 // Construct SettingsUiSelector for the ConsentFlow UI.
-ash::assistant::SettingsUiSelector GetSettingsUiSelector();
+assistant::SettingsUiSelector GetSettingsUiSelector();
 
 // Construct SettingsUiUpdate for user opt-in.
-ash::assistant::SettingsUiUpdate GetSettingsUiUpdate(
+assistant::SettingsUiUpdate GetSettingsUiUpdate(
     const std::string& consent_token);
 
 using SettingZippyList = google::protobuf::RepeatedPtrField<
-    ash::assistant::ClassicActivityControlUiTexts::SettingZippy>;
+    assistant::ClassicActivityControlUiTexts::SettingZippy>;
 using ActivityControlUi =
-    ash::assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
+    assistant::ConsentFlowUi::ConsentUi::ActivityControlUi;
 // Helper method to create zippy data.
 base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
                                   bool is_minor_mode);
@@ -71,10 +71,9 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
 base::Value::List CreateDisclosureData(const SettingZippyList& disclosure_list);
 
 // Get string constants for settings ui.
-base::Value::Dict GetSettingsUiStrings(
-    const ash::assistant::SettingsUi& settings_ui,
-    bool activity_control_needed,
-    bool equal_weight_buttons);
+base::Value::Dict GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
+                                       bool activity_control_needed,
+                                       bool equal_weight_buttons);
 
 void RecordActivityControlConsent(
     Profile* profile,
@@ -91,20 +90,6 @@ bool IsVoiceMatchEnforcedOff(const PrefService* prefs,
 sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
 GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::AssistantOptInFlowStatus;
-using ::chromeos::CreateZippyData;
-using ::chromeos::GetActivityControlConsentSettingType;
-using ::chromeos::GetSettingsUiSelector;
-using ::chromeos::GetSettingsUiStrings;
-using ::chromeos::GetSettingsUiUpdate;
-using ::chromeos::IsHotwordDspAvailable;
-using ::chromeos::IsVoiceMatchEnforcedOff;
-using ::chromeos::RecordActivityControlConsent;
-using ::chromeos::RecordAssistantActivityControlOptInStatus;
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_

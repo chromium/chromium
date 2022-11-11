@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
+#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 
 #include <memory>
 #include <string>
@@ -46,7 +46,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -57,7 +57,7 @@ constexpr int kCaptionBarHeight = 32;
 constexpr char kFlowTypeParamKey[] = "flow-type";
 constexpr char kCaptionBarHeightParamKey[] = "caption-bar-height";
 
-GURL CreateAssistantOptInURL(ash::FlowType type) {
+GURL CreateAssistantOptInURL(FlowType type) {
   GURL gurl(chrome::kChromeUIAssistantOptInURL);
   gurl = net::AppendQueryParameter(
       gurl, kFlowTypeParamKey, base::NumberToString(static_cast<int>(type)));
@@ -113,15 +113,15 @@ void AssistantOptInUI::OnDialogClosed() {
 
 // static
 void AssistantOptInDialog::Show(
-    ash::FlowType type,
-    ash::AssistantSetup::StartAssistantOptInFlowCallback callback) {
+    FlowType type,
+    AssistantSetup::StartAssistantOptInFlowCallback callback) {
 #if !BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   std::move(callback).Run(false);
 #else
   // Check Assistant allowed state.
   if (::assistant::IsAssistantAllowedForProfile(
           ProfileManager::GetActiveUserProfile()) !=
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      assistant::AssistantAllowedState::ALLOWED) {
     std::move(callback).Run(false);
     return;
   }
@@ -156,8 +156,8 @@ bool AssistantOptInDialog::BounceIfActive() {
 }
 
 AssistantOptInDialog::AssistantOptInDialog(
-    ash::FlowType type,
-    ash::AssistantSetup::StartAssistantOptInFlowCallback callback)
+    FlowType type,
+    AssistantSetup::StartAssistantOptInFlowCallback callback)
     : SystemWebDialogDelegate(CreateAssistantOptInURL(type), std::u16string()),
       callback_(std::move(callback)) {}
 
@@ -177,7 +177,7 @@ void AssistantOptInDialog::GetDialogSize(gfx::Size* size) const {
   const bool is_horizontal = bounds.width() > bounds.height();
   dialog_size = CalculateOobeDialogSize(
       display::Screen::GetScreen()->GetPrimaryDisplay().size(),
-      ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+      ShelfConfig::Get()->shelf_size(), is_horizontal);
   size->SetSize(dialog_size.width(), dialog_size.height());
 }
 
@@ -195,11 +195,11 @@ void AssistantOptInDialog::OnDialogClosed(const std::string& json_retval) {
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const bool completed =
-      prefs->GetBoolean(chromeos::assistant::prefs::kAssistantEnabled) &&
+      prefs->GetBoolean(assistant::prefs::kAssistantEnabled) &&
       (prefs->GetInteger(assistant::prefs::kAssistantConsentStatus) ==
        assistant::prefs::ConsentStatus::kActivityControlAccepted);
   std::move(callback_).Run(completed);
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
-}  // namespace chromeos
+}  // namespace ash

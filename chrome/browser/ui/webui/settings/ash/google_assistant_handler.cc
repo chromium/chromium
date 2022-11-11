@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
+#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "content/public/browser/browser_context.h"
@@ -77,8 +77,7 @@ void GoogleAssistantHandler::HandleShowGoogleAssistantSettings(
 void GoogleAssistantHandler::HandleRetrainVoiceModel(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
-  chromeos::AssistantOptInDialog::Show(FlowType::kSpeakerIdRetrain,
-                                       base::DoNothing());
+  AssistantOptInDialog::Show(FlowType::kSpeakerIdRetrain, base::DoNothing());
 }
 
 void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
