@@ -34,6 +34,7 @@ interface SyncAllPrefs {
   themesSynced: boolean;
   typedUrlsRegistered: boolean;
   typedUrlsSynced: boolean;
+  explicitPassphraseTime?: string;
 }
 
 /**
