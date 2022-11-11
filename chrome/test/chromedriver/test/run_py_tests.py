@@ -4084,16 +4084,14 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     self._https_server.SetDataForPath('/nesting.html', None)
     self._https_server.SetCallbackForPath('/fencedframe.html', None)
 
-  def _initDriver(self, fenced_frame_implementation):
+  def _initDriver(self):
     self._driver = self.CreateDriver(
         accept_insecure_certs = True,
         chrome_switches=['--site-per-process',
-            '--enable-features=FencedFrames:'
-            'implementation_type/%s,PrivacySandboxAdsAPIsOverride' %
-            fenced_frame_implementation])
+            '--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride'])
 
-  def _testCanSwitchToFencedFrame(self, fenced_frame_implementation):
-    self._initDriver(fenced_frame_implementation)
+  def testCanSwitchToFencedFrame(self):
+    self._initDriver()
     self._driver.Load(self.GetHttpsUrlForFile('/main.html'))
     self._driver.SetTimeouts({'implicit': 2000})
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
@@ -4101,8 +4099,8 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     button = self._driver.FindElement('tag name', 'button')
     self.assertIsNotNone(button)
 
-  def _testAppendEmptyFencedFrame(self, fenced_frame_implementation):
-    self._initDriver(fenced_frame_implementation)
+  def testAppendEmptyFencedFrame(self):
+    self._initDriver()
     self._driver.Load(self.GetHttpsUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript(
         'document.body.appendChild(document.createElement("fencedframe"));')
@@ -4110,31 +4108,13 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(fencedframe)
     self._driver.SwitchToFrame(fencedframe)
 
-  def _testFencedFrameInsideIframe(self, fenced_frame_implementation):
-    self._initDriver(fenced_frame_implementation)
+  def testFencedFrameInsideIframe(self):
+    self._initDriver()
     self._driver.Load(self.GetHttpsUrlForFile('/nesting.html'))
     self._driver.SwitchToFrameByIndex(0)
     fencedframe = self._driver.FindElement('tag name', 'fencedframe')
     self.assertIsNotNone(fencedframe)
     self._driver.SwitchToFrame(fencedframe)
-
-  def testCanSwitchToFencedFrame_ShadowDom(self):
-    self._testCanSwitchToFencedFrame('shadow_dom')
-
-  def testCanSwitchToFencedFrame_MPArch(self):
-    self._testCanSwitchToFencedFrame('mparch')
-
-  def testAppendEmptyFencedFrame_ShadowDom(self):
-    self._testAppendEmptyFencedFrame('shadow_dom')
-
-  def testAppendEmptyFencedFrame_MPArch(self):
-    self._testAppendEmptyFencedFrame('mparch')
-
-  def testFencedFrameInsideIframe_ShadowDom(self):
-    self._testFencedFrameInsideIframe('shadow_dom')
-
-  def testFencedFrameInsideIframe_MPArch(self):
-    self._testFencedFrameInsideIframe('mparch')
 
 class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
   """Tests for ChromeDriver with the new Site Isolation Chrome feature.

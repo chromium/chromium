@@ -188,33 +188,6 @@ class RemoteObjectReleaseGuard {
   std::string object_id_;
 };
 
-bool IsFencedFrameNode(const base::Value& node) {
-  if (!node.is_dict())
-    return false;
-  const std::string* node_name = node.GetDict().FindString("nodeName");
-  return node_name && *node_name == "FENCEDFRAME";
-}
-
-const base::Value* GetFencedFrameUserAgentShadowRoot(const base::Value& node) {
-  DCHECK(IsFencedFrameNode(node));
-  const base::Value* shadow_roots = node.GetDict().Find("shadowRoots");
-  if (!shadow_roots)
-    return nullptr;
-
-  // Find user-agent shadow root inside fenced frame.
-  for (const base::Value& shadow_root : shadow_roots->GetList()) {
-    if (shadow_root.is_dict()) {
-      const std::string* shadow_root_type =
-          shadow_root.GetDict().FindString("shadowRootType");
-      if (shadow_root_type && *shadow_root_type == "user-agent") {
-        return &shadow_root;
-      }
-    }
-  }
-
-  return nullptr;
-}
-
 Status DescribeNode(DevToolsClient* client,
                     const std::string& object_id,
                     int depth,
@@ -266,46 +239,6 @@ Status GetFrameIdForObjectId(DevToolsClient* client,
     *frame_id = *maybe_frame_id;
     *found_node = true;
     return Status(kOk);
-  }
-
-  if (IsFencedFrameNode(node)) {
-    status = DescribeNode(client, object_id, 3, true, &node);
-    if (status.IsError()) {
-      return status;
-    }
-    const base::Value* ua_shadow_root = GetFencedFrameUserAgentShadowRoot(node);
-    if (!ua_shadow_root)
-      return Status(kUnknownError, "Shadow not found in fenced frame");
-
-    if (ua_shadow_root->FindIntKey("childNodeCount").value_or(0) == 0)
-      return Status(kUnknownError,
-                    "Attribute childNodeCount not found in fenced frame");
-
-    // Find iframe inside fenced frame's shadow dom.
-    const base::Value* iframe_node = nullptr;
-    const base::Value* shadow_root_children =
-        ua_shadow_root->FindListKey("children");
-    if (!shadow_root_children)
-      return Status(kUnknownError,
-                    "Children attribute not found in fenced frame");
-
-    for (const base::Value& child : shadow_root_children->GetList()) {
-      if (*child.FindStringKey("nodeName") == "IFRAME") {
-        iframe_node = &child;
-        break;
-      }
-    }
-    if (!iframe_node)
-      return Status(kUnknownError, "IFrame child not found under fenced frame");
-
-    // Associate fenced frame element with nested iframe's frame id.
-    const std::string* child_frame_id =
-        iframe_node->GetDict().FindString("frameId");
-    if (child_frame_id) {
-      *frame_id = *child_frame_id;
-      *found_node = true;
-      return Status{kOk};
-    }
   }
 
   return Status(kOk);
