@@ -8,31 +8,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_node.h"
 
 namespace blink {
 
-struct NGGridSizingData : public GarbageCollected<NGGridSizingData> {
-  NGGridSizingData() = delete;
+struct NGGridSizingData {
+  USING_FAST_MALLOC(NGGridSizingData);
 
-  NGGridSizingData(const NGGridSizingData* parent_sizing_data,
-                   const GridItemData* subgrid_data_in_parent)
-      : parent_sizing_data(parent_sizing_data),
-        subgrid_data_in_parent(subgrid_data_in_parent) {}
-
-  bool MustBuildLayoutData(GridTrackSizingDirection track_direction) const;
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(grid_items);
-    visitor->Trace(parent_sizing_data);
-    visitor->Trace(subgrid_data_in_parent);
-  }
-
+ public:
   GridItems grid_items;
   NGGridLayoutData layout_data;
-
-  Member<const NGGridSizingData> parent_sizing_data;
-  Member<const GridItemData> subgrid_data_in_parent;
   wtf_size_t subtree_size{1};
 };
 
@@ -40,21 +24,20 @@ class CORE_EXPORT NGGridSizingTree {
   STACK_ALLOCATED();
 
  public:
-  using GridSizingDataLookupMap =
-      HeapHashMap<Member<const LayoutBox>, Member<NGGridSizingData>>;
-  using GridSizingDataVector = HeapVector<Member<NGGridSizingData>, 16>;
-
-  NGGridSizingData& CreateSizingData(
-      const NGGridNode& grid,
-      const NGGridSizingData* parent_sizing_data,
-      const GridItemData* subgrid_data_in_parent);
+  using GridSizingDataVector = Vector<std::unique_ptr<NGGridSizingData>, 16>;
 
   wtf_size_t Size() const { return sizing_data_.size(); }
 
-  NGGridSizingData& operator[](wtf_size_t index);
+  NGGridSizingData& CreateSizingData() {
+    return *sizing_data_.emplace_back(std::make_unique<NGGridSizingData>());
+  }
+
+  NGGridSizingData& operator[](wtf_size_t index) {
+    DCHECK_LT(index, sizing_data_.size());
+    return *sizing_data_[index];
+  }
 
  private:
-  GridSizingDataLookupMap data_lookup_map_;
   GridSizingDataVector sizing_data_;
 };
 

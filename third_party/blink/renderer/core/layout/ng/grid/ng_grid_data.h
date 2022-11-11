@@ -76,9 +76,6 @@ struct CORE_EXPORT NGGridPlacementData {
 // are able to modify the geometry of its sets. However, after sizing is done,
 // it should only copy |NGGridLayoutTrackCollection| immutable data.
 struct CORE_EXPORT NGGridLayoutData {
-  USING_FAST_MALLOC(NGGridLayoutData);
-
- public:
   NGGridLayoutData() = default;
   NGGridLayoutData(NGGridLayoutData&&) = default;
   NGGridLayoutData& operator=(NGGridLayoutData&&) = default;

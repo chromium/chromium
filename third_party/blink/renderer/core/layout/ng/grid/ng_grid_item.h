@@ -26,10 +26,13 @@ struct OutOfFlowItemPlacement {
   GridItemIndices offset_in_range;
 };
 
-struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
+struct CORE_EXPORT GridItemData {
+  USING_FAST_MALLOC(GridItemData);
+
+ public:
   GridItemData() = delete;
 
-  GridItemData(const NGBlockNode node,
+  GridItemData(NGBlockNode node,
                const ComputedStyle& root_grid_style,
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
@@ -139,9 +142,6 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
                                             : is_considered_for_row_sizing;
   }
 
-  void Set(GridTrackSizingDirection track_direction,
-           bool parent_must_consider_grid_items_for_sizing);
-
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
 
@@ -235,11 +235,11 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   OutOfFlowItemPlacement row_placement;
 };
 
-struct CORE_EXPORT GridItems {
+class CORE_EXPORT GridItems {
   DISALLOW_NEW();
 
  public:
-  using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
+  using GridItemDataVector = Vector<std::unique_ptr<GridItemData>, 16>;
 
   template <bool is_const>
   class IteratorBase {
@@ -278,7 +278,7 @@ struct CORE_EXPORT GridItems {
 
     value_type* operator->() const {
       DCHECK_LT(current_index_, item_data_->size());
-      return item_data_->at(current_index_).Get();
+      return item_data_->at(current_index_).get();
     }
 
     value_type& operator*() const { return *operator->(); }
@@ -291,36 +291,36 @@ struct CORE_EXPORT GridItems {
   typedef IteratorBase<false> Iterator;
   typedef IteratorBase<true> ConstIterator;
 
-  Iterator begin() { return {&item_data, 0}; }
-  Iterator end() { return {&item_data, item_data.size()}; }
+  Iterator begin() { return {&item_data_, 0}; }
+  Iterator end() { return {&item_data_, item_data_.size()}; }
 
-  ConstIterator begin() const { return {&item_data, 0}; }
-  ConstIterator end() const { return {&item_data, item_data.size()}; }
+  ConstIterator begin() const { return {&item_data_, 0}; }
+  ConstIterator end() const { return {&item_data_, item_data_.size()}; }
 
-  wtf_size_t Size() const { return item_data.size(); }
-  bool IsEmpty() const { return item_data.empty(); }
+  bool IsEmpty() const { return item_data_.empty(); }
+  wtf_size_t Size() const { return item_data_.size(); }
 
-  GridItemData& At(wtf_size_t index) { return *item_data[index]; }
+  void Append(GridItems* other);
+  void RemoveSubgriddedItems();
+  void SortByOrderProperty();
 
-  void Append(GridItemData* new_item_data) {
-    DCHECK(new_item_data);
-    item_data.emplace_back(new_item_data);
+  void Append(std::unique_ptr<GridItemData>&& new_item_data) {
+    item_data_.emplace_back(std::move(new_item_data));
   }
 
-  void RemoveSubgriddedItems();
+  GridItemData& At(wtf_size_t index) {
+    DCHECK(item_data_[index]);
+    return *item_data_[index];
+  }
 
   void ReserveInitialCapacity(wtf_size_t initial_capacity) {
-    item_data.ReserveInitialCapacity(initial_capacity);
-  }
-  void ReserveCapacity(wtf_size_t new_capacity) {
-    item_data.reserve(new_capacity);
+    item_data_.ReserveInitialCapacity(initial_capacity);
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
-
+ private:
   // Grid items are rearranged in order-modified document order since
   // auto-placement and painting rely on it later in the algorithm.
-  GridItemDataVector item_data;
+  GridItemDataVector item_data_;
 };
 
 }  // namespace blink

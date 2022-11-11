@@ -68,7 +68,7 @@ GridItems NGGridNode::ConstructGridItems(
         continue;
       }
 
-      auto* grid_item = MakeGarbageCollected<GridItemData>(
+      auto grid_item = std::make_unique<GridItemData>(
           To<NGBlockNode>(child), root_grid_style,
           must_consider_grid_items_for_column_sizing,
           must_consider_grid_items_for_row_sizing);
@@ -81,18 +81,11 @@ GridItems NGGridNode::ConstructGridItems(
       if (has_nested_subgrid)
         *has_nested_subgrid |= grid_item->IsSubgrid();
 
-      grid_items.Append(grid_item);
+      grid_items.Append(std::move(grid_item));
     }
 
-    if (should_sort_grid_items_by_order_property) {
-      // Sort all of our in-flow children by their `order` property.
-      auto CompareItemsByOrderProperty = [](const Member<GridItemData>& lhs,
-                                            const Member<GridItemData>& rhs) {
-        return lhs->node.Style().Order() < rhs->node.Style().Order();
-      };
-      std::stable_sort(grid_items.item_data.begin(), grid_items.item_data.end(),
-                       CompareItemsByOrderProperty);
-    }
+    if (should_sort_grid_items_by_order_property)
+      grid_items.SortByOrderProperty();
   }
 
   const auto& grid_style = Style();
@@ -146,8 +139,6 @@ void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing);
 
-    grid_items->ReserveCapacity(grid_items->Size() + subgridded_items.Size());
-
     const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
     const wtf_size_t row_start_line = current_item.StartLine(kForRows);
 
@@ -155,8 +146,8 @@ void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
       subgridded_item.resolved_position.columns.Translate(column_start_line);
       subgridded_item.resolved_position.rows.Translate(row_start_line);
       subgridded_item.is_subgridded_to_parent_grid = true;
-      grid_items->Append(&subgridded_item);
     }
+    grid_items->Append(&subgridded_items);
   }
 }
 

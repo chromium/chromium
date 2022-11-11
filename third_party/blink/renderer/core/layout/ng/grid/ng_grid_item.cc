@@ -119,7 +119,7 @@ AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
 }  // namespace
 
 GridItemData::GridItemData(
-    const NGBlockNode node,
+    NGBlockNode node,
     const ComputedStyle& root_grid_style,
     bool parent_must_consider_grid_items_for_column_sizing,
     bool parent_must_consider_grid_items_for_row_sizing)
@@ -378,19 +378,35 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
+void GridItems::Append(GridItems* other) {
+  item_data_.reserve(item_data_.size() + other->item_data_.size());
+  for (auto& grid_item : other->item_data_)
+    item_data_.emplace_back(std::move(grid_item));
+}
+
 void GridItems::RemoveSubgriddedItems() {
   wtf_size_t new_item_count = 0;
-  for (const auto& grid_item : item_data) {
+  for (const auto& grid_item : item_data_) {
     if (grid_item->is_subgridded_to_parent_grid)
       break;
     ++new_item_count;
   }
 
 #if DCHECK_IS_ON()
-  for (wtf_size_t i = new_item_count; i < item_data.size(); ++i)
-    DCHECK(item_data[i]->is_subgridded_to_parent_grid);
+  for (wtf_size_t i = new_item_count; i < item_data_.size(); ++i)
+    DCHECK(item_data_[i]->is_subgridded_to_parent_grid);
 #endif
-  item_data.Shrink(new_item_count);
+  item_data_.Shrink(new_item_count);
+}
+
+void GridItems::SortByOrderProperty() {
+  auto CompareItemsByOrderProperty =
+      [](const std::unique_ptr<GridItemData>& lhs,
+         const std::unique_ptr<GridItemData>& rhs) {
+        return lhs->node.Style().Order() < rhs->node.Style().Order();
+      };
+  std::stable_sort(item_data_.begin(), item_data_.end(),
+                   CompareItemsByOrderProperty);
 }
 
 }  // namespace blink

@@ -32,6 +32,9 @@ enum class GridItemContributionType {
   kForFreeSpace,
 };
 
+using GridItemDataPtrVector = Vector<GridItemData*, 16>;
+using GridSetPtrVector = Vector<NGGridSet*, 16>;
+
 class CORE_EXPORT NGGridLayoutAlgorithm
     : public NGLayoutAlgorithm<NGGridNode,
                                NGBoxFragmentBuilder,
@@ -68,7 +71,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children = nullptr,
       const NGGridSizingData* parent_sizing_data = nullptr,
       const NGGridLineResolver* parent_line_resolver = nullptr,
-      const GridItemData* subgrid_data_in_parent = nullptr,
+      const GridItemData* subgrid_data = nullptr,
       bool must_ignore_children = false) const;
 
   NGGridSizingTree BuildGridSizingTree(
@@ -132,8 +135,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                   GridItems* grid_items) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
-      GridItems::Iterator group_begin,
-      GridItems::Iterator group_end,
+      GridItemDataPtrVector::iterator group_begin,
+      GridItemDataPtrVector::iterator group_end,
       const NGGridLayoutData& layout_data,
       const bool is_group_spanning_flex_track,
       const SizingConstraint sizing_constraint,

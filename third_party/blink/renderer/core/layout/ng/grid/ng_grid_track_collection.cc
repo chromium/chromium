@@ -136,7 +136,7 @@ void NGGridRangeBuilder::EnsureTrackCoverage(
 }
 
 NGGridRangeVector NGGridRangeBuilder::FinalizeRanges() {
-  DCHECK_LE(start_lines_.size(), end_lines_.size());
+  DCHECK_EQ(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
   if (must_sort_grid_lines_) {
@@ -365,11 +365,6 @@ NGGridRangeBuilder::NGGridRangeBuilder(const NGGridTrackList& explicit_tracks,
     end_lines_.emplace_back(current_repeater_start_line);
   }
 }
-
-NGGridSet::NGGridSet(wtf_size_t track_count)
-    : track_count(track_count),
-      track_size(Length::Auto(), Length::Auto()),
-      fit_content_limit(kIndefiniteSize) {}
 
 NGGridSet::NGGridSet(wtf_size_t track_count,
                      const GridTrackSize& track_definition,
@@ -697,8 +692,7 @@ NGGridSizingTrackCollection::NGGridSizingTrackCollection(
     NGGridRangeVector&& ranges,
     bool must_create_baselines,
     GridTrackSizingDirection track_direction)
-    : NGGridLayoutTrackCollection(track_direction),
-      non_collapsed_track_count_(0) {
+    : NGGridLayoutTrackCollection(track_direction) {
   ranges_ = std::move(ranges);
 
   if (must_create_baselines)

@@ -19,9 +19,6 @@ struct NGGridPlacementData;
 // collection to get the range that contains a specific grid line.
 class CORE_EXPORT NGGridTrackCollectionBase {
  public:
-  explicit NGGridTrackCollectionBase(GridTrackSizingDirection track_direction)
-      : track_direction_(track_direction) {}
-
   virtual ~NGGridTrackCollectionBase() = default;
 
   // Returns the number of track ranges in the collection.
@@ -35,26 +32,21 @@ class CORE_EXPORT NGGridTrackCollectionBase {
   wtf_size_t RangeEndLine(wtf_size_t range_index) const;
   // Gets the index of the range that contains the given grid line.
   wtf_size_t RangeIndexFromGridLine(wtf_size_t grid_line) const;
-
-  GridTrackSizingDirection Direction() const { return track_direction_; }
-
- protected:
-  GridTrackSizingDirection track_direction_;
 };
 
 class CORE_EXPORT TrackSpanProperties {
  public:
   enum PropertyId : unsigned {
     kNoPropertyId = 0,
-    kHasAutoMinimumTrack = 1 << 1,
-    kHasFixedMaximumTrack = 1 << 2,
-    kHasFixedMinimumTrack = 1 << 3,
-    kHasFlexibleTrack = 1 << 4,
-    kHasIntrinsicTrack = 1 << 5,
-    kHasNonDefiniteTrack = 1 << 6,
-    kIsCollapsed = 1 << 7,
-    kIsDependentOnAvailableSize = 1 << 8,
-    kIsImplicit = 1 << 9,
+    kHasAutoMinimumTrack = 1 << 0,
+    kHasFixedMaximumTrack = 1 << 1,
+    kHasFixedMinimumTrack = 1 << 2,
+    kHasFlexibleTrack = 1 << 3,
+    kHasIntrinsicTrack = 1 << 4,
+    kHasNonDefiniteTrack = 1 << 5,
+    kIsCollapsed = 1 << 6,
+    kIsDependentOnAvailableSize = 1 << 7,
+    kIsImplicit = 1 << 8,
   };
 
   inline bool HasProperty(PropertyId id) const { return bitmask_ & id; }
@@ -165,9 +157,6 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 
   NGGridLayoutTrackCollection() = delete;
 
-  explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
-      : NGGridTrackCollectionBase(track_direction) {}
-
   NGGridLayoutTrackCollection(
       const NGGridLayoutTrackCollection& other,
       const NGBoxStrut& subgrid_border_scrollbar_padding,
@@ -215,8 +204,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
       wtf_size_t end_range_index,
       GridTrackSizingDirection subgrid_track_direction) const;
 
+  GridTrackSizingDirection Direction() const { return track_direction_; }
   LayoutUnit GutterSize() const { return gutter_size_; }
-  const NGGridRangeVector& Ranges() const { return ranges_; }
 
   bool HasFlexibleTrack() const;
   bool HasIntrinsicTrack() const;
@@ -237,13 +226,17 @@ class CORE_EXPORT NGGridLayoutTrackCollection
     Vector<LayoutUnit, 16> minor;
   };
 
-  // Baselines are only created when there are items with baseline alignment.
-  absl::optional<Baselines> baselines_;
+  explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
+      : track_direction_(track_direction) {}
 
   LayoutUnit gutter_size_;
   NGGridRangeVector ranges_;
   TrackSpanProperties properties_;
   Vector<SetGeometry, 16> sets_geometry_;
+  GridTrackSizingDirection track_direction_;
+
+  // Baselines are only created when there are items with baseline alignment.
+  absl::optional<Baselines> baselines_;
 
   // These values are used to adjust the sets geometry to the relative border
   // box of a subgrid and account for its gutter size difference.
@@ -289,7 +282,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
 // repeater and to not cross any grid item's boundary in the respective
 // dimension, tracks within a set are "commutative" and can be sized evenly.
 struct CORE_EXPORT NGGridSet {
-  explicit NGGridSet(wtf_size_t track_count);
+  explicit NGGridSet(wtf_size_t track_count)
+      : track_count(track_count), track_size(Length::Auto(), Length::Auto()) {}
 
   // |is_available_size_indefinite| is used to normalize percentage track
   // sizing functions; from https://drafts.csswg.org/css-grid-2/#track-sizes:
@@ -323,7 +317,7 @@ struct CORE_EXPORT NGGridSet {
   bool is_infinitely_growable : 1;
 };
 
-class CORE_EXPORT NGGridSizingTrackCollection
+class CORE_EXPORT NGGridSizingTrackCollection final
     : public NGGridLayoutTrackCollection {
   USING_FAST_MALLOC(NGGridSizingTrackCollection);
 
@@ -421,6 +415,7 @@ class CORE_EXPORT NGGridSizingTrackCollection
   void SetGutterSize(LayoutUnit gutter_size) { gutter_size_ = gutter_size; }
 
  private:
+  friend class NGGridLayoutAlgorithmTest;
   friend class NGGridTrackCollectionTest;
 
   // This private version of |InitializeSets| is directly used in testing.
@@ -432,7 +427,7 @@ class CORE_EXPORT NGGridSizingTrackCollection
                           bool is_available_size_indefinite,
                           NGGridRange* range);
 
-  wtf_size_t non_collapsed_track_count_;
+  wtf_size_t non_collapsed_track_count_{0};
 
   // Initially we only know some of the set sizes - others will be indefinite.
   // To represent this we store both the offset for the set, and a vector of all

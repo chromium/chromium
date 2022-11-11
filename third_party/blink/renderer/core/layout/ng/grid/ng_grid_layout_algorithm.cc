@@ -95,11 +95,17 @@ void CacheGridItemsProperties(
     GridItems* grid_items) {
   DCHECK(grid_items);
 
-  GridItems grid_items_spanning_multiple_ranges;
+  GridItemDataPtrVector grid_items_spanning_multiple_ranges;
   const auto track_direction = track_collection.Direction();
 
   for (auto& grid_item : *grid_items) {
+    const auto& range_indices = grid_item.RangeIndices(track_direction);
+    auto& track_span_properties = (track_direction == kForColumns)
+                                      ? grid_item.column_span_properties
+                                      : grid_item.row_span_properties;
+
     grid_item.ComputeSetIndices(track_collection);
+    track_span_properties.Reset();
 
     // If a grid item spans only one range, then we can just cache the track
     // span properties directly. On the contrary, if a grid item spans multiple
@@ -107,28 +113,23 @@ void CacheGridItemsProperties(
     // to do more work to cache its track span properties.
     //
     // TODO(layout-dev): Investigate applying this concept to spans > 1.
-    const auto& range_indices = grid_item.RangeIndices(track_direction);
     if (range_indices.begin == range_indices.end) {
-      auto& grid_item_properties = (track_direction == kForColumns)
-                                       ? grid_item.column_span_properties
-                                       : grid_item.row_span_properties;
-      grid_item_properties =
+      track_span_properties =
           track_collection.RangeProperties(range_indices.begin);
     } else {
-      grid_items_spanning_multiple_ranges.Append(&grid_item);
+      grid_items_spanning_multiple_ranges.emplace_back(&grid_item);
     }
   }
 
-  if (grid_items_spanning_multiple_ranges.IsEmpty())
+  if (grid_items_spanning_multiple_ranges.empty())
     return;
 
   auto CompareGridItemsByStartLine =
-      [track_direction](const Member<GridItemData>& lhs,
-                        const Member<GridItemData>& rhs) -> bool {
+      [track_direction](GridItemData* lhs, GridItemData* rhs) -> bool {
     return lhs->StartLine(track_direction) < rhs->StartLine(track_direction);
   };
-  std::sort(grid_items_spanning_multiple_ranges.item_data.begin(),
-            grid_items_spanning_multiple_ranges.item_data.end(),
+  std::sort(grid_items_spanning_multiple_ranges.begin(),
+            grid_items_spanning_multiple_ranges.end(),
             CompareGridItemsByStartLine);
 
   auto CacheGridItemsSpanningMultipleRangesProperty =
@@ -140,7 +141,7 @@ void CacheGridItemsProperties(
         wtf_size_t current_range_index = 0;
         const wtf_size_t range_count = track_collection.RangeCount();
 
-        for (auto& grid_item : grid_items_spanning_multiple_ranges) {
+        for (auto* grid_item : grid_items_spanning_multiple_ranges) {
           // We want to find the first range in the collection that:
           //   - Spans tracks located AFTER the start line of the current grid
           //   item; this can be done by checking that the last track number of
@@ -152,7 +153,7 @@ void CacheGridItemsProperties(
           //   - Contains a track that fulfills the specified property.
           while (current_range_index < range_count &&
                  (track_collection.RangeEndLine(current_range_index) <=
-                      grid_item.StartLine(track_direction) ||
+                      grid_item->StartLine(track_direction) ||
                   !track_collection.RangeProperties(current_range_index)
                        .HasProperty(property))) {
             ++current_range_index;
@@ -173,8 +174,8 @@ void CacheGridItemsProperties(
           // are excluded from the grid item's span, meaning that such item
           // cannot satisfy the property we are looking for.
           if (track_collection.RangeEndLine(current_range_index) <=
-              grid_item.EndLine(track_direction)) {
-            grid_item.SetTrackSpanProperty(property, track_direction);
+              grid_item->EndLine(track_direction)) {
+            grid_item->SetTrackSpanProperty(property, track_direction);
           }
         }
       };
@@ -420,20 +421,20 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
 namespace {
 
-GridArea SubgriddedAreaInParent(const GridItemData* subgrid_data_in_parent) {
-  if (!subgrid_data_in_parent)
+GridArea SubgriddedAreaInParent(const GridItemData* subgrid_data) {
+  if (!subgrid_data)
     return GridArea();
 
-  auto subgridded_area_in_parent = subgrid_data_in_parent->resolved_position;
+  auto subgridded_area_in_parent = subgrid_data->resolved_position;
 
-  if (!subgrid_data_in_parent->is_parallel_with_root_grid) {
+  if (!subgrid_data->is_parallel_with_root_grid) {
     std::swap(subgridded_area_in_parent.columns,
               subgridded_area_in_parent.rows);
   }
 
-  if (!subgrid_data_in_parent->has_subgridded_columns)
+  if (!subgrid_data->has_subgridded_columns)
     subgridded_area_in_parent.columns = GridSpan::IndefiniteGridSpan();
-  if (!subgrid_data_in_parent->has_subgridded_rows)
+  if (!subgrid_data->has_subgridded_rows)
     subgridded_area_in_parent.rows = GridSpan::IndefiniteGridSpan();
 
   return subgridded_area_in_parent;
@@ -446,7 +447,7 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
     HeapVector<Member<LayoutBox>>* oof_children,
     const NGGridSizingData* parent_sizing_data,
     const NGGridLineResolver* parent_line_resolver,
-    const GridItemData* subgrid_data_in_parent,
+    const GridItemData* subgrid_data,
     bool must_ignore_children) const {
   DCHECK(sizing_tree);
 
@@ -457,7 +458,7 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
   auto placement_data =
       parent_line_resolver
           ? NGGridPlacementData(style, *parent_line_resolver,
-                                SubgriddedAreaInParent(subgrid_data_in_parent))
+                                SubgriddedAreaInParent(subgrid_data))
           : NGGridPlacementData(style);
 
   // TODO(ethavar): Compute automatic repetitions for subgridded axes as
@@ -469,8 +470,7 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
   }
 
   bool has_nested_subgrid = false;
-  auto& sizing_data = sizing_tree->CreateSizingData(node, parent_sizing_data,
-                                                    subgrid_data_in_parent);
+  auto& sizing_data = sizing_tree->CreateSizingData();
 
   if (!must_ignore_children) {
     // Construct grid items that are not subgridded.
@@ -506,9 +506,14 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
         range_builder.FinalizeRanges(), must_create_baselines, track_direction);
   };
 
-  if (sizing_data.MustBuildLayoutData(kForColumns))
+  const bool must_build_sizing_column_collection =
+      !subgrid_data || !subgrid_data->has_subgridded_columns;
+  const bool must_build_sizing_row_collection =
+      !subgrid_data || !subgrid_data->has_subgridded_rows;
+
+  if (must_build_sizing_column_collection)
     BuildLayoutData(kForColumns);
-  if (sizing_data.MustBuildLayoutData(kForRows))
+  if (must_build_sizing_row_collection)
     BuildLayoutData(kForRows);
 
   if (!has_nested_subgrid)
@@ -541,9 +546,9 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
   // for subgridded items; it would be ideal to have them accounted for already,
   // but we might need the track collections to compute a subgrid's automatic
   // repetitions, so we do this process twice to avoid a cyclic dependency.
-  if (sizing_data.MustBuildLayoutData(kForColumns))
+  if (must_build_sizing_column_collection)
     BuildLayoutData(kForColumns);
-  if (sizing_data.MustBuildLayoutData(kForRows))
+  if (must_build_sizing_row_collection)
     BuildLayoutData(kForRows);
 
   return sizing_data.subtree_size;
@@ -565,7 +570,7 @@ NGGridSizingTree NGGridLayoutAlgorithm::BuildGridSizingTree(
   if (subgridded_columns || subgridded_rows) {
     const auto& node = Node();
     const auto& container_style = Style();
-    auto& sizing_data = sizing_tree.CreateSizingData(node, nullptr, nullptr);
+    auto& sizing_data = sizing_tree.CreateSizingData();
 
     bool has_nested_subgrid;
     sizing_data.grid_items = node.ConstructGridItems(
@@ -577,7 +582,11 @@ NGGridSizingTree NGGridLayoutAlgorithm::BuildGridSizingTree(
       NGGridRangeBuilder range_builder(
           container_style, node.CachedPlacementData(), track_direction);
 
+      bool must_create_baselines = false;
       for (auto& grid_item : sizing_data.grid_items) {
+        must_create_baselines |=
+            grid_item.IsBaselineSpecifiedForDirection(track_direction);
+
         auto& range_indices = grid_item.RangeIndices(track_direction);
         range_builder.EnsureTrackCoverage(grid_item.StartLine(track_direction),
                                           grid_item.SpanSize(track_direction),
@@ -590,7 +599,7 @@ NGGridSizingTree NGGridLayoutAlgorithm::BuildGridSizingTree(
                                     : sizing_data.layout_data.rows;
 
       sizing_collection = std::make_unique<NGGridSizingTrackCollection>(
-          range_builder.FinalizeRanges(), /* must_create_baselines */ false,
+          range_builder.FinalizeRanges(), must_create_baselines,
           track_direction);
     };
 
@@ -624,7 +633,7 @@ NGGridSizingTree NGGridLayoutAlgorithm::BuildGridSizingTreeIgnoringChildren()
   BuildGridSizingSubtree(&sizing_tree, /* oof_children */ nullptr,
                          /* parent_sizing_data */ nullptr,
                          /* parent_line_resolver */ nullptr,
-                         /* subgrid_data_in_parent */ nullptr,
+                         /* subgrid_data */ nullptr,
                          /* must_ignore_children */ true);
   return sizing_tree;
 }
@@ -1612,7 +1621,6 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 namespace {
 
 using ClampedDouble = base::ClampedNumeric<double>;
-using GridSetVector = Vector<NGGridSet*, 16>;
 using SetIterator = NGGridSizingTrackCollection::SetIterator;
 
 const double kDoubleEpsilon = std::numeric_limits<float>::epsilon();
@@ -1810,8 +1818,8 @@ template <bool is_equal_distribution>
 void DistributeExtraSpaceToSets(LayoutUnit extra_space,
                                 double flex_factor_sum,
                                 GridItemContributionType contribution_type,
-                                GridSetVector* sets_to_grow,
-                                GridSetVector* sets_to_grow_beyond_limit) {
+                                GridSetPtrVector* sets_to_grow,
+                                GridSetPtrVector* sets_to_grow_beyond_limit) {
   DCHECK(extra_space && sets_to_grow);
 
   if (extra_space == kIndefiniteSize) {
@@ -2042,8 +2050,8 @@ void DistributeExtraSpaceToSets(LayoutUnit extra_space,
 void DistributeExtraSpaceToSetsEqually(
     LayoutUnit extra_space,
     GridItemContributionType contribution_type,
-    GridSetVector* sets_to_grow,
-    GridSetVector* sets_to_grow_beyond_limit = nullptr) {
+    GridSetPtrVector* sets_to_grow,
+    GridSetPtrVector* sets_to_grow_beyond_limit = nullptr) {
   DistributeExtraSpaceToSets</* is_equal_distribution */ true>(
       extra_space, /* flex_factor_sum */ 0, contribution_type, sets_to_grow,
       sets_to_grow_beyond_limit);
@@ -2053,7 +2061,7 @@ void DistributeExtraSpaceToWeightedSets(
     LayoutUnit extra_space,
     const double flex_factor_sum,
     GridItemContributionType contribution_type,
-    GridSetVector* sets_to_grow) {
+    GridSetPtrVector* sets_to_grow) {
   DistributeExtraSpaceToSets</* is_equal_distribution */ false>(
       extra_space, flex_factor_sum, contribution_type, sets_to_grow,
       /* sets_to_grow_beyond_limit */ nullptr);
@@ -2062,8 +2070,8 @@ void DistributeExtraSpaceToWeightedSets(
 }  // namespace
 
 void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
-    GridItems::Iterator group_begin,
-    GridItems::Iterator group_end,
+    GridItemDataPtrVector::iterator group_begin,
+    GridItemDataPtrVector::iterator group_end,
     const NGGridLayoutData& layout_data,
     const bool is_group_spanning_flex_track,
     const SizingConstraint sizing_constraint,
@@ -2077,11 +2085,11 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     set_iterator.CurrentSet().planned_increase = kIndefiniteSize;
   }
 
-  GridSetVector sets_to_grow;
-  GridSetVector sets_to_grow_beyond_limit;
+  GridSetPtrVector sets_to_grow;
+  GridSetPtrVector sets_to_grow_beyond_limit;
 
   while (group_begin != group_end) {
-    GridItemData& grid_item = *(group_begin++);
+    GridItemData& grid_item = **(group_begin++);
     DCHECK(grid_item.IsSpanningIntrinsicTrack(track_direction));
 
     sets_to_grow.Shrink(0);
@@ -2179,12 +2187,12 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   DCHECK(track_collection && grid_items);
   const auto track_direction = track_collection->Direction();
 
-  GridItems reordered_grid_items;
+  GridItemDataPtrVector reordered_grid_items;
   reordered_grid_items.ReserveInitialCapacity(grid_items->Size());
 
   for (auto& grid_item : *grid_items) {
     if (grid_item.IsSpanningIntrinsicTrack(track_direction))
-      reordered_grid_items.Append(&grid_item);
+      reordered_grid_items.emplace_back(&grid_item);
   }
 
   // Reorder grid items to process them as follows:
@@ -2194,8 +2202,7 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   not spanning a flexible track have been considered.
   //   - Finally, consider all items spanning a flexible track.
   auto CompareGridItemsForIntrinsicTrackResolution =
-      [track_direction](const Member<GridItemData>& lhs,
-                        const Member<GridItemData>& rhs) -> bool {
+      [track_direction](GridItemData* lhs, GridItemData* rhs) -> bool {
     if (lhs->IsSpanningFlexibleTrack(track_direction) ||
         rhs->IsSpanningFlexibleTrack(track_direction)) {
       // Ignore span sizes if one of the items spans a track with a flexible
@@ -2204,25 +2211,24 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     }
     return lhs->SpanSize(track_direction) < rhs->SpanSize(track_direction);
   };
-  std::sort(reordered_grid_items.item_data.begin(),
-            reordered_grid_items.item_data.end(),
+  std::sort(reordered_grid_items.begin(), reordered_grid_items.end(),
             CompareGridItemsForIntrinsicTrackResolution);
 
   // First, process the items that don't span a flexible track.
-  auto current_group_begin = reordered_grid_items.begin();
+  auto** current_group_begin = reordered_grid_items.begin();
   while (current_group_begin != reordered_grid_items.end() &&
-         !current_group_begin->IsSpanningFlexibleTrack(track_direction)) {
+         !(*current_group_begin)->IsSpanningFlexibleTrack(track_direction)) {
     // Each iteration considers all items with the same span size.
     wtf_size_t current_group_span_size =
-        current_group_begin->SpanSize(track_direction);
+        (*current_group_begin)->SpanSize(track_direction);
 
-    auto current_group_end = current_group_begin;
+    auto** current_group_end = current_group_begin;
     do {
-      DCHECK(!current_group_end->IsSpanningFlexibleTrack(track_direction));
+      DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
       ++current_group_end;
     } while (current_group_end != reordered_grid_items.end() &&
-             !current_group_end->IsSpanningFlexibleTrack(track_direction) &&
-             current_group_end->SpanSize(track_direction) ==
+             !(*current_group_end)->IsSpanningFlexibleTrack(track_direction) &&
+             (*current_group_end)->SpanSize(track_direction) ==
                  current_group_span_size);
 
     IncreaseTrackSizesToAccommodateGridItems(
@@ -2257,8 +2263,8 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  for (auto it = current_group_begin; it != reordered_grid_items.end(); ++it)
-    DCHECK(it->IsSpanningFlexibleTrack(track_direction));
+  for (auto** it = current_group_begin; it != reordered_grid_items.end(); ++it)
+    DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
 #endif
 
   // Now, process items spanning flexible tracks (if any).
@@ -2289,7 +2295,7 @@ void NGGridLayoutAlgorithm::MaximizeTracks(
   if (!free_space)
     return;
 
-  GridSetVector sets_to_grow;
+  GridSetPtrVector sets_to_grow;
   sets_to_grow.ReserveInitialCapacity(track_collection->GetSetCount());
   for (auto set_iterator = track_collection->GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
@@ -2328,7 +2334,7 @@ void NGGridLayoutAlgorithm::StretchAutoTracks(
 
   // Expand tracks that have an 'auto' max track sizing function by dividing any
   // remaining positive, definite free space equally amongst them.
-  GridSetVector sets_to_grow;
+  GridSetPtrVector sets_to_grow;
   for (auto set_iterator = track_collection->GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
     auto& set = set_iterator.CurrentSet();
@@ -2385,7 +2391,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
   const auto track_direction = track_collection->Direction();
 
   // https://drafts.csswg.org/css-grid-2/#algo-find-fr-size
-  GridSetVector flexible_sets;
+  GridSetPtrVector flexible_sets;
   auto FindFrSize = [&](SetIterator set_iterator,
                         LayoutUnit leftover_space) -> double {
     ClampedDouble flex_factor_sum = 0;
