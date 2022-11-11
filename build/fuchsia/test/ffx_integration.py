@@ -189,12 +189,14 @@ class FfxEmulator(AbstractContextManager):
                 json.dump(ast.literal_eval(qemu_arm64_meta), f)
             emu_command.extend(['--engine', 'qemu'])
 
-        for retry_num in range(_EMU_COMMAND_RETRIES):
-            if retry_num == _EMU_COMMAND_RETRIES - 1:
-                run_ffx_command(emu_command)
-            else:
-                if run_ffx_command(emu_command, check=False).returncode == 0:
-                    break
+        with ScopedFfxConfig('emu.start.timeout', '180'):
+            for retry_num in range(_EMU_COMMAND_RETRIES):
+                if retry_num == _EMU_COMMAND_RETRIES - 1:
+                    run_ffx_command(emu_command)
+                else:
+                    if run_ffx_command(emu_command,
+                                       check=False).returncode == 0:
+                        break
         return self._node_name
 
     def __exit__(self, exc_type, exc_value, traceback) -> bool:
