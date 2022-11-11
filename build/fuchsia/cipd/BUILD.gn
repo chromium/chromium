@@ -105,7 +105,7 @@ template("cipd_archive") {
       _gn_path = "//buildtools/linux64/gn"
     }
 
-    script = "//tools/licenses.py"
+    script = "//tools/licenses/licenses.py"
     inputs = [ "$_gn_path" ]
     outputs = [ _license_path ]
     args = [

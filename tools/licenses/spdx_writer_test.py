@@ -8,8 +8,8 @@ import os
 import sys
 import unittest
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools'))
+REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 from spdx_writer import _get_spdx_path
 from spdx_writer import _Package

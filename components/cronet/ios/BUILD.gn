@@ -287,7 +287,7 @@ if (!is_fat_secondary_toolchain) {
   action("generate_license") {
     _license_path = "$_package_dir/LICENSE"
 
-    script = "//tools/licenses.py"
+    script = "//tools/licenses/licenses.py"
     inputs = [ lastchange_file ]
     outputs = [ _license_path ]
     args = [

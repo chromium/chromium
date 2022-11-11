@@ -627,7 +627,7 @@ if (!is_fat_secondary_toolchain) {
   action("ios_web_view_generate_license") {
     _license_path = "$_package_dir/LICENSE"
 
-    script = "//tools/licenses.py"
+    script = "//tools/licenses/licenses.py"
     inputs = [ "//buildtools/$host_os/gn" ]
     outputs = [ _license_path ]
     args = [

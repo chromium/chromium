@@ -1359,7 +1359,7 @@ if (!is_component_build) {
   action("generate_licenses") {
     _license_path = "$_package_dir/LICENSE"
 
-    script = "//tools/licenses.py"
+    script = "//tools/licenses/licenses.py"
     outputs = [ _license_path ]
     args = [
       "license_file",

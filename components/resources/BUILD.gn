@@ -93,7 +93,7 @@ grit("components_scaled_resources") {
 }
 
 action("about_credits") {
-  script = "//tools/licenses.py"
+  script = "//tools/licenses/licenses.py"
   depfile = "$target_gen_dir/$target_name.d"
 
   inputs = [

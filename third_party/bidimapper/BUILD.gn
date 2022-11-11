@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # The target "bidimapper" is created just to be used as a dependency of ChromeDriver.
-# This allows tools/licenses.py to discover it
+# This allows tools/licenses/licenses.py to discover it
 # and append its license notice to the LICENSE file of ChromeDriver.
 copy("bidimapper") {
   sources = [ "mapper.js" ]

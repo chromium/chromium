@@ -186,7 +186,7 @@ false-negatives).
 You need a LICENSE file. Example:
 [//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE).
 
-Run `//tools/licenses.py scan`; this will complain about incomplete or missing
+Run `//tools/licenses/licenses.py scan`; this will complain about incomplete or missing
 data for third_party checkins. We use `licenses.py credits` to generate the
 about:credits page in Google Chrome builds.
 
@@ -241,6 +241,6 @@ That page displays a resource embedded in the browser as part of the
 GRIT file; the actual HTML text is generated in the
 [//components/resources:about_credits](../components/resources/BUILD.gn)
 build target using a template from the output of the
-[//tools/licenses.py](../tools/licenses.py) script. Assuming you've followed
+[//tools/licenses/licenses.py](../tools/licenses/licenses.py) script. Assuming you've followed
 the rules above to ensure that you have the proper LICENSE file and it passes
 the checks, it'll be included automatically.

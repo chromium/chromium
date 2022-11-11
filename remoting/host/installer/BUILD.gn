@@ -10,7 +10,7 @@ action("credits") {
   # compatibility w/ GYP, since the installer needs the file to
   # be at the same location.
   about_credits_file = "$root_build_dir/gen/remoting/CREDITS.txt"
-  script = "//tools/licenses.py"
+  script = "//tools/licenses/licenses.py"
   depfile = "$target_gen_dir/$target_name.d"
 
   inputs = [

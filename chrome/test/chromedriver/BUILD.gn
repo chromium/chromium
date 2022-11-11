@@ -536,7 +536,7 @@ action("generate_chromedriver_license") {
     "third_party/selenium-atoms/wgxpath",
     "third_party/selenium-atoms/closure-lib",
   ]
-  script = "//tools/licenses.py"
+  script = "//tools/licenses/licenses.py"
   outputs = [ _license_path ]
   args = [
     "license_file",

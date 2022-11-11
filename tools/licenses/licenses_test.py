@@ -2,17 +2,16 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit tests for //tools/licenses.py.
+"""Unit tests for //tools/licenses/licenses.py.
 """
 
 import os
 import pathlib
 import sys
 import unittest
-from unittest import mock
 
-REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools'))
+REPOSITORY_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'licenses'))
 
 import licenses
 

@@ -30,8 +30,6 @@ per-file include_tracer.py=thakis@chromium.org
 
 per-file ipc_messages_log.py=yfriedman@chromium.org
 
-per-file licenses_test.py=ichikawa@chromium.org
-
 per-file nocompile_driver.py=wychen@chromium.org
 
 per-file roll_webgl_conformance.py=bajones@chromium.org
