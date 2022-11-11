@@ -29,13 +29,13 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
 
+class HTMLToken;
 class HTMLTokenizer;
 
 class HTMLMetaCharsetParser {
@@ -53,12 +53,11 @@ class HTMLMetaCharsetParser {
   const WTF::TextEncoding& Encoding() { return encoding_; }
 
  private:
-  bool ProcessMeta();
+  bool ProcessMeta(const HTMLToken& token);
 
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   std::unique_ptr<TextCodec> assumed_codec_;
   SegmentedString input_;
-  HTMLToken token_;
   bool in_head_section_;
 
   bool done_checking_;

@@ -222,7 +222,6 @@ class CORE_EXPORT HTMLPreloadScanner
  private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
-  HTMLToken token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   std::unique_ptr<BackgroundHTMLScanner::ScriptTokenScanner>
       script_token_scanner_;

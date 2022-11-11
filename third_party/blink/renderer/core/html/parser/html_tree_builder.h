@@ -84,7 +84,9 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   void ConstructTree(AtomicHTMLToken*);
 
-  bool HasParserBlockingScript() const { return !!script_to_process_; }
+  ALWAYS_INLINE bool HasParserBlockingScript() const {
+    return !!script_to_process_;
+  }
   // Must be called to take the parser-blocking script before calling the parser
   // again.
   Element* TakeScriptToProcess(TextPosition& script_start_position);

@@ -40,16 +40,12 @@ TEST_F(HTMLTokenizerTest, ZeroOffsetAttributeNameRange) {
   HTMLParserOptions options;
   std::unique_ptr<HTMLTokenizer> tokenizer =
       std::make_unique<HTMLTokenizer>(options);
-  HTMLToken token;
-
   SegmentedString input("<script ");
-  EXPECT_FALSE(tokenizer->NextToken(input, token));
-
-  EXPECT_EQ(HTMLToken::kStartTag, token.GetType());
+  EXPECT_EQ(nullptr, tokenizer->NextToken(input));
 
   SegmentedString input2("type='javascript'");
   // Below should not fail ASSERT
-  EXPECT_FALSE(tokenizer->NextToken(input2, token));
+  EXPECT_EQ(nullptr, tokenizer->NextToken(input2));
 }
 
 TEST_F(HTMLTokenizerTest, SaveAndRestoreSnapshot) {

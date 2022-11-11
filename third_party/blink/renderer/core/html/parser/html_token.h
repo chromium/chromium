@@ -169,6 +169,20 @@ class HTMLToken {
   HTMLToken(const HTMLToken&) = delete;
   HTMLToken& operator=(const HTMLToken&) = delete;
 
+  std::unique_ptr<HTMLToken> Take() {
+    std::unique_ptr<HTMLToken> copy = std::make_unique<HTMLToken>();
+    copy->data_ = std::move(data_);
+    copy->attributes_ = std::move(attributes_);
+    copy->doctype_data_ = std::move(doctype_data_);
+    copy->type_ = type_;
+    copy->self_closing_ = self_closing_;
+    copy->range_ = range_;
+    copy->base_offset_ = base_offset_;
+    // Reset to uninitialized.
+    Clear();
+    return copy;
+  }
+
   void Clear() {
     if (type_ == kUninitialized)
       return;

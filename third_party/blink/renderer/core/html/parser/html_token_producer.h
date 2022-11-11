@@ -71,11 +71,11 @@ class CORE_EXPORT HTMLTokenProducer {
   HTMLToken* ParseNextToken();
 
   // Clears the token.
-  void ClearToken() {
+  ALWAYS_INLINE void ClearToken() {
     // Background parsing creates a unique token every time, so need to clear
     // it.
     if (!IsUsingBackgroundProducer())
-      token_->Clear();
+      tokenizer_->ClearToken();
   }
 
   // Appends `string` to the end of text to parse.
@@ -165,7 +165,6 @@ class CORE_EXPORT HTMLTokenProducer {
   // State used when tokenizer runs on main thread:
 
   // Used if production happening on the current thread.
-  std::unique_ptr<HTMLToken> token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
 
   // The remaining state is only used when the tokenizer runs off the main

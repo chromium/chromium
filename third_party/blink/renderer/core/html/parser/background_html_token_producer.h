@@ -150,6 +150,7 @@ class CORE_EXPORT BackgroundHTMLTokenProducer {
 
   // Adds a token result and notifies the main thread data is available.
   void AppendTokenResult(
+      std::unique_ptr<HTMLToken> token,
       bool was_tokenizer_state_change_speculative,
       HTMLTokenizer::State state_before_speculative_state_change);
 
@@ -203,7 +204,6 @@ class CORE_EXPORT BackgroundHTMLTokenProducer {
   // `tokenizer_` operates on this.
   SegmentedString input_;
 
-  std::unique_ptr<HTMLToken> token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

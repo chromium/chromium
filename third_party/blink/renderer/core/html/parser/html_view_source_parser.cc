@@ -45,15 +45,17 @@ HTMLViewSourceParser::HTMLViewSourceParser(HTMLViewSourceDocument& document,
 void HTMLViewSourceParser::PumpTokenizer() {
   while (true) {
     StartTracker(input_.Current(), tokenizer_.get(), token_);
-    if (!tokenizer_->NextToken(input_.Current(), token_))
+    HTMLToken* token = tokenizer_->NextToken(input_.Current());
+    if (!token)
       return;
-    EndTracker(input_.Current(), tokenizer_.get(), token_);
+    token_ = token;
+    EndTracker(input_.Current(), tokenizer_.get(), *token_);
 
-    GetDocument()->AddSource(SourceForToken(token_), token_);
+    GetDocument()->AddSource(SourceForToken(*token_), *token_);
 
-    if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(token_);
-    token_.Clear();
+    if (token_->GetType() == HTMLToken::kStartTag)
+      tokenizer_->UpdateStateFor(*token_);
+    token_->Clear();
   }
 }
 
@@ -75,8 +77,8 @@ void HTMLViewSourceParser::Finish() {
 
 void HTMLViewSourceParser::StartTracker(SegmentedString& current_input,
                                         HTMLTokenizer* tokenizer,
-                                        HTMLToken& token) {
-  if (token.GetType() == HTMLToken::kUninitialized && !tracker_is_started_) {
+                                        HTMLToken* token) {
+  if (!tracker_is_started_ && (!token || token->IsUninitialized())) {
     previous_source_.Clear();
     if (NeedToCheckTokenizerBuffer(tokenizer) &&
         tokenizer->NumberOfBufferedCharacters())
@@ -87,8 +89,10 @@ void HTMLViewSourceParser::StartTracker(SegmentedString& current_input,
 
   tracker_is_started_ = true;
   current_source_ = current_input;
-  token.SetBaseOffset(current_source_.NumberOfCharactersConsumed() -
-                      previous_source_.length());
+  if (token) {
+    token->SetBaseOffset(current_source_.NumberOfCharactersConsumed() -
+                         previous_source_.length());
+  }
 }
 
 void HTMLViewSourceParser::EndTracker(SegmentedString& current_input,

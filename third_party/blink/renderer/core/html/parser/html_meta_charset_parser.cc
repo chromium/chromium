@@ -43,8 +43,8 @@ HTMLMetaCharsetParser::HTMLMetaCharsetParser()
 
 HTMLMetaCharsetParser::~HTMLMetaCharsetParser() = default;
 
-bool HTMLMetaCharsetParser::ProcessMeta() {
-  const HTMLToken::AttributeList& token_attributes = token_.Attributes();
+bool HTMLMetaCharsetParser::ProcessMeta(const HTMLToken& token) {
+  const HTMLToken::AttributeList& token_attributes = token.Attributes();
   HTMLAttributeList attributes;
   for (const HTMLToken::Attribute& token_attribute : token_attributes) {
     String attribute_name = token_attribute.NameAttemptStaticStringCreation();
@@ -86,16 +86,16 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
 
   input_.Append(SegmentedString(assumed_codec_->Decode(data, length)));
 
-  while (tokenizer_->NextToken(input_, token_)) {
-    bool end = token_.GetType() == HTMLToken::kEndTag;
-    if (end || token_.GetType() == HTMLToken::kStartTag) {
+  while (HTMLToken* token = tokenizer_->NextToken(input_)) {
+    bool end = token->GetType() == HTMLToken::kEndTag;
+    if (end || token->GetType() == HTMLToken::kStartTag) {
       const html_names::HTMLTag tag =
-          token_.GetName().IsEmpty()
+          token->GetName().IsEmpty()
               ? html_names::HTMLTag::kUnknown
-              : lookupHTMLTag(token_.GetName().data(), token_.GetName().size());
+              : lookupHTMLTag(token->GetName().data(), token->GetName().size());
       if (!end && tag != html_names::HTMLTag::kUnknown) {
         tokenizer_->UpdateStateFor(tag);
-        if (tag == html_names::HTMLTag::kMeta && ProcessMeta()) {
+        if (tag == html_names::HTMLTag::kMeta && ProcessMeta(*token)) {
           done_checking_ = true;
           return true;
         }
@@ -121,7 +121,7 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(const char* data,
       return true;
     }
 
-    token_.Clear();
+    token->Clear();
   }
 
   return false;

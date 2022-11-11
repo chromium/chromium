@@ -30,7 +30,6 @@ BackgroundHTMLTokenProducer::BackgroundHTMLTokenProducer(
     : input_(input),
       tokenizer_(std::move(tokenizer)),
       task_runner_(std::move(task_runner)) {
-  token_ = std::make_unique<HTMLToken>();
   if (g_max_tokens == 0)
     g_max_tokens = features::kThreadedHtmlTokenizerTokenMaxCount.Get();
   // `g_max_tokens` must be > 0, otherwise no tokens will be added and this
@@ -172,7 +171,8 @@ void BackgroundHTMLTokenProducer::RunTokenizeLoopOnTaskRunner() {
           .string_length_at_start_of_token = input_.length(),
           .line_count_at_start_of_token = input_.CurrentLine().ZeroBasedInt()});
     }
-    if (!tokenizer_->NextToken(input_, *token_)) {
+    HTMLToken* token = tokenizer_->NextToken(input_);
+    if (!token) {
       // Let main thread know reached end of current input.
       NotifyEndOfInput(apply_result.input_generation);
 
@@ -193,10 +193,10 @@ void BackgroundHTMLTokenProducer::RunTokenizeLoopOnTaskRunner() {
       bool was_tokenizer_state_change_speculative = false;
       HTMLTokenizer::State state_before_speculative_state_change =
           HTMLTokenizer::kDataState;
-      if (token_->GetType() == HTMLToken::kStartTag &&
-          token_->GetName().size() > 0) {
+      if (token->GetType() == HTMLToken::kStartTag &&
+          token->GetName().size() > 0) {
         auto html_tag =
-            lookupHTMLTag(token_->GetName().data(), token_->GetName().size());
+            lookupHTMLTag(token->GetName().data(), token->GetName().size());
         auto speculative_state = tokenizer_->SpeculativeStateForTag(html_tag);
         if (speculative_state && speculative_state != tokenizer_->GetState()) {
           state_before_speculative_state_change = tokenizer_->GetState();
@@ -204,7 +204,7 @@ void BackgroundHTMLTokenProducer::RunTokenizeLoopOnTaskRunner() {
           was_tokenizer_state_change_speculative = true;
         }
       }
-      AppendTokenResult(was_tokenizer_state_change_speculative,
+      AppendTokenResult(token->Take(), was_tokenizer_state_change_speculative,
                         state_before_speculative_state_change);
     }
   }
@@ -253,6 +253,7 @@ void BackgroundHTMLTokenProducer::DeleteOnTaskRunner() {
 }
 
 void BackgroundHTMLTokenProducer::AppendTokenResult(
+    std::unique_ptr<HTMLToken> token,
     bool was_tokenizer_state_change_speculative,
     HTMLTokenizer::State state_before_speculative_state_change) {
   DCHECK(IsRunningOnBackgroundTaskRunner());
@@ -267,11 +268,10 @@ void BackgroundHTMLTokenProducer::AppendTokenResult(
   const unsigned column_position_at_end = input_.CurrentColumn().ZeroBasedInt();
   in_progress_token_data_.reset();
 
-  AppendResultAndNotify(std::move(token_), num_chars_processed,
+  AppendResultAndNotify(std::move(token), num_chars_processed,
                         num_lines_processed, column_position_at_end,
                         was_tokenizer_state_change_speculative,
                         state_before_speculative_state_change);
-  token_ = std::make_unique<HTMLToken>();
 }
 
 void BackgroundHTMLTokenProducer::AppendResultAndNotify(

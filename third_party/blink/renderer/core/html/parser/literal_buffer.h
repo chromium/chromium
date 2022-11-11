@@ -235,6 +235,14 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     return *this;
   }
 
+  UCharLiteralBuffer& operator=(const UCharLiteralBuffer& other) {
+    if (this == &other)
+      return *this;
+    this->Copy(other);
+    is_8bit_ = other.is_8bit_;
+    return *this;
+  }
+
   UCharLiteralBuffer& operator=(UCharLiteralBuffer&& other) {
     if (this == &other)
       return *this;

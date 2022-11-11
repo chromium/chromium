@@ -1134,17 +1134,17 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
   if (script_token_scanner_)
     script_token_scanner_->set_first_script_in_scan(true);
 
-  while (tokenizer_->NextToken(source_, token_)) {
-    if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(token_);
+  while (HTMLToken* token = tokenizer_->NextToken(source_)) {
+    if (token->GetType() == HTMLToken::kStartTag)
+      tokenizer_->UpdateStateFor(*token);
     bool seen_csp_meta_tag = false;
-    scanner_.Scan(token_, source_, pending_data->requests,
+    scanner_.Scan(*token, source_, pending_data->requests,
                   pending_data->meta_ch_values, &pending_data->viewport,
                   &seen_csp_meta_tag);
     if (script_token_scanner_)
-      script_token_scanner_->ScanToken(token_);
+      script_token_scanner_->ScanToken(*token);
     pending_data->has_csp_meta_tag |= seen_csp_meta_tag;
-    token_.Clear();
+    token->Clear();
     // Don't preload anything if a CSP meta tag is found. We should rarely find
     // them here because the HTMLPreloadScanner is only used for the synchronous
     // parsing path.

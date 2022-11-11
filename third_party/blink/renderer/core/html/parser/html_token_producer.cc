@@ -40,7 +40,6 @@ HTMLTokenProducer::HTMLTokenProducer(HTMLInputStream& input_stream,
     : input_stream_(input_stream),
       parser_options_(parser_options),
       initial_state_(initial_state),
-      token_(std::make_unique<HTMLToken>()),
       tokenizer_(std::make_unique<HTMLTokenizer>(parser_options_)) {
   tokenizer_->SetState(initial_state);
   if (can_use_background_token_producer &&
@@ -63,9 +62,7 @@ HTMLTokenProducer::HTMLTokenProducer(HTMLInputStream& input_stream,
 }
 
 HTMLTokenProducer::~HTMLTokenProducer() {
-  // Destroy `tokenizer_` first as it keeps a raw pointer to `token_`.
   tokenizer_.reset();
-  token_.reset();
 
   if (IsUsingBackgroundProducer()) {
     DCHECK_GT(g_num_bg_producers, 0);
@@ -161,8 +158,7 @@ HTMLToken* HTMLTokenProducer::ParseNextToken() {
     // fall through to using `tokenizer_`.
     DCHECK(!IsUsingBackgroundProducer());
   }
-  return tokenizer_->NextToken(input_stream_.Current(), *token_) ? token_.get()
-                                                                 : nullptr;
+  return tokenizer_->NextToken(input_stream_.Current());
 }
 
 void HTMLTokenProducer::AppendToEnd(const String& string) {

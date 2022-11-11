@@ -53,6 +53,8 @@ class CORE_EXPORT HTMLTokenizer {
 
   void Reset();
 
+  void ClearToken() { token_.Clear(); }
+
   enum State {
     kDataState,
     kCharacterReferenceInDataState,
@@ -136,7 +138,7 @@ class CORE_EXPORT HTMLTokenizer {
   // This function returns true if it emits a token. Otherwise, callers
   // must provide the same (in progress) token on the next call (unless
   // they call reset() first).
-  bool NextToken(SegmentedString&, HTMLToken&);
+  HTMLToken* NextToken(SegmentedString&);
 
   // Returns a copy of any characters buffered internally by the tokenizer.
   // The tokenizer buffers characters when searching for the </script> token
@@ -212,6 +214,7 @@ class CORE_EXPORT HTMLTokenizer {
  private:
   friend class HTMLTokenizerTest;
 
+  bool NextTokenImpl(SegmentedString&);
   inline bool ProcessEntity(SegmentedString&);
 
   // Returns true if it has skipped all the whitespaces and we still have
@@ -223,8 +226,8 @@ class CORE_EXPORT HTMLTokenizer {
 
   inline void BufferCharacter(UChar character) {
     DCHECK_NE(character, kEndOfFileMarker);
-    token_->EnsureIsCharacterToken();
-    token_->AppendToCharacter(character);
+    token_.EnsureIsCharacterToken();
+    token_.AppendToCharacter(character);
   }
 
   inline bool EmitAndResumeIn(SegmentedString& source, State state) {
@@ -249,8 +252,8 @@ class CORE_EXPORT HTMLTokenizer {
       return true;
     state_ = HTMLTokenizer::kDataState;
     source.AdvanceAndUpdateLineNumber();
-    token_->Clear();
-    token_->MakeEndOfFile();
+    token_.Clear();
+    token_.MakeEndOfFile();
     return true;
   }
 
@@ -267,23 +270,21 @@ class CORE_EXPORT HTMLTokenizer {
   inline void AddToPossibleEndTag(LChar cc);
 
   inline void SaveEndTagNameIfNeeded() {
-    DCHECK_NE(token_->GetType(), HTMLToken::kUninitialized);
-    if (token_->GetType() == HTMLToken::kStartTag)
-      appropriate_end_tag_name_ = token_->GetName();
+    DCHECK_NE(token_.GetType(), HTMLToken::kUninitialized);
+    if (token_.GetType() == HTMLToken::kStartTag)
+      appropriate_end_tag_name_ = token_.GetName();
   }
   inline bool IsAppropriateEndTag();
 
   inline bool HaveBufferedCharacterToken() {
-    return token_->GetType() == HTMLToken::kCharacter;
+    return token_.GetType() == HTMLToken::kCharacter;
   }
+
+  HTMLToken token_;
 
   State state_;
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
-
-  // token_ is owned by the caller. If NextToken is not on the stack,
-  // this member might be pointing to unallocated memory.
-  HTMLToken* token_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#additional-allowed-character
   UChar additional_allowed_character_;
@@ -302,6 +303,10 @@ class CORE_EXPORT HTMLTokenizer {
   LCharLiteralBuffer<32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
+
+#if DCHECK_IS_ON()
+  bool token_should_be_in_uninitialized_state_ = true;
+#endif
 };
 
 // Snapshot of the tokenizers state. Used by HTMLTokenProducer when it switches

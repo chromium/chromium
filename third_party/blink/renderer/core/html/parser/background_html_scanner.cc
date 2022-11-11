@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
+#include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -174,11 +175,11 @@ void BackgroundHTMLScanner::Scan(const String& source) {
   TRACE_EVENT0("blink", "BackgroundHTMLScanner::Scan");
   token_scanner_->set_first_script_in_scan(true);
   source_.Append(source);
-  while (tokenizer_->NextToken(source_, token_)) {
-    if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(token_);
-    token_scanner_->ScanToken(token_);
-    token_.Clear();
+  while (HTMLToken* token = tokenizer_->NextToken(source_)) {
+    if (token->GetType() == HTMLToken::kStartTag)
+      tokenizer_->UpdateStateFor(*token);
+    token_scanner_->ScanToken(*token);
+    token->Clear();
   }
 }
 

@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -17,6 +16,7 @@
 namespace blink {
 
 class HTMLParserOptions;
+class HTMLToken;
 class HTMLTokenizer;
 class ScriptableDocumentParser;
 
@@ -94,7 +94,6 @@ class CORE_EXPORT BackgroundHTMLScanner {
 
  private:
   SegmentedString source_;
-  HTMLToken token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
   std::unique_ptr<ScriptTokenScanner> token_scanner_;
 };
