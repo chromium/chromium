@@ -3396,7 +3396,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
-          'isolated_scripts': 'fieldtrial_isolated_scripts',
         },
       },
       'linux-headless-shell-rel': {
@@ -3596,7 +3595,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
-          'isolated_scripts': 'fieldtrial_isolated_scripts',
         },
       },
       'mac-hermetic-upgrade-rel': {
@@ -3668,7 +3666,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
-          'isolated_scripts': 'fieldtrial_isolated_scripts',
         },
       },
       'win-perfetto-rel': {

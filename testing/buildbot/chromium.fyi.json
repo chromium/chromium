@@ -87417,63 +87417,6 @@
         "test": "xr_browser_tests",
         "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
       }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--xvfb",
-          "--jobs=1",
-          "--extra-browser-args='--enable-crashpad --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_perf_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_perf_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
-      },
-      {
-        "args": [
-          "--jobs=1",
-          "--extra-browser-args='--disable-gpu --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
-      }
     ]
   },
   "linux-headless-shell-rel": {
@@ -99359,65 +99302,6 @@
         "test": "xr_browser_tests",
         "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
       }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--xvfb",
-          "--jobs=1",
-          "--extra-browser-args='--enable-crashpad --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_perf_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_perf_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
-      },
-      {
-        "args": [
-          "--jobs=1",
-          "--extra-browser-args='--disable-gpu --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
-      }
     ]
   },
   "mac-hermetic-upgrade-rel": {
@@ -104769,65 +104653,6 @@
         },
         "test": "xr_browser_tests",
         "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "args": [
-          "--xvfb",
-          "--jobs=1",
-          "--extra-browser-args='--enable-crashpad --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_perf_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_perf_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Windows-10-19042",
-              "pool": "chromium.tests.finch"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
-      },
-      {
-        "args": [
-          "--jobs=1",
-          "--extra-browser-args='--disable-gpu --disable-field-trial-config'"
-        ],
-        "isolate_name": "telemetry_unittests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "telemetry_unittests_no_field_trial",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Windows-10-19042",
-              "pool": "chromium.tests.finch"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
-        },
-        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       }
     ]
   },
