@@ -2485,7 +2485,7 @@
       },
       'Mac12 Tests': {
         'swarming': {
-          'quickrun_shards': 6,
+          'shards': 6,
         },
       },
       'Mac12 Tests (dbg)': { # https://crbug.com/1265051
