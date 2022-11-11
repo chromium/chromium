@@ -24,7 +24,6 @@
 namespace blink {
 
 using CompositorStickyConstraint = cc::StickyPositionConstraint;
-class AffineTransform;
 
 // A transform (e.g., created by css "transform" or "perspective", or for
 // internal positioning such as paint offset or scrolling) along with a
@@ -85,75 +84,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     kVisible,
   };
 
-  // Stores a transform and origin with an optimization for the identity and
-  // 2d translation cases that avoids allocating a full matrix and origin.
-  class PLATFORM_EXPORT TransformAndOrigin {
-    DISALLOW_NEW();
-
-   public:
-    TransformAndOrigin() = default;
-    explicit TransformAndOrigin(const AffineTransform&);
-    // These constructors are not explicit so that we can use gfx::Vector2dF or
-    // gfx::Transform directly in the initialization list of State.
-    // NOLINTNEXTLINE(google-explicit-constructor)
-    TransformAndOrigin(const gfx::Vector2dF& translation_2d)
-        : translation_2d_(translation_2d) {}
-    // This should be used for arbitrary matrix only. If the caller knows that
-    // the transform is identity or a 2d translation, the translation_2d version
-    // should be used instead.
-    // NOLINTNEXTLINE(google-explicit-constructor)
-    TransformAndOrigin(const gfx::Transform& matrix,
-                       const gfx::Point3F& origin = gfx::Point3F()) {
-      matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(matrix, origin);
-    }
-
-    bool IsIdentityOr2DTranslation() const { return !matrix_and_origin_; }
-    bool IsIdentity() const {
-      return !matrix_and_origin_ && translation_2d_.IsZero();
-    }
-    const gfx::Vector2dF& Translation2D() const {
-      DCHECK(IsIdentityOr2DTranslation());
-      return translation_2d_;
-    }
-
-    const gfx::Transform& Matrix() const {
-      DCHECK(matrix_and_origin_);
-      return matrix_and_origin_->matrix;
-    }
-    gfx::Transform SlowMatrix() const;
-
-    gfx::Point3F Origin() const {
-      return matrix_and_origin_ ? matrix_and_origin_->origin : gfx::Point3F();
-    }
-    bool TransformEquals(const TransformAndOrigin& other) const {
-      return translation_2d_ == other.translation_2d_ &&
-             ((!matrix_and_origin_ && !other.matrix_and_origin_) ||
-              (matrix_and_origin_ && other.matrix_and_origin_ &&
-               matrix_and_origin_->matrix == other.matrix_and_origin_->matrix));
-    }
-
-    bool ChangePreserves2dAxisAlignment(const TransformAndOrigin& other) const {
-      if (IsIdentityOr2DTranslation() && other.IsIdentityOr2DTranslation())
-        return true;
-      if (IsIdentityOr2DTranslation())
-        return other.Matrix().Preserves2dAxisAlignment();
-      if (other.IsIdentityOr2DTranslation())
-        return Matrix().Preserves2dAxisAlignment();
-      // TODO(crbug.com/960481): Consider more rare corner cases.
-      return (Matrix().InverseOrIdentity() * other.Matrix())
-          .Preserves2dAxisAlignment();
-    }
-
-   private:
-    struct MatrixAndOrigin {
-      MatrixAndOrigin(const gfx::Transform& m, const gfx::Point3F& o)
-          : matrix(m), origin(o) {}
-      gfx::Transform matrix;
-      gfx::Point3F origin;
-      USING_FAST_MALLOC(MatrixAndOrigin);
-    };
-    gfx::Vector2dF translation_2d_;
-    std::unique_ptr<MatrixAndOrigin> matrix_and_origin_;
+  struct PLATFORM_EXPORT TransformAndOrigin {
+    gfx::Transform matrix;
+    gfx::Point3F origin;
   };
 
   struct AnimationState {
@@ -192,9 +125,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
-    DISALLOW_NEW();
-
-   public:
     TransformAndOrigin transform_and_origin;
     scoped_refptr<const ScrollPaintPropertyNode> scroll;
     scoped_refptr<const TransformPaintPropertyNode>
@@ -268,17 +198,19 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return std::max(parent_changed, state_changed);
   }
 
-  bool IsIdentityOr2DTranslation() const {
-    return state_.transform_and_origin.IsIdentityOr2DTranslation();
+  bool IsIdentityOr2dTranslation() const {
+    return state_.transform_and_origin.matrix.IsIdentityOr2DTranslation();
   }
-  bool IsIdentity() const { return state_.transform_and_origin.IsIdentity(); }
-  // Only available when IsIdentityOr2DTranslation() is true.
-  const gfx::Vector2dF& Translation2D() const {
-    return state_.transform_and_origin.Translation2D();
+  bool IsIdentity() const {
+    return state_.transform_and_origin.matrix.IsIdentity();
   }
-  // Only available when IsIdentityOr2DTranslation() is false.
+  // Only available when IsIdentityOr2dTranslation() is true.
+  gfx::Vector2dF Get2dTranslation() const {
+    DCHECK(IsIdentityOr2dTranslation());
+    return state_.transform_and_origin.matrix.To2dTranslation();
+  }
   const gfx::Transform& Matrix() const {
-    return state_.transform_and_origin.Matrix();
+    return state_.transform_and_origin.matrix;
   }
 
   gfx::Transform MatrixWithOriginApplied() const {
@@ -287,14 +219,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return result;
   }
 
-  // The slow version always return meaningful gfx::Transform regardless
-  // of IsIdentityOr2DTranslation(). Should be used only in contexts that are
-  // not performance sensitive.
-  gfx::Transform SlowMatrix() const {
-    return state_.transform_and_origin.SlowMatrix();
+  const gfx::Point3F& Origin() const {
+    return state_.transform_and_origin.origin;
   }
-
-  gfx::Point3F Origin() const { return state_.transform_and_origin.Origin(); }
 
   PaintPropertyChangeType DirectlyUpdateTransformAndOrigin(
       TransformAndOrigin&& transform_and_origin,
@@ -491,11 +418,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     if (state_.scroll) {
       // If there is an associated scroll node, this can only be a 2d
       // translation for scroll offset.
-      DCHECK(IsIdentityOr2DTranslation());
+      DCHECK(IsIdentityOr2dTranslation());
       // The scroll compositor element id should be stored on the scroll node.
       DCHECK(!state_.compositor_element_id);
     }
-    DCHECK(!HasActiveTransformAnimation() || !IsIdentityOr2DTranslation());
 #endif
   }
 

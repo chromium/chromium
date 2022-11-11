@@ -925,7 +925,7 @@ TEST_P(PaintAndRasterInvalidationTest, ScrollingInvalidatesStickyOffset) {
   EXPECT_EQ(gfx::Vector2dF(0, 50), sticky->FirstFragment()
                                        .PaintProperties()
                                        ->StickyTranslation()
-                                       ->Translation2D());
+                                       ->Get2dTranslation());
   const auto* inner = GetLayoutObjectByElementId("inner");
   EXPECT_EQ(PhysicalOffset(), inner->FirstFragment().PaintOffset());
 
@@ -936,7 +936,7 @@ TEST_P(PaintAndRasterInvalidationTest, ScrollingInvalidatesStickyOffset) {
   EXPECT_EQ(gfx::Vector2dF(0, 150), sticky->FirstFragment()
                                         .PaintProperties()
                                         ->StickyTranslation()
-                                        ->Translation2D());
+                                        ->Get2dTranslation());
   EXPECT_EQ(PhysicalOffset(), inner->FirstFragment().PaintOffset());
 }
 

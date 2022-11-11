@@ -55,7 +55,7 @@ class HitTestingTransformState {
 
   void Translate(const gfx::Vector2dF&);
   void ApplyTransform(const TransformPaintPropertyNode&);
-  void ApplyTransform(const GeometryMapper::Translation2DOrMatrix&);
+  void ApplyTransform(const gfx::Transform&);
 
   gfx::PointF MappedPoint() const;
   gfx::QuadF MappedQuad() const;

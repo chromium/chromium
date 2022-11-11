@@ -99,8 +99,7 @@ bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
       // "transform: perspective(100px) rotateY(45deg)". In these cases, we
       // also want to skip cull rect mapping. See http://crbug.com/887558 for
       // details.
-      if (!transform->IsIdentityOr2DTranslation() &&
-          transform->Matrix().HasPerspective()) {
+      if (transform->Matrix().HasPerspective()) {
         subtree_should_use_infinite_cull_rect = true;
         return true;
       }
@@ -468,7 +467,7 @@ void OldCullRectUpdater::PaintPropertiesChanged(
         // - if the current contents cull rect is infinite and no descendants
         //   need cull rect update.
         needs_cull_rect_update =
-            scroll_translation->Translation2D() != old_scroll_offset;
+            scroll_translation->Get2dTranslation() != old_scroll_offset;
       }
     }
   }

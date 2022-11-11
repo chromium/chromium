@@ -251,7 +251,8 @@ inline scoped_refptr<TransformPaintPropertyNode> Create2DTranslation(
     float x,
     float y) {
   return TransformPaintPropertyNode::Create(
-      parent, TransformPaintPropertyNode::State{gfx::Vector2dF(x, y)});
+      parent, TransformPaintPropertyNode::State{
+                  {gfx::Transform::MakeTranslation(x, y)}});
 }
 
 inline scoped_refptr<TransformPaintPropertyNode> CreateFixedPositionTranslation(
@@ -259,7 +260,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateFixedPositionTranslation(
     float offset_x,
     float offset_y,
     const TransformPaintPropertyNode& scroll_translation_for_fixed) {
-  TransformPaintPropertyNode::State state{gfx::Vector2dF(offset_x, offset_y)};
+  TransformPaintPropertyNode::State state{
+      {gfx::Transform::MakeTranslation(offset_x, offset_y)}};
   state.scroll_translation_for_fixed = &scroll_translation_for_fixed;
   state.direct_compositing_reasons = CompositingReason::kFixedPosition;
   return TransformPaintPropertyNode::Create(parent, std::move(state));
@@ -293,7 +295,8 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
     float offset_y,
     const ScrollPaintPropertyNode& scroll,
     CompositingReasons compositing_reasons = CompositingReason::kNone) {
-  TransformPaintPropertyNode::State state{gfx::Vector2dF(offset_x, offset_y)};
+  TransformPaintPropertyNode::State state{
+      {gfx::Transform::MakeTranslation(offset_x, offset_y)}};
   state.direct_compositing_reasons = compositing_reasons;
   state.scroll = &scroll;
   return TransformPaintPropertyNode::Create(parent, std::move(state));
@@ -320,7 +323,7 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation(
       NewUniqueObjectId(), CompositorElementIdNamespace::kScroll);
   scroll_state.main_thread_scrolling_reasons = main_thread_reasons;
   TransformPaintPropertyNode::State translation_state{
-      gfx::Vector2dF(offset_x, offset_y)};
+      {gfx::Transform::MakeTranslation(offset_x, offset_y)}};
   translation_state.direct_compositing_reasons = compositing_reasons;
   translation_state.scroll = ScrollPaintPropertyNode::Create(
       *parent_scroll_translation->ScrollNode(), std::move(scroll_state));

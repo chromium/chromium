@@ -1999,12 +1999,9 @@ bool LayoutObject::HasDistortingVisualEffects() const {
   const auto& root_properties = root_fragment.LocalBorderBoxProperties();
 
   // The only allowed transforms are 2D translation and proportional up-scaling.
-  const auto& translation_2d_or_matrix =
-      GeometryMapper::SourceToDestinationProjection(
-          paint_properties.Transform(), root_properties.Transform());
-  if (!translation_2d_or_matrix.IsIdentityOr2DTranslation() &&
-      !translation_2d_or_matrix.Matrix()
-           .Is2dProportionalUpscaleAndOr2dTranslation())
+  gfx::Transform projection = GeometryMapper::SourceToDestinationProjection(
+      paint_properties.Transform(), root_properties.Transform());
+  if (!projection.Is2dProportionalUpscaleAndOr2dTranslation())
     return true;
 
   return false;

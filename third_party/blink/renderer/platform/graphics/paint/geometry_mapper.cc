@@ -22,7 +22,7 @@ void ExpandFixedVisualRectInScroller(
 
   // First move the rect back to the min scroll offset, by accounting for the
   // current scroll offset.
-  rect.Offset(scroll_translation.Translation2D());
+  rect.Offset(scroll_translation.Get2dTranslation());
 
   // Calculate the max scroll offset and expand by that amount. The max scroll
   // offset is the contents size minus one viewport's worth of space (i.e. the
@@ -55,8 +55,7 @@ void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
 
 }  // namespace
 
-GeometryMapper::Translation2DOrMatrix
-GeometryMapper::SourceToDestinationProjection(
+gfx::Transform GeometryMapper::SourceToDestinationProjection(
     const TransformPaintPropertyNode& source,
     const TransformPaintPropertyNode& destination) {
   ExtraProjectionResult extra_result;
@@ -104,8 +103,7 @@ GeometryMapper::SourceToDestinationProjection(
 //     = flatten(destination_to_plane_root)^-1 * flatten(source_to_plane_root)
 //     = destination_to_plane_root^-1 * source_to_plane_root
 // [3] Flatten lemma: https://goo.gl/DNKyOc
-GeometryMapper::Translation2DOrMatrix
-GeometryMapper::SourceToDestinationProjectionInternal(
+gfx::Transform GeometryMapper::SourceToDestinationProjectionInternal(
     const TransformPaintPropertyNode& source,
     const TransformPaintPropertyNode& destination,
     ExtraProjectionResult& extra_result,
@@ -113,31 +111,25 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   success = true;
 
   if (&source == &destination)
-    return Translation2DOrMatrix();
+    return gfx::Transform();
 
   if (source.Parent() && &destination == &source.Parent()->Unalias()) {
     extra_result.has_fixed = source.RequiresCompositingForFixedPosition();
     if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
       extra_result.has_sticky = source.RequiresCompositingForStickyPosition();
-    if (source.IsIdentityOr2DTranslation()) {
-      // We always use full matrix for animating transforms.
-      DCHECK(!source.HasActiveTransformAnimation());
-      return Translation2DOrMatrix(source.Translation2D());
-    }
-    // The result will be translate(origin)*matrix*translate(-origin) which
-    // equals to matrix if the origin is zero or if the matrix is just
-    // identity or 2d translation.
-    if (source.Origin().IsOrigin()) {
+    if (source.IsIdentityOr2dTranslation() && source.Origin().IsOrigin()) {
+      // The result will be translate(origin)*matrix*translate(-origin) which
+      // equals to matrix if the origin is zero or if the matrix is just
+      // identity or 2d translation.
       extra_result.has_animation = source.HasActiveTransformAnimation();
-      return Translation2DOrMatrix(source.Matrix());
+      return source.Matrix();
     }
   }
 
-  if (destination.IsIdentityOr2DTranslation() && destination.Parent() &&
-      &source == &destination.Parent()->Unalias()) {
-    // We always use full matrix for animating transforms.
-    DCHECK(!destination.HasActiveTransformAnimation());
-    return Translation2DOrMatrix(-destination.Translation2D());
+  if (destination.IsIdentityOr2dTranslation() && destination.Parent() &&
+      &source == &destination.Parent()->Unalias() &&
+      !destination.HasActiveTransformAnimation()) {
+    return gfx::Transform::MakeTranslation(-destination.Get2dTranslation());
   }
 
   const auto& source_cache = source.GetTransformCache();
@@ -152,8 +144,9 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   if (source_cache.root_of_2d_translation() ==
       destination_cache.root_of_2d_translation()) {
     // We always use full matrix for animating transforms.
-    return Translation2DOrMatrix(source_cache.to_2d_translation_root() -
-                                 destination_cache.to_2d_translation_root());
+    return gfx::Transform::MakeTranslation(
+        source_cache.to_2d_translation_root() -
+        destination_cache.to_2d_translation_root());
   }
 
   // Case 1b: Check if source and destination are known to be coplanar.
@@ -163,16 +156,15 @@ GeometryMapper::SourceToDestinationProjectionInternal(
     extra_result.has_animation =
         source_cache.has_animation_to_plane_root() ||
         destination_cache.has_animation_to_plane_root();
-    if (&source == destination_cache.plane_root()) {
-      return Translation2DOrMatrix(destination_cache.from_plane_root());
-    }
-    if (&destination == source_cache.plane_root()) {
-      return Translation2DOrMatrix(source_cache.to_plane_root());
-    }
+    if (&source == destination_cache.plane_root())
+      return destination_cache.from_plane_root();
+    if (&destination == source_cache.plane_root())
+      return source_cache.to_plane_root();
+
     gfx::Transform matrix;
     destination_cache.ApplyFromPlaneRoot(matrix);
     source_cache.ApplyToPlaneRoot(matrix);
-    return Translation2DOrMatrix(matrix);
+    return matrix;
   }
 
   // Case 2: Check if we can fallback to the canonical definition of
@@ -185,19 +177,19 @@ GeometryMapper::SourceToDestinationProjectionInternal(
                                destination_cache.has_animation_to_screen();
   if (!destination_cache.projection_from_screen_is_valid()) {
     success = false;
-    return Translation2DOrMatrix();
+    return gfx::Transform();
   }
 
   // Case 3: Compute:
   // flatten(destination_to_screen)^-1 * flatten(source_to_screen)
   const auto& root = TransformPaintPropertyNode::Root();
   if (&source == &root)
-    return Translation2DOrMatrix(destination_cache.projection_from_screen());
+    return destination_cache.projection_from_screen();
   gfx::Transform matrix;
   destination_cache.ApplyProjectionFromScreen(matrix);
   source_cache.ApplyToScreen(matrix);
   matrix.Flatten();
-  return Translation2DOrMatrix(matrix);
+  return matrix;
 }
 
 float GeometryMapper::SourceToDestinationApproximateMinimumScale(
@@ -257,7 +249,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
 
   ExtraProjectionResult extra_result;
   bool success = false;
-  const auto& translation_2d_or_matrix = SourceToDestinationProjectionInternal(
+  gfx::Transform projection = SourceToDestinationProjectionInternal(
       local_state.Transform(), ancestor_state.Transform(), extra_result,
       success);
   if (!success) {
@@ -285,7 +277,7 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     // TODO(crbug.com/1117658): Use sticky bounds instead of infinite rect.
     rect_to_map = InfiniteLooseFloatClipRect();
   } else {
-    translation_2d_or_matrix.MapFloatClipRect(rect_to_map);
+    rect_to_map.Map(projection);
     if (for_compositing_overlap == ForCompositingOverlap::kYes &&
         !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
         extra_result.has_fixed) {
@@ -454,10 +446,9 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   for (auto* const node : base::Reversed(intermediate_nodes)) {
     ExtraProjectionResult extra_result;
     bool success = false;
-    const auto& translation_2d_or_matrix =
-        SourceToDestinationProjectionInternal(
-            node->LocalTransformSpace().Unalias(), ancestor_transform,
-            extra_result, success);
+    gfx::Transform projection = SourceToDestinationProjectionInternal(
+        node->LocalTransformSpace().Unalias(), ancestor_transform, extra_result,
+        success);
     if (!success)
       return FloatClipRect(gfx::RectF());
 
@@ -468,7 +459,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     // This is where we generate the roundedness and tightness of clip rect
     // from clip and transform properties, and propagate them to |clip|.
     FloatClipRect mapped_rect(GetClipRect(*node, clip_behavior));
-    translation_2d_or_matrix.MapFloatClipRect(mapped_rect);
+    mapped_rect.Map(projection);
     if (inclusive_behavior == kInclusiveIntersect) {
       clip.InclusiveIntersect(mapped_rect);
     } else {

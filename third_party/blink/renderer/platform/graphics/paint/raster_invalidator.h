@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -104,7 +105,7 @@ class PLATFORM_EXPORT RasterInvalidator {
 
     gfx::Rect bounds_in_layer;
     FloatClipRect chunk_to_layer_clip;
-    SkMatrix chunk_to_layer_transform;
+    gfx::Transform chunk_to_layer_transform;
   };
 
   void GenerateRasterInvalidations(RasterInvalidationFunction,

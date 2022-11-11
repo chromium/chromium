@@ -368,7 +368,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
     for (const auto* node = &property_state.Transform();
          !node->IsRoot() && !can_be_decomposited.Contains(node);
          node = &node->Parent()->Unalias()) {
-      if (!node->IsIdentityOr2DTranslation() || node->ScrollNode() ||
+      if (!node->IsIdentityOr2dTranslation() || node->ScrollNode() ||
           node->HasDirectCompositingReasonsOtherThan3dTransform() ||
           !node->FlattensInheritedTransformSameAsParent() ||
           !node->BackfaceVisibilitySameAsParent()) {
@@ -411,7 +411,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
     const auto* transform = &pending_layer.GetPropertyTreeState().Transform();
     while (!transform->IsRoot() && can_be_decomposited.at(transform)) {
       pending_layer.offset_of_decomposited_transforms_ +=
-          transform->Translation2D();
+          transform->Get2dTranslation();
       pending_layer.change_of_decomposited_transforms_ =
           std::max(pending_layer.ChangeOfDecompositedTransforms(),
                    transform->NodeChanged());

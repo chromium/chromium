@@ -13,14 +13,14 @@ Should be composited
       "name": "LayoutBlockFlow DIV id='to-animate' class='container animating'",
       "bounds": [262, 212],
       "contentsOpaqueForText": true,
-      "transform": 2
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow DIV class='composited banner'",
       "bounds": [250, 50],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='test1 box'",
@@ -28,7 +28,7 @@ Should be composited
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FFA500",
-      "transform": 2
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
@@ -51,16 +51,6 @@ Should be composited
     {
       "id": 2,
       "parent": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
-      "parent": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

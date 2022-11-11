@@ -183,7 +183,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     const auto& device_emulation_transform =
         GetChromeClient()->GetDeviceEmulationTransform();
     if (!device_emulation_transform.IsIdentity()) {
-      TransformPaintPropertyNode::State state{device_emulation_transform};
+      TransformPaintPropertyNode::State state{{device_emulation_transform}};
       state.flags.in_subtree_of_page_scale = false;
       if (!device_emulation_transform_node_) {
         device_emulation_transform_node_ = TransformPaintPropertyNode::Create(
@@ -228,7 +228,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 
     TransformPaintPropertyNode::State state;
     if (scale_ != 1.f)
-      state.transform_and_origin = {gfx::Transform::MakeScale(scale_)};
+      state.transform_and_origin.matrix = gfx::Transform::MakeScale(scale_);
     state.flags.in_subtree_of_page_scale = false;
     state.direct_compositing_reasons = CompositingReason::kViewport;
     state.compositor_element_id = page_scale_element_id_;
@@ -309,7 +309,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
   {
-    TransformPaintPropertyNode::State state{-GetScrollOffset()};
+    TransformPaintPropertyNode::State state{
+        {gfx::Transform::MakeTranslation(-offset_)}};
     state.scroll = scroll_node_;
     state.direct_compositing_reasons = CompositingReason::kViewport;
     if (!scroll_translation_node_) {

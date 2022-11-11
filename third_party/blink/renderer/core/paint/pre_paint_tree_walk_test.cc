@@ -67,7 +67,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(gfx::Vector2dF(100, 100),
-            transformed_properties->Transform()->Translation2D());
+            transformed_properties->Transform()->Get2dTranslation());
 
   // Artifically change the transform node.
   const_cast<ObjectPaintProperties*>(transformed_properties)->ClearTransform();
@@ -79,7 +79,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
 
   // Should have changed back.
   EXPECT_EQ(gfx::Vector2dF(100, 100),
-            transformed_properties->Transform()->Translation2D());
+            transformed_properties->Transform()->Get2dTranslation());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithFrameScroll) {
@@ -90,7 +90,8 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithFrameScroll) {
   GetDocument().domWindow()->scrollTo(0, 100);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(gfx::Vector2dF(0, -100), FrameScrollTranslation()->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, -100),
+            FrameScrollTranslation()->Get2dTranslation());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
@@ -107,7 +108,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(gfx::Vector2dF(100, 100),
-            transformed_properties->Transform()->Translation2D());
+            transformed_properties->Transform()->Get2dTranslation());
 
   // Invalidate the CSS transform property.
   transformed_element->setAttribute(html_names::kClassAttr, "transformB");
@@ -115,7 +116,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
 
   // The transform should have changed.
   EXPECT_EQ(gfx::Vector2dF(200, 200),
-            transformed_properties->Transform()->Translation2D());
+            transformed_properties->Transform()->Get2dTranslation());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithOpacityInvalidation) {
