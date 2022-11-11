@@ -39,6 +39,7 @@ std::string ToString(enterprise_management::RemoteCommand::Type type) {
     CASE(BROWSER_CLEAR_BROWSING_DATA);
     CASE(DEVICE_RESET_EUICC);
     CASE(BROWSER_ROTATE_ATTESTATION_CREDENTIAL);
+    CASE(FETCH_CRD_AVAILABILITY_INFO);
   }
   return base::StringPrintf("Unknown type %i", type);
 #undef CASE

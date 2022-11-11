@@ -80,6 +80,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".DeviceSetVolume" summary="Set volume"/>
   <variant name=".DeviceStartCrdSession" summary="Device start CRD session"/>
   <variant name=".DeviceWipeUsers" summary="Wipe users"/>
+  <variant name=".FetchCrdAvailabilityInfo"
+      summary="Fetch CRD availability info"/>
   <variant name=".UserArcCommand" summary="ARC command"/>
 </variants>
 

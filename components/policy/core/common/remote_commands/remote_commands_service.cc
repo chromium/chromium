@@ -65,6 +65,8 @@ RemoteCommandsService::MetricReceivedRemoteCommand RemoteCommandMetricFromType(
       return Metric::kDeviceResetEuicc;
     case em::RemoteCommand_Type_BROWSER_ROTATE_ATTESTATION_CREDENTIAL:
       return Metric::kBrowserRotateAttestationCredential;
+    case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
+      return Metric::kFetchCrdAvailabilityInfo;
   }
 
   // None of possible types matched. May indicate that there is new unhandled
@@ -107,6 +109,8 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
       return "DeviceResetEuicc";
     case em::RemoteCommand_Type_BROWSER_ROTATE_ATTESTATION_CREDENTIAL:
       return "BrowserRotateAttestationCredential";
+    case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
+      return "FetchCrdAvailabilityInfo";
   }
 
   NOTREACHED() << "Unknown command type: " << type;

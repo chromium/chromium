@@ -68,8 +68,9 @@ class POLICY_EXPORT RemoteCommandsService
     kBrowserClearBrowsingData = 18,
     kDeviceResetEuicc = 19,
     kBrowserRotateAttestationCredential = 20,
+    kFetchCrdAvailabilityInfo = 21,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kBrowserRotateAttestationCredential
+    kMaxValue = kFetchCrdAvailabilityInfo
   };
 
   // Returns the metric name to report received commands.

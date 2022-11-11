@@ -2724,7 +2724,7 @@ message RemoteCommand {
     // Wipe all the users off of the device.
     DEVICE_WIPE_USERS = 5;
 
-    // Start Chrome Remote Desktop session (limited to Kiosk sessions only).
+    // Start Chrome Remote Desktop session.
     DEVICE_START_CRD_SESSION = 6;
 
     // Wipe the device (perform a powerwash).
@@ -2751,6 +2751,9 @@ message RemoteCommand {
 
     // Rotates the attestation credentials associated with a browser device.
     BROWSER_ROTATE_ATTESTATION_CREDENTIAL = 14;
+
+    // Fetch information that determines the availability of CRD on the device.
+    FETCH_CRD_AVAILABILITY_INFO = 15;
 
     // Please update metrics after adding a new item - see the comment above.
   }
