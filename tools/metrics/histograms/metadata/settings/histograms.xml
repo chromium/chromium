@@ -214,6 +214,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacyGuide.CanShowNTPPromo" enum="Boolean"
+    expires_after="2023-03-19">
+  <owner>msramek@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Recorded when we attempt to show a Privacy Guide NTP promotion as instructed
+    by the server. True if the conditions to do so are met.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacyGuide.EntryExit"
     enum="SettingsPrivacyGuideInteractions" expires_after="2023-03-19">
   <owner>harrisonsean@chromium.org</owner>

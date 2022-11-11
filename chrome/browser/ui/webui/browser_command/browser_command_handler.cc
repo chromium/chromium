@@ -84,6 +84,8 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenPrivacyGuide:
       can_execute = !chrome::enterprise_util::IsBrowserManaged(profile_) &&
                     !profile_->IsChild();
+      base::UmaHistogramBoolean("Privacy.Settings.PrivacyGuide.CanShowNTPPromo",
+                                can_execute);
       break;
     case Command::kStartTabGroupTutorial:
       can_execute = !!GetTutorialService() && BrowserSupportsTabGroups();
