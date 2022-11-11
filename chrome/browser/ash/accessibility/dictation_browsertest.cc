@@ -1426,6 +1426,25 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharMultiLineString) {
   SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, RepeatSimple) {
+  std::string text = "Hello, world.";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForEditableValue("delete all","");
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForEditableValue("repeat", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, RepeatAdvanced) {
+  std::string text = "Hello, world.";
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForEditableValue("delete","Hello, world");
+  SendFinalResultAndWaitForEditableValue("repeat", "Hello, worl");
+  SendFinalResultAndWaitForCaretBoundsChanged("move to the previous character");
+  SendFinalResultAndWaitForCaretBoundsChanged("repeat");
+  std::string expected = "Hello, wrl";
+  SendFinalResultAndWaitForEditableValue("delete", expected);
+}
+
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
   SendFinalResultAndWaitForEditableValue("delete the previous sentence", "");

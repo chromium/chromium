@@ -44,6 +44,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/macros/macro.js",
     "dictation/macros/macro_names.js",
     "dictation/macros/nav_sent_macro.js",
+    "dictation/macros/repeat_macro.js",
     "dictation/macros/repeatable_key_press_macro.js",
     "dictation/macros/smart_delete_phrase_macro.js",
     "dictation/macros/smart_insert_before_macro.js",

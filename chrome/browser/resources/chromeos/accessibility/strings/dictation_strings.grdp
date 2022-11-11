@@ -99,4 +99,7 @@
   <message name="DICTATION_COMMAND_SELECT_PREV_CHAR" desc="A spoken command to select the previous character in the input field." is_accessibility_with_no_ui="true">
     highlight the previous character
   </message>
+  <message name="DICTATION_COMMAND_REPEAT" desc="A spoken command to repeat the last executed macro." is_accessibility_with_no_ui="true">
+    repeat
+  </message>
 </grit-part>

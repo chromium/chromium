@@ -15,6 +15,7 @@ import {ListCommandsMacro} from '../macros/list_commands_macro.js';
 import {Macro} from '../macros/macro.js';
 import {MacroName} from '../macros/macro_names.js';
 import {NavNextSentMacro, NavPrevSentMacro} from '../macros/nav_sent_macro.js';
+import {RepeatMacro} from '../macros/repeat_macro.js';
 import * as RepeatableKeyPress from '../macros/repeatable_key_press_macro.js';
 import {SmartDeletePhraseMacro} from '../macros/smart_delete_phrase_macro.js';
 import {SmartInsertBeforeMacro} from '../macros/smart_insert_before_macro.js';
@@ -265,6 +266,10 @@ class SimpleMacroFactory {
         messageId: 'dictation_command_select_prev_char',
         build: RepeatableKeyPress.SelectPrevChar,
       },
+      [MacroName.REPEAT]: {
+        messageId: 'dictation_command_repeat',
+        build: RepeatMacro,
+      },
     };
   }
 }
@@ -288,6 +293,9 @@ export class SimpleParseStrategy extends ParseStrategy {
     /** @private {boolean} */
     this.isMoreCommandsFeatureEnabled_ = false;
 
+    /** @private {Macro} */
+    this.prevMacro_ = null;
+
     /** @private {!Array<!MacroName>}*/
     this.moreCommandsSet_ = [
       MacroName.DELETE_ALL_TEXT,
@@ -297,6 +305,7 @@ export class SimpleParseStrategy extends ParseStrategy {
       MacroName.SELECT_NEXT_WORD,
       MacroName.SELECT_NEXT_CHAR,
       MacroName.SELECT_PREV_CHAR,
+      MacroName.REPEAT,
     ];
 
     this.initialize_();
@@ -356,10 +365,17 @@ export class SimpleParseStrategy extends ParseStrategy {
   async parse(text) {
     const macros = [];
     for (const [name, factory] of this.macroFactoryMap_) {
-      const macro = factory.createMacro(text);
-      if (this.shouldAddMacro_(macro)) {
-        macros.push(macro);
+      let macro = factory.createMacro(text);
+      if (!this.shouldAddMacro_(macro)) {
+        continue;
       }
+
+      if (macro.getMacroName() === MacroName.REPEAT) {
+        macro = this.prevMacro_;
+      }
+
+      macros.push(macro);
+      this.prevMacro_ = macro;
     }
     if (macros.length === 1) {
       return macros[0];

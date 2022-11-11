@@ -121,5 +121,8 @@ export const MacroName = {
   // Select the previous character in the input field.
   SELECT_PREV_CHAR: 33,
 
+  // Repeats the last executed macro.
+  REPEAT: 34,
+
   // Any new actions should match with Voice Access's semantic tags.
 };
