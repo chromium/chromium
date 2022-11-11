@@ -13411,4 +13411,359 @@ INSTANTIATE_TEST_SUITE_P(,
                          URLRequestMaybeAsyncFirstPartySetsTest,
                          testing::Bool());
 
+namespace {
+
+struct EnabledFeatureFlagsTestingParam {
+  const bool enable_double_key_network_anonymization_key;
+  const bool enable_cross_site_flag_network_anonymization_key;
+  const bool enable_double_key_network_isolation_key;
+};
+
+const EnabledFeatureFlagsTestingParam kFlagsParam[] = {
+    // 0. Triple-keying is enabled for both IsolationInfo and
+    // NetworkAnonymizationKey.
+    {/*enable_double_key_network_anonymization_key=*/false,
+     /*enable_cross_site_flag_network_anonymization_key=*/false,
+     /*enable_double_key_network_isolation_key=*/false},
+
+    // 1. Double-keying is enabled for both IsolationInfo and
+    // NetworkAnonymizationKey.
+    {/*enable_double_key_network_anonymization_key=*/true,
+     /*enable_cross_site_flag_network_anonymization_key=*/false,
+     /*enable_double_key_network_isolation_key=*/true},
+
+    // 2. Triple-keying is enabled for IsolationInfo and double-keying is
+    // enabled for NetworkAnonymizationKey.
+    {/*enable_double_key_network_anonymization_key=*/true,
+     /*enable_cross_site_flag_network_anonymization_key=*/false,
+     /*enable_double_key_network_isolation_key=*/false},
+
+    // 3. Triple-keying is enabled for IsolationInfo and double-keying +
+    // cross-site-bit is enabled for NetworkAnonymizationKey.
+    {/*enable_double_key_network_anonymization_key=*/false,
+     /*enable_cross_site_flag_network_anonymization_key=*/true,
+     /*enable_double_key_network_isolation_key=*/false}};
+
+}  // namespace
+
+class PartitionConnectionsByNetworkAnonymizationKey
+    : public URLRequestTest,
+      public testing::WithParamInterface<EnabledFeatureFlagsTestingParam> {
+ public:
+  PartitionConnectionsByNetworkAnonymizationKey() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        net::features::kPartitionConnectionsByNetworkIsolationKey,
+        net::features::kPartitionSSLSessionsByNetworkIsolationKey};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (IsDoubleKeyNetworkIsolationKeyEnabled()) {
+      enabled_features.push_back(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+    } else {
+      disabled_features.push_back(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+    }
+
+    if (IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
+      enabled_features.push_back(
+          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+    } else {
+      disabled_features.push_back(
+          net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+    }
+
+    if (IsCrossSiteFlagEnabled()) {
+      enabled_features.push_back(
+          net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+    } else {
+      disabled_features.push_back(
+          net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsDoubleKeyNetworkIsolationKeyEnabled() const {
+    return GetParam().enable_double_key_network_isolation_key;
+  }
+
+  bool IsDoubleKeyNetworkAnonymizationKeyEnabled() const {
+    return GetParam().enable_double_key_network_anonymization_key;
+  }
+
+  bool IsCrossSiteFlagEnabled() const {
+    return GetParam().enable_cross_site_flag_network_anonymization_key;
+  }
+
+  const SchemefulSite kTestSiteA = SchemefulSite(GURL("http://a.test/"));
+  const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
+  const SchemefulSite kTestSiteC = SchemefulSite(GURL("http://c.test/"));
+  const base::UnguessableToken kNonceA = base::UnguessableToken::Create();
+  const base::UnguessableToken kNonceB = base::UnguessableToken::Create();
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+       DifferentTopFrameSitesNeverShareConnections) {
+  // Start server
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+  const auto original_url = test_server.GetURL("/echo");
+  NetworkAnonymizationKey network_anonymization_key1(kTestSiteA, kTestSiteA);
+  NetworkAnonymizationKey network_anonymization_key2(kTestSiteB, kTestSiteB);
+
+  // Create a request from first party `kTestSiteA`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r1(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r1->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key1);
+    r1->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r1->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly
+    EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r1->isolation_info().network_anonymization_key(),
+              network_anonymization_key1);
+    // Run request
+    r1->Start();
+    d.RunUntilComplete();
+
+    // Verify request started with a full handshake
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r1->ssl_info().handshake_type);
+  }
+
+  // Create a request from first party `kTestSiteB`. This request should never
+  // share a key with r1 regardless of the NIK/NAK key schemes.
+  {
+    TestDelegate d;
+    // Create request and create IsolationInfo from
+    // `network_anonymization_key2`
+    std::unique_ptr<URLRequest> r2(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r2->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key2);
+    r2->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r2->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly.
+    EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r2->isolation_info().network_anonymization_key(),
+              network_anonymization_key2);
+    // Run request
+    r2->Start();
+    d.RunUntilComplete();
+
+    // Verify request started with a full handshake
+    EXPECT_EQ(1, d.response_started_count());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
+  }
+}
+
+TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+       FirstPartyIsSeparatedFromCrossSiteFrames) {
+  // Start server
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+  const auto original_url = test_server.GetURL("/echo");
+  NetworkAnonymizationKey network_anonymization_key1(kTestSiteA, kTestSiteA);
+  NetworkAnonymizationKey network_anonymization_key2(kTestSiteA, kTestSiteB);
+
+  // Create a request from first party `kTestSiteA`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r1(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r1->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key1);
+    r1->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r1->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly
+    EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r1->isolation_info().network_anonymization_key(),
+              network_anonymization_key1);
+    // Run request
+    r1->Start();
+    d.RunUntilComplete();
+    // Verify request started with a full handshake
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r1->ssl_info().handshake_type);
+  }
+
+  // Create a request from third party `kTestSiteB` embedded in `kTestSiteA`.
+  // This request should share a key with r1 when NetworkAnonymizationKey is in
+  // double keyed scheme and should not share a key with r1 when
+  // NetworkAnonymizationKey is triple keyed or in cross site flag scheme.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r2(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r2->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key2);
+    r2->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r2->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly.
+    EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r2->isolation_info().network_anonymization_key(),
+              network_anonymization_key2);
+    // Run request
+    r2->Start();
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    // We should only share a connection with r1 if double key
+    // NetworkAnonymizationKey scheme is enabled.
+    if (IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
+        !IsCrossSiteFlagEnabled()) {
+      EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
+    } else {
+      EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
+    }
+  }
+}
+
+TEST_P(
+    PartitionConnectionsByNetworkAnonymizationKey,
+    DifferentCrossSiteFramesAreSeparatedOnlyWhenNetworkAnonymizationKeyIsTripleKeyed) {
+  // Start server
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+  const auto original_url = test_server.GetURL("/echo");
+  NetworkAnonymizationKey network_anonymization_key1(kTestSiteA, kTestSiteB);
+  NetworkAnonymizationKey network_anonymization_key2(kTestSiteA, kTestSiteC);
+
+  // Create a request from first party `kTestSiteA`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r1(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r1->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key1);
+    r1->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r1->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly
+    EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r1->isolation_info().network_anonymization_key(),
+              network_anonymization_key1);
+    // Run request
+    r1->Start();
+    d.RunUntilComplete();
+    // Verify request started with a full handshake
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r1->ssl_info().handshake_type);
+  }
+
+  // Create a request from third party `kTestSiteB` embedded in `kTestSiteA`.
+  // This request should share a key with r1 when NetworkAnonymizationKey is in
+  // double keyed scheme and should not share a key with r1 when
+  // NetworkAnonymizationKey is triple keyed or in cross site flag scheme.
+  {
+    TestDelegate d;
+    // Create request and create IsolationInfo from
+    // `network_anonymization_key2`
+    std::unique_ptr<URLRequest> r2(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r2->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key2);
+    r2->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r2->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly.
+    EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r2->isolation_info().network_anonymization_key(),
+              network_anonymization_key2);
+    // Run request
+    r2->Start();
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    // We should share a connection with r1 unless triple keyed
+    // NetworkAnonymizationKey scheme is enabled.
+    if (!IsDoubleKeyNetworkAnonymizationKeyEnabled() &&
+        !IsCrossSiteFlagEnabled()) {
+      EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
+    } else {
+      EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
+    }
+  }
+}
+
+TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+       DifferentNoncesAreAlwaysSeparated) {
+  // Start server
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+  const auto original_url = test_server.GetURL("/echo");
+  NetworkAnonymizationKey network_anonymization_key1(kTestSiteA, kTestSiteA,
+                                                     false, kNonceA);
+  NetworkAnonymizationKey network_anonymization_key2(kTestSiteA, kTestSiteA,
+                                                     false, kNonceB);
+
+  // Create a request from first party `kTestSiteA`.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r1(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r1->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key1);
+    r1->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r1->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly
+    EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r1->isolation_info().network_anonymization_key(),
+              network_anonymization_key1);
+    // Run request
+    r1->Start();
+    d.RunUntilComplete();
+    // Verify request started with a full handshake
+    EXPECT_THAT(d.request_status(), IsOk());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r1->ssl_info().handshake_type);
+  }
+
+  // Create a request from third party `kTestSiteB` embedded in `kTestSiteA`.
+  // This request should share a key with r1 when NetworkAnonymizationKey is in
+  // double keyed scheme and should not share a key with r1 when
+  // NetworkAnonymizationKey is triple keyed or in cross site flag scheme.
+  {
+    TestDelegate d;
+    // Create request and create IsolationInfo from
+    // `network_anonymization_key2`
+    std::unique_ptr<URLRequest> r2(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    r2->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key2);
+    r2->SetLoadFlags(LOAD_DISABLE_CACHE);
+    r2->set_allow_credentials(false);
+
+    // Verify NetworkAnonymizationKey is set correctly.
+    EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
+    EXPECT_EQ(r2->isolation_info().network_anonymization_key(),
+              network_anonymization_key2);
+    // Run request
+    r2->Start();
+    d.RunUntilComplete();
+
+    EXPECT_THAT(d.request_status(), IsOk());
+    // Connections where the NetworkAnonymizationKey has different nonces should
+    // always be separated regardless of scheme
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PartitionConnectionsByNetworkAnonymizationKey,
+                         testing::ValuesIn(kFlagsParam));
+
 }  // namespace net
