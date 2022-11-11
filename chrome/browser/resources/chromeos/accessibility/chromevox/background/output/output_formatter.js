@@ -62,7 +62,7 @@ export class OutputFormatter {
     } else if (token === 'restriction') {
       this.formatRestriction_(this.params_, token);
     } else if (token === 'checked') {
-      this.output_.formatChecked_(this.params_, token);
+      this.formatChecked_(this.params_, token);
     } else if (token === 'pressed') {
       this.output_.formatPressed_(this.params_, token);
     } else if (token === 'state') {
@@ -171,6 +171,28 @@ export class OutputFormatter {
       roles.add(currentNode.value);
     }
     return roles;
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @private
+   */
+  formatChecked_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
+    if (msg) {
+      formatLog.writeToken(token);
+      this.output_.format_({
+        node,
+        outputFormat: '@' + msg,
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+      });
+    }
   }
 
   /**
