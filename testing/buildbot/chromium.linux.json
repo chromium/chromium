@@ -7788,7 +7788,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--disable-features=BackForwardCache"
         ],
         "merge": {
           "args": [],
@@ -7810,7 +7810,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--disable-features=BackForwardCache"
         ],
         "merge": {
           "args": [],
@@ -7832,7 +7832,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance"
+          "--disable-features=BackForwardCache"
         ],
         "merge": {
           "args": [],
@@ -7854,7 +7854,7 @@
       },
       {
         "args": [
-          "--enable-features=BackForwardCache,BackForwardCacheSameSiteForBots,BackForwardCacheNoTimeEviction,ProactivelySwapBrowsingInstance",
+          "--disable-features=BackForwardCache",
           "--test-launcher-filter-file=../../testing/buildbot/filters/bfcache.unit_tests.filter"
         ],
         "merge": {
