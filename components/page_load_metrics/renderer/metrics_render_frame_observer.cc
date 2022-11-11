@@ -646,6 +646,9 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         ClampDelta(perf.LargestTextPaintForMetrics(), start);
     timing->paint_timing->largest_contentful_paint->largest_text_paint_size =
         perf.LargestTextPaintSizeForMetrics();
+    timing->paint_timing->largest_contentful_paint->type =
+        LargestContentfulPaintTypeToUKMFlags(
+            perf.LargestContentfulPaintTypeForMetrics());
   }
   if (perf.ExperimentalLargestImagePaintSize() > 0) {
     timing->paint_timing->experimental_largest_contentful_paint

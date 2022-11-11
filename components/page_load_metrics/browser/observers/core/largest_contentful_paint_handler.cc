@@ -250,7 +250,8 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
     main_frame_contentful_paint_.Text().Reset(
         largest_contentful_paint.largest_text_paint,
         largest_contentful_paint.largest_text_paint_size,
-        blink::LargestContentfulPaintType::kNone,
+        static_cast<blink::LargestContentfulPaintType>(
+            largest_contentful_paint.type),
         /*image_bpp=*/0.0,
         /*image_request_priority=*/absl::nullopt);
   }

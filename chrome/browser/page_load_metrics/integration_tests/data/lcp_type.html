@@ -1,0 +1,29 @@
+<script>
+  const add_image = async (url) => {
+    await new Promise(resolve => {
+      const img = document.createElement('img');
+      img.addEventListener('load', resolve);
+      img.src = url;
+      document.body.appendChild(img);
+    });
+  }
+
+  const add_text = (text) => {
+    const paragraph = document.createElement('p');
+    paragraph.innerHTML = text;
+    document.body.appendChild(paragraph);
+  }
+
+  const wait_for_lcp_entry_emission = async (expected_count) => {
+    let expected_entries = [];
+    await new Promise(resolve => {
+      new PerformanceObserver((list, observer) => {
+        expected_entries = expected_entries.concat(list.getEntries());
+        if (expected_entries.length >= expected_count) {
+          observer.disconnect();
+          resolve();
+        }
+      }).observe({ type: "largest-contentful-paint", buffered: true });
+    });
+  };
+</script>

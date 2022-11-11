@@ -142,7 +142,7 @@ std::unique_ptr<HttpResponse> MetricIntegrationTest::HandleRequest(
 
 void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
                                                     int64_t expected_value) {
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+  auto merged_entries =
       ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
   EXPECT_EQ(1ul, merged_entries.size());
   const auto& kv = merged_entries.begin();
@@ -150,22 +150,37 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
                                      expected_value);
 }
 
-void MetricIntegrationTest::ExpectUKMPageLoadMetricFlagSet(
-    base::StringPiece metric_name,
-    uint32_t flag_set,
-    bool expected) {
+int64_t MetricIntegrationTest::GetUKMPageLoadMetricFlagSet(
+    base::StringPiece metric_name) {
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
       ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
   EXPECT_EQ(1ul, merged_entries.size());
   const auto& kv = merged_entries.begin();
-  const int64_t* metric =
+  const int64_t* flag_set =
       TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
-  EXPECT_TRUE(metric != nullptr);
+  EXPECT_TRUE(flag_set != nullptr);
+  return *flag_set;
+}
+
+void MetricIntegrationTest::ExpectUKMPageLoadMetricFlagSet(
+    base::StringPiece metric_name,
+    uint32_t flag_set,
+    bool expected) {
   if (expected) {
-    EXPECT_TRUE(*metric & static_cast<int64_t>(flag_set));
+    EXPECT_EQ(GetUKMPageLoadMetricFlagSet(metric_name) &
+                  static_cast<int64_t>(flag_set),
+              static_cast<int64_t>(flag_set));
   } else {
-    EXPECT_FALSE(*metric & static_cast<int64_t>(flag_set));
+    EXPECT_FALSE(GetUKMPageLoadMetricFlagSet(metric_name) &
+                 static_cast<int64_t>(flag_set));
   }
+}
+
+void MetricIntegrationTest::ExpectUKMPageLoadMetricFlagSetExactMatch(
+    base::StringPiece metric_name,
+    uint32_t flag_set) {
+  EXPECT_EQ(GetUKMPageLoadMetricFlagSet(metric_name),
+            static_cast<int64_t>(flag_set));
 }
 
 void MetricIntegrationTest::ExpectUKMPageLoadMetricNear(StringPiece metric_name,

@@ -154,7 +154,8 @@ class CORE_EXPORT PaintTimingDetector
       const gfx::Size& intrinsic_size,
       const MediaTiming& media_timing,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      const gfx::Rect& image_border);
+      const gfx::Rect& image_border,
+      const String& media_type = "");
   inline static void NotifyTextPaint(const gfx::Rect& text_visual_rect);
 
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);

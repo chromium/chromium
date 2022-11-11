@@ -86,8 +86,8 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(
   }
   return ImagePaintTimingInfo(PaintTimingDetector::NotifyImagePaint(
       layout_image, image.Size(), *image_content,
-      context.GetPaintController().CurrentPaintChunkProperties(),
-      image_border));
+      context.GetPaintController().CurrentPaintChunkProperties(), image_border,
+      image_content->GetImage()->FilenameExtension()));
 }
 
 }  // namespace

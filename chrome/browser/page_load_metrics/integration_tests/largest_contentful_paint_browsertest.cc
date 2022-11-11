@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -462,4 +463,254 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*x1=*/10, /*y1=*/10,
                  /*x2=*/30, /*y2=*/10,
                  /*expected=*/false);
+}
+
+class LargestContentfulPaintTypeTypeTest : public MetricIntegrationTest {
+ private:
+  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
+  AddWaiterAndExpectation(uint32_t expectedResourceCount = 1) {
+    auto waiter =
+        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+            web_contents());
+
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+
+    // Passing expectedResourceCount + 1 as in addition to the elements on the
+    // page, the html page itself is a completed resource.
+    waiter->AddMinimumCompleteResourcesExpectation(expectedResourceCount + 1);
+
+    return waiter;
+  }
+
+  void Navigate() {
+    Start();
+    Load("/lcp_type.html");
+  }
+
+  void AddImage(const std::string& imgSrc) {
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("add_image($1)", imgSrc))
+                  .error,
+              "");
+  }
+
+  void AddText(const std::string text) {
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("add_text($1)", text))
+                  .error,
+              "");
+  }
+
+  void WaitForLcpEmission(int32_t expectedLCPEntryCount = 1) {
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("wait_for_lcp_entry_emission($1)",
+                                        expectedLCPEntryCount))
+                  .error,
+              "");
+  }
+
+  void WaitForUKMReporting() {
+    std::string script = R"(
+      (
+        async () => {
+          await new Promise(resolve => {
+            setTimeout(resolve, 200);
+          })
+        }
+      )();
+    )";
+
+    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), script).error, "");
+  }
+
+  // navigate away from the test html page so that metrics are flushed.
+  void NavigateAway(
+      std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter) {
+    // Wait for LCP element to be updated.
+    WaitForUKMReporting();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    waiter->Wait();
+
+    // Wait for UKM metrics to be flushed.
+    WaitForUKMReporting();
+  }
+
+ public:
+  enum class ElementOrder { kImageFirst, kTextFirst };
+  void TestImage(std::string& imgSrc,
+                 blink::LargestContentfulPaintType flagSet) {
+    auto waiter = AddWaiterAndExpectation();
+
+    Navigate();
+
+    AddImage(imgSrc);
+
+    WaitForLcpEmission();
+
+    NavigateAway(std::move(waiter));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestText(std::string& text, blink::LargestContentfulPaintType flagSet) {
+    auto waiter = AddWaiterAndExpectation();
+
+    Navigate();
+
+    AddText(text);
+
+    WaitForLcpEmission();
+
+    NavigateAway(std::move(waiter));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestTextAndImage(ElementOrder elementOrder,
+                        std::string& text,
+                        std::string& imgSrc,
+                        uint32_t expectedLCPEntryCount,
+                        blink::LargestContentfulPaintType flagSet) {
+    auto waiter = AddWaiterAndExpectation(2);
+
+    Navigate();
+
+    if (elementOrder == ElementOrder::kTextFirst) {
+      AddText(text);
+      // Wait for LCP emission for 1st element before adding the 2nd
+      // element.This is to prevent the case that a larger 2nd element replaces
+      // the 1st element as LCP element before an LCP entry is emitted for the
+      // 1st element.
+      if (expectedLCPEntryCount > 1)
+        WaitForLcpEmission();
+      AddImage(imgSrc);
+    } else {
+      AddImage(imgSrc);
+      if (expectedLCPEntryCount > 1)
+        WaitForLcpEmission();
+      AddText(text);
+    }
+
+    WaitForLcpEmission(expectedLCPEntryCount);
+
+    NavigateAway(std::move(waiter));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_PNG) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kPNG;
+  std::string imgSrc = "images/blue.png";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_JPG) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kJPG;
+  std::string imgSrc = "images/arrow-oriented-upright.jpg";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_WebP) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kAnimatedImage |
+                  blink::LargestContentfulPaintType::kWebP;
+  std::string imgSrc = "images/webp-animated.webp";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_GIF) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kGIF |
+                  blink::LargestContentfulPaintType::kAnimatedImage;
+  std::string imgSrc = "images/fail.gif";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_AVIF) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kAVIF;
+  std::string imgSrc = "images/green.avif";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, ImageType_SVG) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kSVG;
+  std::string imgSrc = "images/colors.svg";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, TextType) {
+  auto flag_set = blink::LargestContentfulPaintType::kText;
+  std::string text = "This is to test LargestContentfulPaintType::kText";
+  TestText(text, flag_set);
+}
+
+// Case when text that is larger and comes before an image. The
+// LargestContentfulPaintType should be those of a text element.
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
+                       LargeTextAndImage_TextType) {
+  auto flag_set = blink::LargestContentfulPaintType::kText;
+  std::string text =
+      "This is a text that is larger and comes before an image. The "
+      "LargestContentfulPaintType should be those of a text element.";
+  std::string imgSrc = "images/green-2x2.png";
+
+  // The larger element comes first so 1 LCP entry is expected.
+  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 1, flag_set);
+}
+
+// Case when text that is larger and comes after an image. The
+// LargestContentfulPaintType should be those of a text element.
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
+                       ImageAndLargeText_TextType) {
+  auto flag_set = blink::LargestContentfulPaintType::kText;
+  std::string text =
+      "This is a text that is larger and comes after an image. The "
+      "LargestContentfulPaintType should be those of a text element.";
+  std::string imgSrc = "images/green-2x2.png";
+
+  // The larger element comes later so 2 LCP entries are expected.
+  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 2, flag_set);
+}
+
+// Case when a text that is smaller and comes before an Image. The
+// LargestContentfulPaintType should be those of an image element.
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
+                       TextAndLargeImage_ImageType) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kGIF |
+                  blink::LargestContentfulPaintType::kAnimatedImage;
+  ;
+  std::string text =
+      "This is a text that is smaller and comes before an image. The "
+      "LargestContentfulPaintType should be those of an image element";
+  std::string imgSrc = "images/fail.gif";
+  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 2, flag_set);
+}
+
+// Case when a text that is smaller and comes after an Image. The
+// LargestContentfulPaintType should be those of an image element.
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
+                       LargeImageAndText_ImageType) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kGIF |
+                  blink::LargestContentfulPaintType::kAnimatedImage;
+  std::string text =
+      "This is a text that is smaller and comes after an Image. The "
+      "LargestContentfulPaintType should be those of an image element.";
+  std::string imgSrc = "images/fail.gif";
+  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 1, flag_set);
 }

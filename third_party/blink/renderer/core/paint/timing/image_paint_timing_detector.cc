@@ -294,7 +294,8 @@ bool ImagePaintTimingDetector::RecordImage(
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleFetchedImage* style_image,
-    const gfx::Rect& image_border) {
+    const gfx::Rect& image_border,
+    const String& media_type) {
   Node* node = object.GetNode();
 
   if (!node)
@@ -320,7 +321,7 @@ bool ImagePaintTimingDetector::RecordImage(
           image_border, mapped_visual_rect, intrinsic_size,
           current_paint_chunk_properties, object, media_timing);
       records_manager_.MaybeUpdateLargestIgnoredImage(
-          record_id, rect_size, image_border, mapped_visual_rect);
+          record_id, rect_size, media_type, image_border, mapped_visual_rect);
     }
     return false;
   }
@@ -364,7 +365,7 @@ bool ImagePaintTimingDetector::RecordImage(
                    : 0.0;
 
   bool added_pending = records_manager_.RecordFirstPaintAndReturnIsPending(
-      record_id, rect_size, image_border, mapped_visual_rect, bpp);
+      record_id, rect_size, media_type, image_border, mapped_visual_rect, bpp);
   if (!added_pending)
     return false;
 
@@ -521,13 +522,14 @@ void ImageRecordsManager::OnImageLoadedInternal(
 void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const RecordId& record_id,
     const uint64_t& visual_size,
+    const String& media_type,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect) {
   if (visual_size && (!largest_ignored_image_ ||
                       visual_size > largest_ignored_image_->recorded_size)) {
     largest_ignored_image_ =
         CreateImageRecord(*record_id.first, record_id.second, visual_size,
-                          frame_visual_rect, root_visual_rect);
+                          media_type, frame_visual_rect, root_visual_rect);
     largest_ignored_image_->load_time = base::TimeTicks::Now();
   }
 }
@@ -535,6 +537,7 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
 bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
     const RecordId& record_id,
     const uint64_t& visual_size,
+    const String& media_type,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
     double bpp) {
@@ -561,7 +564,7 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
 
   std::unique_ptr<ImageRecord> record =
       CreateImageRecord(*record_id.first, record_id.second, visual_size,
-                        frame_visual_rect, root_visual_rect);
+                        media_type, frame_visual_rect, root_visual_rect);
   size_ordered_set_.insert(record->AsWeakPtr());
   pending_images_.insert(record_id, std::move(record));
   return true;
@@ -571,13 +574,15 @@ std::unique_ptr<ImageRecord> ImageRecordsManager::CreateImageRecord(
     const LayoutObject& object,
     const MediaTiming* media_timing,
     const uint64_t& visual_size,
+    const String& media_type,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);
   std::unique_ptr<ImageRecord> record = std::make_unique<ImageRecord>(
-      node_id, media_timing, visual_size, frame_visual_rect, root_visual_rect);
+      node_id, media_timing, visual_size, media_type, frame_visual_rect,
+      root_visual_rect);
   return record;
 }
 

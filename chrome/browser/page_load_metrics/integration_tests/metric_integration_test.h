@@ -94,9 +94,20 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
                                int64_t expected_value);
 
+  int64_t GetUKMPageLoadMetricFlagSet(base::StringPiece metric_name);
+
+  // The expected being true means ALL the bits present in the expected
+  // flag_set should also be present in the flag_set retrieved from the ukm
+  // metrics.
+  // The expected being false means NONE of the bits present in the expected
+  // flag_set should be present in the flag_set retrieved from the ukm
+  // metrics.
   void ExpectUKMPageLoadMetricFlagSet(base::StringPiece metric_name,
                                       uint32_t flag_set,
                                       bool expected);
+
+  void ExpectUKMPageLoadMetricFlagSetExactMatch(base::StringPiece metric_name,
+                                                uint32_t flag_set);
 
   void ExpectUKMPageLoadMetricNear(base::StringPiece metric_name,
                                    double expected_value,
