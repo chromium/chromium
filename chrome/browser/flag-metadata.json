@@ -6494,7 +6494,7 @@
   {
     "name": "sync-access-handle-all-sync-surface",
     "owners": [ "dslee@google.com", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 111
   },
   {
     "name": "sync-android-limit-ntp-promo-impressions",
