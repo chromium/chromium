@@ -85,7 +85,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetBackgroundImage(const std::string& attribution_1,
                           const std::string& attribution_2,
                           const GURL& attribution_url,
-                          const GURL& image_url) override;
+                          const GURL& image_url,
+                          const GURL& thumbnail_url) override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   void SetNoBackgroundImage() override;
   void RevertBackgroundChanges() override;

@@ -143,9 +143,15 @@ export class CustomizeBackgroundsElement extends PolymerElement {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kBackgroundsImageSelected);
     }
-    const {attribution1, attribution2, attributionUrl, imageUrl} = image;
+    const {
+      attribution1,
+      attribution2,
+      attributionUrl,
+      imageUrl,
+      previewImageUrl,
+    } = image;
     this.pageHandler_.setBackgroundImage(
-        attribution1, attribution2, attributionUrl, imageUrl);
+        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl);
   }
 
   private async onSelectedCollectionChange_() {

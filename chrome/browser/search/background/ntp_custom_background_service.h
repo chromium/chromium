@@ -13,8 +13,11 @@
 #include "base/values.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/gfx/color_utils.h"
 
 class NtpCustomBackgroundServiceObserver;
 class PrefRegistrySimple;
@@ -54,6 +57,7 @@ class NtpCustomBackgroundService : public KeyedService,
 
   // Invoked when a custom background is configured on the NTP.
   void SetCustomBackgroundInfo(const GURL& background_url,
+                               const GURL& thumbnail_url,
                                const std::string& attribution_line_1,
                                const std::string& attribution_line_2,
                                const GURL& action_url,
@@ -90,6 +94,14 @@ class NtpCustomBackgroundService : public KeyedService,
   void SetNextCollectionImageForTesting(const CollectionImage& image) const;
   void SetClockForTesting(base::Clock* clock);
 
+  // TODO: Make private when color extraction is refactored outside of this
+  // service.
+  // Calculates the most frequent color of the image and stores it in prefs.
+  void UpdateCustomBackgroundColorAsync(
+      const GURL& image_url,
+      const gfx::Image& fetched_image,
+      const image_fetcher::RequestMetadata& metadata);
+
  private:
   void SetBackgroundToLocalResource();
   // Returns false if the custom background pref cannot be parsed, otherwise
@@ -97,8 +109,17 @@ class NtpCustomBackgroundService : public KeyedService,
   bool IsCustomBackgroundPrefValid();
   void NotifyAboutBackgrounds();
 
+  // Updates custom background prefs with color for the given |image_url|.
+  void UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
+                                            SkColor color);
+
+  // Fetches the image for the given |fetch_url| and extract its main color.
+  void FetchCustomBackgroundAndExtractBackgroundColor(const GURL& image_url,
+                                                      const GURL& fetch_url);
+
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<ThemeService> theme_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<NtpBackgroundService> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
@@ -106,6 +127,7 @@ class NtpCustomBackgroundService : public KeyedService,
   raw_ptr<base::Clock> clock_;
   base::TimeTicks background_updated_timestamp_;
   base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
+  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Used to track information for previous background when a background is
   // being previewed.

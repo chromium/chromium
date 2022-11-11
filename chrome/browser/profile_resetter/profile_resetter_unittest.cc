@@ -1024,6 +1024,7 @@ TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
       GURL("https://background.com"));
   ntp_custom_background_service->SetCustomBackgroundInfo(
       /*background_url=*/GURL("https://background.com"),
+      /*thumbnail_url=*/GURL("https://thumbnail.com"),
       /*attribution_line_1=*/"line 1",
       /*attribution_line_2=*/"line 2",
       /*action_url=*/GURL("https://action.com"),

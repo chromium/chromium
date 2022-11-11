@@ -218,7 +218,8 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Sets the background image and notifies all NTPs of the change.
   SetBackgroundImage(string attribution_1, string attribution_2,
-      url.mojom.Url attribution_url, url.mojom.Url image_url);
+      url.mojom.Url attribution_url, url.mojom.Url image_url,
+      url.mojom.Url thumbnail_url);
   // Sets collection id for daily refresh. When |collection_id| is empty, the
   // daily refresh is turned off.
   SetDailyRefreshCollectionId(string collection_id);

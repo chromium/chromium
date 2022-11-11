@@ -347,7 +347,7 @@ Refer to README.md for content description and update process.
  <item id="fast_pair_device_metadata_fetcher" added_in_milestone="100" content_hash_code="0099c721" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc" />
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="00c76007" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
  <item id="webview_proxy_config" added_in_milestone="100" content_hash_code="009d2396" os_list="android" file_path="android_webview/browser/network_service/aw_proxy_config_monitor.cc" />
- <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc" />
+ <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux,windows" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc" />
  <item id="sct_auditing_hashdance" added_in_milestone="100" content_hash_code="00ea07d2" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
  <item id="pull_template_request" added_in_milestone="101" content_hash_code="06335b4a" os_list="android" file_path="components/content_creation/notes/core/templates/template_fetcher.cc" />
  <item id="webapk_create_for_service" added_in_milestone="101" content_hash_code="00107cfb" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
@@ -402,4 +402,5 @@ Refer to README.md for content description and update process.
  <item id="k_anonymity_service_join_set" added_in_milestone="108" content_hash_code="02ae88a5" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
  <item id="k_anonymity_service_query_set" added_in_milestone="108" content_hash_code="0411a8c6" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_service_client.cc" />
  <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="109" content_hash_code="05958d4c" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher.cc" />
+ <item id="ntp_custom_background" added_in_milestone="109" content_hash_code="05dcbc8b" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_custom_background_service.cc" />
 </annotations>
