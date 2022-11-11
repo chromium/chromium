@@ -18,8 +18,10 @@ import {
   GifSaver,
   VideoSaver,
 } from '../../models/video_saver.js';
+import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../mojo/image_capture.js';
+import {StorageMonitorStatus} from '../../mojo/type.js';
 import * as sound from '../../sound.js';
 import * as state from '../../state.js';
 import * as toast from '../../toast.js';
@@ -29,6 +31,7 @@ import {
   ErrorType,
   Facing,
   getVideoTrackSettings,
+  LowStorageError,
   Metadata,
   NoChunkError,
   NoFrameError,
@@ -109,6 +112,7 @@ function beforeUnloadListener(event: BeforeUnloadEvent) {
 }
 
 export interface VideoResult {
+  autoStopped: boolean;
   resolution: Resolution;
   duration: number;
   videoSaver: VideoSaver;
@@ -207,6 +211,16 @@ export class Video extends ModeBase {
    */
   private everPaused = false;
 
+  /**
+   * Whether the current recording is auto stopped due to low storage.
+   */
+  private autoStopped = false;
+
+  /**
+   * HTMLElement displaying warning about low storage.
+   */
+  private lowStorageWarningNudge = dom.get('#nudge', HTMLDivElement);
+
   constructor(
       video: PreviewVideo,
       private readonly captureConstraints: StreamConstraints|null,
@@ -304,6 +318,37 @@ export class Video extends ModeBase {
     return this.snapshotting;
   }
 
+  private toggleLowStorageWarning(show: boolean): void {
+    this.lowStorageWarningNudge.hidden = !show;
+  }
+
+  /**
+   * Start monitor storage status and return initial status.
+   *
+   * @return Promise resolved to boolean indicating whether users can
+   * start/resume the recording.
+   */
+  private async startMonitorStorage(): Promise<boolean> {
+    const onChange = (newState: StorageMonitorStatus) => {
+      if (newState === StorageMonitorStatus.NORMAL) {
+        this.toggleLowStorageWarning(false);
+      } else if (newState === StorageMonitorStatus.LOW) {
+        this.toggleLowStorageWarning(true);
+      } else if (newState === StorageMonitorStatus.CRITICALLY_LOW) {
+        if (!state.get(state.State.RECORDING_PAUSED)) {
+          this.autoStopped = true;
+          this.stop();
+        }
+      }
+    };
+    const initialState =
+        await ChromeHelper.getInstance().startMonitorStorage(onChange);
+    if (initialState === StorageMonitorStatus.LOW) {
+      this.toggleLowStorageWarning(true);
+    }
+    return initialState !== StorageMonitorStatus.CRITICALLY_LOW;
+  }
+
   /**
    * Toggles pause/resume state of video recording.
    *
@@ -324,6 +369,16 @@ export class Video extends ModeBase {
     assert(this.mediaRecorder.state !== 'inactive');
     const toBePaused = this.mediaRecorder.state !== 'paused';
     const toggledEvent = toBePaused ? 'pause' : 'resume';
+
+    if (!toBePaused) {
+      const canResume = await this.startMonitorStorage();
+      if (!canResume) {
+        this.autoStopped = true;
+        this.stop();
+        return;
+      }
+    }
+
     const onToggled = () => {
       assert(this.mediaRecorder !== null);
       this.mediaRecorder.removeEventListener(toggledEvent, onToggled);
@@ -393,6 +448,15 @@ export class Video extends ModeBase {
     assert(this.snapshotting === null);
     this.togglePausedInternal = null;
     this.everPaused = false;
+    this.autoStopped = false;
+
+    if (this.recordingType === RecordType.NORMAL) {
+      const canStart = await this.startMonitorStorage();
+      if (!canStart) {
+        ChromeHelper.getInstance().stopMonitorStorage();
+        throw new LowStorageError();
+      }
+    }
 
     const isSoundEnded =
         await sound.play(dom.get('#sound-rec-start', HTMLAudioElement));
@@ -491,6 +555,7 @@ export class Video extends ModeBase {
       return [(async () => {
         assert(videoSaver !== null);
         await this.handler.onVideoCaptureDone({
+          autoStopped: this.autoStopped,
           resolution: this.captureResolution,
           duration: this.recordTime.inMilliseconds(),
           videoSaver,
@@ -502,6 +567,8 @@ export class Video extends ModeBase {
   }
 
   override stop(): void {
+    ChromeHelper.getInstance().stopMonitorStorage();
+    this.toggleLowStorageWarning(false);
     if (!state.get(state.State.RECORDING)) {
       return;
     }
@@ -597,7 +664,6 @@ export class Video extends ModeBase {
           if (noChunk) {
             reject(new NoChunkError());
           } else {
-            // TODO(yuli): Handle insufficient storage.
             resolve(saver);
           }
         };

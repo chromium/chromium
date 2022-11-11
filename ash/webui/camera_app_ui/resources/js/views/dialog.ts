@@ -66,11 +66,14 @@ export class Dialog extends View {
     if (message !== undefined) {
       this.messageHolder.textContent = assertString(message);
     }
+    // Update title and description, and update i18n-text for testing purpose.
     if (title !== undefined && this.titleHolder !== null) {
       this.titleHolder.textContent = getI18nMessage(title);
+      this.titleHolder.setAttribute('i18n-text', title);
     }
     if (description !== undefined && this.descHolder !== null) {
       this.descHolder.textContent = getI18nMessage(description);
+      this.descHolder.setAttribute('i18n-text', description);
     }
 
     // Only change visibility when explicitly define boolean value.

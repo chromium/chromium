@@ -253,7 +253,7 @@
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
       </div>
-      <div id="nudge" tabindex="-1" aria-live="polite" hidden>
+      <div id="nudge" tabindex="-1" role="alert" aria-live="polite" hidden>
         <div class="warning-icon"></div>
         <div class="warning-msg"
              i18n-text="low_storage_nudge_warning_msg"></div>
@@ -497,9 +497,13 @@
     </div>
     <div id="view-low-storage-dialog" class="dialog">
       <div class="low-storage-dialog-popup" role="dialog" 
-           aria-labelledby="dialog-msg" aria-live="polite">
-        <div class="dialog-title dialog-msg-holder"></div>
-        <div class="dialog-description"></div>
+           aria-labelledby="low-storage-dialog-title"
+           aria-describedby="low-storage-dialog-description"
+           aria-live="polite">
+        <div class="dialog-title dialog-msg-holder"
+             id="low-storage-dialog-title"></div>
+        <div class="dialog-description"
+             id="low-storage-dialog-description"></div>
         <div class="low-storage-dialog-buttons">
           <button class="dialog-negative-button text-button pill
                   system-secondary dark" tabindex="0">

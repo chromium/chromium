@@ -43,6 +43,7 @@ import {
   ErrorType,
   Facing,
   ImageBlob,
+  LowStorageError,
   MimeType,
   Mode,
   PerfEvent,
@@ -81,7 +82,10 @@ export class Camera extends View implements CameraViewUI {
       new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
 
   private readonly lowStorageDialogView =
-      new Dialog(ViewName.LOW_STORAGE_DIALOG);
+      new Dialog(ViewName.LOW_STORAGE_DIALOG, {
+        onNegativeButtonClicked: () =>
+            ChromeHelper.getInstance().openStorageManagement(),
+      });
 
   private readonly subViews: View[];
 
@@ -473,6 +477,14 @@ export class Camera extends View implements CameraViewUI {
         const [captureDone] = await this.cameraManager.startCapture();
         await captureDone;
       } catch (e) {
+        if (e instanceof LowStorageError) {
+          nav.open(ViewName.LOW_STORAGE_DIALOG, {
+            title: I18nString.LOW_STORAGE_DIALOG_CANNOT_START_TITLE,
+            description: I18nString.LOW_STORAGE_DIALOG_CANNOT_START_DESC,
+          });
+          // Don't mark this as capture error.
+          return;
+        }
         hasError = true;
         if (e instanceof CanceledError) {
           return;
@@ -884,6 +896,15 @@ export class Camera extends View implements CameraViewUI {
     animate.play(this.cameraManager.getPreviewVideo().video);
   }
 
+  private showLowStorageDialogForAutoStop(): void {
+    // TODO(b/244261957): Send metrics for this event when there is a final
+    // decision on new event/custom dimension.
+    nav.open(ViewName.LOW_STORAGE_DIALOG, {
+      title: I18nString.LOW_STORAGE_DIALOG_AUTO_STOP_TITLE,
+      description: I18nString.LOW_STORAGE_DIALOG_AUTO_STOP_DESC,
+    });
+  }
+
   async onGifCaptureDone({name, gifSaver, resolution, duration}: GifResult):
       Promise<void> {
     nav.open(ViewName.FLASH);
@@ -940,8 +961,12 @@ export class Camera extends View implements CameraViewUI {
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
-  async onVideoCaptureDone({resolution, videoSaver, duration, everPaused}:
-                               VideoResult): Promise<void> {
+  async onVideoCaptureDone(
+      {resolution, videoSaver, duration, everPaused, autoStopped}: VideoResult):
+      Promise<void> {
+    if (autoStopped) {
+      this.showLowStorageDialogForAutoStop();
+    }
     state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
     try {
       metrics.sendCaptureEvent({
