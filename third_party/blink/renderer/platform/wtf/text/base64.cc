@@ -55,7 +55,7 @@ namespace {
 
 class Base64EncoderImpl {
  public:
-  Base64EncoderImpl(wtf_size_t len, Base64EncodePolicy policy);
+  explicit Base64EncoderImpl(wtf_size_t len);
 
   wtf_size_t out_length() const { return out_length_; }
   void Encode(base::span<const uint8_t> data, base::span<char> out) const;
@@ -63,11 +63,9 @@ class Base64EncoderImpl {
  private:
   wtf_size_t in_length_ = 0;
   wtf_size_t out_length_ = 0;
-  bool insert_lfs_ = false;
 };
 
-Base64EncoderImpl::Base64EncoderImpl(wtf_size_t len,
-                                     Base64EncodePolicy policy) {
+Base64EncoderImpl::Base64EncoderImpl(wtf_size_t len) {
   if (!len)
     return;
 
@@ -80,11 +78,6 @@ Base64EncoderImpl::Base64EncoderImpl(wtf_size_t len,
 
   in_length_ = len;
   out_length_ = ((len + 2) / 3) * 4;
-
-  // Deal with the 76 character per line limit specified in RFC 2045.
-  insert_lfs_ = (policy == kBase64InsertLFs && out_length_ > 76);
-  if (insert_lfs_)
-    out_length_ += ((out_length_ - 1) / 76);
 }
 
 void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
@@ -97,16 +90,9 @@ void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
   unsigned sidx = 0;
   unsigned didx = 0;
 
-  int count = 0;
-
   // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
   if (len > 1) {
     while (sidx < len - 2) {
-      if (insert_lfs_) {
-        if (count && !(count % 76))
-          out[didx++] = '\n';
-        count += 4;
-      }
       out[didx++] = kBase64EncMap[(data[sidx] >> 2) & 077];
       out[didx++] = kBase64EncMap[((data[sidx + 1] >> 4) & 017) |
                                   ((data[sidx] << 4) & 077)];
@@ -118,9 +104,6 @@ void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
   }
 
   if (sidx < len) {
-    if (insert_lfs_ && (count > 0) && !(count % 76))
-      out[didx++] = '\n';
-
     out[didx++] = kBase64EncMap[(data[sidx] >> 2) & 077];
     if (sidx < len - 1) {
       out[didx++] = kBase64EncMap[((data[sidx + 1] >> 4) & 017) |
@@ -140,8 +123,8 @@ void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
 
 }  // namespace
 
-String Base64Encode(base::span<const uint8_t> data, Base64EncodePolicy policy) {
-  Base64EncoderImpl encoder(data.size(), policy);
+String Base64Encode(base::span<const uint8_t> data) {
+  Base64EncoderImpl encoder(data.size());
   auto size = encoder.out_length();
   if (size == 0)
     return String();
@@ -153,10 +136,8 @@ String Base64Encode(base::span<const uint8_t> data, Base64EncodePolicy policy) {
   return result.Release();
 }
 
-void Base64Encode(base::span<const uint8_t> data,
-                  Vector<char>& out,
-                  Base64EncodePolicy policy) {
-  Base64EncoderImpl encoder(data.size(), policy);
+void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
+  Base64EncoderImpl encoder(data.size());
   auto size = encoder.out_length();
   if (size == 0) {
     out.clear();
@@ -313,10 +294,8 @@ bool Base64UnpaddedURLDecode(const String& in,
                       policy);
 }
 
-String Base64URLEncode(const char* data,
-                       unsigned length,
-                       Base64EncodePolicy policy) {
-  return Base64Encode(base::as_bytes(base::make_span(data, length)), policy)
+String Base64URLEncode(const char* data, unsigned length) {
+  return Base64Encode(base::as_bytes(base::make_span(data, length)))
       .Replace('+', '-')
       .Replace('/', '_');
 }

@@ -33,16 +33,10 @@
 
 namespace WTF {
 
-enum Base64EncodePolicy { kBase64DoNotInsertLFs, kBase64InsertLFs };
-
 enum Base64DecodePolicy { kBase64DoNotValidatePadding, kBase64ValidatePadding };
 
-WTF_EXPORT void Base64Encode(base::span<const uint8_t>,
-                             Vector<char>&,
-                             Base64EncodePolicy = kBase64DoNotInsertLFs);
-[[nodiscard]] WTF_EXPORT String
-    Base64Encode(base::span<const uint8_t>,
-                 Base64EncodePolicy = kBase64DoNotInsertLFs);
+WTF_EXPORT void Base64Encode(base::span<const uint8_t>, Vector<char>&);
+[[nodiscard]] WTF_EXPORT String Base64Encode(base::span<const uint8_t>);
 
 WTF_EXPORT bool Base64Decode(
     const String&,
@@ -76,15 +70,10 @@ WTF_EXPORT bool Base64UnpaddedURLDecode(
 // encoding in plain base64.
 WTF_EXPORT String NormalizeToBase64(const String&);
 
-WTF_EXPORT String Base64URLEncode(const char*,
-                                  unsigned,
-                                  Base64EncodePolicy = kBase64DoNotInsertLFs);
+WTF_EXPORT String Base64URLEncode(const char*, unsigned);
 
 }  // namespace WTF
 
-using WTF::Base64EncodePolicy;
-using WTF::kBase64DoNotInsertLFs;
-using WTF::kBase64InsertLFs;
 using WTF::Base64DecodePolicy;
 using WTF::kBase64DoNotValidatePadding;
 using WTF::kBase64ValidatePadding;
