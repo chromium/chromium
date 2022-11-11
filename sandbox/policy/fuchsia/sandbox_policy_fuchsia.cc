@@ -119,6 +119,7 @@ constexpr SandboxConfig kGpuConfig = {
 
 constexpr SandboxConfig kNetworkConfig = {
     base::make_span((const char* const[]){
+        "fuchsia.device.NameProvider",
         "fuchsia.net.name.Lookup",
         fuchsia::net::interfaces::State::Name_,
         "fuchsia.posix.socket.Provider",
