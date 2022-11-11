@@ -25,7 +25,7 @@ class MotherboardMetricsProvider : public MetricsProvider {
   MotherboardMetricsProvider& operator=(const MotherboardMetricsProvider&) =
       delete;
 
-  // metricsMetricsProvider:
+  // metrics::MetricsProvider:
   void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
