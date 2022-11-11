@@ -13,9 +13,6 @@ import os
 import platform
 import subprocess
 
-_IDL_GN_TARGET = 'chrome/updater/app/server/win:updater_idl_idl_idl_action'
-
-
 class IDLUpdateError(Exception):
     """Module exception class."""
 
@@ -23,13 +20,15 @@ class IDLUpdateError(Exception):
 class IDLUpdater:
     """A class to update IDL COM headers/TLB files based on config."""
 
-    def __init__(self, target_cpu: str, is_chrome_branded: bool):
+    def __init__(self, idl_gn_target: str, target_cpu: str,
+                 is_chrome_branded: bool):
+        self.idl_gn_target = idl_gn_target
         self.target_cpu = target_cpu
         self.is_chrome_branded = str(is_chrome_branded).lower()
         self.output_dir = r'out\idl_update'
 
     def update(self) -> None:
-        print('Updating IDL files for', self.target_cpu,
+        print('Updating', self.idl_gn_target, 'IDL files for', self.target_cpu,
               'CPU, chrome_branded:', self.is_chrome_branded, '...')
         self._make_output_dir()
         self._gen_gn_args()
@@ -64,7 +63,7 @@ class IDLUpdater:
     def _autoninja_and_update(self) -> None:
         print('Check if update is needed by building the target...')
         proc = subprocess.run(
-            ['autoninja.bat', '-C', self.output_dir, _IDL_GN_TARGET],
+            ['autoninja.bat', '-C', self.output_dir, self.idl_gn_target],
             capture_output=True,
             check=False)
         if proc.returncode == 0:
@@ -72,6 +71,7 @@ class IDLUpdater:
             return
 
         cmd = self._extract_update_command(proc.stdout.decode('utf-8'))
+        cmd = cmd.replace('..\\..\\', '')
         print('Updating IDL COM headers/TLB by [', cmd, ']...')
         subprocess.run(cmd, shell=True, capture_output=True, check=True)
         print('Done.\n')
@@ -119,9 +119,15 @@ def check_running_environment() -> None:
 def main():
     check_running_environment()
 
-    for target_cpu in ['arm64', 'x64', 'x86']:
-        for is_chrome_branded in [True, False]:
-            IDLUpdater(target_cpu, is_chrome_branded).update()
+    for idl_target in [
+            'updater_idl_idl', 'updater_internal_idl_idl',
+            'updater_legacy_idl_idl'
+    ]:
+        for target_cpu in ['arm64', 'x64', 'x86']:
+            for is_chrome_branded in [True, False]:
+                IDLUpdater(
+                    'chrome/updater/app/server/win:' + idl_target +
+                    '_idl_action', target_cpu, is_chrome_branded).update()
 
 
 if __name__ == '__main__':
