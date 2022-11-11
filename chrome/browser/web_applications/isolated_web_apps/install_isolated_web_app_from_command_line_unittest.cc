@@ -12,8 +12,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/web_applications/isolation_data.h"
+#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -135,7 +137,19 @@ base::CommandLine CreateCommandLine(
 class InstallIsolatedWebAppFromCommandLineFlagTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebApps};
 };
+
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
+       NoInstallationWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kIsolatedWebApps);
+
+  EXPECT_THAT(GetIsolationDataFromCommandLine(
+                  CreateCommandLine("http://example.com:12345", absl::nullopt)),
+              HasNoValue());
+}
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
        NoInstallationWhenProxyFlagAbsentAndBundleFlagAbsent) {

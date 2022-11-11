@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/overloaded.h"
 #include "base/no_destructor.h"
@@ -27,6 +28,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -147,6 +149,10 @@ base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
 
 base::expected<absl::optional<IsolationData>, std::string>
 GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
+  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    return absl::nullopt;
+  }
+
   base::expected<absl::optional<IsolationData>, std::string> proxy_url =
       GetProxyUrlFromCommandLine(command_line);
   base::expected<absl::optional<IsolationData>, std::string> bundle_path =
