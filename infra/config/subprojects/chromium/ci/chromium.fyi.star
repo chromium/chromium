@@ -1,7 +1,7 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Definitions of builders in the chromium.fuzz builder group."""
+"""Definitions of builders in the chromium.fyi builder group."""
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
@@ -2206,49 +2206,4 @@ ci.builder(
     notifies = ["annotator-rel"],
     os = os.WINDOWS_DEFAULT,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-)
-
-ci.builder(
-    name = "Blink Unexpected Pass Finder",
-    builderless = True,
-    cores = "16",
-    console_view_entry = consoles.console_view_entry(
-        short_name = "upf",
-    ),
-    executable = "recipe:chromium_expectation_files/expectation_file_scripts",
-    # This will eventually be set to run on a schedule, but only support
-    # manual triggering for now until we get a successful build.
-    schedule = "triggered",
-    triggered_by = [],
-    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
-    properties = {
-        "scripts": [
-            {
-                "step_name": "remove_stale_blink_expectations",
-                "script": "third_party/blink/tools/remove_stale_expectations.py",
-                "script_type": "UNEXPECTED_PASS",
-                "submit_type": "MANUAL",
-                "reviewer_list": {
-                    "reviewer": ["bsheedy@chromium.org"],
-                },
-                "cl_title": "Remove stale Blink expectations",
-                "args": [
-                    "--project",
-                    "chrome-unexpected-pass-data",
-                    "--no-include-internal-builders",
-                    "--remove-stale-expectations",
-                    "--large-query-mode",
-                    "--num-samples",
-                    "200",
-                    # We need to limit the max number of parallel jobs in order
-                    # to avoid having large memory usage spikes that can kill
-                    # the bot due to swap space not being enabled.
-                    "--jobs",
-                    "2",
-                ],
-            },
-        ],
-    },
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )

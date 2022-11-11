@@ -138,6 +138,7 @@ consoles.console_view(
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
 )]
 
+exec("./ci/blink.infra.star")
 exec("./ci/checks.star")
 exec("./ci/chromium.star")
 exec("./ci/chromium.accessibility.star")

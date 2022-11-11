@@ -1,8 +1,4 @@
 {
-  "$build/goma": {
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org"
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -10,7 +6,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
   "recipe": "chromium_expectation_files/expectation_file_scripts",
   "scripts": [
     {
@@ -28,13 +23,18 @@
       "cl_title": "Remove stale Blink expectations",
       "reviewer_list": {
         "reviewer": [
-          "bsheedy@chromium.org"
+          "awillia@chromium.org",
+          "jiesheng@google.com",
+          "jonathanjlee@google.com",
+          "nsatragno@chromium.org",
+          "tkent@chromium.org",
+          "wangxianzhu@chromium.org"
         ]
       },
       "script": "third_party/blink/tools/remove_stale_expectations.py",
       "script_type": "UNEXPECTED_PASS",
       "step_name": "remove_stale_blink_expectations",
-      "submit_type": "MANUAL"
+      "submit_type": "AUTO"
     }
   ]
 }
