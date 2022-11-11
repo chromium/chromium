@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.view.View.OnLayoutChangeListener;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
@@ -105,6 +107,33 @@ public class FullscreenHtmlApiHandlerUnitTest {
         mAreControlsHidden.set(true);
         verify(mTabBrowserControlsConstraintsHelper, times(1))
                 .update(BrowserControlsState.SHOWN, true);
+    }
+
+    @Test
+    public void testFullscreenAddAndRemoveObserver() {
+        // avoid calling GestureListenerManager/SelectionPopupController
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(true).when(mTab).isUserInteractable();
+
+        // Fullscreen process stops at pending state since controls are not hidden.
+        mAreControlsHidden.set(false);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandler.addObserver(observer);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        verify(observer).onEnterFullscreen(mTab, fullscreenOptions);
+        Assert.assertEquals("Observer is not added.", 1,
+                mFullscreenHtmlApiHandler.getObserversForTesting().size());
+
+        // Exit is invoked unexpectedly before the controls get hidden. Fullscreen process should be
+        // marked as canceled.
+        mFullscreenHtmlApiHandler.onExitFullscreen(mTab);
+        verify(observer).onExitFullscreen(mTab);
+
+        mFullscreenHtmlApiHandler.destroy();
+        Assert.assertEquals("Observer is not removed.", 0,
+                mFullscreenHtmlApiHandler.getObserversForTesting().size());
     }
 
     @Test
