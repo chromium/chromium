@@ -94,10 +94,6 @@
 #include "components/os_crypt/key_storage_config_linux.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "sandbox/linux/services/libc_interceptor.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
@@ -512,14 +508,6 @@ void NetworkService::SetSystemDnsResolver(
   CHECK(
       base::FeatureList::IsEnabled(features::kOutOfProcessSystemDnsResolution));
   CHECK(override_remote);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // The in-process system DNS resolver is being overridden with an
-  // out-of-process Mojo implementation. So, generate a crash dump if this
-  // process ever calls getaddrinfo().
-  // TODO(crbug.com/1312224): remove this once network service is sandboxed.
-  sandbox::DiscourageGetaddrinfo();
-#endif
 
   // Using a Remote (as opposed to a SharedRemote) is fine as system host
   // resolver overrides should only be invoked on the main thread.
