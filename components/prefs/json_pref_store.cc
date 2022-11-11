@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -60,6 +61,13 @@ bool BackupPrefsFile(const base::FilePath& path) {
   const bool bad_existed = base::PathExists(bad);
   base::Move(path, bad);
   return bad_existed;
+}
+
+bool PrefStoreBackgroundSerializationEnabledOrFeatureListUnavailable() {
+  // TODO(crbug.com/1364606#c12): Ensure that this is not invoked before
+  // FeatureList initialization.
+  return !base::FeatureList::GetInstance() ||
+         base::FeatureList::IsEnabled(kPrefStoreBackgroundSerialization);
 }
 
 PersistentPrefStore::PrefReadError HandleReadErrors(
@@ -554,7 +562,7 @@ void JsonPrefStore::ScheduleWrite(uint32_t flags) {
 
   if (flags & LOSSY_PREF_WRITE_FLAG)
     pending_lossy_write_ = true;
-  else if (base::FeatureList::IsEnabled(kPrefStoreBackgroundSerialization))
+  else if (PrefStoreBackgroundSerializationEnabledOrFeatureListUnavailable())
     writer_.ScheduleWriteWithBackgroundDataSerializer(this);
   else
     writer_.ScheduleWrite(this);
