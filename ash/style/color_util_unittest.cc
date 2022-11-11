@@ -74,12 +74,74 @@ TEST_F(ColorUtilTest, MixesWithWhiteInLightMode) {
   }
 }
 
+TEST_F(ColorUtilTest, ClampsMaxLightnessInLightMode) {
+  // Tuple of k_mean_color, expected output color after darkening and masking
+  // with white.
+  std::vector<std::tuple<SkColor, SkColor>> cases = {
+      // Pure white is shifted to gray.
+      {SK_ColorWHITE, SkColorSetARGB(0xFF, 0xF8, 0xF8, 0xF8)},
+      // #B3B3B3 should result in the same output color as pure white.
+      {
+          SkColorSetARGB(0xFF, 0xB3, 0xB3, 0xB3),
+          SkColorSetARGB(0xFF, 0xF8, 0xF8, 0xF8),
+      },
+      // Slightly darker than last case results in a different output color than
+      // previous two.
+      {
+          SkColorSetARGB(0xFF, 0xB2, 0xB2, 0xB2),
+          SkColorSetARGB(0xFF, 0xF7, 0xF7, 0xF7),
+      },
+      // Light pink retains red hue.
+      {
+          SkColorSetARGB(0xFF, 0xFF, 0xEE, 0xEE),
+          SkColorSetARGB(0xFF, 0xFF, 0xF0, 0xF0),
+      },
+  };
+  for (const auto& [k_mean_color, expected_color] : cases) {
+    test_api()->SetCalculatedColors({{}, k_mean_color});
+    SkColor result_color =
+        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, false);
+    EXPECT_SKCOLOR_EQ(expected_color, result_color);
+  }
+}
+
 TEST_F(ColorUtilTest, MixesWithBlackInDarkMode) {
   // Tuple of k_mean_color, expected output color after masking with black.
   std::vector<std::tuple<SkColor, SkColor>> cases = {
-      {SK_ColorRED, SkColorSetARGB(0xFF, 0x33, 0x00, 0x00)},
-      {SK_ColorGREEN, SkColorSetARGB(0xFF, 0x00, 0x33, 0x00)},
-      {SK_ColorMAGENTA, SkColorSetARGB(0xFF, 0x33, 0x00, 0x33)},
+      {SK_ColorRED, SkColorSetARGB(0xFF, 0x4C, 0x00, 0x00)},
+      {SK_ColorGREEN, SkColorSetARGB(0xFF, 0x00, 0x4C, 0x00)},
+      {SK_ColorMAGENTA, SkColorSetARGB(0xFF, 0x4C, 0x00, 0x4C)},
+  };
+  for (const auto& [k_mean_color, expected_color] : cases) {
+    test_api()->SetCalculatedColors({{}, k_mean_color});
+    SkColor result_color =
+        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, true);
+    EXPECT_SKCOLOR_EQ(expected_color, result_color);
+  }
+}
+
+TEST_F(ColorUtilTest, ClampsMaxDarknessInDarkMode) {
+  // Tuple of k_mean_color, expected output color after lightening and masking
+  // with black.
+  std::vector<std::tuple<SkColor, SkColor>> cases = {
+      // Pure black is shifted to dark gray.
+      {SK_ColorBLACK, SkColorSetARGB(0xFF, 0x17, 0x17, 0x17)},
+      // #4D4D4D should result in the same output color as black.
+      {
+          SkColorSetARGB(0xFF, 0x4D, 0x4D, 0x4D),
+          SkColorSetARGB(0xFF, 0x17, 0x17, 0x17),
+      },
+      // Slightly lighter than last case results in a different output color
+      // from previous two, as it is light enough to skip lightness shift.
+      {
+          SkColorSetARGB(0xFF, 0x4F, 0x4F, 0x4F),
+          SkColorSetARGB(0xFF, 0x18, 0x18, 0x18),
+      },
+      // Dark red retains red hue.
+      {
+          SkColorSetARGB(0xFF, 0x44, 0x00, 0x00),
+          SkColorSetARGB(0xFF, 0x2E, 0x00, 0x00),
+      },
   };
   for (const auto& [k_mean_color, expected_color] : cases) {
     test_api()->SetCalculatedColors({{}, k_mean_color});

@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/cxx17_backports.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
@@ -23,8 +24,13 @@ constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
 constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
 // Alternate alpha values used when `kDarkLightModeKMeansColor` is active.
-constexpr int kDarkBackgroundBlendKMeansAlpha = 204;   // 80%
+constexpr int kDarkBackgroundBlendKMeansAlpha = 179;   // 70%
 constexpr int kLightBackgroundBlendKMeansAlpha = 230;  // 90%
+
+// Clamp the lightness of input user colors so that there is sufficient contrast
+// between shelf and wallpaper.
+constexpr double kMaxLightnessLightMode = 0.7;
+constexpr double kMinLightnessDarkMode = 0.3;
 
 // The disabled color is always 38% opacity of the enabled color.
 constexpr float kDisabledColorOpacity = 0.38f;
@@ -69,6 +75,18 @@ int GetForegroundAlpha(bool use_dark_color) {
                         : kLightBackgroundBlendAlpha;
 }
 
+SkColor ClampLightness(bool use_dark_color, SkColor color) {
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(color, &hsl);
+
+  if (use_dark_color) {
+    hsl.l = base::clamp(hsl.l, kMinLightnessDarkMode, 1.0);
+  } else {
+    hsl.l = base::clamp(hsl.l, 0.0, kMaxLightnessLightMode);
+  }
+  return color_utils::HSLToSkColor(hsl, SkColorGetA(color));
+}
+
 }  // namespace
 
 // static
@@ -89,6 +107,8 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
     DVLOG(1) << "Failed to get wallpaper color";
     return default_color;
   }
+  const SkColor clamped_wallpaper_color =
+      ClampLightness(use_dark_color, wallpaper_color);
 
   const SkColor foreground_color =
       use_dark_color ? SK_ColorBLACK : SK_ColorWHITE;
@@ -98,7 +118,7 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
   // Put a slightly transparent screen of white/black on top of the user's
   // wallpaper color.
   return color_utils::GetResultingPaintColor(
-      SkColorSetA(foreground_color, foreground_alpha), wallpaper_color);
+      SkColorSetA(foreground_color, foreground_alpha), clamped_wallpaper_color);
 }
 
 // static
