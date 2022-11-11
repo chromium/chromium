@@ -56,6 +56,10 @@ DecoderBuffer::DecoderBuffer(base::WritableSharedMemoryMapping mapping,
                              size_t size)
     : size_(size), writable_mapping_(std::move(mapping)) {}
 
+DecoderBuffer::DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory)
+    : size_(external_memory->span().size()),
+      external_memory_(std::move(external_memory)) {}
+
 DecoderBuffer::~DecoderBuffer() {
   data_.reset();
   side_data_.reset();
@@ -72,7 +76,7 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(const uint8_t* data,
                                                      size_t data_size) {
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
   CHECK(data);
-  return base::WrapRefCounted(new DecoderBuffer(data, data_size, NULL, 0));
+  return base::WrapRefCounted(new DecoderBuffer(data, data_size, nullptr, 0));
 }
 
 // static
@@ -127,8 +131,17 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromSharedMemoryRegion(
 }
 
 // static
+scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
+    std::unique_ptr<ExternalMemory> external_memory) {
+  DCHECK(external_memory);
+  if (external_memory->span().empty())
+    return nullptr;
+  return base::WrapRefCounted(new DecoderBuffer(std::move(external_memory)));
+}
+
+// static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
-  return base::WrapRefCounted(new DecoderBuffer(NULL, 0, NULL, 0));
+  return base::WrapRefCounted(new DecoderBuffer(nullptr, 0, nullptr, 0));
 }
 
 bool DecoderBuffer::MatchesMetadataForTesting(

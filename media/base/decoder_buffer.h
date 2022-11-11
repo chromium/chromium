@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -33,13 +34,20 @@ namespace media {
 class MEDIA_EXPORT DecoderBuffer
     : public base::RefCountedThreadSafe<DecoderBuffer> {
  public:
-  enum {
-    kPaddingSize = 64,
-#if defined(ARCH_CPU_ARM_FAMILY)
-    kAlignmentSize = 16
-#else
-    kAlignmentSize = 32
-#endif
+  // ExternalMemory wraps a class owning a buffer and expose the data interface
+  // through |span|. This class is derived by a class that owns the class owning
+  // the buffer owner class. It is generally better to add the buffer class to
+  // DecoderBuffer. ExternalMemory is for a class that cannot be added; for
+  // instance, rtc::scoped_refptr<webrtc::EncodedImageBufferInterface>, webrtc
+  // class cannot be included in //media/base.
+  struct MEDIA_EXPORT ExternalMemory {
+   public:
+    explicit ExternalMemory(base::span<const uint8_t> span) : span_(span) {}
+    virtual ~ExternalMemory() = default;
+    const base::span<const uint8_t>& span() const { return span_; }
+
+   private:
+    const base::span<const uint8_t> span_;
   };
 
   using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;
@@ -112,6 +120,12 @@ class MEDIA_EXPORT DecoderBuffer
       uint64_t offset,
       size_t size);
 
+  // Creates a DecoderBuffer with ExternalMemory. The buffer accessed through
+  // the created DecoderBuffer is |span| of |external_memory||.
+  // |external_memory| is owned by DecoderBuffer until it is destroyed.
+  static scoped_refptr<DecoderBuffer> FromExternalMemory(
+      std::unique_ptr<ExternalMemory> external_memory);
+
   // Create a DecoderBuffer indicating we've reached end of stream.
   //
   // Calling any method other than end_of_stream() on the resulting buffer
@@ -151,6 +165,8 @@ class MEDIA_EXPORT DecoderBuffer
       return read_only_mapping_.GetMemoryAs<const uint8_t>();
     if (writable_mapping_.IsValid())
       return writable_mapping_.GetMemoryAs<const uint8_t>();
+    if (external_memory_)
+      return external_memory_->span().data();
     return data_.get();
   }
 
@@ -159,6 +175,7 @@ class MEDIA_EXPORT DecoderBuffer
     DCHECK(!end_of_stream());
     DCHECK(!read_only_mapping_.IsValid());
     DCHECK(!writable_mapping_.IsValid());
+    DCHECK(!external_memory_);
     return data_.get();
   }
 
@@ -202,7 +219,7 @@ class MEDIA_EXPORT DecoderBuffer
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const {
     return !read_only_mapping_.IsValid() && !writable_mapping_.IsValid() &&
-           !data_;
+           !external_memory_ && !data_;
   }
 
   bool is_key_frame() const {
@@ -245,6 +262,8 @@ class MEDIA_EXPORT DecoderBuffer
 
   DecoderBuffer(base::WritableSharedMemoryMapping mapping, size_t size);
 
+  explicit DecoderBuffer(std::unique_ptr<ExternalMemory> external_memory);
+
   virtual ~DecoderBuffer();
 
   // Encoded data, if it is stored on the heap.
@@ -265,6 +284,8 @@ class MEDIA_EXPORT DecoderBuffer
 
   // Encoded data, if it is stored in a writable shared memory mapping.
   base::WritableSharedMemoryMapping writable_mapping_;
+
+  std::unique_ptr<ExternalMemory> external_memory_;
 
   // Encryption parameters for the encoded data.
   std::unique_ptr<DecryptConfig> decrypt_config_;

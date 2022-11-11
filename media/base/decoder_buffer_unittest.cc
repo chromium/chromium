@@ -179,6 +179,19 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
   ASSERT_FALSE(buffer.get());
 }
 
+TEST(DecoderBufferTest, FromExternalMemory) {
+  constexpr uint8_t kData[] = "hello";
+  constexpr size_t kDataSize = std::size(kData);
+  auto external_memory = std::make_unique<DecoderBuffer::ExternalMemory>(
+      base::make_span(kData, kDataSize));
+  auto buffer = DecoderBuffer::FromExternalMemory(std::move(external_memory));
+  ASSERT_TRUE(buffer.get());
+  EXPECT_EQ(buffer->data_size(), kDataSize);
+  EXPECT_EQ(0, memcmp(buffer->data(), kData, kDataSize));
+  EXPECT_FALSE(buffer->end_of_stream());
+  EXPECT_FALSE(buffer->is_key_frame());
+}
+
 TEST(DecoderBufferTest, ReadingWriting) {
   const char kData[] = "hello";
   const size_t kDataSize = std::size(kData);
