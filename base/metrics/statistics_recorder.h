@@ -30,6 +30,7 @@
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -159,7 +160,7 @@ class BASE_EXPORT StatisticsRecorder {
   // Ownership of the individual histograms remains with the StatisticsRecorder.
   //
   // This method is thread safe.
-  static Histograms GetHistograms();
+  static Histograms GetHistograms() LOCKS_EXCLUDED(lock_.Pointer());
 
   // Gets BucketRanges used by all histograms registered. The order of returned
   // BucketRanges is not guaranteed.
@@ -187,7 +188,8 @@ class BASE_EXPORT StatisticsRecorder {
   static void PrepareDeltas(bool include_persistent,
                             HistogramBase::Flags flags_to_set,
                             HistogramBase::Flags required_flags,
-                            HistogramSnapshotManager* snapshot_manager);
+                            HistogramSnapshotManager* snapshot_manager)
+      LOCKS_EXCLUDED(snapshot_lock_.Pointer());
 
   // Retrieves and runs the list of callbacks for the histogram referred to by
   // |histogram_name|, if any.
@@ -352,6 +354,9 @@ class BASE_EXPORT StatisticsRecorder {
   // Global lock for internal synchronization. Uses an absl::Mutex to
   // support read/write lock semantics.
   static LazyInstance<absl::Mutex>::Leaky lock_;
+
+  // Global lock for internal synchronization of delta snapshots.
+  static LazyInstance<base::Lock>::Leaky snapshot_lock_;
 
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the

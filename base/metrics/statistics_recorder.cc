@@ -36,6 +36,10 @@ LazyInstance<absl::Mutex>::Leaky StatisticsRecorder::lock_ =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
+LazyInstance<base::Lock>::Leaky StatisticsRecorder::snapshot_lock_ =
+    LAZY_INSTANCE_INITIALIZER;
+
+// static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;
 
 // static
@@ -228,6 +232,8 @@ void StatisticsRecorder::PrepareDeltas(
   Histograms histograms = GetHistograms();
   if (!include_persistent)
     histograms = NonPersistent(std::move(histograms));
+
+  base::AutoLock lock(snapshot_lock_.Get());
   snapshot_manager->PrepareDeltas(Sort(std::move(histograms)), flags_to_set,
                                   required_flags);
 }

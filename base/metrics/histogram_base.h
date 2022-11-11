@@ -235,6 +235,10 @@ class BASE_EXPORT HistogramBase {
   // changed since the last call.
   //
   // See additional caveats by SnapshotSamples().
+  //
+  // WARNING: This may be called from a background thread by the metrics
+  // collection system. Do not make a call to this unless it was properly vetted
+  // by someone familiar with the system.
   virtual std::unique_ptr<HistogramSamples> SnapshotDelta() = 0;
 
   // Calculate the change (delta) in histogram counts since the previous call
