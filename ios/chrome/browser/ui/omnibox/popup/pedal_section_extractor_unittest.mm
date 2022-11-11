@@ -93,7 +93,7 @@ TEST_F(PedalSectionExtractorTest, Debounce) {
   [[delegate_ expect] invalidatePedals];
 
   // Verify that the pedal cache expires.
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(1, ^{
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(base::Seconds(1), ^{
     return ![extractor_ hasCachedPedals];
   }));
 

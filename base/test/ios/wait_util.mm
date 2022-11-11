@@ -26,11 +26,6 @@ bool WaitUntilConditionOrTimeout(TimeDelta timeout, ConditionBlock condition) {
   return success;
 }
 
-bool WaitUntilConditionOrTimeout(NSTimeInterval timeout,
-                                 ConditionBlock condition) {
-  return WaitUntilConditionOrTimeout(base::Seconds(timeout), condition);
-}
-
 TimeDelta TimeUntilCondition(ProceduralBlock action,
                              ConditionBlock condition,
                              bool run_message_loop,

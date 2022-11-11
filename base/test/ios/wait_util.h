@@ -47,9 +47,6 @@ constexpr TimeDelta kWaitForFileOperationTimeout = Seconds(2);
 // |timeout|.
 [[nodiscard]] bool WaitUntilConditionOrTimeout(TimeDelta timeout,
                                                ConditionBlock condition);
-[[nodiscard]] bool WaitUntilConditionOrTimeout(
-    NSTimeInterval timeout,
-    ConditionBlock condition);  // deprecated
 
 // Runs |action| if non-nil. Then, until either |condition| is true or |timeout|
 // expires, repetitively runs the current NSRunLoop and the current MessageLoop
