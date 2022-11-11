@@ -3204,6 +3204,7 @@ if (!is_android) {
         sources += [
           "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
+          "../browser/extensions/api/document_scan/document_scan_apitest.cc",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
 
