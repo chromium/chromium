@@ -43,10 +43,6 @@
         {
           "builder": "fuchsia-x64-cast-receiver-rel",
           "group": "tryserver.chromium.fuchsia"
-        },
-        {
-          "builder": "fuchsia-x64-cast-receiver-rel-orchestrator",
-          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }

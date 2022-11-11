@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "fuchsia-x64-cast-receiver-rel-compilator",
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -41,11 +45,6 @@
       ]
     }
   },
-  "$build/goma": {
-    "enable_ats": true,
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org"
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -54,5 +53,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuchsia",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium/orchestrator"
 }
