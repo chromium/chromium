@@ -12,14 +12,12 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
@@ -27,6 +25,11 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 namespace gpu {
 namespace {
@@ -72,11 +75,13 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     uint32_t usage) {
   gfx::BufferFormat buffer_format = viz::BufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
+#if BUILDFLAG(ENABLE_VULKAN)
   DCHECK(shared_context_state_);
   if (shared_context_state_->vk_context_provider()) {
     device_queue =
         shared_context_state_->vk_context_provider()->GetDeviceQueue();
   }
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   ui::SurfaceFactoryOzone* surface_factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
@@ -233,6 +238,7 @@ bool OzoneImageBackingFactory::IsSupported(
 }
 
 bool OzoneImageBackingFactory::CanImportNativePixmapToVulkan() {
+#if BUILDFLAG(ENABLE_VULKAN)
   if (!shared_context_state_->vk_context_provider()) {
     return false;
   }
@@ -241,6 +247,9 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToVulkan() {
   return shared_context_state_->vk_context_provider()
       ->GetVulkanImplementation()
       ->CanImportGpuMemoryBuffer(vk_device, gfx::NATIVE_PIXMAP);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 }
 
 bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {

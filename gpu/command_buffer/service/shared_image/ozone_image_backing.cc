@@ -23,11 +23,8 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/skia_vk_ozone_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/vulkan/vulkan_image.h"
-#include "gpu/vulkan/vulkan_implementation.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -41,6 +38,12 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_image_native_pixmap.h"
+
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/command_buffer/service/shared_image/skia_vk_ozone_image_representation.h"
+#include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_implementation.h"
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 #if BUILDFLAG(USE_DAWN)
 #include "gpu/command_buffer/service/shared_image/dawn_ozone_image_representation.h"
@@ -193,6 +196,7 @@ std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(
     return skia_representation;
   }
   if (context_state->GrContextIsVulkan()) {
+#if BUILDFLAG(ENABLE_VULKAN)
     auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
     gfx::GpuMemoryBufferHandle gmb_handle;
     gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
@@ -209,6 +213,10 @@ std::unique_ptr<SkiaImageRepresentation> OzoneImageBacking::ProduceSkia(
     return std::make_unique<SkiaVkOzoneImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
         tracker);
+#else
+    NOTREACHED() << "Vulkan is disabled.";
+    return nullptr;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   }
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;

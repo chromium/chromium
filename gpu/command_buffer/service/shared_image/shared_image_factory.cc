@@ -41,7 +41,7 @@
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 #if BUILDFLAG(IS_OZONE)
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
@@ -50,9 +50,7 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #endif
 
@@ -72,6 +70,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
+#include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 #endif
 
@@ -213,15 +212,17 @@ SharedImageFactory::SharedImageFactory(
         gpu_preferences, workarounds, context_state);
     factories_.push_back(std::move(factory));
   }
-#endif
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(IS_WIN)
   if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
-#elif BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+#if BUILDFLAG(IS_ANDROID)
   if (use_gl) {
     auto egl_backing_factory = std::make_unique<EGLImageBackingFactory>(
         gpu_preferences, workarounds, feature_info.get());
@@ -244,14 +245,12 @@ SharedImageFactory::SharedImageFactory(
         feature_info.get());
     factories_.push_back(std::move(ahb_factory));
   }
-#if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == GrContextType::kVulkan &&
       !base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
     auto external_vk_image_factory =
         std::make_unique<ExternalVkImageBackingFactory>(context_state);
     factories_.push_back(std::move(external_vk_image_factory));
   }
-#endif  // BUILDFLAG(ENABLE_VULKAN)
 #elif BUILDFLAG(IS_OZONE)
   // For all Ozone platforms - Desktop Linux, ChromeOS, Fuchsia, CastOS.
   if (ui::OzonePlatform::GetInstance()
