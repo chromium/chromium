@@ -118,6 +118,12 @@ void PageImpl::DidInferColorScheme(
   delegate_->DidInferColorScheme(*this);
 }
 
+void PageImpl::NotifyPageBecameCurrent() {
+  if (!IsPrimary())
+    return;
+  delegate_->NotifyPageBecamePrimary(*this);
+}
+
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
 }

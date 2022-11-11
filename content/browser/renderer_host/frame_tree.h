@@ -44,7 +44,6 @@ namespace content {
 
 class BrowserContext;
 class PageDelegate;
-class PageImpl;
 class RenderFrameHostDelegate;
 class RenderViewHostDelegate;
 class RenderViewHostImpl;
@@ -162,9 +161,6 @@ class CONTENT_EXPORT FrameTree {
 
     // Returns true when the active RenderWidgetHostView should be hidden.
     virtual bool IsHidden() = 0;
-
-    // Called when current Page of this frame tree changes to `page`.
-    virtual void NotifyPageChanged(PageImpl& page) = 0;
 
     // If the FrameTree using this delegate is an inner/nested FrameTree, then
     // there may be a FrameTreeNode in the outer FrameTree that is considered

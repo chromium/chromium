@@ -94,6 +94,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Notifies the page's color scheme was inferred.
   void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);
 
+  void NotifyPageBecameCurrent();
+
   absl::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }

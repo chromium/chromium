@@ -130,7 +130,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   void DidStopLoading() override;
   bool IsHidden() override;
   FrameTree* LoadingTree() override;
-  void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override;
   bool IsPortal() override;
 

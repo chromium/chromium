@@ -3369,8 +3369,8 @@ void RenderFrameHostImpl::RenderFrameCreated() {
     // here, since speculative and pending deletion RenderFrameHosts get
     // deleted immediately after crash, whereas prerender gets cancelled and
     // bfcache entry gets evicted.
-    DCHECK_EQ(frame_tree_node_->current_frame_host(), this);
-    frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged(GetPage());
+    DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
+    GetPage().NotifyPageBecameCurrent();
   }
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as

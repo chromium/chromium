@@ -1019,6 +1019,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnBackgroundColorChanged(PageImpl& page) override;
   void DidInferColorScheme(PageImpl& page) override;
   void OnVirtualKeyboardModeChanged(PageImpl& page) override;
+  void NotifyPageBecamePrimary(PageImpl& page) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(
@@ -1037,7 +1038,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                        bool should_show_loading_ui) override;
   void DidStopLoading() override;
   bool IsHidden() override;
-  void NotifyPageChanged(PageImpl& page) override;
   int GetOuterDelegateFrameTreeNodeId() override;
   FrameTree* LoadingTree() override;
 

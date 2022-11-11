@@ -395,8 +395,7 @@ void RenderFrameHostManager::InitRoot(
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
   // delegate about this.
-  frame_tree_node_->frame_tree()->delegate()->NotifyPageChanged(
-      render_frame_host_->GetPage());
+  render_frame_host_->GetPage().NotifyPageBecameCurrent();
 }
 
 void RenderFrameHostManager::InitChild(

@@ -29,6 +29,9 @@ class PageDelegate {
 
   // Called when the main document's virtual keyboard mode changes.
   virtual void OnVirtualKeyboardModeChanged(PageImpl& page) {}
+
+  // Called when `page` becomes primary in its FrameTree.
+  virtual void NotifyPageBecamePrimary(PageImpl& page) = 0;
 };
 
 }  // namespace content

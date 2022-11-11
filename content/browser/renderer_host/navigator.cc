@@ -654,10 +654,7 @@ void Navigator::DidNavigate(
     // TODO(crbug.com/1275933): Don't dispatch PrimaryPageChanged for initial
     // empty document navigations.
     if (!was_within_same_document && render_frame_host->is_main_frame()) {
-      navigation_request->frame_tree_node()
-          ->frame_tree()
-          ->delegate()
-          ->NotifyPageChanged(render_frame_host->GetPage());
+      render_frame_host->GetPage().NotifyPageBecameCurrent();
 
       // Finally reset the `navigation_request` after navigation commit and all
       // NavigationRequest usages.
