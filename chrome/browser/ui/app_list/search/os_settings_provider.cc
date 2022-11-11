@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
@@ -116,7 +115,6 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
   SetCategory(Category::kSettings);
   set_relevance(relevance_score);
   SetTitle(result->canonical_text);
-  SetTitleTags(CalculateTags(query, result->canonical_text));
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
@@ -132,7 +130,6 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
     LogError(Error::kHierarchyEmpty);
   } else if (result->type != SettingsResultType::kSection) {
     SetDetails(hierarchy.back());
-    SetDetailsTags(CalculateTags(query, hierarchy.back()));
   }
 
   // Manually build the accessible name for the search result, in a way that

@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/arc/arc_playstore_app_context_menu.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "components/crx_file/id_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
@@ -110,7 +109,6 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
       list_controller_(list_controller) {
   const auto title = base::UTF8ToUTF16(label().value());
   SetTitle(title);
-  SetTitleTags(CalculateTags(query, title));
   set_id(kPlayAppPrefix +
          crx_file::id_util::GenerateId(install_intent_uri().value()));
   SetCategory(Category::kPlayStore);

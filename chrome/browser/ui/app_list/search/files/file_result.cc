@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
@@ -140,7 +139,6 @@ FileResult::FileResult(const std::string& id,
 
   SetTitle(base::UTF8ToUTF16(
       StripHostedFileExtensions(filepath.BaseName().value())));
-  SetTitleTags(CalculateTags(query, title()));
 
   if (details)
     SetDetails(details.value());

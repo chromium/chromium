@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
 #include "chrome/browser/ui/app_list/search/app_service_app_result.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
@@ -353,7 +352,6 @@ SearchProvider::Results AppSearchDataSource::GetExactMatches(
 
     // Update result from match.
     result->SetTitle(indexed_name->text());
-    result->SetTitleTags(CalculateTags(query, indexed_name->text()));
     result->set_relevance(relevance);
 
     MaybeAddResult(&matches, std::move(result), &handled_results);
@@ -387,7 +385,6 @@ SearchProvider::Results AppSearchDataSource::GetFuzzyMatches(
 
     // Update result from match.
     result->SetTitle(indexed_name->text());
-    result->SetTitleTags(CalculateTags(query, indexed_name->text()));
     result->set_relevance(relevance);
 
     MaybeAddResult(&matches, std::move(result), &handled_results);

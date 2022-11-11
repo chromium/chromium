@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -45,8 +44,6 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   const auto title = base::UTF8ToUTF16(data_->short_label);
   SetTitle(title);
   SetDetails(base::UTF8ToUTF16(details));
-  if (!query.empty())
-    SetTitleTags(CalculateTags(query, title));
   set_id(kAppShortcutSearchPrefix + GetAppId() + "/" + data_->shortcut_id);
   SetCategory(Category::kAppShortcuts);
   SetAccessibleName(ComputeAccessibleName());
