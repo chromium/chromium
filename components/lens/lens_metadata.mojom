@@ -17,6 +17,7 @@ enum ImageFormat {
 };
 
 enum Phase {
+    OVERALL_START,
     DOWNSCALE_START,
     DOWNSCALE_END,
     ENCODE_START,

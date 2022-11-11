@@ -167,6 +167,11 @@ bool LensRegionSearchController::NeedsDownscale(gfx::Image image) {
 
 void LensRegionSearchController::OnCaptureCompleted(
     const image_editor::ScreenshotCaptureResult& result) {
+  std::vector<lens::mojom::LatencyLogPtr> log_data;
+  log_data.push_back(lens::mojom::LatencyLog::New(
+      lens::mojom::Phase::OVERALL_START, gfx::Size(), gfx::Size(),
+      lens::mojom::ImageFormat::ORIGINAL, base::Time::Now()));
+
   // Close all open UI overlays and bubbles.
   CloseWithReason(views::Widget::ClosedReason::kLostFocus);
   image_editor::ScreenshotCaptureResultCode code = result.result_code;
@@ -180,8 +185,6 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::LensRegionSearchCaptureResult::USER_EXITED_CAPTURE_ESCAPE);
     return;
   }
-
-  std::vector<lens::mojom::LatencyLogPtr> log_data;
 
   const gfx::Image& captured_image = result.image;
   // If image is empty, then record UMA and close.
