@@ -87,7 +87,8 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     experiments = {
-        "chromium_rts.inverted_rts": 100,
+        # TODO (crbug.com/1382577): Reenable after cq active is reliable
+        "chromium_rts.inverted_rts": 0,
     },
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -229,7 +230,8 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
+        # TODO (crbug.com/1382577): Reenable after cq active is reliable
+        "chromium_rts.inverted_rts": 0,
     },
     description_html = "<h1>NOTE: This bot is now deprecated. Please use 'win-rel' instead.</h1>",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools

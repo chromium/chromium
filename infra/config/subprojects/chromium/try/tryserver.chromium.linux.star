@@ -222,7 +222,8 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     experiments = {
-        "chromium_rts.inverted_rts": 100,
+        # TODO (crbug.com/1382577): Reenable after cq active is reliable
+        "chromium_rts.inverted_rts": 0,
     },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
