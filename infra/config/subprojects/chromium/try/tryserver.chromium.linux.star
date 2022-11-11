@@ -240,26 +240,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "linux-wayland-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
-    mirrors = [
-        "ci/Linux Builder (Wayland)",
-        "ci/Linux Tests (Wayland)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
-)
-
-try_.builder(
     name = "linux-wayland-rel-inverse-fyi",
     mirrors = [
         "ci/Linux Builder (Wayland)",
@@ -280,9 +260,8 @@ try_.builder(
     omit_python2 = False,
 )
 
-# TODO (crbug.com/1287228): Remove when orchestrator is confirmed to work
 try_.orchestrator_builder(
-    name = "linux-wayland-rel-orchestrator",
+    name = "linux-wayland-rel",
     compilator = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
@@ -295,16 +274,20 @@ try_.orchestrator_builder(
         ),
     ),
     main_list_view = "try",
-    use_orchestrator_pool = True,
+    tryjob = try_.job(),
+
+    # TODO(crbug.com/1366987): remove this.
+    omit_python2 = False,
 )
 
 try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    # TODO (crbug.com/1287228): Set correct values once bots are set up
+    # TODO(crbug.com/1287228): Set to 16 once compilator bots are moved
+    cores = "8|16",
+    # TODO (crbug.com/1287228): Set to True once compilator bots are moved
     ssd = None,
-    cores = None,
 )
 
 try_.builder(
