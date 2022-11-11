@@ -1,0 +1,96 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+/* Custom scrollbar for the content area */
+/* The default scrollbar on Windows doesn't fit with the dialog style. Also
+  * it is wide and causes visual problems when the height of the content is
+  * changed. */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  border-radius: var(--scrollbar-width);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-background);
+  border-radius: var(--scrollbar-width);
+}
+
+.custom-scrollbar.hide-scrollbar::-webkit-scrollbar-thumb {
+  visibility: hidden;
+}
+
+.header {
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.header h2 {
+  font-weight: 500;
+  line-height: 22px;
+  margin: 0;
+}
+
+.section {
+  line-height: 20px;
+  padding: 8px 0;
+}
+
+.section-header {
+  margin-bottom: 4px;
+}
+
+.buttons-container {
+  align-items: center;
+  display: flex;
+  height: 64px;
+  justify-content: end;
+  padding-inline-end:
+      var(--cr-dialog-button-container-padding-horizontal, 16px);
+  width: 100%;
+}
+
+.buttons-container cr-button+cr-button {
+  margin-inline-start: 8px;
+}
+
+.content-area {
+  border-color: transparent;
+  border-style: solid;
+  border-width: 1px 0;
+  overflow-y: scroll;
+  padding: 0 var(--cr-section-padding);
+}
+
+.fill-content {
+  height: 100vh;
+}
+
+.fill-content .content-area {
+  bottom: 64px;
+  position: absolute;
+  top: 0;
+}
+
+.fill-content .buttons-container {
+  bottom: 0;
+  box-sizing: border-box;
+  position: fixed;
+  right: 0;
+}
+
+.content-area.can-scroll {
+  border-bottom-color: var(--scrollable-border-color);
+}

@@ -1,9 +1,14 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style shared-style">
   cr-view-manager {
     display: block;
   }
 
-  .saving-step.active {
+  cr-view-manager .active:not(.saving-step) {
+    position: relative;
+  }
+
+  .saving-step.active,
+  .saving-step.closing {
     align-items: center;
     display: flex;
     justify-content: center;
@@ -17,9 +22,43 @@
 </style>
 
 <cr-view-manager id="viewManager">
-  <div id="[[stepEnum_.CONSENT]]" slot="view">
-    Consent step
-    <button on-click="onConsentStepResolved_">Next</button>
+  <div id="[[stepEnum_.CONSENT]]" slot="view" fill-content>
+    <div class="content-area custom-scrollbar">
+      <div class="header">
+        <h2>Lorem ipsum Consent</h2>
+      </div>
+      <div class="section cr-secondary-text">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium
+        pulvinar metus non mollis. Quisque placerat eget nisl sit amet
+        facilisis.
+      </div>
+      <div class="section cr-secondary-text">
+        Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non
+        purus vitae, imperdiet porttitor elit. Integer et libero id metus
+        egestas consequat non a ipsum.
+      </div>
+      <div class="section cr-secondary-text">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+        elementum ut venenatis ornare, consequat ac turpis.
+      </div>
+      <div class="section cr-secondary-text">
+        Proin sed purus vestibulum velit convallis suscipit. Aenean aliquam ut
+        velit eget dapibus. Vestibulum orci risus, consectetur non odio
+        vulputate, mattis dignissim purus. Cras id tempor mi.
+      </div>
+      <div class="section cr-secondary-text">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+        elementum ut venenatis ornare, consequat ac turpis.
+      </div>
+    </div>
+    <div class="buttons-container">
+      <cr-button id="declineButton" on-click="onConsentStepResolved_">
+        No
+      </cr-button>
+      <cr-button id="confirmButton" on-click="onConsentStepResolved_">
+        Yes
+      </cr-button>
+    </div>
   </div>
 
   <div id="[[stepEnum_.SAVING]]" class="saving-step" slot="view">
@@ -27,8 +66,42 @@
     Saving...
   </div>
 
-  <div id="[[stepEnum_.NOTICE]]" slot="view">
-    Notice step
-    <button>Ok</button>
+  <div id="[[stepEnum_.NOTICE]]" slot="view"  fill-content>
+    <div class="content-area custom-scrollbar">
+      <div class="header">
+        <h2>Lorem ipsum Notice</h2>
+      </div>
+      <div class="section cr-secondary-text">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium
+        pulvinar metus non mollis. Quisque placerat eget nisl sit amet
+        facilisis.
+      </div>
+      <div class="section cr-secondary-text">
+        Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius
+        non purus vitae, imperdiet porttitor elit. Integer et libero id metus
+        egestas consequat non a ipsum.
+      </div>
+      <div class="section cr-secondary-text">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+        elementum ut venenatis ornare, consequat ac turpis.
+      </div>
+      <div class="section cr-secondary-text">
+        Proin sed purus vestibulum velit convallis suscipit. Aenean aliquam
+        ut velit eget dapibus. Vestibulum orci risus, consectetur non odio
+        vulputate, mattis dignissim purus. Cras id tempor mi.
+      </div>
+      <div class="section cr-secondary-text">
+        Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+        elementum ut venenatis ornare, consequat ac turpis.
+      </div>
+    </div>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings_">
+        Settings
+      </cr-button>
+      <cr-button id="ackButton" on-click="onNoticeAcknowledge_">
+        Ok
+      </cr-button>
+    </div>
   </div>
 </cr-view-manager>
