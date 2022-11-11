@@ -98,8 +98,7 @@ static inline bool IsSimpleLengthPropertyID(CSSPropertyID property_id,
   return properties.Has(property_id);
 }
 
-template <typename CharacterType>
-static inline bool ParseSimpleLength(const CharacterType* characters,
+static inline bool ParseSimpleLength(const LChar* characters,
                                      unsigned length,
                                      CSSPrimitiveValue::UnitType& unit,
                                      double& number) {
@@ -1445,8 +1444,7 @@ bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {
   return value_id >= CSSValueID::kCaption && value_id <= CSSValueID::kStatusBar;
 }
 
-template <typename CharType>
-static inline CSSValue* ParseCSSWideKeywordValue(const CharType* ptr,
+static inline CSSValue* ParseCSSWideKeywordValue(const LChar* ptr,
                                                  unsigned length) {
   if (length == 7 && MatchesCaseInsensitiveLiteral4(ptr, "init") &&
       MatchesCaseInsensitiveLiteral4(ptr + 3, "tial")) {
@@ -1525,10 +1523,9 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
   return nullptr;
 }
 
-template <typename CharType>
 static bool ParseTransformTranslateArguments(
-    CharType*& pos,
-    CharType* end,
+    const LChar*& pos,
+    const LChar* end,
     unsigned expected_count,
     CSSFunctionValue* transform_value) {
   while (expected_count) {
@@ -1552,9 +1549,8 @@ static bool ParseTransformTranslateArguments(
   return true;
 }
 
-template <typename CharType>
-static bool ParseTransformRotateArgument(CharType*& pos,
-                                         CharType* end,
+static bool ParseTransformRotateArgument(const LChar*& pos,
+                                         const LChar* end,
                                          CSSFunctionValue* transform_value) {
   wtf_size_t delimiter =
       WTF::Find(pos, static_cast<wtf_size_t>(end - pos), ')');
@@ -1578,9 +1574,8 @@ static bool ParseTransformRotateArgument(CharType*& pos,
   return true;
 }
 
-template <typename CharType>
-static bool ParseTransformNumberArguments(CharType*& pos,
-                                          CharType* end,
+static bool ParseTransformNumberArguments(const LChar*& pos,
+                                          const LChar* end,
                                           unsigned expected_count,
                                           CSSFunctionValue* transform_value) {
   while (expected_count) {
@@ -1604,9 +1599,8 @@ static bool ParseTransformNumberArguments(CharType*& pos,
 
 static const int kShortestValidTransformStringLength = 12;
 
-template <typename CharType>
-static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
-                                                   CharType* end) {
+static CSSFunctionValue* ParseSimpleTransformValue(const LChar*& pos,
+                                                   const LChar* end) {
   if (end - pos < kShortestValidTransformStringLength)
     return nullptr;
 
