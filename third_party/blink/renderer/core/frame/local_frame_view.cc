@@ -2375,20 +2375,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
         unthrottled_frame_views.push_back(&frame_view);
       });
 
-  // TODO(vmpstr): Figure out what to do with frames.
-  // This may change due to https://github.com/w3c/csswg-drafts/issues/7874
-  absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
-      forced_activatable_locks_scope;
-  if (auto* transition =
-          ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument())) {
-    if (transition->NeedsUpToDateTags()) {
-      forced_activatable_locks_scope.emplace(
-          frame_->GetDocument()
-              ->GetDisplayLockDocumentState()
-              .GetScopedForceActivatableLocks());
-    }
-  }
-
   while (true) {
     for (LocalFrameView* frame_view : unthrottled_frame_views) {
       // RunResizeObserverSteps may run arbitrary script, which can cause a
@@ -2497,19 +2483,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // shared elements to UA created elements. This may dirty style/layout
     // requiring another lifecycle update.
     needs_to_repeat_lifecycle = RunViewTransitionSteps(target_state);
-
-#if DCHECK_IS_ON()
-    // We shouldn't need up to date tags after running view transition
-    // steps. The only way we should run into a situation where we need up to
-    // date tags is outside of the lifecycle, and the value should be cleared in
-    // view transition steps.
-    if (auto* transition =
-            ViewTransitionUtils::GetActiveTransition(*frame_->GetDocument())) {
-      DCHECK(!transition->NeedsUpToDateTags());
-    }
-#endif
-
-    forced_activatable_locks_scope.reset();
     if (!needs_to_repeat_lifecycle)
       break;
   }

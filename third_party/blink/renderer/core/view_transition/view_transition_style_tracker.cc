@@ -325,6 +325,9 @@ void ViewTransitionStyleTracker::AddSharedElementsFromCSSRecursive(
                      root_style.ViewTransitionName());
   }
 
+  if (root_object.ChildPaintBlockedByDisplayLock())
+    return;
+
   PaintLayerPaintOrderIterator child_iterator(root, kAllChildren);
   while (auto* child = child_iterator.Next()) {
     AddSharedElementsFromCSSRecursive(child);
