@@ -1439,4 +1439,28 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunArcDnsResolutionRoutineSuccess) {
       })));
 }
 
+// Note that the sensitive sensor routine has no parameters, so we only need to
+// test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunSensitiveSensorRoutineSuccess) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(
+            ash::cros_healthd::FakeCrosHealthd::Get()
+                ->GetLastRunRoutine()
+                .value(),
+            ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor);
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
 }  // namespace policy

@@ -491,6 +491,11 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           std::move(response_callback));
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor: {
+      diagnostics_service->RunSensitiveSensorRoutine(
+          std::move(response_callback));
+      break;
+    }
   }
 }
 

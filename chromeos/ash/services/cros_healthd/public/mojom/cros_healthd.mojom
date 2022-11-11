@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 2, NextIndex: 33
+// NextMinVersion: 3, NextIndex: 34
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -511,6 +511,20 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunArcDnsResolutionRoutine@31() => (RunRoutineResponse response);
+
+  // Requests that the SensitiveSensor routine is created and started on the
+  // platform. This routine checks that the device's sensors are working
+  // correctly by monitoring the sensor sample data without user interaction.
+  // This routine only support sensitive sensors including accelerometers,
+  // gyro sensors, gravity sensors and magnetometers.
+  // The availability of this routine can be determined by checking that
+  // kSensitiveSensor is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=2] RunSensitiveSensorRoutine@33()
+      => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
