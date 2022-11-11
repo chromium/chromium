@@ -1,0 +1,168 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// clang-format off
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+
+import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
+suite('CrSettingsReviewNotificationPermissionsInteractiveUITest', function() {
+  // The mock proxy object to use during test.
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  let testElement: SettingsReviewNotificationPermissionsElement;
+
+  const origin1 = 'https://www.example1.com:443';
+  const detail1 = 'About 4 notifications a day';
+  const origin2 = 'https://www.example2.com:443';
+  const detail2 = 'About 1 notification a day';
+
+  const mockData = [
+    {
+      origin: origin1,
+      notificationInfoString: detail1,
+    },
+    {
+      origin: origin2,
+      notificationInfoString: detail2,
+    },
+  ];
+
+  function assertExpandButtonFocus() {
+    const expandButton = testElement.shadowRoot!.querySelector('#expandButton');
+    assert(expandButton);
+    assertTrue(expandButton.matches(':focus-within'));
+  }
+
+  function waitForFocusEventOnExpandButton(): Promise<void> {
+    return new Promise((resolve) => {
+      const expandButton =
+          testElement.shadowRoot!.querySelector('#expandButton');
+      assert(expandButton);
+      const callback = () => {
+        expandButton.removeEventListener('focus', callback);
+        resolve();
+      };
+      expandButton.addEventListener('focus', callback);
+    });
+  }
+
+  setup(function() {
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    browserProxy.setNotificationPermissionReview(mockData);
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
+    testElement = document.createElement('review-notification-permissions');
+    document.body.appendChild(testElement);
+
+    flush();
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  // Opens the action menu for a particular element in the list.
+  function openActionMenu(index: number) {
+    const item = getEntries()[index];
+    assert(item);
+    const actionMenu = item.querySelector<HTMLElement>('#actionMenuButton');
+    assert(actionMenu);
+    actionMenu.click();
+    flush();
+  }
+
+  function getEntries() {
+    return testElement.shadowRoot!.querySelectorAll(
+        '.notification-permissions-list .site-entry');
+  }
+
+  /**
+   * Tests whether the focus returns to the expand button after clicking undo
+   * following a click on the block button.
+   */
+  test('Undo Block Click Refocus', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    // User blocks the site.
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.site-entry #block')!.click();
+
+    const focusPromise = waitForFocusEventOnExpandButton();
+    testElement.$.undoToast.querySelector('cr-button')!.click();
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', mockData);
+    await focusPromise;
+    assertExpandButtonFocus();
+  });
+
+  /**
+   * Tests whether the focus returns to the expand button after clicking undo
+   * following a click on the ignore button.
+   */
+  test('Undo Ignore Click Refocus', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    openActionMenu(0);
+    // User ignores notifications for the site.
+    testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!.click();
+
+    const focusPromise = waitForFocusEventOnExpandButton();
+    testElement.$.undoToast.querySelector('cr-button')!.click();
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', mockData);
+    await focusPromise;
+    assertExpandButtonFocus();
+  });
+
+  /**
+   * Tests whether the focus returns to the expand button after clicking undo
+   * following a click on the reset button.
+   */
+  test('Undo Reset Click Refocus', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    openActionMenu(0);
+    // User resets permissions for the site.
+    testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!.click();
+
+    const focusPromise = waitForFocusEventOnExpandButton();
+    testElement.$.undoToast.querySelector('cr-button')!.click();
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', mockData);
+    await focusPromise;
+    assertExpandButtonFocus();
+  });
+
+  /**
+   * Tests whether the focus returns to the expand button after clicking undo
+   * following a click on the block-all button.
+   */
+  test('Block All Click Refocus', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#blockAllButton')!.click();
+    // Click undo button.
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#undoToast cr-button')!.click();
+
+    const focusPromise = waitForFocusEventOnExpandButton();
+    testElement.$.undoToast.querySelector('cr-button')!.click();
+    webUIListenerCallback(
+        'notification-permission-review-list-maybe-changed', mockData);
+    await focusPromise;
+    assertExpandButtonFocus();
+  });
+});

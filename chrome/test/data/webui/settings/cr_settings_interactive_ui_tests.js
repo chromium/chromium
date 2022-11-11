@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
 GEN('#include "build/build_config.h"');
+GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
@@ -113,3 +114,26 @@ var CrSettingsTextareaInteractiveTest =
 TEST_F('CrSettingsTextareaInteractiveTest', 'All', function() {
   mocha.run();
 });
+
+var CrSettingsReviewNotificationPermissionsInteractiveUITest =
+    class extends CrSettingsInteractiveUITest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/review_notification_permissions_interactive_ui_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kSafetyCheckNotificationPermissions',
+      ],
+    };
+  }
+};
+
+TEST_F(
+    'CrSettingsReviewNotificationPermissionsInteractiveUITest', 'All',
+    function() {
+      mocha.run();
+    });
