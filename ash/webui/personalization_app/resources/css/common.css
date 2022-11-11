@@ -30,10 +30,22 @@
       var(--cros-font-family-google-sans);
 }
 
+:host-context(body.jelly-enabled) {
+  --personalization-app-grid-item-background-color:
+      var(--cros-sys-secondary_container);
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
+    --personalization-app-grid-item-background-color: rgba(var(--google-grey-700-rgb), 0.3);
+  }
+
+  :host-context(body.jelly-enabled) {
+    /* When Jelly is enabled, the
+     * |personalization-app-grid-item-background-color| is the same for light
+     * and dark mode. */
     --personalization-app-grid-item-background-color:
-      rgba(var(--google-grey-700-rgb), 0.3);
+        var(--cros-sys-secondary_container);
   }
 }
 
