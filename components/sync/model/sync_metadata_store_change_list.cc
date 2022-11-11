@@ -52,7 +52,7 @@ void SyncMetadataStoreChangeList::UpdateMetadata(
     return;
   }
 
-  if (!store_->UpdateSyncMetadata(type_, storage_key, metadata)) {
+  if (!store_->UpdateEntityMetadata(type_, storage_key, metadata)) {
     SetError(ModelError(FROM_HERE, "Failed to update entity metadata."));
   }
 }
@@ -63,7 +63,7 @@ void SyncMetadataStoreChangeList::ClearMetadata(
     return;
   }
 
-  if (!store_->ClearSyncMetadata(type_, storage_key)) {
+  if (!store_->ClearEntityMetadata(type_, storage_key)) {
     SetError(ModelError(FROM_HERE, "Failed to clear entity metadata."));
   }
 }

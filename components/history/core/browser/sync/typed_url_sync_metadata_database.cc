@@ -67,7 +67,7 @@ bool TypedURLSyncMetadataDatabase::GetAllSyncMetadata(
   return true;
 }
 
-bool TypedURLSyncMetadataDatabase::UpdateSyncMetadata(
+bool TypedURLSyncMetadataDatabase::UpdateEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
@@ -83,7 +83,7 @@ bool TypedURLSyncMetadataDatabase::UpdateSyncMetadata(
   return s.Run();
 }
 
-bool TypedURLSyncMetadataDatabase::ClearSyncMetadata(
+bool TypedURLSyncMetadataDatabase::ClearEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key) {
   DCHECK_EQ(model_type, syncer::TYPED_URLS)

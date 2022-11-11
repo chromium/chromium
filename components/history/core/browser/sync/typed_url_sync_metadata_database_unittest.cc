@@ -79,8 +79,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
   std::string storage_key2 = IntToStorageKey(2);
   metadata.set_sequence_number(1);
 
-  EXPECT_TRUE(sync_metadata_db_.UpdateSyncMetadata(syncer::TYPED_URLS,
-                                                   storage_key, metadata));
+  EXPECT_TRUE(sync_metadata_db_.UpdateEntityMetadata(syncer::TYPED_URLS,
+                                                     storage_key, metadata));
 
   ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
@@ -89,8 +89,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
                                                      model_type_state));
 
   metadata.set_sequence_number(2);
-  EXPECT_TRUE(sync_metadata_db_.UpdateSyncMetadata(syncer::TYPED_URLS,
-                                                   storage_key2, metadata));
+  EXPECT_TRUE(sync_metadata_db_.UpdateEntityMetadata(syncer::TYPED_URLS,
+                                                     storage_key2, metadata));
 
   MetadataBatch metadata_batch;
   EXPECT_TRUE(sync_metadata_db_.GetAllSyncMetadata(&metadata_batch));
@@ -123,13 +123,13 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLWriteThenDeleteSyncMetadata) {
   metadata.set_client_tag_hash("client_hash");
 
   // Write the data into the store.
-  EXPECT_TRUE(sync_metadata_db_.UpdateSyncMetadata(syncer::TYPED_URLS,
-                                                   storage_key, metadata));
+  EXPECT_TRUE(sync_metadata_db_.UpdateEntityMetadata(syncer::TYPED_URLS,
+                                                     storage_key, metadata));
   EXPECT_TRUE(sync_metadata_db_.UpdateModelTypeState(syncer::TYPED_URLS,
                                                      model_type_state));
   // Delete the data we just wrote.
   EXPECT_TRUE(
-      sync_metadata_db_.ClearSyncMetadata(syncer::TYPED_URLS, storage_key));
+      sync_metadata_db_.ClearEntityMetadata(syncer::TYPED_URLS, storage_key));
   // It shouldn't be there any more.
   EXPECT_TRUE(sync_metadata_db_.GetAllSyncMetadata(&metadata_batch));
 

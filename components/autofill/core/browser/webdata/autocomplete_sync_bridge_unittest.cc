@@ -642,8 +642,8 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
   const std::string storage_key = GetStorageKey(expired_specifics);
 
   // Let's add the sync metadata
-  ASSERT_TRUE(table()->UpdateSyncMetadata(syncer::AUTOFILL, storage_key,
-                                          EntityMetadata()));
+  ASSERT_TRUE(table()->UpdateEntityMetadata(syncer::AUTOFILL, storage_key,
+                                            EntityMetadata()));
 
   // Validate that it was added.
   syncer::MetadataBatch batch;
@@ -670,7 +670,7 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataCalled) {
   EXPECT_TRUE(
       table()->UpdateModelTypeState(syncer::AUTOFILL, model_type_state));
   EXPECT_TRUE(
-      table()->UpdateSyncMetadata(syncer::AUTOFILL, "key", EntityMetadata()));
+      table()->UpdateEntityMetadata(syncer::AUTOFILL, "key", EntityMetadata()));
 
   ResetProcessor();
   EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(

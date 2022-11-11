@@ -2799,7 +2799,7 @@ bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
   return true;
 }
 
-bool AutofillTable::UpdateSyncMetadata(
+bool AutofillTable::UpdateEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
@@ -2817,8 +2817,8 @@ bool AutofillTable::UpdateSyncMetadata(
   return s.Run();
 }
 
-bool AutofillTable::ClearSyncMetadata(syncer::ModelType model_type,
-                                      const std::string& storage_key) {
+bool AutofillTable::ClearEntityMetadata(syncer::ModelType model_type,
+                                        const std::string& storage_key) {
   DCHECK(SupportsMetadataForModelType(model_type))
       << "Model type " << model_type << " not supported for metadata";
 

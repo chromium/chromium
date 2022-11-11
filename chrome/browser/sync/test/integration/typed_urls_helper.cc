@@ -252,8 +252,8 @@ class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Write the metadata to the DB.
-    db->GetTypedURLMetadataDB()->UpdateSyncMetadata(syncer::TYPED_URLS,
-                                                    storage_key_, metadata_);
+    db->GetTypedURLMetadataDB()->UpdateEntityMetadata(syncer::TYPED_URLS,
+                                                      storage_key_, metadata_);
     wait_event_->Signal();
     return true;
   }

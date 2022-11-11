@@ -2813,7 +2813,7 @@ TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
   std::string storage_key2 = "storage_key2";
   metadata.set_sequence_number(1);
 
-  EXPECT_TRUE(table_->UpdateSyncMetadata(model_type, storage_key, metadata));
+  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
 
   ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
@@ -2821,7 +2821,7 @@ TEST_P(AutofillTableTestPerModelType, AutofillGetAllSyncMetadata) {
   EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
 
   metadata.set_sequence_number(2);
-  EXPECT_TRUE(table_->UpdateSyncMetadata(model_type, storage_key2, metadata));
+  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key2, metadata));
 
   MetadataBatch metadata_batch;
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
@@ -2854,10 +2854,10 @@ TEST_P(AutofillTableTestPerModelType, AutofillWriteThenDeleteSyncMetadata) {
   metadata.set_client_tag_hash("client_hash");
 
   // Write the data into the store.
-  EXPECT_TRUE(table_->UpdateSyncMetadata(model_type, storage_key, metadata));
+  EXPECT_TRUE(table_->UpdateEntityMetadata(model_type, storage_key, metadata));
   EXPECT_TRUE(table_->UpdateModelTypeState(model_type, model_type_state));
   // Delete the data we just wrote.
-  EXPECT_TRUE(table_->ClearSyncMetadata(model_type, storage_key));
+  EXPECT_TRUE(table_->ClearEntityMetadata(model_type, storage_key));
   // It shouldn't be there any more.
   EXPECT_TRUE(table_->GetAllSyncMetadata(model_type, &metadata_batch));
 

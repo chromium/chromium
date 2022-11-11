@@ -742,7 +742,7 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   // No need to send any actual deletions: A HistoryDeleteDirective will take
   // care of that. Just untrack all entities and clear their metadata. (The only
   // case where such metadata actually exists is if there are entities that are
-  // waiting for a commit. Clear their metadata, to cancel those commits.
+  // waiting for a commit. Clear their metadata, to cancel those commits.)
   UntrackAndClearMetadataForAllEntities();
 }
 
@@ -786,7 +786,7 @@ void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
   // delete its metadata (just in case this entity was waiting to be committed -
   // otherwise no metadata exists anyway).
   std::string storage_key = GetStorageKeyFromVisitRow(visit_row);
-  sync_metadata_database_->ClearSyncMetadata(syncer::HISTORY, storage_key);
+  sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
   change_processor()->UntrackEntityForStorageKey(storage_key);
 }
 
@@ -1001,7 +1001,7 @@ void HistorySyncBridge::UntrackAndClearMetadataForSyncedEntities() {
       // be committed) have to be tracked, so *don't* clear their metadata.
       continue;
     }
-    sync_metadata_database_->ClearSyncMetadata(syncer::HISTORY, storage_key);
+    sync_metadata_database_->ClearEntityMetadata(syncer::HISTORY, storage_key);
     change_processor()->UntrackEntityForStorageKey(storage_key);
   }
 }

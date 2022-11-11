@@ -48,11 +48,11 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   bool GetAllSyncMetadata(syncer::MetadataBatch* metadata_batch);
 
   // syncer::SyncMetadataStore implementation.
-  bool UpdateSyncMetadata(syncer::ModelType model_type,
-                          const std::string& storage_key,
-                          const sync_pb::EntityMetadata& metadata) override;
-  bool ClearSyncMetadata(syncer::ModelType model_type,
-                         const std::string& storage_key) override;
+  bool UpdateEntityMetadata(syncer::ModelType model_type,
+                            const std::string& storage_key,
+                            const sync_pb::EntityMetadata& metadata) override;
+  bool ClearEntityMetadata(syncer::ModelType model_type,
+                           const std::string& storage_key) override;
   bool UpdateModelTypeState(
       syncer::ModelType model_type,
       const sync_pb::ModelTypeState& model_type_state) override;

@@ -1009,7 +1009,7 @@ void TypedURLSyncBridge::ExpireMetadataForURL(const URLRow& row) {
   // The following functions need to tolerate if there exists no metadata
   // for `storage_key` as we might call this function multiple times for a given
   // url.
-  sync_metadata_database_->ClearSyncMetadata(syncer::TYPED_URLS, storage_key);
+  sync_metadata_database_->ClearEntityMetadata(syncer::TYPED_URLS, storage_key);
   change_processor()->UntrackEntityForStorageKey(storage_key);
 }
 

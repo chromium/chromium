@@ -75,7 +75,7 @@ bool HistorySyncMetadataDatabase::ClearAllEntityMetadata() {
   return s.Run();
 }
 
-bool HistorySyncMetadataDatabase::UpdateSyncMetadata(
+bool HistorySyncMetadataDatabase::UpdateEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
@@ -92,7 +92,7 @@ bool HistorySyncMetadataDatabase::UpdateSyncMetadata(
   return s.Run();
 }
 
-bool HistorySyncMetadataDatabase::ClearSyncMetadata(
+bool HistorySyncMetadataDatabase::ClearEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key) {
   DCHECK_EQ(model_type, syncer::HISTORY)

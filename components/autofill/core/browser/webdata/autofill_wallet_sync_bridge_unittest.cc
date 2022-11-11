@@ -958,8 +958,8 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllCloudTokenData) {
 }
 
 TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {
-  EXPECT_TRUE(table()->UpdateSyncMetadata(syncer::AUTOFILL_WALLET_DATA, "key",
-                                          EntityMetadata()));
+  EXPECT_TRUE(table()->UpdateEntityMetadata(syncer::AUTOFILL_WALLET_DATA, "key",
+                                            EntityMetadata()));
 
   ResetProcessor();
   EXPECT_CALL(mock_processor(), ModelReadyToSync(MetadataBatchContains(

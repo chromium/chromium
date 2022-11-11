@@ -1601,7 +1601,7 @@ TEST_F(LoginDatabaseTest, GetAllSyncMetadata) {
   metadata.set_sequence_number(1);
 
   EXPECT_TRUE(
-      db().UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey1, metadata));
+      db().UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey1, metadata));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
@@ -1610,7 +1610,7 @@ TEST_F(LoginDatabaseTest, GetAllSyncMetadata) {
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(
-      db().UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey2, metadata));
+      db().UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey2, metadata));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       db().GetAllSyncMetadata();
@@ -1642,7 +1642,7 @@ TEST_F(LoginDatabaseTest, DeleteAllSyncMetadata) {
   metadata.set_sequence_number(1);
 
   EXPECT_TRUE(
-      db().UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey1, metadata));
+      db().UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey1, metadata));
 
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
@@ -1651,7 +1651,7 @@ TEST_F(LoginDatabaseTest, DeleteAllSyncMetadata) {
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(
-      db().UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey2, metadata));
+      db().UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey2, metadata));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       db().GetAllSyncMetadata();
@@ -1677,10 +1677,10 @@ TEST_F(LoginDatabaseTest, WriteThenDeleteSyncMetadata) {
 
   // Write the data into the store.
   EXPECT_TRUE(
-      db().UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey, metadata));
+      db().UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey, metadata));
   EXPECT_TRUE(db().UpdateModelTypeState(syncer::PASSWORDS, model_type_state));
   // Delete the data we just wrote.
-  EXPECT_TRUE(db().ClearSyncMetadata(syncer::PASSWORDS, kStorageKey));
+  EXPECT_TRUE(db().ClearEntityMetadata(syncer::PASSWORDS, kStorageKey));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       db().GetAllSyncMetadata();

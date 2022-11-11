@@ -309,13 +309,13 @@ class MockSyncMetadataStore : public PasswordStoreSync::MetadataStore {
               (override));
   MOCK_METHOD(void, DeleteAllSyncMetadata, (), (override));
   MOCK_METHOD(bool,
-              UpdateSyncMetadata,
+              UpdateEntityMetadata,
               (syncer::ModelType,
                const std::string&,
                const sync_pb::EntityMetadata&),
               (override));
   MOCK_METHOD(bool,
-              ClearSyncMetadata,
+              ClearEntityMetadata,
               (syncer::ModelType, const std::string&),
               (override));
   MOCK_METHOD(bool,
@@ -403,9 +403,9 @@ class PasswordSyncBridgeTest : public testing::Test {
     ON_CALL(mock_sync_metadata_store_sync_, GetAllSyncMetadata())
         .WillByDefault(
             []() { return std::make_unique<syncer::MetadataBatch>(); });
-    ON_CALL(mock_sync_metadata_store_sync_, UpdateSyncMetadata)
+    ON_CALL(mock_sync_metadata_store_sync_, UpdateEntityMetadata)
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_sync_metadata_store_sync_, ClearSyncMetadata)
+    ON_CALL(mock_sync_metadata_store_sync_, ClearEntityMetadata)
         .WillByDefault(testing::Return(true));
     ON_CALL(mock_sync_metadata_store_sync_, UpdateModelTypeState)
         .WillByDefault(testing::Return(true));
@@ -551,7 +551,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyMetadataWithEmptySyncChanges) {
   EXPECT_CALL(*mock_password_store_sync(), NotifyCredentialsChanged).Times(0);
 
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
-              UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey, _));
+              UpdateEntityMetadata(syncer::PASSWORDS, kStorageKey, _));
 
   absl::optional<syncer::ModelError> error = bridge()->ApplySyncChanges(
       std::move(metadata_change_list), syncer::EntityChangeList());

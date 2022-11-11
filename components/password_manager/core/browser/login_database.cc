@@ -1658,7 +1658,7 @@ void LoginDatabase::DeleteAllSyncMetadata() {
   }
 }
 
-bool LoginDatabase::UpdateSyncMetadata(
+bool LoginDatabase::UpdateEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
@@ -1696,8 +1696,8 @@ bool LoginDatabase::UpdateSyncMetadata(
   return result;
 }
 
-bool LoginDatabase::ClearSyncMetadata(syncer::ModelType model_type,
-                                      const std::string& storage_key) {
+bool LoginDatabase::ClearEntityMetadata(syncer::ModelType model_type,
+                                        const std::string& storage_key) {
   TRACE_EVENT0("passwords", "LoginDatabase::ClearSyncMetadata");
   DCHECK_EQ(model_type, syncer::PASSWORDS);
 

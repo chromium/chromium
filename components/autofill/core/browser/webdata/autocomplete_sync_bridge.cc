@@ -447,8 +447,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
       case AutofillChange::EXPIRE: {
         // For expired entries, unlink and delete the sync metadata.
         // That way we are not sending tombstone updates to the sync servers.
-        bool success = GetAutofillTable()->ClearSyncMetadata(syncer::AUTOFILL,
-                                                             storage_key);
+        bool success = GetAutofillTable()->ClearEntityMetadata(syncer::AUTOFILL,
+                                                               storage_key);
         if (!success) {
           change_processor()->ReportError(
               {FROM_HERE,
