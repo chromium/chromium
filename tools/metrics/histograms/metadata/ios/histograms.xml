@@ -1736,7 +1736,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Snapshots.PDFSize" units="KB" expires_after="2022-11-28">
+<histogram name="IOS.Snapshots.PDFSize" units="KB" expires_after="2023-11-10">
   <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
