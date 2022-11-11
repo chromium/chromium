@@ -654,6 +654,8 @@ const char* ToString(ax::mojom::Action action) {
       return "scrollToMakeVisible";
     case ax::mojom::Action::kScrollToPoint:
       return "scrollToPoint";
+    case ax::mojom::Action::kScrollToPositionAtRowColumn:
+      return "scrollToPositionAtRowColumn";
     case ax::mojom::Action::kSetAccessibilityFocus:
       return "setAccessibilityFocus";
     case ax::mojom::Action::kSetScrollOffset:

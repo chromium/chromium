@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 
 #include <string>
+#include <utility>
 
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -71,6 +72,12 @@ struct AX_BASE_EXPORT AXActionData {
 
   // The new value for a node, for the SET_VALUE action. UTF-8 encoded.
   std::string value;
+
+  // The row and column to move to. Used with the
+  // ax::mojom::Action::kScrollToPositionAtRowColumn action.
+  //
+  // Supported by Android.
+  std::pair<int, int> row_column;
 
   // The event to fire in response to a HIT_TEST action.
   ax::mojom::Event hit_test_event_to_fire;

@@ -797,6 +797,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kScrollToMakeVisible:
     case ax::mojom::Action::kScrollToPoint:
+    case ax::mojom::Action::kScrollToPositionAtRowColumn:
     case ax::mojom::Action::kSetAccessibilityFocus:
     case ax::mojom::Action::kSetScrollOffset:
     case ax::mojom::Action::kSetSelection:

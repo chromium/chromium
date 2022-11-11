@@ -415,6 +415,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kDoDefault:
     case ax::mojom::Action::kIncrement:
     case ax::mojom::Action::kScrollToPoint:
+    case ax::mojom::Action::kScrollToPositionAtRowColumn:
     case ax::mojom::Action::kFocus:
     case ax::mojom::Action::kSetAccessibilityFocus:
     case ax::mojom::Action::kSetScrollOffset:

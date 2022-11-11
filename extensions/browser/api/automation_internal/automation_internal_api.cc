@@ -546,6 +546,18 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
           gfx::Point(scroll_to_point_params.x, scroll_to_point_params.y);
       break;
     }
+    case api::automation::ACTION_TYPE_SCROLLTOPOSITIONATROWCOLUMN: {
+      api::automation_internal::ScrollToPositionAtRowColumnParams params;
+      bool result =
+          api::automation_internal::ScrollToPositionAtRowColumnParams::Populate(
+              additional_properties, &params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kScrollToPositionAtRowColumn;
+      action->row_column = std::pair(params.row, params.column);
+      break;
+    }
     case api::automation::ACTION_TYPE_SETSCROLLOFFSET: {
       api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
       bool result = api::automation_internal::SetScrollOffsetParams::Populate(

@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/singleton.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -330,6 +332,7 @@ void ArcAccessibilityHelperBridge::OnAction(
   action_data->node_id = data.target_node_id;
   action_data->window_id = window_id.value();
   action_data->action_type = action.value();
+  PopulateActionParameters(data, *action_data);
 
   if (action == arc::mojom::AccessibilityActionType::GET_TEXT_LOCATION) {
     action_data->start_index = data.start_index;
@@ -342,8 +345,6 @@ void ArcAccessibilityHelperBridge::OnAction(
       OnActionResult(data, false);
     }
     return;
-  } else if (action == arc::mojom::AccessibilityActionType::CUSTOM_ACTION) {
-    action_data->custom_action_id = data.custom_action_id;
   }
 
   if (!accessibility_helper_instance_.PerformAction(
@@ -352,6 +353,57 @@ void ArcAccessibilityHelperBridge::OnAction(
                          base::Unretained(this), data))) {
     // TODO(b/146809329): This case should probably destroy all trees.
     OnActionResult(data, false);
+  }
+}
+
+void ArcAccessibilityHelperBridge::PopulateActionParameters(
+    const ui::AXActionData& chrome_data,
+    arc::mojom::AccessibilityActionData& action_data) const {
+  switch (action_data.action_type) {
+    case mojom::AccessibilityActionType::SCROLL_TO_POSITION: {
+      base::flat_map<arc::mojom::ActionIntArgumentType, int32_t> args;
+      const auto [row, column] = chrome_data.row_column;
+      args[arc::mojom::ActionIntArgumentType::ROW_INT] = row;
+      args[arc::mojom::ActionIntArgumentType::COLUMN_INT] = column;
+      action_data.int_parameters = args;
+      break;
+    }
+    case mojom::AccessibilityActionType::CUSTOM_ACTION:
+      action_data.custom_action_id = chrome_data.custom_action_id;
+      break;
+    case mojom::AccessibilityActionType::NEXT_HTML_ELEMENT:
+    case mojom::AccessibilityActionType::PREVIOUS_HTML_ELEMENT:
+    case mojom::AccessibilityActionType::FOCUS:
+    case mojom::AccessibilityActionType::CLEAR_FOCUS:
+    case mojom::AccessibilityActionType::SELECT:
+    case mojom::AccessibilityActionType::CLEAR_SELECTION:
+    case mojom::AccessibilityActionType::CLICK:
+    case mojom::AccessibilityActionType::LONG_CLICK:
+    case mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS:
+    case mojom::AccessibilityActionType::CLEAR_ACCESSIBILITY_FOCUS:
+    case mojom::AccessibilityActionType::NEXT_AT_MOVEMENT_GRANULARITY:
+    case mojom::AccessibilityActionType::PREVIOUS_AT_MOVEMENT_GRANULARITY:
+    case mojom::AccessibilityActionType::SCROLL_FORWARD:
+    case mojom::AccessibilityActionType::SCROLL_BACKWARD:
+    case mojom::AccessibilityActionType::COPY:
+    case mojom::AccessibilityActionType::PASTE:
+    case mojom::AccessibilityActionType::CUT:
+    case mojom::AccessibilityActionType::SET_SELECTION:
+    case mojom::AccessibilityActionType::EXPAND:
+    case mojom::AccessibilityActionType::COLLAPSE:
+    case mojom::AccessibilityActionType::DISMISS:
+    case mojom::AccessibilityActionType::SET_TEXT:
+    case mojom::AccessibilityActionType::CONTEXT_CLICK:
+    case mojom::AccessibilityActionType::SCROLL_DOWN:
+    case mojom::AccessibilityActionType::SCROLL_LEFT:
+    case mojom::AccessibilityActionType::SCROLL_RIGHT:
+    case mojom::AccessibilityActionType::SCROLL_UP:
+    case mojom::AccessibilityActionType::SET_PROGRESS:
+    case mojom::AccessibilityActionType::SHOW_ON_SCREEN:
+    case mojom::AccessibilityActionType::GET_TEXT_LOCATION:
+    case mojom::AccessibilityActionType::SHOW_TOOLTIP:
+    case mojom::AccessibilityActionType::HIDE_TOOLTIP:
+      break;
   }
 }
 

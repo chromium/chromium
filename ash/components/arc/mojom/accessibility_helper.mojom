@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 25
+// Next MinVersion: 26
 
 module arc.mojom;
 
@@ -429,6 +429,42 @@ struct AccessibilityEventData {
       map<AccessibilityEventIntListProperty, array<int32>>? int_list_properties;
 };
 
+// This enum is used to represent the argument
+// string constants for accessibility action float parameters.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#constants_1
+enum ActionFloatArgumentType {
+  PROGRESS_VALUE
+};
+
+// This enum is used to represent the argument
+// string constants for accessibility action integer parameters.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#constants_1
+enum ActionIntArgumentType {
+  MOVEMENT_GRANULARITY_INT,
+  SELECTION_START_INT,
+  SELECTION_END_INT,
+  ROW_INT,
+  COLUMN_INT,
+  MOVE_WINDOW_X,
+  MOVE_WINDOW_Y,
+  PRESS_AND_HOLD_DURATION_MILLIS_INT
+};
+
+// This enum is used to represent the argument
+// string constants for accessibility action string parameters.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#constants_1
+enum ActionStringArgumentType {
+  HTML_ELEMENT_STRING,
+  SET_TEXT_CHARSEQUENCE
+};
+
+// This enum is used to represent the argument string constants
+// for accessibility action parameters that have complex types.
+// https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo#constants_1
+enum ActionComplexArgumentType {
+  ACCESSIBLE_CLICKABLE_SPAN
+};
+
 // AccessibilityActionData is a struct to send action information when Chrome
 // invokes an action.
 struct AccessibilityActionData {
@@ -446,6 +482,12 @@ struct AccessibilityActionData {
   // in Android.
   [MinVersion=13] int32 start_index;
   [MinVersion=13] int32 end_index;
+
+  // Parameters for action functions.
+  // Ex: SCROLL_TO_POSITION would have a row and column int parameter.
+  [MinVersion=25] map<ActionIntArgumentType,int32>? int_parameters;
+  [MinVersion=25] map<ActionStringArgumentType,string>? string_parameters;
+  [MinVersion=25] map<ActionFloatArgumentType,float>? float_parameters;
 };
 
 // The type of shadow used for Chrome captions.

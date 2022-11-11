@@ -86,6 +86,12 @@ namespace automationInternal {
     long y;
   };
 
+  // Arguments for the scrollToPositionAtRowColumn action supplied to performAction.
+  dictionary ScrollToPositionAtRowColumnParams {
+    long row;
+    long column;
+  };
+
   // Arguments for the SetScrollOffset action supplied to performAction.
   dictionary SetScrollOffsetParams {
     long x;

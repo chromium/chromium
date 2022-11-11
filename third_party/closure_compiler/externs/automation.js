@@ -415,6 +415,7 @@ chrome.automation.ActionType = {
   SCROLL_UP: 'scrollUp',
   SCROLL_TO_MAKE_VISIBLE: 'scrollToMakeVisible',
   SCROLL_TO_POINT: 'scrollToPoint',
+  SCROLL_TO_POSITION_AT_ROW_COLUMN: 'scrollToPositionAtRowColumn',
   SET_ACCESSIBILITY_FOCUS: 'setAccessibilityFocus',
   SET_SCROLL_OFFSET: 'setScrollOffset',
   SET_SELECTION: 'setSelection',
@@ -2424,6 +2425,14 @@ chrome.automation.AutomationNode.prototype.scrollRight = function(callback) {};
  * @see https://developer.chrome.com/extensions/automation#method-scrollToPoint
  */
 chrome.automation.AutomationNode.prototype.scrollToPoint = function(x, y) {};
+
+/**
+ * Scrolls this scrollable grid to the given row and column index.
+ * @param {number} row
+ * @param {number} column
+ * @see https://developer.chrome.com/extensions/automation#method-scrollToPositionAtRowColumn
+ */
+ chrome.automation.AutomationNode.prototype.scrollToPositionAtRowColumn = function(row, column) {};
 
 /**
  * Sets this scrollable container's scroll offset.

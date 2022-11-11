@@ -408,6 +408,7 @@
     scrollUp,
     scrollToMakeVisible,
     scrollToPoint,
+    scrollToPositionAtRowColumn,
     setAccessibilityFocus,
     setScrollOffset,
     setSelection,

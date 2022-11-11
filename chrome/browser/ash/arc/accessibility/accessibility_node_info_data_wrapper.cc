@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
@@ -457,6 +458,9 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   if (HasStandardAction(AXActionType::SCROLL_FORWARD))
     out_data->AddAction(ax::mojom::Action::kScrollForward);
+
+  if (HasStandardAction(AXActionType::SCROLL_TO_POSITION))
+    out_data->AddAction(ax::mojom::Action::kScrollToPositionAtRowColumn);
 
   if (HasStandardAction(AXActionType::EXPAND)) {
     out_data->AddAction(ax::mojom::Action::kExpand);

@@ -5929,6 +5929,7 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kStopDuckingMedia:
     case ax::mojom::blink::Action::kSuspendMedia:
     case ax::mojom::blink::Action::kLongClick:
+    case ax::mojom::blink::Action::kScrollToPositionAtRowColumn:
       return false;
   }
 }

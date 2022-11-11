@@ -126,6 +126,10 @@ class ArcAccessibilityHelperBridge
       const ui::AXActionData& data,
       const absl::optional<gfx::Rect>& result_rect) const;
 
+  void PopulateActionParameters(
+      const ui::AXActionData& chrome_data,
+      arc::mojom::AccessibilityActionData& action_data) const;
+
   absl::optional<gfx::Rect> OnGetTextLocationDataResultInternal(
       const ui::AXTreeID& ax_tree_id,
       const absl::optional<gfx::Rect>& result_rect) const;

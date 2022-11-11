@@ -1130,6 +1130,10 @@ AutomationNodeImpl.prototype = {
     this.performAction_('scrollToPoint', {x, y});
   },
 
+  scrollToPositionAtRowColumn: function(row, column) {
+    this.performAction_('scrollToPositionAtRowColumn', {row, column});
+  },
+
   setScrollOffset: function(x, y) {
     this.performAction_('setScrollOffset', {x, y});
   },
@@ -2156,6 +2160,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'scrollLeft',
     'scrollRight',
     'scrollToPoint',
+    'scrollToPositionAtRowColumn',
     'scrollUp',
     'setAccessibilityFocus',
     'setScrollOffset',

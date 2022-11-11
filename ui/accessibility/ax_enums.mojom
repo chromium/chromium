@@ -380,8 +380,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 3
-// Next value: 39
+// Next version: 4
+// Next value: 40
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -461,6 +461,7 @@ enum Action {
   // Scroll the given object to a specified point on the screen in
   // global screen coordinates. Pass a point in AXActionData.target_point.
   kScrollToPoint = 25,
+  [MinVersion=3] kScrollToPositionAtRowColumn = 39,
 
   // Notifies a node that it has accessibility focus.
   // Currently used only on Android and only internally, it's not
