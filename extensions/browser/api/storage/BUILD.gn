@@ -1,0 +1,43 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("storage") {
+  sources = [
+    "backend_task_runner.cc",
+    "backend_task_runner.h",
+    "local_value_store_cache.cc",
+    "local_value_store_cache.h",
+    "session_storage_manager.cc",
+    "session_storage_manager.h",
+    "settings_storage_quota_enforcer.cc",
+    "settings_storage_quota_enforcer.h",
+    "storage_api.cc",
+    "storage_api.h",
+    "storage_area_namespace.cc",
+    "storage_area_namespace.h",
+    "storage_frontend.cc",
+    "storage_frontend.h",
+    "value_store_cache.cc",
+    "value_store_cache.h",
+    "value_store_util.cc",
+    "value_store_util.h",
+    "weak_unlimited_settings_storage.cc",
+    "weak_unlimited_settings_storage.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//components/value_store",
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+}
