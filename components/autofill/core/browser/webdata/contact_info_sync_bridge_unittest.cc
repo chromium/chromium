@@ -15,8 +15,8 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,10 +63,22 @@ class ContactInfoSyncBridgeTest : public testing::Test {
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
     ON_CALL(backend_, GetDatabase()).WillByDefault(testing::Return(&db_));
 
-    auto processor = std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-        syncer::CONTACT_INFO, /*dump_stack=*/base::DoNothing());
-    bridge_ = std::make_unique<ContactInfoSyncBridge>(std::move(processor),
-                                                      &backend_);
+    bridge_ = std::make_unique<ContactInfoSyncBridge>(
+        mock_processor_.CreateForwardingProcessor(), &backend_);
+  }
+
+  // Tells the processor to starts syncing with pre-existing `remote_profiles`.
+  // Triggers the `bridge()`'s `MergeSyncData()`.
+  // Returns true if syncing started successfully.
+  bool StartSyncing(const std::vector<AutofillProfile>& remote_profiles) {
+    syncer::EntityChangeList entity_data;
+    for (const AutofillProfile& profile : remote_profiles) {
+      entity_data.push_back(syncer::EntityChange::CreateAdd(
+          profile.guid(), ProfileToEntity(profile)));
+    }
+    // `MergeSyncData()` returns an error if it fails.
+    return !bridge().MergeSyncData(bridge().CreateMetadataChangeList(),
+                                   std::move(entity_data));
   }
 
   // Adds multiple `profiles` the `bridge()`'s AutofillTable.
@@ -90,6 +102,16 @@ class ContactInfoSyncBridgeTest : public testing::Test {
     return profiles;
   }
 
+  syncer::EntityData ProfileToEntity(const AutofillProfile& profile) {
+    return std::move(*CreateContactInfoEntityDataFromAutofillProfile(profile));
+  }
+
+  MockAutofillWebDataBackend& backend() { return backend_; }
+
+  syncer::MockModelTypeChangeProcessor& mock_processor() {
+    return mock_processor_;
+  }
+
   ContactInfoSyncBridge& bridge() { return *bridge_; }
 
  private:
@@ -98,6 +120,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillTable table_;
   WebDatabase db_;
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<ContactInfoSyncBridge> bridge_;
 };
 
@@ -109,6 +132,54 @@ TEST_F(ContactInfoSyncBridgeTest, GetStorageKey) {
   // Invalid case.
   entity->specifics.mutable_contact_info()->set_guid(kInvalidGUID);
   EXPECT_TRUE(bridge().GetStorageKey(*entity).empty());
+}
+
+// Tests that during the initial sync, `MergeSyncData()` incorporates remote
+// profiles.
+TEST_F(ContactInfoSyncBridgeTest, MergeSyncData) {
+  const AutofillProfile remote1 = TestProfile(kGUID1);
+  const AutofillProfile remote2 = TestProfile(kGUID2);
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
+  EXPECT_CALL(backend(), NotifyThatSyncHasStarted(syncer::CONTACT_INFO));
+
+  EXPECT_TRUE(StartSyncing({remote1, remote2}));
+
+  EXPECT_THAT(GetAllDataFromBridge(), UnorderedElementsAre(remote1, remote2));
+}
+
+// Tests that when sync changes are applied, `ApplySyncChanges()` merges remotes
+// changes into the local store. New local changes are not applied to sync.
+TEST_F(ContactInfoSyncBridgeTest, ApplySyncChanges) {
+  AddAutofillProfilesToTable({TestProfile(kGUID1)});
+  ASSERT_TRUE(StartSyncing({}));
+
+  AutofillProfile remote = TestProfile(kGUID2);
+
+  // Delete the existing local profile and add + update `remote`.
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(kGUID1));
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd(kGUID2, ProfileToEntity(remote)));
+  remote.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateUpdate(kGUID2, ProfileToEntity(remote)));
+
+  // Expect no changes to the remote profiles.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
+
+  // `ApplySyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplySyncChanges(bridge().CreateMetadataChangeList(),
+                                         std::move(entity_change_list)));
+
+  // Expect that the local profiles have changed.
+  EXPECT_THAT(GetAllDataFromBridge(), ElementsAre(remote));
 }
 
 // Tests that `GetData()` returns all local profiles of matching GUID.

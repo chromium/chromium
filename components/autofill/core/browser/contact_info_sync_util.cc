@@ -183,12 +183,13 @@ CreateContactInfoEntityDataFromAutofillProfile(const AutofillProfile& profile) {
   s.Set(specifics->mutable_birthdate_month(), BIRTHDATE_MONTH);
   s.Set(specifics->mutable_birthdate_year(), BIRTHDATE_4_DIGIT_YEAR);
 
+  DCHECK(AreContactInfoSpecificsValid(*specifics));
   return entity_data;
 }
 
 std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     const ContactInfoSpecifics& specifics) {
-  if (!base::IsValidGUID(specifics.guid()))
+  if (!AreContactInfoSpecificsValid(specifics))
     return nullptr;
 
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
@@ -246,6 +247,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
 
   profile->FinalizeAfterImport();
   return profile;
+}
+
+bool AreContactInfoSpecificsValid(
+    const sync_pb::ContactInfoSpecifics& specifics) {
+  return base::GUID::ParseLowercase(specifics.guid()).is_valid();
 }
 
 }  // namespace autofill

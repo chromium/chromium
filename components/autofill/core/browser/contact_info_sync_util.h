@@ -13,15 +13,20 @@
 
 namespace autofill {
 
-// Converts the given `profile` into a syncer EntityData with equivalent
-// contact_info specifics.
+// Converts the given `profile` into a `syncer::EntityData` with equivalent
+// `ContactInfoSpecifics`.
 // Only applicable for profiles with source `kAccount`.
 std::unique_ptr<syncer::EntityData>
 CreateContactInfoEntityDataFromAutofillProfile(const AutofillProfile& profile);
 
 // Converts the given contact info `specifics` into an equivalent
-// AutofillProfile.
+// `AutofillProfile`.
 std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
+    const sync_pb::ContactInfoSpecifics& specifics);
+
+// Tests if the contact info `specifics` are valid and can be converted into an
+// `AutofillProfile` using `CreateAutofillProfileFromContactInfoSpecifics()`.
+bool AreContactInfoSpecificsValid(
     const sync_pb::ContactInfoSpecifics& specifics);
 
 }  // namespace autofill

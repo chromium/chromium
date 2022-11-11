@@ -74,6 +74,10 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   std::unique_ptr<syncer::MutableDataBatch> GetDataAndFilter(
       base::RepeatingCallback<bool(const std::string&)> filter);
 
+  // Synchronously load sync metadata from the `AutofillTable` and pass it to
+  // the processor so it can start tracking changes.
+  void LoadMetadata();
+
   // The bridge should be used on the same sequence where it has been
   // constructed.
   THREAD_CHECKER(thread_checker_);
