@@ -474,6 +474,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         apps_page_->SetVisible(true);
         search_page_->SetVisible(false);
       }
+      a11y_announcer_->AnnounceAppListShown();
       MaybeFocusAndActivateSearchBox();
       break;
     case AppListBubblePage::kSearch:

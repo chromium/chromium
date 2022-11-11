@@ -29,9 +29,8 @@ class AppListA11yAnnouncer {
   // deleted.
   void Shutdown();
 
-  // Modifies the announcement view to verbalize that app list transitioned to
-  // fullscreen state.
-  void AnnounceFullscreenState();
+  // Modifies the announcement view to verbalize that app list is activated.
+  void AnnounceAppListShown();
 
   // Modifies the announcement view to verbalize that the focused view has new
   // updates, based on the item having a notification badge.

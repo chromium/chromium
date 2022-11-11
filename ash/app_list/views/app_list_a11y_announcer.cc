@@ -22,7 +22,7 @@ void AppListA11yAnnouncer::Shutdown() {
   announcement_view_ = nullptr;
 }
 
-void AppListA11yAnnouncer::AnnounceFullscreenState() {
+void AppListA11yAnnouncer::AnnounceAppListShown() {
   Announce(l10n_util::GetStringUTF16(
       IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT));
 }
