@@ -87,6 +87,8 @@ class UIControlsDesktopOzone : public UIControlsAura {
     gfx::Point screen_location(screen_x, screen_y);
     gfx::Point root_location = screen_location;
     aura::Window* root_window = RootWindowForPoint(screen_location);
+    if (root_window == nullptr)
+      return true;
 
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(root_window);
@@ -137,6 +139,9 @@ class UIControlsDesktopOzone : public UIControlsAura {
                                      int accelerator_state) override {
     gfx::Point mouse_loc = aura::Env::GetInstance()->last_mouse_location();
     aura::Window* root_window = RootWindowForPoint(mouse_loc);
+    if (root_window == nullptr)
+      return true;
+
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(root_window);
     if (screen_position_client)
@@ -173,6 +178,9 @@ class UIControlsDesktopOzone : public UIControlsAura {
     else
       root_window = RootWindowForPoint(screen_location);
 
+    if (root_window == nullptr)
+      return true;
+
     ozone_ui_controls_test_helper_->SendTouchEvent(
         root_window->GetHost()->GetAcceleratedWidget(), action, id,
         screen_location, std::move(closure));
@@ -195,8 +203,10 @@ class UIControlsDesktopOzone : public UIControlsAura {
           return window->GetBoundsInScreen().Contains(point) ||
                  window->HasCapture();
         });
-    DCHECK(i != windows.cend()) << "Couldn't find RW for " << point.ToString()
-                                << " among " << windows.size() << " RWs.";
+
+    if (i == windows.cend())
+      return nullptr;
+
     return (*i)->GetRootWindow();
   }
 
