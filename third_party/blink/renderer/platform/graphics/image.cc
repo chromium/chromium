@@ -295,7 +295,7 @@ void Image::DrawPattern(GraphicsContext& context,
   auto image_id = image.stable_id();
 
   SkSamplingOptions sampling_to_use =
-      context.ComputeSamplingOptions(this, dest_rect, gfx::RectF(subset_rect));
+      context.ComputeSamplingOptions(*this, dest_rect, gfx::RectF(subset_rect));
   sk_sp<PaintShader> tile_shader = CreatePatternShader(
       image, local_matrix, sampling_to_use, context.ShouldAntialias(),
       gfx::SizeF(tiling_info.spacing.width() / tiling_info.scale.x(),

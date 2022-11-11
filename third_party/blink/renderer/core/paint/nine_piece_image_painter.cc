@@ -90,7 +90,7 @@ void PaintPieces(GraphicsContext& context,
                  const ComputedStyle& style,
                  const Document& document,
                  const NinePieceImage& nine_piece_image,
-                 Image* image,
+                 Image& image,
                  const gfx::SizeF& unzoomed_image_size,
                  PhysicalBoxSides sides_to_include) {
   const RespectImageOrientationEnum respect_orientation =
@@ -98,7 +98,7 @@ void PaintPieces(GraphicsContext& context,
                                       : kDoNotRespectImageOrientation;
   // |image_size| is in the image's native resolution and |slice_scale| defines
   // the effective size of a CSS pixel in the image.
-  const gfx::SizeF image_size = image->SizeAsFloat(respect_orientation);
+  const gfx::SizeF image_size = image.SizeAsFloat(respect_orientation);
   // Compute the scale factor to apply to the slice values by relating the
   // zoomed size to the "unzoomed" (CSS pixel) size. For raster images this
   // should match any DPR scale while for generated images it should match the
@@ -134,9 +134,9 @@ void PaintPieces(GraphicsContext& context,
       // in the rotated space in order to position and size the background. Undo
       // the src rect rotation if necessary.
       gfx::RectF src_rect = draw_info.source;
-      if (respect_orientation && !image->HasDefaultOrientation()) {
+      if (respect_orientation && !image.HasDefaultOrientation()) {
         src_rect =
-            image->CorrectSrcRectForImageOrientation(image_size, src_rect);
+            image.CorrectSrcRectForImageOrientation(image_size, src_rect);
       }
       // Since there is no way for the developer to specify decode behavior,
       // use kSync by default.
@@ -241,8 +241,7 @@ bool NinePieceImagePainter::Paint(GraphicsContext& graphics_context,
       inspector_paint_image_event::Data, node, *style_image,
       gfx::RectF(image->Rect()), gfx::RectF(border_image_rect));
   PaintPieces(graphics_context, border_image_rect, style, document,
-              nine_piece_image, image.get(), unzoomed_image_size,
-              sides_to_include);
+              nine_piece_image, *image, unzoomed_image_size, sides_to_include);
   return true;
 }
 

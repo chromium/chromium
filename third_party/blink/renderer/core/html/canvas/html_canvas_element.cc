@@ -879,7 +879,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         gfx::Vector2dF(icon_size.width(), icon_size.height());
     // Make the icon more visually prominent on high-DPI displays.
     icon_size.Scale(dpr);
-    context.DrawImage(broken_canvas, Image::kSyncDecode,
+    context.DrawImage(*broken_canvas, Image::kSyncDecode,
                       ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                       gfx::RectF(upper_left, icon_size));
     context.Restore();
@@ -902,7 +902,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     DCHECK(GetDocument().Printing());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
-    context.DrawImage(image_for_printing.get(), Image::kSyncDecode,
+    if (!image_for_printing)
+      return;
+    context.DrawImage(*image_for_printing, Image::kSyncDecode,
                       ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                       gfx::RectF(ToPixelSnappedRect(r)));
     return;
@@ -955,7 +957,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
       DCHECK(!snapshot->IsTextureBacked());
-      context.DrawImage(snapshot.get(), Image::kSyncDecode,
+      context.DrawImage(*snapshot, Image::kSyncDecode,
                         ImageAutoDarkMode::Disabled(), ImagePaintTimingInfo(),
                         gfx::RectF(ToPixelSnappedRect(r)), &src_rect,
                         composite_operator);

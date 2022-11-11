@@ -580,9 +580,9 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
             ? cancel_pressed_image
             : cancel_pressed_image_dark_mode;
   }
-  Image* target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
-                            ? color_scheme_adjusted_cancel_pressed_image
-                            : color_scheme_adjusted_cancel_image;
+  Image& target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
+                            ? *color_scheme_adjusted_cancel_pressed_image
+                            : *color_scheme_adjusted_cancel_image;
   paint_info.context.DrawImage(
       target_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
       ImagePaintTimingInfo(), gfx::RectF(painting_rect));

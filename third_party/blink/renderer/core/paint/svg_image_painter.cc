@@ -120,7 +120,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       *layout_svg_image_.GetFrame(), layout_svg_image_.StyleRef(), dest_rect,
       src_rect);
   paint_info.context.DrawImage(
-      image.get(), decode_mode, image_auto_dark_mode,
+      *image, decode_mode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(layout_svg_image_, *image, image_content,
                                   paint_info.context,
                                   gfx::ToEnclosingRect(dest_rect)),

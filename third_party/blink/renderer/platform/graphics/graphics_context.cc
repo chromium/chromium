@@ -720,7 +720,7 @@ void GraphicsContext::DrawHighlightForText(const Font& font,
 }
 
 void GraphicsContext::DrawImage(
-    Image* image,
+    Image& image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
     const ImagePaintTimingInfo& paint_timing_info,
@@ -729,10 +729,7 @@ void GraphicsContext::DrawImage(
     SkBlendMode op,
     RespectImageOrientationEnum should_respect_image_orientation,
     Image::ImageClampingMode clamping_mode) {
-  if (!image)
-    return;
-
-  const gfx::RectF src = src_ptr ? *src_ptr : gfx::RectF(image->Rect());
+  const gfx::RectF src = src_ptr ? *src_ptr : gfx::RectF(image.Rect());
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
@@ -743,11 +740,11 @@ void GraphicsContext::DrawImage(
                                 should_respect_image_orientation, clamping_mode,
                                 decode_mode, auto_dark_mode.enabled,
                                 paint_timing_info.image_may_be_lcp_candidate);
-  image->Draw(canvas_, image_flags, dest, src, draw_options);
+  image.Draw(canvas_, image_flags, dest, src, draw_options);
   SetImagePainted(paint_timing_info.report_paint_timing);
 }
 void GraphicsContext::DrawImageRRect(
-    Image* image,
+    Image& image,
     Image::ImageDecodingMode decode_mode,
     const ImageAutoDarkMode& auto_dark_mode,
     const ImagePaintTimingInfo& paint_timing_info,
@@ -756,9 +753,6 @@ void GraphicsContext::DrawImageRRect(
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation,
     Image::ImageClampingMode clamping_mode) {
-  if (!image)
-    return;
-
   if (!dest.IsRounded()) {
     DrawImage(image, decode_mode, auto_dark_mode, paint_timing_info,
               dest.Rect(), &src_rect, op, respect_orientation, clamping_mode);
@@ -768,7 +762,7 @@ void GraphicsContext::DrawImageRRect(
   DCHECK(dest.IsRenderable());
 
   const gfx::RectF visible_src =
-      IntersectRects(src_rect, gfx::RectF(image->Rect()));
+      IntersectRects(src_rect, gfx::RectF(image.Rect()));
   if (dest.IsEmpty() || visible_src.IsEmpty())
     return;
 
@@ -786,12 +780,12 @@ void GraphicsContext::DrawImageRRect(
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
-                     image->HasDefaultOrientation());
+                     image.HasDefaultOrientation());
   if (use_shader) {
     const SkMatrix local_matrix = SkMatrix::RectToRect(
         gfx::RectFToSkRect(visible_src), gfx::RectFToSkRect(dest.Rect()));
     use_shader =
-        image->ApplyShader(image_flags, local_matrix, src_rect, draw_options);
+        image.ApplyShader(image_flags, local_matrix, src_rect, draw_options);
   }
 
   if (use_shader) {
@@ -806,7 +800,7 @@ void GraphicsContext::DrawImageRRect(
     // Clip-based fallback.
     PaintCanvasAutoRestore auto_restore(canvas_, true);
     canvas_->clipRRect(SkRRect(dest), image_flags.isAntiAlias());
-    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
+    image.Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options);
   }
 
   SetImagePainted(paint_timing_info.report_paint_timing);
@@ -821,19 +815,19 @@ void GraphicsContext::SetImagePainted(bool report_paint_timing) {
 }
 
 cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
-    Image* image,
+    Image& image,
     const gfx::RectF& dest,
     const gfx::RectF& src) const {
   InterpolationQuality resampling;
   if (printing_) {
     resampling = kInterpolationNone;
-  } else if (image->CurrentFrameIsLazyDecoded()) {
+  } else if (image.CurrentFrameIsLazyDecoded()) {
     resampling = kInterpolationDefault;
   } else {
     resampling = ComputeInterpolationQuality(
         SkScalarToFloat(src.width()), SkScalarToFloat(src.height()),
         SkScalarToFloat(dest.width()), SkScalarToFloat(dest.height()),
-        image->CurrentFrameIsComplete());
+        image.CurrentFrameIsComplete());
 
     if (resampling == kInterpolationNone) {
       // FIXME: This is to not break tests (it results in the filter bitmap flag
@@ -847,16 +841,13 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
 }
 
 void GraphicsContext::DrawImageTiled(
-    Image* image,
+    Image& image,
     const gfx::RectF& dest_rect,
     const ImageTilingInfo& tiling_info,
     const ImageAutoDarkMode& auto_dark_mode,
     const ImagePaintTimingInfo& paint_timing_info,
     SkBlendMode op,
     RespectImageOrientationEnum respect_orientation) {
-  if (!image)
-    return;
-
   cc::PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
   SkSamplingOptions sampling = ImageSamplingOptions();
@@ -866,7 +857,7 @@ void GraphicsContext::DrawImageTiled(
                                 Image::kSyncDecode, auto_dark_mode.enabled,
                                 paint_timing_info.image_may_be_lcp_candidate);
 
-  image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
+  image.DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   SetImagePainted(paint_timing_info.report_paint_timing);
 }
 

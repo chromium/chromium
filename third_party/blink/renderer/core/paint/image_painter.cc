@@ -301,7 +301,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   }
 
   context.DrawImage(
-      image.get(), decode_mode, image_auto_dark_mode,
+      *image, decode_mode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,
                                   pixel_snapped_dest_rect),
       gfx::RectF(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,

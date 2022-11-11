@@ -102,7 +102,7 @@ void CrossfadeGeneratedImage::DrawTile(GraphicsContext& context,
   gfx::RectF dest_rect(size_);
   ImageDrawOptions draw_options(options);
   draw_options.sampling_options =
-      context.ComputeSamplingOptions(this, dest_rect, src_rect);
+      context.ComputeSamplingOptions(*this, dest_rect, src_rect);
   DrawCrossfade(context.Canvas(), flags, draw_options);
 }
 

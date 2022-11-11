@@ -335,7 +335,7 @@ class PLATFORM_EXPORT GraphicsContext {
                        const gfx::RectF& dest,
                        const gfx::RectF& src,
                        SkBlendMode);
-  void DrawImage(Image*,
+  void DrawImage(Image&,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
                  const ImagePaintTimingInfo& paint_timing_info,
@@ -345,7 +345,7 @@ class PLATFORM_EXPORT GraphicsContext {
                  RespectImageOrientationEnum = kRespectImageOrientation,
                  Image::ImageClampingMode clamping_mode =
                      Image::ImageClampingMode::kClampImageToSourceRect);
-  void DrawImageRRect(Image*,
+  void DrawImageRRect(Image&,
                       Image::ImageDecodingMode,
                       const ImageAutoDarkMode& auto_dark_mode,
                       const ImagePaintTimingInfo& paint_timing_info,
@@ -355,7 +355,7 @@ class PLATFORM_EXPORT GraphicsContext {
                       RespectImageOrientationEnum = kRespectImageOrientation,
                       Image::ImageClampingMode clamping_mode =
                           Image::ImageClampingMode::kClampImageToSourceRect);
-  void DrawImageTiled(Image* image,
+  void DrawImageTiled(Image& image,
                       const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
                       const ImageAutoDarkMode& auto_dark_mode,
@@ -512,11 +512,11 @@ class PLATFORM_EXPORT GraphicsContext {
   // ---------- End transformation methods -----------------
 
   cc::PaintFlags::FilterQuality ComputeFilterQuality(
-      Image*,
+      Image&,
       const gfx::RectF& dest,
       const gfx::RectF& src) const;
 
-  SkSamplingOptions ComputeSamplingOptions(Image* image,
+  SkSamplingOptions ComputeSamplingOptions(Image& image,
                                            const gfx::RectF& dest,
                                            const gfx::RectF& src) const {
     return cc::PaintFlags::FilterQualityToSkSamplingOptions(

@@ -163,9 +163,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
         marker_rect, src_rect);
     // Since there is no way for the developer to specify decode behavior, use
     // kSync by default.
-    context.DrawImage(target_image.get(), Image::kSyncDecode,
-                      image_auto_dark_mode, ImagePaintTimingInfo(), marker_rect,
-                      &src_rect);
+    context.DrawImage(*target_image, Image::kSyncDecode, image_auto_dark_mode,
+                      ImagePaintTimingInfo(), marker_rect, &src_rect);
     return;
   }
 

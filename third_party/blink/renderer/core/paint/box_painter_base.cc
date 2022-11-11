@@ -522,7 +522,7 @@ gfx::RectF SnapSourceRectIfNearIntegral(const gfx::RectF src_rect) {
 absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
     const BackgroundImageGeometry& geometry,
     const PhysicalRect& dest_rect,
-    Image* image,
+    Image& image,
     RespectImageOrientationEnum respect_orientation) {
   const PhysicalOffset dest_phase = geometry.ComputeDestPhase();
 
@@ -536,7 +536,7 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
 
   const PhysicalOffset offset_in_tile =
       geometry.SnappedDestRect().offset - dest_phase;
-  if (!image->HasIntrinsicSize()) {
+  if (!image.HasIntrinsicSize()) {
     // This is a generated image sized according to the tile size so we can use
     // the snapped dest rect directly.
     const PhysicalRect offset_tile(offset_in_tile,
@@ -556,8 +556,7 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   //
   // image-resolution information is baked into the given parameters, but we
   // need oriented size.
-  const gfx::SizeF intrinsic_tile_size =
-      image->SizeAsFloat(respect_orientation);
+  const gfx::SizeF intrinsic_tile_size = image.SizeAsFloat(respect_orientation);
 
   // Subset computation needs the same location as was used above, but needs the
   // unsnapped destination size to correctly calculate sprite subsets in the
@@ -583,8 +582,8 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   // rect to be in the unrotated image space, but we have computed it here in
   // the rotated space in order to position and size the background. Undo the
   // src rect rotation if necessary.
-  if (respect_orientation && !image->HasDefaultOrientation()) {
-    visible_src_rect = image->CorrectSrcRectForImageOrientation(
+  if (respect_orientation && !image.HasDefaultOrientation()) {
+    visible_src_rect = image.CorrectSrcRectForImageOrientation(
         intrinsic_tile_size, visible_src_rect);
   }
   return visible_src_rect;
@@ -601,7 +600,7 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
 void DrawTiledBackground(LocalFrame* frame,
                          GraphicsContext& context,
                          const ComputedStyle& style,
-                         Image* image,
+                         Image& image,
                          const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
                          RespectImageOrientationEnum respect_orientation,
@@ -635,7 +634,7 @@ void DrawTiledBackground(LocalFrame* frame,
   Image::SizeConfig size_config;
   size_config.apply_orientation = respect_orientation;
   const gfx::SizeF intrinsic_tile_size =
-      image->SizeWithConfigAsFloat(size_config);
+      image.SizeWithConfigAsFloat(size_config);
 
   // Note that this tile rect uses the image's pre-scaled size.
   ImageTilingInfo tiling_info;
@@ -719,15 +718,15 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
 
   scoped_refptr<Image> paint_worklet_image =
       GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().size());
-  DCHECK(paint_worklet_image);
+  if (!paint_worklet_image)
+    return false;
   gfx::RectF src_rect(dest_rect.Rect().size());
-  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
-                         ImageAutoDarkMode::Disabled(),
-                         ImagePaintTimingInfo(
-                             /* image_may_be_lcp_candidate */ false,
-                             /* report_paint_timing */ false),
-                         dest_rect, src_rect, SkBlendMode::kSrcOver,
-                         kRespectImageOrientation);
+  context.DrawImageRRect(
+      *paint_worklet_image, Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
+      ImagePaintTimingInfo(
+          /* image_may_be_lcp_candidate */ false,
+          /* report_paint_timing */ false),
+      dest_rect, src_rect, SkBlendMode::kSrcOver, kRespectImageOrientation);
   return true;
 }
 
@@ -825,7 +824,7 @@ inline bool PaintFastBottomLayer(const Document* document,
           PhysicalRect::FastAndLossyFromRectF(image_rect);
 
       absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
-          geometry, dest_rect, image, info.respect_image_orientation);
+          geometry, dest_rect, *image, info.respect_image_orientation);
       if (!single_tile_src)
         return false;
       src_rect = *single_tile_src;
@@ -887,12 +886,11 @@ inline bool PaintFastBottomLayer(const Document* document,
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default
   context.DrawImageRRect(
-      image, Image::kSyncDecode, image_auto_dark_mode,
+      *image, Image::kSyncDecode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                   image_border.Rect()),
       image_border, src_rect, composite_op, info.respect_image_orientation,
       clamping_mode);
-
   return true;
 }
 
@@ -1012,7 +1010,7 @@ void PaintFillLayerBackground(const Document* document,
         inspector_paint_image_event::Data, node, *info.image,
         gfx::RectF(image->Rect()), gfx::RectF(scrolled_paint_rect));
     DrawTiledBackground(
-        document->GetFrame(), context, style, image, geometry, composite_op,
+        document->GetFrame(), context, style, *image, geometry, composite_op,
         info.respect_image_orientation,
         ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                     gfx::RectF(geometry.SnappedDestRect())));
