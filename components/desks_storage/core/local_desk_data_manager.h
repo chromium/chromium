@@ -114,7 +114,8 @@ class LocalDeskDataManager : public DeskModel {
   static AddOrUpdateEntryStatus AddOrUpdateEntryTask(
       const base::FilePath& local_saved_desk_path,
       const base::GUID uuid,
-      base::Value entry_base_value);
+      base::Value entry_base_value,
+      ash::DeskTemplateType desk_type);
 
   // Wrapper method to call AddOrUpdateEntryCallback.
   void OnAddOrUpdateEntry(AddOrUpdateEntryCallback callback,

@@ -2005,6 +2005,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.SaveAndRecallTemplateSize" units="B"
+    expires_after="2023-11-08">
+  <owner>zhumatthew@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the save and recall template file size that is saved to local
+    storage.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.SaveAndRecallUnsupportedAppDialogShow"
     units="count" expires_after="2023-10-03">
   <owner>dandersson@google.com</owner>
@@ -2041,6 +2051,15 @@ chromium-metrics-reviews@google.com.
   <owner>richui@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>Records the number of tabs in a template when it is saved.</summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.TemplateSize" units="B"
+    expires_after="2023-11-08">
+  <owner>zhumatthew@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the file size of the desk template that is saved to local storage.
+  </summary>
 </histogram>
 
 <histogram name="Ash.DeskTemplate.TimeBetweenSaveAndRecall" units="seconds"

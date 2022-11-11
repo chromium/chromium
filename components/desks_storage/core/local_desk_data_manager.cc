@@ -23,6 +23,7 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
+#include "components/desks_storage/core/local_desk_data_manager_metrics_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
@@ -283,7 +284,7 @@ void LocalDeskDataManager::AddOrUpdateEntry(
       FROM_HERE,
       base::BindOnce(&LocalDeskDataManager::AddOrUpdateEntryTask,
                      local_saved_desk_path_, uuid,
-                     std::move(template_base_value)),
+                     std::move(template_base_value), desk_type),
       base::BindOnce(&LocalDeskDataManager::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      is_update, desk_type, uuid, std::move(old_entry),
@@ -485,11 +486,17 @@ LocalDeskDataManager::LoadCacheOnBackgroundSequence(
 DeskModel::AddOrUpdateEntryStatus LocalDeskDataManager::AddOrUpdateEntryTask(
     const base::FilePath& local_saved_desk_path,
     const base::GUID uuid,
-    base::Value entry_base_value) {
-  return WriteTemplateFile(GetFullyQualifiedPath(local_saved_desk_path, uuid),
-                           std::move(entry_base_value))
-             ? AddOrUpdateEntryStatus::kOk
-             : AddOrUpdateEntryStatus::kFailure;
+    base::Value entry_base_value,
+    ash::DeskTemplateType desk_type) {
+  const base::FilePath fully_qualified_path =
+      GetFullyQualifiedPath(local_saved_desk_path, uuid);
+  if (WriteTemplateFile(fully_qualified_path, std::move(entry_base_value))) {
+    int64_t file_size;
+    GetFileSize(fully_qualified_path, &file_size);
+    RecordSavedDeskTemplateSizeHistogram(desk_type, file_size);
+    return AddOrUpdateEntryStatus::kOk;
+  }
+  return AddOrUpdateEntryStatus::kFailure;
 }
 
 void LocalDeskDataManager::OnAddOrUpdateEntry(

@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -25,6 +26,7 @@
 #include "components/app_constants/constants.h"
 #include "components/desks_storage/core/desk_template_util.h"
 #include "components/desks_storage/core/desk_test_util.h"
+#include "components/desks_storage/core/local_desk_data_manager_metrics_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -966,6 +968,18 @@ TEST_F(LocalDeskDataManagerTest, CanHandleFileErrorGracefully) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(local_data_manager->GetEntryCount(), static_cast<size_t>(0));
+}
+
+TEST_F(LocalDeskDataManagerTest, CanRecordFileSizeMetrics) {
+  base::HistogramTester histogram_tester;
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+  data_manager_->AddOrUpdateEntry(std::move(sample_save_and_recall_desk_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(kTemplateSizeHistogramName, 1u);
+  histogram_tester.ExpectTotalCount(kSaveAndRecallTemplateSizeHistogramName,
+                                    1u);
 }
 
 }  // namespace desks_storage
