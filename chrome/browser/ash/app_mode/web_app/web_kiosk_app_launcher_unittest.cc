@@ -34,14 +34,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace ash {
+
+namespace {
+
 using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
-
-namespace ash {
-
-namespace {
 
 // TODO(crbug/1379290): Use `TestFuture<void>` in all these tests
 #define EXEC_AND_WAIT_FOR_CALL(exec, mock, method)    \
@@ -331,7 +331,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
  public:
   WebKioskAppLauncherUsingLacrosTest()
       : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()),
-        fake_user_manager_(new ash::FakeChromeUserManager()),
+        fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
         wm_helper_(std::make_unique<exo::WMHelperChromeOS>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
@@ -354,7 +354,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
     return browser_manager_.get();
   }
 
-  ash::FakeChromeUserManager* fake_user_manager() const {
+  FakeChromeUserManager* fake_user_manager() const {
     return fake_user_manager_;
   }
 
@@ -367,7 +367,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-  ash::FakeChromeUserManager* fake_user_manager_;
+  FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
 };

@@ -106,6 +106,7 @@
 #include "url/gurl.h"
 
 namespace ash {
+
 namespace {
 
 using ::extensions::api::accessibility_private::DlcType;
@@ -1011,7 +1012,7 @@ void AccessibilityManager::SetDictationEnabled(bool enabled) const {
     return;
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetBoolean(ash::prefs::kAccessibilityDictationEnabled, enabled);
+  pref_service->SetBoolean(prefs::kAccessibilityDictationEnabled, enabled);
   pref_service->CommitPendingWrite();
 }
 
@@ -1332,8 +1333,7 @@ void AccessibilityManager::CheckBrailleState() {
 }
 
 void AccessibilityManager::ReceiveBrailleDisplayState(
-    std::unique_ptr<extensions::api::braille_display_private::DisplayState>
-        state) {
+    std::unique_ptr<DisplayState> state) {
   OnBrailleDisplayStateChanged(*state);
 }
 

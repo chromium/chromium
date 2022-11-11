@@ -623,7 +623,7 @@ void ArcInputMethodManagerService::EnableIme(const std::string& ime_id,
 }
 
 void ArcInputMethodManagerService::SyncEnabledImesInArc() {
-  auto* manager = chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   if (!manager || !manager->GetActiveIMEState()) {
     LOG(WARNING) << "InputMethodManager is not ready yet.";
     return;
@@ -675,7 +675,7 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
 void ArcInputMethodManagerService::SyncCurrentImeInArc() {
   namespace aeiu = ash::extension_ime_util;
 
-  auto* manager = chromeos::input_method::InputMethodManager::Get();
+  auto* manager = ash::input_method::InputMethodManager::Get();
   if (!manager || !manager->GetActiveIMEState()) {
     LOG(WARNING) << "InputMethodManager is not ready yet.";
     return;

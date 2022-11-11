@@ -28,7 +28,7 @@ views::Widget* CreateExoWindow(const std::string& window_app_id,
                                const std::string& app_id) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(5, 5, 20, 20);
-  params.context = ash::Shell::GetPrimaryRootWindow();
+  params.context = Shell::GetPrimaryRootWindow();
 
   exo::WMHelper::AppPropertyResolver::Params resolver_params;
   resolver_params.app_id = window_app_id;

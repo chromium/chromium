@@ -131,10 +131,4 @@ class MagnificationManager
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// directory migration is finished.
-namespace chromeos {
-using ::ash::MagnificationManager;
-}
-
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_MAGNIFICATION_MANAGER_H_

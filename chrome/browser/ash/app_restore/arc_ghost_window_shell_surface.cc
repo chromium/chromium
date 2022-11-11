@@ -20,6 +20,8 @@
 #include "ui/display/screen.h"
 #include "ui/views/window/caption_button_types.h"
 
+namespace ash::full_restore {
+
 namespace {
 
 bool IsMaximizedState(
@@ -36,8 +38,6 @@ bool IsMinimizedState(
 }
 
 }  // namespace
-
-namespace ash::full_restore {
 
 // Explicitly identifies ARC ghost surface.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
@@ -109,7 +109,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
           : SK_ColorWHITE;
 
   // TODO(sstan): Handle the desk container from full_restore data.
-  int container = ash::desks_util::GetActiveDeskContainerId();
+  int container = desks_util::GetActiveDeskContainerId();
 
   auto surface = std::make_unique<exo::Surface>();
   std::unique_ptr<ArcGhostWindowShellSurface> shell_surface(

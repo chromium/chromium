@@ -52,18 +52,17 @@
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
-using extensions::ExternalInstallInfoFile;
-using extensions::ExternalInstallInfoUpdateUrl;
-using extensions::Manifest;
-using extensions::mojom::ManifestLocation;
-using ::testing::AssertionFailure;
-using ::testing::AssertionResult;
-using ::testing::AssertionSuccess;
-using ::testing::ElementsAre;
-
 namespace ash {
 
 namespace {
+
+using ::extensions::ExternalInstallInfoFile;
+using ::extensions::ExternalInstallInfoUpdateUrl;
+using ::extensions::Manifest;
+using ::extensions::mojom::ManifestLocation;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
 
 constexpr char kTestPrimaryAppId[] = "abcdefghabcdefghabcdefghabcdefgh";
 
@@ -611,7 +610,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   bool kiosk_app_session_initialized_ = false;
 
  private:
-  ash::AshTestHelper ash_test_helper_;
+  AshTestHelper ash_test_helper_;
   base::test::ScopedCommandLine command_line_;
 
   std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;

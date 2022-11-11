@@ -31,6 +31,8 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 
+namespace ash::full_restore {
+
 namespace {
 
 constexpr char kGhostWindowTypeHistogram[] = "Arc.GhostWindowViewType";
@@ -101,8 +103,6 @@ class Throbber : public views::View {
 };
 
 }  // namespace
-
-namespace ash::full_restore {
 
 ArcGhostWindowView::ArcGhostWindowView(
     ArcGhostWindowShellSurface* shell_surface,
@@ -204,7 +204,7 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
       apps::AppType::kArc, app_id, apps::IconType::kStandard,
-      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      SharedAppListConfig::instance().default_grid_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       icon_loaded_cb_for_testing_.is_null()
           ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,

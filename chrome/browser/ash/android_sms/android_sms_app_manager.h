@@ -53,11 +53,4 @@ class AndroidSmsAppManager
 }  // namespace android_sms
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-namespace android_sms {
-using ::ash::android_sms::AndroidSmsAppManager;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_APP_MANAGER_H_

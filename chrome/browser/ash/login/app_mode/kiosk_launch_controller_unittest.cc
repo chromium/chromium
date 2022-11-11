@@ -33,10 +33,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+
+namespace {
+
 using ::testing::Eq;
 using ::testing::Mock;
 
-namespace {
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kInvalidExtensionId[] = "invalid-extension-id";
 const char kExtensionName[] = "extension_name";
@@ -55,8 +58,6 @@ auto BuildExtension(std::string extension_name, std::string extension_id) {
 }
 
 }  // namespace
-
-namespace ash {
 
 class MockKioskProfileLoadFailedObserver
     : public KioskLaunchController::KioskProfileLoadFailedObserver {
@@ -133,7 +134,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         &FakeAppLaunchSplashScreenHandler::GetAppLaunchState, Eq(launch_state));
   }
 
-  auto HasErrorMessage(chromeos::KioskAppLaunchError::Error error) {
+  auto HasErrorMessage(KioskAppLaunchError::Error error) {
     return testing::Property(
         "ErrorState", &FakeAppLaunchSplashScreenHandler::GetErrorMessageType,
         Eq(error));

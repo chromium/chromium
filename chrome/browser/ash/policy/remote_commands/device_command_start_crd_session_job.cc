@@ -77,7 +77,7 @@ ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
   if (user_manager->IsLoggedInAsKioskApp())
     return ash::KioskAppManager::Get();
   if (user_manager->IsLoggedInAsArcKioskApp())
-    return chromeos::ArcKioskAppManager::Get();
+    return ash::ArcKioskAppManager::Get();
   if (user_manager->IsLoggedInAsWebKioskApp())
     return ash::WebKioskAppManager::Get();
 

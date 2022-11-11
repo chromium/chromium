@@ -25,19 +25,21 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 
+namespace ash {
+
 namespace {
 
 // Returns network name by service path.
 std::string GetNetworkName(const std::string& service_path) {
-  const ash::NetworkState* network =
-      ash::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+  const NetworkState* network =
+      NetworkHandler::Get()->network_state_handler()->GetNetworkState(
           service_path);
   if (!network)
     return std::string();
   return network->name();
 }
 
-base::Value::Dict ConvertAppToDict(ash::KioskAppManagerBase::App app) {
+base::Value::Dict ConvertAppToDict(KioskAppManagerBase::App app) {
   base::Value::Dict out_info;
 
   if (app.name.empty())
@@ -60,8 +62,6 @@ base::Value::Dict ConvertAppToDict(ash::KioskAppManagerBase::App app) {
 }
 
 }  // namespace
-
-namespace ash {
 
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,

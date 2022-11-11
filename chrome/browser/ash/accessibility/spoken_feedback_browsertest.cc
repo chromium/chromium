@@ -71,6 +71,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
 
 const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
@@ -454,8 +455,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
   sm_.Call([controller, title]() {
     controller->InsertAppItem(
         std::make_unique<AppShortcutShelfItemController>(ShelfID("FakeApp")),
-        ash::STATUS_CLOSED, controller->shelf_model()->item_count(),
-        ash::TYPE_PINNED_APP, base::ASCIIToUTF16(title));
+        STATUS_CLOSED, controller->shelf_model()->item_count(), TYPE_PINNED_APP,
+        base::ASCIIToUTF16(title));
   });
 
   // Focus on the shelf.
@@ -501,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
       std::string app_id = id + base::NumberToString(i);
       controller->InsertAppItem(
           std::make_unique<AppShortcutShelfItemController>(ShelfID(app_id)),
-          ash::STATUS_CLOSED, base_index + i, ash::TYPE_PINNED_APP,
+          STATUS_CLOSED, base_index + i, TYPE_PINNED_APP,
           base::ASCIIToUTF16(app_title));
     }
 
@@ -1069,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   EXPECT_EQ(1U, root_controllers.size());
 
   // Make two displays, each 800 by 800, side by side.
-  ash::ShellTestApi shell_test_api;
+  ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
       .UpdateDisplay("800x800,801+0-800x800");
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
@@ -1358,10 +1359,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_SmartStickyMode) {
   sm_.Replay();
 }
 
-class TestBacklightsObserver : public ash::ScreenBacklightObserver {
+class TestBacklightsObserver : public ScreenBacklightObserver {
  public:
   explicit TestBacklightsObserver(
-      ash::BacklightsForcedOffSetter* backlights_setter) {
+      BacklightsForcedOffSetter* backlights_setter) {
     backlights_forced_off_ = backlights_setter->backlights_forced_off();
     scoped_observation_.Observe(backlights_setter);
   }
@@ -1391,19 +1392,17 @@ class TestBacklightsObserver : public ash::ScreenBacklightObserver {
   bool backlights_forced_off_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  base::ScopedObservation<ash::BacklightsForcedOffSetter,
-                          ash::ScreenBacklightObserver>
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       scoped_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   EnableChromeVox();
   StablizeChromeVoxState();
-  EXPECT_FALSE(ash::Shell::Get()
-                   ->backlights_forced_off_setter()
-                   ->backlights_forced_off());
-  ash::BacklightsForcedOffSetter* backlights_setter =
-      ash::Shell::Get()->backlights_forced_off_setter();
+  EXPECT_FALSE(
+      Shell::Get()->backlights_forced_off_setter()->backlights_forced_off());
+  BacklightsForcedOffSetter* backlights_setter =
+      Shell::Get()->backlights_forced_off_setter();
   TestBacklightsObserver observer(backlights_setter);
 
   // Try to darken screen and check the dialog is shown.
@@ -1423,7 +1422,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   sm_.Call([]() {
     // Accept the dialog and see that the screen is darkened.
     AccessibilityConfirmationDialog* dialog_ =
-        ash::Shell::Get()
+        Shell::Get()
             ->accessibility_controller()
             ->GetConfirmationDialogForTest();
     ASSERT_TRUE(dialog_ != nullptr);

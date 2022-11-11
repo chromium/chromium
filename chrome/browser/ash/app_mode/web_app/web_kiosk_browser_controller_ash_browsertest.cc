@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
     run_loop.Run();
   }
 
-  EXPECT_FALSE(ash::WebKioskAppManager::Get()->app_session());
+  EXPECT_FALSE(WebKioskAppManager::Get()->app_session());
 
   {
     base::RunLoop run_loop;
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
     run_loop.RunUntilIdle();
   }
 
-  EXPECT_TRUE(ash::WebKioskAppManager::Get()->app_session());
+  EXPECT_TRUE(WebKioskAppManager::Get()->app_session());
 
   // Verify that new regular windows cannot be opened.
   const auto* browser_list = BrowserList::GetInstance();
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
     // The newly opened browser will be allowed and stored by |AppSession|.
     run_loop.Run();
 
-    Browser* settings_browser = ash::WebKioskAppManager::Get()
+    Browser* settings_browser = WebKioskAppManager::Get()
                                     ->app_session()
                                     ->GetSettingsBrowserForTesting();
     EXPECT_TRUE(settings_browser);

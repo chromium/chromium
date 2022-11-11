@@ -278,7 +278,7 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
           }));
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
           l10n_util::GetStringUTF16(message_id),

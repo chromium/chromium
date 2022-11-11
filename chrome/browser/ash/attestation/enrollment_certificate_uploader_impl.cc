@@ -24,6 +24,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace ash::attestation {
+
 namespace {
 
 // Constants for retrying certificate obtention and upload.
@@ -32,15 +34,14 @@ const int kRetryLimit = 100;
 
 void DBusPrivacyCACallback(
     const base::RepeatingCallback<void(const std::string&)> on_success,
-    const base::RepeatingCallback<void(ash::attestation::AttestationStatus)>
-        on_failure,
+    const base::RepeatingCallback<void(AttestationStatus)> on_failure,
     const base::Location& from_here,
-    ash::attestation::AttestationStatus status,
+    AttestationStatus status,
     const std::string& data) {
   DCHECK(on_success);
   DCHECK(on_failure);
 
-  if (status == ash::attestation::ATTESTATION_SUCCESS) {
+  if (status == ATTESTATION_SUCCESS) {
     on_success.Run(data);
     return;
   }
@@ -51,9 +52,6 @@ void DBusPrivacyCACallback(
 }
 
 }  // namespace
-
-namespace ash {
-namespace attestation {
 
 EnrollmentCertificateUploaderImpl::EnrollmentCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client)
@@ -241,5 +239,4 @@ void EnrollmentCertificateUploaderImpl::RunCallbacks(Status status) {
     std::move(callbacks.front()).Run(status);
 }
 
-}  // namespace attestation
-}  // namespace ash
+}  // namespace ash::attestation

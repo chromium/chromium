@@ -73,10 +73,4 @@ class KioskAppLauncher {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::KioskAppLauncher;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_LAUNCHER_H_

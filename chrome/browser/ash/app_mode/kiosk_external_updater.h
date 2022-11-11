@@ -56,7 +56,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
     std::u16string error;
   };
 
-  // ash::disks::DiskMountManager::Observer overrides.
+  // disks::DiskMountManager::Observer overrides.
   void OnMountEvent(
       disks::DiskMountManager::MountEvent event,
       MountError error_code,

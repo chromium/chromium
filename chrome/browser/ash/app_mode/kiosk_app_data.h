@@ -162,9 +162,4 @@ class KioskAppData : public KioskAppDataBase,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace chromeos {
-using ::ash::KioskAppData;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_H_

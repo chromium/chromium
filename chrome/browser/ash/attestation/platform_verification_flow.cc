@@ -44,9 +44,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
-namespace {
+namespace ash::attestation {
 
-using ash::attestation::PlatformVerificationFlow;
+namespace {
 
 const int kTimeoutInSeconds = 8;
 const char kAttestationResultHistogram[] =
@@ -64,9 +64,6 @@ void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
 }
 
 }  // namespace
-
-namespace ash {
-namespace attestation {
 
 // A default implementation of the Delegate interface.
 class DefaultDelegate : public PlatformVerificationFlow::Delegate {
@@ -377,5 +374,4 @@ void PlatformVerificationFlow::RenewCertificateCallback(
   VLOG(1) << "Certificate successfully renewed.";
 }
 
-}  // namespace attestation
-}  // namespace ash
+}  // namespace ash::attestation

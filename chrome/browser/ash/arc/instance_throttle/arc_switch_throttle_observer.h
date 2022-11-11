@@ -10,7 +10,7 @@
 namespace arc {
 
 // This disables ARC throttling in case it is explicitly set by a switch.
-class ArcSwitchThrottleObserver : public chromeos::ThrottleObserver {
+class ArcSwitchThrottleObserver : public ash::ThrottleObserver {
  public:
   ArcSwitchThrottleObserver();
 

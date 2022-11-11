@@ -70,7 +70,7 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   ~ArcGhostWindowHandler() override;
 
   // ArcGhostWindowHandler is created and destroyed with the
-  // ash::AppRestore::AppRestoreArcTaskHandler.
+  // `AppRestore::AppRestoreArcTaskHandler`.
   // ArcGhostWindowHandler::Get may be nullptr if accessed outside the expected
   // lifetime.
   static ArcGhostWindowHandler* Get();

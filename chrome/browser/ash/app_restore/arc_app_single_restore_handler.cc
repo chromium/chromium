@@ -20,7 +20,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
+namespace ash::app_restore {
+
 namespace {
+
 bool IsAppReadyForLaunch(Profile* profile, const std::string& app_id) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   return prefs && prefs->IsAbleToBeLaunched(app_id);
@@ -41,7 +44,6 @@ float GetDisplayScaleFactor(int64_t display_id) {
 }
 
 }  // namespace
-namespace ash::app_restore {
 
 ArcAppSingleRestoreHandler::ArcAppSingleRestoreHandler() {
   observation_.Observe(full_restore::ArcGhostWindowHandler::Get());

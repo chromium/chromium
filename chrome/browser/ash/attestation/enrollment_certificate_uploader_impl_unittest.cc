@@ -24,18 +24,18 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using CertStatus = ash::attestation::EnrollmentCertificateUploader::Status;
-using CertCallback = ash::attestation::AttestationFlow::CertificateCallback;
-using testing::_;
-using ::testing::InSequence;
-using testing::Invoke;
-using testing::StrictMock;
-using testing::WithArgs;
-
 namespace ash {
 namespace attestation {
 
 namespace {
+
+using CertStatus = EnrollmentCertificateUploader::Status;
+using CertCallback = AttestationFlow::CertificateCallback;
+using ::testing::_;
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::StrictMock;
+using ::testing::WithArgs;
 
 constexpr int kRetryLimit = 3;
 

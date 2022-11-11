@@ -231,7 +231,7 @@ class ArcAppQueueRestoreHandler
   void RecordLaunchBoundsState(bool has_root_bounds, bool has_screen_bounds);
   void RecordRestoreResult();
 
-  ash::SchedulerConfigurationManager* GetSchedulerConfigurationManager();
+  SchedulerConfigurationManager* GetSchedulerConfigurationManager();
 
   AppLaunchHandler* handler_ = nullptr;
 

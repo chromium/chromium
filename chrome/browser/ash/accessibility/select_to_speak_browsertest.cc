@@ -101,7 +101,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     // Pretend that enhanced network voices dialog has been accepted so that the
     // dialog does not block.
     browser()->profile()->GetPrefs()->SetBoolean(
-        ash::prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
+        prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
   }
 
   test::SpeechMonitor sm_;
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   // and bring back the console observer.
   console_observer_.reset();
 
-  ash::ShellTestApi shell_test_api;
+  ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
       .UpdateDisplay("1+0-800x800,801+1-800x800");
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());

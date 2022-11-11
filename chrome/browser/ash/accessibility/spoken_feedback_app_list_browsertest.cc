@@ -41,6 +41,7 @@
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
+
 namespace {
 
 void SendKeyPressWithShiftAndControl(ui::KeyboardCode key) {
@@ -167,7 +168,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // Disable the app list nudge in the spoken feedback app list test.
-    ash::AppListTestApi().DisableAppListNudge(true);
+    AppListTestApi().DisableAppListNudge(true);
 
     LoggedInSpokenFeedbackTest::SetUp();
   }
@@ -220,7 +221,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     sm_.ExpectSpeech("Button");
 
     int test_item_index = 0;
-    ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+    AppListItem* test_item = FindItemByName("app 0", &test_item_index);
     EXPECT_TRUE(test_item);
 
     // Skip over apps that were installed before the test item.
@@ -374,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
   PopulateApps(1);
 
   int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  AppListItem* test_item = FindItemByName("app 0", &test_item_index);
   ASSERT_TRUE(test_item);
   test_item->UpdateNotificationBadgeForTesting(true);
 
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   PopulateApps(1);
 
   int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  AppListItem* test_item = FindItemByName("app 0", &test_item_index);
   ASSERT_TRUE(test_item);
   test_item->UpdateAppStatusForTesting(AppStatus::kPaused);
 
@@ -451,7 +452,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
   PopulateApps(1);
 
   int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  AppListItem* test_item = FindItemByName("app 0", &test_item_index);
   ASSERT_TRUE(test_item);
   test_item->UpdateAppStatusForTesting(AppStatus::kBlocked);
 
@@ -531,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
   PopulateApps(3);
 
   int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+  AppListItem* test_item = FindItemByName("app 0", &test_item_index);
   ASSERT_TRUE(test_item);
 
   EnableChromeVox();
@@ -716,7 +717,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Show the context menu for the AppsGridView.
   sm_.Call([]() {
-    AppsGridView* grid_view = ash::AppListTestApi().GetTopLevelAppsGridView();
+    AppsGridView* grid_view = AppListTestApi().GetTopLevelAppsGridView();
     EXPECT_TRUE(grid_view);
     grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
                                ui::MENU_SOURCE_KEYBOARD);
@@ -736,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Show the context menu for the AppsGridView.
   sm_.Call([]() {
-    AppsGridView* grid_view = ash::AppListTestApi().GetTopLevelAppsGridView();
+    AppsGridView* grid_view = AppListTestApi().GetTopLevelAppsGridView();
     EXPECT_TRUE(grid_view);
     grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
                                ui::MENU_SOURCE_KEYBOARD);
@@ -876,7 +877,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest,
   // be "app 2").
   sm_.Call([clock_ptr, generator_ptr]() {
     views::View* target_view =
-        ash::AppListTestApi().GetVisibleSearchResultView(/*index=*/2);
+        AppListTestApi().GetVisibleSearchResultView(/*index=*/2);
     ASSERT_TRUE(target_view);
 
     gfx::Point touch_point = target_view->GetBoundsInScreen().CenterPoint();

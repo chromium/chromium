@@ -54,6 +54,8 @@
 #include "ui/display/display.h"
 #include "ui/wm/public/activation_client.h"
 
+namespace ash::app_restore {
+
 namespace {
 
 // If the app launching condition doesn't match, e.g. the app is not ready,
@@ -94,15 +96,13 @@ constexpr char kNoGhostWindowReasonHistogram[] =
 
 }  // namespace
 
-namespace ash::app_restore {
-
 ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
 
-  if (ash::Shell::HasInstance() && ash::Shell::Get()->GetPrimaryRootWindow()) {
+  if (Shell::HasInstance() && Shell::Get()->GetPrimaryRootWindow()) {
     auto* activation_client =
-        wm::GetActivationClient(ash::Shell::Get()->GetPrimaryRootWindow());
+        wm::GetActivationClient(Shell::Get()->GetPrimaryRootWindow());
     if (activation_client)
       activation_client->AddObserver(this);
   }
@@ -125,9 +125,9 @@ ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
 }
 
 ArcAppQueueRestoreHandler::~ArcAppQueueRestoreHandler() {
-  if (ash::Shell::HasInstance() && ash::Shell::Get()->GetPrimaryRootWindow()) {
+  if (Shell::HasInstance() && Shell::Get()->GetPrimaryRootWindow()) {
     auto* activation_client =
-        wm::GetActivationClient(ash::Shell::Get()->GetPrimaryRootWindow());
+        wm::GetActivationClient(Shell::Get()->GetPrimaryRootWindow());
     if (activation_client)
       activation_client->RemoveObserver(this);
   }
@@ -914,7 +914,7 @@ void ArcAppQueueRestoreHandler::RecordRestoreResult() {
 #endif
 }
 
-ash::SchedulerConfigurationManager*
+SchedulerConfigurationManager*
 ArcAppQueueRestoreHandler::GetSchedulerConfigurationManager() {
   if (!g_browser_process || !g_browser_process->platform_part())
     return nullptr;

@@ -27,10 +27,4 @@ class CertificateManagerDialog : public LoginWebDialog {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::CertificateManagerDialog;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_CERTIFICATE_MANAGER_DIALOG_H_

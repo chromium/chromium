@@ -23,7 +23,7 @@ namespace ash {
 // changes it manually in OS Settings.
 // There should be only one instance of this class, which is attached to the
 // only regular Ash profile. The class should exist only if Account Manager
-// exists (if `ash::IsAccountManagerAvailable(profile)` is `true`).
+// exists (if `IsAccountManagerAvailable(profile)` is `true`).
 class AccountAppsAvailability
     : public KeyedService,
       public account_manager::AccountManagerFacade::Observer,

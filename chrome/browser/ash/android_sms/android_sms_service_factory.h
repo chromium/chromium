@@ -46,11 +46,4 @@ class AndroidSmsServiceFactory : public BrowserContextKeyedServiceFactory {
 }  // namespace android_sms
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace android_sms {
-using ::ash::android_sms::AndroidSmsServiceFactory;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_SERVICE_FACTORY_H_

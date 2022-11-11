@@ -35,10 +35,4 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration of
-// //chrome/browser/ash is finished.
-namespace chromeos {
-using ::ash::LaunchAppOrDie;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_

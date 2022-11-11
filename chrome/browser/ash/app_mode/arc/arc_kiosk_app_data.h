@@ -52,10 +52,4 @@ class ArcKioskAppData : public KioskAppDataBase {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// migration is finished.
-namespace chromeos {
-using ::ash::ArcKioskAppData;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_DATA_H_

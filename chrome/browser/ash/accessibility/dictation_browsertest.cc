@@ -68,6 +68,7 @@
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
+
 namespace {
 
 constexpr int kPrintErrorMessageDelayMs = 3500;
@@ -339,7 +340,7 @@ class DictationTestBase : public InProcessBrowserTest,
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
         browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
     browser()->profile()->GetPrefs()->SetBoolean(
-        ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+        prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
 
     extensions::ExtensionHostTestHelper host_helper(
         browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);

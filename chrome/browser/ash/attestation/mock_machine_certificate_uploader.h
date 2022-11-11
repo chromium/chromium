@@ -30,12 +30,4 @@ class MockMachineCertificateUploader : public MachineCertificateUploader {
 }  // namespace attestation
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace attestation {
-using ::ash::attestation::MockMachineCertificateUploader;
-}  // namespace attestation
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_MOCK_MACHINE_CERTIFICATE_UPLOADER_H_

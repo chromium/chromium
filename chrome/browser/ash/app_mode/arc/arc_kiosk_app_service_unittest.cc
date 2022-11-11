@@ -158,7 +158,7 @@ class ArcKioskAppServiceTest : public testing::Test {
   // Number of times app tried to be launched.
   size_t launch_requests_ = 0;
 
-  ash::AshTestHelper ash_test_helper_;
+  AshTestHelper ash_test_helper_;
 
   content::BrowserTaskEnvironment task_environment;
   ArcAppTest arc_app_test_;
@@ -245,7 +245,7 @@ TEST_F(ArcKioskAppServiceTest, AppLaunches) {
   other_window->Init(ui::LAYER_SOLID_COLOR);
   other_window.reset();
 
-  ash::TestWindowBuilder window_builder;
+  TestWindowBuilder window_builder;
   std::unique_ptr<aura::Window> app_window = window_builder.Build();
   exo::SetShellApplicationId(app_window.get(), kAppWindowAppId);
   NotifyWindowCreated(app_window.get());

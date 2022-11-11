@@ -28,10 +28,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
 namespace {
+
 constexpr char kFakePrimaryUsername[] = "test-primary@example.com";
 constexpr char kFakeSecondaryUsername[] = "test-secondary@example.com";
 constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
+
 }  // namespace
 
 class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
@@ -98,8 +101,8 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     scoped_user_manager_.reset();
   }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
+  FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

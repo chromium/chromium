@@ -100,7 +100,7 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
     arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
   }
 
-  // ash::ApkWebAppService::Delegate implementation, stubs out ARC And Lacros.
+  // `ApkWebAppService::Delegate` implementation, stubs out ARC And Lacros.
 
   void MaybeInstallWebAppInLacros(const std::string& package_name,
                                   arc::mojom::WebAppInfoPtr web_app_info,
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, InstallAndUninstall) {
 
 IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   auto& service = GetApkWebAppService();
-  auto* shelf_model = ash::ShelfModel::Get();
+  auto* shelf_model = ShelfModel::Get();
 
   // Start with one web app in ARC.
   StartLacros();
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   // Pin the app to the shelf.
   PinAppWithIDToShelf(*app_id_a);
   EXPECT_TRUE(shelf_model->IsAppPinned(*app_id_a));
-  int pin_index = shelf_model->ItemIndexByID(ash::ShelfID(*app_id_a));
+  int pin_index = shelf_model->ItemIndexByID(ShelfID(*app_id_a));
 
   // Replace with Android app.
   std::vector<arc::mojom::AppInfoPtr> apps;
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   // Android app is still pinned.
   auto arc_app_id = GetArcAppListPrefs().GetAppIdByPackageName("org.example.a");
   EXPECT_TRUE(shelf_model->IsAppPinned(arc_app_id));
-  EXPECT_EQ(shelf_model->ItemIndexByID(ash::ShelfID(arc_app_id)), pin_index);
+  EXPECT_EQ(shelf_model->ItemIndexByID(ShelfID(arc_app_id)), pin_index);
 
   // Move pin to the left, and then reinstall the web app.
   ASSERT_TRUE(shelf_model->Swap(pin_index, /*with_next=*/false));
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   ASSERT_NE(app_id_a, absl::nullopt);
   EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
   EXPECT_TRUE(shelf_model->IsAppPinned(*app_id_a));
-  EXPECT_EQ(shelf_model->ItemIndexByID(ash::ShelfID(*app_id_a)), pin_index);
+  EXPECT_EQ(shelf_model->ItemIndexByID(ShelfID(*app_id_a)), pin_index);
 }
 
 // TODO(crbug/1329727): This test only tests if certain properties in

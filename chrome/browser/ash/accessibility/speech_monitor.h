@@ -142,12 +142,4 @@ class SpeechMonitor : public content::TtsPlatform {
 }  // namespace test
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// directory migration is finished.
-namespace chromeos {
-namespace test {
-using ::ash::test::SpeechMonitor;
-}
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_SPEECH_MONITOR_H_

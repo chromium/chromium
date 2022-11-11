@@ -57,7 +57,7 @@ class ArcGhostWindowViewTest : public testing::Test {
   ~ArcGhostWindowViewTest() override = default;
 
   void SetUp() override {
-    user_manager_ = new ash::FakeChromeUserManager;
+    user_manager_ = new FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::unique_ptr<user_manager::UserManager>(user_manager_));
 
@@ -113,7 +113,7 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  ash::FakeChromeUserManager* user_manager_;  // Not own.
+  FakeChromeUserManager* user_manager_;  // Not own.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
   TestingProfile* profile_;

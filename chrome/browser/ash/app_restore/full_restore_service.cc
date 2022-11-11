@@ -107,8 +107,7 @@ FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
 
 // static
 void FullRestoreService::MaybeCloseNotification(Profile* profile) {
-  auto* full_restore_service =
-      ash::full_restore::FullRestoreService::GetForProfile(profile);
+  auto* full_restore_service = FullRestoreService::GetForProfile(profile);
   if (full_restore_service)
     full_restore_service->MaybeCloseNotification();
 }
@@ -430,7 +429,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   if (id == kRestoreForCrashNotificationId && exit_type_service)
     crashed_lock_ = exit_type_service->CreateCrashedLock();
 
-  auto* accelerator_controller = ash::AcceleratorController::Get();
+  auto* accelerator_controller = AcceleratorController::Get();
   if (accelerator_controller) {
     DCHECK(!accelerator_controller_observer_.IsObserving());
     accelerator_controller_observer_.Observe(accelerator_controller);
@@ -469,7 +468,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   else
     message_id = IDS_RESTORE_NOTIFICATION_MESSAGE;
 
-  notification_ = ash::CreateSystemNotification(
+  notification_ = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title,
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),

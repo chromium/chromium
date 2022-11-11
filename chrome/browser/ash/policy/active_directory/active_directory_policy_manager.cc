@@ -74,7 +74,7 @@ void ActiveDirectoryPolicyManager::Init(SchemaRegistry* registry) {
             : nullptr);
   }
 
-  authpolicy_helper_ = std::make_unique<chromeos::AuthPolicyHelper>();
+  authpolicy_helper_ = std::make_unique<ash::AuthPolicyHelper>();
 }
 
 void ActiveDirectoryPolicyManager::Shutdown() {

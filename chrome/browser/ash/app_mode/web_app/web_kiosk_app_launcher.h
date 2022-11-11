@@ -115,10 +115,4 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// migration is finished.
-namespace chromeos {
-using ::ash::WebKioskAppLauncher;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_LAUNCHER_H_

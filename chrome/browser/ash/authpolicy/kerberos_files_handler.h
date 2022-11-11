@@ -73,17 +73,4 @@ class KerberosFilesHandler {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::KerberosFilesHandler;
-using ::ash::kKrb5CCEnvName;
-using ::ash::kKrb5CCFile;
-using ::ash::kKrb5CCFilePrefix;
-using ::ash::kKrb5CnameSettings;
-using ::ash::kKrb5ConfEnvName;
-using ::ash::kKrb5ConfFile;
-using ::ash::kKrb5Directory;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_AUTHPOLICY_KERBEROS_FILES_HANDLER_H_

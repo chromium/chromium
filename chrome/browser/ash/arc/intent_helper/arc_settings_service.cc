@@ -735,10 +735,10 @@ void ArcSettingsServiceImpl::SyncTimeZone() const {
 
 void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
   base::Value::Dict extras;
-  extras.Set("autoTimeZone", chromeos::system::TimeZoneResolverManager::
+  extras.Set("autoTimeZone", ash::system::TimeZoneResolverManager::
                                      GetEffectiveUserTimeZoneResolveMethod(
                                          registrar_.prefs(), false) !=
-                                 chromeos::system::TimeZoneResolverManager::
+                                 ash::system::TimeZoneResolverManager::
                                      TimeZoneResolveMethod::DISABLED);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_AUTO_TIME_ZONE",
                         extras);

@@ -257,13 +257,4 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
 }  // namespace attestation
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace attestation {
-using ::ash::attestation::TpmChallengeKeySubtle;
-using ::ash::attestation::TpmChallengeKeySubtleFactory;
-}  // namespace attestation
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_SUBTLE_H_

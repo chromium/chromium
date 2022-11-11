@@ -93,10 +93,4 @@ class FakeCWS {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::FakeCWS;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_FAKE_CWS_H_

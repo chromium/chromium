@@ -29,6 +29,8 @@
 #include "content/public/browser/notification_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace ash::attestation {
+
 namespace {
 
 // The number of days before a certificate expires during which it is
@@ -42,12 +44,11 @@ const int kRetryLimit = 100;
 
 void DBusPrivacyCACallback(
     const base::RepeatingCallback<void(const std::string&)> on_success,
-    const base::RepeatingCallback<void(ash::attestation::AttestationStatus)>
-        on_failure,
+    const base::RepeatingCallback<void(AttestationStatus)> on_failure,
     const base::Location& from_here,
-    ash::attestation::AttestationStatus status,
+    AttestationStatus status,
     const std::string& data) {
-  if (status == ash::attestation::ATTESTATION_SUCCESS) {
+  if (status == ATTESTATION_SUCCESS) {
     on_success.Run(data);
     return;
   }
@@ -58,9 +59,6 @@ void DBusPrivacyCACallback(
 }
 
 }  // namespace
-
-namespace ash {
-namespace attestation {
 
 MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client)
@@ -316,5 +314,4 @@ void MachineCertificateUploaderImpl::RunCallbacks(bool status) {
   }
 }
 
-}  // namespace attestation
-}  // namespace ash
+}  // namespace ash::attestation

@@ -22,8 +22,7 @@ namespace {
 // Start the floating accessibility menu in ash-chrome if the
 // `FloatingAccessibilityMenuEnabled` policy is enabled.
 void StartFloatingAccessibilityMenu() {
-  ash::AccessibilityController* accessibility_controller =
-      ash::AccessibilityController::Get();
+  auto* accessibility_controller = AccessibilityController::Get();
   if (accessibility_controller)
     accessibility_controller->ShowFloatingMenuIfEnabled();
 }
@@ -61,8 +60,7 @@ void AppSessionAsh::ShuttingDown() {
 void AppSessionAsh::InitKioskAppUpdateService(Profile* profile,
                                               const std::string& app_id) {
   // Set the app_id for the current instance of KioskAppUpdateService.
-  ash::KioskAppUpdateService* update_service =
-      ash::KioskAppUpdateServiceFactory::GetForProfile(profile);
+  auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile);
   DCHECK(update_service);
   if (update_service)
     update_service->Init(app_id);

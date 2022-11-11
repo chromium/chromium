@@ -63,7 +63,7 @@ bool MaybeCreateFullRestoreServiceForLacros();
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
                            public message_center::NotificationObserver,
-                           public ash::AcceleratorController::Observer {
+                           public AcceleratorController::Observer {
  public:
   static FullRestoreService* GetForProfile(Profile* profile);
   static void MaybeCloseNotification(Profile* profile);
@@ -93,7 +93,7 @@ class FullRestoreService : public KeyedService,
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
-  // ash::AcceleratorController::Observer:
+  // AcceleratorController::Observer:
   void OnActionPerformed(AcceleratorAction action) override;
   void OnAcceleratorControllerWillBeDestroyed(
       AcceleratorController* controller) override;
@@ -176,8 +176,8 @@ class FullRestoreService : public KeyedService,
   // system is restored from crash to help set the browser saving flag.
   std::unique_ptr<ExitTypeService::CrashedLock> crashed_lock_;
 
-  base::ScopedObservation<ash::AcceleratorController,
-                          ash::AcceleratorController::Observer>
+  base::ScopedObservation<AcceleratorController,
+                          AcceleratorController::Observer>
       accelerator_controller_observer_{this};
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};

@@ -347,10 +347,4 @@ class KioskAppManager : public KioskAppManagerBase,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::KioskAppManager;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_H_

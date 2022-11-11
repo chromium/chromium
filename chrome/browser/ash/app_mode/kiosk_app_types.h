@@ -45,11 +45,4 @@ std::ostream& operator<<(std::ostream& stream, const KioskAppId& app_id);
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::KioskAppId;
-using ::ash::KioskAppType;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_TYPES_H_

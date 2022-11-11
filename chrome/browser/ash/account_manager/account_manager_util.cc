@@ -71,7 +71,7 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
               /*profile_path=*/cryptohome_root_dir.value());
 
   account_manager_mojo_service->SetAccountManagerUI(
-      std::make_unique<ash::AccountManagerUIImpl>());
+      std::make_unique<AccountManagerUIImpl>());
 }
 
 }  // namespace ash

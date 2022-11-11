@@ -1123,7 +1123,7 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchArcKioskApp(
       const DeviceLocalAccount& auto_launch_app_account) {
-    arc_kiosk_app_manager_ = std::make_unique<chromeos::ArcKioskAppManager>();
+    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     arc_kiosk_app_manager_->AddAutoLaunchAppForTest(
         auto_launch_app_account.arc_kiosk_app_info.package_name(),
         auto_launch_app_account.arc_kiosk_app_info,
@@ -1181,7 +1181,7 @@ class DeviceStatusCollectorTest : public testing::Test {
   // Only set after MockRunningKioskApp was called.
   std::unique_ptr<TestingProfile> testing_profile_;
   // Only set after MockAutoLaunchArcKioskApp was called.
-  std::unique_ptr<chromeos::ArcKioskAppManager> arc_kiosk_app_manager_;
+  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   // Only set after MockAutoLaunchWebKioskApp was called.
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   ash::MockUserManager* const user_manager_;

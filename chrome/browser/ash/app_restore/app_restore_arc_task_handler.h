@@ -16,6 +16,7 @@
 class Profile;
 
 namespace ash {
+
 namespace full_restore {
 class ArcGhostWindowHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
@@ -107,7 +108,7 @@ class AppRestoreArcTaskHandler : public KeyedService,
   void Shutdown() override;
 
  private:
-  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
+  friend class full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   ArcAppQueueRestoreHandler* CreateOrGetArcAppQueueRestoreHandler(
       LauncherTag launcher_tag,

@@ -122,10 +122,4 @@ class AuthPolicyHelper {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::AuthPolicyHelper;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_AUTHPOLICY_AUTHPOLICY_HELPER_H_

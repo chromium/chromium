@@ -76,10 +76,4 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
-// source code migration is finished.
-namespace chromeos {
-using ::ash::KioskProfileLoader;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_PROFILE_LOADER_H_

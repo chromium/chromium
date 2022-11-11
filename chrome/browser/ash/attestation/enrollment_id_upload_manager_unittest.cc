@@ -25,18 +25,16 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using CertificateStatus =
-    ash::attestation::EnrollmentCertificateUploader::Status;
-using testing::_;
-using testing::Invoke;
-using testing::Return;
-using testing::StrictMock;
-using testing::WithArgs;
-
 namespace ash {
 namespace attestation {
 
 namespace {
+
+using CertificateStatus = EnrollmentCertificateUploader::Status;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::StrictMock;
+using ::testing::WithArgs;
 
 constexpr int kRetryLimit = 3;
 

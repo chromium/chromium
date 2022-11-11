@@ -54,12 +54,4 @@ class TpmChallengeKeyWithTimeout final {
 }  // namespace attestation
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-namespace attestation {
-using ::ash::attestation::TpmChallengeKeyWithTimeout;
-}  // namespace attestation
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_TPM_CHALLENGE_KEY_WITH_TIMEOUT_H_

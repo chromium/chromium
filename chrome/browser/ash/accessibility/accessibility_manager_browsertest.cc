@@ -56,9 +56,6 @@ namespace ash {
 
 namespace {
 
-using ::content::BrowserThread;
-using ::extensions::api::braille_display_private::BrailleObserver;
-using ::extensions::api::braille_display_private::DisplayState;
 using ::extensions::api::braille_display_private::KeyEvent;
 using ::extensions::api::braille_display_private::MockBrailleController;
 using input_method::InputMethodDescriptors;
@@ -380,7 +377,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition}, {});
+        {features::kOnDeviceSpeechRecognition}, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -1190,7 +1187,7 @@ enum DictationDialogTestVariant {
 
 class AccessibilityManagerDictationDialogTest
     : public AccessibilityManagerTest,
-      public ::testing::WithParamInterface<DictationDialogTestVariant> {
+      public WithParamInterface<DictationDialogTestVariant> {
  protected:
   AccessibilityManagerDictationDialogTest()
       : disable_animations_(
@@ -1218,13 +1215,13 @@ class AccessibilityManagerDictationDialogTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam() == DictationDialogTestVariant::kOfflineEnabledAndAvailable) {
-      enabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
+      enabled_features.push_back(features::kOnDeviceSpeechRecognition);
     } else if (GetParam() ==
                DictationDialogTestVariant::kOfflineEnabledAndUnavailable) {
       // SODA isn't available on this device.
-      disabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
+      disabled_features.push_back(features::kOnDeviceSpeechRecognition);
     } else {
-      disabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
+      disabled_features.push_back(features::kOnDeviceSpeechRecognition);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);

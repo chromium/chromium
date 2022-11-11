@@ -47,6 +47,7 @@ class Rect;
 }  // namespace gfx
 
 namespace ash {
+
 class AccessibilityExtensionLoader;
 class Dictation;
 class PumpkinInstaller;
@@ -648,12 +649,4 @@ class AccessibilityManager
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// directory migration is finished.
-namespace chromeos {
-using ::ash::AccessibilityManager;
-using ::ash::AccessibilityNotificationType;
-using ::ash::AccessibilityStatusEventDetails;
-using ::ash::PlaySoundOption;
-}  // namespace chromeos
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_MANAGER_H_

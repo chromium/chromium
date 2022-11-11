@@ -33,13 +33,13 @@ ash::ArcTermsOfServiceScreenView* GetScreenView() {
   return host->GetOobeUI()->GetView<ash::ArcTermsOfServiceScreenHandler>();
 }
 
-chromeos::ConsolidatedConsentScreen* GetConsolidatedConsentScreen() {
+ash::ConsolidatedConsentScreen* GetConsolidatedConsentScreen() {
   // TODO: Inject testing instance.
-  chromeos::LoginDisplayHost* host = chromeos::LoginDisplayHost::default_host();
+  auto* host = ash::LoginDisplayHost::default_host();
   DCHECK(host);
   DCHECK(host->GetWizardController());
   return host->GetWizardController()
-      ->GetScreen<chromeos::ConsolidatedConsentScreen>();
+      ->GetScreen<ash::ConsolidatedConsentScreen>();
 }
 
 }  // namespace

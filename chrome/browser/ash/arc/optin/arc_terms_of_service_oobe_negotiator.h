@@ -20,7 +20,7 @@ namespace arc {
 class ArcTermsOfServiceOobeNegotiator
     : public ArcTermsOfServiceNegotiator,
       public ash::ArcTermsOfServiceScreenViewObserver,
-      public chromeos::ConsolidatedConsentScreen::Observer {
+      public ash::ConsolidatedConsentScreen::Observer {
  public:
   ArcTermsOfServiceOobeNegotiator();
 
@@ -48,7 +48,7 @@ class ArcTermsOfServiceOobeNegotiator
   void OnAccept(bool review_arc_settings) override;
   void OnViewDestroyed(ash::ArcTermsOfServiceScreenView* view) override;
 
-  // chromeos::ConsolidatedConsentScreen::Observer:
+  // ash::ConsolidatedConsentScreen::Observer:
   void OnConsolidatedConsentAccept() override;
   void OnConsolidatedConsentScreenDestroyed() override;
 
@@ -63,8 +63,8 @@ class ArcTermsOfServiceOobeNegotiator
   // StartNegotiationImpl(), and reset in HandleTermsAccepted().
   ash::ArcTermsOfServiceScreenView* screen_view_ = nullptr;
 
-  base::ScopedObservation<chromeos::ConsolidatedConsentScreen,
-                          chromeos::ConsolidatedConsentScreen::Observer>
+  base::ScopedObservation<ash::ConsolidatedConsentScreen,
+                          ash::ConsolidatedConsentScreen::Observer>
       consolidated_consent_observation_{this};
 };
 

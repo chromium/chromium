@@ -16,9 +16,6 @@
 
 namespace ash {
 
-using ::ash::AuthFailure;
-using ::chromeos::KioskAppLaunchError;
-
 namespace {
 
 // Key under "kiosk" dictionary to store the last launch error.

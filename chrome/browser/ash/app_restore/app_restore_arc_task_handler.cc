@@ -17,6 +17,7 @@
 #include "components/app_restore/features.h"
 
 namespace ash::app_restore {
+
 namespace {
 
 ::app_restore::AppRestoreArcInfo* GetAppRestoreArcInfo() {

@@ -971,13 +971,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile);
     if (user && user->GetType() == user_manager::USER_TYPE_KIOSK_APP) {
-      chromeos::LaunchAppOrDie(
-          profile, chromeos::KioskAppId::ForChromeApp(
+      ash::LaunchAppOrDie(
+          profile, ash::KioskAppId::ForChromeApp(
                        command_line.GetSwitchValueASCII(switches::kAppId)));
     } else if (user &&
                user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
-      chromeos::LaunchAppOrDie(
-          profile, chromeos::KioskAppId::ForWebApp(user->GetAccountId()));
+      ash::LaunchAppOrDie(profile,
+                          ash::KioskAppId::ForWebApp(user->GetAccountId()));
     } else {
       // If we are here, we are either in ARC kiosk session or the user is
       // invalid. We should terminate the session in such cases.
