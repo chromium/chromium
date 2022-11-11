@@ -929,6 +929,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1834503245783133039">Échec du téléchargement : <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Mettre à niveau Linux</translation>
+<translation id="1835612721186505600">Autoriser l'accès pour les applis et sites Web avec l'autorisation d'accès à l'appareil photo</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
 <translation id="1839021455997460752">Votre adresse e-mail</translation>
 <translation id="1839540115464516994">Afficher dans <ph name="LOCATION" /></translation>
@@ -2495,6 +2496,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3279230909244266691">Cette opération peut prendre quelques minutes. Démarrage de la machine virtuelle…</translation>
 <translation id="3280237271814976245">Enregistrer &amp;sous...</translation>
 <translation id="3280243678470289153">Rester dans Chrome</translation>
+<translation id="328119399589609861">Contrôler l'accès de l'appareil au micro, à l'appareil photo, etc.</translation>
 <translation id="3281892622610078515">Fichiers et programmes à placer en quarantaine :</translation>
 <translation id="3282210178675490297">Partage d'un onglet avec <ph name="APP_NAME" />…</translation>
 <translation id="3285322247471302225">Nouvel ongle&amp;t</translation>
@@ -4499,6 +4501,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5185500136143151980">Aucun accès à Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Activer le port</translation>
+<translation id="5190959794678983197">Aucun micro</translation>
 <translation id="5191094172448199359">Les codes saisis ne correspondent pas</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="519185197579575131">Utiliser QT</translation>
@@ -4858,6 +4861,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Est-ce la page d'accueil que vous attendiez ?</translation>
 <translation id="5522156646677899028">Cette extension contient une grave faille de sécurité.</translation>
+<translation id="5522403133543437426">Moteur de recherche utilisé dans la barre d'adresse.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Une extension a été installée par votre administrateur}one{# extension a été installée par votre administrateur}other{# extensions ont été installées par votre administrateur}}</translation>
 <translation id="5523558474028191231">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux, et ne doit pas dépasser <ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526701598901867718">Tous les types de chiffrement (option non sécurisée)</translation>
@@ -7043,6 +7047,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7607002721634913082">Suspendu</translation>
 <translation id="7608810328871051088">Préférences Android</translation>
 <translation id="7609148976235050828">Veuillez vous connecter à Internet, puis réessayer.</translation>
+<translation id="7612401678989660900">Autoriser l'accès pour les applis et sites Web avec l'autorisation d'accès au micro</translation>
 <translation id="7612655942094160088">Activation des fonctionnalités connectées du téléphone.</translation>
 <translation id="7614260613810441905">Vous demander lorsqu'un site souhaite modifier des fichiers ou des dossiers sur votre appareil (recommandé)</translation>
 <translation id="761530003705945209">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
@@ -7542,6 +7547,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8046132381940444654">Un employé du service client peut utiliser ce numéro EID pour vous aider à activer le service</translation>
 <translation id="8047242494569930800">Transférer vers le compte Google</translation>
 <translation id="804786196054284061">Contrat de licence utilisateur final</translation>
+<translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8048977114738515028">Créez un raccourci sur le bureau pour accéder directement à ce profil depuis votre appareil</translation>
 <translation id="8049029041626250638">Connectez un clavier ou une souris. Si vous utilisez des appareils Bluetooth, assurez-vous qu'ils sont prêts à être associés.</translation>
 <translation id="8049122382261047457">Rechercher une image avec Google Lens</translation>
@@ -8426,6 +8432,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8872155268274985541">Fichier manifeste de mise à jour externe de kiosque non valide. Échec de la mise à jour de l'application kiosque. Veuillez débrancher la clé USB.</translation>
 <translation id="8872506776304248286">Ouvrir dans l'appli</translation>
 <translation id="8872777911145321141">Vous demander votre avis lorsqu'un site souhaite utiliser vos données et appareils de réalité virtuelle (recommandé)</translation>
+<translation id="887292602123626481">En savoir plus sur les moteurs de recherche par défaut</translation>
 <translation id="8874341931345877644">Castez sur un appareil :</translation>
 <translation id="8875520811099717934">Mise à niveau de Linux</translation>
 <translation id="8875736897340638404">Sélectionnez un paramètre de visibilité</translation>
@@ -8546,6 +8553,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8987927404178983737">Mois</translation>
 <translation id="8989359959810288806">Actualiser l'état du partage de connexion</translation>
 <translation id="8991520179165052608">Le site peut utiliser votre micro</translation>
+<translation id="8991694323904646277">Aucun appareil photo</translation>
 <translation id="8993059306046735527">Même si vous oubliez votre mot de passe <ph name="DEVICE_TYPE" />, vous pouvez restaurer vos données locales. Vous devrez pour cela vous connecter à votre compte Google ou utiliser la récupération de compte.</translation>
 <translation id="899384117894244799">Supprimer un utilisateur avec accès restreint</translation>
 <translation id="899403249577094719">URL de base du certificat Netscape</translation>

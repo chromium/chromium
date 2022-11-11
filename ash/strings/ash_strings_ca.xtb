@@ -352,6 +352,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2960314608273155470">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />. Prem la tecla de tabulació per navegar amb el teclat.</translation>
 <translation id="2961963223658824723">S'ha produït un error. Torna-ho a provar d'aquí a uns quants segons.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Vols activar l'accés al micròfon?</translation>
 <translation id="296762781903199866">No s'han pogut baixar els fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
@@ -430,6 +431,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Configuració addicional</translation>
+<translation id="3405101454990027959">Activa l'accés al micròfon</translation>
 <translation id="3410336247007142655">Mostra la configuració del tema fosc</translation>
 <translation id="3413817803639110246">Encara no hi ha res per veure</translation>
 <translation id="3428447136709161042">Desconnecta't de la xarxa <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
 <translation id="3861651314799684201">Prem Retorn per gravar la pantalla completa</translation>
+<translation id="3885531177412808398">Permet l'accés al micròfon per a totes les aplicacions i tots els llocs web amb permís de micròfon</translation>
 <translation id="3886872229787704059">Obert avui</translation>
 <translation id="3891340733213178823">Premeu Ctrl+Maj+Q dues vegades per tancar la sessió.</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
@@ -1372,6 +1375,7 @@ Instal·lació nova</translation>
 <translation id="8666856788528804727">Obre <ph name="NAME" /> per configurar el dispositiu</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
+<translation id="8684405646663021166">Permet l'accés al micròfon per a <ph name="APP_NAME" /> i totes les aplicacions i llocs web amb permís de micròfon</translation>
 <translation id="8685326675965865247">Fes cerques al dispositiu, en aplicacions, a la configuració i al web. Fes servir les tecles de fletxa per navegar per les aplicacions.</translation>
 <translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>

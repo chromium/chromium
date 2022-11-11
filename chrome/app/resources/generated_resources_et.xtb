@@ -931,6 +931,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1832848789136765277">Selleks, et pääseksite alati oma sünkroonitud andmetele juurde, kinnitage oma isik</translation>
 <translation id="1834503245783133039">Allalaadimine nurjus: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux versiooni uuendamine</translation>
+<translation id="1835612721186505600">Luba juurdepääs kaamerale rakenduste ja veebisaitide puhul, millel on kaamerale juurdepääsemise luba</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1839021455997460752">Teie e-posti aadress</translation>
 <translation id="1839540115464516994">Kuva asukohas <ph name="LOCATION" /></translation>
@@ -2500,6 +2501,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3279230909244266691">Protsess võib võtta mõne minuti. Virtuaalset masinat käivitatakse.</translation>
 <translation id="3280237271814976245">Salvesta &amp;nimega...</translation>
 <translation id="3280243678470289153">Jää Chrome'i</translation>
+<translation id="328119399589609861">Seadme mikrofonile, kaamerale ja muule juurdepääsu haldamine</translation>
 <translation id="3281892622610078515">Karantiini pandavad failid ja programmid:</translation>
 <translation id="3282210178675490297">Vahelehte jagatakse rakendusega <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Uus &amp;vaheleht</translation>
@@ -4505,6 +4507,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5185500136143151980">Internetiühendus puudub</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktiveeri port</translation>
+<translation id="5190959794678983197">Mikrofoni pole</translation>
 <translation id="5191094172448199359">Teie sisestatud PIN-koodid ei ühti</translation>
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
 <translation id="519185197579575131">Kasuta teemat QT</translation>
@@ -4864,6 +4867,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Kas see on avaleht, mida ootasite?</translation>
 <translation id="5522156646677899028">See laiendus sisaldab tõsist turvaauku.</translation>
+<translation id="5522403133543437426">Aadressiribal kasutatud otsingumootor.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administraator installis laienduse}other{Administraator installis # laiendust}}</translation>
 <translation id="5523558474028191231">Nimi võib sisaldada tähti, numbreid ja erimärke ning tohib olla kuni <ph name="MAX_CHARACTER_COUNT" /> tähemärki pikk</translation>
 <translation id="5526701598901867718">Kõik (ebaturvaline)</translation>
@@ -7046,6 +7050,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7608810328871051088">Androidi eelistused</translation>
 <translation id="7609148976235050828">Ühendage Internetiga ja proovige uuesti.</translation>
+<translation id="7612401678989660900">Luba juurdepääs mikrofonile rakenduste ja veebisaitide puhul, millel on mikrofonile juurdepääsemise luba</translation>
 <translation id="7612655942094160088">Ühendatud telefoni funktsioonide lubamine.</translation>
 <translation id="7614260613810441905">Küsi, kui sait soovib seadmes olevaid faile või kaustasid muuta (soovitatav)</translation>
 <translation id="761530003705945209">Andmete varundamine Google Drive'i. Teil on alati võimalik oma andmed hõlpsalt taastada või seadet vahetada. Teie varukoopia hõlmab rakenduste andmeid. Teie varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie Google'i konto parooliga.</translation>
@@ -7545,6 +7550,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8046132381940444654">Klienditeeninduse esindaja saab seda EID-numbrit kasutada, et aidata teil teenus aktiveerida</translation>
 <translation id="8047242494569930800">Teisalda Google'i kontole</translation>
 <translation id="804786196054284061">Lõppkasutaja litsentsileping</translation>
+<translation id="8048728378294435881">Varundage oma andmed ja kasutage neid ükskõik millises seadmes</translation>
 <translation id="8048977114738515028">Looge oma seadmes töölaua otsetee, mille kaudu pääsete otse selle profiili juurde</translation>
 <translation id="8049029041626250638">Ühendage klaviatuur või hiir. Kui kasutate Bluetooth-seadmeid, veenduge, et need oleksid sidumiseks valmis.</translation>
 <translation id="8049122382261047457">Otsige Google Lensi abil mis tahes pilti</translation>
@@ -8429,6 +8435,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8872155268274985541">Leiti kioski kehtetu väline värskendamise manifesti fail. Kioski rakendust ei saanud värskendada. Eemaldage USB-mälupulk.</translation>
 <translation id="8872506776304248286">Ava rakenduses</translation>
 <translation id="8872777911145321141">Küsi, kui sait soovib kasutada teie virtuaalreaalsuse seadmeid ja andmeid (soovitatav)</translation>
+<translation id="887292602123626481">Lisateave vaikeotsingumootorite kohta</translation>
 <translation id="8874341931345877644">Ülekandmine seadmesse:</translation>
 <translation id="8875520811099717934">Linux versiooniuuendus</translation>
 <translation id="8875736897340638404">Valige oma nähtavuse seade</translation>
@@ -8549,6 +8556,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8987927404178983737">kuu</translation>
 <translation id="8989359959810288806">Värskenda jagamise olekut</translation>
 <translation id="8991520179165052608">Sait saab kasutada teie mikrofoni</translation>
+<translation id="8991694323904646277">Kaamerat pole</translation>
 <translation id="8993059306046735527">Kui unustate oma seadme <ph name="DEVICE_TYPE" /> parooli, saate siiski oma kohalikud andmed taastada. Peate sisse logima oma Google'i kontole või kasutama konto taastamise funktsiooni.</translation>
 <translation id="899384117894244799">Piiratud juurdepääsuga kasutaja eemaldamine</translation>
 <translation id="899403249577094719">Netscape'i sertifikaadi baas-URL</translation>

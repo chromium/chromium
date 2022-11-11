@@ -3739,6 +3739,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> је откривен на активном TPM-у који може безбедније да чува податке.</translation>
 <translation id="4451479197788154834">Лозинка је сачувана на овом уређају и на вашем Google налогу</translation>
 <translation id="4451757071857432900">Блокирано на сајтовима који приказују огласе који ометају активности или обмањујуће огласе (препоручено)</translation>
+<translation id="4452898361839215358">или изаберите PPD. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Претражите <ph name="SEARCH_ENGINE_NAME" /> или унесите URL</translation>
 <translation id="4458535500699390320">Док је ова картица била неактивна, Уштеда меморије је ослободила меморију за друге задатке. Ово можете да промените у сваком тренутку у подешавањима.</translation>
 <translation id="4459169140545916303">Последња активност: пре <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дан/а</translation>
@@ -7546,6 +7547,7 @@
 <translation id="8046132381940444654">Представник корисничке подршке може да користи овај EID број да би вам помогао да активирате услугу</translation>
 <translation id="8047242494569930800">Премести на Google налог</translation>
 <translation id="804786196054284061">Уговор о лиценцирању са крајњим корисником</translation>
+<translation id="8048728378294435881">Правите резервне копије садржаја и користите га на било ком уређају</translation>
 <translation id="8048977114738515028">Направите пречицу на радној површини на уређају да бисте директно приступали овом профилу</translation>
 <translation id="8049029041626250638">Повежите тастатуру или миш. Ако користите Bluetooth уређаје, уверите се да су уређаји спремни за упаривање.</translation>
 <translation id="8049122382261047457">Претражите било коју слику помоћу Google објектива</translation>
@@ -8372,6 +8374,7 @@
 <translation id="8823514049557262177">Копирај тек&amp;ст линка</translation>
 <translation id="8823559166155093873">Блокирај колачиће</translation>
 <translation id="8823704566850948458">Предложи лозинку...</translation>
+<translation id="8823963789776061136">Можете и да изаберете PPD штампача. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Додај стра&amp;ницу...</translation>
 <translation id="8827125715368568315">Блокирано је: <ph name="PERMISSION" /> и још <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закачите додатак</translation>
@@ -8628,6 +8631,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> жели да приступа следећем садржају:</translation>
 <translation id="9057354806206861646">Ажурирајте распоред</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Око 1 обавештење дневно}one{Око {NUM_NOTIFICATION} обавештење дневно}few{Око {NUM_NOTIFICATION} обавештења дневно}other{Око {NUM_NOTIFICATION} обавештења дневно}}</translation>
+<translation id="9058760336383947367">Прикажи PPD штампача</translation>
 <translation id="9061383912634843744">Аутоматски се пријављујте на сајтове и у апликације помоћу сачуваних акредитива. Ако је ова функција искључена, тражићемо потврду пре сваког пријављивања на веб-сајт или у апликацију.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од <ph name="ERROR_LINE_START" />. до <ph name="ERROR_LINE_END" />. реда</translation>

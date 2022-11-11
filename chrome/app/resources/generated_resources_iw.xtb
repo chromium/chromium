@@ -937,6 +937,7 @@
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1834503245783133039">ההורדה נכשלה: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏Linux שודרגה</translation>
+<translation id="1835612721186505600">מתן גישה לאפליקציות ולאתרים עם הרשאת גישה למצלמה</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="1839021455997460752">כתובת האימייל שלך</translation>
 <translation id="1839540115464516994">הצגה ב-<ph name="LOCATION" /></translation>
@@ -2507,6 +2508,7 @@
 <translation id="3279230909244266691">הפעולה עשויה להימשך מספר דקות. מתבצעת הפעלה של המכונה הווירטואלית.</translation>
 <translation id="3280237271814976245">שמירה &amp;בשם...</translation>
 <translation id="3280243678470289153">‏להישאר ב-Chrome</translation>
+<translation id="328119399589609861">שליטה בגישה של המכשיר למיקרופון, למצלמה ועוד</translation>
 <translation id="3281892622610078515">קבצים ותוכנות שיש להעביר להסגר:</translation>
 <translation id="3282210178675490297">המערכת משתפת כרטיסייה עם האפליקציה <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">כרטיסייה &amp;חדשה</translation>
@@ -4509,6 +4511,7 @@
 <translation id="5185500136143151980">אין חיבור לאינטרנט</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> ‏(<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">הפעלת היציאה</translation>
+<translation id="5190959794678983197">אין מיקרופון</translation>
 <translation id="5191094172448199359">קודי האימות שהזנת לא תואמים.</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="519185197579575131">‏שימוש ב-QT</translation>
@@ -4868,6 +4871,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">האם זהו דף הבית שציפית לראות?</translation>
 <translation id="5522156646677899028">התוסף הזה מכיל נקודת תורפה חמורה באבטחה.</translation>
+<translation id="5522403133543437426">מנוע החיפוש שייעשה בו שימוש בסרגל הכתובות.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{מנהל המערכת שלך התקין תוסף}two{מנהל המערכת שלך התקין # תוספים}many{מנהל המערכת שלך התקין # תוספים}other{מנהל המערכת שלך התקין # תוספים}}</translation>
 <translation id="5523558474028191231">שם יכול לכלול אותיות, ספרות ותווים מיוחדים, והוא חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
 <translation id="5526701598901867718">הכול (לא מאובטח)</translation>
@@ -7050,6 +7054,7 @@
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7608810328871051088">‏העדפות Android</translation>
 <translation id="7609148976235050828">צריך להתחבר לאינטרנט ולנסות שוב.</translation>
+<translation id="7612401678989660900">מתן גישה לאפליקציות ולאתרים עם הרשאת גישה למיקרופון</translation>
 <translation id="7612655942094160088">הפעלת תכונות הטלפון המקושר.</translation>
 <translation id="7614260613810441905">תוצג שאלה כשאתר ירצה לערוך קבצים או תיקיות במכשיר שלך (מומלץ)</translation>
 <translation id="761530003705945209">‏גיבוי ב-Google Drive. ההגדרה הזו מאפשרת לאחזר נתונים בקלות או לעבור למכשיר אחר בכל שלב. הגיבוי כולל נתוני אפליקציות. הגיבויים נשמרים ב-Google ומוצפנים באמצעות הסיסמה של חשבון Google שלך.</translation>
@@ -7548,6 +7553,7 @@
 <translation id="8046132381940444654">‏נציג משירות הלקוחות יכול להשתמש במספר ה-EID הזה כדי לעזור לך להפעיל את השירות</translation>
 <translation id="8047242494569930800">‏העברה לחשבון Google</translation>
 <translation id="804786196054284061">הסכם רישיון למשתמש קצה</translation>
+<translation id="8048728378294435881">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר</translation>
 <translation id="8048977114738515028">יצירת קיצור דרך בשולחן העבודה במכשיר שלך כדי לגשת ישירות לפרופיל זה.</translation>
 <translation id="8049029041626250638">‏יש לחבר מקלדת או עכבר. אם ברצונך להשתמש במכשירי Bluetooth, עליך לוודא שהמכשירים מוכנים להתאמה.</translation>
 <translation id="8049122382261047457">‏חיפוש תמונה כלשהי באמצעות Google Lens</translation>
@@ -8435,6 +8441,7 @@
 <translation id="8872155268274985541">נמצא קובץ מניפסט לא חוקי לעדכון חיצוני של קיוסק. העדכון של אפליקציית הקיוסק נכשל. יש להסיר את הדיסק און קי.</translation>
 <translation id="8872506776304248286">פתח ביישום</translation>
 <translation id="8872777911145321141">תוצג שאלה כשאתר ירצה להשתמש במכשירי המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
+<translation id="887292602123626481">מידע נוסף על מנועי חיפוש שמוגדרים כברירת מחדל</translation>
 <translation id="8874341931345877644">‏העברה (cast) למכשיר:</translation>
 <translation id="8875520811099717934">‏שדרוג של Linux</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
@@ -8554,6 +8561,7 @@
 <translation id="8987927404178983737">חודש</translation>
 <translation id="8989359959810288806">‏רענון הסטטוס של שיתוף אינטרנט בין מכשירים (tethering)</translation>
 <translation id="8991520179165052608">האתר רשאי להשתמש במיקרופון</translation>
+<translation id="8991694323904646277">אין מצלמה</translation>
 <translation id="8993059306046735527">‏אם שכחת את הסיסמה של <ph name="DEVICE_TYPE" />, עדיין אפשר לשחזר את הנתונים המקומיים. עליך להיכנס לחשבון Google או להשתמש בתכונת שחזור החשבון.</translation>
 <translation id="899384117894244799">הסרה של משתמש מוגבל</translation>
 <translation id="899403249577094719">‏כתובת אתר בסיסית של אישור Netscape</translation>

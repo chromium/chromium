@@ -370,6 +370,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3861486700625780712">Unfollow</translation>
 <translation id="3863769054730344136">Send to Your Devices</translation>
 <translation id="387280738075653372">Download Chrome here.</translation>
+<translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
 <translation id="3892144330757387737">You'll find your history here</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Your organisation turned off sync. You can still see your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.</translation>
@@ -942,6 +943,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">This will be used to create events in your Apple Calendar from Chrome and Google Lens.</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

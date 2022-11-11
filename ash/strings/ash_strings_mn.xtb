@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">Зураг авах горим. Өгөгдмөл нь <ph name="SOURCE" /> <ph name="TYPE" /> байна. Гарын навигац ашиглах бол tab дээр дарна уу.</translation>
 <translation id="2961963223658824723">Алдаа гарлаа. Хэдэн секундын дараа дахин оролдоно уу.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Микрофоны хандалтыг асаах уу?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татаж чадсангүй</translation>
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Нэмэлт тохиргоо</translation>
+<translation id="3405101454990027959">Микрофоны хандалтыг асаах</translation>
 <translation id="3410336247007142655">Бараан загварын тохиргоог харуулах</translation>
 <translation id="3413817803639110246">Одоогоор мэдэгдэл алга</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-с салгах</translation>
@@ -517,6 +519,7 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="385300504083504382">Эхлэл</translation>
 <translation id="3861651314799684201">Бүтэн дэлгэцийг бичихийн тулд enter дээр дарна уу</translation>
+<translation id="3885531177412808398">Микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
 <translation id="3886872229787704059">Өнөөдөр нээсэн</translation>
 <translation id="3891340733213178823">Гарахын тулд Ctrl+Shift+Q дээр хоёр удаа дарна уу.</translation>
 <translation id="3893630138897523026">ChromeVox (ярьдаг санал хүсэлт)</translation>
@@ -1377,6 +1380,7 @@
 <translation id="8666856788528804727">Төхөөрөмжөө тохируулахын тулд <ph name="NAME" />-г нээнэ үү</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
 <translation id="8683506306463609433">Гүйцэтгэлийн хяналт идэвхтэй байна</translation>
+<translation id="8684405646663021166">Микрофоны зөвшөөрөлтэй <ph name="APP_NAME" />, бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
 <translation id="8685326675965865247">Төхөөрөмж, апп, тохиргоо, вебээ хайна уу. Аппуудын хооронд шилжихийн тулд сумтай товчлууруудыг ашиглана уу.</translation>
 <translation id="8703634754197148428">Бичиж эхэлнэ үү. Бичиж эхэлсэн үед Alt + Shift + L-г ашиглан тавиур луу шилжиж, бичлэгийг зогсоох товчлуурыг олно уу</translation>
 <translation id="8721053961083920564">Дууг хаах/нээх. <ph name="STATE_TEXT" /></translation>

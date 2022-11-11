@@ -352,6 +352,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2960314608273155470">Aufnahmemodus – die Standardeinstellung ist <ph name="TYPE" /> (<ph name="SOURCE" />). Drücke für die Navigation über die Tastatur die Tabulatortaste.</translation>
 <translation id="2961963223658824723">Ein Fehler ist aufgetreten. Bitte versuche es in ein paar Sekunden noch einmal.</translation>
 <translation id="2963773877003373896">Mod3</translation>
+<translation id="2965227184985674128">Mikrofonzugriff aktivieren?</translation>
 <translation id="296762781903199866">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden</translation>
 <translation id="2970920913501714344">Apps, Erweiterungen und Designs installieren</translation>
 <translation id="2977598380246111477">Nächste Nummer</translation>
@@ -430,6 +431,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3386978599540877378">die Vollbildlupe</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Zusätzliche Einstellungen</translation>
+<translation id="3405101454990027959">Mikrofonzugriff aktivieren</translation>
 <translation id="3410336247007142655">Einstellungen für das dunkle Design anzeigen</translation>
 <translation id="3413817803639110246">Noch nichts zu sehen</translation>
 <translation id="3428447136709161042">Verbindung mit <ph name="NETWORK_NAME" /> trennen</translation>
@@ -515,6 +517,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="385300504083504382">Anfang</translation>
 <translation id="3861651314799684201">Eingabetaste drücken, um den ganzen Bildschirm aufzuzeichnen</translation>
+<translation id="3885531177412808398">Erlaubt den Mikrofonzugriff für alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücke zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
@@ -1374,6 +1377,7 @@ Neuinstallation</translation>
 <translation id="8666856788528804727"><ph name="NAME" /> öffnen, um das Gerät einzurichten</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8683506306463609433">Leistungsverfolgung ist aktiv</translation>
+<translation id="8684405646663021166">Erlaubt den Mikrofonzugriff für <ph name="APP_NAME" /> sowie alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="8685326675965865247">Du kannst auf deinem Gerät, in deinen Apps und Einstellungen sowie im Web suchen. Gehe mit den Pfeiltasten die entsprechenden Apps durch.</translation>
 <translation id="8703634754197148428">Aufnahme starten. Wenn die Aufnahme gestartet ist, kannst du Alt + Umschalttaste + L verwenden, um zur Ablage zu gehen – dort findest du die Schaltfläche zum Beenden der Aufnahme.</translation>
 <translation id="8721053961083920564">Ton ein- oder ausschalten. <ph name="STATE_TEXT" /></translation>

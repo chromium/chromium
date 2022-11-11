@@ -925,6 +925,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1832848789136765277">Bestätige deine Identität, damit du jederzeit auf deine synchronisierten Daten zugreifen kannst</translation>
 <translation id="1834503245783133039">Download fehlgeschlagen: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux wird aktualisiert</translation>
+<translation id="1835612721186505600">Zugriff für Apps und Websites mit der Kameraberechtigung erlauben</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1839021455997460752">Deine E-Mail-Adresse</translation>
 <translation id="1839540115464516994">In <ph name="LOCATION" /> anzeigen</translation>
@@ -2491,6 +2492,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3279230909244266691">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird gestartet.</translation>
 <translation id="3280237271814976245">Speichern &amp;unter...</translation>
 <translation id="3280243678470289153">In Chrome bleiben</translation>
+<translation id="328119399589609861">Gerätezugriff auf Mikrofon, Kamera und mehr festlegen</translation>
 <translation id="3281892622610078515">Dateien und Programme, die unter Quarantäne gestellt werden:</translation>
 <translation id="3282210178675490297">Tab wird mit <ph name="APP_NAME" /> geteilt</translation>
 <translation id="3285322247471302225">Neuer &amp;Tab</translation>
@@ -4495,6 +4497,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5185500136143151980">Kein Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Port aktivieren</translation>
+<translation id="5190959794678983197">Kein Mikrofon</translation>
 <translation id="5191094172448199359">Die eingegebenen PINs stimmen nicht überein</translation>
 <translation id="5191251636205085390">Weitere Informationen zu neuen Technologien als Ersatz für Drittanbieter-Cookies und ihrer Nutzung</translation>
 <translation id="519185197579575131">Qt verwenden</translation>
@@ -4854,6 +4857,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Ist das deine erwartete Startseite?</translation>
 <translation id="5522156646677899028">Diese Erweiterung enthält eine schwere Sicherheitslücke.</translation>
+<translation id="5522403133543437426">In der Adressleiste verwendete Suchmaschine.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde von deinem Administrator installiert}other{# Erweiterungen wurden von deinem Administrator installiert}}</translation>
 <translation id="5523558474028191231">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen und maximal <ph name="MAX_CHARACTER_COUNT" /> Zeichen lang sein</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
@@ -4884,7 +4888,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5551573675707792127">Tastatur und Texteingabe</translation>
 <translation id="5553089923092577885">Zuordnungen von Zertifikatrichtlinien</translation>
 <translation id="5554240068773209752">Zum Anpassen der Einstellungen hier klicken</translation>
-<translation id="5554403733534868102">Sie müssen in Zukunft auf keine Updates mehr warten</translation>
+<translation id="5554403733534868102">Du musst in Zukunft nicht mehr auf Updates warten</translation>
 <translation id="5554489410841842733">Dieses Symbol wird eingeblendet, wenn die Erweiterung auf die aktuelle Seite angewendet werden kann.</translation>
 <translation id="5554720593229208774">E-Mail-Zertifizierungsstelle</translation>
 <translation id="5554866693883022680">Wähle eine App auf dem <ph name="DEVICE_TYPE" /> aus, um diesen Link zu öffnen</translation>
@@ -7033,6 +7037,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7607002721634913082">Angehalten</translation>
 <translation id="7608810328871051088">Android-Einstellungen</translation>
 <translation id="7609148976235050828">Stelle eine Internetverbindung her und versuche es dann noch einmal.</translation>
+<translation id="7612401678989660900">Zugriff für Apps und Websites mit der Mikrofonberechtigung erlauben</translation>
 <translation id="7612655942094160088">Funktionen für verbundenes Smartphone aktivieren.</translation>
 <translation id="7614260613810441905">Nachfragen, wenn eine Website Dateien oder Ordner auf meinem Gerät bearbeiten möchte (empfohlen)</translation>
 <translation id="761530003705945209">In Google Drive sichern. Du kannst deine Daten jederzeit wiederherstellen – auch auf einem anderen Gerät. In deiner Sicherung sind auch App-Daten enthalten. Deine Sicherungen werden an Google gesendet und mit dem Passwort deines Google-Kontos verschlüsselt.</translation>
@@ -7532,6 +7537,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8046132381940444654">Ein Kundenservicemitarbeiter kann dir anhand dieser EID-Nummer helfen, diesen Dienst zu aktivieren</translation>
 <translation id="8047242494569930800">In Google-Konto verschieben</translation>
 <translation id="804786196054284061">Endnutzer-Lizenzvereinbarung</translation>
+<translation id="8048728378294435881">Möchtest du deine Daten sichern und auf jedem Gerät verwenden?</translation>
 <translation id="8048977114738515028">Erstelle auf deinem Gerät eine Desktopverknüpfung, um direkt auf dieses Profil zuzugreifen</translation>
 <translation id="8049029041626250638">Verbinde eine Tastatur oder Maus mit deinem Gerät. Achte bei Verwendung eines Bluetooth-Geräts darauf, ob es bereit zur Kopplung ist.</translation>
 <translation id="8049122382261047457">Mit Google Lens nach beliebigen Bildern suchen</translation>
@@ -8415,6 +8421,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8872155268274985541">Ungültige Manifestdatei für externes Kiosk-Update gefunden. Die Kiosk-App konnte nicht aktualisiert werden. Bitte entferne den USB-Stick.</translation>
 <translation id="8872506776304248286">In App öffnen</translation>
 <translation id="8872777911145321141">Nachfragen, wenn eine Website meine Virtual-Reality-Geräte und ‑Daten verwenden möchte (empfohlen)</translation>
+<translation id="887292602123626481">Weitere Informationen zu Standard-Suchmaschinen</translation>
 <translation id="8874341931345877644">Auf ein Gerät streamen:</translation>
 <translation id="8875520811099717934">Linux-Upgrade</translation>
 <translation id="8875736897340638404">Sichtbarkeit festlegen</translation>
@@ -8535,6 +8542,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8987927404178983737">Monat</translation>
 <translation id="8989359959810288806">Tethering-Status aktualisieren</translation>
 <translation id="8991520179165052608">Die Website kann dein Mikrofon verwenden</translation>
+<translation id="8991694323904646277">Keine Kamera</translation>
 <translation id="8993059306046735527">Wenn du dein <ph name="DEVICE_TYPE" />-Passwort vergessen hast, kannst du trotzdem deine lokalen Daten wiederherstellen. Melde dich in deinem Google-Konto an oder verwende die Kontowiederherstellung.</translation>
 <translation id="899384117894244799">Nutzer mit eingeschränktem Zugriff entfernen</translation>
 <translation id="899403249577094719">Basis-URL für Netscape-Zertifikate</translation>

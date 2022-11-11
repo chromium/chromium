@@ -939,6 +939,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1834503245783133039">Nedladdningen misslyckades: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uppgraderar Linux</translation>
+<translation id="1835612721186505600">Tillåt åtkomst för appar och webbplatser med kamerabehörighet</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="1839021455997460752">Din e-postadress</translation>
 <translation id="1839540115464516994">Visa i <ph name="LOCATION" /></translation>
@@ -2509,6 +2510,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3279230909244266691">Detta kan ta några minuter. Den virtuella maskinen startas.</translation>
 <translation id="3280237271814976245">Spara so&amp;m...</translation>
 <translation id="3280243678470289153">Fortsätt i Chrome</translation>
+<translation id="328119399589609861">Styr enhetsåtkomst till mikrofon, kamera med mera</translation>
 <translation id="3281892622610078515">Filer och program som sätts i karantän:</translation>
 <translation id="3282210178675490297">En flik delas med <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Ny &amp;flik</translation>
@@ -4514,6 +4516,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5185500136143151980">Inget internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktivera port</translation>
+<translation id="5190959794678983197">Ingen mikrofon</translation>
 <translation id="5191094172448199359">Pinkoden du angav matchar inte</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="519185197579575131">Använd Qt</translation>
@@ -4873,6 +4876,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Är det här den startsida du väntade dig?</translation>
 <translation id="5522156646677899028">Det förekommer en allvarlig säkerhetsbrist i det här tillägget.</translation>
+<translation id="5522403133543437426">Sökmotorn som används i adressfältet.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ett tillägg har installerats av administratören}other{# tillägg har installerats av administratören}}</translation>
 <translation id="5523558474028191231">Namnet kan innehålla bokstäver, siffror och specialtecken och får vara högst <ph name="MAX_CHARACTER_COUNT" /> tecken långt</translation>
 <translation id="5526701598901867718">Alla (osäker)</translation>
@@ -7055,6 +7059,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7608810328871051088">Android-inställningar</translation>
 <translation id="7609148976235050828">Anslut till internet och försök igen.</translation>
+<translation id="7612401678989660900">Tillåt åtkomst för appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="7612655942094160088">Aktivera anslutna mobilfunktioner.</translation>
 <translation id="7614260613810441905">Fråga när en webbplats vill kunna redigera filer eller mappar på enheten (rekommenderas)</translation>
 <translation id="761530003705945209">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av Google-kontots lösenord och laddas upp på Google.</translation>
@@ -7554,6 +7559,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8046132381940444654">Kundtjänsten kan använda detta EID-nummer för att hjälpa dig att aktivera tjänsten</translation>
 <translation id="8047242494569930800">Flytta lösenordet till Google-kontot</translation>
 <translation id="804786196054284061">Licensavtal för slutanvändare</translation>
+<translation id="8048728378294435881">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8048977114738515028">Skapa en skrivbordsgenväg direkt till den här profilen på din enhet.</translation>
 <translation id="8049029041626250638">Anslut ett tangentbord eller en mus. Om du använder Bluetooth-enheter kontrollerar du att de är klara att koppla.</translation>
 <translation id="8049122382261047457">Sök med valfri bild med Google Lens</translation>
@@ -8437,6 +8443,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8872155268274985541">Ogiltig manifestfil för extern kioskuppdatering hittades. Det gick inte att uppdatera kioskappen. Ta bort USB-minnet.</translation>
 <translation id="8872506776304248286">Öppna i appen</translation>
 <translation id="8872777911145321141">Fråga när en webbplats vill använda VR-enheter och VR-data (rekommenderas)</translation>
+<translation id="887292602123626481">Läs mer om standardsökmotorer</translation>
 <translation id="8874341931345877644">Casta till en enhet:</translation>
 <translation id="8875520811099717934">Uppgradering av Linux</translation>
 <translation id="8875736897340638404">Välj synlighetsinställning</translation>
@@ -8557,6 +8564,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8987927404178983737">Månad</translation>
 <translation id="8989359959810288806">Uppdatera status för internetdelning</translation>
 <translation id="8991520179165052608">Webbplatsen har åtkomst till din mikrofon</translation>
+<translation id="8991694323904646277">Ingen kamera</translation>
 <translation id="8993059306046735527">Om du glömmer lösenordet för din <ph name="DEVICE_TYPE" /> kan du fortfarande återställa lokal data. Du måste logga in på ditt Google-konto eller använda kontoåterställning.</translation>
 <translation id="899384117894244799">Ta bort begränsad användare</translation>
 <translation id="899403249577094719">Basadress för Netscape-certifikat</translation>

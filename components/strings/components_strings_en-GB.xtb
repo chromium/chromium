@@ -683,7 +683,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2674804415323431591">Hide suggestions</translation>
 <translation id="2677696497921480781">Birthdays and name days</translation>
 <translation id="2677748264148917807">Leave</translation>
-<translation id="2679714844901977852">Save your card and billing info to your Google Account <ph name="USER_EMAIL" /> for secure and faster checkouts</translation>
 <translation id="2687555958734450033">Best fit</translation>
 <translation id="2688186765492306706">500 mm x 760 mm</translation>
 <translation id="2688969097326701645">Yes, continue</translation>
@@ -721,7 +720,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
-<translation id="2791176355335562114">Pay faster next time</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
 <translation id="2799020568854403057">The site ahead contains harmful apps</translation>
 <translation id="2799223571221894425">Relaunch</translation>
@@ -1046,7 +1044,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3633738897356909127">Update Chrome button; press enter to update Chrome from your Chrome settings</translation>
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
-<translation id="3637662659967048211">Save to Google Account</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3647286794400715637">Each URL string entry must contain between 1 and 2 URLs.</translation>
 <translation id="3650584904733503804">Validation successful</translation>
@@ -1434,6 +1431,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4646534391647090355">Take me there now</translation>
 <translation id="4648262692072505866">Hash must be of format SHA-256.</translation>
 <translation id="4652266463001779298">Not allowed</translation>
+<translation id="4652440160515225514">Your organisation has blocked this site because it violates a policy.</translation>
 <translation id="4653167719759882810">Mergers and acquisitions</translation>
 <translation id="4658638640878098064">Staple top left</translation>
 <translation id="4660119392514473465">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.</translation>
@@ -2275,7 +2273,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6826993739343257035">Allow AR?</translation>
 <translation id="6828866289116430505">Genetics</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6833752742582340615">Save your card and billing info to your Google Account for secure and faster checkouts</translation>
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
 <translation id="6846340164947227603">Use a virtual card number…</translation>
 <translation id="6852204201400771460">Reload app?</translation>
@@ -2923,6 +2920,7 @@ Additional details:
 <translation id="8437238597147034694">&amp;Undo move</translation>
 <translation id="8438476240229491014">Remember this setting</translation>
 <translation id="8438786541497918448">Use camera and microphone?</translation>
+<translation id="8438923942245957911">This site is flagged by your organisation</translation>
 <translation id="8443613539889492016">Rap and hip-hop</translation>
 <translation id="8444543005280733648">Computer networks</translation>
 <translation id="8446884382197647889">Learn More</translation>

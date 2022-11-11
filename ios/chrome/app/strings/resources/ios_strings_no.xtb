@@ -500,7 +500,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4854345657858711387">Angi en adgangskode</translation>
 <translation id="4858786880085262208">Oppgrader til HTTPS når det er mulig. Sikre nettsteder kan bygge inn innhold som ikke er sikkert.</translation>
 <translation id="4860895144060829044">Ring</translation>
-<translation id="4872323082491632254">Kontrollér passordene</translation>
+<translation id="4872323082491632254">Kontroller passordene</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4894963374040315706">Dette gjør at du kan søke ved bruk av stemmen</translation>
 <translation id="4901778704868714008">Lagre</translation>
@@ -846,7 +846,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> uleste artikler.</translation>
 <translation id="7412027924265291969">Fortsett</translation>
 <translation id="7425346204213733349">Endringer i bokmerkene, loggoppføringene, passordene og de andre innstillingene dine blir ikke synkronisert med Google-kontoen din lenger. Data som allerede er lagret i Google-kontoen din, blir imidlertid ikke fjernet.</translation>
-<translation id="7431991332293347422">Kontrollér hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
+<translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7438481509621345350">Nå ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="7454057999980797137">Fylke/kommune</translation>
@@ -936,7 +936,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8076014560081431679">Lagrede nettstedsinnstillinger slettes ikke og kan gjenspeile nettleserbruken din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne innstillingen er administrert – dobbelttrykk for mer informasjon</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
-<translation id="8084285576995584326">Kontrollér Google-kontodataene dine</translation>
+<translation id="8084285576995584326">Kontroller Google-kontodataene dine</translation>
 <translation id="809543534949702122">Søkelogg</translation>
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slå av</translation>

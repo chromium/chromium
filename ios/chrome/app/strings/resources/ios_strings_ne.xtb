@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">सबै साइटका कुकीहरू व्यवस्थापन गर्न, <ph name="BEGIN_LINK" />कुकीसम्बन्धी सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="5490005495580364134">सबै कुकीलाई रोक लगाइयोस् (सिफारिस गरिँदैन)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> घन्टाअघि</translation>
+<translation id="5520466080178053306">"पासवर्ड म्यानेजर" मा ट्याप गर्नुहोस् अनि "हाल्नुहोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="5525095647255982834">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने उक्त डिभाइसमा Chrome मा साइन इन गर्नुहोस्।</translation>
 <translation id="5525269841082836315">पासफ्रेज सिर्जना गर्नुहोस्</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> वटा खुला ट्याब भेटियो</translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">मेनु → इतिहास → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7738120385185846461">समस्याका बारेमा रिपोर्ट गर्नुहोस्…</translation>
 <translation id="7741325291586284254">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
+<translation id="7744394900930577716">अन्य एपहरूका पासवर्ड</translation>
 <translation id="7756478488453921771">मेनु → सेटिङ → भुक्तानी विधि</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> को पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="9083838294503912307">यन्त्रहरूभरि सिंक र पर्सनलाइज गर्न सिंक सुविधा अन गर्नुहोस्।</translation>
 <translation id="9087108903408689779">Chrome ले सिफारिस गरेको पासवर्ड:</translation>
+<translation id="9093271241977565440">स्क्रिनको सिरानमा रहेको "खोज्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="9094033019050270033">पासवर्ड अपडेट गर्नुहोस्</translation>
 <translation id="9097506547406246598">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>

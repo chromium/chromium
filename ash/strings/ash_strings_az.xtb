@@ -352,6 +352,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2960314608273155470">Çəkim Rejimi, defolt: <ph name="SOURCE" /> <ph name="TYPE" />. Klaviatura naviqasiyası üçün tab düyməsini basın.</translation>
 <translation id="2961963223658824723">Xəta baş verdi. Bir neçə dəqiqə sonra yenidən cəhd edin.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Mikrofona giriş aktiv edilsin?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> dilində danışıq fayllarını endirmək mümkün olmadı</translation>
 <translation id="2970920913501714344">Tətbiq, artırma və temaları quraşdırın</translation>
 <translation id="2977598380246111477">Növbəti nömrə</translation>
@@ -430,6 +431,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3386978599540877378">tam ekranlı böyüdücü</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Əlavə ayarlar</translation>
+<translation id="3405101454990027959">Mikrofona girişi aktiv edin</translation>
 <translation id="3410336247007142655">Tünd tema ayarlarını göstərin</translation>
 <translation id="3413817803639110246">Göstərmək üçün bildiriş yoxdur</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> ilə bağlantı kəsilsin</translation>
@@ -516,6 +518,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlanğıc</translation>
 <translation id="3861651314799684201">Tam ekranı qeydə almaq üçün enter düyməsini basın</translation>
+<translation id="3885531177412808398">Mikrofon icazəsi olan bütün tətbiq və vebsaytlar üçün mikrofona giriş icazəsi verir</translation>
 <translation id="3886872229787704059">Bugün açılıb</translation>
 <translation id="3891340733213178823">Hesabdan çıxmaq üçün iki dəfə Ctrl+Shift+Q basın.</translation>
 <translation id="3893630138897523026">ChromeVox (şifahi geri əlaqə)</translation>
@@ -1375,6 +1378,7 @@ Yeni quraşdırma</translation>
 <translation id="8666856788528804727">Cihazınızı ayarlamaq üçün <ph name="NAME" /> tətbiqini açın</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
 <translation id="8683506306463609433">Performansın izlənməsi aktivdir</translation>
+<translation id="8684405646663021166">Mikrofon icazəsi olan <ph name="APP_NAME" /> və bütün tətbiq və vebsaytlar üçün mikrofona giriş icazəsi verir</translation>
 <translation id="8685326675965865247">Cihaz, tətbiqlər, ayarlar və vebdə axtarın. Tətbiqləri axtarmaq üçün ox düymələrindən istifadə edin.</translation>
 <translation id="8703634754197148428">Yazmanı başladın. Yazma başladıqda Alt + Shift + L düymələri ilə rəfə keçin və yazmanın dayandırılması düyməsini tapın</translation>
 <translation id="8721053961083920564">Səsi aktiv edin. <ph name="STATE_TEXT" /></translation>

@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">የቀረጻ ሁነታ፣ ነባሪው <ph name="SOURCE" /> <ph name="TYPE" /> ነው። ለቁልፍ ሰሌዳ አሰሳ ትርን ይጫኑ።</translation>
 <translation id="2961963223658824723">የሆነ ስህተት ተከስቷል። በጥቂት ሰከንዶች ውስጥ እንደገና ይሞክሩ።</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">የማይክሮፎን መዳረሻ ይብራ?</translation>
 <translation id="296762781903199866">የ<ph name="LANGUAGE" /> የንግግር ፋይሎችን ማውረድ አልተቻለም</translation>
 <translation id="2970920913501714344">መተግበሪያዎችን፣ ቅጥያዎችን እና ገጽታዎችን ይጫኑ</translation>
 <translation id="2977598380246111477">ቀጣይ ቁጥር</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">የሙሉ ማያ ገጽ ማጉያ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">ተጨማሪ ቅንብሮች</translation>
+<translation id="3405101454990027959">የማይክሮፎን መዳረሻን አብራ</translation>
 <translation id="3410336247007142655">ጠቆር ያለ የገጽታ ቅንብሮችን አሳይ</translation>
 <translation id="3413817803639110246">ገና ምንም የሚታይ ነገር የለም</translation>
 <translation id="3428447136709161042">ከ <ph name="NETWORK_NAME" /> ግንኙነት አቋርጥ</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="385300504083504382">መጀመሪያ</translation>
 <translation id="3861651314799684201">ሙሉ ገጽ ዕይታ ለመቅዳት አስገባን ይጫኑ</translation>
+<translation id="3885531177412808398">በማይክሮፎን ፈቃድ ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የማይክሮፎን መዳረሻን ይፍቀዱ</translation>
 <translation id="3886872229787704059">ዛሬ የተከፈተ</translation>
 <translation id="3891340733213178823">ዘግተው ለመውጣት Ctrl+Shift+Qን ሁለቴ ይጫኑ።</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">መሣሪያዎን ለማዋቀር <ph name="NAME" />ን ይክፈቱ</translation>
 <translation id="8676770494376880701">አነስተኛ ኃይል ያለው ባትሪ መሙያ ተገናኝቷል</translation>
 <translation id="8683506306463609433">የአፈጻጸም ክትትል ገቢር ነው</translation>
+<translation id="8684405646663021166">በማይክሮፎን ፈቃድ ለ<ph name="APP_NAME" /> እና ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች የማይክሮፎን መዳረሻን ይፍቀዱ</translation>
 <translation id="8685326675965865247">የእርስዎን መሣሪያ፣ መተግበሪያዎች እና ድርን ይፈልጉ። በእርስዎ መተግበሪያዎች መካከል አሰሳ ለማድረግ የቀስት ቁልፎቹን ይጠቀሙ።</translation>
 <translation id="8703634754197148428">መቅዳት ጀምር። አንዴ ቀረጻው ከጀመረ በኋላ ወደ መደርደሪያው ለመሄድ እና ቀረፃውን አዝራር አቁምን ለማግኘት Alt + Shift + Lን ይጠቀሙ</translation>
 <translation id="8721053961083920564">ድምፅን ቀያይር። <ph name="STATE_TEXT" /></translation>

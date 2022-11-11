@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">ಈ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ಕುಕಿಗಳನ್ನು ನಿರ್ವಹಿಸಲು, <ph name="BEGIN_LINK" />ಕುಕಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
 <translation id="5490005495580364134">ಎಲ್ಲಾ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ಗಂಟೆಯ ಹಿಂದೆ</translation>
+<translation id="5520466080178053306">ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ನಿರ್ವಾಹಕವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನಂತರ ಸೇರಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5525095647255982834">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಅಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="5525269841082836315">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ</translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">ಮೆನು → ಇತಿಹಾಸ → ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="7738120385185846461">ಸಮಸ್ಯೆಯನ್ನು ವರದಿಮಾಡಿ…</translation>
 <translation id="7741325291586284254">ಹೊಸ ಅದೃಶ್ಯ ಟ್ಯಾಬ್ ಪುಟ</translation>
+<translation id="7744394900930577716">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7756478488453921771">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
 <translation id="9083838294503912307">ಸಾಧನಗಳಾದ್ಯಂತ ಸಿಂಕ್ ಮಾಡಲು ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="9087108903408689779">Chrome ಸೂಚಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್:</translation>
+<translation id="9093271241977565440">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ, ಹುಡುಕಾಟ ಐಕಾನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="9094033019050270033">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡು</translation>
 <translation id="9097506547406246598">ಅನ್‌ಫಾಲೋ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="9100610230175265781">ಪಾಸ್‌ಫ್ರೇಸ್ ಅಗತ್ಯವಿದೆ</translation>

@@ -352,6 +352,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2960314608273155470">Diofyn y Modd Tynnu yw <ph name="SOURCE" /> <ph name="TYPE" />. Pwyswch Tab am lywio bysellfwrdd.</translation>
 <translation id="2961963223658824723">Aeth rhywbeth o'i le. Rhowch gynnig arall arni mewn ychydig eiliadau.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Troi mynediad meicroffon ymlaen?</translation>
 <translation id="296762781903199866">Methu â lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Gosod apiau, estyniadau, a themâu</translation>
 <translation id="2977598380246111477">Rhif nesaf</translation>
@@ -430,6 +431,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3386978599540877378">y chwyddwydr sgrîn lawn</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Gosodiadau ychwanegol</translation>
+<translation id="3405101454990027959">Trowch fynediad meicroffon ymlaen</translation>
 <translation id="3410336247007142655">Dangos gosodiadau thema dywyll</translation>
 <translation id="3413817803639110246">Dim byd i'w weld eto</translation>
 <translation id="3428447136709161042">Datgysylltwyd o <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="385300504083504382">Y dechrau</translation>
 <translation id="3861651314799684201">Pwyswch Enter i recordio'r sgrîn lawn</translation>
+<translation id="3885531177412808398">Yn caniatáu mynediad meicroffon ar gyfer pob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="3886872229787704059">Agorwyd heddiw</translation>
 <translation id="3891340733213178823">Pwyswch Ctrl+Shift+Q ddwywaith i allgofnodi.</translation>
 <translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
@@ -1375,6 +1378,7 @@ Gosodiad newydd</translation>
 <translation id="8666856788528804727">Agorwch <ph name="NAME" /> i osod eich dyfais</translation>
 <translation id="8676770494376880701">Mae gwefrydd pŵer isel wedi'i gysylltu</translation>
 <translation id="8683506306463609433">Mae olrhain perfformiad yn weithredol</translation>
+<translation id="8684405646663021166">Yn caniatáu mynediad meicroffon ar gyfer <ph name="APP_NAME" /> a phob ap a gwefan gyda'r caniatâd meicroffon</translation>
 <translation id="8685326675965865247">Chwilio eich dyfais, eich apiau, eich gosodiadau, a'r we. Defnyddiwch y bysellau saeth i lywio'ch apiau.</translation>
 <translation id="8703634754197148428">Dechrau recordio. Ar ôl i'r recordio ddechrau, gallwch ddefnyddio Alt + Shift + L i lywio i'r silff i ddod o hyd i'r botwm stopio recordio</translation>
 <translation id="8721053961083920564">Toglo Lefel y Sain. <ph name="STATE_TEXT" /></translation>

@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
+<translation id="4060260348856573701">새 APN</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
@@ -606,6 +607,7 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6791471867139427246">키보드 조명 색상</translation>
+<translation id="6793680441750437230">키보드의 아무 키나 누르세요. 동시에 최대 4개의 키를 누를 수 있습니다. Alt + Esc를 눌러 대화상자를 닫습니다.</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="6853312040151791195">방전 속도</translation>

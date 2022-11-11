@@ -571,6 +571,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5489208564673669003">Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="5513681519188741830">pre <ph name="TIME" /> s</translation>
+<translation id="5520466080178053306">Dodirnite Menadžer lozinki, pa Dodaj</translation>
 <translation id="5525095647255982834">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome tamo.</translation>
 <translation id="5525269841082836315">Pravljenje pristupne fraze</translation>
 <translation id="5542540507657872337">Pronađeno je <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7726702057919861819">Meni → Istorija → Obriši podatke pregledanja</translation>
 <translation id="7738120385185846461">Prijavi problem…</translation>
 <translation id="7741325291586284254">Nova stranica na kartici bez arhiviranja</translation>
+<translation id="7744394900930577716">Lozinke u drugim aplikacijama</translation>
 <translation id="7756478488453921771">Meni → Podešavanja → Načini plaćanja</translation>
 <translation id="7765158879357617694">Premesti</translation>
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
@@ -1054,6 +1056,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9081058212938299310">Želite li da ažurirate lozinku za <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Da biste sinhronizovali i personalizovali sadržaj na uređajima, uključite sinhronizaciju.</translation>
 <translation id="9087108903408689779">Predložena lozinka za Chrome:</translation>
+<translation id="9093271241977565440">U vrhu ekrana dodirnite ikonu Pretraga</translation>
 <translation id="9094033019050270033">Ažuriraj lozinku</translation>
 <translation id="9097506547406246598">Opozivanje praćenja nije uspelo. Došlo je do greške.</translation>
 <translation id="9100610230175265781">Potrebna je pristupna fraza</translation>

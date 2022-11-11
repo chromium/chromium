@@ -571,6 +571,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5489208564673669003">Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení súborov cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Klepnite na Správcu hesiel a potom na Pridať</translation>
 <translation id="5525095647255982834">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do Chromu.</translation>
 <translation id="5525269841082836315">Vytv. prístup. frázu</translation>
 <translation id="5542540507657872337">Nájdené karty: <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7726702057919861819">Ponuka → História → Vymazať dáta prehliadania</translation>
 <translation id="7738120385185846461">Nahlásiť problém…</translation>
 <translation id="7741325291586284254">Nová stránka s kartou inkognito</translation>
+<translation id="7744394900930577716">Heslá v ďalších aplikáciách</translation>
 <translation id="7756478488453921771">Ponuka → Nastavenia → Spôsoby platby</translation>
 <translation id="7765158879357617694">Presunúť</translation>
 <translation id="7772032839648071052">Potvrďte prístupovú frázu</translation>
@@ -1054,6 +1056,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9081058212938299310">Chcete aktualizovať heslo používateľa <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Ak chcete synchronizovať a prispôsobovať viaceré zariadenia, zapnite synchronizáciu.</translation>
 <translation id="9087108903408689779">Heslo navrhnuté Chromom:</translation>
+<translation id="9093271241977565440">V hornej časti obrazovky klepnite na ikonu vyhľadávania</translation>
 <translation id="9094033019050270033">Aktualizovať heslo</translation>
 <translation id="9097506547406246598">Nedá sa prestať sledovať. Niečo sa pokazilo.</translation>
 <translation id="9100610230175265781">Vyžaduje sa prístupová fráza</translation>

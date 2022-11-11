@@ -3742,6 +3742,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="445099924538929605">Operačný systém <ph name="DEVICE_OS" /> rozpoznal aktívny modul TPM, ktorý môže ukladať vaše údaje bezpečnejšie.</translation>
 <translation id="4451479197788154834">Heslo máte uložené v tomto zariadení aj účte Google</translation>
 <translation id="4451757071857432900">Blokované na weboch, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy (odporúčané)</translation>
+<translation id="4452898361839215358">alebo vyberte súbor PPD. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Vyhľadajte v službe <ph name="SEARCH_ENGINE_NAME" /> alebo zadajte webovú adresu</translation>
 <translation id="4458535500699390320">Kým bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť na ďalšie úlohy. Túto možnosť môžete kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="4459169140545916303">Aktívne pred <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dňami</translation>
@@ -7549,6 +7550,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8046132381940444654">Zástupca služieb zákazníkom vám môže pomocou tohto čísla EID aktivovať službu</translation>
 <translation id="8047242494569930800">Presunúť do účtu Google</translation>
 <translation id="804786196054284061">Licenčná zmluva koncového používateľa</translation>
+<translation id="8048728378294435881">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení</translation>
 <translation id="8048977114738515028">Vytvorte si v zariadení odkaz na pracovnej ploche, aby ste získali priamy prístup k tomuto profilu</translation>
 <translation id="8049029041626250638">Pripojte klávesnicu alebo myš. Ak používate zariadenia s rozhraním Bluetooth, uistite sa, že sú pripravené na párovanie.</translation>
 <translation id="8049122382261047457">Vyhľadajte ľubovoľný obrázok pomocou funkcie Google Lens</translation>
@@ -8375,6 +8377,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8823514049557262177">Kopírovať te&amp;xt odkazu</translation>
 <translation id="8823559166155093873">Blokovať súbory cookie</translation>
 <translation id="8823704566850948458">Navrhnúť heslo…</translation>
+<translation id="8823963789776061136">Prípadne vyberte súbor PPD tlačiarne. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Pridať strán&amp;ku...</translation>
 <translation id="8827125715368568315">Je blokované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="8827289157496676362">Pripnúť rozšírenie</translation>
@@ -8631,6 +8634,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> požaduje prístup k nasledujúcemu obsahu:</translation>
 <translation id="9057354806206861646">Plán aktualizácií</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Približne 1 upozornenie denne}few{Približne {NUM_NOTIFICATION} upozornenia denne}many{About {NUM_NOTIFICATION} notifications a day}other{Približne {NUM_NOTIFICATION} upozornení denne}}</translation>
+<translation id="9058760336383947367">Zobraziť súbor PPD tlačiarne</translation>
 <translation id="9061383912634843744">Automaticky sa prihlasujte na weboch a v aplikáciách uloženými prihlasovacími údajmi. Ak túto funkciu vypnete, pred každým prihlásením na webe alebo v aplikácii sa vám bude zobrazovať výzva na ich potvrdenie.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Chyba od riadka <ph name="ERROR_LINE_START" /> po <ph name="ERROR_LINE_END" /></translation>

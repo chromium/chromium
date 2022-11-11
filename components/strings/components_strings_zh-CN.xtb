@@ -680,7 +680,6 @@
 <translation id="2674804415323431591">隐藏建议</translation>
 <translation id="2677696497921480781">生日与命名日</translation>
 <translation id="2677748264148917807">离开</translation>
-<translation id="2679714844901977852">将您的付款卡信息和结算信息保存到您的 Google 帐号 <ph name="USER_EMAIL" />，以便您安全快捷地结账</translation>
 <translation id="2687555958734450033">最适合</translation>
 <translation id="2688186765492306706">500 x 760 毫米</translation>
 <translation id="2688969097326701645">是的，继续</translation>
@@ -718,7 +717,6 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">连接已重置。</translation>
-<translation id="2791176355335562114">下次付款更快捷</translation>
 <translation id="2792012897584536778">此设备的管理员设置了安全证书，这些证书可能会允许管理员查看您所访问的网站的内容。</translation>
 <translation id="2799020568854403057">您要访问的网站包含有害应用</translation>
 <translation id="2799223571221894425">重新启动</translation>
@@ -1038,7 +1036,6 @@
 <translation id="3633738897356909127">“更新 Chrome”按钮，按 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
-<translation id="3637662659967048211">保存到 Google 帐号</translation>
 <translation id="3642638418806704195">应用：</translation>
 <translation id="3647286794400715637">每个网址字符串条目都必须包含 1-2 个网址。</translation>
 <translation id="3650584904733503804">验证成功</translation>
@@ -2259,7 +2256,6 @@
 <translation id="6826993739343257035">允许 AR？</translation>
 <translation id="6828866289116430505">遗传学</translation>
 <translation id="6831043979455480757">翻译</translation>
-<translation id="6833752742582340615">将您的付款卡信息和结算信息保存到您的 Google 帐号中，便于您安全快捷地结账</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6846340164947227603">使用虚拟卡号…</translation>
 <translation id="6852204201400771460">要重新加载应用吗？</translation>

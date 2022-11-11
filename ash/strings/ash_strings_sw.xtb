@@ -352,6 +352,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2960314608273155470">Hali ya Kupiga Picha, chaguomsingi ni <ph name="SOURCE" /> <ph name="TYPE" />. Bonyeza 'tab' ili usogeze kwa kutumia kibodi.</translation>
 <translation id="2961963223658824723">Hitilafu fulani imetokea. Jaribu tena baada ya sekunde chache.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Ungependa kuwasha ufikiaji wa maikrofoni?</translation>
 <translation id="296762781903199866">Imeshindwa kupakua faili za matamshi za <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Kusakinisha programu, viendelezi na mandhari</translation>
 <translation id="2977598380246111477">Nambari inayofuata</translation>
@@ -430,6 +431,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3386978599540877378">Kikuza skrini nzima</translation>
 <translation id="3387527074123400161">Mfumo wa uendeshaji wa Chromium</translation>
 <translation id="3400357268283240774">Mipangilio ya ziada</translation>
+<translation id="3405101454990027959">Washa ufikiaji wa maikrofoni</translation>
 <translation id="3410336247007142655">Onyesha mipangilio ya mandhari meusi</translation>
 <translation id="3413817803639110246">Bado hakuna chochote hapa</translation>
 <translation id="3428447136709161042">Ondoa kwenye <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="385300504083504382">Mwanzo</translation>
 <translation id="3861651314799684201">Bonyeza enter ili urekodi skrini nzima</translation>
+<translation id="3885531177412808398">Huruhusu ufikiaji wa maikrofoni kwa programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="3886872229787704059">Imefunguliwa leo</translation>
 <translation id="3891340733213178823">Bonyeza Ctrl+Shift+Q mara mbili ili kuondoka katika akaunti.</translation>
 <translation id="3893630138897523026">ChromeVox (maoni yaliyotamkwa)</translation>
@@ -1376,6 +1379,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8666856788528804727">Fungua <ph name="NAME" /> ili uweke mipangilio ya kifaa chako</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
 <translation id="8683506306463609433">Kipengele cha ufuatiliaji wa utendaji kinatumika</translation>
+<translation id="8684405646663021166">Huruhusu ufikiaji wa maikrofoni kwa <ph name="APP_NAME" />, programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="8685326675965865247">Tafuta kwenye programu, mipangilio, wavuti na kifaa chako. Tumia vitufe vya vishale ili upitie programu zako.</translation>
 <translation id="8703634754197148428">Anza kurekodi. Ukishaanza kurekodi, tumia vitufe vya Alt + Shift + L kwenda kwenye rafu ili upate kitufe cha kuacha kurekodi</translation>
 <translation id="8721053961083920564">Swichi ya Sauti. <ph name="STATE_TEXT" /></translation>

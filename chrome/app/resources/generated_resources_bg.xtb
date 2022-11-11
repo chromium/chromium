@@ -3750,6 +3750,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> откри активен TPM, който може да съхранява данните ви по-сигурно.</translation>
 <translation id="4451479197788154834">Паролата ви е запазена на това устройство и в профила ви в Google</translation>
 <translation id="4451757071857432900">Блокиране за сайтовете, на които се показват натрапчиви или подвеждащи реклами (препоръчително)</translation>
+<translation id="4452898361839215358">или изберете PPD файл. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Търсете с(ъс) <ph name="SEARCH_ENGINE_NAME" /> или въведете URL адрес</translation>
 <translation id="4458535500699390320">Докато този раздел бе неактивен, режимът „Икономия на памет“ освободи памет за други задачи. Можете да промените това по всяко време от настройките.</translation>
 <translation id="4459169140545916303">Активно преди <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дни</translation>
@@ -7552,6 +7553,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8046132381940444654">Представител на екипа за обслужване на клиенти може да използва този EID номер, за да ви помогне да активирате услуга</translation>
 <translation id="8047242494569930800">Преместване в профила в Google</translation>
 <translation id="804786196054284061">Лицензионно споразумение с крайния потребител</translation>
+<translation id="8048728378294435881">Създавайте резервни копия на нещата си и ги използвайте на всяко устройство</translation>
 <translation id="8048977114738515028">Създаване на пряк път върху работния плот на устройството ви с цел директен достъп до този потребителски профил</translation>
 <translation id="8049029041626250638">Свържете клавиатура или мишка. Ако използвате устройства с Bluetooth, проверете дали са готови за сдвояване.</translation>
 <translation id="8049122382261047457">Търсете изображения посредством Google Обектив</translation>
@@ -8376,6 +8378,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8823514049557262177">Копиране на тек&amp;ста на връзката</translation>
 <translation id="8823559166155093873">Блокиране на „бисквитките“</translation>
 <translation id="8823704566850948458">Предложение за парола...</translation>
+<translation id="8823963789776061136">Друга възможност е да изберете PPD файл за принтера. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Добавяне на &amp;страница...</translation>
 <translation id="8827125715368568315">Блокирани са „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Фиксиране на разширението</translation>
@@ -8630,6 +8633,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> иска достъп до следното съдържание:</translation>
 <translation id="9057354806206861646">График на актуализациите</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Около 1 известие на ден}other{Около {NUM_NOTIFICATION} известия на ден}}</translation>
+<translation id="9058760336383947367">Прегледайте PPD файла за принтера</translation>
 <translation id="9061383912634843744">Автоматично влизане в профила ви в сайтове и приложения, като се ползват запазени идентификационни данни. Ако е изключено, ще се иска потвърждение от вас преди всяко влизане в профил в сайт или приложение.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>

@@ -352,6 +352,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2960314608273155470">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />. Tryck på tabb om du vill navigera med tangentbordet.</translation>
 <translation id="2961963223658824723">Ett fel har uppstått. Försök igen om några sekunder.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
 <translation id="296762781903199866">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
@@ -430,6 +431,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3386978599540877378">helskärmsförstoraren</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Ytterligare inställningar</translation>
+<translation id="3405101454990027959">Aktivera mikrofonåtkomst.</translation>
 <translation id="3410336247007142655">Visa inställningarna för mörkt tema</translation>
 <translation id="3413817803639110246">Det finns inget att se här ännu</translation>
 <translation id="3428447136709161042">Koppla från <ph name="NETWORK_NAME" /></translation>
@@ -516,6 +518,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
 <translation id="3861651314799684201">Tryck på retur för att spela in hela skärmen</translation>
+<translation id="3885531177412808398">Tillåter mikrofonåtkomst för alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>
@@ -1375,6 +1378,7 @@ Nyligen installerad</translation>
 <translation id="8666856788528804727">Öppna <ph name="NAME" /> och konfigurera enheten där</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
+<translation id="8684405646663021166">Tillåter mikrofonåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="8685326675965865247">Sök på enheten, i appar, inställningar och på webben. Flytta mellan apparna med piltangenterna.</translation>
 <translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>

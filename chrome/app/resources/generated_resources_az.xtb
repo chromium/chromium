@@ -924,6 +924,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1834503245783133039">Endirmə tamamlandı: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux güncəllənir</translation>
+<translation id="1835612721186505600">Kamera icazəsi ilə tətbiqlərə və vebsaytlara girişə icazə verin</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
 <translation id="1839021455997460752">E-poçt ünvanınız</translation>
 <translation id="1839540115464516994">Burada göstərin: <ph name="LOCATION" /></translation>
@@ -2493,6 +2494,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3279230909244266691">Bir az səbr edin; virtual maşın başladılır.</translation>
 <translation id="3280237271814976245">Saxlama formatı:</translation>
 <translation id="3280243678470289153">Chrome'da qalın</translation>
+<translation id="328119399589609861">Mikrofona, kameraya və daha çoxuna cihaz girişini idarə edin</translation>
 <translation id="3281892622610078515">Təcrid ediləcək fayl və proqramlar:</translation>
 <translation id="3282210178675490297">Tab <ph name="APP_NAME" /> ilə paylaşılır</translation>
 <translation id="3285322247471302225">Yeni Tab</translation>
@@ -4496,6 +4498,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5185500136143151980">İnternet yoxdur</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Portu aktiv edin</translation>
+<translation id="5190959794678983197">Mikrofon yoxdur</translation>
 <translation id="5191094172448199359">Daxil etdiyiniz PIN kodlar uyğun gəlmir</translation>
 <translation id="5191251636205085390">Üçüncü tərəf kukilərini əvəzləmək üçün hazırlanmış yeni texnologiyalar barədə öyrənin və onlara nəzarət edin</translation>
 <translation id="519185197579575131">QT istifadə edin</translation>
@@ -4855,6 +4858,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Gözlədiyiniz ana səhifə budur?</translation>
 <translation id="5522156646677899028">Bu artırmanın ciddi güvənlik problemləri var.</translation>
+<translation id="5522403133543437426">Ünvan panelində istifadə edilən axtarış sistemi.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Artırma administratorunuz tərəfindən quraşdırılıb}other{# artırma administratorunuz tərəfindən quraşdırılıb}}</translation>
 <translation id="5523558474028191231">Adda hərflər, rəqəmlər və xüsusi simvollar ola bilər və maksimum <ph name="MAX_CHARACTER_COUNT" /> simvol ola bilər</translation>
 <translation id="5526701598901867718">Hamısı (təhlükəli)</translation>
@@ -7035,6 +7039,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7608810328871051088">Android tərcihləri</translation>
 <translation id="7609148976235050828">İnternetə qoşulun və yenidən cəhd edin.</translation>
+<translation id="7612401678989660900">Mikrofon icazəsi olan tətbiq və vebsaytlar üçün giriş icazəsi verin</translation>
 <translation id="7612655942094160088">Qoşulmuş telefon funksiyalarının aktivləşdirilməsi.</translation>
 <translation id="7614260613810441905">Sayt cihazınızdakı fayl və qovluqları redaktə etmək istədikdə icazə tələb edilsin (tövsiyə edilir)</translation>
 <translation id="761530003705945209">Google Diskə yedəkləyin. İstənilən vaxt datanızı asanlıqla bərpa edin və ya cihazı dəyişin. Yedəkləmənizə tətbiq datası daxildir. Yedəkləmələriniz Google'a yüklənir və Google Hesabı parolunuzdan istifadə etməklə şifrlənir.</translation>
@@ -7533,6 +7538,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8046132381940444654">Müştəri xidmətlərinin nümayəndəsi xidməti aktiv etmək üçün bu EID nömrəsindən istifadə edə bilər</translation>
 <translation id="8047242494569930800">Google Hesabına köçürün</translation>
 <translation id="804786196054284061">Son İstifadəçinin Lisenziya Müqaviləsi</translation>
+<translation id="8048728378294435881">Elementləri yedəkləyin və istənilən cihazda istifadə edin</translation>
 <translation id="8048977114738515028">Bu profilə birbaşa giriş üçün cihazınızda masaüstü qısayol yaradın</translation>
 <translation id="8049029041626250638">Klaviatura və ya maus qoşun. Bluetooth cihazları istifadə edirsinizsə, onların birləşdirmə üçün hazır olduğuna əmin olun.</translation>
 <translation id="8049122382261047457">Google Linza ilə şəkilləri axtarın</translation>
@@ -8415,6 +8421,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8872155268274985541">Yolverilməz manifest faylı tapıldı. Kiosk tətbiqi üçün xarici güncəllənməni quraşdırmaq alınmadı. USB-ni çıxarın.</translation>
 <translation id="8872506776304248286">Tətbiqdə açın</translation>
 <translation id="8872777911145321141">Sayt virtual reallıq cihazları və datanızı istifadə etmək istədikdə icazə istəsin (tövsiyə edilir)</translation>
+<translation id="887292602123626481">Defolt axtarış sistemləri haqqında ətraflı məlumat</translation>
 <translation id="8874341931345877644">Cihazda paylaşın:</translation>
 <translation id="8875520811099717934">Linux güncəlləməsi</translation>
 <translation id="8875736897340638404">Görünmənizi seçin</translation>
@@ -8535,6 +8542,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8987927404178983737">Ay</translation>
 <translation id="8989359959810288806">Modem Rejimi Statusunu yeniləyin</translation>
 <translation id="8991520179165052608">Sayt mikrofonu paylaşa bilər</translation>
+<translation id="8991694323904646277">Kamera yoxdur</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> parolunuzu unutsanız, yenə də lokal datanızı bərpa edə bilərsiniz. Google Hesabınıza daxil olmalı və ya hesabın bərpasından istifadə etməlisiniz.</translation>
 <translation id="899384117894244799">Məhdudlaşdırılmış istifadəçini silin</translation>
 <translation id="899403249577094719">Netscape Sertifikat Base URL</translation>

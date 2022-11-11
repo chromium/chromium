@@ -571,6 +571,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5489208564673669003">I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau Cwcis<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Rhwystro Pob Cwci (Ni Argymhellir)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> a yn ôl</translation>
+<translation id="5520466080178053306">Tapiwch Reolwr Cyfrineiriau Yna Tapiwch Ychwanegu</translation>
 <translation id="5525095647255982834">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chrome yno.</translation>
 <translation id="5525269841082836315">Creu Cyfrinymadrodd</translation>
 <translation id="5542540507657872337">Canfuwyd <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7726702057919861819">Dewislen → Hanes → Clirio Data Pori</translation>
 <translation id="7738120385185846461">Adrodd am broblem…</translation>
 <translation id="7741325291586284254">Tudalen Tab Anhysbys Newydd</translation>
+<translation id="7744394900930577716">Cyfrineiriau mewn Apiau Eraill</translation>
 <translation id="7756478488453921771">Dewislen → Gosodiadau → Dulliau Talu</translation>
 <translation id="7765158879357617694">Symud</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
@@ -1054,6 +1056,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9081058212938299310">Diweddaru'r cyfrinair ar gyfer <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">I gysoni a phersonoleiddio ar draws dyfeisiau, trowch gysoni ymlaen.</translation>
 <translation id="9087108903408689779">Cyfrinair sy'n cael ei awgrymu gan Chrome:</translation>
+<translation id="9093271241977565440">Ar Ben y Sgrin, Tapiwch yr Eicon Chwilio</translation>
 <translation id="9094033019050270033">Diweddaru cyfrinair</translation>
 <translation id="9097506547406246598">Methu â dad-ddilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="9100610230175265781">Angen cyfrinymadrodd</translation>
