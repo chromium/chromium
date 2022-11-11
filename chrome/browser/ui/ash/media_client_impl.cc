@@ -22,7 +22,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
@@ -95,10 +95,10 @@ constexpr int kMaxRecordedTimeInSeconds = 60;
 // reporting`kCameraPrivacySwitchToTurnOffHistogramName`.
 constexpr int kRecordedTimeGranularityInSeconds = 5;
 
-// The ID template for a notification shown when the user tries to use a camera
-// while the camera privacy switch is on.
-constexpr char kCameraPrivacySwitchOnNotificationId[] =
-    "ash.media.camera.activity_with_privacy_switch_on.%s";
+// The prefix of ID of the notification shown when the user tries to use a
+// camera while the camera privacy switch is on.
+constexpr char kCameraPrivacySwitchOnNotificationIdPrefix[] =
+    "ash.media.camera.activity_with_privacy_switch_on.";
 
 // The notifier ID for a notification shown when the user tries to use a camera
 // while the camera privacy switch is on.
@@ -542,8 +542,8 @@ void MediaClientImpl::ShowCameraOffNotification(
                 IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME,
                 app_name, device_name_u16);
 
-  const std::string notification_id = base::StringPrintf(
-      kCameraPrivacySwitchOnNotificationId, device_name.c_str());
+  const std::string notification_id =
+      base::StrCat({kCameraPrivacySwitchOnNotificationIdPrefix, device_name});
 
   SystemNotificationHelper::GetInstance()->Close(notification_id);
 
@@ -652,8 +652,8 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
   }
 
   if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-    SystemNotificationHelper::GetInstance()->Close(base::StringPrintf(
-        kCameraPrivacySwitchOnNotificationId, device_name.c_str()));
+    SystemNotificationHelper::GetInstance()->Close(base::StrCat(
+        {kCameraPrivacySwitchOnNotificationIdPrefix, device_name}));
   }
 }
 
@@ -675,8 +675,8 @@ void MediaClientImpl::OnGetSourceInfosByActiveClientChanged(
       } else if (active_camera_client_count_ == 0) {
         // Clear the notification for this device as no client is trying to use
         // this camera anymore.
-        const std::string notification_id = base::StringPrintf(
-            kCameraPrivacySwitchOnNotificationId, device_name.c_str());
+        const std::string notification_id = base::StrCat(
+            {kCameraPrivacySwitchOnNotificationIdPrefix, device_name});
         SystemNotificationHelper::GetInstance()->Close(notification_id);
       }
     }
