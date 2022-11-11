@@ -198,6 +198,7 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   DCHECK(!model_type_state.cache_guid().empty());
   DCHECK_EQ(model_type_state.cache_guid(), cache_guid_);
   DCHECK(model_type_state.initial_sync_done());
+  DCHECK(start_callback_.is_null());
 
   // TODO(crbug.com/1356900): validate incoming updates, e.g. |gc_directive|
   // must be empty for Bookmarks.
@@ -215,18 +216,33 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   }
 
   // Incremental updates.
-  ScopedRemoteUpdateBookmarks update_bookmarks(
-      bookmark_model_, bookmark_undo_service_, bookmark_model_observer_.get());
-  BookmarkRemoteUpdatesHandler updates_handler(
-      bookmark_model_, favicon_service_, bookmark_tracker_.get());
-  const bool got_new_encryption_requirements =
-      bookmark_tracker_->model_type_state().encryption_key_name() !=
-      model_type_state.encryption_key_name();
-  bookmark_tracker_->set_model_type_state(model_type_state);
-  updates_handler.Process(updates, got_new_encryption_requirements);
+  {
+    ScopedRemoteUpdateBookmarks update_bookmarks(
+        bookmark_model_, bookmark_undo_service_,
+        bookmark_model_observer_.get());
+    BookmarkRemoteUpdatesHandler updates_handler(
+        bookmark_model_, favicon_service_, bookmark_tracker_.get());
+    const bool got_new_encryption_requirements =
+        bookmark_tracker_->model_type_state().encryption_key_name() !=
+        model_type_state.encryption_key_name();
+    bookmark_tracker_->set_model_type_state(model_type_state);
+    updates_handler.Process(updates, got_new_encryption_requirements);
+  }
+
+  // Issue error and disable sync if bookmarks count exceeds limit.
+  if (bookmark_tracker_->TrackedBookmarksCount() >
+          max_bookmarks_till_sync_enabled_ &&
+      base::FeatureList::IsEnabled(syncer::kSyncEnforceBookmarksCountLimit)) {
+    StopTrackingMetadataAndResetTracker();
+    error_handler_.Run(
+        syncer::ModelError(FROM_HERE, "Local bookmarks count exceed limit."));
+    return;
+  }
+
   if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
     NudgeForCommitIfNeeded();
   }
+
   // There are cases when we receive non-empty updates that don't result in
   // model changes (e.g. reflections). In that case, issue a write to persit the
   // progress marker in order to avoid downloading those updates again.
