@@ -49,6 +49,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 
 }  // namespace features
 

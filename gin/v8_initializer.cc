@@ -347,6 +347,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptSymbolAsWeakMapKey,
                          "--harmony-symbol-as-weakmap-key",
                          "--no-harmony-symbol-as-weakmap-key");
+  SetV8FlagsIfOverridden(features::kJavaScriptChangeArrayByCopy,
+                         "--harmony-change-array-by-copy",
+                         "--no-harmony-change-array-by-copy");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
