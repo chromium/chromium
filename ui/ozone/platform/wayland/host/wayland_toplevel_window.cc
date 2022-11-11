@@ -297,7 +297,7 @@ void WaylandToplevelWindow::SizeConstraintsChanged() {
 
 void WaylandToplevelWindow::SetZOrderLevel(ZOrderLevel order) {
   if (shell_toplevel_)
-    shell_toplevel_->SetZOrder(z_order_);
+    shell_toplevel_->SetZOrder(order);
 
   z_order_ = order;
 }
