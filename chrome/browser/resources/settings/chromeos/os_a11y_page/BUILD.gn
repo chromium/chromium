@@ -11,25 +11,8 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":change_dictation_locale_dialog",
     ":manage_a11y_page",
     ":manage_a11y_page_browser_proxy",
-  ]
-}
-
-js_library("change_dictation_locale_dialog") {
-  deps = [
-    "//ash/webui/common/resources:cr_scrollable_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_search_field/cr_search_field_externs.js",
   ]
 }
 
@@ -44,8 +27,10 @@ js_library("manage_a11y_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
 js_library("manage_a11y_page_browser_proxy") {
@@ -54,8 +39,5 @@ js_library("manage_a11y_page_browser_proxy") {
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "change_dictation_locale_dialog.js",
-    "manage_a11y_page.js",
-  ]
+  js_files = [ "manage_a11y_page.js" ]
 }

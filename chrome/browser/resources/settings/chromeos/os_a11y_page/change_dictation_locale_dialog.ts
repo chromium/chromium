@@ -17,33 +17,39 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './change_dictation_locale_dialog.html.js';
 
 /**
  * A locale option for Dictation, including the human-readable name, the
  * locale value (like en-US), whether it works offline, whether the language
  * pack for the locale is installed, and whether it should be highlighted as
  * recommended to the user.
- * @typedef {{
- *   name: string,
- *   value: string,
- *   worksOffline: boolean,
- *   installed: boolean,
- *   recommended: boolean,
- * }}
  */
-let DictationLocaleOption;
+interface DictationLocaleOption {
+  name: string;
+  value: string;
+  worksOffline: boolean;
+  installed: boolean;
+  recommended: boolean;
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ChangeDictationLocaleDialogBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+export interface ChangeDictationLocaleDialog {
+  $: {
+    allLocalesList: IronListElement,
+    changeDictationLocaleDialog: CrDialogElement,
+    recommendedLocalesList: IronListElement,
+    search: CrSearchFieldElement,
+  };
+}
 
-/** @polymer */
+const ChangeDictationLocaleDialogBase = I18nMixin(PolymerElement);
+
 export class ChangeDictationLocaleDialog extends
     ChangeDictationLocaleDialogBase {
   static get is() {
@@ -51,7 +57,7 @@ export class ChangeDictationLocaleDialog extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -59,23 +65,19 @@ export class ChangeDictationLocaleDialog extends
       /**
        * Set by the manage OS a11y page, this is the full list of locales
        * available.
-       * @type {!Array<!DictationLocaleOption>}
        */
       options: Array,
 
       /**
        * Preference associated with Dictation locales.
-       * @type {!chrome.settingsPrivate.PrefObject}
        */
       pref: Object,
 
-      /** @private {!Array<!DictationLocaleOption>} */
       displayedLocales_: {
         type: Array,
         computed: `getAllDictationLocales_(options, lowercaseQueryString_)`,
       },
 
-      /** @private {!Array<!DictationLocaleOption>} */
       recommendedLocales_: {
         type: Array,
         computed:
@@ -84,7 +86,6 @@ export class ChangeDictationLocaleDialog extends
 
       /**
        * Whether any locales are displayed.
-       * @private
        */
       displayedLocalesEmpty_: {
         type: Boolean,
@@ -93,7 +94,6 @@ export class ChangeDictationLocaleDialog extends
 
       /**
        * Whether any locales are displayed.
-       * @private
        */
       recommendedLocalesEmpty_: {
         type: Boolean,
@@ -102,14 +102,12 @@ export class ChangeDictationLocaleDialog extends
 
       /**
        * Whether to enable the button to update the locale pref.
-       * @private
        */
       disableUpdateButton_: {
         type: Boolean,
         computed: 'shouldDisableActionButton_(selectedLocale_)',
       },
 
-      /** @private */
       lowercaseQueryString_: {
         type: String,
         value: '',
@@ -117,7 +115,6 @@ export class ChangeDictationLocaleDialog extends
 
       /**
        * The currently selected locale from the recommended locales list.
-       * @private {?DictationLocaleOption}
        */
       selectedRecommendedLocale_: {
         type: Object,
@@ -126,7 +123,6 @@ export class ChangeDictationLocaleDialog extends
 
       /**
        * The currently selected locale from the full locales list.
-       * @private {?DictationLocaleOption}
        */
       selectedLocale_: {
         type: Object,
@@ -135,18 +131,27 @@ export class ChangeDictationLocaleDialog extends
     };
   }
 
-  /** @override */
-  ready() {
+  options: DictationLocaleOption[];
+  pref: chrome.settingsPrivate.PrefObject<string>;
+  private disableUpdateButton_: boolean;
+  private displayedLocales_: DictationLocaleOption[];
+  private displayedLocalesEmpty_: boolean;
+  private lowercaseQueryString_: string;
+  private recommendedLocales_: DictationLocaleOption[];
+  private recommendedLocalesEmpty_: boolean;
+  private selectedLocale_: DictationLocaleOption|null;
+  private selectedRecommendedLocale_: DictationLocaleOption|null;
+
+  override ready() {
     super.ready();
     this.addEventListener('exit-pane', () => this.onPaneExit_());
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Sets offset in iron-list that uses the body as a scrollTarget.
-    afterNextRender(this, function() {
+    afterNextRender(this, () => {
       this.$.allLocalesList.scrollOffset = this.$.allLocalesList.offsetTop;
     });
   }
@@ -154,30 +159,21 @@ export class ChangeDictationLocaleDialog extends
   /**
    * Gets the list of all recommended Dictation locales based on the current
    * search.
-   * @return {!Array<!DictationLocaleOption>}
-   * @private
    */
-  getRecommendedDictationLocales_() {
+  private getRecommendedDictationLocales_(): DictationLocaleOption[] {
     return this.getPossibleDictationLocales_(/*recommendedOnly=*/ true);
   }
 
   /**
    * Gets the list of all possible Dictation locales based on the current
    * search.
-   * @return {!Array<!DictationLocaleOption>}
    */
-  getAllDictationLocales_() {
+  private getAllDictationLocales_(): DictationLocaleOption[] {
     return this.getPossibleDictationLocales_(/*recommendedOnly=*/ false);
   }
 
-  /**
-   * @param {boolean} recommendedOnly Whether to filter only to recommended
-   *     locales.
-   * @return {!Array<!DictationLocaleOption>} A list of possible dictation
-   *     locales based on the current search.
-   * @private
-   */
-  getPossibleDictationLocales_(recommendedOnly) {
+  private getPossibleDictationLocales_(recommendedOnly: boolean):
+      DictationLocaleOption[] {
     return this.options
         .filter(option => {
           // Filter recommended options. The currently selected option is also
@@ -199,12 +195,13 @@ export class ChangeDictationLocaleDialog extends
    * |selectedRecommendedLocale_| is not changed by the time this is called. The
    * value that |selectedRecommendedLocale_| will be assigned to is stored in
    * |this.$.recommendedLocalesList.selectedItem|.
-   * @private
    */
-  selectedRecommendedLocaleChanged_() {
-    const allLocalesSelected = this.$.allLocalesList.selectedItem;
+  private selectedRecommendedLocaleChanged_(): void {
+    const allLocalesSelected =
+        this.$.allLocalesList.selectedItem as DictationLocaleOption | null;
     const recommendedLocalesSelected =
-        this.$.recommendedLocalesList.selectedItem;
+        this.$.recommendedLocalesList.selectedItem as DictationLocaleOption |
+        null;
 
     // Check for equality before updating to avoid an infinite loop with
     // selectedLocaleChanged_().
@@ -222,39 +219,34 @@ export class ChangeDictationLocaleDialog extends
    * |selectedLocale_| is not changed by the time this is called. The value that
    * |selectedLocale_| will be assigned to is stored in
    * |this.$.allLocalesList.selectedItem|.
-   * @private
    */
-  selectedLocaleChanged_() {
-    const allLocalesSelected = this.$.allLocalesList.selectedItem;
+  private selectedLocaleChanged_(): void {
+    const allLocalesSelected =
+        this.$.allLocalesList.selectedItem as DictationLocaleOption | null;
     const recommendedLocalesSelected =
-        this.$.recommendedLocalesList.selectedItem;
+        this.$.recommendedLocalesList.selectedItem as DictationLocaleOption |
+        null;
 
     if (allLocalesSelected === recommendedLocalesSelected) {
       return;
     }
     // Check if the locale is also in the recommended list.
-    if (allLocalesSelected && allLocalesSelected.recommended) {
+    if (allLocalesSelected?.recommended) {
       this.$.recommendedLocalesList.selectItem(allLocalesSelected);
     } else if (recommendedLocalesSelected) {
       this.$.recommendedLocalesList.deselectItem(recommendedLocalesSelected);
     }
   }
 
-  /**
-   * @param {number} num
-   * @return {boolean} Whether num is equal to 0.
-   * @private
-   */
-  isZero_(num) {
+  private isZero_(num: number): boolean {
     return num === 0;
   }
 
   /**
    * Disable the action button unless a new locale has been selected.
-   * @return {boolean} Whether the "update" action button should be disabled.
-   * @private
+   * @return Whether the "update" action button should be disabled.
    */
-  shouldDisableActionButton_() {
+  private shouldDisableActionButton_(): boolean {
     return this.selectedLocale_ === null ||
         this.selectedLocale_.value === this.pref.value;
   }
@@ -262,12 +254,9 @@ export class ChangeDictationLocaleDialog extends
   /**
    * Gets the ARIA label for an item given the online/offline state and selected
    * state, which are also portrayed via icons in the HTML.
-   * @param {!DictationLocaleOption} item
-   * @param {boolean} selected
-   * @return {string} The ARIA label for the item.
-   * @private
    */
-  getAriaLabelForItem_(item, selected) {
+  private getAriaLabelForItem_(item: DictationLocaleOption, selected: boolean):
+      string {
     const longName = item.worksOffline ?
         this.i18n(
             'dictationChangeLanguageDialogOfflineDescription', item.name) :
@@ -278,41 +267,23 @@ export class ChangeDictationLocaleDialog extends
     return this.i18n(description, longName);
   }
 
-  /**
-   * @param {boolean} selected
-   * @return {string}
-   * @private
-   */
-  getItemClass_(selected) {
+  private getItemClass_(selected: boolean): string {
     return selected ? 'selected' : '';
   }
 
-  /**
-   * @param {!DictationLocaleOption} item
-   * @param {boolean} selected
-   * @return {string}
-   * @private
-   */
-  getIconClass_(item, selected) {
+  private getIconClass_(item: DictationLocaleOption, selected: boolean):
+      string {
     if (this.pref.value === item.value) {
       return 'previous';
     }
     return selected ? 'active' : 'hidden';
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>): void {
     this.lowercaseQueryString_ = e.detail.toLowerCase();
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent): void {
     // Close dialog if 'esc' is pressed and the search box is already empty.
     if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.changeDictationLocaleDialog.close();
@@ -321,18 +292,15 @@ export class ChangeDictationLocaleDialog extends
     }
   }
 
-  /** @private */
-  onPaneExit_() {
+  private onPaneExit_(): void {
     this.$.changeDictationLocaleDialog.close();
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.changeDictationLocaleDialog.close();
   }
 
-  /** @private */
-  onUpdateClick_() {
+  private onUpdateClick_(): void {
     if (this.selectedLocale_) {
       this.set('pref.value', this.selectedLocale_.value);
     }
