@@ -535,14 +535,14 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
 
   // Lookup the printer IP address.
   http_addrlist_t* addr_list = httpAddrGetList(
-      address.c_str(), AF_INET, base::NumberToString(port).c_str());
+      address.c_str(), AF_UNSPEC, base::NumberToString(port).c_str());
   if (!addr_list) {
     LOG(WARNING) << "Unable to resolve IP address from hostname";
     return PrinterQueryResult::kHostnameResolution;
   }
 
   ScopedHttpPtr http = ScopedHttpPtr(httpConnect2(
-      address.c_str(), port, addr_list, AF_INET,
+      address.c_str(), port, addr_list, AF_UNSPEC,
       encrypted ? HTTP_ENCRYPTION_ALWAYS : HTTP_ENCRYPTION_IF_REQUESTED, 0,
       kHttpConnectTimeoutMs, nullptr));
   if (!http) {
