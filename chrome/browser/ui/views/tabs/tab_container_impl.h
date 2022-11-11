@@ -241,6 +241,10 @@ class TabContainerImpl : public TabContainer,
   gfx::Rect GetTargetBoundsForClosingTab(Tab* tab,
                                          int former_model_index) const;
 
+  // Returns the largest x-value this TabContainer should contain, based on the
+  // ideal (i.e. post-animation) bounds of its contents.
+  int GetIdealTrailingX() const;
+
   // Remove the tab from |tabs_view_model_|, but *not* from the View hierarchy,
   // so it can be animated closed.
   void RemoveTabFromViewModel(int index);
@@ -334,6 +338,11 @@ class TabContainerImpl : public TabContainer,
   // The View that is to be scrolled by |tab_scrolling_animation_|. May be
   // nullptr in tests.
   const raw_ptr<views::View> scroll_contents_view_;
+
+  // This view is animated by `bounds_animator_` to guarantee that this
+  // container's bounds change smoothly when tabs are animated into or out of
+  // this container.
+  const raw_ref<views::View> overall_bounds_view_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

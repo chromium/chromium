@@ -13,6 +13,14 @@
 #include "ui/views/view_utils.h"
 
 // static
+bool ZOrderableTabContainerElement::CanOrderView(views::View* view) {
+  return views::IsViewClass<Tab>(view) ||
+         views::IsViewClass<TabGroupHeader>(view) ||
+         views::IsViewClass<TabGroupUnderline>(view) ||
+         views::IsViewClass<TabGroupHighlight>(view);
+}
+
+// static
 float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   Tab* tab = views::AsViewClass<Tab>(child);
   TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(child);

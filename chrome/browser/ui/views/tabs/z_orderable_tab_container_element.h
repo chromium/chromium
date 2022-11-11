@@ -18,6 +18,10 @@ class ZOrderableTabContainerElement {
   explicit ZOrderableTabContainerElement(views::View* const child)
       : child_(child), z_value_(CalculateZValue(child)) {}
 
+  // Returns true iff a ZOrderableTabContainerElement can be constructed with
+  // `view`.
+  static bool CanOrderView(views::View* view);
+
   bool operator<(const ZOrderableTabContainerElement& rhs) const {
     return z_value_ < rhs.z_value_;
   }

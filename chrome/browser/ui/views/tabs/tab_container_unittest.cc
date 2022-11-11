@@ -924,22 +924,23 @@ TEST_F(TabContainerTest, GroupHighlightBasics) {
             tab_container_->GetTabAtModelIndex(0)->bounds().height());
 }
 
-TEST_F(TabContainerTest, PreferredWidth) {
-  Tab* const tab = AddTab(0);
-  // Manually displace `tab`, then trigger an animation back to ideal bounds.
-  tab->SetBoundsRect(gfx::Rect());
-  tab_container_->MoveTab(0, 0);
+TEST_F(TabContainerTest, PreferredWidthDuringAnimation) {
+  AddTab(0);
+  AddTab(0);
+  const int initial_pref_width = tab_container_->GetPreferredSize().width();
 
-  // During animations, container should prefer to match its child bounds.
-  const gfx::Rect initial_tab_bounds = tab->bounds();
+  // Trigger an animation.
+  RemoveTab(0);
   ASSERT_TRUE(tab_container_->IsAnimating());
 
-  EXPECT_EQ(tab_container_->GetPreferredSize().width(),
-            initial_tab_bounds.right());
+  // During animations, container preferred size should animate smoothly.
+  EXPECT_EQ(initial_pref_width, tab_container_->GetPreferredSize().width());
 
-  // Complete the animation and the preferred width should match ideal bounds.
+  // Complete the animation and the preferred width should match ideal bounds of
+  // the trailingmost tab.
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_NE(initial_tab_bounds, tab_container_->GetIdealBounds(0));
+  ASSERT_NE(initial_pref_width, tab_container_->GetPreferredSize().width());
   EXPECT_EQ(tab_container_->GetPreferredSize().width(),
-            tab_container_->GetIdealBounds(0).right());
+            tab_container_->GetIdealBounds(tab_container_->GetTabCount() - 1)
+                .right());
 }

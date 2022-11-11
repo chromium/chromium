@@ -6,6 +6,7 @@
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
+#include "base/cxx20_to_address.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -177,6 +178,7 @@ TabContainerImpl::TabContainerImpl(
       drag_context_(drag_context),
       tab_slot_controller_(tab_slot_controller),
       scroll_contents_view_(scroll_contents_view),
+      overall_bounds_view_(*AddChildView(std::make_unique<views::View>())),
       bounds_animator_(this),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller,
@@ -188,6 +190,8 @@ TabContainerImpl::TabContainerImpl(
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
 
   bounds_animator_.AddObserver(this);
+
+  overall_bounds_view_->SetVisible(false);
 
   if (g_drop_indicator_width == 0) {
     // Direction doesn't matter, both images are the same size.
@@ -775,8 +779,11 @@ void TabContainerImpl::Layout() {
 
 void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
   std::vector<ZOrderableTabContainerElement> orderable_children;
-  for (views::View* child : children())
+  for (views::View* child : children()) {
+    if (!ZOrderableTabContainerElement::CanOrderView(child))
+      continue;
     orderable_children.emplace_back(child);
+  }
 
   // Sort in ascending order by z-value. Stable sort breaks ties by child index.
   std::stable_sort(orderable_children.begin(), orderable_children.end());
@@ -1043,6 +1050,10 @@ void TabContainerImpl::AnimateToIdealBounds() {
     AnimateTabSlotViewTo(header, target_bounds);
   }
 
+  const gfx::Rect overall_target_bounds = gfx::Rect(GetIdealTrailingX(), 0);
+  bounds_animator_.AnimateViewTo(base::to_address(overall_bounds_view_),
+                                 overall_target_bounds);
+
   // Because the preferred size of the tabstrip depends on the IsAnimating()
   // condition, but starting an animation doesn't necessarily invalidate the
   // existing preferred size and layout (which may now be incorrect), we need to
@@ -1084,6 +1095,8 @@ void TabContainerImpl::SnapToIdealBounds() {
         layout_helper_->group_header_ideal_bounds().at(header_pair.first));
     header_pair.second->UpdateBounds();
   }
+
+  overall_bounds_view_->SetBoundsRect(gfx::Rect(GetIdealTrailingX(), 0));
 
   PreferredSizeChanged();
 }
@@ -1191,6 +1204,13 @@ gfx::Rect TabContainerImpl::GetTargetBoundsForClosingTab(
   target_bounds.set_width(tab_overlap);
 
   return target_bounds;
+}
+
+int TabContainerImpl::GetIdealTrailingX() const {
+  // Our ideal width is the trailing x of our rightmost tab's ideal bounds.
+  return GetTabCount() > 0
+             ? tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()
+             : 0;
 }
 
 void TabContainerImpl::RemoveTabFromViewModel(int index) {
