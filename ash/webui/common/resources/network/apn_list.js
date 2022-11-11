@@ -29,6 +29,11 @@ Polymer({
       type: Array,
       value: [{name: 'apn1'}, {name: 'apn2'}, {name: 'apn3'}],
     },
+
+    shouldOmitLinks: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**

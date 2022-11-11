@@ -22,7 +22,17 @@ suite('ApnListTest', function() {
 
   test('Check if APN description exists', async function() {
     assertTrue(!!apnList);
-    assertTrue(!!apnList.shadowRoot.querySelector('localized-link'));
+    const getDescriptionWithLink = () =>
+        apnList.shadowRoot.querySelector('localized-link');
+    assertTrue(!!getDescriptionWithLink());
+    const getDescriptionWithoutLink = () =>
+        apnList.shadowRoot.querySelector('#descriptionNoLink');
+    assertFalse(!!getDescriptionWithoutLink());
+
+    apnList.shouldOmitLinks = true;
+    await flushTasks();
+    assertFalse(!!getDescriptionWithLink());
+    assertTrue(!!getDescriptionWithoutLink());
   });
 
   test('Check if APN list count is correct', async function() {

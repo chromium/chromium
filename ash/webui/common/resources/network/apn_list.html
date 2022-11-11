@@ -23,12 +23,18 @@
   }
 </style>
 <div id="apnDescription" class="property-box">
-  <localized-link
-      localized-string="[[i18nAdvanced('apnSettingsDescriptionWithLink')]]"
-      on-link-clicked="onLearnMoreClicked_">
-  </localized-link>
+  <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
+    <localized-link
+        localized-string="[[i18nAdvanced('apnSettingsDescriptionWithLink')]]"
+        on-link-clicked="onLearnMoreClicked_">
+    </localized-link>
+  </template>
+  <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
+    <div id="descriptionNoLink" aria-live="polite">
+      [[i18n('apnSettingsDescriptionNoLink')]]
+    </div>
+  </template>
 </div>
-
 <iron-list items="[[apns]]">
   <template>
     <apn-list-item apn="[[item]]"></apn-list-item>

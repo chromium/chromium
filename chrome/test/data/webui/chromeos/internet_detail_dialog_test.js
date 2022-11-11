@@ -334,7 +334,10 @@ suite('internet-detail-dialog', () => {
             internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
                 .textContent.trim();
         assertFalse(!!getApnSectionSublabel());
-        assertTrue(!!internetDetailDialog.shadowRoot.querySelector('apn-list'));
+        const getApnList = () =>
+            internetDetailDialog.shadowRoot.querySelector('apn-list');
+        assertTrue(!!getApnList());
+        assertTrue(getApnList().shouldOmitLinks);
         const isApnListShowing = () =>
             internetDetailDialog.shadowRoot.querySelector('iron-collapse')
                 .opened;
