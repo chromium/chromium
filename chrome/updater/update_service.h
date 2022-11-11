@@ -314,10 +314,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
                             StateChangeCallback state_update,
                             Callback callback) = 0;
 
-  // Provides a way to commit data or clean up resources before the task
-  // scheduler is shutting down.
-  virtual void Uninitialize() = 0;
-
  protected:
   friend class base::RefCountedThreadSafe<UpdateService>;
 

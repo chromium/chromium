@@ -72,8 +72,6 @@ class UpdateServiceImpl : public UpdateService {
                     StateChangeCallback state_update,
                     Callback callback) override;
 
-  void Uninitialize() override;
-
  private:
   ~UpdateServiceImpl() override;
 

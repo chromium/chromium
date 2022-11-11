@@ -494,10 +494,6 @@ void UpdateServiceProxy::Reset() {
   client_.reset([[CRUUpdateServiceProxyImpl alloc] initWithScope:scope_]);
 }
 
-void UpdateServiceProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
 UpdateServiceProxy::~UpdateServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

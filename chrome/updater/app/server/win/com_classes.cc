@@ -692,8 +692,7 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
   return S_OK;
 }
 
-HRESULT UpdaterInternalImpl::InitializeUpdateService(
-    IUpdaterInternalCallback* callback) {
+HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
   using IUpdaterInternalCallbackPtr =
       Microsoft::WRL::ComPtr<IUpdaterInternalCallback>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
@@ -707,7 +706,7 @@ HRESULT UpdaterInternalImpl::InitializeUpdateService(
           [](scoped_refptr<UpdateServiceInternal> update_service_internal,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              IUpdaterInternalCallbackPtr callback) {
-            update_service_internal->InitializeUpdateService(base::BindOnce(
+            update_service_internal->Hello(base::BindOnce(
                 [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                    IUpdaterInternalCallbackPtr callback) {
                   task_runner->PostTaskAndReplyWithResult(
@@ -715,9 +714,8 @@ HRESULT UpdaterInternalImpl::InitializeUpdateService(
                       base::BindOnce(&IUpdaterInternalCallback::Run, callback,
                                      0),
                       base::BindOnce([](HRESULT hr) {
-                        VLOG(2)
-                            << "UpdaterInternalImpl::InitializeUpdateService "
-                            << "callback returned " << std::hex << hr;
+                        VLOG(2) << "UpdaterInternalImpl::Hello "
+                                << "callback returned " << std::hex << hr;
                       }));
                 },
                 task_runner, callback));

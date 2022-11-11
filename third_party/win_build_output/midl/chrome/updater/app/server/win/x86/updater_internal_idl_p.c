@@ -228,7 +228,7 @@ static const updater_internal_idl_MIDL_PROC_FORMAT_STRING updater_internal_idl__
 /* 70 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure InitializeUpdateService */
+	/* Procedure Hello */
 
 /* 72 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
@@ -380,7 +380,7 @@ CINTERFACE_PROXY_VTABLE(5) _IUpdaterInternalProxyVtbl =
     IUnknown_AddRef_Proxy,
     IUnknown_Release_Proxy ,
     (void *) (INT_PTR) -1 /* IUpdaterInternal::Run */ ,
-    (void *) (INT_PTR) -1 /* IUpdaterInternal::InitializeUpdateService */
+    (void *) (INT_PTR) -1 /* IUpdaterInternal::Hello */
 };
 
 const CInterfaceStubVtbl _IUpdaterInternalStubVtbl =

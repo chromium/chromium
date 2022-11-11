@@ -150,8 +150,7 @@ class UpdaterInternalImpl
 
   // Overrides for IUpdaterInternal.
   IFACEMETHODIMP Run(IUpdaterInternalCallback* callback) override;
-  IFACEMETHODIMP InitializeUpdateService(
-      IUpdaterInternalCallback* callback) override;
+  IFACEMETHODIMP Hello(IUpdaterInternalCallback* callback) override;
 
  private:
   ~UpdaterInternalImpl() override = default;

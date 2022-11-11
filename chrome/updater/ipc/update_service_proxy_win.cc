@@ -760,11 +760,6 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                       OnCurrentSequence(std::move(callback)));
 }
 
-// TODO(crbug.com/1363829) - remove the function.
-void UpdateServiceProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope updater_scope,
     const base::TimeDelta& /*get_version_timeout*/) {

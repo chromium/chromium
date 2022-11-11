@@ -105,8 +105,6 @@ class UpdateServiceImplInactive : public UpdateService {
         base::BindOnce(std::move(callback), UpdateService::Result::kInactive));
   }
 
-  void Uninitialize() override {}
-
  private:
   ~UpdateServiceImplInactive() override = default;
 };

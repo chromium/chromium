@@ -79,7 +79,7 @@
       performTasksWithReply:reply];
 }
 
-- (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
+- (void)performHelloWithReply:(void (^)(void))reply {
   auto errorHandler = ^(NSError* xpcError) {
     LOG(ERROR) << "XPC connection failed: "
                << base::SysNSStringToUTF8([xpcError description]);
@@ -87,7 +87,7 @@
   };
 
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
-      performInitializeUpdateServiceWithReply:reply];
+      performHelloWithReply:reply];
 }
 
 @end
@@ -117,8 +117,7 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   [client_ performTasksWithReply:reply];
 }
 
-void UpdateServiceInternalProxy::InitializeUpdateService(
-    base::OnceClosure callback) {
+void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
@@ -127,11 +126,7 @@ void UpdateServiceInternalProxy::InitializeUpdateService(
     callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
 
-  [client_ performInitializeUpdateServiceWithReply:reply];
-}
-
-void UpdateServiceInternalProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [client_ performHelloWithReply:reply];
 }
 
 UpdateServiceInternalProxy::~UpdateServiceInternalProxy() {

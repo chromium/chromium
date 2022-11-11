@@ -570,7 +570,7 @@
                                 std::move(cb)));
 }
 
-- (void)performInitializeUpdateServiceWithReply:(void (^)(void))reply {
+- (void)performHelloWithReply:(void (^)(void))reply {
   auto cb = base::BindOnce(base::RetainBlock(^(void) {
     if (reply)
       reply();
@@ -580,9 +580,8 @@
 
   _appServer->TaskStarted();
   _callbackRunner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&updater::UpdateServiceInternal::InitializeUpdateService,
-                     _service, std::move(cb)));
+      FROM_HERE, base::BindOnce(&updater::UpdateServiceInternal::Hello,
+                                _service, std::move(cb)));
 }
 
 @end

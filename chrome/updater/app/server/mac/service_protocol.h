@@ -102,7 +102,7 @@
 
 // Performs the task that is relevant to the state of the Updater.
 // Does not perform an UpdateCheck.
-- (void)performInitializeUpdateServiceWithReply:(void (^_Nullable)(void))reply;
+- (void)performHelloWithReply:(void (^_Nullable)(void))reply;
 
 @end
 

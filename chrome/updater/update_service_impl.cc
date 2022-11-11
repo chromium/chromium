@@ -667,11 +667,6 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
           MakeUpdateClientCallback(std::move(callback))));
 }
 
-void UpdateServiceImpl::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PrefsCommitPendingWrites(config_->GetPrefService());
-}
-
 UpdateServiceImpl::~UpdateServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   config_->GetPrefService()->SchedulePendingLossyWrites();

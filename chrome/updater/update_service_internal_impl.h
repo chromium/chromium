@@ -18,9 +18,7 @@ class UpdateServiceInternalImpl : public UpdateServiceInternal {
 
   // Overrides for updater::UpdateServiceInternal.
   void Run(base::OnceClosure callback) override;
-  void InitializeUpdateService(base::OnceClosure callback) override;
-
-  void Uninitialize() override;
+  void Hello(base::OnceClosure callback) override;
 
  private:
   ~UpdateServiceInternalImpl() override;

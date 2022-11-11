@@ -29,7 +29,7 @@ interface IUpdaterInternalCallback : IUnknown {
 ]
 interface IUpdaterInternal : IUnknown {
   HRESULT Run([in] IUpdaterInternalCallback* callback);
-  HRESULT InitializeUpdateService([in] IUpdaterInternalCallback* callback);
+  HRESULT Hello([in] IUpdaterInternalCallback* callback);
 };
 
 [

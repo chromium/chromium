@@ -66,7 +66,6 @@ class UpdateServiceProxy : public UpdateService {
                     const std::string& install_settings,
                     StateChangeCallback state_update,
                     Callback callback) override;
-  void Uninitialize() override;
 
  private:
   ~UpdateServiceProxy() override;

@@ -106,8 +106,6 @@ class FakeUpdateService : public UpdateService {
     DoStateChangeCallbacks(std::move(state_update), std::move(callback));
   }
 
-  void Uninitialize() override {}
-
  private:
   ~FakeUpdateService() override = default;
 

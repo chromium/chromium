@@ -54,14 +54,10 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
             this, std::move(callback)));
   }
 
-  void InitializeUpdateService(base::OnceClosure callback) override {
+  void Hello(base::OnceClosure callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__ << " (Qualifying)";
     std::move(callback).Run();
-  }
-
-  void Uninitialize() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
  private:

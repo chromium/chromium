@@ -96,10 +96,9 @@ class UpdateServiceInternalProxyImpl
                                std::move(callback)));
   }
 
-  void InitializeUpdateService(base::OnceClosure callback) {
-    PostRPCTask(base::BindOnce(
-        &UpdateServiceInternalProxyImpl::InitializeUpdateServiceOnSTA, this,
-        std::move(callback)));
+  void Hello(base::OnceClosure callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceInternalProxyImpl::HelloOnSTA,
+                               this, std::move(callback)));
   }
 
  private:
@@ -122,7 +121,7 @@ class UpdateServiceInternalProxyImpl
     }
   }
 
-  void InitializeUpdateServiceOnSTA(base::OnceClosure callback) {
+  void HelloOnSTA(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!ConnectToServer()) {
       std::move(callback).Run();
@@ -130,11 +129,9 @@ class UpdateServiceInternalProxyImpl
     }
     auto callback_wrapper =
         Microsoft::WRL::Make<UpdaterInternalCallback>(std::move(callback));
-    HRESULT hr =
-        get_interface()->InitializeUpdateService(callback_wrapper.Get());
+    HRESULT hr = get_interface()->Hello(callback_wrapper.Get());
     if (FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
-              << std::hex << hr;
+      VLOG(2) << "Failed to call IUpdaterInternal::Hello" << std::hex << hr;
       callback_wrapper->Disconnect().Run();
       return;
     }
@@ -157,16 +154,10 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   impl_->Run(OnCurrentSequence(std::move(callback)));
 }
 
-void UpdateServiceInternalProxy::InitializeUpdateService(
-    base::OnceClosure callback) {
+void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->InitializeUpdateService(OnCurrentSequence(std::move(callback)));
-}
-
-// TODO(crbug.com/1363829) - remove the function.
-void UpdateServiceInternalProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  impl_->Hello(OnCurrentSequence(std::move(callback)));
 }
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(

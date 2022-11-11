@@ -34,15 +34,10 @@ void UpdateServiceInternalImpl::Run(base::OnceClosure callback) {
       std::move(callback), service));
 }
 
-void UpdateServiceInternalImpl::InitializeUpdateService(
-    base::OnceClosure callback) {
+void UpdateServiceInternalImpl::Hello(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   std::move(callback).Run();
-}
-
-void UpdateServiceInternalImpl::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 UpdateServiceInternalImpl::~UpdateServiceInternalImpl() {

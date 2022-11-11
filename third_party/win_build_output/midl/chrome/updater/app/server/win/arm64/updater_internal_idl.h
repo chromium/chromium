@@ -216,7 +216,7 @@ EXTERN_C const IID IID_IUpdaterInternal;
         virtual HRESULT STDMETHODCALLTYPE Run( 
             /* [in] */ IUpdaterInternalCallback *callback) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE InitializeUpdateService( 
+        virtual HRESULT STDMETHODCALLTYPE Hello( 
             /* [in] */ IUpdaterInternalCallback *callback) = 0;
         
     };
@@ -248,8 +248,8 @@ EXTERN_C const IID IID_IUpdaterInternal;
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);
         
-        DECLSPEC_XFGVIRT(IUpdaterInternal, InitializeUpdateService)
-        HRESULT ( STDMETHODCALLTYPE *InitializeUpdateService )( 
+        DECLSPEC_XFGVIRT(IUpdaterInternal, Hello)
+        HRESULT ( STDMETHODCALLTYPE *Hello )( 
             IUpdaterInternal * This,
             /* [in] */ IUpdaterInternalCallback *callback);
         
@@ -279,8 +279,8 @@ EXTERN_C const IID IID_IUpdaterInternal;
 #define IUpdaterInternal_Run(This,callback)	\
     ( (This)->lpVtbl -> Run(This,callback) ) 
 
-#define IUpdaterInternal_InitializeUpdateService(This,callback)	\
-    ( (This)->lpVtbl -> InitializeUpdateService(This,callback) ) 
+#define IUpdaterInternal_Hello(This,callback)	\
+    ( (This)->lpVtbl -> Hello(This,callback) ) 
 
 #endif /* COBJMACROS */
 
