@@ -47,8 +47,8 @@ enum BadMessageReason {
   // DEPRECATED_EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG = 21,
   EMF_NON_EXTENSION_SENDER_FRAME = 22,
   EMF_NON_EXTENSION_SENDER_NATIVE_HOST = 23,
-  EMF_INVALID_SOURCE_URL_FROM_FRAME = 24,
-  EMF_INVALID_SOURCE_URL_FROM_WORKER = 25,
+  EMF_INVALID_SOURCE_URL = 24,
+  // DEPRECATED_EMF_INVALID_SOURCE_URL_FROM_WORKER = 25,
   EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST = 26,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the

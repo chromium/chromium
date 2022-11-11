@@ -160,36 +160,43 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
   if (source_url.is_empty())
     return true;
 
-  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  // Extract the `base_origin`.
+  //
+  // We don't just use (or compare against) the trustworthy
+  // `render_frame_host->GetLastCommittedURL()` because the renderer-side and
+  // browser-side URLs may differ in some scenarios (e.g. see
+  // https://crbug.com/1197308 or `document.write`).
+  //
+  // We don't use `ChildProcessSecurityPolicy::CanCommitURL` because: 1) it
+  // doesn't cover service workers (e.g. see https://crbug.com/1038996#c35), 2)
+  // it has bugs (e.g. https://crbug.com/1380576), and 3) we *can* extract the
+  // `base_origin` (via `source_context.worker->extension_id` or
+  // `GetLastCommittedOrigin`) and therefore *can* use the more fundamental
+  // `CanAccessDataForOrigin` (whereas `CanCommitURL` tries to work even if the
+  // base origin is not available).
+  url::Origin base_origin;
   if (source_context.is_for_render_frame()) {
-    // We don't just use (or compare against) the trustworthy
-    // `render_frame_host->GetLastCommittedURL()` because the renderer-side and
-    // browser-side URLs may differ in some scenarios (e.g. see
-    // https://crbug.com/1197308).
-    if (!policy->CanCommitURL(process.GetID(), source_url)) {
-      bad_message::ReceivedBadMessage(
-          &process, bad_message::EMF_INVALID_SOURCE_URL_FROM_FRAME);
+    content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
+        process.GetID(), source_context.frame->routing_id);
+    if (!frame) {
+      // Not calling ReceivedBadMessage because it is possible that the frame
+      // got deleted before the IPC arrived.
+      // Returning `false` will result in dropping the IPC by the caller - this
+      // is okay, because sending of the IPC was inherently racing with the
+      // deletion of the frame.
       return false;
     }
+    base_origin = frame->GetLastCommittedOrigin();
   } else if (source_context.is_for_service_worker()) {
     // Validate `source_context` before using it to validate `source_url`.
+    // IsValidSourceContext will call ReceivedBadMessage if needed.
     if (!IsValidSourceContext(process, source_context))
       return false;
 
-    // The `base_origin` and `url_origin` below are considered trustworthy,
-    // because `source_context` has been validated above.
-    url::Origin base_origin = Extension::CreateOriginFromExtensionId(
+    // `base_origin` can be considered trustworthy, because `source_context` has
+    // been validated above.
+    base_origin = Extension::CreateOriginFromExtensionId(
         source_context.worker->extension_id);
-    url::Origin url_origin = url::Origin::Resolve(source_url, base_origin);
-
-    // The CanCommitURL check (in the `is_for_render_frame` branch of the `if`
-    // statement) can't cover service workers (see
-    // https://crbug.com/1038996#c35) so we do an origin-based check instead.
-    if (!policy->CanAccessDataForOrigin(process.GetID(), url_origin)) {
-      bad_message::ReceivedBadMessage(
-          &process, bad_message::EMF_INVALID_SOURCE_URL_FROM_WORKER);
-      return false;
-    }
   } else {
     DCHECK(source_context.is_for_native_host());
     // `ExtensionHostMsg_OpenChannelToExtension` is sent in
@@ -198,6 +205,15 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
     bad_message::ReceivedBadMessage(
         &process,
         bad_message::EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST);
+    return false;
+  }
+
+  // Verify `source_url` via CanAccessDataForOrigin.
+  url::Origin source_url_origin = url::Origin::Resolve(source_url, base_origin);
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  if (!policy->CanAccessDataForOrigin(process.GetID(), source_url_origin)) {
+    bad_message::ReceivedBadMessage(&process,
+                                    bad_message::EMF_INVALID_SOURCE_URL);
     return false;
   }
 
