@@ -494,8 +494,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     return CandidateStatus::kFailNearFilter;
 
   if (quad->background_color != SkColors::kTransparent &&
-      (quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter() ||
-       quad->shared_quad_state->mask_filter_info.HasGradientMask())) {
+      (quad->background_color != SkColors::kBlack ||
+       quad->ShouldDrawWithBlending())) {
     // This path can also be used by other platforms like Ash/Chrome, which does
     // not support overlays with background color. Only LaCros/Wayland supports
     // that.
