@@ -470,8 +470,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2" units="ms"
-    expires_after="2021-03-07">
-  <owner>asvitkine@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: breakdown metric for Startup.FirstWebContents.NonEmptyPaint2
+     guardrail metrics -->
+
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <summary>
     Time between Startup.BrowserMessageLoopStartTime and
     Startup.FirstWebContents.NonEmptyPaint2. Recorded explicitly to allow easy
