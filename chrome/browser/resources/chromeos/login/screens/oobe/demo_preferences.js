@@ -87,7 +87,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
 
       retailer_id_input_pattern_: {
         type: String,
-        value: '[a-zA-Z]{3}-[0-9]{4}$',
+        value: '^[A-Z]{3}-[0-9]{4}$',
       },
 
     };
