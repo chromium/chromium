@@ -5,10 +5,9 @@
 #ifndef BASE_SCOPED_OBSERVATION_TRAITS_H_
 #define BASE_SCOPED_OBSERVATION_TRAITS_H_
 
-namespace base {
+#include "base/scoped_observation_traits_internal.h"
 
-template <class Source, class Observer, void (Source::*... Func)(Observer*)>
-struct ScopedObservationTraits;
+namespace base {
 
 // `ScopedObservationTraits` is used to control the behavior of
 // `ScopedObservation` on sources without AddObserver()/RemoveObserver()
@@ -58,24 +57,14 @@ struct ScopedObservationTraits;
 //    base::ScopedObservation<CustomSource, FooObserver> obs...
 //
 
-template <class Source,
-          class Observer,
-          void (Source::*AddObserverFn)(Observer*),
-          void (Source::*RemoveObserverFn)(Observer*)>
-struct ScopedObservationTraits<Source,
-                               Observer,
-                               AddObserverFn,
-                               RemoveObserverFn> {
-  static void AddObserver(Source* source, Observer* observer) {
-    (source->*AddObserverFn)(observer);
-  }
-  static void RemoveObserver(Source* source, Observer* observer) {
-    (source->*RemoveObserverFn)(observer);
-  }
-};
-
 template <class Source, class Observer>
-struct ScopedObservationTraits<Source, Observer> {
+struct ScopedObservationTraits {
+  static_assert(internal::HasAddAndRemoveObserverMethods<Source, Observer>,
+                "The given Source is missing "
+                "AddObserver(Observer*) and/or RemoveObserver(Observer*) "
+                "methods. Please provide a custom specialization of "
+                "ScopedObservationTraits<> for this Source/Observer pair.");
+
   static void AddObserver(Source* source, Observer* observer) {
     source->AddObserver(observer);
   }

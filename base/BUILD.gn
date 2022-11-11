@@ -645,6 +645,7 @@ mixed_component("base") {
     "scoped_native_library.h",
     "scoped_observation.h",
     "scoped_observation_traits.h",
+    "scoped_observation_traits_internal.h",
     "sequence_checker.cc",
     "sequence_checker.h",
     "sequence_checker_impl.cc",

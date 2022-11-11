@@ -132,12 +132,22 @@ class TestSourceWithNonDefaultNames {
 };
 
 using TestScopedObservationWithNonDefaultNames =
-    ScopedObservation<TestSourceWithNonDefaultNames,
-                      TestSourceObserver,
-                      &TestSourceWithNonDefaultNames::AddFoo,
-                      &TestSourceWithNonDefaultNames::RemoveFoo>;
+    ScopedObservation<TestSourceWithNonDefaultNames, TestSourceObserver>;
 
 }  // namespace
+
+template <>
+struct ScopedObservationTraits<TestSourceWithNonDefaultNames,
+                               TestSourceObserver> {
+  static void AddObserver(TestSourceWithNonDefaultNames* source,
+                          TestSourceObserver* observer) {
+    source->AddFoo(observer);
+  }
+  static void RemoveObserver(TestSourceWithNonDefaultNames* source,
+                             TestSourceObserver* observer) {
+    source->RemoveFoo(observer);
+  }
+};
 
 TEST(ScopedObservationTest, NonDefaultNames) {
   TestSourceWithNonDefaultNames s1;

@@ -41,18 +41,11 @@ namespace base {
 // By default `ScopedMultiSourceObservation` only works with sources that expose
 // `AddObserver` and `RemoveObserver`. However, it's also possible to
 // adapt it to custom function names (say `AddFoo` and `RemoveFoo` accordingly)
-// by using one of the two methods outlined below:
-//
-//  - (obsolete) Pass function names to the template:
-//    ScopedMultiSourceObservation<Source, Observer, &Source::AddFoo,
-//    &Source::RemoveFoo>
-//    TODO(crbug.com/1380837): Migrate all such examples to traits.
-//
-//  - (preferred) Tailor ScopedObservationTraits<> for the given Source and
-//    Observer -- see `base/scoped_observation_traits.h` for details.
+// by tailoring ScopedObservationTraits<> for the given Source and Observer --
+// see `base/scoped_observation_traits.h` for details.
 //
 
-template <class Source, class Observer, void (Source::*... Func)(Observer*)>
+template <class Source, class Observer>
 class ScopedMultiSourceObservation {
  public:
   explicit ScopedMultiSourceObservation(Observer* observer)
@@ -98,7 +91,7 @@ class ScopedMultiSourceObservation {
   size_t GetSourcesCount() const { return sources_.size(); }
 
  private:
-  using Traits = ScopedObservationTraits<Source, Observer, Func...>;
+  using Traits = ScopedObservationTraits<Source, Observer>;
 
   const raw_ptr<Observer> observer_;
 
