@@ -184,6 +184,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//chromecast/cast_core/runtime/browser/url_rewrite",
     "//components/cast/message_port",
     "//components/cast_receiver/browser:page_state_observer",
+    "//components/cast_receiver/browser:permissions_manager",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",
     "//components/media_control/browser",
@@ -199,6 +200,8 @@ cast_source_set("runtime_application_dispatcher") {
 
 cast_source_set("runtime_service_impl") {
   sources = [
+    "core_conversions.cc",
+    "core_conversions.h",
     "core_streaming_config_manager.cc",
     "core_streaming_config_manager.h",
     "runtime_application_service_impl.cc",
@@ -247,6 +250,7 @@ cast_source_set("runtime_service_impl") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
     "//third_party/openscreen/src/cast/common:public",
+    "//url",
   ]
 }
 

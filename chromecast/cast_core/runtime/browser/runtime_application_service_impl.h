@@ -39,12 +39,14 @@ class CastContentWindow;
 class MessagePortService;
 class RuntimeApplicationBase;
 
-class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
+class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate,
+                                      public CastWebContents::Observer {
  public:
   using StatusCallback = cast_receiver::RuntimeApplication::StatusCallback;
 
   RuntimeApplicationServiceImpl(
       std::unique_ptr<RuntimeApplicationBase> runtime_application,
+      cast::common::ApplicationConfig config,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       CastWebService& web_service);
   ~RuntimeApplicationServiceImpl() override;
@@ -70,6 +72,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
   content::WebContents* GetWebContents() override;
   cast_receiver::ContentWindowControls* GetContentWindowControls() override;
   cast_receiver::StreamingConfigManager* GetStreamingConfigManager() override;
+  void LoadPage(const GURL& url) override;
 
  private:
   // Creates the root CastWebView for this Cast session.
@@ -110,7 +113,27 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
       GetAllBindingsCallback callback,
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
 
+  // Returns if current session is enabled for dev.
+  bool IsEnabledForDev() const;
+
+  // Returns if remote control mode is enabled.
+  bool IsRemoteControlMode() const;
+
+  // Returns renderer features.
+  base::Value GetRendererFeatures() const;
+
+  // Returns if app is audio only.
+  bool IsAudioOnly() const;
+
+  // Returns whether feature permissions should be enforced.
+  bool GetEnforceFeaturePermissions() const;
+
+  // CastWebContents::Observer overrides.
+  void InnerContentsCreated(CastWebContents* inner_contents,
+                            CastWebContents* outer_contents) override;
+
   std::unique_ptr<RuntimeApplicationBase> const runtime_application_;
+  const cast::common::ApplicationConfig config_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::raw_ref<CastWebService> web_service_;

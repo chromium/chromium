@@ -10,6 +10,7 @@
 #include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/page_state_observer.h"
+#include "components/cast_receiver/browser/public/application_config.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
@@ -23,11 +24,16 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
-                        cast::common::ApplicationConfig app_config,
+                        cast_receiver::ApplicationConfig app_config,
                         cast_receiver::ApplicationClient& application_client);
   ~WebRuntimeApplication() override;
 
  private:
+  const GURL& app_url() {
+    DCHECK(config().url);
+    return *config().url;
+  }
+
   void OnAllBindingsReceived(cast_receiver::Status status,
                              std::vector<std::string> bindings);
 
@@ -53,7 +59,6 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   // BindingsManagerWebRuntime::Client implementation:
   void OnError() override;
 
-  const GURL app_url_;
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);

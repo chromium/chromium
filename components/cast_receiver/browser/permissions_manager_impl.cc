@@ -45,10 +45,13 @@ PermissionsManagerImpl::PermissionsManagerImpl(std::string app_id)
 PermissionsManagerImpl::~PermissionsManagerImpl() = default;
 
 void PermissionsManagerImpl::AddPermission(blink::PermissionType permission) {
+  // TODO(crbug.com/1383326): Ensure this each permission is valid per an allow
+  // list maintained by this component.
   permissions_.push_back(permission);
 }
 
 void PermissionsManagerImpl::AddOrigin(url::Origin origin) {
+  CHECK(!origin.opaque());
   additional_origins_.push_back(std::move(origin));
 }
 

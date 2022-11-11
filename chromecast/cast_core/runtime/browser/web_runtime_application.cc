@@ -20,13 +20,13 @@ namespace chromecast {
 
 WebRuntimeApplication::WebRuntimeApplication(
     std::string cast_session_id,
-    cast::common::ApplicationConfig config,
+    cast_receiver::ApplicationConfig config,
     cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(config),
-                             mojom::RendererType::MOJO_RENDERER,
-                             application_client),
-      app_url_(RuntimeApplicationBase::config().cast_web_app_config().url()) {}
+                             application_client) {
+  DCHECK(app_url().is_valid());
+}
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -47,6 +47,8 @@ void WebRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOG(INFO) << "Launching application: " << *this;
+
+  SetContentPermissions(*delegate().GetWebContents());
 
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
@@ -73,34 +75,17 @@ void WebRuntimeApplication::InnerWebContentsCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(inner_web_contents);
 
-  CastWebContents* inner_cast_contents =
-      CastWebContents::FromWebContents(inner_web_contents);
-  CastWebContents* outer_cast_contents =
-      CastWebContents::FromWebContents(delegate().GetWebContents());
-  DCHECK(inner_cast_contents);
-  DCHECK(outer_cast_contents);
-
   DLOG(INFO) << "Inner web contents created";
 
-#if DCHECK_IS_ON()
-  base::Value features(base::Value::Type::DICTIONARY);
-  base::Value dev_mode_config(base::Value::Type::DICTIONARY);
-  dev_mode_config.SetKey(feature::kDevModeOrigin, base::Value(app_url_.spec()));
-  features.SetKey(feature::kEnableDevMode, std::move(dev_mode_config));
-  inner_cast_contents->AddRendererFeatures(std::move(features));
-#endif
+  CastWebContents* outer_cast_contents =
+      CastWebContents::FromWebContents(delegate().GetWebContents());
+  DCHECK(outer_cast_contents);
 
-  // Bind inner CastWebContents with the same session id and app id as the
-  // root CastWebContents so that the same url rewrites are applied.
-  inner_cast_contents->SetAppProperties(
-      config().app_id(), GetCastSessionId(), GetIsAudioOnly(), app_url_,
-      GetEnforceFeaturePermissions(), GetFeaturePermissions(),
-      GetAdditionalFeaturePermissionOrigins());
-  content::WebContentsObserver::Observe(inner_web_contents);
+  SetContentPermissions(*inner_web_contents);
 
-  // Attach URL request rewrire rules to the inner CastWebContents.
+  // TODO(crbug.com/1359571): Decouple URL Rewrite support from CastWebContents.
   outer_cast_contents->url_rewrite_rules_manager()->AddWebContents(
-      inner_cast_contents->web_contents());
+      inner_web_contents);
 }
 
 void WebRuntimeApplication::MediaStartedPlaying(
@@ -142,7 +127,7 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   bindings_manager_->ConfigureWebContents(delegate().GetWebContents());
 
   // Application is initialized now - we can load the URL.
-  LoadPage(app_url_);
+  LoadPage(app_url());
 }
 
 void WebRuntimeApplication::OnPageLoadComplete() {

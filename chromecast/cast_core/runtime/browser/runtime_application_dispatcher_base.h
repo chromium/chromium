@@ -17,6 +17,7 @@
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/application_config.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
@@ -39,7 +40,7 @@ class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
   // the |loaded_apps_| list.
   TRuntimeApplicationPlatform* CreateApplication(
       std::string session_id,
-      cast::common::ApplicationConfig app_config,
+      cast_receiver::ApplicationConfig app_config,
       RuntimeApplicationPlatformFactory factory);
 
   // Returns an existing application or nullptr.
@@ -72,12 +73,12 @@ template <typename TRuntimeApplicationPlatform>
 TRuntimeApplicationPlatform*
 RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
     CreateApplication(std::string session_id,
-                      cast::common::ApplicationConfig app_config,
+                      cast_receiver::ApplicationConfig app_config,
                       RuntimeApplicationPlatformFactory factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<RuntimeApplicationBase> app;
-  if (openscreen::cast::IsCastStreamingReceiverAppId(app_config.app_id())) {
+  if (openscreen::cast::IsCastStreamingReceiverAppId(app_config.app_id)) {
     app = std::make_unique<StreamingRuntimeApplication>(
         session_id, std::move(app_config), *application_client_);
   } else {

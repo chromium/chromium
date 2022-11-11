@@ -14,6 +14,7 @@ source_set("browser") {
   ]
   public = [
     "public/application_client.h",
+    "public/application_config.h",
     "public/application_state_observer.h",
     "public/content_window_controls.h",
     "public/runtime_application.h",
@@ -22,6 +23,7 @@ source_set("browser") {
   ]
   sources = [
     "application_client.cc",
+    "application_config.cc",
     "content_window_controls.cc",
     "runtime_application.cc",
     "streaming_config_manager.cc",

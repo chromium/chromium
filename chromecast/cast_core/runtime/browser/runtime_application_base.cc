@@ -10,36 +10,20 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/cast_receiver/browser/permissions_manager_impl.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromecast {
-namespace {
-
-// Parses renderer features.
-const cast::common::Dictionary::Entry* FindEntry(
-    const std::string& key,
-    const cast::common::Dictionary& dict) {
-  auto iter = base::ranges::find(dict.entries(), key,
-                                 &cast::common::Dictionary::Entry::key);
-  if (iter == dict.entries().end()) {
-    return nullptr;
-  }
-  return &*iter;
-}
-
-}  // namespace
 
 RuntimeApplicationBase::Delegate::~Delegate() = default;
 
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
-    cast::common::ApplicationConfig app_config,
-    mojom::RendererType renderer_type,
+    cast_receiver::ApplicationConfig app_config,
     cast_receiver::ApplicationClient& application_client)
     : cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
-      renderer_type_(renderer_type),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       application_client_(application_client) {
   DCHECK(task_runner_);
@@ -56,11 +40,11 @@ void RuntimeApplicationBase::SetDelegate(Delegate& delegate) {
 }
 
 const std::string& RuntimeApplicationBase::GetDisplayName() const {
-  return config().display_name();
+  return config().display_name;
 }
 
 const std::string& RuntimeApplicationBase::GetAppId() const {
-  return config().app_id();
+  return config().app_id;
 }
 
 const std::string& RuntimeApplicationBase::GetCastSessionId() const {
@@ -101,152 +85,32 @@ RuntimeApplicationBase::GetApplicationControls() {
       *delegate().GetWebContents());
 }
 
-base::Value RuntimeApplicationBase::GetRendererFeatures() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry =
-      FindEntry(feature::kCastCoreRendererFeatures, config().extra_features());
-  if (!entry) {
-    return base::Value();
-  }
-  DCHECK(entry->value().has_dictionary());
-
-  base::Value::Dict renderer_features;
-  for (const cast::common::Dictionary::Entry& feature :
-       entry->value().dictionary().entries()) {
-    base::Value::Dict dict;
-    if (feature.has_value()) {
-      DCHECK(feature.value().has_dictionary());
-      for (const cast::common::Dictionary::Entry& feature_arg :
-           feature.value().dictionary().entries()) {
-        DCHECK(feature_arg.has_value());
-        if (feature_arg.value().value_case() == cast::common::Value::kFlag) {
-          dict.Set(feature_arg.key(), feature_arg.value().flag());
-        } else if (feature_arg.value().value_case() ==
-                   cast::common::Value::kText) {
-          dict.Set(feature_arg.key(), feature_arg.value().text());
-        } else {
-          LOG(FATAL) << "No or unsupported value was set for the feature: "
-                     << feature.key();
-        }
-      }
-    }
-    DVLOG(1) << "Renderer feature created: " << feature.key();
-    renderer_features.Set(feature.key(), std::move(dict));
-  }
-
-  return base::Value(std::move(renderer_features));
-}
-
-bool RuntimeApplicationBase::GetIsAudioOnly() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry =
-      FindEntry(feature::kCastCoreIsAudioOnly, config().extra_features());
-  if (!entry) {
-    return false;
-  }
-
-  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
-}
-
-bool RuntimeApplicationBase::GetIsRemoteControlMode() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreIsRemoteControlMode,
-                                config().extra_features());
-  if (!entry) {
-    return false;
-  }
-
-  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
-}
-
-bool RuntimeApplicationBase::GetEnforceFeaturePermissions() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
-                                config().extra_features());
-  if (!entry) {
-    return false;
-  }
-
-  DCHECK(entry->value().value_case() == cast::common::Value::kFlag);
-  return entry->value().flag();
-}
-
-std::vector<int> RuntimeApplicationBase::GetFeaturePermissions() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<int> feature_permissions;
-  const auto* entry = FindEntry(feature::kCastCoreFeaturePermissions,
-                                config().extra_features());
-  if (!entry) {
-    return feature_permissions;
-  }
-
-  DCHECK(entry->value().value_case() == cast::common::Value::kArray);
-  base::ranges::for_each(
-      entry->value().array().values(),
-      [&feature_permissions](const cast::common::Value& value) {
-        DCHECK(value.value_case() == cast::common::Value::kNumber);
-        feature_permissions.push_back(value.number());
-      });
-  return feature_permissions;
-}
-
-std::vector<std::string>
-RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::string> feature_permission_origins;
-  const auto* entry = FindEntry(feature::kCastCoreFeaturePermissionOrigins,
-                                config().extra_features());
-  if (!entry) {
-    return feature_permission_origins;
-  }
-
-  DCHECK(entry->value().value_case() == cast::common::Value::kArray);
-  base::ranges::for_each(
-      entry->value().array().values(),
-      [&feature_permission_origins](const cast::common::Value& value) {
-        DCHECK(value.value_case() == cast::common::Value::kText);
-        feature_permission_origins.push_back(value.text());
-      });
-  return feature_permission_origins;
-}
-
-bool RuntimeApplicationBase::GetEnabledForDev() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry =
-      FindEntry(feature::kCastCoreRendererFeatures, config().extra_features());
-  if (!entry) {
-    return false;
-  }
-  DCHECK(entry->value().has_dictionary());
-
-  return FindEntry(chromecast::feature::kEnableDevMode,
-                   entry->value().dictionary()) != nullptr;
-}
-
 void RuntimeApplicationBase::LoadPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(delegate_->GetWebContents());
-  auto* cast_web_contents =
-      CastWebContents::FromWebContents(delegate_->GetWebContents());
-  DCHECK(cast_web_contents);
 
-  cast_web_contents->AddRendererFeatures(GetRendererFeatures());
-  cast_web_contents->SetAppProperties(
-      config().app_id(), GetCastSessionId(), GetIsAudioOnly(), url,
-      GetEnforceFeaturePermissions(), GetFeaturePermissions(),
-      GetAdditionalFeaturePermissionOrigins());
+  delegate().LoadPage(url);
 
-  // Start loading the URL while JS visibility is disabled and no window is
-  // created. This way users won't see the progressive UI updates as the page is
-  // formed and styles are applied. The actual window will be created in
-  // OnApplicationStarted when application is fully launched.
-  cast_web_contents->LoadUrl(url);
-
-  // This needs to be called to get the PageState::LOADED event as it's fully
-  // loaded.
   SetWebVisibilityAndPaint(false);
+}
+
+void RuntimeApplicationBase::SetContentPermissions(
+    content::WebContents& web_contents) {
+  cast_receiver::PermissionsManagerImpl* permissions_manager =
+      cast_receiver::PermissionsManagerImpl::CreateInstance(web_contents,
+                                                            GetAppId());
+  if (config().url.has_value()) {
+    auto app_url_origin = url::Origin::Create(config().url.value());
+    if (!app_url_origin.opaque()) {
+      permissions_manager->AddOrigin(app_url_origin);
+    }
+  }
+  for (blink::PermissionType permission : config().permissions.permissions) {
+    permissions_manager->AddPermission(permission);
+  }
+  for (auto& origin : config().permissions.additional_origins) {
+    DCHECK(!origin.opaque());
+    permissions_manager->AddOrigin(origin);
+  }
 }
 
 void RuntimeApplicationBase::OnPageLoaded() {
@@ -350,10 +214,6 @@ void RuntimeApplicationBase::SetTouchInputEnabled(bool enabled) {
 
 bool RuntimeApplicationBase::IsApplicationRunning() const {
   return is_application_running_;
-}
-
-mojom::RendererType RuntimeApplicationBase::GetRendererType() const {
-  return renderer_type_;
 }
 
 void RuntimeApplicationBase::StopApplication(

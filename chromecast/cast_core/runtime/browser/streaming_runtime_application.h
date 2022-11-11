@@ -7,6 +7,7 @@
 
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
+#include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 
 namespace cast_receiver {
@@ -25,7 +26,7 @@ class StreamingRuntimeApplication final
   // lifetime of this instance.
   StreamingRuntimeApplication(
       std::string cast_session_id,
-      cast::common::ApplicationConfig app_config,
+      cast_receiver::ApplicationConfig app_config,
       cast_receiver::ApplicationClient& application_client);
   ~StreamingRuntimeApplication() override;
 

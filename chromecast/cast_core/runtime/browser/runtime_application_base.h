@@ -13,12 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/public/content_window_controls.h"
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
-#include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace cast_receiver {
@@ -82,16 +81,23 @@ class RuntimeApplicationBase
     CreateWebUIControllerFactory(std::vector<std::string> hosts) = 0;
 
     // Returns the WebContents this application should use.
+    //
     // TODO(crbug.com/1382907): Change to a callback-based API.
     virtual content::WebContents* GetWebContents() = 0;
 
     // Returns the window controls for this instance.
+    //
     // TODO(crbug.com/1382907): Change to a callback-based API.
     virtual cast_receiver::ContentWindowControls*
     GetContentWindowControls() = 0;
 
     virtual cast_receiver::StreamingConfigManager*
     GetStreamingConfigManager() = 0;
+
+    // Loads |url| in the associated WebContents.
+    //
+    // TODO(crbug.com/1383332): Remove this function.
+    virtual void LoadPage(const GURL& url) = 0;
   };
 
   ~RuntimeApplicationBase() override;
@@ -121,21 +127,6 @@ class RuntimeApplicationBase
   // Sets touch input.
   void SetTouchInputEnabled(bool enabled);
 
-  // Returns if current session is enabled for dev.
-  //
-  // TODO(crbug.com/1359587): Remove this function.
-  bool GetEnabledForDev() const;
-
-  // Returns if remote control mode is enabled.
-  //
-  // TODO(crbug.com/1359587): Remove this function.
-  bool GetIsRemoteControlMode() const;
-
-  // Returns the type of Renderer to be used for this application.
-  //
-  // TODO(crbug.com/1359587): Remove this function.
-  mojom::RendererType GetRendererType() const;
-
   // Called to launch the application. The |callback| will be called indicating
   // if the operation succeeded or not.
   virtual void Launch(StatusCallback callback) = 0;
@@ -154,8 +145,7 @@ class RuntimeApplicationBase
   // |application_client| is expected to exist for the lifetime of this
   // instance.
   RuntimeApplicationBase(std::string cast_session_id,
-                         cast::common::ApplicationConfig app_config,
-                         mojom::RendererType renderer_type,
+                         cast_receiver::ApplicationConfig app_config,
                          cast_receiver::ApplicationClient& application_client);
 
   // Stops the running application. Must be called before destruction of any
@@ -170,28 +160,17 @@ class RuntimeApplicationBase
   Delegate& delegate() { return *delegate_; }
 
   // NOTE: This field is empty until after Load() is called.
-  const cast::common::ApplicationConfig& config() const { return app_config_; }
-
-  // Returns renderer features.
-  base::Value GetRendererFeatures() const;
-
-  // Returns if app is audio only.
-  bool GetIsAudioOnly() const;
-
-  // Returns if feature permissions are enforced.
-  bool GetEnforceFeaturePermissions() const;
-
-  // Returns feature permissions.
-  std::vector<int> GetFeaturePermissions() const;
-
-  // Returns additional feature permission origins.
-  std::vector<std::string> GetAdditionalFeaturePermissionOrigins() const;
+  const cast_receiver::ApplicationConfig& config() const { return app_config_; }
 
   // Loads the page at the given |url| in the CastWebContents.
   void LoadPage(const GURL& url);
 
   // Called by the actual implementation as Cast application page has loaded.
   void OnPageLoaded();
+
+  // Sets the permissions for the provided |web_contents| to that as configured
+  // in |app_config_|.
+  void SetContentPermissions(content::WebContents& web_contents);
 
  private:
   void SetWebVisibilityAndPaint(bool is_visible);
@@ -207,10 +186,7 @@ class RuntimeApplicationBase
   GetApplicationControls();
 
   const std::string cast_session_id_;
-  const cast::common::ApplicationConfig app_config_;
-
-  // Renderer type used by this application.
-  mojom::RendererType renderer_type_;
+  const cast_receiver::ApplicationConfig app_config_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

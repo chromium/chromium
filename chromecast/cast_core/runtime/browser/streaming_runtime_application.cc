@@ -31,11 +31,10 @@ constexpr char kStreamingPageUrlTemplate[] =
 
 StreamingRuntimeApplication::StreamingRuntimeApplication(
     std::string cast_session_id,
-    cast::common::ApplicationConfig app_config,
+    cast_receiver::ApplicationConfig app_config,
     cast_receiver::ApplicationClient& application_client)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
-                             mojom::RendererType::MOJO_RENDERER,
                              application_client),
       application_client_(application_client) {}
 
@@ -80,6 +79,8 @@ void StreamingRuntimeApplication::OnResolutionChanged(
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  SetContentPermissions(*delegate().GetWebContents());
+
   // Bind Cast Transport.
   auto* message_port_service = delegate().GetMessagePortService();
   DCHECK(message_port_service);
@@ -94,7 +95,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       task_runner(), application_client_->GetNetworkContextGetter(),
       std::move(server_port), delegate().GetWebContents(), this,
       delegate().GetStreamingConfigManager(),
-      /* supports_audio= */ config().app_id() !=
+      /* supports_audio= */ GetAppId() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
