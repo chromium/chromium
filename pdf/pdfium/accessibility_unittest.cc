@@ -41,7 +41,7 @@ double GetExpectedCharWidth(bool using_test_fonts, size_t i, double expected) {
 // update the GetExpected... functions above. If that becomes too much of a
 // burden, consider changing the checks to just make sure the font metrics look
 // sane.
-TEST_F(AccessibilityTest, GetAccessibilityPage) {
+TEST_P(AccessibilityTest, GetAccessibilityPage) {
   static constexpr size_t kExpectedTextRunCount = 2;
   struct {
     uint32_t len;
@@ -112,7 +112,7 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
   }
 }
 
-TEST_F(AccessibilityTest, GetAccessibilityImageInfo) {
+TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
   static const AccessibilityImageInfo kExpectedImageInfo[] = {
       {"Image 1", 0, {380, 78, 67, 68}, {}},
       {"Image 2", 0, {380, 385, 27, 28}, {}},
@@ -144,7 +144,7 @@ TEST_F(AccessibilityTest, GetAccessibilityImageInfo) {
   }
 }
 
-TEST_F(AccessibilityTest, GetUnderlyingTextRangeForRect) {
+TEST_P(AccessibilityTest, GetUnderlyingTextRangeForRect) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -203,7 +203,7 @@ class ScrollEnabledTestClient : public TestClient {
   gfx::Vector2d received_scroll_delta_;
 };
 
-TEST_F(AccessibilityTest, ScrollIntoViewActionHandling) {
+TEST_P(AccessibilityTest, ScrollIntoViewActionHandling) {
   // This test checks that accessibility scroll action is passed
   // on to the ScrollEnabledTestClient implementation.
   ScrollEnabledTestClient client;
@@ -286,7 +286,7 @@ TEST_F(AccessibilityTest, ScrollIntoViewActionHandling) {
   EXPECT_EQ(gfx::Vector2d(-180, -300), client.GetScrollRequestDelta());
 }
 
-TEST_F(AccessibilityTest, ScrollToNearestEdge) {
+TEST_P(AccessibilityTest, ScrollToNearestEdge) {
   ScrollEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -325,7 +325,7 @@ TEST_F(AccessibilityTest, ScrollToNearestEdge) {
   EXPECT_EQ(gfx::Vector2d(-199, -199), client.GetScrollRequestDelta());
 }
 
-TEST_F(AccessibilityTest, ScrollToGlobalPoint) {
+TEST_P(AccessibilityTest, ScrollToGlobalPoint) {
   ScrollEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
@@ -390,7 +390,7 @@ class NavigationEnabledTestClient : public TestClient {
   float zoom_ = 0;
 };
 
-TEST_F(AccessibilityTest, WebLinkClickActionHandling) {
+TEST_P(AccessibilityTest, WebLinkClickActionHandling) {
   NavigationEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
@@ -406,7 +406,7 @@ TEST_F(AccessibilityTest, WebLinkClickActionHandling) {
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB, client.disposition());
 }
 
-TEST_F(AccessibilityTest, InternalLinkClickActionHandling) {
+TEST_P(AccessibilityTest, InternalLinkClickActionHandling) {
   NavigationEnabledTestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
@@ -425,7 +425,7 @@ TEST_F(AccessibilityTest, InternalLinkClickActionHandling) {
   EXPECT_TRUE(client.url().empty());
 }
 
-TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
+TEST_P(AccessibilityTest, GetAccessibilityLinkInfo) {
   AccessibilityLinkInfo expected_link_info[] = {
       {"http://yahoo.com", 0, {75, 191, 110, 16}, {1, 1}},
       {"http://bing.com", 1, {131, 121, 138, 20}, {4, 1}},
@@ -466,7 +466,7 @@ TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
   }
 }
 
-TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
+TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
   constexpr uint32_t kHighlightDefaultColor = MakeARGB(255, 255, 255, 0);
   constexpr uint32_t kHighlightRedColor = MakeARGB(102, 230, 0, 0);
   constexpr uint32_t kHighlightNoColor = MakeARGB(0, 0, 0, 0);
@@ -508,7 +508,7 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
   }
 }
 
-TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
+TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   static const AccessibilityTextFieldInfo kExpectedTextFieldInfo[] = {
       {"Text Box", "Text", false, false, false, 0, 5, {138, 230, 135, 41}},
       {"ReadOnly", "Elephant", true, false, false, 1, 5, {138, 163, 135, 41}},
@@ -560,7 +560,7 @@ TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   }
 }
 
-TEST_F(AccessibilityTest, SelectionActionHandling) {
+TEST_P(AccessibilityTest, SelectionActionHandling) {
   struct Selection {
     uint32_t start_page_index;
     uint32_t start_char_index;
@@ -624,7 +624,7 @@ TEST_F(AccessibilityTest, SelectionActionHandling) {
 
 // Tests if PP_PDF_SET_SELECTION updates scroll offsets if the selection is not
 // in the current visible rect.
-TEST_F(AccessibilityTest, SetSelectionAndScroll) {
+TEST_P(AccessibilityTest, SetSelectionAndScroll) {
   struct Selection {
     uint32_t start_page_index;
     uint32_t start_char_index;
@@ -681,5 +681,7 @@ TEST_F(AccessibilityTest, SetSelectionAndScroll) {
     index++;
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AccessibilityTest, testing::Bool());
 
 }  // namespace chrome_pdf
