@@ -5,7 +5,6 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -24,27 +23,23 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
       const TabletModeMultitaskMenuEventHandler&) = delete;
   ~TabletModeMultitaskMenuEventHandler() override;
 
+  void MaybeCreateMultitaskMenu(aura::Window* active_window);
+
+  // Destroys the multitask menu.
+  void ResetMultitaskMenu();
+
   // ui::EventHandler:
   // TODO(crbug.com/1336836): Temporarily allow mouse wheel events to show or
   // hide the multitask menu for developers. Remove this before launch.
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // Destroys the multitask menu.
-  void ResetMultitaskMenu();
-
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
     return multitask_menu_.get();
   }
 
  private:
-  bool ProcessBeginFlingOrSwipe(const ui::GestureEvent& event);
-
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
-
-  // Used to show or hide the multitask menu. Null if no drag is in
-  // progress.
-  absl::optional<bool> is_drag_to_open_;
 };
 
 }  // namespace ash

@@ -25,6 +25,13 @@
 
 namespace ash {
 
+namespace {
+
+// The vertical position used to end drag to show and start drag to hide.
+constexpr int kMenuDragPoint = 100;
+
+}  // namespace
+
 // A simple event monitor that records the gesture event type, used to check
 // gesture event generation.
 class TestEventHandler : public ui::EventHandler {
@@ -117,7 +124,7 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   void ShowMultitaskMenu(const aura::Window& window) {
     GenerateScroll(/*x=*/window.bounds().CenterPoint().x(),
                    /*start_y=*/window.bounds().y() + 8,
-                   /*end_y=*/window.bounds().y() + 50);
+                   /*end_y=*/window.bounds().y() + kMenuDragPoint);
   }
 
   TabletModeMultitaskMenuEventHandler* GetMultitaskMenuEventHandler() {
@@ -152,41 +159,44 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
   auto window = CreateTestWindow();
 
   // Verify that scroll can open and close the menu.
-  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
-                 /*end_y=*/50);
+  GenerateScroll(window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_scroll());
   ASSERT_TRUE(GetMultitaskMenu());
 
-  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+  GenerateScroll(window->bounds().CenterPoint().x(),
+                 /*start_y=*/kMenuDragPoint,
                  /*end_y=*/8);
   ASSERT_FALSE(GetMultitaskMenu());
 
   // Verify that swipe can open and close the menu.
   event_handler.ResetGestures();
-  GenerateSwipe(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
-                /*end_y=*/50);
+  GenerateSwipe(window->bounds().CenterPoint().x(), /*start_y=*/1,
+                /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_swipe());
   ASSERT_TRUE(GetMultitaskMenu());
 
-  GenerateSwipe(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+  GenerateSwipe(window->bounds().CenterPoint().x(),
+                /*start_y=*/kMenuDragPoint,
                 /*end_y=*/8);
   ASSERT_FALSE(GetMultitaskMenu());
 
   // Verify that fling can open and close the menu.
   event_handler.ResetGestures();
-  GenerateFling(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
-                /*end_y=*/50);
+  GenerateFling(window->bounds().CenterPoint().x(), /*start_y=*/1,
+                /*end_y=*/kMenuDragPoint);
   ASSERT_TRUE(event_handler.is_fling());
   ASSERT_TRUE(GetMultitaskMenu());
 
-  GenerateFling(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+  GenerateFling(window->bounds().CenterPoint().x(),
+                /*start_y=*/kMenuDragPoint,
                 /*end_y=*/8);
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
 // Tests that a scroll down gesture from the top center activates the
 // multitask menu.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, BasicShowMenu) {
   auto window = CreateAppWindow();
 
   ShowMultitaskMenu(*window);
@@ -212,6 +222,21 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
                 .CenterPoint()
                 .x(),
             window->GetBoundsInScreen().CenterPoint().x());
+}
+
+// Tests that a partial drag will show or hide the menu as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialDrag) {
+  auto window = CreateTestWindow();
+  // Scroll down less than half of the menu height. Tests that the menu does not
+  // open.
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/20);
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  // Scroll down more than half of the menu height. Tests that the menu opens.
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/100);
+  ASSERT_TRUE(GetMultitaskMenu());
 }
 
 // Tests that the bottom window can open the multitask menu in portrait mode. In
@@ -241,7 +266,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowBottomMenuPortraitPrimary) {
   // divider toward the right to open the menu.
   const gfx::Rect bounds(window2->bounds());
   const gfx::Point start(bounds.y() + 8, bounds.CenterPoint().x());
-  const gfx::Point end(bounds.y() + 50, bounds.CenterPoint().x());
+  const gfx::Point end(bounds.y() + kMenuDragPoint, bounds.CenterPoint().x());
   GetEventGenerator()->GestureScrollSequence(start, end,
                                              base::Milliseconds(100),
                                              /*steps=*/3);
@@ -276,7 +301,8 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest,
   // divider toward the left to open the menu.
   const gfx::Rect bounds(window2->bounds());
   const gfx::Point start(bounds.height(), bounds.CenterPoint().x());
-  const gfx::Point end(bounds.height() - 50, bounds.CenterPoint().x());
+  const gfx::Point end(bounds.height() - kMenuDragPoint,
+                       bounds.CenterPoint().x());
   GetEventGenerator()->GestureScrollSequence(start, end,
                                              base::Milliseconds(100),
                                              /*steps=*/3);
@@ -297,26 +323,27 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
 
 // Tests that scroll down shows the menu as expected.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollDownGestures) {
+  UpdateDisplay("1600x1000");
   auto window = CreateTestWindow();
 
   // Scroll down from the top left. Verify that we do not show the menu.
-  GenerateScroll(0, 1, 50);
+  GenerateScroll(0, 1, kMenuDragPoint);
   ASSERT_FALSE(GetMultitaskMenu());
 
   // Scroll down from the top right. Verify that we do not show the menu.
-  GenerateScroll(window->bounds().right(), 1, 50);
+  GenerateScroll(window->bounds().right(), 1, kMenuDragPoint);
   ASSERT_FALSE(GetMultitaskMenu());
 
   // Scroll down from the top center. Verify that we show the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), 1, 50);
+  GenerateScroll(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Scroll up on the menu. Verify that we close the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
+  GenerateScroll(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
   EXPECT_FALSE(GetMultitaskMenu());
 
   // Scroll down from the top left. Verify that we do not show the menu.
-  GenerateScroll(0, 1, 50);
+  GenerateScroll(0, 1, kMenuDragPoint);
   ASSERT_FALSE(GetMultitaskMenu());
 }
 
@@ -326,17 +353,17 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeFlingGestures) {
 
   // Swipe down fast to send a ET_SCROLL_FLING_START event. Verify that we
   // open the menu.
-  GenerateFling(window->bounds().CenterPoint().x(), 1, 50);
+  GenerateFling(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Swipe up fast to send a ET_SCROLL_FLING_START event. Verify that we close
   // the menu.
-  GenerateFling(window->bounds().CenterPoint().x(), 50, 8);
+  GenerateFling(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
   ASSERT_FALSE(GetMultitaskMenu());
 
   // Fling down and end the gesture outside of the target area. Verify that we
   // open the menu.
-  GenerateFling(window->bounds().CenterPoint().x(), 1, 150);
+  GenerateFling(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
   EXPECT_TRUE(GetMultitaskMenu());
 }
 
@@ -345,18 +372,18 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollUpGestures) {
   auto window = CreateTestWindow();
 
   // Scroll up with no menu open. Verify no change.
-  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
+  GenerateScroll(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
   ASSERT_FALSE(GetMultitaskMenu());
 
   ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Scroll down again. Verify that we still show the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), 1, 50);
+  GenerateScroll(window->bounds().CenterPoint().x(), 1, kMenuDragPoint);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Scroll up on the menu. Verify that we close the menu.
-  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
+  GenerateScroll(window->bounds().CenterPoint().x(), kMenuDragPoint, 8);
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
