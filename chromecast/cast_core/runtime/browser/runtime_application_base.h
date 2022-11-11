@@ -21,6 +21,10 @@
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
+namespace cast_receiver {
+class StreamingConfigManager;
+}  // namespace cast_receiver
+
 namespace content {
 class WebContents;
 class WebUIControllerFactory;
@@ -69,8 +73,9 @@ class RuntimeApplicationBase
                                 std::vector<std::string>)>;
     virtual void GetAllBindings(GetAllBindingsCallback callback) = 0;
 
-    // Creates a new platform-specific MessagePortService.
-    virtual std::unique_ptr<MessagePortService> CreateMessagePortService() = 0;
+    // Gets the platform-specific MessagePortService instance for this
+    // application, if such an instance exists.
+    virtual MessagePortService* GetMessagePortService() = 0;
 
     // Creates a new platform-specific WebUIControllerFactory.
     virtual std::unique_ptr<content::WebUIControllerFactory>
@@ -84,6 +89,9 @@ class RuntimeApplicationBase
     // TODO(crbug.com/1382907): Change to a callback-based API.
     virtual cast_receiver::ContentWindowControls*
     GetContentWindowControls() = 0;
+
+    virtual cast_receiver::StreamingConfigManager*
+    GetStreamingConfigManager() = 0;
   };
 
   ~RuntimeApplicationBase() override;

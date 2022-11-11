@@ -37,14 +37,12 @@ void StreamingControllerMirroring::StartPlayback(
   renderer_controls_->SetPlaybackRate(1.0);
 }
 
-void StreamingControllerMirroring::ProcessAVConstraints(
-    cast_streaming::ReceiverSession::AVConstraints* constraints) {
-  DCHECK(constraints);
-
+void StreamingControllerMirroring::ProcessConfig(
+    cast_streaming::ReceiverConfig& config) {
   // Ensure remoting is disabled for this streaming session.
-  DLOG_IF(INFO, constraints->remoting)
+  DLOG_IF(INFO, config.remoting)
       << "Remoting configuration removed from received AVConstraints";
-  constraints->remoting.reset();
+  config.remoting = absl::nullopt;
 }
 
 }  // namespace chromecast

@@ -5,9 +5,8 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_STREAMING_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/callback.h"
+#include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
 namespace chromecast {
@@ -23,8 +22,7 @@ class StreamingController {
   // Creates a new cast_streaming::ReceiverSession to use for this streaming
   // session.
   virtual void InitializeReceiverSession(
-      std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints>
-          constraints,
+      cast_streaming::ReceiverConfig config,
       cast_streaming::ReceiverSession::Client* client) = 0;
 
   // Begins playback once all preconditions have been met, at which time |cb| is

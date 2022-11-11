@@ -8,6 +8,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
+#include "chromecast/cast_core/runtime/browser/core_streaming_config_manager.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
@@ -312,6 +313,13 @@ void RuntimeApplicationServiceImpl::SetMediaBlocking(
   }
 }
 
+void RuntimeApplicationServiceImpl::OnStreamingApplicationError(
+    cast_receiver::Status status) {
+  LOG(ERROR) << "Error while running streaming application: " << status
+             << ". Exiting application...";
+  runtime_application_->Stop(StatusCallback{});
+}
+
 void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
     cast::v2::SetUrlRewriteRulesRequest request,
     cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
@@ -442,12 +450,17 @@ void RuntimeApplicationServiceImpl::GetAllBindings(
                      weak_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-std::unique_ptr<MessagePortService>
-RuntimeApplicationServiceImpl::CreateMessagePortService() {
+MessagePortService* RuntimeApplicationServiceImpl::GetMessagePortService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_message_port_app_stub_);
-  return std::make_unique<MessagePortServiceGrpc>(
-      &core_message_port_app_stub_.value());
+  if (!core_message_port_app_stub_) {
+    return nullptr;
+  }
+
+  if (!message_port_service_) {
+    message_port_service_ = std::make_unique<MessagePortServiceGrpc>(
+        &core_message_port_app_stub_.value());
+  }
+  return message_port_service_.get();
 }
 
 std::unique_ptr<content::WebUIControllerFactory>
@@ -479,6 +492,25 @@ RuntimeApplicationServiceImpl::GetContentWindowControls() {
   }
 
   return content_window_controls_.get();
+}
+
+cast_receiver::StreamingConfigManager*
+RuntimeApplicationServiceImpl::GetStreamingConfigManager() {
+  if (streaming_config_manager_) {
+    return streaming_config_manager_.get();
+  }
+
+  auto* message_port_service = GetMessagePortService();
+  if (!message_port_service) {
+    return nullptr;
+  }
+
+  streaming_config_manager_ = std::make_unique<CoreStreamingConfigManager>(
+      *message_port_service,
+      base::BindOnce(
+          &RuntimeApplicationServiceImpl::OnStreamingApplicationError,
+          weak_factory_.GetWeakPtr()));
+  return streaming_config_manager_.get();
 }
 
 void RuntimeApplicationServiceImpl::OnAllBindingsReceived(

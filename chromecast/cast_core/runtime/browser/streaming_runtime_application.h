@@ -41,8 +41,6 @@ class StreamingRuntimeApplication final
   // StreamingReceiverSessionClient::Handler implementation:
   void OnStreamingSessionStarted() override;
   void OnError() override;
-  void StartAvSettingsQuery(
-      std::unique_ptr<cast_api_bindings::MessagePort> message_port) override;
   void OnResolutionChanged(
       const gfx::Rect& size,
       const ::media::VideoTransformation& transformation) override;

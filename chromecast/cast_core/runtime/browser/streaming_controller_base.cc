@@ -23,8 +23,8 @@ StreamingControllerBase::StreamingControllerBase(
 
 StreamingControllerBase::~StreamingControllerBase() = default;
 
-void StreamingControllerBase::ProcessAVConstraints(
-    cast_streaming::ReceiverSession::AVConstraints* constraints) {}
+void StreamingControllerBase::ProcessConfig(
+    cast_streaming::ReceiverConfig& config) {}
 
 void StreamingControllerBase::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -45,14 +45,14 @@ void StreamingControllerBase::ReadyToCommitNavigation(
 }
 
 void StreamingControllerBase::InitializeReceiverSession(
-    std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints> constraints,
+    cast_streaming::ReceiverConfig config,
     cast_streaming::ReceiverSession::Client* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(constraints);
 
-  ProcessAVConstraints(constraints.get());
-  constraints_ = std::move(constraints);
+  config_ = std::move(config);
   client_ = client;
+
+  ProcessConfig(config_);
 
   TryStartPlayback();
 }
@@ -68,7 +68,7 @@ void StreamingControllerBase::StartPlaybackAsync(PlaybackStartedCB cb) {
 }
 
 void StreamingControllerBase::TryStartPlayback() {
-  if (playback_started_cb_ && constraints_ && demuxer_connector_) {
+  if (playback_started_cb_ && demuxer_connector_) {
     cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
         base::BindOnce(
             [](std::unique_ptr<cast_api_bindings::MessagePort> port) {
@@ -76,7 +76,7 @@ void StreamingControllerBase::TryStartPlayback() {
             },
             std::move(message_port_));
     receiver_session_ = cast_streaming::ReceiverSession::Create(
-        std::move(constraints_), std::move(message_port_provider), client_);
+        config_, std::move(message_port_provider), client_);
     DCHECK(receiver_session_);
 
     StartPlayback(receiver_session_.get(), std::move(demuxer_connector_),

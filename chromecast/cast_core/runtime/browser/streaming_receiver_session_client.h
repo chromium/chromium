@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/cast/message_port/message_port.h"
+#include "components/cast_receiver/browser/public/streaming_config_manager.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
@@ -41,7 +42,7 @@ class StreamingController;
 // manages the lifetimes of cast streaming objects, and informs the caller
 // of important events. Methods in this class may not be called in parallel.
 class StreamingReceiverSessionClient
-    : public cast_api_bindings::MessagePort::Receiver,
+    : public cast_receiver::StreamingConfigManager::ConfigObserver,
       public cast_streaming::ReceiverSession::Client {
  public:
   class Handler {
@@ -57,10 +58,6 @@ class StreamingReceiverSessionClient
     // associated StreamingReceiverSessionClient instance will be placed in an
     // undefined state.
     virtual void OnError() = 0;
-
-    // Called when an AV settings query must be started for |message_port|.
-    virtual void StartAvSettingsQuery(
-        std::unique_ptr<cast_api_bindings::MessagePort> message_port) = 0;
 
     // Called when the resolution as reported to the media pipeline changes.
     virtual void OnResolutionChanged(
@@ -80,6 +77,7 @@ class StreamingReceiverSessionClient
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
       content::WebContents* web_contents,
       Handler* handler,
+      cast_receiver::StreamingConfigManager* config_manager,
       bool supports_audio,
       bool supports_video);
 
@@ -145,6 +143,7 @@ class StreamingReceiverSessionClient
       cast_streaming::NetworkContextGetter network_context_getter,
       std::unique_ptr<StreamingController> streaming_controller,
       Handler* handler,
+      cast_receiver::StreamingConfigManager* config_manager,
       bool supports_audio,
       bool supports_video);
 
@@ -170,17 +169,15 @@ class StreamingReceiverSessionClient
 
   void TriggerError();
 
-  // cast_api_bindings::MessagePort::Receiver overrides.
-  bool OnMessage(base::StringPiece message,
-                 std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
-                     ports) override;
-  void OnPipeError() override;
-
   // cast_streaming::ReceiverSession::Client overrides.
   void OnAudioConfigUpdated(
       const ::media::AudioDecoderConfig& audio_config) override;
   void OnVideoConfigUpdated(
       const ::media::VideoDecoderConfig& video_config) override;
+
+  // cast_receiver::StreamingConfigManager::ConfigObserver overrides.
+  void OnStreamingConfigSet(
+      const cast_streaming::ReceiverConfig& config) override;
 
   void VerifyAVSettingsReceived();
 
@@ -194,13 +191,6 @@ class StreamingReceiverSessionClient
   // occur.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Most recently received AV Constraints, from bindings.
-  absl::optional<cast_streaming::ReceiverSession::AVConstraints>
-      av_constraints_;
-
-  // MessagePort responsible for receiving AV Settings Bindings Messages.
-  std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
 
   // Responsible for initiating the streaming session and controlling its
   // playback state.

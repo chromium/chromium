@@ -132,8 +132,10 @@ void WebRuntimeApplication::OnAllBindingsReceived(
 
   content::WebContentsObserver::Observe(delegate().GetWebContents());
   cast_receiver::PageStateObserver::Observe(delegate().GetWebContents());
-  bindings_manager_ = std::make_unique<BindingsManagerWebRuntime>(
-      *this, delegate().CreateMessagePortService());
+  auto* message_port_sevice = delegate().GetMessagePortService();
+  DCHECK(message_port_sevice);
+  bindings_manager_ =
+      std::make_unique<BindingsManagerWebRuntime>(*this, *message_port_sevice);
   for (auto& binding : bindings) {
     bindings_manager_->AddBinding(std::move(binding));
   }

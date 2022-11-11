@@ -8,6 +8,7 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/cast_receiver/common",
+    "//components/cast_streaming/browser",
     "//components/media_control/browser",
     "//content/public/browser",
   ]
@@ -16,12 +17,14 @@ source_set("browser") {
     "public/application_state_observer.h",
     "public/content_window_controls.h",
     "public/runtime_application.h",
+    "public/streaming_config_manager.h",
     "public/streaming_resolution_observer.h",
   ]
   sources = [
     "application_client.cc",
     "content_window_controls.cc",
     "runtime_application.cc",
+    "streaming_config_manager.cc",
   ]
   friend = [ ":unit_tests" ]
 }

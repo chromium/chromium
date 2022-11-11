@@ -199,6 +199,8 @@ cast_source_set("runtime_application_dispatcher") {
 
 cast_source_set("runtime_service_impl") {
   sources = [
+    "core_streaming_config_manager.cc",
+    "core_streaming_config_manager.h",
     "runtime_application_service_impl.cc",
     "runtime_application_service_impl.h",
     "runtime_service_impl.cc",
@@ -213,6 +215,7 @@ cast_source_set("runtime_service_impl") {
     "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/common:feature_constants",
+    "//chromecast/shared:platform_info_serializer",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
     "//components/cast_receiver/common",
@@ -290,6 +293,7 @@ cast_source_set("unit_tests") {
     "cast_runtime_histogram_flattener_unittest.cc",
     "cast_runtime_metrics_test_helpers.cc",
     "cast_runtime_metrics_test_helpers.h",
+    "core_streaming_config_manager_unittest.cc",
     "grpc_resource_data_source_unittest.cc",
     "streaming_receiver_session_client_unittest.cc",
   ]
@@ -297,11 +301,13 @@ cast_source_set("unit_tests") {
   deps = [
     ":grpc_webui",
     ":metrics_recorder",
+    ":runtime_service_impl",
     ":streaming_receiver_session_client",
     "//base",
     "//base/test:test_support",
     "//chromecast/browser:test_support",
     "//chromecast/shared:platform_info_serializer",
+    "//components/cast_receiver/common",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public",
     "//testing/gmock",

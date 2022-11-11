@@ -20,8 +20,6 @@ namespace chromecast {
 namespace {
 
 constexpr char kCastTransportBindingName[] = "cast.__platform__.cast_transport";
-constexpr char kMediaCapabilitiesBindingName[] =
-    "cast.__platform__.canDisplayType";
 
 constexpr char kStreamingPageUrlTemplate[] =
     "data:text/html;charset=UTF-8, <video style='position:absolute; "
@@ -51,10 +49,12 @@ StreamingRuntimeApplication::~StreamingRuntimeApplication() {
 bool StreamingRuntimeApplication::OnMessagePortMessage(
     cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!message_port_service_) {
+
+  auto* message_port_service = delegate().GetMessagePortService();
+  if (!message_port_service) {
     return false;
   }
-  return message_port_service_->HandleMessage(std::move(message)).ok();
+  return message_port_service->HandleMessage(std::move(message)).ok();
 }
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
@@ -70,15 +70,6 @@ void StreamingRuntimeApplication::OnError() {
       net::ERR_FAILED);
 }
 
-void StreamingRuntimeApplication::StartAvSettingsQuery(
-    std::unique_ptr<cast_api_bindings::MessagePort> message_port) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Connect the port to allow for sending messages. Querying will be done by
-  // the associated |receiver_session_client_|.
-  message_port_service_->ConnectToPortAsync(kMediaCapabilitiesBindingName,
-                                            std::move(message_port));
-}
-
 void StreamingRuntimeApplication::OnResolutionChanged(
     const gfx::Rect& size,
     const ::media::VideoTransformation& transformation) {
@@ -89,19 +80,20 @@ void StreamingRuntimeApplication::OnResolutionChanged(
 void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  message_port_service_ = delegate().CreateMessagePortService();
-
   // Bind Cast Transport.
+  auto* message_port_service = delegate().GetMessagePortService();
+  DCHECK(message_port_service);
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
   std::unique_ptr<cast_api_bindings::MessagePort> client_port;
   cast_api_bindings::CreatePlatformMessagePortPair(&client_port, &server_port);
-  message_port_service_->ConnectToPortAsync(kCastTransportBindingName,
-                                            std::move(client_port));
+  message_port_service->ConnectToPortAsync(kCastTransportBindingName,
+                                           std::move(client_port));
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), application_client_->GetNetworkContextGetter(),
       std::move(server_port), delegate().GetWebContents(), this,
+      delegate().GetStreamingConfigManager(),
       /* supports_audio= */ config().app_id() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
@@ -127,7 +119,6 @@ void StreamingRuntimeApplication::StopApplication(
 
   receiver_session_client_.reset();
   RuntimeApplicationBase::StopApplication(stop_reason, net_error_code);
-  message_port_service_.reset();
 }
 
 bool StreamingRuntimeApplication::IsStreamingApplication() const {

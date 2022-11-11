@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
+#include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
@@ -50,10 +51,9 @@ class StreamingControllerBase : public StreamingController,
       mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
           renderer_connection) = 0;
 
-  // Makes any modifications or validations to |constraints| needed prior to the
+  // Makes any modifications or validations to |config| needed prior to the
   // initialization of the streaming receiver.
-  virtual void ProcessAVConstraints(
-      cast_streaming::ReceiverSession::AVConstraints* constraints);
+  virtual void ProcessConfig(cast_streaming::ReceiverConfig& config);
 
  private:
   // content::WebContentsObserver overrides:
@@ -62,8 +62,7 @@ class StreamingControllerBase : public StreamingController,
 
   // Partial StreamingController overrides:
   void InitializeReceiverSession(
-      std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints>
-          constraints,
+      cast_streaming::ReceiverConfig config,
       cast_streaming::ReceiverSession::Client* client) final;
   void StartPlaybackAsync(PlaybackStartedCB cb) final;
 
@@ -80,7 +79,7 @@ class StreamingControllerBase : public StreamingController,
   PlaybackStartedCB playback_started_cb_;
 
   // Populated in InitializeReceiverSession()
-  std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints> constraints_;
+  cast_streaming::ReceiverConfig config_;
   cast_streaming::ReceiverSession::Client* client_;
 
   // Mojo connections. Initially populated in MainFrameReadyToCommitNavigation()

@@ -43,8 +43,7 @@ class StreamingControllerRemoting : public StreamingControllerBase {
           demuxer_connector,
       mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
           renderer_connection) override;
-  void ProcessAVConstraints(
-      cast_streaming::ReceiverSession::AVConstraints* constraints) override;
+  void ProcessConfig(cast_streaming::ReceiverConfig& config) override;
 };
 
 }  // namespace chromecast

@@ -33,15 +33,12 @@ void StreamingControllerRemoting::StartPlayback(
   renderer_controller->SetPlaybackRate(1.0);
 }
 
-void StreamingControllerRemoting::ProcessAVConstraints(
-    cast_streaming::ReceiverSession::AVConstraints* constraints) {
-  DCHECK(constraints);
-
+void StreamingControllerRemoting::ProcessConfig(
+    cast_streaming::ReceiverConfig& config) {
   // Ensure remoting is enabled for this streaming session.
-  if (!constraints->remoting) {
+  if (!config.remoting) {
     DLOG(INFO) << "Remoting configuration added to received AVConstraints";
-    constraints->remoting = std::make_unique<
-        openscreen::cast::ReceiverSession::RemotingPreferences>();
+    config.remoting.emplace();
   }
 }
 

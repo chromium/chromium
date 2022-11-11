@@ -39,9 +39,10 @@ class BindingsManagerWebRuntime final
     virtual void OnError() = 0;
   };
 
-  BindingsManagerWebRuntime(
-      Client& client,
-      std::unique_ptr<MessagePortService> message_port_service);
+  // |client| and |message_port_service| are expected to persist for the
+  // duration of this instance's lifetime.
+  BindingsManagerWebRuntime(Client& client,
+                            MessagePortService& message_port_service);
   ~BindingsManagerWebRuntime() override;
 
   BindingsManagerWebRuntime(const BindingsManagerWebRuntime&) = delete;
@@ -78,7 +79,7 @@ class BindingsManagerWebRuntime final
   std::unique_ptr<cast_receiver::BindingsMessagePortConnector>
       message_port_connector_;
 
-  std::unique_ptr<MessagePortService> message_port_service_;
+  base::raw_ref<MessagePortService> message_port_service_;
 
   base::raw_ref<Client> client_;
 };
