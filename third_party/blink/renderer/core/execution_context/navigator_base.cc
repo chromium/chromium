@@ -72,9 +72,16 @@ String NavigatorBase::platform() const {
     return GetReducedNavigatorPlatform();
   }
 
-// For user-agent reduction phase 5, all desktop platform should be frozen
-// string, see https://www.chromium.org/updates/ua-reduction/.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // For user-agent reduction phase 6, Android platform should be frozen
+  // string, see https://www.chromium.org/updates/ua-reduction/.
+  if (RuntimeEnabledFeatures::ReduceUserAgentAndroidVersionDeviceModelEnabled(
+          execution_context)) {
+    return GetReducedNavigatorPlatform();
+  }
+#else
+  // For user-agent reduction phase 5, all desktop platform should be frozen
+  // string, see https://www.chromium.org/updates/ua-reduction/.
   if (RuntimeEnabledFeatures::ReduceUserAgentPlatformOsCpuEnabled(
           execution_context)) {
     return GetReducedNavigatorPlatform();

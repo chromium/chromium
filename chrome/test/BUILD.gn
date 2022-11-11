@@ -921,6 +921,7 @@ if (is_android) {
       "../browser/ui/android/autofill/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/ui/autofill/payments/offer_notification_controller_android_browsertest.cc",
       "../browser/ui/webui/policy/policy_ui_browsertest.cc",
+      "../browser/user_agent/android_user_agent_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.h",
       "../renderer/autofill/fake_password_generation_driver.cc",
