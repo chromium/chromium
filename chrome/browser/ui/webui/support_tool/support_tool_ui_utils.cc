@@ -148,6 +148,14 @@ std::string GetDataCollectorName(
       return "ChromeOS System Logs";
     case support_tool::CHROMEOS_CHROME_USER_LOGS:
       return "Chrome OS Chrome User Logs";
+    case support_tool::CHROMEOS_BLUETOOTH_FLOSS:
+      return "ChromeOS Bluetooth Floss";
+    case support_tool::CHROMEOS_CONNECTED_INPUT_DEVICES:
+      return "ChromeOS Connected Input Devices";
+    case support_tool::CHROMEOS_TRAFFIC_COUNTERS:
+      return "ChromeOS Traffic Counters";
+    case support_tool::CHROMEOS_VIRTUAL_KEYBOARD:
+      return "ChromeOS Virtual Keyboard";
     default:
       return "Error: Undefined";
   }

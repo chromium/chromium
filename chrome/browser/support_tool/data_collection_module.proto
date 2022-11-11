@@ -30,6 +30,10 @@ enum DataCollectorType {
   CHROMEOS_SYSTEM_STATE = 16;
   CHROMEOS_SYSTEM_LOGS = 17;
   CHROMEOS_CHROME_USER_LOGS = 18;
+  CHROMEOS_BLUETOOTH_FLOSS = 19;
+  CHROMEOS_CONNECTED_INPUT_DEVICES = 20;
+  CHROMEOS_TRAFFIC_COUNTERS = 21;
+  CHROMEOS_VIRTUAL_KEYBOARD = 22;
 }
 
 // Used for storing the information about which data colllectors will be used

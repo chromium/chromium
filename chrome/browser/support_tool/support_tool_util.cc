@@ -20,12 +20,16 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
+#include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/device_event_log_source.h"
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
+#include "chrome/browser/ash/system_logs/traffic_counters_log_source.h"
+#include "chrome/browser/ash/system_logs/virtual_keyboard_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 #include "chrome/browser/support_tool/ash/chrome_user_logs_data_collector.h"
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
@@ -155,6 +159,31 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
       case support_tool::CHROMEOS_CHROME_USER_LOGS:
         handler->AddDataCollector(
             std::make_unique<ChromeUserLogsDataCollector>());
+        break;
+      case support_tool::CHROMEOS_BLUETOOTH_FLOSS:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Fetches the Bluetooth Floss enabled or disabled information "
+                "on the device.",
+                std::make_unique<system_logs::BluetoothLogSource>()));
+        break;
+      case support_tool::CHROMEOS_CONNECTED_INPUT_DEVICES:
+        handler->AddDataCollector(std::make_unique<
+                                  SystemLogSourceDataCollectorAdaptor>(
+            "Fetches the information about connected input devices.",
+            std::make_unique<system_logs::ConnectedInputDevicesLogSource>()));
+        break;
+      case support_tool::CHROMEOS_TRAFFIC_COUNTERS:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Fetches traffic counters information.",
+                std::make_unique<system_logs::TrafficCountersLogSource>()));
+        break;
+      case support_tool::CHROMEOS_VIRTUAL_KEYBOARD:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Fetches the virtual keyboard information.",
+                std::make_unique<system_logs::VirtualKeyboardLogSource>()));
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
