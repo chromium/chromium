@@ -498,7 +498,6 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
     },
     {
       name: "HighlightData",
@@ -522,7 +521,6 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "*",
       computed_style_custom_functions: ["setter"],
-      writable: true,
     },
     {
       name: "Mask",
@@ -616,7 +614,6 @@
       wrapper_pointer_name: "std::unique_ptr",
       include_paths: ["third_party/blink/renderer/core/style/style_non_inherited_variables.h"],
       computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
     },
     {
       name: "PageSizeType",

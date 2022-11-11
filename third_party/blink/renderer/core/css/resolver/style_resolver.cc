@@ -1555,7 +1555,7 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   scoped_refptr<StyleInitialData> initial_data =
       engine.MaybeCreateAndGetInitialData();
   if (initial_data)
-    builder.MutableInternalStyle()->SetInitialData(std::move(initial_data));
+    builder.SetInitialData(std::move(initial_data));
 
   return builder;
 }

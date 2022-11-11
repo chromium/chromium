@@ -439,7 +439,7 @@ TEST_F(StyleCascadeTest, ApplyGenerations) {
   EXPECT_EQ("20px", cascade.ComputedValue("width"));
 
   cascade.State().StyleBuilder().SetWidth(Length::Auto());
-  cascade.State().StyleRef().SetVariableData("--x", nullptr, true);
+  cascade.State().StyleBuilder().SetVariableData("--x", nullptr, true);
   EXPECT_EQ(g_null_atom, cascade.ComputedValue("--x"));
   EXPECT_EQ("auto", cascade.ComputedValue("width"));
 

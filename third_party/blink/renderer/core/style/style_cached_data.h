@@ -19,6 +19,7 @@ using PseudoElementStyleCache = Vector<scoped_refptr<const ComputedStyle>, 4>;
 class CORE_EXPORT StyleCachedData final {
  private:
   friend class ComputedStyle;
+  friend class ComputedStyleBuilder;
 
   // This cache stores ComputedStyles for pseudo elements originating from this
   // ComputedStyle's element. Pseudo elements which are represented by

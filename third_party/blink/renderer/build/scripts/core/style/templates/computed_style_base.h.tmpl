@@ -137,11 +137,6 @@ class ComputedStyleBase {
     );
   }
 
-  // Copies the values of any independent inherited properties from the parent
-  // style that are marked as inherited by this style.
-  void PropagateIndependentInheritedProperties(
-      const ComputedStyleBase& parentStyle);
-
   {% for name, groups_to_diff in diff_functions_map.items() %}
   static bool {{name}}(const ComputedStyle& a, const ComputedStyle& b);
   {% endfor %}
@@ -229,6 +224,8 @@ class ComputedStyleBuilderBase {
 
   CORE_EXPORT void InheritFrom(const ComputedStyleBase& other, IsAtShadowBoundary isAtShadowBoundary);
   void CopyNonInheritedFromCached(const ComputedStyleBase& other);
+
+  void PropagateIndependentInheritedProperties(const ComputedStyleBase& parent_style);
 
   {% for field in computed_style_builder.all_fields|sort(attribute='name') %}
   // {{field.property_name}}

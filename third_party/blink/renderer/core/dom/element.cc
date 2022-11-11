@@ -3306,11 +3306,11 @@ scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
     // so we do that.
     return nullptr;
   }
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style);
-  new_style->PropagateIndependentInheritedProperties(*parent_style);
+  ComputedStyleBuilder builder(*style);
+  builder.PropagateIndependentInheritedProperties(*parent_style);
   INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                 independent_inherited_styles_propagated, 1);
-  return new_style;
+  return builder.TakeStyle();
 }
 
 static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(

@@ -218,6 +218,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Needed to allow access to private/protected getters of fields to allow diff
   // generation
   friend class ComputedStyleBase;
+  friend class ComputedStyleBuilder;
   // Used by CSS animations. We can't allow them to animate based off visited
   // colors.
   friend class CSSPropertyEquality;
@@ -288,7 +289,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Access to GetCurrentColor(). (drop-shadow() does not resolve 'currentcolor'
   // at use-time.)
   friend class FilterOperationResolver;
-  // Access to SetInitialData() and GetCurrentColor().
+  // Access to GetCurrentColor().
   friend class StyleResolver;
   // Access to UserModify().
   friend class MatchedPropertiesCache;
@@ -304,7 +305,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   Vector<AtomicString>* GetVariableNamesCache() const;
   Vector<AtomicString>& EnsureVariableNamesCache() const;
-  void ClearVariableNamesCache() const;
 
   PositionFallbackStyleCache& EnsurePositionFallbackStyleCache(
       unsigned ensure_size) const;
@@ -389,11 +389,6 @@ class ComputedStyle : public ComputedStyleBase,
   static bool NeedsReattachLayoutTree(const Element& element,
                                       const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
-
-  // Copies the values of any independent inherited properties from the parent
-  // that are not explicitly set in this style.
-  void PropagateIndependentInheritedProperties(
-      const ComputedStyle& parent_style);
 
   ContentPosition ResolvedJustifyContentPosition(
       const StyleContentAlignmentData& normal_value_behavior) const;
@@ -947,13 +942,6 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT const Vector<AtomicString>& GetVariableNames() const;
   CORE_EXPORT const StyleInheritedVariables* InheritedVariables() const;
   CORE_EXPORT const StyleNonInheritedVariables* NonInheritedVariables() const;
-
-  CORE_EXPORT void SetVariableData(const AtomicString&,
-                                   scoped_refptr<CSSVariableData>,
-                                   bool is_inherited_property);
-  CORE_EXPORT void SetVariableValue(const AtomicString&,
-                                    const CSSValue*,
-                                    bool is_inherited_property);
 
   // Handles both inherited and non-inherited variables
   CORE_EXPORT CSSVariableData* GetVariableData(const AtomicString&) const;
@@ -2556,11 +2544,6 @@ class ComputedStyle : public ComputedStyleBase,
 
   static bool ShadowListHasCurrentColor(const ShadowList*);
 
-  StyleInheritedVariables& MutableInheritedVariables();
-  StyleNonInheritedVariables& MutableNonInheritedVariables();
-
-  CORE_EXPORT void SetInitialData(scoped_refptr<StyleInitialData>);
-
   PhysicalToLogical<const Length&> PhysicalMarginToLogical(
       const ComputedStyle& other) const {
     return PhysicalToLogical<const Length&>(other.GetWritingDirection(),
@@ -2724,6 +2707,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     DCHECK(MatchedPropertiesCache::IsStyleCacheable(other));
     ComputedStyleBuilderBase::CopyNonInheritedFromCached(other);
   }
+
+  // Copies the values of any independent inherited properties from the parent
+  // that are not explicitly set in this style.
+  void PropagateIndependentInheritedProperties(
+      const ComputedStyle& parent_style);
 
   // animations
   const CSSAnimationData* Animations() const {
@@ -3138,12 +3126,38 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       mojom::blink::PreferredColorScheme preferred_color_scheme,
       bool force_dark);
 
+  // Variables
+  CORE_EXPORT StyleInheritedVariables& MutableInheritedVariables();
+  CORE_EXPORT StyleNonInheritedVariables& MutableNonInheritedVariables();
+  CORE_EXPORT void SetVariableData(const AtomicString& name,
+                                   scoped_refptr<CSSVariableData> value,
+                                   bool is_inherited_property) {
+    if (is_inherited_property)
+      MutableInheritedVariables().SetData(name, std::move(value));
+    else
+      MutableNonInheritedVariables().SetData(name, std::move(value));
+  }
+  CORE_EXPORT void SetVariableValue(const AtomicString& name,
+                                    const CSSValue* value,
+                                    bool is_inherited_property) {
+    if (is_inherited_property)
+      MutableInheritedVariables().SetValue(name, value);
+    else
+      MutableNonInheritedVariables().SetValue(name, value);
+  }
+  CORE_EXPORT void SetInitialData(scoped_refptr<StyleInitialData> data) {
+    ClearVariableNamesCache();
+    MutableInitialDataInternal() = std::move(data);
+  }
+
  private:
   friend class ColorPropertyFunctions;
   friend class StyleAdjuster;
   friend class StyleResolverState;
 
   ComputedStyleBuilder() = default;
+
+  CORE_EXPORT void ClearVariableNamesCache();
 
   // TODO(andruud): This should be part of the constructor, but
   // StyleResolverState does not work that way.

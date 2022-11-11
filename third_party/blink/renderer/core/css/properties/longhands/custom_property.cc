@@ -66,10 +66,11 @@ bool CustomProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {
 }
 
 void CustomProperty::ApplyInitial(StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   bool is_inherited_property = IsInherited();
 
   if (!registration_) {
-    state.Style()->SetVariableData(name_, nullptr, is_inherited_property);
+    builder.SetVariableData(name_, nullptr, is_inherited_property);
     return;
   }
 
@@ -86,27 +87,28 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
   CSSVariableData* initial_variable_data = initial_data->GetVariableData(name_);
   const CSSValue* initial_value = initial_data->GetVariableValue(name_);
 
-  state.Style()->SetVariableData(name_, initial_variable_data,
-                                 is_inherited_property);
-  state.Style()->SetVariableValue(name_, initial_value, is_inherited_property);
+  builder.SetVariableData(name_, initial_variable_data, is_inherited_property);
+  builder.SetVariableValue(name_, initial_value, is_inherited_property);
 }
 
 void CustomProperty::ApplyInherit(StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   bool is_inherited_property = IsInherited();
 
   CSSVariableData* parent_data =
       state.ParentStyle()->GetVariableData(name_, is_inherited_property);
 
-  state.Style()->SetVariableData(name_, parent_data, is_inherited_property);
+  builder.SetVariableData(name_, parent_data, is_inherited_property);
 
   if (registration_) {
     const CSSValue* parent_value = state.ParentStyle()->GetVariableValue(name_);
-    state.Style()->SetVariableValue(name_, parent_value, is_inherited_property);
+    builder.SetVariableValue(name_, parent_value, is_inherited_property);
   }
 }
 
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   DCHECK(!value.IsCSSWideKeyword());
 
   if (value.IsInvalidVariableValue()) {
@@ -114,9 +116,9 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
       ApplyUnset(state);
       return;
     }
-    state.Style()->SetVariableData(name_, nullptr, IsInherited());
+    builder.SetVariableData(name_, nullptr, IsInherited());
     if (registration_)
-      state.Style()->SetVariableValue(name_, nullptr, IsInherited());
+      builder.SetVariableValue(name_, nullptr, IsInherited());
     return;
   }
 
@@ -127,7 +129,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   scoped_refptr<CSSVariableData> data = &declaration.Value();
   DCHECK(!data->NeedsVariableResolution());
 
-  state.Style()->SetVariableData(name_, data, is_inherited_property);
+  builder.SetVariableData(name_, data, is_inherited_property);
 
   if (registration_) {
     const CSSParserContext* context = declaration.ParserContext();
@@ -163,9 +165,8 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
         *registered_value, data->IsAnimationTainted());
 
-    state.Style()->SetVariableData(name_, data, is_inherited_property);
-    state.Style()->SetVariableValue(name_, registered_value,
-                                    is_inherited_property);
+    builder.SetVariableData(name_, data, is_inherited_property);
+    builder.SetVariableValue(name_, registered_value, is_inherited_property);
   }
 }
 

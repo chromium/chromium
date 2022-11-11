@@ -91,11 +91,11 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
                                                  *context);
     DCHECK(value);
 
-    scoped_refptr<ComputedStyle> style =
-        GetDocument().GetStyleResolver().InitialStyleForElement();
-    style->SetVariableData(AtomicString(custom_property_name), &value->Value(),
-                           false);
-    ContainerElement().SetComputedStyle(style);
+    ComputedStyleBuilder builder =
+        GetDocument().GetStyleResolver().InitialStyleBuilderForElement();
+    builder.SetVariableData(AtomicString(custom_property_name), &value->Value(),
+                            false);
+    ContainerElement().SetComputedStyle(builder.TakeStyle());
 
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->SizeContainerChanged(
@@ -288,7 +288,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   ComputedStyleBuilder builder(
       *GetDocument().GetStyleResolver().InitialStyleForElement());
   builder.SetContainerType(type_inline_size);
-  scoped_refptr<ComputedStyle> style = builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
@@ -322,21 +322,30 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Set --no: match. Should not cause change because size query part does not
   // match.
-  style->SetVariableData("--no", css_test_helpers::CreateVariableData("match"),
-                         inherited);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetVariableData("--no", css_test_helpers::CreateVariableData("match"),
+                          inherited);
+  style = builder.TakeStyle();
+  container_element.SetComputedStyle(style);
   EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   // Set --foo: bar. Should trigger change.
-  style->SetVariableData("--foo", css_test_helpers::CreateVariableData("bar"),
-                         inherited);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetVariableData("--foo", css_test_helpers::CreateVariableData("bar"),
+                          inherited);
+  style = builder.TakeStyle();
+  container_element.SetComputedStyle(style);
   EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Set --bar: foo. Should trigger change because size part also matches.
   eval_and_add_all();
-  style->SetVariableData("--bar", css_test_helpers::CreateVariableData("foo"),
-                         inherited);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetVariableData("--bar", css_test_helpers::CreateVariableData("foo"),
+                          inherited);
+  style = builder.TakeStyle();
+  container_element.SetComputedStyle(style);
   EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
 }
