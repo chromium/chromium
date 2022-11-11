@@ -65,10 +65,6 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-    media::kDeprecateLowUsageCodecs,
-#endif
   };
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -349,14 +345,6 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Divx) {
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
   PlayVideo("bear_h264_aac.3gp");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAmrnbMpeg4) {
-  PlayVideo("bear_mpeg4_amrnb.3gp");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavGsmms) {
-  PlayAudio("bear_gsm_ms.wav");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

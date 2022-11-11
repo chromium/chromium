@@ -118,12 +118,6 @@ AudioCodec CodecIDToAudioCodec(AVCodecID codec_id) {
       return AudioCodec::kPCM_S24BE;
     case AV_CODEC_ID_FLAC:
       return AudioCodec::kFLAC;
-    case AV_CODEC_ID_AMR_NB:
-      return AudioCodec::kAMR_NB;
-    case AV_CODEC_ID_AMR_WB:
-      return AudioCodec::kAMR_WB;
-    case AV_CODEC_ID_GSM_MS:
-      return AudioCodec::kGSM_MS;
     case AV_CODEC_ID_PCM_ALAW:
       return AudioCodec::kPCM_ALAW;
     case AV_CODEC_ID_PCM_MULAW:
@@ -175,12 +169,6 @@ AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,
       return AV_CODEC_ID_VORBIS;
     case AudioCodec::kFLAC:
       return AV_CODEC_ID_FLAC;
-    case AudioCodec::kAMR_NB:
-      return AV_CODEC_ID_AMR_NB;
-    case AudioCodec::kAMR_WB:
-      return AV_CODEC_ID_AMR_WB;
-    case AudioCodec::kGSM_MS:
-      return AV_CODEC_ID_GSM_MS;
     case AudioCodec::kPCM_ALAW:
       return AV_CODEC_ID_PCM_ALAW;
     case AudioCodec::kPCM_MULAW:
