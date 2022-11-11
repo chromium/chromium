@@ -186,8 +186,8 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
 
   // Expect that group2 is a valid group to merge with and that group1 hold the
   // same data after the merge.
-  EXPECT_TRUE(group1.ShouldMergeGroup(group2.ToSpecifics().get()));
-  group1.MergeGroup(group2.ToSpecifics());
+  EXPECT_TRUE(group1.ShouldMergeGroup(*group2.ToSpecifics()));
+  group1.MergeGroup(*group2.ToSpecifics());
   CompareGroups(group1, group2);
 
   // Expect that group2 is not a valid group to merge. No merging should be
@@ -195,7 +195,7 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   group1.SetColor(tab_groups::TabGroupColorId::kOrange);
   group1.SetTitle(u"Another title");
   group2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_FALSE(group1.ShouldMergeGroup(group2.ToSpecifics().get()));
+  EXPECT_FALSE(group1.ShouldMergeGroup(*group2.ToSpecifics()));
 }
 
 // Verifies that merging 2 tab objects (1 Sync, 1 SavedTabGroupTab)
@@ -213,13 +213,13 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
 
   // Expect that tab2 is a valid group to merge with and that the tab1 holds the
   // same data after the merge.
-  EXPECT_TRUE(tab1.ShouldMergeTab(tab2.ToSpecifics().get()));
-  tab1.MergeTab(tab2.ToSpecifics());
+  EXPECT_TRUE(tab1.ShouldMergeTab(*tab2.ToSpecifics()));
+  tab1.MergeTab(*tab2.ToSpecifics());
   CompareTabs(tab1, tab2);
 
   // Expect that tab2 is not a valid group to merge. No merging should be done.
   tab1.SetTitle(u"A title");
   tab1.SetURL(GURL("Another url"));
   tab2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_FALSE(tab1.ShouldMergeTab(tab2.ToSpecifics().get()));
+  EXPECT_FALSE(tab1.ShouldMergeTab(*tab2.ToSpecifics()));
 }

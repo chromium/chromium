@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 
 class Profile;
 
@@ -23,9 +25,13 @@ class SavedTabGroupKeyedService : public KeyedService {
 
   SavedTabGroupModelListener* listener() { return &listener_; }
   SavedTabGroupModel* model() { return &model_; }
+  SavedTabGroupSyncBridge* bridge() { return &bridge_; }
   Profile* profile() { return profile_; }
 
  private:
+  // Returns the ModelTypeStoreFactory tied to the current profile.
+  syncer::OnceModelTypeStoreFactory GetStoreFactory();
+
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -35,6 +41,9 @@ class SavedTabGroupKeyedService : public KeyedService {
   // Listens to and observers all tabstrip models; updating the
   // SavedTabGroupModel when necessary.
   SavedTabGroupModelListener listener_;
+
+  // Stores SavedTabGroup data to the disk and to sync if enabled.
+  SavedTabGroupSyncBridge bridge_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_

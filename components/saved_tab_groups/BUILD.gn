@@ -9,7 +9,8 @@ source_set("core") {
     "saved_tab_group_model.cc",
     "saved_tab_group_model.h",
     "saved_tab_group_model_observer.h",
-    "saved_tab_group_sync_bridge_base.h",
+    "saved_tab_group_sync_bridge.cc",
+    "saved_tab_group_sync_bridge.h",
     "saved_tab_group_tab.cc",
     "saved_tab_group_tab.h",
   ]
@@ -28,6 +29,7 @@ source_set("unit_tests") {
   sources = [
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
+    "saved_tab_group_sync_bridge_unittest.cc",
   ]
   deps = [
     ":core",

@@ -9,9 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 
-SavedTabGroupServiceFactory& SavedTabGroupServiceFactory::GetInstance() {
+SavedTabGroupServiceFactory* SavedTabGroupServiceFactory::GetInstance() {
   static base::NoDestructor<SavedTabGroupServiceFactory> instance;
-  return *instance;
+  return instance.get();
 }
 
 // static
@@ -19,7 +19,7 @@ SavedTabGroupKeyedService* SavedTabGroupServiceFactory::GetForProfile(
     Profile* profile) {
   DCHECK(profile);
   return static_cast<SavedTabGroupKeyedService*>(
-      GetInstance().GetServiceForBrowserContext(profile, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 SavedTabGroupServiceFactory::SavedTabGroupServiceFactory()

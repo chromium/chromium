@@ -18,7 +18,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
 class SavedTabGroupModelObserver;
 class SavedTabGroup;
 
@@ -27,7 +26,6 @@ class SavedTabGroup;
 class SavedTabGroupModel {
  public:
   SavedTabGroupModel();
-  explicit SavedTabGroupModel(Profile* profile);
   SavedTabGroupModel(const SavedTabGroupModel&) = delete;
   SavedTabGroupModel& operator=(const SavedTabGroupModel& other) = delete;
   ~SavedTabGroupModel();
@@ -36,7 +34,6 @@ class SavedTabGroupModel {
   const std::vector<SavedTabGroup>& saved_tab_groups() const {
     return saved_tab_groups_;
   }
-  Profile* profile() const { return profile_; }
   std::vector<SavedTabGroup> saved_tab_groups() { return saved_tab_groups_; }
 
   // Returns the index of the SavedTabGroup if it exists in the vector. Else
@@ -114,9 +111,9 @@ class SavedTabGroupModel {
   // Attempts to merge the sync_specific with the local object that holds the
   // same guid.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeGroup(
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific);
+      const sync_pb::SavedTabGroupSpecifics& sync_specific);
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeTab(
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific);
+      const sync_pb::SavedTabGroupSpecifics& sync_specific);
 
   // Changes the index of a given tab group by id. The new index provided is the
   // expected index after the group is removed.
@@ -125,10 +122,10 @@ class SavedTabGroupModel {
   // Loads the entries (a sync_pb::SavedTabGroupSpecifics can be a group or a
   // tab) saved locally in the model type store (local storage) and attempts to
   // reconstruct the model by matching groups with their tabs using their
-  // `group_id`'s. We do this by adding the groups to the model first, then
-  // populating them with their respective tabs. Note: Any tabs that do not have
-  // a matching group, will be lost.
-  void LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics> entries);
+  // `group_id`'s. Note: Any tabs that do not have a matching group, will be
+  // returned to the bridge to keep track of.
+  std::vector<sync_pb::SavedTabGroupSpecifics> LoadStoredEntries(
+      std::vector<sync_pb::SavedTabGroupSpecifics> entries);
 
   // Functions that should be called when a SavedTabGroup's corresponding
   // TabGroup is closed or opened.
@@ -151,10 +148,6 @@ class SavedTabGroupModel {
 
   // Storage of all saved tab groups in the order they are displayed.
   std::vector<SavedTabGroup> saved_tab_groups_;
-
-  // SavedTabGroupModels are created on a per profile basis with a keyed
-  // service. Returns the Profile that made the SavedTabGroupModel
-  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_H_

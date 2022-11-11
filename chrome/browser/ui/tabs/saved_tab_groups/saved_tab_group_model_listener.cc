@@ -58,6 +58,8 @@ void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
   }
   observed_browsers_.insert(browser);
   browser->tab_strip_model()->AddObserver(this);
+  // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
+  // should be in the SavedTabGroupModel.
 }
 
 void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {

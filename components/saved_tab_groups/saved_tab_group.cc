@@ -47,13 +47,11 @@ SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
 
-absl::optional<SavedTabGroupTab> SavedTabGroup::GetTab(
-    const base::GUID& tab_id) {
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& tab_id) {
   absl::optional<int> index = GetIndexOfTab(tab_id);
   if (!index.has_value())
-    return absl::nullopt;
-
-  return saved_tabs()[index.value()];
+    return nullptr;
+  return &saved_tabs()[index.value()];
 }
 
 bool SavedTabGroup::ContainsTab(const base::GUID& tab_id) const {
@@ -153,9 +151,9 @@ SavedTabGroup& SavedTabGroup::MoveTab(const base::GUID& tab_id,
 }
 
 bool SavedTabGroup::ShouldMergeGroup(
-    sync_pb::SavedTabGroupSpecifics* sync_specific) {
+    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
   bool sync_update_is_latest =
-      sync_specific->update_time_windows_epoch_micros() >=
+      sync_specific.update_time_windows_epoch_micros() >=
       update_time_windows_epoch_micros()
           .ToDeltaSinceWindowsEpoch()
           .InMicroseconds();
@@ -165,12 +163,12 @@ bool SavedTabGroup::ShouldMergeGroup(
 }
 
 std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::MergeGroup(
-    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific) {
-  if (ShouldMergeGroup(sync_specific.get())) {
-    SetTitle(base::UTF8ToUTF16(sync_specific->group().title()));
-    SetColor(SyncColorToTabGroupColor(sync_specific->group().color()));
+    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
+  if (ShouldMergeGroup(sync_specific)) {
+    SetTitle(base::UTF8ToUTF16(sync_specific.group().title()));
+    SetColor(SyncColorToTabGroupColor(sync_specific.group().color()));
     SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(sync_specific->update_time_windows_epoch_micros())));
+        base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
   }
 
   return ToSpecifics();

@@ -26,6 +26,8 @@ class SavedTabGroupModelObserver {
   }
 
   // Called when the title, tabs, or color change.
+  // TODO(dljames): Update parameters to take 2 guids. 1 for the group and an
+  // optional guid for the tab. Do the same for the sync version.
   virtual void SavedTabGroupUpdatedLocally(const base::GUID& guid) {}
 
   // Called when the order of saved tab groups in the bookmark bar are changed.

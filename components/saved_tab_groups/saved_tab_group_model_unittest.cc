@@ -380,15 +380,15 @@ TEST_F(SavedTabGroupModelTest, AddTabToGroup) {
   EXPECT_EQ(group->saved_tabs().size(), size_t(2));
   EXPECT_EQ(0, group->GetIndexOfTab(tab1.guid()));
   EXPECT_TRUE(group->ContainsTab(tab1.guid()));
-  ASSERT_TRUE(group->GetTab(tab1.guid()).has_value());
-  CompareSavedTabGroupTabs({group->GetTab(tab1.guid()).value()}, {tab1});
+  ASSERT_TRUE(group->GetTab(tab1.guid()));
+  CompareSavedTabGroupTabs({*group->GetTab(tab1.guid())}, {tab1});
 
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2, 2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
   EXPECT_EQ(2, group->GetIndexOfTab(tab2.guid()));
   EXPECT_TRUE(group->ContainsTab(tab2.guid()));
-  ASSERT_TRUE(group->GetTab(tab2.guid()).has_value());
-  CompareSavedTabGroupTabs({group->GetTab(tab2.guid()).value()}, {tab2});
+  ASSERT_TRUE(group->GetTab(tab2.guid()));
+  CompareSavedTabGroupTabs({*group->GetTab(tab2.guid())}, {tab2});
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {tab1, group->saved_tabs()[1], tab2});
 }
@@ -512,15 +512,15 @@ TEST_F(SavedTabGroupModelTest, MergeGroupsFromModel) {
   group2.SetColor(tab_groups::TabGroupColorId::kPink);
   group2.SetTitle(u"Updated title");
   SavedTabGroup merged_group = SavedTabGroup::FromSpecifics(
-      *saved_tab_group_model_->MergeGroup(group2.ToSpecifics()));
+      *saved_tab_group_model_->MergeGroup(*group2.ToSpecifics()));
 
-  EXPECT_EQ(group1->title(), group2.title());
-  EXPECT_EQ(group1->color(), group2.color());
-  EXPECT_EQ(group1->saved_guid(), group2.saved_guid());
-  EXPECT_EQ(group1->creation_time_windows_epoch_micros(),
-            group2.creation_time_windows_epoch_micros());
-  EXPECT_EQ(group1->update_time_windows_epoch_micros(),
-            group2.update_time_windows_epoch_micros());
+  EXPECT_EQ(group2.title(), merged_group.title());
+  EXPECT_EQ(group2.color(), merged_group.color());
+  EXPECT_EQ(group2.saved_guid(), merged_group.saved_guid());
+  EXPECT_EQ(group2.creation_time_windows_epoch_micros(),
+            merged_group.creation_time_windows_epoch_micros());
+  EXPECT_EQ(group2.update_time_windows_epoch_micros(),
+            merged_group.update_time_windows_epoch_micros());
 }
 
 // Tests that merging a tab with the same tab_id changes the state of the object
@@ -532,14 +532,14 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
   tab2.SetURL(GURL("chrome://updated_url"));
 
   SavedTabGroupTab merged_tab = SavedTabGroupTab::FromSpecifics(
-      *saved_tab_group_model_->MergeTab(tab2.ToSpecifics()));
+      *saved_tab_group_model_->MergeTab(*tab2.ToSpecifics()));
 
-  EXPECT_EQ(tab1.url(), merged_tab.url());
-  EXPECT_EQ(tab1.guid(), merged_tab.guid());
-  EXPECT_EQ(tab1.group_guid(), merged_tab.group_guid());
-  EXPECT_EQ(tab1.creation_time_windows_epoch_micros(),
+  EXPECT_EQ(tab2.url(), merged_tab.url());
+  EXPECT_EQ(tab2.guid(), merged_tab.guid());
+  EXPECT_EQ(tab2.group_guid(), merged_tab.group_guid());
+  EXPECT_EQ(tab2.creation_time_windows_epoch_micros(),
             merged_tab.creation_time_windows_epoch_micros());
-  EXPECT_EQ(tab1.update_time_windows_epoch_micros(),
+  EXPECT_EQ(tab2.update_time_windows_epoch_micros(),
             merged_tab.update_time_windows_epoch_micros());
 }
 

@@ -18,7 +18,7 @@ class SavedTabGroupServiceFactory : public ProfileKeyedServiceFactory {
   void operator=(const SavedTabGroupServiceFactory&) = delete;
   ~SavedTabGroupServiceFactory() override;
 
-  static SavedTabGroupServiceFactory& GetInstance();
+  static SavedTabGroupServiceFactory* GetInstance();
   static SavedTabGroupKeyedService* GetForProfile(Profile* profile);
 
  private:

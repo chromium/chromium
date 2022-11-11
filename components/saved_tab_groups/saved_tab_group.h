@@ -54,7 +54,7 @@ class SavedTabGroup {
     return saved_tabs_;
   }
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
-  absl::optional<SavedTabGroupTab> GetTab(const base::GUID& tab_id);
+  SavedTabGroupTab* GetTab(const base::GUID& tab_id);
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
   // returns absl::nullopt.
   absl::optional<int> GetIndexOfTab(const base::GUID& tab_id) const;
@@ -87,12 +87,12 @@ class SavedTabGroup {
   // Merges this groups data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values of this group.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeGroup(
-      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific);
+      const sync_pb::SavedTabGroupSpecifics& sync_specific);
 
   // We should merge a group if one of the following is true:
   // 1. The data from `sync_specific` has the most recent (larger) update time.
   // 2. The `sync_specific` has the oldest (smallest) creation time.
-  bool ShouldMergeGroup(sync_pb::SavedTabGroupSpecifics* sync_specific);
+  bool ShouldMergeGroup(const sync_pb::SavedTabGroupSpecifics& sync_specific);
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.
