@@ -15,6 +15,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERMS_OF_SERVICE_URL} from './feedback_constants.js';
 import {FeedbackFlowState} from './feedback_flow.js';
 import {AttachedFile, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report} from './feedback_types.js';
+import {showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -469,6 +470,14 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           '#performanceTraceLink',
           `chrome://slow_trace/tracing.zip#${this.feedbackContext.traceId}`);
     }
+  }
+
+  /**
+   * @param {!Event} event
+   * @protected
+   */
+  onContainerScroll_(event) {
+    showScrollingEffects(event, this);
   }
 }
 

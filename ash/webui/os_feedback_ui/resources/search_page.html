@@ -87,7 +87,8 @@
   <div id="header">
     <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
-  <div id="content">
+  <div id="shadowElevation"></div>
+  <div id="content" on-scroll="onContainerScroll_">
     <div id="descriptionPane">
       <div id="descriptionHeader">
         <h2 id="descriptionTitle">[[i18n('descriptionLabel')]]</h2>
@@ -116,6 +117,7 @@
           scrolling="no">
       </iframe>
     </div>
+    <div id="shadowShield"></div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonContinue" class="action-button"

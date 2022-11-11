@@ -48,6 +48,7 @@ generate_grd("build_grd") {
     "fake_feedback_service_provider.js",
     "feedback_constants.js",
     "feedback_types.js",
+    "feedback_utils.js",
     "index.html",
     "mojo_interface_provider.js",
     "questionnaire.js",

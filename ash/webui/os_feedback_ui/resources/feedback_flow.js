@@ -12,6 +12,7 @@ import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js'
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -313,6 +314,21 @@ export class FeedbackFlowElement extends PolymerElement {
     window.addEventListener('resize', (event) => {
       this.style.setProperty(
           '--window-height', window.innerHeight.toString() + 'px');
+      let page = null;
+      switch (this.currentState_) {
+        case FeedbackFlowState.SEARCH:
+          page = this.shadowRoot.querySelector('search-page');
+          break;
+        case FeedbackFlowState.SHARE_DATA:
+          page = this.shadowRoot.querySelector('share-data-page');
+          break;
+        case FeedbackFlowState.CONFIRMATION:
+          page = this.shadowRoot.querySelector('confirmation-page');
+          break;
+        default:
+          console.warn('unexpected state: ', this.currentState_);
+      }
+      showScrollingEffects(event, page);
     });
   }
 
@@ -382,8 +398,9 @@ export class FeedbackFlowElement extends PolymerElement {
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
         this.fetchScreenshot_();
-        this.shadowRoot.querySelector('share-data-page')
-            .focusScreenshotCheckbox();
+        const shareDataPage = this.shadowRoot.querySelector('share-data-page');
+        shareDataPage.focusScreenshotCheckbox();
+        showScrollingEffectOnStart(shareDataPage);
 
         if (!this.helpContentOutcomeMetricEmitted_) {
           this.recordHelpContentOutcome_(
@@ -403,7 +420,10 @@ export class FeedbackFlowElement extends PolymerElement {
         this.feedbackServiceProvider_.sendReport(report).then((response) => {
           this.currentState_ = FeedbackFlowState.CONFIRMATION;
           this.sendReportStatus_ = response.status;
-          this.shadowRoot.querySelector('confirmation-page').focusPageTitle();
+          const confirmationPage =
+              this.shadowRoot.querySelector('confirmation-page');
+          confirmationPage.focusPageTitle();
+          showScrollingEffectOnStart(confirmationPage);
         });
         break;
       default:
@@ -424,6 +444,7 @@ export class FeedbackFlowElement extends PolymerElement {
         // Remove the text from previous search.
         const searchPage = this.shadowRoot.querySelector('search-page');
         searchPage.setDescription(/*text=*/ '');
+        showScrollingEffectOnStart(searchPage);
 
         // Re-enable the send button in share data page.
         const shareDataPage = this.shadowRoot.querySelector('share-data-page');
@@ -442,7 +463,9 @@ export class FeedbackFlowElement extends PolymerElement {
   /** @private */
   navigateToSearchPage_() {
     this.currentState_ = FeedbackFlowState.SEARCH;
-    this.shadowRoot.querySelector('search-page').focusInputElement();
+    const searchPage = this.shadowRoot.querySelector('search-page');
+    searchPage.focusInputElement();
+    showScrollingEffectOnStart(searchPage);
   }
 
   /**

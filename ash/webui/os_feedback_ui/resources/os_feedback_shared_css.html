@@ -31,7 +31,6 @@
     }
 
     #header {
-      box-shadow: var(--cros-elevation-2-shadow);
       display: flex;
       height: 68px;
       padding-bottom: 24px;
@@ -39,10 +38,31 @@
       padding-inline-start: var(--feedback-padding-inline-start);
     }
 
+    .elevation-shadow-scrolling {
+      background-color: var(--cros-bg-color-elevation-1);
+      box-shadow: var(--cros-elevation-2-shadow);
+    }
+
+    #shadowElevation {
+      height: 2px;
+      left: 0;
+      position: fixed;
+      right: 0;
+      top: 90px;
+    }
+
     #content {
       display: flex;
       flex-direction: column;
-      height: 456px;
+      height: calc(var(--window-height) - var(--feedback-header-height) -
+          var(--feedback-footer-height));
+      overflow: auto;
+      padding-inline-end: var(--feedback-padding-inline-end);
+      padding-inline-start: var(--feedback-padding-inline-start);
+    }
+
+    .content-scrolling-end {
+      border-bottom: 1px solid var(--cros-separator-color);
     }
 
     .page-title {
@@ -87,13 +107,16 @@
     }
 
     #navButtons {
-      box-shadow: var(--cros-elevation-2-shadow);
       display: flex;
       justify-content: end;
       padding-bottom: 40px;
       padding-inline-end: var(--feedback-padding-inline-end);
       padding-inline-start: var(--feedback-padding-inline-start);
       padding-top: 20px;
+    }
+
+    .nav-buttons-scrolling {
+      box-shadow: var(--cros-elevation-2-shadow);
     }
 
     cr-button {
@@ -217,12 +240,17 @@
       --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
     }
 
-    #content {
-      height: calc(var(--window-height) - var(--feedback-header-height) -
-          var(--feedback-footer-height));
-      overflow: auto;
-      padding-inline-end: var(--feedback-padding-inline-end);
-      padding-inline-start: var(--feedback-padding-inline-start);
+    #shadowShield {
+      bottom: 92px;
+      height: 48px;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+
+    .scrolling-shield {
+      background: linear-gradient(to bottom,
+          rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1))
     }
   </style>
 </template>

@@ -13,6 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {FeedbackFlowState} from './feedback_flow.js';
 import {FeedbackAppPostSubmitAction, FeedbackServiceProviderInterface, SendReportStatus} from './feedback_types.js';
+import {showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -167,6 +168,14 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
 
   focusPageTitle() {
     this.shadowRoot.querySelector('#pageTitle').focus();
+  }
+
+  /**
+   * @param {!Event} event
+   * @protected
+   */
+  onContainerScroll_(event) {
+    showScrollingEffects(event, this);
   }
 }
 

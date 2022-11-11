@@ -71,7 +71,8 @@
   <div id="header">
     <h1 id="pageTitle" class="page-title" tabindex="-1">[[getTitle_(sendReportStatus)]]</h1>
   </div>
-  <div id="content">
+  <div id="shadowElevation"></div>
+  <div id="content" on-scroll="onContainerScroll_">
     <div id="message" class="sub-label">[[getMessage_(sendReportStatus)]]</div>
     <div id="helpResources">
       <h2 id="helpResourcesLabel">[[i18n('helpResourcesLabel')]]</h2>
@@ -101,6 +102,7 @@
           </span>
       </cr-link-row>
     </div>
+    <div id="shadowShield"></div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonNewReport" class="cancel-button"

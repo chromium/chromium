@@ -13,6 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {btRegEx, buildWordMatcher, FeedbackFlowState} from './feedback_flow.js';
 import {FeedbackContext, HelpContentList, HelpContentProviderInterface, SearchRequest, SearchResponse, SearchResult} from './feedback_types.js';
+import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
 import {domainQuestions, questionnaireBegin} from './questionnaire.js';
 
@@ -137,8 +138,12 @@ export class SearchPageElement extends SearchPageElementBase {
       this.resolveIframeLoaded_ = resolve;
     });
 
-    // Set focus on the input field after iframe is loaded.
-    this.iframeLoaded_.then(() => this.focusInputElement());
+    // Set focus on the input field and decide whether to show scrolling effect
+    // after iframe is loaded.
+    this.iframeLoaded_.then(() => {
+      this.focusInputElement();
+      showScrollingEffectOnStart(this);
+    });
 
     /** @private {?HTMLIFrameElement} */
     this.iframe_ = null;
@@ -470,6 +475,14 @@ export class SearchPageElement extends SearchPageElementBase {
     // the end of the appended text, so we need to move the cursor back to where
     // the user was typing before.
     textarea.selectionEnd = savedCursor;
+  }
+
+  /**
+   * @param {!Event} event
+   * @protected
+   */
+  onContainerScroll_(event) {
+    showScrollingEffects(event, this);
   }
 }
 
