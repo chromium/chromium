@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,4 +58,24 @@ TEST(NameProcessingUtil, ComputeParseableNames) {
   ComputeParseableNames(long_prefix);
   EXPECT_THAT(long_prefix, ElementsAre(u"aazzz", u"bbzzz", u"cczzz"));
 }
+
+// Tests that shipping and billing prefixes are removed correctly with
+// AutofillLabelAffixRemoval. Unrelated strings without common prefixes to their
+// neighbours and short strings are not modified.
+TEST(NameProcessingUtil, RemoveCommonPrefixInIntervals) {
+  base::test::ScopedFeatureList label_affix_removal;
+  label_affix_removal.InitAndEnableFeature(
+      features::kAutofillLabelAffixRemoval);
+
+  std::vector<base::StringPiece16> names{
+      u"shipping-name",    u"shipping-email",
+      u"shipping-address", u"unrelated-field",
+      u"billing-name",     u"billing-email",
+      u"billing-address",  u"abc"};
+  ComputeParseableNames(names);
+  EXPECT_THAT(names,
+              ElementsAre(u"name", u"email", u"address", u"unrelated-field",
+                          u"name", u"email", u"address", u"abc"));
+}
+
 }  // namespace autofill

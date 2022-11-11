@@ -12,14 +12,14 @@ ADDRESS_HOME_LINE2 | BAddress2 | Address 2 |  | LoginName_1
 ADDRESS_HOME_CITY | BCity | City* |  | LoginName_1
 ADDRESS_HOME_STATE | BState | State* | AK | LoginName_1
 ADDRESS_HOME_ZIP | BZip | Zip Code* |  | LoginName_1
-PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BNightPhone_tel1 | Shipping Phone* |  | LoginName_1
-PHONE_HOME_NUMBER_PREFIX | BNightPhone_tel2 | Exchange |  | LoginName_1
-PHONE_HOME_NUMBER_SUFFIX | BNightPhone_tel3 | Last four digits |  | LoginName_1
-PHONE_HOME_EXTENSION | BNightPhone_ext1 | Ext |  | LoginName_1
-PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BDayPhone_tel1 | Daytime Phone |  | LoginName_1
-PHONE_HOME_NUMBER_PREFIX | BDayPhone_tel2 | Exchange |  | LoginName_1
-PHONE_HOME_NUMBER_SUFFIX | BDayPhone_tel3 | Last four digits |  | LoginName_1
-PHONE_HOME_EXTENSION | BDayPhone_ext1 | Ext |  | LoginName_1
+PHONE_HOME_WHOLE_NUMBER | BNightPhone_tel1 | Shipping Phone* |  | LoginName_1
+UNKNOWN_TYPE | BNightPhone_tel2 | Exchange |  | LoginName_1
+UNKNOWN_TYPE | BNightPhone_tel3 | Last four digits |  | LoginName_1
+UNKNOWN_TYPE | BNightPhone_ext1 | Ext |  | LoginName_1
+PHONE_HOME_WHOLE_NUMBER | BDayPhone_tel1 | Daytime Phone |  | LoginName_1
+UNKNOWN_TYPE | BDayPhone_tel2 | Exchange |  | LoginName_1
+UNKNOWN_TYPE | BDayPhone_tel3 | Last four digits |  | LoginName_1
+UNKNOWN_TYPE | BDayPhone_ext1 | Ext |  | LoginName_1
 UNKNOWN_TYPE | same | Yes | 1 | LoginName_1
 UNKNOWN_TYPE | same | No | 0 | LoginName_1
 NAME_FIRST | SFirstName | First Name* |  | SFirstName_2
@@ -31,10 +31,10 @@ ADDRESS_HOME_LINE2 | SAddress2 | Address 2 |  | SFirstName_2
 ADDRESS_HOME_CITY | SCity | City* |  | SFirstName_2
 ADDRESS_HOME_STATE | SState | State* | AK | SFirstName_2
 ADDRESS_HOME_ZIP | SZip | Zip Code* |  | SFirstName_2
-PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_2
-PHONE_HOME_NUMBER_PREFIX | ShippingPhone_tel2 |  |  | SFirstName_2
-PHONE_HOME_NUMBER_SUFFIX | ShippingPhone_tel3 |  |  | SFirstName_2
-PHONE_HOME_EXTENSION | ShippingPhone_ext1 | Ext |  | SFirstName_2
+PHONE_HOME_WHOLE_NUMBER | ShippingPhone_tel1 | Shipping Phone* |  | SFirstName_2
+UNKNOWN_TYPE | ShippingPhone_tel2 |  |  | SFirstName_2
+UNKNOWN_TYPE | ShippingPhone_tel3 |  |  | SFirstName_2
+UNKNOWN_TYPE | ShippingPhone_ext1 | Ext |  | SFirstName_2
 UNKNOWN_TYPE | custtype | Is this purchase for personal or business use? | 200 | LoginName_1
 UNKNOWN_TYPE | Age | Age |  | LoginName_1
 UNKNOWN_TYPE | income | Income | 0 | LoginName_1
