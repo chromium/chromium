@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -196,7 +197,7 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
     dialog_model.AddMenuItem(
         tab.favicon().has_value()
             ? ui::ImageModel::FromImage(tab.favicon().value())
-            : ui::ImageModel(),
+            : ui::ImageModel::FromImage(favicon::GetDefaultFavicon()),
         tab.title().empty() ? base::UTF8ToUTF16(tab.url().spec()) : tab.title(),
         base::BindRepeating(
             [](GURL url,
