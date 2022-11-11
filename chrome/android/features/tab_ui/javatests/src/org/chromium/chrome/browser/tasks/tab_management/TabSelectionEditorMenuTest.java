@@ -38,7 +38,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -64,6 +67,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -78,7 +82,8 @@ import java.util.concurrent.TimeoutException;
  * On-device Unit tests for the {@link TabSelectionEditorMenu} and its related
  * classes.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Features.EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS,
         TAB_GROUPS_FOR_TABLETS, TAB_SELECTION_EDITOR_V2})
 @Batch(Batch.UNIT_TESTS)
@@ -88,6 +93,10 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final Integer TAB_ID_1 = 1;
     private static final Integer TAB_ID_2 = 2;
     private static final Integer[] TAB_IDS = new Integer[] {TAB_ID_0, TAB_ID_1, TAB_ID_2};
+
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams =
+            new NightModeTestUtils.NightModeParams().getParameters();
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -164,11 +173,14 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private PropertyListModel<PropertyModel, PropertyKey> mPropertyListModel;
     private ListModelChangeProcessor mChangeProcessor;
 
+    public TabSelectionEditorMenuTest(boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        // TODO(crbug/1379188): Override another test is leaking theme state.
-        getActivity().setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
         ChromeFeatureList.sTabSelectionEditorV2.setForTesting(true);
         MockitoAnnotations.initMocks(this);
 
@@ -214,8 +226,10 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         ChromeFeatureList.sTabSelectionEditorV2.setForTesting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mPropertyListModel.clear(); });
+        super.tearDownTest();
     }
 
     private void configureMenuWithActions(List<FakeTabSelectionEditorAction> actions) {
@@ -251,6 +265,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_0, TAB_ID_2})));
         assertActionView(R.id.tab_selection_editor_close_menu_item, true);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarEnabled");
     }
 
@@ -272,6 +287,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_1})));
         assertActionView(R.id.tab_selection_editor_close_menu_item, false);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarDisabled");
     }
 
@@ -292,6 +308,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                 new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_0, TAB_ID_1, TAB_ID_2})));
         assertActionView(R.id.tab_selection_editor_close_menu_item, true);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarIconOnlyEnabled");
     }
 
@@ -323,6 +340,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { actions.get(0).addActionObserver(observer); });
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarTextOnlyEnabled");
         assertActionView(R.id.tab_selection_editor_close_menu_item, true);
         clickActionView(R.id.tab_selection_editor_close_menu_item);
@@ -354,6 +372,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         openMenu(listener);
         assertMenuItem("Close tabs", false);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(
                 mTabSelectionEditorMenu.getContentView(), "singleMenuItemDisabled_Menu");
         closeMenu(listener);
@@ -393,6 +412,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         clickMenuItem("Close tab");
         helper.waitForCallback(0);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleMenuItemEnabled_Toolbar");
         mRenderTestRule.render(
                 mTabSelectionEditorMenu.getContentView(), "singleMenuItemEnabled_Menu");
@@ -425,6 +445,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         assertActionView(R.id.tab_selection_editor_close_menu_item, false);
         assertActionView(R.id.tab_selection_editor_group_menu_item, true);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "twoActionToolbarPartlyDisabled");
     }
 
@@ -452,6 +473,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         PopupListener listener = new PopupListener();
         openMenu(listener);
         assertMenuItem("Close tab", true);
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "oneActionToolbarOneMenuItemEnabled_Toobar");
         mRenderTestRule.render(mTabSelectionEditorMenu.getContentView(),
                 "oneActionToolbarOneMenuItemEnabled_Menu");
@@ -486,6 +508,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         assertActionView(R.id.tab_selection_editor_group_menu_item, false);
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "longTextV2ActionAndMenu");
     }
 
@@ -505,6 +528,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {})));
 
+        forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "longTextDefaultGroupButton");
     }
 
@@ -533,6 +557,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         openMenu(listener);
         assertMenuItem("Close tab", true);
         assertMenuItem("Group tab", false);
+        forceFinishRollAnimation();
         mRenderTestRule.render(
                 mTabSelectionEditorMenu.getContentView(), "twoMenuItemsPartlyDisabled_Menu");
         closeMenu(listener);
@@ -604,5 +629,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private void setSelectedItems(Set<Integer> tabIds) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mSelectionDelegate.setSelectedItems(tabIds); });
+    }
+
+    private void forceFinishRollAnimation() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            NumberRollView numberRoll =
+                    (NumberRollView) mToolbar.getActionViewLayout().getChildAt(0);
+            numberRoll.endAnimationsForTesting();
+        });
     }
 }
