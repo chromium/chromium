@@ -10,7 +10,7 @@
 #include "content/common/content_export.h"
 
 namespace attribution_reporting {
-class SourceRegistration;
+struct SourceRegistration;
 }  // namespace attribution_reporting
 
 namespace base {

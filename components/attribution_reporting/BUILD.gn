@@ -27,6 +27,8 @@ component("attribution_reporting") {
     "os_registration.h",
     "source_registration.cc",
     "source_registration.h",
+    "suitable_origin.cc",
+    "suitable_origin.h",
     "trigger_registration.cc",
     "trigger_registration.h",
   ]
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "filters_unittest.cc",
     "os_registration_unittest.cc",
     "source_registration_unittest.cc",
+    "suitable_origin_unittest.cc",
     "trigger_registration_unittest.cc",
   ]
 
@@ -109,7 +112,6 @@ fuzzer_test("source_registration_fuzzer") {
     "//testing/libfuzzer/proto:json_proto",
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
-    "//url",
   ]
   seed_corpus =
       "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus/"

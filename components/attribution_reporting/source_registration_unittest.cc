@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/invoke.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -13,23 +14,32 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+template <typename F>
+SourceRegistration SourceRegistrationWith(SuitableOrigin destination,
+                                          SuitableOrigin reporting_origin,
+                                          F&& f) {
+  SourceRegistration r(std::move(destination), std::move(reporting_origin));
+  base::invoke<F, SourceRegistration&>(std::move(f), r);
+  return r;
+}
+
 TEST(SourceRegistrationTest, Parse) {
-  const auto reporting_origin = url::Origin::Create(GURL("https://r.example"));
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://r.example");
 
   const auto destination_origin =
-      url::Origin::Create(GURL("https://d.example"));
+      *SuitableOrigin::Deserialize("https://d.example");
 
   const struct {
     const char* desc;
@@ -39,50 +49,23 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "required_fields_only",
           R"json({"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "source_event_id_valid",
           R"json({"source_event_id":"1","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/1, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) { r.source_event_id = 1; }),
       },
       {
           "source_event_id_wrong_type",
           R"json({"source_event_id":1,"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "source_event_id_invalid_defaults_to_0",
           R"json({"source_event_id":"-1","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "destination_missing",
@@ -102,200 +85,113 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "priority_valid",
           R"json({"priority":"-5","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/-5, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) { r.priority = -5; }),
       },
       {
           "priority_wrong_type_defaults_to_0",
           R"json({"priority":-5,"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "priority_invalid_defaults_to_0",
           R"json({"priority":"abc","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "expiry_valid",
           R"json({"expiry":"172801","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "expiry_wrong_type",
           R"json({"expiry":172800,"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "expiry_invalid",
           R"json({"expiry":"abc","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "event_report_window_valid",
           R"json({"expiry":"172801","event_report_window":"86401",
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/base::Seconds(86401),
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) {
+                                   r.expiry = base::Seconds(172801);
+                                   r.event_report_window = base::Seconds(86401);
+                                 }),
       },
       {
           "event_report_window_wrong_type",
           R"json({"expiry":"172801","event_report_window":86401,
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "event_report_window_invalid",
           R"json({"expiry":"172801","event_report_window":"abc",
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "aggregatable_report_window_valid",
           R"json({"expiry":"172801","aggregatable_report_window":"86401",
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/base::Seconds(86401),
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) {
+                                   r.expiry = base::Seconds(172801);
+                                   r.aggregatable_report_window =
+                                       base::Seconds(86401);
+                                 }),
       },
       {
           "aggregatable_report_window_wrong_type",
           R"json({"expiry":"172801","aggregatable_report_window":86401,
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "aggregatable_report_window_invalid",
           R"json({"expiry":"172801","aggregatable_report_window":"abc",
           "destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/base::Seconds(172801),
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "debug_key_valid",
           R"json({"debug_key":"5","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/5, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) { r.debug_key = 5; }),
       },
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5,"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
       {
           "filter_data_valid",
           R"json({"filter_data":{"a":["b"]},"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, *FilterData::Create({{"a", {"b"}}}),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(
+              destination_origin, reporting_origin,
+              [](auto& r) {
+                r.filter_data = *FilterData::Create({{"a", {"b"}}});
+              }),
       },
       {
           "filter_data_wrong_type",
@@ -305,15 +201,12 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "aggregation_keys_valid",
           R"json({"aggregation_keys":{"a":"0x1"},"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt,
-              *AggregationKeys::FromKeys({{"a", absl::MakeUint128(0, 1)}}),
-              /*debug_reporting=*/false),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) {
+                                   r.aggregation_keys =
+                                       *AggregationKeys::FromKeys(
+                                           {{"a", absl::MakeUint128(0, 1)}});
+                                 }),
       },
       {
           "aggregation_keys_wrong_type",
@@ -323,26 +216,13 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "debug_reporting_valid",
           R"json({"debug_reporting":true,"destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/true),
+          SourceRegistrationWith(destination_origin, reporting_origin,
+                                 [](auto& r) { r.debug_reporting = true; }),
       },
       {
           "debug_reporting_wrong_type",
           R"json({"debug_reporting":"true","destination":"https://d.example"})json",
-          *SourceRegistration::Create(
-              /*source_event_id=*/0, destination_origin, reporting_origin,
-              /*expiry=*/absl::nullopt,
-              /*event_report_window=*/absl::nullopt,
-              /*aggregatable_report_window=*/absl::nullopt,
-              /*priority=*/0, FilterData(),
-              /*debug_key=*/absl::nullopt, AggregationKeys(),
-              /*debug_reporting=*/false),
+          SourceRegistration(destination_origin, reporting_origin),
       },
   };
 

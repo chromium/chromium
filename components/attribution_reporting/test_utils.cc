@@ -13,8 +13,10 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace attribution_reporting {
 
@@ -86,26 +88,25 @@ std::ostream& operator<<(std::ostream& out, const Filters& filters) {
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
     return std::make_tuple(
-        s.source_event_id(), s.destination(), s.reporting_origin(), s.expiry(),
-        s.event_report_window(), s.aggregatable_report_window(), s.priority(),
-        s.filter_data(), s.debug_key(), s.aggregation_keys(),
-        s.debug_reporting());
+        s.source_event_id, s.destination, s.reporting_origin, s.expiry,
+        s.event_report_window, s.aggregatable_report_window, s.priority,
+        s.filter_data, s.debug_key, s.aggregation_keys, s.debug_reporting);
   };
   return tie(a) == tie(b);
 }
 
 std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
-  out << "{source_event_id=" << s.source_event_id()
-      << ",destination=" << s.destination()
-      << ",reporting_origin=" << s.reporting_origin() << ",expiry=";
-  WriteOptional(out, s.expiry()) << ",event_report_window=";
-  WriteOptional(out, s.event_report_window()) << ",aggregatable_report_window=";
-  WriteOptional(out, s.aggregatable_report_window())
-      << ",priority=" << s.priority() << ",filter_data=" << s.filter_data()
+  out << "{source_event_id=" << s.source_event_id
+      << ",destination=" << s.destination
+      << ",reporting_origin=" << s.reporting_origin << ",expiry=";
+  WriteOptional(out, s.expiry) << ",event_report_window=";
+  WriteOptional(out, s.event_report_window) << ",aggregatable_report_window=";
+  WriteOptional(out, s.aggregatable_report_window)
+      << ",priority=" << s.priority << ",filter_data=" << s.filter_data
       << ",debug_key=";
-  WriteOptional(out, s.debug_key())
-      << ",aggregation_keys=" << s.aggregation_keys()
-      << ",debug_reporting=" << s.debug_reporting() << "}";
+  WriteOptional(out, s.debug_key)
+      << ",aggregation_keys=" << s.aggregation_keys
+      << ",debug_reporting=" << s.debug_reporting << "}";
   return out;
 }
 
@@ -201,6 +202,14 @@ std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {
       << ",debug_reporting=" << reg.debug_reporting() << "}";
 
   return out;
+}
+
+bool operator==(const SuitableOrigin& a, const SuitableOrigin& b) {
+  return *a == *b;
+}
+
+std::ostream& operator<<(std::ostream& out, const SuitableOrigin& origin) {
+  return out << *origin;
 }
 
 }  // namespace attribution_reporting

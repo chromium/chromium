@@ -15,12 +15,11 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace attribution_reporting {
 
@@ -52,7 +51,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
 
   std::ignore = SourceRegistration::Parse(
       std::move(*input).TakeDict(),
-      /*reporting_origin=*/url::Origin::Create(GURL("https://r.test/")));
+      /*reporting_origin=*/
+      *SuitableOrigin::Deserialize("https://r.test/"));
 }
 
 }  // namespace attribution_reporting

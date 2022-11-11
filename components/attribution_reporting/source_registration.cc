@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -18,10 +17,8 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace attribution_reporting {
 
@@ -59,9 +56,29 @@ absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
   return absl::nullopt;
 }
 
+base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
+    const base::Value::Dict& registration) {
+  const base::Value* v = registration.Find("destination");
+  if (!v)
+    return base::unexpected(SourceRegistrationError::kDestinationMissing);
+
+  const std::string* s = v->GetIfString();
+  if (!s)
+    return base::unexpected(SourceRegistrationError::kDestinationWrongType);
+
+  auto destination = SuitableOrigin::Deserialize(*s);
+  if (!destination.has_value())
+    return base::unexpected(SourceRegistrationError::kDestinationUntrustworthy);
+
+  return *destination;
+}
+
 }  // namespace
 
-SourceRegistration::SourceRegistration() = default;
+SourceRegistration::SourceRegistration(SuitableOrigin destination,
+                                       SuitableOrigin reporting_origin)
+    : destination(std::move(destination)),
+      reporting_origin(std::move(reporting_origin)) {}
 
 SourceRegistration::~SourceRegistration() = default;
 
@@ -78,93 +95,46 @@ SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
 SourceRegistration::Parse(base::Value::Dict registration,
-                          url::Origin reporting_origin) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
+                          SuitableOrigin reporting_origin) {
+  auto destination = ParseDestination(registration);
+  if (!destination.has_value())
+    return base::unexpected(destination.error());
 
-  SourceRegistration result;
+  SourceRegistration result(std::move(*destination),
+                            std::move(reporting_origin));
 
-  {
-    const base::Value* v = registration.Find("destination");
-    if (!v)
-      return base::unexpected(SourceRegistrationError::kDestinationMissing);
-
-    const std::string* s = v->GetIfString();
-    if (!s)
-      return base::unexpected(SourceRegistrationError::kDestinationWrongType);
-
-    result.destination_ = url::Origin::Create(GURL(*s));
-    if (!network::IsOriginPotentiallyTrustworthy(result.destination_)) {
-      return base::unexpected(
-          SourceRegistrationError::kDestinationUntrustworthy);
-    }
-  }
-
-  result.source_event_id_ =
+  result.source_event_id =
       ParseUint64(registration, "source_event_id").value_or(0);
 
-  result.priority_ = ParseInt64(registration, "priority").value_or(0);
+  result.priority = ParseInt64(registration, "priority").value_or(0);
 
-  result.expiry_ = ParseTimeDeltaInSeconds(registration, "expiry");
+  result.expiry = ParseTimeDeltaInSeconds(registration, "expiry");
 
-  result.event_report_window_ =
+  result.event_report_window =
       ParseTimeDeltaInSeconds(registration, "event_report_window");
 
-  result.aggregatable_report_window_ =
+  result.aggregatable_report_window =
       ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
 
-  result.debug_key_ = ParseUint64(registration, "debug_key");
+  result.debug_key = ParseUint64(registration, "debug_key");
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
       FilterData::FromJSON(registration.Find("filter_data"));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
 
-  result.filter_data_ = std::move(*filter_data);
+  result.filter_data = std::move(*filter_data);
 
   base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
       AggregationKeys::FromJSON(registration.Find("aggregation_keys"));
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
-  result.aggregation_keys_ = std::move(*aggregation_keys);
+  result.aggregation_keys = std::move(*aggregation_keys);
 
-  result.debug_reporting_ =
+  result.debug_reporting =
       registration.FindBool("debug_reporting").value_or(false);
 
-  result.reporting_origin_ = std::move(reporting_origin);
-  return result;
-}
-
-// static
-absl::optional<SourceRegistration> SourceRegistration::Create(
-    uint64_t source_event_id,
-    url::Origin destination,
-    url::Origin reporting_origin,
-    absl::optional<base::TimeDelta> expiry,
-    absl::optional<base::TimeDelta> event_report_window,
-    absl::optional<base::TimeDelta> aggregatable_report_window,
-    int64_t priority,
-    FilterData filter_data,
-    absl::optional<uint64_t> debug_key,
-    AggregationKeys aggregation_keys,
-    bool debug_reporting) {
-  if (!network::IsOriginPotentiallyTrustworthy(destination) ||
-      !network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
-    return absl::nullopt;
-  }
-
-  SourceRegistration result;
-  result.source_event_id_ = source_event_id;
-  result.destination_ = std::move(destination);
-  result.reporting_origin_ = std::move(reporting_origin);
-  result.expiry_ = expiry;
-  result.event_report_window_ = event_report_window;
-  result.aggregatable_report_window_ = aggregatable_report_window;
-  result.priority_ = priority;
-  result.filter_data_ = std::move(filter_data);
-  result.debug_key_ = debug_key;
-  result.aggregation_keys_ = std::move(aggregation_keys);
-  result.debug_reporting_ = debug_reporting;
   return result;
 }
 

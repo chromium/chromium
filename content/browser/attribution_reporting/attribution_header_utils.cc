@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -25,10 +26,16 @@ ParseSourceRegistration(base::Value::Dict registration,
                         url::Origin source_origin,
                         AttributionSourceType source_type,
                         bool is_within_fenced_frame) {
+  // TODO(apaseltiner): Change `reporting_origin`'s type to `SuitableOrigin`.
+  auto suitable_reporting_origin =
+      attribution_reporting::SuitableOrigin::Create(
+          std::move(reporting_origin));
+  DCHECK(suitable_reporting_origin.has_value());
+
   base::expected<attribution_reporting::SourceRegistration,
                  attribution_reporting::mojom::SourceRegistrationError>
       reg = attribution_reporting::SourceRegistration::Parse(
-          std::move(registration), std::move(reporting_origin));
+          std::move(registration), std::move(*suitable_reporting_origin));
   if (!reg.has_value())
     return base::unexpected(reg.error());
 

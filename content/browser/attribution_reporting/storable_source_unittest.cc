@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +19,13 @@ namespace content {
 namespace {
 
 TEST(StorableSourceTest, ReportWindows) {
+  const auto destination =
+      *attribution_reporting::SuitableOrigin::Deserialize("https://dest.test");
+
+  const auto reporting_origin =
+      *attribution_reporting::SuitableOrigin::Deserialize(
+          "https://report.test");
+
   const base::Time kSourceTime = base::Time::Now();
 
   const struct {
@@ -93,18 +99,13 @@ TEST(StorableSourceTest, ReportWindows) {
   };
 
   for (const auto& test_case : kTestCases) {
-    auto reg = attribution_reporting::SourceRegistration::Create(
-        /*source_event_id=*/0,
-        /*destination=*/url::Origin::Create(GURL("https://dest.test")),
-        /*reporting_origin=*/url::Origin::Create(GURL("https://report.test")),
-        test_case.expiry, test_case.event_report_window,
-        test_case.aggregatable_report_window,
-        /*priority=*/0, attribution_reporting::FilterData(),
-        /*debug_key=*/absl::nullopt, attribution_reporting::AggregationKeys(),
-        /*debug_reporting=*/false);
-    ASSERT_TRUE(reg) << test_case.desc;
+    attribution_reporting::SourceRegistration reg(destination,
+                                                  reporting_origin);
+    reg.expiry = test_case.expiry;
+    reg.event_report_window = test_case.event_report_window;
+    reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
-    StorableSource actual(std::move(*reg), kSourceTime,
+    StorableSource actual(std::move(reg), kSourceTime,
                           url::Origin::Create(GURL("https://source.test")),
                           AttributionSourceType::kNavigation,
                           /*is_within_fenced_frame=*/false);

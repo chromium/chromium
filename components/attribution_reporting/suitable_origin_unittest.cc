@@ -1,0 +1,91 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/attribution_reporting/suitable_origin.h"
+
+#include "base/strings/string_piece.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace attribution_reporting {
+namespace {
+
+TEST(SuitableOriginTest, Create) {
+  const struct {
+    url::Origin origin;
+    bool expected_suitable;
+  } kTestCases[] = {
+      {
+          url::Origin(),
+          false,
+      },
+      {
+          url::Origin::Create(GURL("http://a.test")),
+          false,
+      },
+      {
+          url::Origin::Create(GURL("https://a.test")),
+          true,
+      },
+      {
+          url::Origin::Create(GURL("http://localhost")),
+          true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<SuitableOrigin> actual =
+        SuitableOrigin::Create(test_case.origin);
+
+    EXPECT_EQ(test_case.expected_suitable, actual.has_value())
+        << test_case.origin;
+
+    if (test_case.expected_suitable)
+      EXPECT_EQ(test_case.origin, *actual.value());
+  }
+}
+
+TEST(SuitableOriginTest, Deserialize) {
+  const struct {
+    base::StringPiece str;
+    absl::optional<url::Origin> expected;
+  } kTestCases[] = {
+      {
+          "",
+          absl::nullopt,
+      },
+      {
+          "http://a.test",
+          absl::nullopt,
+      },
+      {
+          "https://a.test",
+          url::Origin::Create(GURL("https://a.test")),
+      },
+      {
+          "http://localhost",
+          url::Origin::Create(GURL("http://localhost")),
+      },
+      {
+          "https://a.test/path?x=y#z",
+          url::Origin::Create(GURL("https://a.test")),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    absl::optional<SuitableOrigin> actual =
+        SuitableOrigin::Deserialize(test_case.str);
+
+    EXPECT_EQ(test_case.expected.has_value(), actual.has_value())
+        << test_case.str;
+
+    if (test_case.expected.has_value())
+      EXPECT_EQ(test_case.expected, *actual.value()) << test_case.str;
+  }
+}
+
+}  // namespace
+}  // namespace attribution_reporting
