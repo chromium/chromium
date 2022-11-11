@@ -189,15 +189,15 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     if (!cached_extensions_.Find(id)) {
       LOG(ERROR) << "ExternalCacheImpl extension " << id
                  << " not found on update server";
-      delegate_->OnExtensionDownloadFailed(id);
+      delegate_->OnExtensionDownloadFailed(id, error);
     } else {
       // No version update for an already cached extension.
-      delegate_->OnExtensionLoadedInCache(id);
+      delegate_->OnExtensionLoadedInCache(id, /*is_updated=*/false);
     }
   } else {
     LOG(ERROR) << "ExternalCacheImpl failed to download extension " << id
                << ", error " << static_cast<int>(error);
-    delegate_->OnExtensionDownloadFailed(id);
+    delegate_->OnExtensionDownloadFailed(id, error);
   }
 }
 
@@ -371,11 +371,16 @@ void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,
                                    base::BindOnce(&FlushFile, file_path));
   }
 
+  // Whether the extension is updated. Must be set before cached_extensions_.Set
+  // or it always returns true.
+  bool is_updated = cached_extensions_.contains(id);
+
   cached_extensions_.Set(id, GetExtensionValueToCache(
                                  *original_entry, file_path.value(), version));
 
   if (delegate_)
-    delegate_->OnExtensionLoadedInCache(id);
+    delegate_->OnExtensionLoadedInCache(id, is_updated);
+
   UpdateExtensionLoader();
 }
 

@@ -15,6 +15,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
@@ -43,6 +45,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/test_event_router.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -466,7 +469,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
       return AssertionFailure() << "Download not pending: " << app_id;
 
     if (!external_cache_->SimulateExtensionDownloadFinished(
-            app_id, GetExtensionPath(app_id), version)) {
+            app_id, GetExtensionPath(app_id), version, /*is_update=*/false)) {
       return AssertionFailure() << " Finish download attempt failed";
     }
 
@@ -742,13 +745,15 @@ TEST_F(StartupAppLauncherTest,
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
+  base::HistogramTester histogram;
   InitializeLauncherWithNetworkReady();
 
   ASSERT_TRUE(external_cache_);
   EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
             external_cache_->pending_downloads());
-  ASSERT_TRUE(
-      external_cache_->SimulateExtensionDownloadFailed(kTestPrimaryAppId));
+  ASSERT_TRUE(external_cache_->SimulateExtensionDownloadFailed(
+      kTestPrimaryAppId,
+      extensions::ExtensionDownloaderDelegate::Error::CRX_FETCH_FAILED));
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
@@ -760,6 +765,11 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
             startup_launch_delegate_.launch_error());
 
   EXPECT_FALSE(kiosk_app_session_initialized_);
+
+  histogram.ExpectUniqueSample(
+      kKioskPrimaryAppInstallErrorHistogram,
+      KioskAppManager::PrimaryAppDownloadResult::kCrxFetchFailed,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppCrxInstallFailure) {

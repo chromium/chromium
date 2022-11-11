@@ -27,6 +27,8 @@ namespace system {
 class AutomaticRebootManager;
 }
 
+extern const char kKioskPrimaryAppInSessionUpdateHistogram[];
+
 // This class enforces automatic restart on app and Chrome updates in app mode.
 class KioskAppUpdateService : public KeyedService,
                               public extensions::UpdateObserver,

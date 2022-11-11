@@ -10,7 +10,9 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
@@ -19,7 +21,9 @@ class Profile;
 
 namespace ash {
 
-class ChromeKioskAppInstaller : private extensions::InstallObserver {
+class ChromeKioskAppInstaller
+    : private extensions::InstallObserver,
+      public extensions::InstallStageTracker::Observer {
  public:
   using InstallResult = crosapi::mojom::ChromeKioskInstallResult;
   using AppInstallParams = crosapi::mojom::AppInstallParams;
@@ -43,6 +47,11 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   // extensions::InstallObserver overrides.
   void OnFinishCrxInstall(const std::string& extension_id,
                           bool success) override;
+
+  // extensions::InstallStageTracker::Observer overrides.
+  void OnExtensionInstallationFailed(
+      const extensions::ExtensionId& id,
+      extensions::InstallStageTracker::FailureReason reason) override;
 
   void ReportInstallSuccess();
   void ReportInstallFailure(InstallResult result);
@@ -75,6 +84,8 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   bool install_complete_ = false;
   bool secondary_apps_installing_ = false;
 
+  base::Time extension_update_start_time_;
+
   // Used to run extension update checks for primary app's imports and
   // secondary extensions.
   std::unique_ptr<StartupAppLauncherUpdateChecker> update_checker_;
@@ -82,6 +93,9 @@ class ChromeKioskAppInstaller : private extensions::InstallObserver {
   base::ScopedObservation<extensions::InstallTracker,
                           extensions::InstallObserver>
       install_observation_{this};
+  base::ScopedObservation<extensions::InstallStageTracker,
+                          extensions::InstallStageTracker::Observer>
+      install_stage_observation_{this};
   base::WeakPtrFactory<ChromeKioskAppInstaller> weak_ptr_factory_{this};
 };
 

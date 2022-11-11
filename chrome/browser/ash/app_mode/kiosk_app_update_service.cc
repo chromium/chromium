@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
@@ -27,6 +28,9 @@ namespace {
 const int kForceRestartWaitTimeMs = 24 * 3600 * 1000;  // 24 hours.
 
 }  // namespace
+
+const char kKioskPrimaryAppInSessionUpdateHistogram[] =
+    "Kiosk.ChromeApp.PrimaryAppInSessionUpdate";
 
 KioskAppUpdateService::KioskAppUpdateService(
     Profile* profile,
@@ -58,6 +62,8 @@ void KioskAppUpdateService::Init(const std::string& app_id) {
 }
 
 void KioskAppUpdateService::StartAppUpdateRestartTimer() {
+  base::UmaHistogramCounts100(kKioskPrimaryAppInSessionUpdateHistogram, 1);
+
   if (restart_timer_.IsRunning())
     return;
 

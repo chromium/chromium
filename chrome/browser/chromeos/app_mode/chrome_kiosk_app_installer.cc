@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"
@@ -16,6 +17,17 @@
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
 namespace ash {
+
+namespace {
+
+const char kChromeKioskExtensionUpdateErrorHistogram[] =
+    "Kiosk.ChromeApp.ExtensionUpdateError";
+const char kChromeKioskExtensionHasUpdateDurationHistogram[] =
+    "Kiosk.ChromeApp.ExtensionUpdateDuration.HasUpdate";
+const char kChromeKioskExtensionNoUpdateDurationHistogram[] =
+    "Kiosk.ChromeApp.ExtensionUpdateDuration.NoUpdate";
+
+}  // namespace
 
 ChromeKioskAppInstaller::ChromeKioskAppInstaller(
     Profile* profile,
@@ -95,6 +107,16 @@ void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
 
   SYSLOG(INFO) << "MaybeCheckExtensionUpdate";
 
+  // Record update start time to calculate time consumed by update check. When
+  // |OnExtensionUpdateCheckFinished| is called the update is already finished
+  // because |extensions::ExtensionUpdater::CheckParams::install_immediately| is
+  // set to true.
+  extension_update_start_time_ = base::Time::Now();
+
+  // Observe installation failures.
+  install_stage_observation_.Observe(
+      extensions::InstallStageTracker::Get(profile_));
+
   // Enforce an immediate version update check for all extensions before
   // launching the primary app. After the chromeos is updated, the shared
   // module(e.g. ARC runtime) may need to be updated to a newer version
@@ -104,6 +126,7 @@ void ChromeKioskAppInstaller::MaybeCheckExtensionUpdate() {
           &ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished,
           weak_ptr_factory_.GetWeakPtr()))) {
     update_checker_.reset();
+    install_stage_observation_.Reset();
     FinalizeAppInstall();
     return;
   }
@@ -117,6 +140,7 @@ void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
 
   SYSLOG(INFO) << "OnExtensionUpdateCheckFinished";
   update_checker_.reset();
+  install_stage_observation_.Reset();
   if (update_found) {
     SYSLOG(INFO) << "Start to reload extension with id "
                  << primary_app_install_data_.id;
@@ -131,6 +155,11 @@ void ChromeKioskAppInstaller::OnExtensionUpdateCheckFinished(
     SYSLOG(INFO) << "Finish to reload extension with id "
                  << primary_app_install_data_.id;
   }
+
+  base::UmaHistogramMediumTimes(
+      update_found ? kChromeKioskExtensionHasUpdateDurationHistogram
+                   : kChromeKioskExtensionNoUpdateDurationHistogram,
+      base::Time::Now() - extension_update_start_time_);
 
   FinalizeAppInstall();
 }
@@ -184,6 +213,13 @@ void ChromeKioskAppInstaller::OnFinishCrxInstall(
     MaybeInstallSecondaryApps();
   else
     MaybeCheckExtensionUpdate();
+}
+
+void ChromeKioskAppInstaller::OnExtensionInstallationFailed(
+    const extensions::ExtensionId& id,
+    extensions::InstallStageTracker::FailureReason reason) {
+  base::UmaHistogramEnumeration(kChromeKioskExtensionUpdateErrorHistogram,
+                                reason);
 }
 
 void ChromeKioskAppInstaller::ReportInstallSuccess() {

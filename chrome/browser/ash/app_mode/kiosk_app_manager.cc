@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -53,6 +54,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -144,11 +146,38 @@ bool IsWebstoreUpdateUrl(const std::string* url) {
   return url && extension_urls::IsWebstoreUpdateUrl(GURL(*url));
 }
 
+KioskAppManager::PrimaryAppDownloadResult PrimaryAppDownloadResultFromError(
+    extensions::ExtensionDownloaderDelegate::Error error) {
+  switch (error) {
+    case extensions::ExtensionDownloaderDelegate::Error::DISABLED:
+      return KioskAppManager::PrimaryAppDownloadResult::kDisabled;
+    case extensions::ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED:
+      return KioskAppManager::PrimaryAppDownloadResult::kManifestFetchFailed;
+    case extensions::ExtensionDownloaderDelegate::Error::MANIFEST_INVALID:
+      return KioskAppManager::PrimaryAppDownloadResult::kManifestInvalid;
+    case extensions::ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE:
+      return KioskAppManager::PrimaryAppDownloadResult::kNoUpdateAvailable;
+    case extensions::ExtensionDownloaderDelegate::Error::CRX_FETCH_URL_EMPTY:
+      return KioskAppManager::PrimaryAppDownloadResult::kCrxFetchUrlEmpty;
+    case extensions::ExtensionDownloaderDelegate::Error::CRX_FETCH_URL_INVALID:
+      return KioskAppManager::PrimaryAppDownloadResult::kCrxFetchUrlInvalid;
+    case extensions::ExtensionDownloaderDelegate::Error::CRX_FETCH_FAILED:
+      return KioskAppManager::PrimaryAppDownloadResult::kCrxFetchFailed;
+  }
+}
+
 }  // namespace
 
 // static
 const char KioskAppManager::kKioskDictionaryName[] = "kiosk";
 const char KioskAppManager::kKeyAutoLoginState[] = "auto_login_state";
+
+const char kKioskPrimaryAppInstallErrorHistogram[] =
+    "Kiosk.ChromeApp.PrimaryAppInstallError";
+const char kKioskPrimaryAppUpdateResultHistogram[] =
+    "Kiosk.ChromeApp.PrimaryAppUpdateResult";
+const char kKioskExternalUpdateSuccessHistogram[] =
+    "Kiosk.ChromeApp.ExternalUpdateSuccess";
 
 class GlobalManager : public KioskAppManager {
  public:
@@ -634,6 +663,7 @@ void KioskAppManager::OnKioskAppCacheUpdated(const std::string& app_id) {
 }
 
 void KioskAppManager::OnKioskAppExternalUpdateComplete(bool success) {
+  base::UmaHistogramBoolean(kKioskExternalUpdateSuccessHistogram, success);
   for (auto& observer : observers_)
     observer.OnKioskAppExternalUpdateComplete(success);
 }
@@ -811,7 +841,8 @@ void KioskAppManager::UpdateExternalCachePrefs() {
 }
 
 void KioskAppManager::OnExtensionLoadedInCache(
-    const extensions::ExtensionId& id) {
+    const extensions::ExtensionId& id,
+    bool is_updated) {
   KioskAppData* app_data = GetAppDataMutable(id);
   if (!app_data)
     return;
@@ -823,15 +854,30 @@ void KioskAppManager::OnExtensionLoadedInCache(
 
   for (auto& observer : observers_)
     observer.OnKioskExtensionLoadedInCache(id);
+
+  if (is_updated) {
+    base::UmaHistogramEnumeration(kKioskPrimaryAppUpdateResultHistogram,
+                                  PrimaryAppDownloadResult::kSuccess);
+  }
 }
 
 void KioskAppManager::OnExtensionDownloadFailed(
-    const extensions::ExtensionId& id) {
+    const extensions::ExtensionId& id,
+    extensions::ExtensionDownloaderDelegate::Error error) {
   KioskAppData* app_data = GetAppDataMutable(id);
   if (!app_data)
     return;
   for (auto& observer : observers_)
     observer.OnKioskExtensionDownloadFailed(id);
+
+  if (!external_cache_->GetExtension(id, nullptr, nullptr)) {
+    // Initial install fail.
+    base::UmaHistogramEnumeration(kKioskPrimaryAppInstallErrorHistogram,
+                                  PrimaryAppDownloadResultFromError(error));
+    return;
+  }
+  base::UmaHistogramEnumeration(kKioskPrimaryAppUpdateResultHistogram,
+                                PrimaryAppDownloadResultFromError(error));
 }
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {

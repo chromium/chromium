@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -171,11 +172,17 @@ class KioskAppUpdateServiceTest
 // Verifies that the app is notified a reboot is required when an app update
 // becomes available.
 IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, AppUpdate) {
+  base::HistogramTester histogram;
+
   CreateKioskAppUpdateService();
 
   ExtensionTestMessageListener listener("app_update");
   FireAppUpdateAvailable();
   EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  histogram.ExpectUniqueSample(kKioskPrimaryAppInSessionUpdateHistogram,
+                               /*sample=*/1,
+                               /*expected_bucket_count=*/1);
 }
 
 // Verifies that the app is notified a reboot is required when an OS update is
