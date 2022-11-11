@@ -48,7 +48,6 @@ enum class Site {
   kMinimalUi,
   kNotPromotable,
   kWco,
-  kIsolated,
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
@@ -62,7 +61,6 @@ enum class InstallableSite {
   kStandaloneNotStartUrl,
   kMinimalUi,
   kWco,
-  kIsolated,
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
@@ -150,8 +148,7 @@ struct AppState {
            absl::optional<UserDisplayMode> user_display_mode,
            std::string manifest_launcher_icon_filename,
            bool is_installed_locally,
-           bool is_shortcut_created,
-           bool is_isolated);
+           bool is_shortcut_created);
   ~AppState();
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
@@ -165,7 +162,6 @@ struct AppState {
   std::string manifest_launcher_icon_filename;
   bool is_installed_locally;
   bool is_shortcut_created;
-  bool is_isolated;
 };
 
 struct ProfileState {
@@ -443,8 +439,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
       override_registration_;
 
-  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_test_server_ =
-      nullptr;
   std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
       nullptr;
 

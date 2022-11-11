@@ -12,15 +12,6 @@ using WebAppIntegration = WebAppIntegrationTest;
 
 // Manual tests:
 
-IN_PROC_BROWSER_TEST_F(
-    WebAppIntegrationTest,
-    WindowModeSettingsIsNotAvailableForIsolatedWebAppsOnAppSettingsPage) {
-  helper_.InstallMenuOption(InstallableSite::kIsolated);
-  helper_.OpenAppSettingsFromChromeApps(Site::kIsolated);
-  helper_.CheckBrowserNavigationIsAppSettings(Site::kIsolated);
-  helper_.CheckWindowModeIsNotVisibleInAppSettings(Site::kIsolated);
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationTest, LaunchFromPlatformShortcut) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();

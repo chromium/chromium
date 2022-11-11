@@ -24,7 +24,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -170,8 +169,6 @@ namespace web_app::integration_tests {
 
 namespace {
 
-using ::testing::Eq;
-
 Site InstallableSiteToSite(InstallableSite site) {
   switch (site) {
     case InstallableSite::kStandalone:
@@ -186,8 +183,6 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kStandaloneNotStartUrl;
     case InstallableSite::kWco:
       return Site::kWco;
-    case InstallableSite::kIsolated:
-      return Site::kIsolated;
     case InstallableSite::kFileHandler:
       return Site::kFileHandler;
     case InstallableSite::kNoServiceWorker:
@@ -273,16 +268,6 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "webapps_integration/standalone/bar/basic.html",
       .app_name = "Site A Bar",
       .wco_not_enabled_title = u"Site A Bar",
-      .icon_color = SK_ColorGREEN}},
-    {Site::kIsolated,
-     {// This file actually lives in /webapps_integration/isolated_web_app/. We
-      // serve this directory as root in a special test server to allow the
-      // Isolated Web App to live at the root scope.
-      .relative_url = "/basic.html",
-      // same note for this file
-      .relative_manifest_id = "basic.html",
-      .app_name = "Isolated Web App",
-      .wco_not_enabled_title = u"Isolated Web App",
       .icon_color = SK_ColorGREEN}},
     {Site::kFileHandler,
      {.relative_url = "/webapps_integration/file_handler/basic.html",
@@ -687,8 +672,7 @@ AppState::AppState(web_app::AppId app_id,
                    absl::optional<UserDisplayMode> user_display_mode,
                    std::string manifest_launcher_icon_filename,
                    bool installed_locally,
-                   bool shortcut_created,
-                   bool is_isolated)
+                   bool shortcut_created)
     : id(std::move(app_id)),
       name(std::move(app_name)),
       scope(std::move(app_scope)),
@@ -698,8 +682,7 @@ AppState::AppState(web_app::AppId app_id,
       manifest_launcher_icon_filename(
           std::move(manifest_launcher_icon_filename)),
       is_installed_locally(installed_locally),
-      is_shortcut_created(shortcut_created),
-      is_isolated(is_isolated) {}
+      is_shortcut_created(shortcut_created) {}
 AppState::~AppState() = default;
 AppState::AppState(const AppState&) = default;
 bool AppState::operator==(const AppState& other) const {
@@ -710,8 +693,7 @@ bool AppState::operator==(const AppState& other) const {
          manifest_launcher_icon_filename ==
              other.manifest_launcher_icon_filename &&
          is_installed_locally == other.is_installed_locally &&
-         is_shortcut_created == other.is_shortcut_created &&
-         is_isolated == other.is_isolated;
+         is_shortcut_created == other.is_shortcut_created;
 }
 
 ProfileState::ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
@@ -778,7 +760,6 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
                    app.manifest_launcher_icon_filename);
       app_dict.Set("is_installed_locally", app.is_installed_locally);
       app_dict.Set("is_shortcut_created", app.is_shortcut_created);
-      app_dict.Set("is_isolated", app.is_isolated);
 
       app_dicts.Set(app_pair.first, std::move(app_dict));
     }
@@ -801,12 +782,6 @@ WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
 void WebAppIntegrationTestDriver::SetUp() {
-  isolated_web_app_test_server_ = std::make_unique<net::EmbeddedTestServer>();
-  isolated_web_app_test_server_->AddDefaultHandlers(
-      base::FilePath(FILE_PATH_LITERAL(
-          "chrome/test/data/webapps_integration/isolated_web_app/")));
-  CHECK(isolated_web_app_test_server_->Start());
-
   webapps::TestAppBannerManagerDesktop::SetUp();
 }
 
@@ -882,9 +857,6 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     ASSERT_TRUE(override_registration_->shortcut_override->desktop.Delete());
 #endif
 
-  if (isolated_web_app_test_server_->Started()) {
-    CHECK(isolated_web_app_test_server_->ShutdownAndWaitUntilComplete());
-  }
   LOG(INFO)
       << "TearDownOnMainThread: Destroying shortcut override and waiting.";
   override_registration_.reset();
@@ -2252,39 +2224,6 @@ void WebAppIntegrationTestDriver::CheckCreateShortcutShown() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckWindowModeIsNotVisibleInAppSettings(
-    Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (!BeforeStateCheckAction(__FUNCTION__))
-    return;
-
-  absl::optional<AppState> app_state =
-      GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
-  ASSERT_TRUE(app_state.has_value());
-
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  auto delegate =
-      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
-  auto app_management_page_handler = AppManagementPageHandler(
-      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile(), *delegate);
-
-  base::test::TestFuture<app_management::mojom::AppPtr> test_future;
-  app_management_page_handler.GetApp(app_state->id, test_future.GetCallback());
-
-  ASSERT_TRUE(test_future.Wait()) << "Failed to get app information.";
-
-  const auto& app = test_future.Get();
-  EXPECT_THAT(app->id, Eq(app_state->id));
-  EXPECT_THAT(app->hide_window_mode, Eq(true));
-
-  AfterStateCheckAction();
-#else
-  NOTREACHED() << "Not implemented on Chrome OS.";
-#endif
-}
-
 void WebAppIntegrationTestDriver::CheckInstallIconShown() {
   // Currently this function does not support tests that check install icons
   // for sites that have a manifest but no service worker.
@@ -2866,8 +2805,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
             manifest_launcher_icon_filename,
             registrar.IsLocallyInstalled(app_id),
             IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
-                                     app_id),
-            registrar.IsIsolated(app_id));
+                                     app_id));
 #if !BUILDFLAG(IS_CHROMEOS)
       if (registrar.IsLocallyInstalled(app_id)) {
         CheckAppSettingsAppState(profile->GetOriginalProfile(), state);
@@ -3324,10 +3262,6 @@ PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
 
 const net::EmbeddedTestServer&
 WebAppIntegrationTestDriver::GetTestServerForSiteMode(Site site) const {
-  if (site == Site::kIsolated) {
-    return *isolated_web_app_test_server_;
-  }
-
   return *delegate_->EmbeddedTestServer();
 }
 
