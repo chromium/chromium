@@ -24,6 +24,15 @@ base::flat_set<url::Origin> DestinationSet(url::Origin destination) {
   return set;
 }
 
+base::Time ComputeReportWindowTime(
+    absl::optional<base::Time> report_window_time,
+    base::Time expiry_time) {
+  return report_window_time.has_value() &&
+                 report_window_time.value() <= expiry_time
+             ? report_window_time.value()
+             : expiry_time;
+}
+
 }  // namespace
 
 // static
@@ -95,9 +104,11 @@ CommonSourceInfo::CommonSourceInfo(
       reporting_origin_(std::move(reporting_origin)),
       source_time_(source_time),
       expiry_time_(expiry_time),
-      event_report_window_time_(event_report_window_time.value_or(expiry_time)),
+      event_report_window_time_(
+          ComputeReportWindowTime(event_report_window_time, expiry_time)),
       aggregatable_report_window_time_(
-          aggregatable_report_window_time.value_or(expiry_time)),
+          ComputeReportWindowTime(aggregatable_report_window_time,
+                                  expiry_time)),
       source_type_(source_type),
       priority_(priority),
       filter_data_(std::move(filter_data)),

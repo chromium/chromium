@@ -55,6 +55,15 @@ TEST(StorableSourceTest, ReportWindows) {
               kSourceTime + base::Days(30),
       },
       {
+          .desc = "clamp-event-report-window",
+          .expiry = base::Days(4),
+          .event_report_window = base::Days(30),
+          .expected_expiry_time = kSourceTime + base::Days(4),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
           .desc = "aggregatable-report-window",
           .aggregatable_report_window = base::Days(4),
           .expected_expiry_time = kSourceTime + base::Days(30),
@@ -63,14 +72,23 @@ TEST(StorableSourceTest, ReportWindows) {
               kSourceTime + base::Days(4),
       },
       {
+          .desc = "clamp-aggregatable-report-window",
+          .expiry = base::Days(4),
+          .aggregatable_report_window = base::Days(30),
+          .expected_expiry_time = kSourceTime + base::Days(4),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
           .desc = "all",
-          .expiry = base::Days(5),
+          .expiry = base::Days(9),
           .event_report_window = base::Days(7),
-          .aggregatable_report_window = base::Days(9),
-          .expected_expiry_time = kSourceTime + base::Days(5),
+          .aggregatable_report_window = base::Days(5),
+          .expected_expiry_time = kSourceTime + base::Days(9),
           .expected_event_report_window_time = kSourceTime + base::Days(7),
           .expected_aggregatable_report_window_time =
-              kSourceTime + base::Days(9),
+              kSourceTime + base::Days(5),
       },
   };
 
