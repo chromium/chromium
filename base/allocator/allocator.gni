@@ -60,13 +60,6 @@ if (!use_partition_alloc_as_malloc) {
   assert(!enable_mte_checked_ptr_support,
          "Chromium does not use MTECheckedPtr without PA-E")
 }
-use_backup_ref_ptr = use_partition_alloc && enable_backup_ref_ptr_support &&
-                     use_partition_alloc_as_malloc && !is_nacl
-use_mte_checked_ptr = use_partition_alloc && enable_mte_checked_ptr_support &&
-                      use_partition_alloc_as_malloc && !is_nacl
-
-assert(!(use_backup_ref_ptr && use_mte_checked_ptr),
-       "MTECheckedPtr conflicts with BRP.")
 
 declare_args() {
   # The supported platforms are supposed to match `_is_brp_supported`, but we
@@ -77,7 +70,7 @@ declare_args() {
 
 # BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
 assert(
-    !use_backup_ref_ptr || !use_asan_backup_ref_ptr,
+    !enable_backup_ref_ptr_support || !use_asan_backup_ref_ptr,
     "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
