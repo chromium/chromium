@@ -9941,7 +9941,112 @@ TEST_P(QuicNetworkTransactionTest, WebsocketOpensNewConnectionWithHttp1) {
   EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
 }
-// TODO(crbug.com/1286832): make test for Alternative services.
+
+// Much like above, but for Alt-Svc QUIC.
+TEST_P(QuicNetworkTransactionTest,
+       WebsocketOpensNewConnectionWithHttp1AfterAltSvcQuic) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  MockRead http_reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
+      MockRead("hello world"),
+      MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
+      MockRead(ASYNC, OK)};
+
+  StaticSocketDataProvider http_data(http_reads, base::span<MockWrite>());
+  socket_factory_.AddSocketDataProvider(&http_data);
+  AddCertificate(&ssl_data_);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  MockQuicData mock_quic_data(version_);
+  int packet_num = 1;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    mock_quic_data.AddWrite(SYNCHRONOUS,
+                            ConstructInitialSettingsPacket(packet_num++));
+  }
+  mock_quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructClientRequestHeadersPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
+          true, GetRequestHeaders("GET", "https", "/")));
+  mock_quic_data.AddRead(
+      ASYNC, ConstructServerResponseHeadersPacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
+                 GetResponseHeaders("200")));
+  mock_quic_data.AddRead(
+      ASYNC, ConstructServerDataPacket(
+                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
+                 ConstructDataFrame("hello!")));
+  mock_quic_data.AddWrite(SYNCHRONOUS,
+                          ConstructClientAckPacket(packet_num++, 2, 1));
+  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
+  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  MockWrite http_writes2[] = {
+      MockWrite(SYNCHRONOUS, 0,
+                "GET / HTTP/1.1\r\n"
+                "Host: mail.example.org\r\n"
+                "Connection: Upgrade\r\n"
+                "Upgrade: websocket\r\n"
+                "Origin: http://mail.example.org\r\n"
+                "Sec-WebSocket-Version: 13\r\n"
+                "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
+                "Sec-WebSocket-Extensions: permessage-deflate; "
+                "client_max_window_bits\r\n\r\n")};
+
+  MockRead http_reads2[] = {
+      MockRead(SYNCHRONOUS, 1,
+               "HTTP/1.1 101 Switching Protocols\r\n"
+               "Upgrade: websocket\r\n"
+               "Connection: Upgrade\r\n"
+               "Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n\r\n")};
+
+  SequencedSocketData http_data2(http_reads2, http_writes2);
+  socket_factory_.AddSocketDataProvider(&http_data2);
+  AddCertificate(&ssl_data_);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  CreateSession();
+
+  SendRequestAndExpectHttpResponse("hello world");
+  SendRequestAndExpectQuicResponse("hello!");
+
+  HttpRequestInfo request2;
+  request2.method = "GET";
+  request2.url = GURL("wss://mail.example.org/");
+  request2.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_TRUE(HostPortPair::FromURL(request_.url)
+                  .Equals(HostPortPair::FromURL(request2.url)));
+  request2.extra_headers.SetHeader("Connection", "Upgrade");
+  request2.extra_headers.SetHeader("Upgrade", "websocket");
+  request2.extra_headers.SetHeader("Origin", "http://mail.example.org");
+  request2.extra_headers.SetHeader("Sec-WebSocket-Version", "13");
+
+  TestWebSocketHandshakeStreamCreateHelper websocket_stream_create_helper;
+
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session_.get());
+  trans2.SetWebSocketHandshakeStreamCreateHelper(
+      &websocket_stream_create_helper);
+
+  TestCompletionCallback callback2;
+  int rv = trans2.Start(&request2, callback2.callback(), net_log_with_source_);
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+  rv = callback2.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_FALSE(mock_quic_data.AllReadDataConsumed());
+  mock_quic_data.Resume();
+  // Run the QUIC session to completion.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+}
 
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
