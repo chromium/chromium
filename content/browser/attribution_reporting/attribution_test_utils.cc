@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -724,13 +725,14 @@ AttributionTrigger TriggerBuilder::Build(
         /*not_filters=*/attribution_reporting::Filters());
   }
 
-  return AttributionTrigger(destination_origin_, reporting_origin_,
-                            /*filters=*/attribution_reporting::Filters(),
-                            /*not_filters=*/attribution_reporting::Filters(),
-                            debug_key_, aggregatable_dedup_key_,
-                            std::move(event_triggers),
-                            aggregatable_trigger_data_, aggregatable_values_,
-                            is_within_fenced_frame_, debug_reporting_);
+  return AttributionTrigger(
+      *attribution_reporting::TriggerRegistration::Create(
+          reporting_origin_,
+          /*filters=*/attribution_reporting::Filters(),
+          /*not_filters=*/attribution_reporting::Filters(), debug_key_,
+          aggregatable_dedup_key_, std::move(event_triggers),
+          aggregatable_trigger_data_, aggregatable_values_, debug_reporting_),
+      destination_origin_, is_within_fenced_frame_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(StoredSource source)
@@ -822,11 +824,8 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
   const auto tie = [](const AttributionTrigger& t) {
-    return std::make_tuple(t.destination_origin(), t.reporting_origin(),
-                           t.filters(), t.not_filters(), t.debug_key(),
-                           t.event_triggers(), t.aggregatable_trigger_data(),
-                           t.aggregatable_values(), t.aggregatable_dedup_key(),
-                           t.is_within_fenced_frame(), t.debug_reporting());
+    return std::make_tuple(t.registration(), t.destination_origin(),
+                           t.is_within_fenced_frame());
   };
   return tie(a) == tie(b);
 }
@@ -1087,39 +1086,10 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTrigger& conversion) {
-  out << "{destination_origin=" << conversion.destination_origin()
-      << ",reporting_origin=" << conversion.reporting_origin()
-      << ",filters=" << conversion.filters()
-      << ",not_filters=" << conversion.not_filters() << ",debug_key="
-      << (conversion.debug_key() ? base::NumberToString(*conversion.debug_key())
-                                 : "null")
-      << "event_triggers=[";
-
-  const char* separator = "";
-  for (const auto& event_trigger : conversion.event_triggers()) {
-    out << separator << event_trigger;
-    separator = ", ";
-  }
-
-  out << "],aggregatable_trigger_data=[";
-
-  separator = "";
-  for (const auto& aggregatable_trigger_data :
-       conversion.aggregatable_trigger_data()) {
-    out << separator << aggregatable_trigger_data;
-    separator = ", ";
-  }
-
-  out << "],aggregatable_values=" << conversion.aggregatable_values()
-      << ",aggregatable_dedup_key="
-      << (conversion.aggregatable_dedup_key()
-              ? base::NumberToString(*conversion.aggregatable_dedup_key())
-              : "null");
-
-  out << ",is_within_fenced_frame=" << conversion.is_within_fenced_frame()
-      << ",debug_reporting=" << conversion.debug_reporting();
-
-  return out << "}";
+  return out << "{registration=" << conversion.registration()
+             << ",destination_origin=" << conversion.destination_origin()
+             << ",is_within_fenced_frame="
+             << conversion.is_within_fenced_frame();
 }
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
@@ -1340,8 +1310,7 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
             cfg.not_filters));
 }
 
-AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
-    ::testing::Matcher<const url::Origin&> destination_origin,
+TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<const url::Origin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
@@ -1349,38 +1318,60 @@ AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
         const std::vector<attribution_reporting::EventTriggerData>&>
         event_triggers,
     ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key,
-    ::testing::Matcher<bool> is_within_fenced_frame,
     ::testing::Matcher<bool> debug_reporting)
-    : destination_origin(std::move(destination_origin)),
-      reporting_origin(std::move(reporting_origin)),
+    : reporting_origin(std::move(reporting_origin)),
       filters(std::move(filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
       aggregatable_dedup_key(std::move(aggregatable_dedup_key)),
-      is_within_fenced_frame(std::move(is_within_fenced_frame)),
       debug_reporting(std::move(debug_reporting)) {}
+
+TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
+
+::testing::Matcher<const attribution_reporting::TriggerRegistration&>
+TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
+  return AllOf(
+      Property("reporting_origin",
+               &attribution_reporting::TriggerRegistration::reporting_origin,
+               cfg.reporting_origin),
+      Property("filters", &attribution_reporting::TriggerRegistration::filters,
+               cfg.filters),
+      Property("debug_key",
+               &attribution_reporting::TriggerRegistration::debug_key,
+               cfg.debug_key),
+      Property("event_triggers",
+               &attribution_reporting::TriggerRegistration::event_triggers,
+               cfg.event_triggers),
+      Property(
+          "aggregatable_dedup_key",
+          &attribution_reporting::TriggerRegistration::aggregatable_dedup_key,
+          cfg.aggregatable_dedup_key),
+      Property("debug_reporting",
+               &attribution_reporting::TriggerRegistration::debug_reporting,
+               cfg.debug_reporting));
+}
+
+AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
+    ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
+        registration,
+    ::testing::Matcher<const url::Origin&> destination_origin,
+    ::testing::Matcher<bool> is_within_fenced_frame)
+    : registration(std::move(registration)),
+      destination_origin(std::move(destination_origin)),
+      is_within_fenced_frame(std::move(is_within_fenced_frame)) {}
 
 AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
 
 ::testing::Matcher<AttributionTrigger> AttributionTriggerMatches(
     const AttributionTriggerMatcherConfig& cfg) {
   return AllOf(
+      Property("registration", &AttributionTrigger::registration,
+               cfg.registration),
       Property("destination_origin", &AttributionTrigger::destination_origin,
                cfg.destination_origin),
-      Property("reporting_origin", &AttributionTrigger::reporting_origin,
-               cfg.reporting_origin),
-      Property("filters", &AttributionTrigger::filters, cfg.filters),
-      Property("debug_key", &AttributionTrigger::debug_key, cfg.debug_key),
-      Property("event_triggers", &AttributionTrigger::event_triggers,
-               cfg.event_triggers),
-      Property("aggregatable_dedup_key",
-               &AttributionTrigger::aggregatable_dedup_key,
-               cfg.aggregatable_dedup_key),
       Property("is_within_fenced_frame",
                &AttributionTrigger::is_within_fenced_frame,
-               cfg.is_within_fenced_frame),
-      Property("debug_reporting", &AttributionTrigger::debug_reporting,
-               cfg.debug_reporting));
+               cfg.is_within_fenced_frame));
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(

@@ -26,6 +26,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
@@ -575,22 +576,24 @@ void AttributionManagerImpl::ProcessEvents() {
   // possible. Once reaching the first to require a cookie check, start the
   // async check and stop processing further events.
   while (!pending_events_.empty()) {
-    const url::Origin* cookie_origin =
-        absl::visit(base::Overloaded{
-                        [](const StorableSource& source) {
-                          return source.common_info().debug_key().has_value() ||
-                                         source.debug_reporting()
-                                     ? &source.common_info().reporting_origin()
-                                     : nullptr;
-                        },
-                        [](const AttributionTrigger& trigger) {
-                          return trigger.debug_key().has_value() ||
-                                         trigger.debug_reporting()
-                                     ? &trigger.reporting_origin()
-                                     : nullptr;
-                        },
-                    },
-                    pending_events_.front());
+    const url::Origin* cookie_origin = absl::visit(
+        base::Overloaded{
+            [](const StorableSource& source) {
+              return source.common_info().debug_key().has_value() ||
+                             source.debug_reporting()
+                         ? &source.common_info().reporting_origin()
+                         : nullptr;
+            },
+            [](const AttributionTrigger& trigger) {
+              const attribution_reporting::TriggerRegistration& registration =
+                  trigger.registration();
+              return registration.debug_key().has_value() ||
+                             registration.debug_reporting()
+                         ? &registration.reporting_origin()
+                         : nullptr;
+            },
+        },
+        pending_events_.front());
     if (cookie_origin) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
@@ -648,11 +651,13 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
           },
 
           [&](AttributionTrigger trigger) {
+            attribution_reporting::TriggerRegistration& registration =
+                trigger.registration();
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kTrigger,
                 /*source_origin=*/nullptr, &trigger.destination_origin(),
-                &trigger.reporting_origin());
+                &registration.reporting_origin());
             RecordRegisterConversionAllowed(allowed);
             if (!allowed) {
               this->OnReportStored(
@@ -667,9 +672,9 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             }
 
             absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set && trigger.debug_key().has_value()) {
-              cleared_debug_key = trigger.debug_key();
-              trigger.ClearDebugKey();
+            if (!is_debug_cookie_set && registration.debug_key().has_value()) {
+              cleared_debug_key = registration.debug_key();
+              registration.ClearDebugKey();
             }
 
             this->StoreTrigger(std::move(trigger), cleared_debug_key,

@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -373,91 +374,94 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      *attribution_reporting::TriggerRegistration::Create(
+                          /*reporting_origin=*/
+                          url::Origin::Create(GURL("https://a.r.test")),
+                          /*filters=*/
+                          *AttributionFilters::Create({
+                              {"a", {"b", "c"}},
+                              {"d", {}},
+                          }),
+                          /*not_filters=*/
+                          *AttributionFilters::Create({
+                              {"e", {"f"}},
+                          }),
+                          /*debug_key=*/14,
+                          /*aggregatable_dedup_key=*/absl::nullopt,
+                          {
+                              attribution_reporting::EventTriggerData(
+                                  /*data=*/10,
+                                  /*priority=*/-5,
+                                  /*dedup_key=*/123,
+                                  /*filters=*/
+                                  *AttributionFilters::Create({
+                                      {"x", {"y"}},
+                                  }),
+                                  /*not_filters=*/
+                                  *AttributionFilters::Create({
+                                      {"z", {}},
+                                  })),
+                              attribution_reporting::EventTriggerData(
+                                  /*data=*/0,
+                                  /*priority=*/0,
+                                  /*dedup_key=*/absl::nullopt,
+                                  /*filters=*/AttributionFilters(),
+                                  /*not_filters=*/AttributionFilters()),
+                          },
+                          /*aggregatable_trigger_data=*/{},
+                          /*aggregatable_values=*/
+                          attribution_reporting::AggregatableValues(),
+                          /*debug_reporting=*/false),
                       /*destination_origin=*/
                       url::Origin::Create(GURL("https://a.d1.test")),
-                      /*reporting_origin=*/
-                      url::Origin::Create(GURL("https://a.r.test")),
-                      /*filters=*/
-                      *AttributionFilters::Create({
-                          {"a", {"b", "c"}},
-                          {"d", {}},
-                      }),
-                      /*not_filters=*/
-                      *AttributionFilters::Create({
-                          {"e", {"f"}},
-                      }),
-                      /*debug_key=*/14,
-                      /*aggregatable_dedup_key=*/absl::nullopt,
-                      {
-                          attribution_reporting::EventTriggerData(
-                              /*data=*/10,
-                              /*priority=*/-5,
-                              /*dedup_key=*/123,
-                              /*filters=*/
-                              *AttributionFilters::Create({
-                                  {"x", {"y"}},
-                              }),
-                              /*not_filters=*/
-                              *AttributionFilters::Create({
-                                  {"z", {}},
-                              })),
-                          attribution_reporting::EventTriggerData(
-                              /*data=*/0,
-                              /*priority=*/0,
-                              /*dedup_key=*/absl::nullopt,
-                              /*filters=*/AttributionFilters(),
-                              /*not_filters=*/AttributionFilters()),
-                      },
-                      /*aggregatable_trigger_data=*/{},
-                      /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues(),
-                      /*is_within_fenced_frame=*/false,
-                      /*debug_reporting=*/false),
+                      /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
               _),
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      *attribution_reporting::TriggerRegistration::Create(
+                          /*reporting_origin=*/
+                          url::Origin::Create(GURL("https://b.r.test")),
+                          /*filters=*/AttributionFilters(),
+                          /*not_filters=*/AttributionFilters(),
+                          /*debug_key=*/absl::nullopt,
+                          /*aggregatable_dedup_key=*/absl::nullopt,
+                          /*event_triggers=*/{},
+                          /*aggregatable_trigger_data=*/{},
+                          /*aggregatable_values=*/
+                          attribution_reporting::AggregatableValues(),
+                          /*debug_reporting=*/false),
                       /*destination_origin=*/
                       url::Origin::Create(GURL("https://a.d2.test")),
-                      /*reporting_origin=*/
-                      url::Origin::Create(GURL("https://b.r.test")),
-                      /*filters=*/AttributionFilters(),
-                      /*not_filters=*/AttributionFilters(),
-                      /*debug_key=*/absl::nullopt,
-                      /*aggregatable_dedup_key=*/absl::nullopt,
-                      /*event_triggers=*/{},
-                      /*aggregatable_trigger_data=*/{},
-                      /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues(),
-                      /*is_within_fenced_frame=*/false,
-                      /*debug_reporting=*/false),
+                      /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
               _),
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
+                      *attribution_reporting::TriggerRegistration::Create(
+                          /*reporting_origin=*/
+                          url::Origin::Create(GURL("https://b.r.test")),
+                          /*filters=*/AttributionFilters(),
+                          /*not_filters=*/AttributionFilters(),
+                          /*debug_key=*/absl::nullopt,
+                          /*aggregatable_dedup_key=*/789,
+                          /*event_triggers=*/{},
+                          {*attribution_reporting::AggregatableTriggerData::
+                               Create(absl::MakeUint128(/*high=*/0, /*low=*/1),
+                                      /*source_keys=*/{"a"},
+                                      /*filters=*/AttributionFilters(),
+                                      /*not_filters=*/AttributionFilters())},
+                          /*aggregatable_values=*/
+                          *attribution_reporting::AggregatableValues::Create(
+                              {{"a", 1}}),
+                          /*debug_reporting=*/true),
                       /*destination_origin=*/
                       url::Origin::Create(GURL("https://a.d2.test")),
-                      /*reporting_origin=*/
-                      url::Origin::Create(GURL("https://b.r.test")),
-                      /*filters=*/AttributionFilters(),
-                      /*not_filters=*/AttributionFilters(),
-                      /*debug_key=*/absl::nullopt,
-                      /*aggregatable_dedup_key=*/789,
-                      /*event_triggers=*/{},
-                      {*attribution_reporting::AggregatableTriggerData::Create(
-                          absl::MakeUint128(/*high=*/0, /*low=*/1),
-                          /*source_keys=*/{"a"},
-                          /*filters=*/AttributionFilters(),
-                          /*not_filters=*/AttributionFilters())},
-                      /*aggregatable_values=*/
-                      *attribution_reporting::AggregatableValues::Create(
-                          {{"a", 1}}),
-                      /*is_within_fenced_frame=*/false,
-                      /*debug_reporting=*/true),
+                      /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },
               _))));

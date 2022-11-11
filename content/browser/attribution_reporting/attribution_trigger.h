@@ -5,20 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TRIGGER_H_
 
-#include <stdint.h>
-
-#include <vector>
-
-#include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
-
-namespace attribution_reporting {
-class AggregatableTriggerData;
-struct EventTriggerData;
-}  // namespace attribution_reporting
 
 namespace content {
 
@@ -73,22 +62,9 @@ class CONTENT_EXPORT AttributionTrigger {
     kMaxValue = kDeduplicated,
   };
 
-  // Should only be created with values that the browser process has already
-  // validated. |conversion_destination| should be filled by a navigation origin
-  // known by the browser process.
-  AttributionTrigger(
-      url::Origin destination_origin,
-      url::Origin reporting_origin,
-      attribution_reporting::Filters filters,
-      attribution_reporting::Filters not_filters,
-      absl::optional<uint64_t> debug_key,
-      absl::optional<uint64_t> aggregatable_dedup_key,
-      std::vector<attribution_reporting::EventTriggerData> event_triggers,
-      std::vector<attribution_reporting::AggregatableTriggerData>
-          aggregatable_trigger_data,
-      attribution_reporting::AggregatableValues aggregatable_values,
-      bool is_within_fenced_frame,
-      bool debug_reporting);
+  AttributionTrigger(attribution_reporting::TriggerRegistration registration,
+                     url::Origin destination_origin,
+                     bool is_within_fenced_frame);
 
   AttributionTrigger(const AttributionTrigger&);
   AttributionTrigger& operator=(const AttributionTrigger&);
@@ -96,71 +72,26 @@ class CONTENT_EXPORT AttributionTrigger {
   AttributionTrigger& operator=(AttributionTrigger&&);
   ~AttributionTrigger();
 
+  const attribution_reporting::TriggerRegistration& registration() const {
+    return registration_;
+  }
+
+  attribution_reporting::TriggerRegistration& registration() {
+    return registration_;
+  }
+
   const url::Origin& destination_origin() const { return destination_origin_; }
-
-  const url::Origin& reporting_origin() const { return reporting_origin_; }
-
-  const attribution_reporting::Filters& filters() const { return filters_; }
-
-  const attribution_reporting::Filters& not_filters() const {
-    return not_filters_;
-  }
-
-  absl::optional<uint64_t> debug_key() const { return debug_key_; }
-
-  absl::optional<uint64_t> aggregatable_dedup_key() const {
-    return aggregatable_dedup_key_;
-  }
-
-  void ClearDebugKey() { debug_key_ = absl::nullopt; }
-
-  const std::vector<attribution_reporting::EventTriggerData>& event_triggers()
-      const {
-    return event_triggers_;
-  }
-
-  const std::vector<attribution_reporting::AggregatableTriggerData>&
-  aggregatable_trigger_data() const {
-    return aggregatable_trigger_data_;
-  }
-
-  const attribution_reporting::AggregatableValues& aggregatable_values() const {
-    return aggregatable_values_;
-  }
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
-  bool debug_reporting() const { return debug_reporting_; }
-
  private:
-  // Origin that this conversion event occurred on.
+  attribution_reporting::TriggerRegistration registration_;
+
+  // Origin that this trigger was registered.
   url::Origin destination_origin_;
-
-  // Origin of the conversion redirect url, and the origin that will receive any
-  // reports.
-  url::Origin reporting_origin_;
-
-  attribution_reporting::Filters filters_;
-
-  attribution_reporting::Filters not_filters_;
-
-  absl::optional<uint64_t> debug_key_;
-
-  // Key specified for deduplication against existing aggregatable reports with
-  // the same source. If absent, no deduplication is performed.
-  absl::optional<uint64_t> aggregatable_dedup_key_;
-
-  std::vector<attribution_reporting::EventTriggerData> event_triggers_;
-
-  std::vector<attribution_reporting::AggregatableTriggerData>
-      aggregatable_trigger_data_;
-  attribution_reporting::AggregatableValues aggregatable_values_;
 
   // Whether the trigger is registered within a fenced frame tree.
   bool is_within_fenced_frame_;
-
-  // Whether debug reporting is enabled.
-  bool debug_reporting_;
 };
 
 }  // namespace content

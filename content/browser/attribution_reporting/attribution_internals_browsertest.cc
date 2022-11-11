@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -1016,44 +1017,46 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const base::Time now = base::Time::Now();
 
   const AttributionTrigger trigger(
+      *attribution_reporting::TriggerRegistration::Create(
+          url::Origin::Create(GURL("https://r.test")),
+          /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
+          /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
+          /*debug_key=*/1,
+          /*aggregatable_dedup_key=*/18,
+          {
+              attribution_reporting::EventTriggerData(
+                  /*data=*/2,
+                  /*priority=*/3,
+                  /*dedup_key=*/absl::nullopt,
+                  /*filters=*/
+                  *AttributionFilters::Create({{"c", {"d"}}}),
+                  /*not_filters=*/AttributionFilters()),
+              attribution_reporting::EventTriggerData(
+                  /*data=*/4,
+                  /*priority=*/5,
+                  /*dedup_key=*/6,
+                  /*filters=*/AttributionFilters(),
+                  /*not_filters=*/
+                  *AttributionFilters::Create({{"e", {"f"}}})),
+          },
+          {*attribution_reporting::AggregatableTriggerData::Create(
+               /*key_piece=*/345,
+               /*source_keys=*/{"a"},
+               /*filters=*/
+               *AttributionFilters::Create({{"c", {"d"}}}),
+               /*not_filters=*/AttributionFilters()),
+           *attribution_reporting::AggregatableTriggerData::Create(
+               /*key_piece=*/678,
+               /*source_keys=*/{"b"},
+               /*filters=*/AttributionFilters(),
+               /*not_filters=*/
+               *AttributionFilters::Create({{"e", {"f"}}}))},
+          /*aggregatable_values=*/
+          *attribution_reporting::AggregatableValues::Create(
+              {{"a", 123}, {"b", 456}}),
+          /*debug_reporting=*/false),
       url::Origin::Create(GURL("https://d.test")),
-      url::Origin::Create(GURL("https://r.test")),
-      /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
-      /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
-      /*debug_key=*/1,
-      /*aggregatable_dedup_key=*/18,
-      {
-          attribution_reporting::EventTriggerData(
-              /*data=*/2,
-              /*priority=*/3,
-              /*dedup_key=*/absl::nullopt,
-              /*filters=*/
-              *AttributionFilters::Create({{"c", {"d"}}}),
-              /*not_filters=*/AttributionFilters()),
-          attribution_reporting::EventTriggerData(
-              /*data=*/4,
-              /*priority=*/5,
-              /*dedup_key=*/6,
-              /*filters=*/AttributionFilters(),
-              /*not_filters=*/
-              *AttributionFilters::Create({{"e", {"f"}}})),
-      },
-      {*attribution_reporting::AggregatableTriggerData::Create(
-           /*key_piece=*/345,
-           /*source_keys=*/{"a"},
-           /*filters=*/
-           *AttributionFilters::Create({{"c", {"d"}}}),
-           /*not_filters=*/AttributionFilters()),
-       *attribution_reporting::AggregatableTriggerData::Create(
-           /*key_piece=*/678,
-           /*source_keys=*/{"b"},
-           /*filters=*/AttributionFilters(),
-           /*not_filters=*/
-           *AttributionFilters::Create({{"e", {"f"}}}))},
-      /*aggregatable_values=*/
-      *attribution_reporting::AggregatableValues::Create(
-          {{"a", 123}, {"b", 456}}),
-      /*is_within_fenced_frame=*/false, /*debug_reporting=*/false);
+      /*is_within_fenced_frame=*/false);
 
   static constexpr char kWantEventTriggerJSON[] =
       R"json([ {  "data": "2",  "priority": "3",  "filters": {   "c": [    "d"   ]  } }, {  "data": "4",  "priority": "5",  "deduplication_key": "6",  "not_filters": {   "e": [    "f"   ]  } }])json";

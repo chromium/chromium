@@ -506,24 +506,26 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
-          destination_origin, reporting_origin,
-          *AttributionFilters::Create({
-              {"a", {"b"}},
-          }),
-          Optional(789),
-          ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                          1, 2, Optional(3),
-                          *AttributionFilters::Create({
-                              {"c", {"d"}},
-                          }),
-                          *AttributionFilters::Create({
-                              {"e", {"f"}},
-                          }))),
-                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                          4, 5, Eq(absl::nullopt), AttributionFilters(),
-                          AttributionFilters()))),
-          Optional(123), /*is_within_fenced_frame=*/false,
-          /*debug_reporting=*/true))));
+          TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
+              reporting_origin,
+              *AttributionFilters::Create({
+                  {"a", {"b"}},
+              }),
+              Optional(789),
+              ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                              1, 2, Optional(3),
+                              *AttributionFilters::Create({
+                                  {"c", {"d"}},
+                              }),
+                              *AttributionFilters::Create({
+                                  {"e", {"f"}},
+                              }))),
+                          EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                              4, 5, Eq(absl::nullopt), AttributionFilters(),
+                              AttributionFilters()))),
+              Optional(123),
+              /*debug_reporting=*/true)),
+          destination_origin))));
 
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -1718,13 +1720,17 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_manager_,
-                HandleTrigger(AttributionTriggerMatches(
-                    AttributionTriggerMatcherConfig(_, reporting_origin1))));
+    EXPECT_CALL(
+        mock_manager_,
+        HandleTrigger(AttributionTriggerMatches(
+            AttributionTriggerMatcherConfig(TriggerRegistrationMatches(
+                TriggerRegistrationMatcherConfig(reporting_origin1))))));
     EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(mock_manager_,
-                HandleTrigger(AttributionTriggerMatches(
-                    AttributionTriggerMatcherConfig(_, reporting_origin2))));
+    EXPECT_CALL(
+        mock_manager_,
+        HandleTrigger(AttributionTriggerMatches(
+            AttributionTriggerMatcherConfig(TriggerRegistrationMatches(
+                TriggerRegistrationMatcherConfig(reporting_origin2))))));
   }
 
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
@@ -1844,7 +1850,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     EXPECT_CALL(mock_manager_,
                 HandleTrigger(AttributionTriggerMatches(
-                    AttributionTriggerMatcherConfig(_, reporting_origin))))
+                    AttributionTriggerMatcherConfig(TriggerRegistrationMatches(
+                        TriggerRegistrationMatcherConfig(reporting_origin))))))
         .WillOnce([&](AttributionTrigger trigger) { barrier.Run(); });
 
     send_trigger(std::move(reporting_origin));
@@ -2179,8 +2186,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
-          destination_origin, reporting_origin, _, _, _, _,
-          /*is_within_fenced_frame=*/true))));
+          TriggerRegistrationMatches(
+              TriggerRegistrationMatcherConfig(reporting_origin)),
+          destination_origin, /*is_within_fenced_frame=*/true))));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(

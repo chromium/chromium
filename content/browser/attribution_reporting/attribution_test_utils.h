@@ -60,6 +60,7 @@
 namespace attribution_reporting {
 class AggregatableTriggerData;
 struct EventTriggerData;
+class TriggerRegistration;
 }  // namespace attribution_reporting
 
 namespace mojo {
@@ -915,8 +916,7 @@ struct EventTriggerDataMatcherConfig {
 ::testing::Matcher<const attribution_reporting::EventTriggerData&>
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 
-struct AttributionTriggerMatcherConfig {
-  ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_;
+struct TriggerRegistrationMatcherConfig {
   ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_;
   ::testing::Matcher<const attribution_reporting::Filters&> filters =
       ::testing::_;
@@ -926,12 +926,10 @@ struct AttributionTriggerMatcherConfig {
       event_triggers = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
       ::testing::_;
-  ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
   ::testing::Matcher<bool> debug_reporting = ::testing::_;
 
-  AttributionTriggerMatcherConfig() = delete;
-  AttributionTriggerMatcherConfig(
-      ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_,
+  TriggerRegistrationMatcherConfig() = delete;
+  explicit TriggerRegistrationMatcherConfig(
       ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_,
       ::testing::Matcher<const attribution_reporting::Filters&> filters =
           ::testing::_,
@@ -941,8 +939,26 @@ struct AttributionTriggerMatcherConfig {
           event_triggers = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
           ::testing::_,
-      ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_,
       ::testing::Matcher<bool> debug_reporting = ::testing::_);
+  ~TriggerRegistrationMatcherConfig();
+};
+
+::testing::Matcher<const attribution_reporting::TriggerRegistration&>
+TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig&);
+
+struct AttributionTriggerMatcherConfig {
+  ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
+      registration = ::testing::_;
+  ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_;
+
+  ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_;
+
+  AttributionTriggerMatcherConfig() = delete;
+  explicit AttributionTriggerMatcherConfig(
+      ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
+          registration = ::testing::_,
+      ::testing::Matcher<const url::Origin&> destination_origin = ::testing::_,
+      ::testing::Matcher<bool> is_within_fenced_frame = ::testing::_);
   ~AttributionTriggerMatcherConfig();
 };
 

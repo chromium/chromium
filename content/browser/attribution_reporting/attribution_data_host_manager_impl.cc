@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -568,14 +569,18 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   context.num_data_registered++;
 
-  // TODO(linnan): Parse debug reporting from response header.
-  AttributionTrigger trigger(
-      /*destination_origin=*/context.context_origin,
-      std::move(data->reporting_origin), std::move(*filters),
-      std::move(*not_filters), data->debug_key, data->aggregatable_dedup_key,
-      std::move(event_triggers), std::move(*aggregatable_trigger_data),
-      std::move(*aggregatable_values), context.is_within_fenced_frame,
-      data->debug_reporting);
+  absl::optional<attribution_reporting::TriggerRegistration> registration =
+      attribution_reporting::TriggerRegistration::Create(
+          std::move(data->reporting_origin), std::move(*filters),
+          std::move(*not_filters), data->debug_key,
+          data->aggregatable_dedup_key, std::move(event_triggers),
+          std::move(*aggregatable_trigger_data),
+          std::move(*aggregatable_values), data->debug_reporting);
+  DCHECK(registration);
+
+  AttributionTrigger trigger(std::move(*registration),
+                             /*destination_origin=*/context.context_origin,
+                             context.is_within_fenced_frame);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.

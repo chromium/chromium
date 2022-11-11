@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -254,10 +255,8 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   base::Value::Dict data_body;
   SetAttributionDestination(data_body,
                             net::SchemefulSite(trigger.destination_origin()));
-  if (trigger.debug_key()) {
-    data_body.Set("trigger_debug_key",
-                  base::NumberToString(*trigger.debug_key()));
-  }
+  if (absl::optional<uint64_t> debug_key = trigger.registration().debug_key())
+    data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
 
   if (result.source())
     SetSourceData(data_body, result.source()->common_info());
@@ -368,8 +367,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const AttributionTrigger& trigger,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
-  if (!trigger.debug_reporting() || trigger.is_within_fenced_frame())
+  if (!trigger.registration().debug_reporting() ||
+      trigger.is_within_fenced_frame()) {
     return absl::nullopt;
+  }
 
   std::vector<ReportData> report_data;
 
@@ -394,7 +395,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return absl::nullopt;
 
   return AttributionDebugReport(std::move(report_data),
-                                trigger.reporting_origin());
+                                trigger.registration().reporting_origin());
 }
 
 AttributionDebugReport::AttributionDebugReport(

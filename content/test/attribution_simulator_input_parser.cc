@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -320,15 +321,19 @@ class AttributionSimulatorInputParser {
     if (has_error())
       return;
 
+    absl::optional<attribution_reporting::TriggerRegistration> registration =
+        attribution_reporting::TriggerRegistration::Create(
+            std::move(reporting_origin), std::move(filters),
+            std::move(not_filters), debug_key, aggregatable_dedup_key,
+            std::move(event_triggers), std::move(aggregatable_trigger_data),
+            std::move(aggregatable_values), debug_reporting);
+    DCHECK(registration);
+
     events_.emplace_back(
         AttributionTriggerAndTime{
-            .trigger = AttributionTrigger(
-                std::move(destination_origin), std::move(reporting_origin),
-                std::move(filters), std::move(not_filters), debug_key,
-                aggregatable_dedup_key, std::move(event_triggers),
-                std::move(aggregatable_trigger_data),
-                std::move(aggregatable_values),
-                /*is_within_fenced_frame=*/false, debug_reporting),
+            .trigger = AttributionTrigger(std::move(*registration),
+                                          std::move(destination_origin),
+                                          /*is_within_fenced_frame=*/false),
             .time = trigger_time,
         },
         std::move(trigger));

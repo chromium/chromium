@@ -27,6 +27,8 @@ component("attribution_reporting") {
     "os_registration.h",
     "source_registration.cc",
     "source_registration.h",
+    "trigger_registration.cc",
+    "trigger_registration.h",
   ]
 
   public_deps = [
@@ -51,6 +53,7 @@ source_set("unit_tests") {
     "filters_unittest.cc",
     "os_registration_unittest.cc",
     "source_registration_unittest.cc",
+    "trigger_registration_unittest.cc",
   ]
 
   deps = [

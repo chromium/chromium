@@ -30,6 +30,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -882,8 +883,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             limits, std::move(dropped_event_level_report));
       };
 
-  if (trigger.aggregatable_trigger_data().empty() &&
-      trigger.aggregatable_values().values().empty()) {
+  const attribution_reporting::TriggerRegistration& trigger_registration =
+      trigger.registration();
+
+  if (trigger_registration.aggregatable_trigger_data().empty() &&
+      trigger_registration.aggregatable_values().values().empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
   }
 
@@ -926,10 +930,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const bool top_level_filters_match = AttributionFiltersMatch(
       source_to_attribute->source.common_info().filter_data(),
       source_to_attribute->source.common_info().source_type(),
-      trigger.filters(), trigger.not_filters());
+      trigger_registration.filters(), trigger_registration.not_filters());
 
   attribution_info.emplace(std::move(source_to_attribute->source), trigger_time,
-                           trigger.debug_key());
+                           trigger_registration.debug_key());
 
   absl::optional<uint64_t> dedup_key;
   if (EventLevelResult create_event_level_status = MaybeCreateEventLevelReport(
@@ -1006,7 +1010,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     store_aggregatable_status = MaybeStoreAggregatableAttributionReport(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
-        trigger.aggregatable_dedup_key(),
+        trigger_registration.aggregatable_dedup_key(),
         limits.aggregatable_budget_per_source);
   }
 
@@ -1083,7 +1087,8 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
     std::vector<StoredSource::Id>& source_ids_to_delete,
     std::vector<StoredSource::Id>& source_ids_to_deactivate) {
   const url::Origin& destination_origin = trigger.destination_origin();
-  const url::Origin& reporting_origin = trigger.reporting_origin();
+  const url::Origin& reporting_origin =
+      trigger.registration().reporting_origin();
 
   // Get all sources that match this <reporting_origin,
   // conversion_destination> pair. Only get sources that are active and not
@@ -1150,14 +1155,14 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   const AttributionSourceType source_type = common_info.source_type();
 
   auto event_trigger = base::ranges::find_if(
-      trigger.event_triggers(),
+      trigger.registration().event_triggers(),
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
         return AttributionFiltersMatch(common_info.filter_data(), source_type,
                                        event_trigger.filters,
                                        event_trigger.not_filters);
       });
 
-  if (event_trigger == trigger.event_triggers().end())
+  if (event_trigger == trigger.registration().event_triggers().end())
     return EventLevelResult::kNoMatchingConfigurations;
 
   switch (ReportAlreadyStored(attribution_info.source.source_id(),
@@ -2789,18 +2794,23 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   if (!top_level_filters_match)
     return AggregatableResult::kNoMatchingSourceFilterData;
 
+  const attribution_reporting::TriggerRegistration& trigger_registration =
+      trigger.registration();
+
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           attribution_info.source.common_info().filter_data(),
           attribution_info.source.common_info().source_type(),
           attribution_info.source.common_info().aggregation_keys(),
-          trigger.aggregatable_trigger_data(), trigger.aggregatable_values());
+          trigger_registration.aggregatable_trigger_data(),
+          trigger_registration.aggregatable_values());
   if (contributions.empty())
     return AggregatableResult::kNoHistograms;
 
-  switch (ReportAlreadyStored(
-      attribution_info.source.source_id(), trigger.aggregatable_dedup_key(),
-      AttributionReport::Type::kAggregatableAttribution)) {
+  switch (
+      ReportAlreadyStored(attribution_info.source.source_id(),
+                          trigger_registration.aggregatable_dedup_key(),
+                          AttributionReport::Type::kAggregatableAttribution)) {
     case ReportAlreadyStoredStatus::kNotStored:
       break;
     case ReportAlreadyStoredStatus::kStored:

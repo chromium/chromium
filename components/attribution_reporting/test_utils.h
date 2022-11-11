@@ -16,6 +16,7 @@ struct EventTriggerData;
 class FilterData;
 class Filters;
 class SourceRegistration;
+class TriggerRegistration;
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 
@@ -44,6 +45,10 @@ std::ostream& operator<<(std::ostream&, const AggregatableTriggerData&);
 bool operator==(const EventTriggerData&, const EventTriggerData&);
 
 std::ostream& operator<<(std::ostream&, const EventTriggerData&);
+
+bool operator==(const TriggerRegistration&, const TriggerRegistration&);
+
+std::ostream& operator<<(std::ostream&, const TriggerRegistration&);
 
 }  // namespace attribution_reporting
 
