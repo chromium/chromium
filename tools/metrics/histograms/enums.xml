@@ -33621,6 +33621,12 @@ Called by update_document_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="EnterpriseProfileIdError">
+  <int value="0" label="Failure retrieving the device id."/>
+  <int value="1" label="Failure retrieving the profile GUID."/>
+  <int value="2" label="Failure encoding the profile id."/>
+</enum>
+
 <enum name="EnterpriseRetrievePolicyResponseType">
   <obsolete>
     Removed in M91 since the data is no longer monitored.

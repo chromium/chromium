@@ -2279,6 +2279,26 @@ chromium-metrics-reviews@google.com.
   <summary>Tracking the results of policy user verification.</summary>
 </histogram>
 
+<histogram name="Enterprise.ProfileIdentifier.Error"
+    enum="EnterpriseProfileIdError" expires_after="2023-11-10">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded in the event of failures during the profile identifier generation
+    action.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProfileIdentifier.Status" enum="Boolean"
+    expires_after="2023-11-10">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Records whether the profile identifier generation action was successful or
+    not.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse"
     enum="HttpResponseCode" expires_after="2022-12-08">
   <owner>ydago@chromium.org</owner>

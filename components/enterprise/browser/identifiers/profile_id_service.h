@@ -23,6 +23,15 @@ class ProfileIdDelegate;
 // i.e profiles that are not in guest or incognito modes.
 class ProfileIdService : public KeyedService {
  public:
+  // Possible errors for the profile id generation. This must be kept in
+  // sync with the EnterpriseProfileIdError UMA enum.
+  enum class Error {
+    kGetDeviceIdFailure,
+    kGetProfileGUIDFailure,
+    kProfileIdURLEncodeFailure,
+    kMaxValue = kProfileIdURLEncodeFailure,
+  };
+
   ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
                    PrefService* profile_prefs);
 
