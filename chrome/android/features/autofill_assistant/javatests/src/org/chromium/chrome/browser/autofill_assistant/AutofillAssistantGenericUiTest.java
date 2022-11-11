@@ -8,16 +8,15 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.PositionAssertions.isLeftAlignedWith;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.PickerActions.setDate;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -65,6 +64,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -171,6 +171,7 @@ import java.util.List;
  * Tests autofill assistant generic UI framework.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantGenericUiTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
@@ -1716,11 +1717,9 @@ public class AutofillAssistantGenericUiTest {
         // Verify that the text input view is focused.
         // Ideally, we should also check for keyboard being open but Espresso does not show keyboard
         // on focus or click.
-        onView(withContentDescription("Type here")).perform(typeTextIntoFocusedView("test 1"));
-        waitUntilViewMatchesCondition(withText("test 1"), isDisplayed());
-        onView(withContentDescription("Type here")).perform(clearText());
-        onView(withContentDescription("Type here")).perform(typeText("test 2"));
-        waitUntilViewMatchesCondition(withText("test 2"), isDisplayed());
+        onView(withContentDescription("Type here")).check(matches(hasFocus()));
+        onView(withContentDescription("Type here")).perform(replaceText("test 1"));
+        onView(withContentDescription("Type here")).perform(replaceText("test 2"));
 
         int numNextActionsCalled = testService.getNextActionsCounter();
         onView(withContentDescription("Done")).perform(click());

@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -41,6 +41,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -72,6 +73,7 @@ import java.util.List;
  * Tests autofill assistant with accessibility enabled.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantAccessibilityIntegrationTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
@@ -167,7 +169,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
         waitUntilViewMatchesCondition(withContentDescription("Text input 1"),
                 withEffectiveVisibility(Visibility.VISIBLE));
         onView(withContentDescription("Text input 1"))
-                .perform(scrollTo(), typeText("Hello World!"));
+                .perform(scrollTo(), replaceText("Hello World!"));
         onView(withId(R.id.control_container)).check(matches(isCompletelyDisplayed()));
         assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
         scrollIntoViewIfNeeded(mTestRule.getWebContents(), "touch_area_four");

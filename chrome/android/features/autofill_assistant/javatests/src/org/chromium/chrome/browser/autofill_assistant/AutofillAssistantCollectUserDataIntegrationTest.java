@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasBackground;
@@ -62,6 +60,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -123,6 +122,7 @@ import java.util.List;
  * Integration tests for the collect user data action.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantCollectUserDataIntegrationTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
@@ -206,7 +206,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
-        onView(withId(R.id.card_unmask_input)).perform(typeText("123"), pressImeActionButton());
+        onView(withId(R.id.card_unmask_input)).perform(replaceText("123"), pressImeActionButton());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed(), 6000L);
         assertThat(getElementValue(getWebContents(), "name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "card_number"), is("4111111111111111"));
@@ -326,7 +326,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         testService.setNextActions(new ArrayList<>());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
-        onView(withId(R.id.card_unmask_input)).perform(typeText("123"), pressImeActionButton());
+        onView(withId(R.id.card_unmask_input)).perform(replaceText("123"), pressImeActionButton());
         testService.waitUntilGetNextActions(1);
 
         List<ProcessedActionProto> processedActions = testService.getProcessedActions();
@@ -1140,7 +1140,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(typeText("Jane Doe"));
+        onView(withContentDescription("Name*")).perform(replaceText("Jane Doe"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -1160,7 +1160,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON))).perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(clearText(), typeText("Jeremy Doe"));
+        onView(withContentDescription("Name*")).perform(replaceText("Jeremy Doe"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
