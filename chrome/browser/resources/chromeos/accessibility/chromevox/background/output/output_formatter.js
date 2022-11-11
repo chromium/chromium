@@ -60,7 +60,7 @@ export class OutputFormatter {
     } else if (token === 'indexInParent') {
       this.formatIndexInParent_(this.params_, token, tree, options);
     } else if (token === 'restriction') {
-      this.output_.formatRestriction_(this.params_, token);
+      this.formatRestriction_(this.params_, token);
     } else if (token === 'checked') {
       this.output_.formatChecked_(this.params_, token);
     } else if (token === 'pressed') {
@@ -304,6 +304,28 @@ export class OutputFormatter {
       this.output_.format_({
         node,
         outputFormat: '$descendants',
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+      });
+    }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @private
+   */
+  formatRestriction_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
+    if (msg) {
+      formatLog.writeToken(token);
+      this.output_.format_({
+        node,
+        outputFormat: '@' + msg,
         outputBuffer: buff,
         outputFormatLogger: formatLog,
       });

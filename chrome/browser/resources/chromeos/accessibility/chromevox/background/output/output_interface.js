@@ -147,12 +147,6 @@ export class OutputInterface {
   /**
    * @param {!OutputFormattingData} data
    * @param {string} token
-   */
-  formatRestriction_(data, token) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatRole_(data, token, options) {}

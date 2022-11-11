@@ -680,24 +680,6 @@ export class Output {
   }
 
   /** @override */
-  formatRestriction_(data, token) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
-    if (msg) {
-      formatLog.writeToken(token);
-      this.format_({
-        node,
-        outputFormat: '@' + msg,
-        outputBuffer: buff,
-        outputFormatLogger: formatLog,
-      });
-    }
-  }
-
-  /** @override */
   formatChecked_(data, token) {
     const buff = data.outputBuffer;
     const node = data.node;
