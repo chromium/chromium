@@ -22,9 +22,6 @@ try_.defaults.set(
     os = os.WINDOWS_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.list_view(
@@ -64,6 +61,9 @@ try_.builder(
     main_list_view = "try",
     os = os.WINDOWS_ANY,
     tryjob = try_.job(),
+
+    # TODO(crbug.com/1366994): remove this.
+    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
@@ -93,6 +93,9 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
+
+    # TODO(crbug.com/1366994): remove this.
+    omit_python2 = False,
 )
 
 try_.compilator_builder(
@@ -131,6 +134,9 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
+
+    # TODO(crbug.com/1366994): remove this.
+    omit_python2 = False,
 )
 
 try_.builder(
@@ -237,6 +243,9 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
+
+    # TODO(crbug.com/1366994): remove this.
+    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
