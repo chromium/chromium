@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
@@ -16,6 +17,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -116,6 +118,23 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
               test_case.Expected().has_value())
         << test_case.description;
   }
+}
+
+TEST(AggregationKeysTest, FromJSON_RecordsMetric) {
+  using ::base::Bucket;
+  using ::testing::ElementsAre;
+
+  absl::optional<base::Value> json = base::test::ParseJson(R"json({
+    "a": "0x3",
+    "b": "0x4"
+  })json");
+  ASSERT_TRUE(json);
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(AggregationKeys::FromJSON(base::OptionalToPtr(json)).has_value());
+
+  EXPECT_THAT(histograms.GetAllSamples("Conversions.AggregatableKeysPerSource"),
+              ElementsAre(Bucket(2, 1)));
 }
 
 }  // namespace

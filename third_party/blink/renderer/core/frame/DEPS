@@ -3,7 +3,9 @@ specific_include_rules = {
     "+base/run_loop.h",
   ],
   "attribution_response_parsing\.cc": [
+    "+components/attribution_reporting/aggregation_keys.h",
     "+components/attribution_reporting/constants.h",
+    "+components/attribution_reporting/filters.h",
   ],
   "attribution_response_parsing_test\.cc": [
     "+components/attribution_reporting/constants.h",

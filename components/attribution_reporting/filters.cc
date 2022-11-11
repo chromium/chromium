@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
@@ -47,6 +49,28 @@ bool IsValidForSource(const FilterValues& filter_values) {
 
 }  // namespace
 
+void RecordFiltersPerFilterData(base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(
+      kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.FiltersPerFilterData");
+
+  // The metrics are called potentially many times while parsing an attribution
+  // header, therefore using the macros to avoid the overhead of taking a lock
+  // and performing a map lookup.
+  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", count);
+}
+
+void RecordValuesPerFilter(base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
+                "Bump the version for histogram Conversions.ValuesPerFilter");
+
+  UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", count);
+}
+
 // static
 absl::optional<FilterData> FilterData::Create(FilterValues filter_values) {
   if (!IsValidForSource(filter_values))
@@ -58,7 +82,6 @@ absl::optional<FilterData> FilterData::Create(FilterValues filter_values) {
 // static
 base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
     base::Value* input_value) {
-  // TODO(johnidel): Consider logging registration JSON metrics here.
   if (!input_value)
     return FilterData();
 
@@ -69,6 +92,8 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
   const size_t num_filters = dict->size();
   if (num_filters > kMaxFiltersPerSource)
     return base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys);
+
+  RecordFiltersPerFilterData(num_filters);
 
   if (dict->contains(kSourceTypeFilterKey)) {
     return base::unexpected(
@@ -91,6 +116,8 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
     const size_t num_values = list->size();
     if (num_values > kMaxValuesPerFilter)
       return base::unexpected(SourceRegistrationError::kFilterDataListTooLong);
+
+    RecordValuesPerFilter(num_values);
 
     std::vector<std::string> values;
     values.reserve(num_values);

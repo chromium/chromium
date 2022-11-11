@@ -12,9 +12,10 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -94,24 +95,11 @@ bool ParseFilterValues(
   if (!object)
     return false;
 
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(
-      attribution_reporting::kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.ValuesPerFilter");
-
-  static_assert(
-      attribution_reporting::kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.FiltersPerFilterData");
-
   const wtf_size_t num_filters = object->size();
   if (num_filters > attribution_reporting::kMaxFiltersPerSource)
     return false;
 
-  // The metrics are called potentially many times while parsing an attribution
-  // header, therefore using the macros to avoid the overhead of taking a lock
-  // and performing a map lookup.
-  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", num_filters);
+  attribution_reporting::RecordFiltersPerFilterData(num_filters);
 
   for (wtf_size_t i = 0; i < num_filters; ++i) {
     const JSONObject::Entry entry = object->at(i);
@@ -129,7 +117,7 @@ bool ParseFilterValues(
     if (num_values > attribution_reporting::kMaxValuesPerFilter)
       return false;
 
-    UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", num_values);
+    attribution_reporting::RecordValuesPerFilter(num_values);
 
     WTF::Vector<String> values;
 
@@ -160,13 +148,6 @@ mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
   if (!json)
     return aggregation_keys;
 
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(
-      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger <
-          kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.AggregatableKeysPerSource");
-
   const auto* object = JSONObject::Cast(json);
   if (!object)
     return nullptr;
@@ -175,8 +156,7 @@ mojom::blink::AttributionAggregationKeysPtr ParseAggregationKeys(
   if (num_keys > attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger)
     return nullptr;
 
-  base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
-                              num_keys);
+  attribution_reporting::RecordAggregatableKeysPerSource(num_keys);
 
   aggregation_keys->keys.ReserveCapacityForSize(num_keys);
 

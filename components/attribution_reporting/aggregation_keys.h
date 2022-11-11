@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_base.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -19,6 +20,10 @@ class Value;
 }  // namespace base
 
 namespace attribution_reporting {
+
+// Records the Conversions.AggregatableKeysPerSource metric.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count);
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregationKeys {
  public:

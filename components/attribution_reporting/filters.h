@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_base.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,6 +20,14 @@ class Value;
 }  // namespace base
 
 namespace attribution_reporting {
+
+// Records the Conversions.FiltersPerFilterData metric.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void RecordFiltersPerFilterData(base::HistogramBase::Sample count);
+
+// Records the Conversions.ValuesPerFilter metric.
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void RecordValuesPerFilter(base::HistogramBase::Sample count);
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 

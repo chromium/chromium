@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -32,6 +34,16 @@ bool IsValid(const AggregationKeys::Keys& keys) {
 
 }  // namespace
 
+void RecordAggregatableKeysPerSource(base::HistogramBase::Sample count) {
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(
+      kMaxAggregationKeysPerSourceOrTrigger < kExclusiveMaxHistogramValue,
+      "Bump the version for histogram Conversions.AggregatableKeysPerSource");
+
+  base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource", count);
+}
+
 // static
 absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
   if (!IsValid(keys))
@@ -43,7 +55,6 @@ absl::optional<AggregationKeys> AggregationKeys::FromKeys(Keys keys) {
 // static
 base::expected<AggregationKeys, SourceRegistrationError>
 AggregationKeys::FromJSON(const base::Value* value) {
-  // TODO(johnidel): Consider logging registration JSON metrics here.
   if (!value)
     return AggregationKeys();
 
@@ -57,6 +68,8 @@ AggregationKeys::FromJSON(const base::Value* value) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysTooManyKeys);
   }
+
+  RecordAggregatableKeysPerSource(num_keys);
 
   Keys::container_type keys;
   keys.reserve(num_keys);
