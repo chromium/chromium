@@ -29,9 +29,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
@@ -41,6 +43,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/resources/grit/views_resources.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -491,9 +494,14 @@ TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
 
-  event_generator_->MoveMouseTo(
-      GetButtonAtIndex(0)->GetBoundsInScreen().CenterPoint());
-  event_generator_->DoubleClickLeftButton();
+  views::test::ButtonTestApi button(GetButtonAtIndex(0));
+
+  button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_NONE, ui::EF_NONE));
+  button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(),
+                                    gfx::PointF(), ui::EventTimeForNow(),
+                                    ui::EF_IS_DOUBLE_CLICK, ui::EF_NONE));
 
   EXPECT_EQ(last_selected_launch_name_, "web_app_id");
   EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
