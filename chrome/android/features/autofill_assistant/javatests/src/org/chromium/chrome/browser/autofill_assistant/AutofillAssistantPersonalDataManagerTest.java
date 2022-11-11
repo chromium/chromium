@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
@@ -176,10 +177,10 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(replaceText("John"));
+        onView(withContentDescription("Name*")).perform(typeText("John"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Email*")).perform(replaceText("johndoe@google.com"));
+        onView(withContentDescription("Email*")).perform(typeText("johndoe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -197,7 +198,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Edit contact info")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(replaceText("John Doe"));
+        onView(withContentDescription("Name*")).perform(typeText(" Doe"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -262,10 +263,10 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(replaceText("John Doe"));
+        onView(withContentDescription("Name*")).perform(typeText("John Doe"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Email*")).perform(replaceText("doe@google.com"));
+        onView(withContentDescription("Email*")).perform(typeText("doe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -284,7 +285,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Edit contact info")).perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(replaceText("Jane Doe"));
+        onView(withContentDescription("Name*")).perform(clearText(), typeText("Jane Doe"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -509,10 +510,12 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(replaceText("Jane Doe"));
+        onView(withContentDescription("Name*")).perform(clearText()).perform(typeText("Jane Doe"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Email*")).perform(replaceText("janedoe@google.com"));
+        onView(withContentDescription("Email*"))
+                .perform(clearText())
+                .perform(typeText("janedoe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -573,10 +576,10 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Card number*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Card number*")).perform(replaceText("4111111111111111"));
+        onView(withContentDescription("Card number*")).perform(typeText("4111111111111111"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Name on card*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name on card*")).perform(replaceText("John Doe"));
+        onView(withContentDescription("Name on card*")).perform(typeText("John Doe"));
         Espresso.closeSoftKeyboard(); // Close keyboard, not to hide the Spinners.
         onView(allOf(withId(org.chromium.chrome.R.id.spinner),
                        withChild(withText(String.valueOf(year)))))
@@ -599,7 +602,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 allOf(withText(containsString("1111")), isDisplayed()));
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
-        onView(withId(R.id.card_unmask_input)).perform(replaceText("123"), pressImeActionButton());
+        onView(withId(R.id.card_unmask_input)).perform(typeText("123"), pressImeActionButton());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "card_number"), is("4111111111111111"));
@@ -899,19 +902,19 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(scrollTo(), replaceText("John Doe"));
+        onView(withContentDescription("Name*")).perform(scrollTo(), typeText("John Doe"));
         onView(withContentDescription("Street address*"))
-                .perform(scrollTo(), replaceText("123 Main St"));
-        onView(withContentDescription("City*")).perform(scrollTo(), replaceText("Mountain View"));
-        onView(withContentDescription("State*")).perform(scrollTo(), replaceText("California"));
-        onView(withContentDescription("ZIP code*")).perform(scrollTo(), replaceText("1234"));
+                .perform(scrollTo(), typeText("123 Main St"));
+        onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
+        onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         // Wait for the address to appear in the UI. From this point on it should be available in
         // the CreditCard editor.
         waitUntilViewMatchesCondition(
                 allOf(withParent(withId(R.id.address_summary)), withId(R.id.full_name)),
-                allOf(withText("John Doe"), withEffectiveVisibility(Visibility.VISIBLE)));
+                allOf(withText("John Doe"), isCompletelyDisplayed()));
         waitUntilViewMatchesCondition(
                 allOf(withId(R.id.section_title_add_button_label), withText("Add card")),
                 isCompletelyDisplayed());
@@ -968,12 +971,12 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(scrollTo(), replaceText("John Doe"));
+        onView(withContentDescription("Name*")).perform(scrollTo(), typeText("John Doe"));
         onView(withContentDescription("Street address*"))
-                .perform(scrollTo(), replaceText("123 Main St"));
-        onView(withContentDescription("City*")).perform(scrollTo(), replaceText("Mountain View"));
-        onView(withContentDescription("State*")).perform(scrollTo(), replaceText("Invalid"));
-        onView(withContentDescription("ZIP code*")).perform(scrollTo(), replaceText("1234"));
+                .perform(scrollTo(), typeText("123 Main St"));
+        onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("Invalid"));
+        onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -994,7 +997,8 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
         Espresso.closeSoftKeyboard();
-        onView(withContentDescription("State*")).perform(scrollTo(), replaceText("California"));
+        onView(withContentDescription("State*"))
+                .perform(scrollTo(), clearText(), typeText("California"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -1055,7 +1059,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Email*")).perform(replaceText("johndoe@google.com"));
+        onView(withContentDescription("Email*")).perform(typeText("johndoe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -1066,10 +1070,10 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Card number*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Card number*")).perform(replaceText("4111111111111111"));
+        onView(withContentDescription("Card number*")).perform(typeText("4111111111111111"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Name on card*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name on card*")).perform(replaceText("John Doe"));
+        onView(withContentDescription("Name on card*")).perform(typeText("John Doe"));
         Espresso.closeSoftKeyboard(); // Close keyboard, not to hide the Spinners.
         onView(allOf(withId(org.chromium.chrome.R.id.spinner),
                        withChild(withText(String.valueOf(year)))))
@@ -1088,10 +1092,10 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(
                 withContentDescription("Street address*"), allOf(isDisplayed(), isEnabled()));
         onView(withContentDescription("Street address*"))
-                .perform(scrollTo(), replaceText("123 Main St"));
-        onView(withContentDescription("City*")).perform(scrollTo(), replaceText("Mountain View"));
-        onView(withContentDescription("State*")).perform(scrollTo(), replaceText("CA"));
-        onView(withContentDescription("ZIP code*")).perform(scrollTo(), replaceText("94043"));
+                .perform(scrollTo(), typeText("123 Main St"));
+        onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("CA"));
+        onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("94043"));
         Espresso.closeSoftKeyboard();
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());

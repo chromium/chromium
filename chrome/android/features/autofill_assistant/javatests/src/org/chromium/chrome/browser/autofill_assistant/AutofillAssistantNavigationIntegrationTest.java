@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -29,7 +31,6 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -55,7 +56,6 @@ import java.util.Arrays;
  * Tests autofill assistant in a normal Chrome tab.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantNavigationIntegrationTest {
     private static final String TEST_PAGE_A = "autofill_assistant_target_website.html";
@@ -100,7 +100,8 @@ public class AutofillAssistantNavigationIntegrationTest {
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
 
         // Committing URL shows error.
-        mTestRule.loadUrl(getURL(TEST_PAGE_B));
+        onView(withId(org.chromium.chrome.R.id.url_bar))
+                .perform(click(), typeText(getURL(TEST_PAGE_B)), pressImeActionButton());
         waitUntilViewMatchesCondition(withText(containsString("Sorry")), isCompletelyDisplayed());
         waitUntil(
                 ()
@@ -259,9 +260,12 @@ public class AutofillAssistantNavigationIntegrationTest {
                         .build(),
                 list);
         startAutofillAssistantOnTab(TEST_PAGE_A, script);
+
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
 
-        mTestRule.loadUrl(getURL(TEST_PAGE_B));
+        onView(withId(org.chromium.chrome.R.id.url_bar))
+                .perform(click(), typeText(getURL(TEST_PAGE_B)));
+        onView(withId(org.chromium.chrome.R.id.url_bar)).perform(pressImeActionButton());
         waitUntilViewAssertionTrue(
                 withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }

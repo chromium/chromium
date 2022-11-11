@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -357,7 +357,7 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(
                 withContentDescription("Text input 0"), isDisplayingAtLeast(90));
         // Typing text will show the soft keyboard, leading to resize of the Chrome window.
-        onView(withContentDescription("Text input 0")).perform(replaceText("Hello World!"));
+        onView(withContentDescription("Text input 0")).perform(typeText("Hello World!"));
         onView(withId(R.id.control_container)).check(matches(isDisplayingAtLeast(90)));
         onView(allOf(withContentDescription("Close"), isDisplayed()))
                 .check(matches(isDisplayingAtLeast(90)));

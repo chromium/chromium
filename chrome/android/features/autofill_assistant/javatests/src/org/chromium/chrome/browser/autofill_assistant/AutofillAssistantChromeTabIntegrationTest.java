@@ -40,7 +40,6 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
@@ -75,7 +74,6 @@ import java.util.Arrays;
  * Tests Autofill Assistant in a normal Chrome tab.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantChromeTabIntegrationTest {
     private static final String TEST_PAGE_A = "autofill_assistant_target_website.html";
@@ -508,7 +506,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
                 withEffectiveVisibility(Visibility.VISIBLE));
 
         // Committing URL shows error.
-        mTestRule.loadUrl(getURL(TEST_PAGE_B));
+        mOmnibox.typeText(getURL(TEST_PAGE_B), true);
         waitUntilViewMatchesCondition(withText(containsString("Sorry")), isCompletelyDisplayed());
     }
 
