@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
