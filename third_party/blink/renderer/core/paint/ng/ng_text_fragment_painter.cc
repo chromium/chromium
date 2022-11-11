@@ -427,8 +427,11 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       decoration_painter.PaintOnlyLineThrough();
       break;
     case NGHighlightPainter::kFastSpellingGrammar:
+      decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+      decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, fragment_paint_info.Length(),
                          text_style, node_id, auto_dark_mode);
+      decoration_painter.PaintOnlyLineThrough();
       highlight_painter.FastPaintSpellingGrammarDecorations();
       break;
     case NGHighlightPainter::kFastSelection:

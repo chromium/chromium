@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: spelling error with originating decorations</title>
+<link rel="author" name="Delan Azabani" href="mailto:dazabani@igalia.com">
+<body contenteditable spellcheck>quikc
+<script>
+    const range = new Range;
+    range.setStart(document.body.firstChild, 0);
+    range.setEnd(document.body.firstChild, 5);
+    internals.setMarker(document, range, "spelling");
+</script>
