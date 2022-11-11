@@ -187,6 +187,10 @@ void SetSourceData(base::Value::Dict& data_body,
   data_body.Set("source_event_id",
                 base::NumberToString(common_info.source_event_id()));
   data_body.Set("source_site", common_info.SourceSite().Serialize());
+  if (common_info.debug_key()) {
+    data_body.Set("source_debug_key",
+                  base::NumberToString(*common_info.debug_key()));
+  }
 }
 
 void SetAttributionDestination(base::Value::Dict& data_body,
@@ -250,6 +254,10 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   base::Value::Dict data_body;
   SetAttributionDestination(data_body,
                             net::SchemefulSite(trigger.destination_origin()));
+  if (trigger.debug_key()) {
+    data_body.Set("trigger_debug_key",
+                  base::NumberToString(*trigger.debug_key()));
+  }
 
   if (result.source())
     SetSourceData(data_body, result.source()->common_info());
