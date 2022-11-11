@@ -43,7 +43,8 @@ suite('PasswordsSectionTest', function() {
     return flushTasks();
   });
 
-  test('password section listens to updates', async function() {
+  // TODO(crbug.com/1383225): Enable test again once the solution is found.
+  test.skip('password section listens to updates', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
     document.body.appendChild(section);
