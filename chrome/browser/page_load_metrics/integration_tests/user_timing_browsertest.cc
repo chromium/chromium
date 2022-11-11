@@ -33,11 +33,11 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, UserTiming) {
   // Check web perf API.
   const base::Value eval_result =
       EvalJs(web_contents(), "runtest()").ExtractList();
-  const double fully_loaded = eval_result.GetListDeprecated()[0].GetDouble();
+  const double fully_loaded = eval_result.GetList()[0].GetDouble();
   EXPECT_GT(fully_loaded, 0.0);
-  const double fully_visible = eval_result.GetListDeprecated()[1].GetDouble();
+  const double fully_visible = eval_result.GetList()[1].GetDouble();
   EXPECT_GT(fully_visible, 0.0);
-  const double interactive = eval_result.GetListDeprecated()[2].GetDouble();
+  const double interactive = eval_result.GetList()[2].GetDouble();
   EXPECT_GT(interactive, 0.0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

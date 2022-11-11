@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
     // std::string function_name = base::StringPrintf("run_test%zu()", i);
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
     EXPECT_EQ("", result.error);
-    const auto& list = result.value.GetListDeprecated();
+    const auto& list = result.value.GetList();
     EXPECT_EQ(1u, list.size());
     const std::string* url = list[0].FindStringPath("url");
     EXPECT_TRUE(url);
