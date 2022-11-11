@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
+import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreMessageController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -107,6 +108,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ActivityWindowAndroid mWindowAndroid;
     private final TabModelInitializer mTabModelInitializer;
+    private final SessionRestoreMessageController mRestoreMsgController;
 
     @Nullable
     private final CustomTabsSessionToken mSession;
@@ -130,7 +132,8 @@ public class CustomTabActivityTabController implements InflationObserver {
             Lazy<CustomTabIncognitoManager> customTabIncognitoManager,
             Lazy<AsyncTabParamsManager> asyncTabParamsManager,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
-            ActivityWindowAndroid windowAndroid, TabModelInitializer tabModelInitializer) {
+            ActivityWindowAndroid windowAndroid, TabModelInitializer tabModelInitializer,
+            SessionRestoreMessageController restoreMsgController) {
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
         mConnection = connection;
@@ -158,6 +161,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         // Save speculated url, because it will be erased later with mConnection.takeHiddenTab().
         mTabProvider.setSpeculatedUrl(mConnection.getSpeculatedUrl(mSession));
 
+        mRestoreMsgController = restoreMsgController;
         lifecycleDispatcher.register(this);
     }
 
