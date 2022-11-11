@@ -212,6 +212,11 @@ ToplevelWindowEventHandler::ToplevelWindowEventHandler()
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  // It's possible that `ToplevelWindowEventHandler` was not removed as the
+  // window observer of its observed window `gesture_target_` yet, so remove it
+  // here to avoid hitting the CHECK error in WindowObserver's destructor.
+  // Please see https://crbug.com/1378259 for more details.
+  UpdateGestureTarget(nullptr);
 }
 
 void ToplevelWindowEventHandler::OnDisplayMetricsChanged(
