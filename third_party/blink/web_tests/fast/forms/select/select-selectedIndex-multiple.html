@@ -137,8 +137,8 @@ mySelect.options[1/0] = document.createElement("option");
 shouldBe("mySelect.options.length", "10");
 shouldBe("mySelect.selectedIndex", "0");
 
-debug((++i) + ") setting length to a value greater than 2,147,483,647");
-mySelect.options.length = 2147483648;
+debug((++i) + ") setting length to a value greater than 100,000");
+mySelect.options.length = 100001;
 shouldBe("mySelect.options.length", "10");
 shouldBe("mySelect.selectedIndex", "0");
 

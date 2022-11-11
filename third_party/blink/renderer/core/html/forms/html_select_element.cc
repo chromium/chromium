@@ -87,10 +87,8 @@ bool CanAssignToSelectSlot(const Node& node) {
 
 }  // namespace
 
-// Upper limit of list_items_. According to the HTML standard, options larger
-// than this limit doesn't work well because |selectedIndex| IDL attribute is
-// signed.
-static const unsigned kMaxListItems = INT_MAX;
+// https://html.spec.whatwg.org/#dom-htmloptionscollection-length
+static const unsigned kMaxListItems = 100000;
 
 // Default size when the multiple attribute is present but size attribute is
 // absent.
@@ -444,15 +442,17 @@ void HTMLSelectElement::SetOption(unsigned index,
                                   HTMLOptionElement* option,
                                   ExceptionState& exception_state) {
   int diff = index - length();
-  // We should check |index >= maxListItems| first to avoid integer overflow.
-  if (index >= kMaxListItems ||
-      GetListItems().size() + diff + 1 > kMaxListItems) {
+  // If we are adding options, we should check |index > maxListItems| first to
+  // avoid integer overflow.
+  if (index > length() && (index >= kMaxListItems ||
+                           GetListItems().size() + diff + 1 > kMaxListItems)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        String::Format("Blocked to expand the option list and set an option at "
-                       "index=%u.  The maximum list length is %u.",
-                       index, kMaxListItems)));
+        String::Format(
+            "Unable to expand the option list and set an option at index=%u. "
+            "The maximum allowed list length is %u.",
+            index, kMaxListItems)));
     return;
   }
   auto* element =
@@ -481,14 +481,16 @@ void HTMLSelectElement::SetOption(unsigned index,
 
 void HTMLSelectElement::setLength(unsigned new_len,
                                   ExceptionState& exception_state) {
-  // We should check |newLen > maxListItems| first to avoid integer overflow.
-  if (new_len > kMaxListItems ||
-      GetListItems().size() + new_len - length() > kMaxListItems) {
+  // If we are adding options, we should check |index > maxListItems| first to
+  // avoid integer overflow.
+  if (new_len > length() &&
+      (new_len > kMaxListItems ||
+       GetListItems().size() + new_len - length() > kMaxListItems)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        String::Format("Blocked to expand the option list to %u items.  The "
-                       "maximum list length is %u.",
+        String::Format("Unable to expand the option list to length %u. "
+                       "The maximum allowed list length is %u.",
                        new_len, kMaxListItems)));
     return;
   }
