@@ -212,6 +212,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_AAA_CHOICE
 
+#define SK_LEGACY_RECT_DASHING_BUG
+
 #define SK_SUPPORT_LEGACY_DRAWLOOPER
 
 #define SK_SUPPORT_LEGACY_DITHER
