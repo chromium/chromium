@@ -70,7 +70,7 @@ FrameInfo::FrameInfo(const std::string& parent_frame_id,
       frame_id(frame_id),
       chromedriver_frame_id(chromedriver_frame_id) {}
 
-InputCancelListEntry::InputCancelListEntry(base::DictionaryValue* input_state,
+InputCancelListEntry::InputCancelListEntry(base::Value::Dict* input_state,
                                            const MouseEvent* mouse_event,
                                            const TouchEvent* touch_event,
                                            const KeyEvent* key_event)

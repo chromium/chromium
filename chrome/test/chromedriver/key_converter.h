@@ -25,7 +25,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& keys,
                               std::vector<KeyEvent>* key_events);
 
 Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
-                                  base::DictionaryValue* input_state,
+                                  base::Value::Dict& input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* client_key_events);
 
