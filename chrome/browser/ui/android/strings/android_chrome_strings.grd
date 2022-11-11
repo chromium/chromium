@@ -1769,6 +1769,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_RENAME_EXTENSION_MESSAGE" desc="Message to warn users the danger of changing file extension.">
         If you change the file extension, the file may open in a different application and potentially be a hazard to your device.
       </message>
+      <message name="IDS_RENAME_FILE_ACCESSIBILITY_HINT" desc="Hint displayed on screen and available to assistive tech for the edit text field for new file name.">
+        New file name
+      </message>
 
        <!-- Duplicate download -->
        <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
