@@ -22,7 +22,6 @@
 
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -105,10 +104,6 @@ class ColorProvider;
   // tabs it has.
   NSMenuItem* _closeTabMenuItem;
   NSMenuItem* _closeWindowMenuItem;
-
-  // If we are expecting a workspace change in response to a reopen
-  // event, the time we got the event. A null time otherwise.
-  base::TimeTicks _reopenTime;
 
   std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
   PrefChangeRegistrar _localPrefRegistrar;

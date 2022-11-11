@@ -122,11 +122,6 @@
 
 namespace {
 
-// How long we allow a workspace change notification to wait to be
-// associated with a dock activation. The animation lasts 250ms. See
-// applicationShouldHandleReopen:hasVisibleWindows:.
-static const int kWorkspaceChangeTimeoutMs = 500;
-
 // True while AppController is calling chrome::NewEmptyWindow(). We need a
 // global flag here, analogue to StartupBrowserCreator::InProcessStartup()
 // because otherwise the SessionService will try to restore sessions when we
@@ -384,7 +379,6 @@ Profile* GetLastProfileMac() {
 - (void)initProfileMenu;
 - (void)updateConfirmToQuitPrefMenuItem:(NSMenuItem*)item;
 - (void)registerServicesMenuTypesTo:(NSApplication*)app;
-- (void)activeSpaceDidChange:(NSNotification*)inNotification;
 - (void)checkForAnyKeyWindows;
 - (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount;
 - (BOOL)shouldQuitWithInProgressDownloads;
@@ -589,13 +583,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
          selector:@selector(windowDidBecomeMain:)
              name:NSWindowDidBecomeMainNotification
            object:nil];
-
-  // Register for space change notifications.
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-    addObserver:self
-       selector:@selector(activeSpaceDidChange:)
-           name:NSWorkspaceActiveSpaceDidChangeNotification
-         object:nil];
 
   [[[NSWorkspace sharedWorkspace] notificationCenter]
       addObserver:self
@@ -814,23 +801,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
   [self setLastProfile:profile];
   _lastActiveColorProvider = browser->window()->GetColorProvider();
-}
-
-- (void)activeSpaceDidChange:(NSNotification*)notify {
-  if (_reopenTime.is_null() ||
-      ![NSApp isActive] ||
-      (base::TimeTicks::Now() - _reopenTime).InMilliseconds() >
-      kWorkspaceChangeTimeoutMs) {
-    return;
-  }
-
-  // The last applicationShouldHandleReopen:hasVisibleWindows: call
-  // happened during a space change. Now that the change has
-  // completed, raise browser windows.
-  _reopenTime = base::TimeTicks();
-  std::set<gfx::NativeWindow> browserWindows = GetBrowserNativeWindows();
-  if (!browserWindows.empty())
-    FocusWindowSetOnCurrentSpace(browserWindows);
 }
 
 // Called when shutting down or logging out.
@@ -1407,26 +1377,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if (hasVisibleWindows) {
     std::set<gfx::NativeWindow> browserWindows = GetBrowserNativeWindows();
     if (!browserWindows.empty()) {
-      NSWindow* keyWindow = [NSApp keyWindow];
-      if (keyWindow && ![keyWindow isOnActiveSpace]) {
-        // The key window is not on the active space. We must be mid-animation
-        // for a space transition triggered by the dock. Delay the call to
-        // |ui::FocusWindowSet| until the transition completes. Otherwise, the
-        // wrong space's windows get raised, resulting in an off-screen key
-        // window. It does not work to |ui::FocusWindowSet| twice, once here
-        // and once in |activeSpaceDidChange:|, as that appears to break when
-        // the omnibox is focused.
-        //
-        // This check relies on OS X setting the key window to a window on the
-        // target space before calling this method.
-        //
-        // See http://crbug.com/309656.
-        _reopenTime = base::TimeTicks::Now();
-      } else {
-        FocusWindowSetOnCurrentSpace(browserWindows);
-      }
-      // Return NO; we've done (or soon will do) the deminiaturize, so
-      // AppKit shouldn't do anything.
+      FocusWindowSetOnCurrentSpace(browserWindows);
+      // We've performed the unminimize, so AppKit shouldn't do anything.
       return NO;
     }
   }
