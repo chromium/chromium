@@ -14,7 +14,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -41,7 +41,6 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
       chromeos::features::kDarkLightMode);
   ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
-  auto* color_provider = AshColorProvider::Get();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -66,9 +65,9 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
                              gfx::kGoogleGrey200)
            .bitmap();
+  auto* color_provider = assistant_dialog_plate->GetColorProvider();
   EXPECT_EQ(assistant_text_field->GetTextColor(),
-            color_provider->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
+            color_provider->GetColor(kColorAshTextColorPrimary));
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
@@ -76,12 +75,12 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
 
   // Switch the color mode.
   dark_light_mode_controller->ToggleColorMode();
+  color_provider = assistant_dialog_plate->GetColorProvider();
   ASSERT_NE(initial_dark_mode_status,
             dark_light_mode_controller->IsDarkModeEnabled());
 
   EXPECT_EQ(assistant_text_field->GetTextColor(),
-            color_provider->GetContentLayerColor(
-                ColorProvider::ContentLayerType::kTextColorPrimary));
+            color_provider->GetColor(kColorAshTextColorPrimary));
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       !initial_dark_mode_status ? dark_keyboard_toggle : light_keyboard_toggle,
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
