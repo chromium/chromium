@@ -273,7 +273,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURLUnspecifiedType) {
 }
 
 // // TODO(crbug.com/1383289): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_GetPowersForURLDeserializingProtoFails \
   DISABLED_GetPowersForURLDeserializingProtoFails
 #else
@@ -339,7 +339,7 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForType) {
   EXPECT_EQ(1u, power_overviews[1]->count());
 }
 // // TODO(crbug.com/1383289): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
+#if defined(MEMORY_SANITIZER)
 #define MAYBE_GetPowerOverviewsForTypeDeserializingProtoFails \
   DISABLED_GetPowerOverviewsForTypeDeserializingProtoFails
 #else
