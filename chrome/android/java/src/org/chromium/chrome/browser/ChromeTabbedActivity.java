@@ -670,8 +670,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void openTabletTabSwitcherIfNoTabs() {
-        if (!isTablet() || mLayoutManager == null
-                || !mTabModelOrchestrator.areTabModelsInitialized()) {
+        if (!isTablet() || mLayoutManager == null || !areTabModelsInitialized()) {
             return;
         }
 
