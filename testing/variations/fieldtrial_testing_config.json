@@ -9650,6 +9650,21 @@
             ]
         }
     ],
+    "RunTasksByBatches": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RunTasksByBatches"
+                    ]
+                }
+            ]
+        }
+    ],
     "SCTAuditingPersistReports": [
         {
             "platforms": [
