@@ -5,6 +5,7 @@
 #include "chrome/updater/net/network.h"
 
 #include <curl/curl.h>
+#include <curl/system.h>
 #include <dlfcn.h>
 
 #include <array>
@@ -108,7 +109,6 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   std::unique_ptr<LibcurlFunctionPtrs> curl_functions_;
   std::array<char, CURL_ERROR_SIZE> curl_error_buf_;
 
-  size_t downloaded_bytes_ = 0;
   ResponseStartedCallback response_started_callback_;
   ProgressCallback progress_callback_;
 
@@ -361,17 +361,21 @@ void LibcurlNetworkFetcher::DownloadToFile(
   response_started_callback_ = std::move(response_started_callback);
   progress_callback_ = std::move(progress_callback);
 
-  downloaded_bytes_ = 0;
+  curl_off_t downloaded_bytes = 0;
   curl_error_buf_[0] = '\0';
   CURLcode result = curl_functions_->easy_perform(curl_);
   if (result != CURLE_OK) {
     VLOG(1) << "Failed to perform HTTP GET. "
             << (curl_error_buf_[0] ? curl_error_buf_.data() : "")
             << " (CURLcode " << result << ")";
+  } else if (curl_functions_->easy_getinfo(curl_, CURLINFO_SIZE_DOWNLOAD_T,
+                                           &downloaded_bytes) != CURLE_OK) {
+    VLOG(1) << "Cannot retrieve downloaded bytes for finished trasnfer";
+    downloaded_bytes = 0;
   }
 
   file.Close();
-  std::move(download_to_file_complete_callback).Run(result, downloaded_bytes_);
+  std::move(download_to_file_complete_callback).Run(result, downloaded_bytes);
 }
 
 void LibcurlNetworkFetcher::OnTransferInfo(curl_off_t total,
