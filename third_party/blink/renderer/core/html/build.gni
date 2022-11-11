@@ -582,6 +582,7 @@ blink_core_hot_sources_html = [
   "parser/html_construction_site.h",
   "parser/html_document_parser.cc",
   "parser/html_document_parser.h",
+  "parser/html_document_parser_state.h",
   "parser/html_element_stack.cc",
   "parser/html_element_stack.h",
   "parser/html_entity_parser.cc",

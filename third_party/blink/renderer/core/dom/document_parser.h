@@ -85,7 +85,7 @@ class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
 
   bool IsParsing() const { return state_ == kParsingState; }
   bool IsStopping() const { return state_ == kStoppingState; }
-  bool IsStopped() const { return state_ >= kStoppedState; }
+  ALWAYS_INLINE bool IsStopped() const { return state_ >= kStoppedState; }
   bool IsDetached() const { return state_ == kDetachedState; }
 
   // prepareToStop() is used when the EOF token is encountered and parsing is to

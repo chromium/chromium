@@ -148,20 +148,6 @@ NonMainThread* GetPreloadScannerThread() {
   return preload_scanner_thread.get();
 }
 
-// Determines how preloads will be processed when available in the background.
-// It is important to process preloads quickly so the request can be started as
-// soon as possible. An experiment will be run to pick the best option which
-// will then be hard coded.
-enum class PreloadProcessingMode {
-  // Preloads will be processed once the posted task is run.
-  kNone,
-  // Preloads will be checked each iteration of the parser and dispatched
-  // immediately.
-  kImmediate,
-  // The parser will yield if there are pending preloads so the task can be run.
-  kYield,
-};
-
 PreloadProcessingMode GetPreloadProcessingMode() {
   if (!ThreadedPreloadScannerEnabled())
     return PreloadProcessingMode::kNone;
@@ -228,186 +214,6 @@ base::TimeDelta GetTimedBudget(int times_yielded) {
     return GetDefaultTimedBudget();
   return kLongParserBudgetValue;
 }
-
-// This class encapsulates the internal state needed for synchronous foreground
-// HTML parsing (e.g. if HTMLDocumentParser::PumpTokenizer yields, this class
-// tracks what should be done after the pump completes.)
-class HTMLDocumentParserState
-    : public GarbageCollected<HTMLDocumentParserState> {
-  friend EndIfDelayedForbiddenScope;
-  friend ShouldCompleteScope;
-  friend AttemptToEndForbiddenScope;
-
- public:
-  // Keeps track of whether the parser needs to complete tokenization work,
-  // optionally followed by EndIfDelayed.
-  enum class DeferredParserState {
-    // Indicates that a tokenizer pump has either completed or hasn't been
-    // scheduled.
-    kNotScheduled = 0,  // Enforce ordering in this enum.
-    // Indicates that a tokenizer pump is scheduled and hasn't completed yet.
-    kScheduled = 1,
-    // Indicates that a tokenizer pump, followed by EndIfDelayed, is scheduled.
-    kScheduledWithEndIfDelayed = 2
-  };
-
-  enum class MetaCSPTokenState {
-    // If we've seen a meta CSP token in an upcoming HTML chunk, then we need to
-    // defer any preloads until we've added the CSP token to the document and
-    // applied the Content Security Policy.
-    kSeen = 0,
-    // Indicates that there is no meta CSP token in the upcoming chunk.
-    kNotSeen = 1,
-    // Indicates that we've added the CSP token to the document and we can now
-    // fetch preloads.
-    kProcessed = 2,
-    // Indicates that it's too late to apply a Content-Security policy (because
-    // we've exited the header section.)
-    kUnenforceable = 3,
-  };
-
-  explicit HTMLDocumentParserState(ParserSynchronizationPolicy mode, int budget)
-      : state_(DeferredParserState::kNotScheduled),
-        meta_csp_state_(MetaCSPTokenState::kNotSeen),
-        mode_(mode),
-        preload_processing_mode_(GetPreloadProcessingMode()),
-        budget_(budget) {}
-
-  void Trace(Visitor* v) const {}
-
-  void SetState(DeferredParserState state) {
-    DCHECK(!(state == DeferredParserState::kScheduled && ShouldComplete()));
-    state_ = state;
-  }
-  DeferredParserState GetState() const { return state_; }
-
-  int GetDefaultBudget() const { return budget_; }
-
-  bool IsScheduled() const { return state_ >= DeferredParserState::kScheduled; }
-  const char* GetStateAsString() const {
-    switch (state_) {
-      case DeferredParserState::kNotScheduled:
-        return "not_scheduled";
-      case DeferredParserState::kScheduled:
-        return "scheduled";
-      case DeferredParserState::kScheduledWithEndIfDelayed:
-        return "scheduled_with_end_if_delayed";
-    }
-  }
-
-  bool NeedsLinkHeaderPreloadsDispatch() const {
-    return needs_link_header_dispatch_;
-  }
-  void DispatchedLinkHeaderPreloads() { needs_link_header_dispatch_ = false; }
-
-  bool SeenFirstByte() const { return have_seen_first_byte_; }
-  void MarkSeenFirstByte() { have_seen_first_byte_ = true; }
-
-  bool EndWasDelayed() const { return end_was_delayed_; }
-  void SetEndWasDelayed(bool new_value) { end_was_delayed_ = new_value; }
-
-  bool AddedPendingParserBlockingStylesheet() const {
-    return added_pending_parser_blocking_stylesheet_;
-  }
-  void SetAddedPendingParserBlockingStylesheet(bool new_value) {
-    added_pending_parser_blocking_stylesheet_ = new_value;
-  }
-
-  bool WaitingForStylesheets() const { return is_waiting_for_stylesheets_; }
-  void SetWaitingForStylesheets(bool new_value) {
-    is_waiting_for_stylesheets_ = new_value;
-  }
-
-  // Keeps track of whether Document::Finish has been called whilst parsing.
-  // ShouldAttemptToEndOnEOF() means that the parser should close when there's
-  // no more input.
-  bool ShouldAttemptToEndOnEOF() const { return should_attempt_to_end_on_eof_; }
-  void SetAttemptToEndOnEOF() {
-    // Should only ever call ::Finish once.
-    DCHECK(!should_attempt_to_end_on_eof_);
-    // This method should only be called from ::Finish.
-    should_attempt_to_end_on_eof_ = true;
-  }
-
-  bool ShouldEndIfDelayed() const { return end_if_delayed_forbidden_ == 0; }
-  bool ShouldComplete() const {
-    return should_complete_ || GetMode() != kAllowDeferredParsing;
-  }
-  bool IsSynchronous() const {
-    return mode_ == ParserSynchronizationPolicy::kForceSynchronousParsing;
-  }
-  ParserSynchronizationPolicy GetMode() const { return mode_; }
-
-  void MarkYield() { times_yielded_++; }
-  int TimesYielded() const { return times_yielded_; }
-
-  NestingLevelIncrementer ScopedPumpSession() {
-    return NestingLevelIncrementer(pump_session_nesting_level_);
-  }
-  bool InPumpSession() const { return pump_session_nesting_level_; }
-  bool InNestedPumpSession() const { return pump_session_nesting_level_ > 1; }
-
-  void SetSeenCSPMetaTag(const bool seen) {
-    if (meta_csp_state_ == MetaCSPTokenState::kUnenforceable)
-      return;
-    if (seen)
-      meta_csp_state_ = MetaCSPTokenState::kSeen;
-    else
-      meta_csp_state_ = MetaCSPTokenState::kNotSeen;
-  }
-
-  void SetExitedHeader() {
-    meta_csp_state_ = MetaCSPTokenState::kUnenforceable;
-  }
-  bool HaveExitedHeader() const {
-    return meta_csp_state_ == MetaCSPTokenState::kUnenforceable;
-  }
-
-  bool ShouldYieldForPreloads() const {
-    return preload_processing_mode_ == PreloadProcessingMode::kYield;
-  }
-
-  bool ShouldProcessPreloads() const {
-    return preload_processing_mode_ == PreloadProcessingMode::kImmediate;
-  }
-
- private:
-  void EnterEndIfDelayedForbidden() { end_if_delayed_forbidden_++; }
-  void ExitEndIfDelayedForbidden() {
-    DCHECK(end_if_delayed_forbidden_);
-    end_if_delayed_forbidden_--;
-  }
-
-  void EnterAttemptToEndForbidden() {
-    DCHECK(should_attempt_to_end_on_eof_);
-    should_attempt_to_end_on_eof_ = false;
-  }
-
-  void EnterShouldComplete() { should_complete_++; }
-  void ExitShouldComplete() {
-    DCHECK(should_complete_);
-    should_complete_--;
-  }
-
-  DeferredParserState state_;
-  MetaCSPTokenState meta_csp_state_;
-  ParserSynchronizationPolicy mode_;
-  PreloadProcessingMode preload_processing_mode_;
-  unsigned end_if_delayed_forbidden_ = 0;
-  unsigned should_complete_ = 0;
-  unsigned times_yielded_ = 0;
-  unsigned pump_session_nesting_level_ = 0;
-  int budget_;
-
-  // Set to non-zero if Document::Finish has been called and we're operating
-  // asynchronously.
-  bool should_attempt_to_end_on_eof_ = false;
-  bool needs_link_header_dispatch_ = true;
-  bool have_seen_first_byte_ = false;
-  bool end_was_delayed_ = false;
-  bool added_pending_parser_blocking_stylesheet_ = false;
-  bool is_waiting_for_stylesheets_ = false;
-};
 
 class EndIfDelayedForbiddenScope {
   STACK_ALLOCATED();
@@ -492,6 +298,15 @@ static HTMLTokenizer::State TokenizerStateForContextElement(
     return HTMLTokenizer::kPLAINTEXTState;
   return HTMLTokenizer::kDataState;
 }
+
+HTMLDocumentParserState::HTMLDocumentParserState(
+    ParserSynchronizationPolicy mode,
+    int budget)
+    : state_(DeferredParserState::kNotScheduled),
+      meta_csp_state_(MetaCSPTokenState::kNotSeen),
+      mode_(mode),
+      preload_processing_mode_(GetPreloadProcessingMode()),
+      budget_(budget) {}
 
 HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
                                        ParserSynchronizationPolicy sync_policy,
@@ -703,10 +518,6 @@ void HTMLDocumentParser::PrepareToStopParsing() {
   AttemptToRunDeferredScriptsAndEnd();
 }
 
-bool HTMLDocumentParser::IsPaused() const {
-  return IsWaitingForScripts() || task_runner_state_->WaitingForStylesheets();
-}
-
 bool HTMLDocumentParser::IsParsingFragment() const {
   return tree_builder_->IsParsingFragment();
 }
@@ -807,25 +618,6 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
   CheckIfBlockingStylesheetAdded();
 }
 
-HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken(
-    base::TimeDelta& time_executing_script) {
-  if (IsStopped())
-    return kNoTokens;
-
-  // If we're paused waiting for a script, we try to execute scripts before
-  // continuing.
-  auto ret = kHaveTokens;
-  if (tree_builder_->HasParserBlockingScript()) {
-    base::ElapsedTimer timer;
-    RunScriptsForPausedTreeBuilder();
-    ret = kHaveTokensAfterScript;
-    time_executing_script += timer.Elapsed();
-  }
-  if (IsStopped() || IsPaused())
-    return kNoTokens;
-  return ret;
-}
-
 void HTMLDocumentParser::ForcePlaintextForTextDocument() {
   token_producer_->ForcePlaintext();
 }
@@ -878,20 +670,23 @@ bool HTMLDocumentParser::PumpTokenizer() {
   if (TimedParserBudgetEnabled())
     timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
 
+  const bool should_process_preloading =
+      task_runner_state_->ShouldProcessPreloads();
   base::ElapsedTimer chunk_parsing_timer;
   unsigned tokens_parsed = 0;
   base::TimeDelta time_executing_script;
   base::TimeDelta time_in_next_token;
-  while (!should_yield) {
-    if (task_runner_state_->ShouldProcessPreloads())
+  while (true) {
+    if (should_process_preloading)
       FlushPendingPreloads();
 
     const auto next_token_status = CanTakeNextToken(time_executing_script);
     if (next_token_status == kNoTokens) {
       // No tokens left to process in this pump, so break
       break;
-    } else if (next_token_status == kHaveTokensAfterScript &&
-               task_runner_state_->HaveExitedHeader()) {
+    }
+    if (next_token_status == kHaveTokensAfterScript &&
+        task_runner_state_->HaveExitedHeader()) {
       // Just executed a parser-blocking script in the body. We'd probably like
       // to yield at some point soon, especially if we're in "extended budget"
       // mode. So reduce the budget back to at most the default.
@@ -936,8 +731,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // should be dispatched as soon as possible.
       if (task_runner_state_->ShouldYieldForPreloads())
         should_yield |= HasPendingPreloads();
-    } else {
-      should_yield = false;
+      if (should_yield)
+        break;
     }
   }
 
