@@ -835,6 +835,11 @@ Additional details:
           =1 {Copy confidential file?}
           other {Copy confidential files?}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE" desc="The title for notification informing the user that opening selected files is not recommended.">
+        {0, plural,
+          =1 {Open confidential file?}
+          other {Open confidential files?}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE" desc="The message for notification informing the user that downloading files is not recommended.">
         {0, plural,
                 =1 {Administrator policy doesn’t recommend downloading this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
@@ -860,6 +865,11 @@ Additional details:
                 =1 {Administrator policy doesn’t recommend copying this file to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
                 other {Administrator policy doesn’t recommend copying these files to <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE" desc="The message for notification informing the user that opening files is not recommended.">
+        {0, plural,
+                =1 {Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}
+                other {Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME">$1<ex>External storage</ex></ph>}}
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before downloading files.">
     Download anyway
   </message>
@@ -874,6 +884,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before copying files.">
     Copy anyway
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before opening files.">
+    Open anyway
   </message>
   <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
     Removable storage

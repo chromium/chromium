@@ -122,14 +122,13 @@ const std::u16string GetDialogButtonOkLabelForFiles(
     case DlpFilesController::FileAction::kMove:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kOpen:
-    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kShare:
-    // TODO(crbug.com/1382063): Add the correct string.
-    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
-                                                    // Set proper text when file
-                                                    // action is unknown
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON);
+    case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kUnknown:
+      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
   }
@@ -153,11 +152,11 @@ const std::u16string GetTitleForFiles(
     case DlpFilesController::FileAction::kMove:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, files_number);
-    case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kOpen:
-    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kShare:
-    // TODO(crbug.com/1382063): Add the correct string.
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, files_number);
+    case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown
@@ -170,51 +169,39 @@ const std::u16string GetTitleForFiles(
 const std::u16string GetMessageForFiles(
     const DlpWarnDialog::DlpWarnDialogOptions& options) {
   DCHECK(options.files_action.has_value());
-
+  std::u16string destination;
+  int num_files;
+  int message_id;
   switch (options.files_action.value()) {
     case DlpFilesController::FileAction::kDownload:
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              // Download action is only allowed for one file.
-              IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
-          GetDestinationComponentForFiles(
-              options.destination_component.value()),
-          /*offset=*/nullptr);
+      DCHECK(options.destination_component.has_value());
+      destination = GetDestinationComponentForFiles(
+          options.destination_component.value());
+      num_files = 1;  // Download action is only for one file.
+      message_id = IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE;
+      break;
     case DlpFilesController::FileAction::kUpload:
       DCHECK(!options.destination_pattern->empty());
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE,
-              options.confidential_files.size()),
-          base::UTF8ToUTF16(options.destination_pattern.value()),
-          /*offset=*/nullptr);
+      destination = base::UTF8ToUTF16(options.destination_pattern.value());
+      num_files = options.confidential_files.size();
+      message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
+      break;
     case DlpFilesController::FileAction::kCopy:
       DCHECK(!options.destination_pattern->empty());
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE,
-              options.confidential_files.size()),
-          GetDestinationComponentForFiles(
-              options.destination_component.value()),
-          /*offset=*/nullptr);
+      destination = GetDestinationComponentForFiles(
+          options.destination_component.value());
+      num_files = options.confidential_files.size();
+      message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
+      break;
     case DlpFilesController::FileAction::kMove:
       DCHECK(!options.destination_pattern->empty());
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE,
-              options.confidential_files.size()),
-          GetDestinationComponentForFiles(
-              options.destination_component.value()),
-          /*offset=*/nullptr);
-    case DlpFilesController::FileAction::kTransfer:
+      destination = GetDestinationComponentForFiles(
+          options.destination_component.value());
+      num_files = options.confidential_files.size();
+      message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
+      break;
     case DlpFilesController::FileAction::kOpen:
-    // TODO(crbug.com/1382063): Add the correct string.
     case DlpFilesController::FileAction::kShare:
-    // TODO(crbug.com/1382063): Add the correct string.
-    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
-                                                    // Set proper text when file
-                                                    // action is unknown
-      std::u16string destination;
       if (options.destination_component.has_value()) {
         destination = GetDestinationComponentForFiles(
             options.destination_component.value());
@@ -222,13 +209,26 @@ const std::u16string GetMessageForFiles(
         DCHECK(!options.destination_pattern->empty());
         destination = base::UTF8ToUTF16(options.destination_pattern.value());
       }
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE,
-              options.confidential_files.size()),
-          destination,
-          /*offset=*/nullptr);
+      num_files = options.confidential_files.size();
+      message_id = IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE;
+      break;
+    case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kUnknown:
+      // TODO(crbug.com/1361900): Set proper text when file action is unknown
+      if (options.destination_component.has_value()) {
+        destination = GetDestinationComponentForFiles(
+            options.destination_component.value());
+      } else {
+        DCHECK(!options.destination_pattern->empty());
+        destination = base::UTF8ToUTF16(options.destination_pattern.value());
+      }
+      num_files = options.confidential_files.size();
+      message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;
+      break;
   }
+  return base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(message_id, num_files), destination,
+      /*offset=*/nullptr);
 }
 
 // Returns the OK button label for |restriction|.
