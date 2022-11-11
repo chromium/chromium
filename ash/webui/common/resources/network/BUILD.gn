@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
 
   deps = [
     ":apn_list",
+    ":apn_list_item",
     ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
@@ -69,10 +70,22 @@ js_library("cr_policy_network_indicator_mojo") {
 js_library("apn_list") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:apn_list_item",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = []
+}
+
+js_library("apn_list_item") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+  ]
 }
 
 js_library("network_apnlist") {

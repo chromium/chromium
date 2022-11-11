@@ -41,6 +41,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
 
 [['ApnList', 'network/apn_list_test.js'],
+ ['ApnListItem', 'network/apn_list_item_test.js'],
  ['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.js'],
  ['CrPolicyNetworkIndicatorMojo', 'network/cr_policy_network_indicator_mojo_tests.js'],
  ['NetworkApnlist', 'network/network_apnlist_test.js'],

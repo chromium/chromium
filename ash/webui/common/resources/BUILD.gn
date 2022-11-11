@@ -63,6 +63,7 @@ web_component_files = [
   "network_health/network_health_summary.js",
   "network_health/routine_group.js",
   "network/apn_list.js",
+  "network/apn_list_item.js",
   "network/cr_policy_network_indicator_mojo.js",
   "network/network_apnlist.js",
   "network/network_choose_mobile.js",
@@ -367,6 +368,7 @@ checked_in_dts_files = [
   "quick_unlock/setup_pin_keyboard.d.ts",
 
   "network/apn_list.d.ts",
+  "network/apn_list_item.d.ts",
   "network/cellular_utils.d.ts",
   "network/cr_policy_network_behavior_mojo.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",

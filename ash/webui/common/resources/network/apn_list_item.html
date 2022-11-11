@@ -1,0 +1,65 @@
+<style include="network-shared">
+  :host {
+    box-sizing: border-box;
+    flex: 1;
+    font-family: inherit;
+    font-size: 100%;
+    /* Specifically for Mac OSX, harmless elsewhere. */
+    line-height: 154%;
+    min-height: var(--cr-section-min-height);
+    padding: 0;
+  }
+
+  :host(:not([embedded])) {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #labelWrapper {
+    flex-basis: 0.000000001px;
+    flex: 1;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-top: var(--cr-section-vertical-padding);
+    text-align: start;
+  }
+
+  #label,
+  #subLabel {
+    display: flex;
+  }
+
+  #subLabel {
+    color: var(--cros-text-color-positive);
+  }
+</style>
+
+  <!-- TODO(b/162365553): Implement accessibility attributes. -->
+<div id="labelWrapper">
+  <div id="label" aria-hidden="true">
+    [[apn.name]]
+  </div>
+  <!-- TODO(b/162365553): Implement isConnected logic. -->
+  <div id="subLabel" class="cr-secondary-text" aria-hidden="true"
+      hidden="[[!isConnected]]">
+    [[i18n('NetworkHealthStateConnected')]]
+  </div>
+</div>
+<cr-icon-button id="actionMenuButton" class="icon-more-vert"
+    on-click="onMenuButtonClicked_"
+    title="[[i18n('apnMoreActionsTitle')]]"
+    focus-row-control focus-type="menu">
+</cr-icon-button>
+
+<cr-action-menu id="dotsMenu" role-description="[[i18n('menu')]]">
+  <button class="dropdown-item" hidden="[[!shouldShowDetailsMenuItem_]]"
+      on-click="onDetailsClicked_">
+    [[i18n('apnMenuDetails')]]
+  </button>
+  <button class="dropdown-item" hidden="[[!shouldShowDisableMenuItem_]]"
+      on-click="onDisableClicked_">
+    [[i18n('apnMenuDisable')]]
+  </button>
+  <button class="dropdown-item" hidden="[[!shouldShowRemoveMenuItem_]]"
+      on-click="onRemoveClicked_">
+    [[i18n('apnMenuRemove')]]
+  </button>
+</cr-action-menu>

@@ -6,12 +6,31 @@
     justify-content: center;
     margin-inline-end: 40px;
     min-height: var(--cr-section-min-height);
-    padding: 0 var(--cr-section-padding);
+    padding: 0 var(--cr-section-padding) 10px var(--cr-section-padding);
+  }
+
+  iron-list {
+    display: block;
+    padding: 0 0 0 var(--cr-section-padding);
+  }
+
+  apn-list-item {
+    align-items: center;
+    border-top: var(--cr-separator-line);
+    display: flex;
+    min-height: var(--settings-row-min-height);
+    padding: 0 20px 0 0;
   }
 </style>
-<div id="apnDescription">
+<div id="apnDescription" class="property-box">
   <localized-link
       localized-string="[[i18nAdvanced('apnSettingsDescriptionWithLink')]]"
       on-link-clicked="onLearnMoreClicked_">
   </localized-link>
 </div>
+
+<iron-list items="[[apns]]">
+  <template>
+    <apn-list-item apn="[[item]]"></apn-list-item>
+  </template>
+</iron-list>

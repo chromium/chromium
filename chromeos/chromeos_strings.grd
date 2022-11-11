@@ -3624,6 +3624,18 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK" desc="Text describing APN settings menu with a link to more detailed information.">
         Manage network APN settings. APNs establish a connection between a cellular network and the internet. <ph name="BEGIN_LINK">&lt;a href="#" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
+      <message name="IDS_SETTINGS_APN_MENU_DETAILS" desc="Details button in three dotted menu for APNs">
+        Details
+      </message>
+      <message name="IDS_SETTINGS_APN_MENU_DISABLE" desc="Disable button in three dotted menu for APNs">
+        Disable
+      </message>
+      <message name="IDS_SETTINGS_APN_MENU_REMOVE" desc="Remove button in three dotted menu for APNs">
+        Remove
+      </message>
+      <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
+        More actions
+      </message>
       <!-- End of APN -->
     </messages>
   </release>
