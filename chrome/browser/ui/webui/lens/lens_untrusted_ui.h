@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_LENS_LENS_UNTRUSTED_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_LENS_LENS_UNTRUSTED_UI_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/gfx/image/image.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace lens {
@@ -17,7 +20,16 @@ class LensUntrustedUI : public ui::UntrustedWebUIController {
 
   LensUntrustedUI(const LensUntrustedUI&) = delete;
   LensUntrustedUI& operator=(const LensUntrustedUI&) = delete;
-  ~LensUntrustedUI() override = default;
+  ~LensUntrustedUI() override;
+
+ private:
+  void StartLoadScreenshot(
+      const std::string& resource_path,
+      content::WebUIDataSource::GotDataCallback got_data_callback);
+
+  gfx::Image image_;
+
+  base::WeakPtrFactory<LensUntrustedUI> weak_factory_{this};
 };
 
 }  // namespace lens

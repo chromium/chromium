@@ -5480,6 +5480,8 @@ static_library("ui") {
         "views/lens/lens_side_panel_navigation_helper.cc",
         "views/lens/lens_side_panel_view.cc",
         "views/lens/lens_side_panel_view.h",
+        "views/lens/lens_static_page_controller.cc",
+        "views/lens/lens_static_page_controller.h",
         "views/side_panel/lens/lens_side_panel_coordinator.cc",
         "views/side_panel/lens/lens_side_panel_coordinator.h",
         "views/side_panel/lens/lens_unified_side_panel_view.cc",

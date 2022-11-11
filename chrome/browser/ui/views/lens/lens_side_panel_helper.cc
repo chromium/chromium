@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
+#include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_rendering_environment.h"
@@ -121,15 +121,13 @@ content::WebContents* GetLensUnifiedSidePanelWebContentsForTesting(
 }
 
 void OpenLensStaticPage(Browser* browser) {
-  // TODO(juanmojica): Expand this function to simulate the current region
-  // search experience in the new tab.
   DCHECK(browser);
-  GURL url(chrome::kChromeUILensURL);
-  content::OpenURLParams params(
-      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-  params.initiator_origin = url::Origin::Create(url);
-  browser->OpenURL(params);
+  auto lens_static_page_data = std::make_unique<lens::LensStaticPageData>();
+  lens_static_page_data->lens_static_page_controller =
+      std::make_unique<lens::LensStaticPageController>(browser);
+  lens_static_page_data->lens_static_page_controller->OpenStaticPage();
+  browser->SetUserData(LensStaticPageData::kDataKey,
+                       std::move(lens_static_page_data));
 }
 
 }  // namespace lens

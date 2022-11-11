@@ -11,6 +11,9 @@ static_library("region_search") {
     "lens_region_search_controller.cc",
     "lens_region_search_controller.h",
   ]
+
+  # TODO(crbug/1383280): Remove allow_circular_includes_from when dependencies for controller are fixed.
+  allow_circular_includes_from = [ "//chrome/browser/ui" ]
   deps = [
     "//base",
     "//chrome/browser/image_editor",

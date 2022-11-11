@@ -3640,24 +3640,23 @@ void RenderViewContextMenu::ExecRegionSearch(
     return;
   }
 
+  WebContents* web_contents = source_web_contents_;
+  if (base::FeatureList::IsEnabled(
+          lens::features::kEnableRegionSearchOnPdfViewer)) {
+    // We don't use `source_web_contents_` here because it doesn't work with
+    // the PDF reader.
+    web_contents = browser->tab_strip_model()->GetActiveWebContents();
+  }
   if (!lens_region_search_controller_) {
-    WebContents* web_contents = source_web_contents_;
-    if (base::FeatureList::IsEnabled(
-            lens::features::kEnableRegionSearchOnPdfViewer)) {
-      // We don't use `source_web_contents_` here because it doesn't work with
-      // the PDF reader.
-      web_contents = browser->tab_strip_model()->GetActiveWebContents();
-    }
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(web_contents,
-                                                           browser);
+        std::make_unique<lens::LensRegionSearchController>(browser);
   }
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   bool use_fullscreen_capture =
       GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
       lens::features::IsLensFullscreenSearchEnabled();
-  lens_region_search_controller_->Start(use_fullscreen_capture,
+  lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
                                         is_google_default_search_provider);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }

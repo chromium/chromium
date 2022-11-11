@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
 class Browser;
@@ -26,8 +28,7 @@ namespace lens {
 
 class LensRegionSearchController : public content::WebContentsObserver {
  public:
-  explicit LensRegionSearchController(content::WebContents* web_contents,
-                                      Browser* browser);
+  explicit LensRegionSearchController(Browser* browser);
   ~LensRegionSearchController() override;
 
   // Creates and runs the drag and capture flow. When run, the user enters into
@@ -35,7 +36,8 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // around the web contents. When finished with selection, the region is
   // converted into a PNG and sent to Lens. If `use_fullscreen_capture` is set
   // to true, the whole screen will automatically be captured.
-  void Start(bool use_fullscreen_capture,
+  void Start(content::WebContents* web_contents,
+             bool use_fullscreen_capture,
              bool is_google_default_search_provider);
 
   // Closes the UI overlay and user education bubble if currently being shown.
@@ -75,6 +77,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // either of the UI elements is not visible, returns false.
   bool IsOverlayUIVisibleForTesting();
 
+  // Sets the web contents for unit tests that do not launch the region search
+  // UI.
+  void SetWebContentsForTesting(content::WebContents* web_contents);
+
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
 
@@ -99,6 +105,19 @@ class LensRegionSearchController : public content::WebContentsObserver {
   base::WeakPtr<LensRegionSearchController> weak_this_;
 
   base::WeakPtrFactory<LensRegionSearchController> weak_factory_{this};
+};
+
+// Class to associate region search data with Profile across navigation. Used to
+// support region search on a static WebUI page.
+class RegionSearchCapturedData : public base::SupportsUserData::Data {
+ public:
+  RegionSearchCapturedData();
+  ~RegionSearchCapturedData() override;
+  RegionSearchCapturedData(const RegionSearchCapturedData&) = delete;
+  RegionSearchCapturedData& operator=(const RegionSearchCapturedData&) = delete;
+
+  static constexpr char kDataKey[] = "region_search_data";
+  gfx::Image image;
 };
 }  // namespace lens
 #endif  // CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
