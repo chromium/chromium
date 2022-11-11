@@ -203,6 +203,53 @@ struct ExpectedReportWaiter {
   }
 };
 
+struct ExpectedDebugReportWaiter {
+  ExpectedDebugReportWaiter(GURL report_url,
+                            std::string expected_body_serialized,
+                            net::EmbeddedTestServer* server)
+      : expected_url(std::move(report_url)),
+        expected_body_serialized(std::move(expected_body_serialized)),
+        response(std::make_unique<net::test_server::ControllableHttpResponse>(
+            server,
+            expected_url.path())) {}
+
+  GURL expected_url;
+  std::string expected_body_serialized;
+
+  std::unique_ptr<net::test_server::ControllableHttpResponse> response;
+
+  // Waits for a report to be received matching the report url. Verifies that
+  // the report url and report body were set correctly.
+  void WaitForReport() {
+    if (!response->http_request())
+      response->WaitForRequest();
+
+    // The embedded test server resolves all urls to 127.0.0.1, so get the real
+    // request host from the request headers.
+    const net::test_server::HttpRequest& request = *response->http_request();
+    DCHECK(base::Contains(request.headers, "Host"));
+    const GURL& request_url = request.GetURL();
+    GURL header_url = GURL("https://" + request.headers.at("Host"));
+    std::string host = header_url.host();
+    GURL::Replacements replace_host;
+    replace_host.SetHostStr(host);
+
+    EXPECT_EQ(base::test::ParseJson(request.content),
+              base::test::ParseJson(expected_body_serialized));
+
+    // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
+    replace_host.SetPortStr("");
+
+    // Compare the expected report url with a URL formatted with the host
+    // defined in the headers. This would not match |expected_url| if the host
+    // for report url was not set properly.
+    EXPECT_EQ(expected_url, request_url.ReplaceComponents(replace_host));
+
+    EXPECT_TRUE(base::Contains(request.headers, "User-Agent"));
+    EXPECT_EQ(request.headers.at("Content-Type"), "application/json");
+  }
+};
+
 }  // namespace
 
 class AttributionsBrowserTest : public ContentBrowserTest {
@@ -1677,6 +1724,39 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(register_response2->http_request()->headers.at(
                 "Attribution-Reporting-Support"),
             "web, os");
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
+                       NoMatchingSourceDebugReporting_DebugReportSent) {
+  // Expected reports must be registered before the server starts.
+  ExpectedDebugReportWaiter expected_report(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "debug/verbose"),
+      R"json([{
+        "body": {
+          "attribution_destination": "https://b.test"
+        },
+        "type": "trigger-no-matching-source"
+      }])json",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL(
+          "a.test", "/set-cookie?ar_debug=1;HttpOnly;Secure;SameSite=None")));
+
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_conversion_redirect.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
+
+  GURL register_trigger_url = https_server()->GetURL(
+      "a.test",
+      "/attribution_reporting/register_trigger_headers_debug_reporting.html");
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               register_trigger_url)));
+
+  expected_report.WaitForReport();
 }
 
 }  // namespace content
