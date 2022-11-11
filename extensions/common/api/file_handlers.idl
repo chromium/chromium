@@ -26,8 +26,9 @@
   // A FileHandler registers the ability to read, stream, or edit files of given
   // MIME types and/or file extensions.
   dictionary FileHandler {
-    // TODO(crbug.com/1362192): Include `accept` as an object or any. It is a
-    // dictionary mapping MIME types to extensions.
+    // A mapping of one or more MIME types to one or more file extensions.
+    // e.g. "accept": {"text/csv": ".csv"} or {"text/csv": [".csv", ".txt"]}.
+    object accept;
 
     // Specifies the url after the origin that is the navigation destination for
     // file handling launches.

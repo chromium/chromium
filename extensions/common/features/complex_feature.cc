@@ -29,8 +29,7 @@ ComplexFeature::ComplexFeature(std::vector<Feature*>* features) {
 #endif
 }
 
-ComplexFeature::~ComplexFeature() {
-}
+ComplexFeature::~ComplexFeature() = default;
 
 Feature::Availability ComplexFeature::IsAvailableToManifest(
     const HashedExtensionId& hashed_id,

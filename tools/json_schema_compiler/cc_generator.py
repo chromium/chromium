@@ -500,7 +500,10 @@ class _Generator(object):
     )
     c.Sblock('if (!value)')
     c.Append('return false;')
-    c.Eblock('const base::Value::Dict& dict = value->GetDict();')
+    if len(properties) > 0:
+      c.Eblock('const base::Value::Dict& dict = value->GetDict();')
+    else:
+      c.Eblock('')
 
     for prop in properties:
       c.Concat(self._InitializePropertyToDefault(prop, 'out'))
