@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -63,6 +64,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -1275,10 +1277,23 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
         DOMExceptionCode::kNotSupportedError,
         "Not supported on elements that do not have a valid value for the "
         "'popover' attribute");
-  } else if (popoverOpen() || !isConnected()) {
+  }
+  if (popoverOpen() || !isConnected()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Invalid on already-showing or disconnected popover elements");
+  }
+  if (IsA<HTMLDialogElement>(this) && hasAttribute(html_names::kOpenAttr)) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The dialog is already open as a dialog, and therefore cannot be "
+        "opened as a popover.");
+  }
+  if (Fullscreen::IsFullscreenElement(*this)) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "This element is already in fullscreen mode, and therefore cannot be "
+        "opened as a popover.");
   }
 
   // Fire the popovershow event (bubbles, cancelable).
@@ -2370,7 +2385,9 @@ Node::InsertionNotificationRequest HTMLElement::InsertedInto(
     auto maybe_show_popover = [](HTMLElement* popover) {
       // The `defaultopen` attribute can only be used on popover=manual and
       // popover=auto popovers.
-      if (popover && popover->isConnected() &&
+      bool is_open_dialog = popover && IsA<HTMLDialogElement>(popover) &&
+                            popover->hasAttribute(html_names::kOpenAttr);
+      if (popover && popover->isConnected() && !is_open_dialog &&
           (popover->PopoverType() == PopoverValueType::kManual ||
            (popover->PopoverType() == PopoverValueType::kAuto &&
             !popover->GetDocument().PopoverAutoShowing()))) {

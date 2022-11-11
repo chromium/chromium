@@ -45,7 +45,7 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
   void close(const String& return_value = String());
-  void show();
+  void show(ExceptionState&);
   void showModal(ExceptionState&);
   void RemovedFrom(ContainerNode&) override;
 

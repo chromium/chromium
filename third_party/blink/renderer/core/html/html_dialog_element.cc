@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -187,9 +188,19 @@ void HTMLDialogElement::ScheduleCloseEvent() {
   GetDocument().EnqueueAnimationFrameEvent(event);
 }
 
-void HTMLDialogElement::show() {
+void HTMLDialogElement::show(ExceptionState& exception_state) {
   if (FastHasAttribute(html_names::kOpenAttr))
     return;
+
+  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+          GetDocument().GetExecutionContext()) &&
+      HasPopoverAttribute() && popoverOpen()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The dialog is already open as a Popover, and therefore cannot be "
+        "opened as a non-modal dialog.");
+  }
+
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
   // The layout must be updated here because setFocusForDialog calls
@@ -228,16 +239,24 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
 
 void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   if (FastHasAttribute(html_names::kOpenAttr)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The element already has an 'open' "
-                                      "attribute, and therefore cannot be "
-                                      "opened modally.");
-    return;
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The element already has an 'open' "
+        "attribute, and therefore cannot be "
+        "opened modally.");
   }
   if (!isConnected()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The element is not in a Document.");
-    return;
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is not in a Document.");
+  }
+  if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+          GetDocument().GetExecutionContext()) &&
+      HasPopoverAttribute() && popoverOpen()) {
+    return exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The dialog is already open as a Popover, and therefore cannot be "
+        "opened as a modal dialog.");
   }
 
   Document& document = GetDocument();
