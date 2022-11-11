@@ -5,9 +5,9 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
+
+import java.util.Optional;
 
 /**
  * Interface for the object mediating access to the password settings.
@@ -22,8 +22,17 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    void getOfferToSavePasswords(Optional<Account> account,
-            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback);
+    default void getOfferToSavePasswords(com.google.common.base.Optional<Account> account,
+            Callback<com.google.common.base.Optional<Boolean>> successCallback,
+            Callback<Exception> failureCallback) {
+        assert false;
+    }
+
+    default void getOfferToSavePasswords(Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback) {
+        getOfferToSavePasswords(OptionalUtils.toGuavaOptional(account),
+                OptionalUtils.toGuavaOptionalCallback(successCallback), failureCallback);
+    }
 
     /**
      * Asynchronously sets the value of the "Offer to save passwords" setting.
@@ -34,8 +43,18 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled, Optional<Account> account,
-            Callback<Void> successCallback, Callback<Exception> failureCallback);
+    default void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled,
+            com.google.common.base.Optional<Account> account, Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {
+        assert false;
+    }
+
+    default void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled,
+            Optional<Account> account, Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {
+        setOfferToSavePasswords(offerToSavePasswordsEnabled, OptionalUtils.toGuavaOptional(account),
+                successCallback, failureCallback);
+    }
 
     /**
      * Asynchronously retrieves the value of the "Auto Sign In" setting.
@@ -46,8 +65,17 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    void getAutoSignIn(Optional<Account> account, Callback<Optional<Boolean>> successCallback,
-            Callback<Exception> failureCallback);
+    default void getAutoSignIn(com.google.common.base.Optional<Account> account,
+            Callback<com.google.common.base.Optional<Boolean>> successCallback,
+            Callback<Exception> failureCallback) {
+        assert false;
+    }
+
+    default void getAutoSignIn(Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback) {
+        getAutoSignIn(OptionalUtils.toGuavaOptional(account),
+                OptionalUtils.toGuavaOptionalCallback(successCallback), failureCallback);
+    }
 
     /**
      * Asynchronously sets the value of the "Auto Sign In" setting.
@@ -58,6 +86,15 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    void setAutoSignIn(boolean autoSignInEnabled, Optional<Account> account,
-            Callback<Void> successCallback, Callback<Exception> failureCallback);
+    default void setAutoSignIn(boolean autoSignInEnabled,
+            com.google.common.base.Optional<Account> account, Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {
+        assert false;
+    }
+
+    default void setAutoSignIn(boolean autoSignInEnabled, Optional<Account> account,
+            Callback<Void> successCallback, Callback<Exception> failureCallback) {
+        setAutoSignIn(autoSignInEnabled, OptionalUtils.toGuavaOptional(account), successCallback,
+                failureCallback);
+    }
 }

@@ -15,8 +15,6 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -56,6 +54,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
