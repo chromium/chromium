@@ -18,7 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/reporting/metrics/metric_data_collector.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");

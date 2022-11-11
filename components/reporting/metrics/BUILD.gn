@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("metrics_data_collection") {
+source_set("metrics_data_collection") {
   sources = [
+    "collector_base.cc",
+    "collector_base.h",
     "configured_sampler.cc",
     "configured_sampler.h",
     "event_driven_telemetry_sampler_pool.h",

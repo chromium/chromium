@@ -6,32 +6,14 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/functional/callback_helpers.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
 
 namespace reporting {
-
-CollectorBase::CollectorBase(Sampler* sampler) : sampler_(sampler) {}
-
-CollectorBase::~CollectorBase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void CollectorBase::Collect() {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto on_collected_cb = base::BindOnce(&CollectorBase::OnMetricDataCollected,
-                                        weak_ptr_factory_.GetWeakPtr());
-  sampler_->MaybeCollect(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
-}
 
 OneShotCollector::OneShotCollector(
     Sampler* sampler,
@@ -51,7 +33,7 @@ OneShotCollector::OneShotCollector(
 OneShotCollector::~OneShotCollector() = default;
 
 void OneShotCollector::Collect() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckOnSequence();
 
   if (data_collected_) {
     return;
@@ -63,7 +45,7 @@ void OneShotCollector::Collect() {
 
 void OneShotCollector::OnMetricDataCollected(
     absl::optional<MetricData> metric_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckOnSequence();
   DCHECK(on_data_reported_);
   if (!metric_data.has_value()) {
     return;
@@ -104,7 +86,7 @@ PeriodicCollector::~PeriodicCollector() = default;
 
 void PeriodicCollector::OnMetricDataCollected(
     absl::optional<MetricData> metric_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckOnSequence();
   if (!metric_data.has_value()) {
     return;
   }
@@ -114,14 +96,14 @@ void PeriodicCollector::OnMetricDataCollected(
 }
 
 void PeriodicCollector::StartPeriodicCollection() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckOnSequence();
   // Do initial collection at startup.
   Collect();
   rate_controller_->Start();
 }
 
 void PeriodicCollector::StopPeriodicCollection() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CheckOnSequence();
   rate_controller_->Stop();
 }
 }  // namespace reporting

@@ -1,0 +1,37 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/reporting/metrics/collector_base.h"
+
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/reporting/metrics/sampler.h"
+
+namespace reporting {
+
+CollectorBase::CollectorBase(Sampler* sampler) : sampler_(sampler) {}
+
+CollectorBase::~CollectorBase() {
+  CheckOnSequence();
+}
+
+void CollectorBase::Collect() {
+  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  CheckOnSequence();
+
+  auto on_collected_cb = base::BindOnce(&CollectorBase::OnMetricDataCollected,
+                                        weak_ptr_factory_.GetWeakPtr());
+  sampler_->MaybeCollect(base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
+}
+
+void CollectorBase::CheckOnSequence() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+}  // namespace reporting

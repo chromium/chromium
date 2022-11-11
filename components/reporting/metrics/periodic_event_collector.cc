@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/metric_data_collector.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/sampler.h"

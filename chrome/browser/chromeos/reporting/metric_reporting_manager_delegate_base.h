@@ -9,6 +9,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/metric_event_observer.h"

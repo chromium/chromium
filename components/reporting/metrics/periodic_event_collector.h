@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/reporting/metrics/metric_data_collector.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

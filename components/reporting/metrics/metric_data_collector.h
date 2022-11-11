@@ -9,12 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_helpers.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,30 +24,6 @@ class MetricRateController;
 class MetricReportQueue;
 class MetricReportingController;
 class ReportingSettings;
-
-// A base class for metric data collection and reporting.
-class CollectorBase {
- public:
-  explicit CollectorBase(Sampler* sampler);
-
-  CollectorBase(const CollectorBase& other) = delete;
-  CollectorBase& operator=(const CollectorBase& other) = delete;
-
-  virtual ~CollectorBase();
-
- protected:
-  virtual void Collect();
-
-  virtual void OnMetricDataCollected(
-      absl::optional<MetricData> metric_data) = 0;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  const raw_ptr<Sampler> sampler_;
-
-  base::WeakPtrFactory<CollectorBase> weak_ptr_factory_{this};
-};
 
 // Class to collect and report metric data only one time when the reporting
 // setting is enabled.
