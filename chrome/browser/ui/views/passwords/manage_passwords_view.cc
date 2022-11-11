@@ -26,6 +26,21 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
   SetFootnoteView(CreateFooterView());
 }
 
+ManagePasswordsView::~ManagePasswordsView() = default;
+
+PasswordBubbleControllerBase* ManagePasswordsView::GetController() {
+  return &controller_;
+}
+
+const PasswordBubbleControllerBase* ManagePasswordsView::GetController() const {
+  return &controller_;
+}
+
+ui::ImageModel ManagePasswordsView::GetWindowIcon() {
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                        ui::kColorIcon);
+}
+
 std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
       [](ManagePasswordsView* dialog) {
@@ -59,19 +74,4 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           open_password_manager_closure);
   }
-}
-
-ManagePasswordsView::~ManagePasswordsView() = default;
-
-PasswordBubbleControllerBase* ManagePasswordsView::GetController() {
-  return &controller_;
-}
-
-const PasswordBubbleControllerBase* ManagePasswordsView::GetController() const {
-  return &controller_;
-}
-
-ui::ImageModel ManagePasswordsView::GetWindowIcon() {
-  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
-                                        ui::kColorIcon);
 }
