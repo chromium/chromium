@@ -231,6 +231,7 @@ try_.orchestrator_builder(
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    description_html = "<h1>NOTE: This bot is now deprecated. Please use 'win-rel' instead.</h1>",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
