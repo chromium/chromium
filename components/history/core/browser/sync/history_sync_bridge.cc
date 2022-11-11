@@ -661,28 +661,7 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
                                      const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
-  // If this visit is not the end of a redirect chain, ignore it. Note that
-  // visits that are not part of a redirect chain are considered to be both
-  // start and end of a chain, so these are *not* ignored here.
-  if (!(visit_row.transition & ui::PAGE_TRANSITION_CHAIN_END)) {
-    return;
-  }
-
-  std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
-      QueryRedirectChainAndMakeEntityData(visit_row);
-
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      CreateMetadataChangeList();
-
-  for (auto& entity_data : entity_data_list) {
-    std::string storage_key = GetStorageKey(*entity_data);
-    change_processor()->Put(storage_key, std::move(entity_data),
-                            metadata_change_list.get());
-  }
+  MaybeCommit(visit_row);
 }
 
 void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
@@ -727,28 +706,7 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
 void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ShouldCommitRightNow()) {
-    return;
-  }
-
-  // If this visit is not the end of a redirect chain, ignore it. Note that
-  // visits that are not part of a redirect chain are considered to be both
-  // start and end of a chain, so these are *not* ignored here.
-  if (!(visit_row.transition & ui::PAGE_TRANSITION_CHAIN_END)) {
-    return;
-  }
-
-  std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
-      QueryRedirectChainAndMakeEntityData(visit_row);
-
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      CreateMetadataChangeList();
-
-  for (auto& entity_data : entity_data_list) {
-    std::string storage_key = GetStorageKey(*entity_data);
-    change_processor()->Put(storage_key, std::move(entity_data),
-                            metadata_change_list.get());
-  }
+  MaybeCommit(visit_row);
 }
 
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
@@ -828,6 +786,34 @@ bool HistorySyncBridge::ShouldCommitRightNow() const {
   }
 
   return true;
+}
+
+void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
+  // First check if the overall state allows committing right now.
+  if (!ShouldCommitRightNow()) {
+    return;
+  }
+
+  // If this visit is not the end of a redirect chain, ignore it. Note that
+  // visits that are not part of a redirect chain are considered to be both
+  // start and end of a chain, so these are *not* ignored here.
+  if (!(visit_row.transition & ui::PAGE_TRANSITION_CHAIN_END)) {
+    return;
+  }
+
+  // All conditions are fulfilled - convert the visit into Sync's format and
+  // send it on.
+  std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
+      QueryRedirectChainAndMakeEntityData(visit_row);
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+
+  for (auto& entity_data : entity_data_list) {
+    std::string storage_key = GetStorageKey(*entity_data);
+    change_processor()->Put(storage_key, std::move(entity_data),
+                            metadata_change_list.get());
+  }
 }
 
 std::vector<std::unique_ptr<syncer::EntityData>>

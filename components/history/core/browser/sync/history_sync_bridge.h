@@ -86,7 +86,14 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // passes it to the processor so that it can start tracking changes.
   void LoadMetadata();
 
+  // Whether local history changes should be sent to Sync ("committed") right
+  // now. This includes conditions like Sync being enabled, no error state, etc.
   bool ShouldCommitRightNow() const;
+
+  // Checks various conditions on `visit_row` and the overall Sync state, and if
+  // all are fulfilled, sends changes corresponding to the new/updated visit(s)
+  // to Sync.
+  void MaybeCommit(const VisitRow& visit_row);
 
   // Queries the redirect chain ending in `final_visit` from the HistoryBackend,
   // and creates the corresponding EntityData(s). Typically returns a single
