@@ -700,9 +700,12 @@ void ManagedNetworkConfigurationHandlerImpl::
   const std::string* profile =
       existing_properties.FindStringKey(shill::kProfileProperty);
   if (!profile || profile->empty()) {
+    // TODO(b/258782165): Figure out how to deal with entries that don't have a
+    // Profile property properly.
     NET_LOG(ERROR) << "Missing profile property: "
                    << shill_property_util::GetNetworkIdFromProperties(
                           existing_properties);
+    std::move(callback).Run();
     return;
   }
   shill_properties.SetKey(shill::kProfileProperty, base::Value(*profile));

@@ -33,18 +33,23 @@ class PolicyApplicator {
    public:
     ConfigurationHandler& operator=(const ConfigurationHandler&) = delete;
 
-    virtual ~ConfigurationHandler() {}
-    // Write the new configuration with the properties |shill_properties| to
+    virtual ~ConfigurationHandler() = default;
+    // Write the new configuration with the properties `shill_properties` to
     // Shill. This configuration comes from a policy. Any conflicting or
     // existing configuration for the same network will have been removed
-    // before. |callback| will be called after the configuration update has been
-    // reflected in NetworkStateHandler, or on error.
+    // before.
+    // `callback` does not necessarily signal success and is only used for
+    // completion - it will be called after the configuration update has been
+    // reflected in NetworkStateHandler or when an error has occurred.
     virtual void CreateConfigurationFromPolicy(
         const base::Value& shill_properties,
         base::OnceClosure callback) = 0;
 
-    // before. |callback| will be called after the configuration update has been
-    // reflected in NetworkStateHandler, or on error.
+    // Modifies the properties of an already-configured network.
+    // `existing_properties` is used to find the network.
+    // `callback` does not necessarily signal success and is only used for
+    // completion - it will be called after the configuration update has been
+    // reflected in NetworkStateHandler or when an error has occurred.
     virtual void UpdateExistingConfigurationWithPropertiesFromPolicy(
         const base::Value& existing_properties,
         const base::Value& new_properties,

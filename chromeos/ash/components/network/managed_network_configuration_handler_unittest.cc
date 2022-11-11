@@ -51,8 +51,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace test_utils = ::chromeos::onc::test_utils;
+using base::test::DictionaryHasValue;
 using base::test::DictionaryHasValues;
 
 namespace ash {
@@ -1093,6 +1095,73 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmanaged) {
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
   EXPECT_THAT(*properties, DictionaryHasValues(expected_shill_properties));
+}
+
+// Regression test for b/237657704.
+// Profile entries that don't have a "Profile" property don't break application
+// of new policy-provided networks.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyIgnoreNetworkWithoutProfile) {
+  InitializeStandardProfiles();
+
+  // This shill entry is missing the "Profile" property.
+  // It has a "wifi2" SSID.
+  base::Value wifi_without_profile_property = base::test::ParseJson(R"(
+    {
+      "AutoConnect": true,
+      "GUID": "wifi2",
+      "Mode": "managed",
+      "Passphrase": "user's passphrase",
+      "PassphraseRequired": false,
+      "SecurityClass": "psk",
+      "Type": "wifi",
+      "WiFi.HexSSID": "7769666932"
+    })");
+  GetShillProfileClient()->AddEntry(kUser1ProfilePath,
+                                    "wifi_without_profile_prop_entry_path",
+                                    wifi_without_profile_property);
+
+  // Apply a policy which:
+  // - Disallows unmanaged networks (such as wifi2 above) to auto-connect
+  //   This will trigger policy_applicator.cc to try to modify wifi2
+  // - Apply a new network (policy_wifi1).
+  const char* const onc_policy = R"(
+    {
+      "GlobalNetworkConfiguration": {
+        "AllowOnlyPolicyNetworksToAutoconnect": true
+      },
+      "NetworkConfigurations": [
+        {
+          "GUID": "policy_wifi1",
+          "Type": "WiFi",
+          "Name": "Managed wifi1",
+          "WiFi": {
+            "HexSSID": "7769666931", // "wifi1"
+            "Passphrase": "policy's passphrase",
+            "SSID": "wifi1",
+            "Security": "WPA-PSK"
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration"
+    })";
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+            base::test::ParseJson(onc_policy));
+  base::RunLoop().RunUntilIdle();
+
+  // Expect that "policy_wifi1" policy has been applied by checking that the
+  // GUID exists and it has properties from the above policy.
+  std::string service_path =
+      GetShillServiceClient()->FindServiceMatchingGUID("policy_wifi1");
+  ASSERT_FALSE(service_path.empty());
+  const base::Value* properties =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties);
+  EXPECT_THAT(*properties, DictionaryHasValue(shill::kWifiHexSsid,
+                                              base::Value("7769666931")));
+  EXPECT_THAT(*properties,
+              DictionaryHasValue(shill::kPassphraseProperty,
+                                 base::Value("policy's passphrase")));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
