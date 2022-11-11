@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_specifics.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -271,7 +272,16 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURLUnspecifiedType) {
   EXPECT_EQ(PowerType::POWER_TYPE_MOCK, stored_powers[0]->power_type());
 }
 
-TEST_F(PowerBookmarkDatabaseImplTest, GetPowersForURLDeserializingProtoFails) {
+// // TODO(crbug.com/1383289): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetPowersForURLDeserializingProtoFails \
+  DISABLED_GetPowersForURLDeserializingProtoFails
+#else
+#define MAYBE_GetPowersForURLDeserializingProtoFails \
+  GetPowersForURLDeserializingProtoFails
+#endif
+TEST_F(PowerBookmarkDatabaseImplTest,
+       MAYBE_GetPowersForURLDeserializingProtoFails) {
   ASSERT_FALSE(base::PathExists(db_file_path()));
 
   // Init DB
@@ -328,9 +338,16 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForType) {
   EXPECT_EQ(GURL("https://boogle.com"), power_overviews[1]->power()->url());
   EXPECT_EQ(1u, power_overviews[1]->count());
 }
-
+// // TODO(crbug.com/1383289): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_GetPowerOverviewsForTypeDeserializingProtoFails \
+  DISABLED_GetPowerOverviewsForTypeDeserializingProtoFails
+#else
+#define MAYBE_GetPowerOverviewsForTypeDeserializingProtoFails \
+  GetPowerOverviewsForTypeDeserializingProtoFails
+#endif
 TEST_F(PowerBookmarkDatabaseImplTest,
-       GetPowerOverviewsForTypeDeserializingProtoFails) {
+       MAYBE_GetPowerOverviewsForTypeDeserializingProtoFails) {
   ASSERT_FALSE(base::PathExists(db_file_path()));
 
   // Init DB
