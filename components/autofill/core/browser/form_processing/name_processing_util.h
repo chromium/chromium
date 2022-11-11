@@ -10,10 +10,12 @@
 
 namespace autofill {
 
-// Returns the length of the longest common prefix of the `strings`. The runtime
-// is O(strings.size() * length-of-longest-common-prefix).
-size_t FindLongestCommonPrefixLength(
-    base::span<const base::StringPiece16> strings);
+// Returns the length of the longest common affix of the `strings`. If `prefix`
+// is true, the prefixes are considered, otherwise the suffixes.
+// The runtime is O(strings.size() * length-of-longest-common-affix).
+size_t FindLongestCommonAffixLength(
+    base::span<const base::StringPiece16> strings,
+    bool prefix);
 
 // Removes long common prefixes from `field_names`. If the common prefix is too
 // short or empty, `field_names` are left unmodified.
