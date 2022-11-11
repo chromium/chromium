@@ -31,6 +31,10 @@ class NotificationCenterTestApi {
       delete;
   ~NotificationCenterTestApi() = default;
 
+  // Toggles the `NotificationCenterBubble` by simulating a click on the
+  // `NotificationCenterTray` on the primary display.
+  void ToggleBubble();
+
   // Adds a notification and returns the associated id.
   std::string AddNotification();
 
@@ -54,6 +58,9 @@ class NotificationCenterTestApi {
   // Returns the `NotificationCenterBubble` owned by `NotificationCenterTray`
   // and created when the notification center tray is shown.
   NotificationCenterBubble* GetBubble();
+
+  // Returns the top level view for the notification center.
+  views::View* GetNotificationCenterView();
 
   // Returns the clear all button in the bottom right corner of the notification
   // center UI.

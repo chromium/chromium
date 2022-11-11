@@ -17,6 +17,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -160,6 +161,20 @@ gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
     return gfx::Insets(kTrayPopupInkDropInset);
   }
   return gfx::Insets();
+}
+
+int CalculateMaxTrayBubbleHeight() {
+  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+
+  // We calculate the available height from the top of the screen to the top of
+  // the bubble's anchor rect. We can not use the bottom of the screen since the
+  // anchor's position is not always exactly at the bottom of the screen.
+  int anchor_rect_top = shelf->GetSystemTrayAnchorRect().y();
+  WorkAreaInsets* work_area =
+      WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
+  int free_space_height_above_anchor =
+      anchor_rect_top - work_area->user_work_area_bounds().y();
+  return free_space_height_above_anchor - kBubbleMenuPadding * 2;
 }
 
 }  // namespace ash

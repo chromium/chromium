@@ -49,6 +49,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/unified_calendar_view_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/deferred_update_dialog.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -758,7 +759,7 @@ bool UnifiedSystemTrayController::IsMessageCenterCollapseRequired() const {
 
   // Note: This calculaton should be the same as
   // UnifiedMessageCenterBubble::CalculateAvailableHeight().
-  return (bubble_ && bubble_->CalculateMaxHeight() -
+  return (bubble_ && CalculateMaxTrayBubbleHeight() -
                              unified_view_->GetExpandedSystemTrayHeight() -
                              kUnifiedMessageCenterBubbleSpacing <
                          kMessageCenterCollapseThreshold);

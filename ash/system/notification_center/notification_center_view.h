@@ -25,6 +25,7 @@ class Notification;
 }  // namespace message_center
 
 namespace views {
+class BoxLayout;
 class ScrollView;
 class ScrollBar;
 }  // namespace views
@@ -200,6 +201,8 @@ class ASH_EXPORT NotificationCenterView
   views::ScrollBar* scroll_bar_;
   views::ScrollView* const scroller_;
   NotificationListView* const notification_list_view_;
+
+  views::BoxLayout* layout_manager_ = nullptr;
 
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;

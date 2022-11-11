@@ -94,10 +94,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   // Update bubble bounds and focus if necessary.
   void UpdateBubble();
 
-  // Return the maximum height available for both the system tray and
-  // the message center.
-  int CalculateMaxHeight() const;
-
   // Return the current visible height of the tray, even when partially
   // collapsed / expanded.
   int GetCurrentTrayHeight() const;

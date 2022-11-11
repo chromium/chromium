@@ -2995,6 +2995,7 @@ test("ash_unittests") {
     "system/network/wifi_toggle_notification_controller_unittest.cc",
     "system/night_light/night_light_controller_unittest.cc",
     "system/night_light/night_light_feature_pod_controller_unittest.cc",
+    "system/notification_center/notification_center_bubble_unittest.cc",
     "system/notification_center/notification_center_tray_unittest.cc",
     "system/notification_center/notification_center_view_unittest.cc",
     "system/notification_center/notification_list_view_unittest.cc",

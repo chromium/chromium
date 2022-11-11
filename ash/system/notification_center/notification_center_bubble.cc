@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ui/views/widget/widget.h"
@@ -36,6 +37,7 @@ NotificationCenterBubble::NotificationCenterBubble(
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight());
 
   notification_center_view_ =
       bubble_view->AddChildView(std::make_unique<NotificationCenterView>());
@@ -56,6 +58,17 @@ TrayBubbleView* NotificationCenterBubble::GetBubbleView() {
 
 views::Widget* NotificationCenterBubble::GetBubbleWidget() {
   return bubble_wrapper_->GetBubbleWidget();
+}
+
+void NotificationCenterBubble::UpdateBubbleBounds() {
+  auto* bubble_view = GetBubbleView();
+  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight());
+  bubble_view->ChangeAnchorRect(
+      notification_center_tray_->shelf()->GetSystemTrayAnchorRect());
+}
+
+void NotificationCenterBubble::OnDisplayConfigurationChanged() {
+  UpdateBubbleBounds();
 }
 
 }  // namespace ash

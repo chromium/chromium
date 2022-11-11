@@ -21,7 +21,6 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/work_area_insets.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -55,7 +54,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_view_ = new TrayBubbleView(init_params);
 
   // Max height calculated from the maximum available height of the screen.
-  int max_height = CalculateMaxHeight();
+  int max_height = CalculateMaxTrayBubbleHeight();
 
   if (features::IsQsRevampEnabled()) {
     auto quick_settings_view = controller_->CreateQuickSettingsView();
@@ -232,20 +231,6 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
   return unified_view_->GetCurrentHeight();
 }
 
-int UnifiedSystemTrayBubble::CalculateMaxHeight() const {
-  // We use the system tray anchor rect's bottom position to calculate the free
-  // space height. Here 'GetSystemTrayAnchorRect' gets the rect that those
-  // bubble views will be anchored. The calculation of this rect has considered
-  // the position of the tray (bottom, left, right), the status of the tray
-  // (tray_->is_active()), etc.
-  int bottom = tray_->shelf()->GetSystemTrayAnchorRect().bottom();
-  WorkAreaInsets* work_area =
-      WorkAreaInsets::ForWindow(tray_->shelf()->GetWindow()->GetRootWindow());
-  int free_space_height_above_anchor =
-      bottom - work_area->user_work_area_bounds().y();
-  return free_space_height_above_anchor - kBubbleMenuPadding * 2;
-}
-
 bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {
   if (quick_settings_view_)
     return false;
@@ -349,7 +334,7 @@ void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
-  int max_height = CalculateMaxHeight();
+  int max_height = CalculateMaxTrayBubbleHeight();
   if (features::IsQsRevampEnabled())
     quick_settings_view_->SetMaxHeight(max_height);
   else

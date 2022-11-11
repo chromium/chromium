@@ -5,7 +5,9 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_BUBBLE_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_BUBBLE_H_
 
-#include "ash/system/tray/tray_bubble_wrapper.h"
+#include <memory>
+
+#include "ash/system/screen_layout_observer.h"
 
 namespace views {
 class Widget;
@@ -16,10 +18,11 @@ namespace ash {
 class NotificationCenterTray;
 class NotificationCenterView;
 class TrayBubbleView;
+class TrayBubbleWrapper;
 
 // Manages the bubble that contains NotificationCenterView.
 // Shows the bubble on `ShowBubble()`, and closes the bubble on the destructor.
-class NotificationCenterBubble {
+class NotificationCenterBubble : public ScreenLayoutObserver {
  public:
   explicit NotificationCenterBubble(
       NotificationCenterTray* notification_center_tray);
@@ -27,13 +30,19 @@ class NotificationCenterBubble {
   NotificationCenterBubble(const NotificationCenterBubble&) = delete;
   NotificationCenterBubble& operator=(const NotificationCenterBubble&) = delete;
 
-  ~NotificationCenterBubble();
+  ~NotificationCenterBubble() override;
 
   TrayBubbleView* GetBubbleView();
   views::Widget* GetBubbleWidget();
 
  private:
   friend class NotificationCenterTestApi;
+
+  // Update the max height and anchor rect for the bubble.
+  void UpdateBubbleBounds();
+
+  // ScreenLayoutObserver:
+  void OnDisplayConfigurationChanged() override;
 
   // The owner of this class.
   NotificationCenterTray* const notification_center_tray_;

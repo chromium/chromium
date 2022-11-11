@@ -335,7 +335,7 @@ int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
   if (!tray_->bubble())
     return 0;
 
-  return tray_->bubble()->CalculateMaxHeight() -
+  return CalculateMaxTrayBubbleHeight() -
          tray_->bubble()->GetCurrentTrayHeight() -
          GetBubbleInsetHotseatCompensation() -
          kUnifiedMessageCenterBubbleSpacing;

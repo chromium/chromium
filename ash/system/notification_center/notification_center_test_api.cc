@@ -4,16 +4,26 @@
 
 #include "ash/system/notification_center/notification_center_test_api.h"
 
+#include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
 NotificationCenterTestApi::NotificationCenterTestApi(
     NotificationCenterTray* tray)
     : notification_center_tray_(tray) {}
+
+void NotificationCenterTestApi::ToggleBubble() {
+  auto event_generator =
+      std::make_unique<ui::test::EventGenerator>(Shell::GetPrimaryRootWindow());
+  event_generator->MoveMouseTo(
+      notification_center_tray_->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+}
 
 std::string NotificationCenterTestApi::AddNotification() {
   std::string id = base::NumberToString(notification_id_++);
@@ -46,6 +56,10 @@ views::Widget* NotificationCenterTestApi::GetWidget() {
 
 NotificationCenterBubble* NotificationCenterTestApi::GetBubble() {
   return notification_center_tray_->bubble_.get();
+}
+
+views::View* NotificationCenterTestApi::GetNotificationCenterView() {
+  return notification_center_tray_->bubble_->notification_center_view_;
 }
 
 views::View* NotificationCenterTestApi::GetClearAllButton() {

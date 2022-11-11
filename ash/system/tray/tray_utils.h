@@ -57,6 +57,10 @@ gfx::Insets GetSecondaryBubbleInsets();
 // Gets the InkDrop insets based on `ink_drop_style`.
 gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 
+// Gets the maximum height possible for a tray bubble based on the available
+// screen space.
+int CalculateMaxTrayBubbleHeight();
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TRAY_TRAY_UTILS_H_
