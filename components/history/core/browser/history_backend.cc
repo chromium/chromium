@@ -1610,6 +1610,12 @@ HistoryBackend::GetHistorySyncControllerDelegate() {
   return history_sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
+void HistoryBackend::SetSyncTransportState(
+    syncer::SyncService::TransportState state) {
+  DCHECK(history_sync_bridge_);
+  history_sync_bridge_->SetSyncTransportState(state);
+}
+
 // Statistics ------------------------------------------------------------------
 
 HistoryCountResult HistoryBackend::GetHistoryCount(const Time& begin_time,

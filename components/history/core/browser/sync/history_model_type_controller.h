@@ -54,8 +54,10 @@ class HistoryModelTypeController : public syncer::ModelTypeController,
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_observation_{this};
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
+
+  const raw_ptr<HistoryService> history_service_;
 };
 
 }  // namespace history

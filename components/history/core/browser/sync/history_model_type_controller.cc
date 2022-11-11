@@ -94,7 +94,8 @@ HistoryModelTypeController::HistoryModelTypeController(
           model_type,
           GetDelegateFromHistoryService(model_type, history_service)),
       helper_(model_type, sync_service, pref_service),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      history_service_(history_service) {
   DCHECK(model_type == syncer::TYPED_URLS || model_type == syncer::HISTORY);
   DCHECK(model_type == syncer::TYPED_URLS ||
          base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType));
@@ -157,6 +158,9 @@ void HistoryModelTypeController::OnStateChanged(syncer::SyncService* sync) {
             base::BindOnce(&HistoryModelTypeController::AccountTypeDetermined,
                            base::Unretained(this)));
   }
+
+  history_service_->SetSyncTransportState(
+      helper_.sync_service()->GetTransportState());
 
   // Most of these calls will be no-ops but SyncService handles that just fine.
   helper_.sync_service()->DataTypePreconditionChanged(type());

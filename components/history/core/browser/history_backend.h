@@ -36,6 +36,7 @@
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/history/core/browser/visit_tracker.h"
+#include "components/sync/driver/sync_service.h"
 #include "sql/init_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -643,6 +644,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // delegate is owned by `this` object.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
+
+  // Sends the SyncService's TransportState `state` to the HistorySyncBridge.
+  void SetSyncTransportState(syncer::SyncService::TransportState state);
 
   // Deleting ------------------------------------------------------------------
 

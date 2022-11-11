@@ -1246,6 +1246,15 @@ HistoryService::GetHistorySyncControllerDelegate() {
                           base::Unretained(history_backend_.get())));
 }
 
+void HistoryService::SetSyncTransportState(
+    syncer::SyncService::TransportState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::SetSyncTransportState,
+                              history_backend_, state));
+}
+
 void HistoryService::ProcessLocalDeleteDirective(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -125,8 +125,12 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
     tracked_entities_.erase(storage_key);
-    // If the entity isn't tracked anymore, it also can't be unsynced.
-    unsynced_entities_.erase(storage_key);
+    // If the entity was still unsynced, then this effectively deletes it (it
+    // won't be committed), so also remove it from `entities_`.
+    if (unsynced_entities_.count(storage_key)) {
+      unsynced_entities_.erase(storage_key);
+      entities_.erase(storage_key);
+    }
   }
 
   void UntrackEntityForClientTagHash(
@@ -307,6 +311,8 @@ class HistorySyncBridgeTest : public testing::Test {
 
   void ApplyInitialSyncChanges(
       const std::vector<sync_pb::HistorySpecifics>& specifics_vector) {
+    bridge()->SetSyncTransportState(
+        syncer::SyncService::TransportState::ACTIVE);
     bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
 
     // Just before passing on the initial updates, the processor starts tracking
@@ -619,6 +625,10 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {
   // Stop Sync temporarily - this happens e.g. in the "Sync paused" case, i.e.
   // when the user signs out from the web.
   bridge()->ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
+  // Note that IsTrackingMetadata() remains true - Sync is still enabled in
+  // principle, just temporarily stopped.
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
 
   // Visit a URL while Sync is paused.
   auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
@@ -634,6 +644,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {
   EXPECT_EQ(processor()->GetEntities().count(storage_key2), 0u);
 
   // Un-pause Sync.
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::ACTIVE);
   bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
 
   // Visit yet another URL.
@@ -648,6 +659,53 @@ TEST_F(HistorySyncBridgeTest, DoesNotUploadWhileSyncIsPaused) {
           visit_row3.visit_time);
   EXPECT_EQ(processor()->GetEntities().size(), 2u);
   EXPECT_EQ(processor()->GetEntities().count(storage_key3), 1u);
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotUploadIfSyncIsPausedAtStartup) {
+  // Sync is enabled (IsTrackingMetadata() is true), but paused.
+  processor()->SetIsTrackingMetadata(true);
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::PAUSED);
+
+  // Visit a URL and notify the bridge.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  // This should *not* have been sent to the processor.
+  EXPECT_TRUE(processor()->GetEntities().empty());
+
+  // Eventually Sync starts up, but this doesn't change anything.
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::ACTIVE);
+  bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
+  EXPECT_TRUE(processor()->GetEntities().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, UploadsChangeFromBeforeSyncWasStarted) {
+  // Sync is enabled (IsTrackingMetadata() is true), but hasn't started yet
+  // (OnSyncStarting() hasn't been called).
+  processor()->SetIsTrackingMetadata(true);
+  bridge()->SetSyncTransportState(syncer::SyncService::TransportState::ACTIVE);
+
+  // Visit a URL and notify the bridge.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_LINK);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  // Even though Sync hasn't started yet (and the bridge doesn't know whether
+  // it's paused), this should have been sent to the processor.
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
+  EXPECT_EQ(processor()->GetEntities().count(storage_key), 1u);
+
+  // Now Sync starts up.
+  bridge()->OnSyncStarting(syncer::DataTypeActivationRequest());
+
+  // The entity should still be there (and the processor would commit it soon).
+  EXPECT_EQ(processor()->GetEntities().size(), 1u);
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsReferrerURL) {

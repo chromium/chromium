@@ -35,6 +35,7 @@
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "sql/init_status.h"
 #include "ui/base/page_transition_types.h"
 
@@ -681,6 +682,10 @@ class HistoryService : public KeyedService {
   // HistorySyncBridge. Must be called from the UI thread.
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
+
+  // Sends the SyncService's TransportState `state` to the backend, which will
+  // pass it on to the HistorySyncBridge.
+  void SetSyncTransportState(syncer::SyncService::TransportState state);
 
   // Override `backend_task_runner_` for testing; needs to be called before
   // Init.

@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
@@ -43,8 +44,6 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   ~HistorySyncBridge() override;
 
   // syncer::ModelTypeSyncBridge implementation.
-  void OnSyncStarting(
-      const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   absl::optional<syncer::ModelError> MergeSyncData(
@@ -60,8 +59,6 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   syncer::ConflictResolution ResolveConflict(
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;
-  void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
-                                delete_metadata_change_list) override;
 
   // HistoryBackendObserver:
   void OnURLVisited(HistoryBackend* history_backend,
@@ -77,6 +74,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
                      const std::set<GURL>& favicon_urls) override;
   void OnVisitUpdated(const VisitRow& visit_row) override;
   void OnVisitDeleted(const VisitRow& visit_row) override;
+
+  void SetSyncTransportState(syncer::SyncService::TransportState state);
 
   // Called by HistoryBackend when database error is reported through
   // DatabaseErrorCallback.
@@ -128,10 +127,13 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // and sync changes to. Never null.
   const raw_ptr<HistoryBackendForSync, DanglingUntriaged> history_backend_;
 
-  // Whether Sync (for this data type) has been started. True between
-  // OnSyncStarting() and ApplyStopSyncChanges(). While this is false, no local
-  // changes will be sent to Sync.
-  bool sync_started_ = false;
+  // The state of Sync as a whole (not necessarily for this data type). Data
+  // will only be sent to the Sync server if this is *not* DISABLED or PAUSED.
+  // Initially, the Sync state is not known, but DISABLED is a safe default
+  // assumption. This gets set to a proper value early during profile
+  // startup.
+  syncer::SyncService::TransportState sync_transport_state_ =
+      syncer::SyncService::TransportState::DISABLED;
 
   // Whether we're currently processing changes from the syncer. While this is
   // true, we ignore any local url changes, since we triggered them.
