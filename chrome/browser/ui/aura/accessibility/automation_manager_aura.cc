@@ -126,6 +126,8 @@ void AutomationManagerAura::OnViewEvent(views::View* view,
   if (!enabled_)
     return;
 
+  DCHECK(tree_.get());
+
   views::AXAuraObjWrapper* obj = cache_->GetOrCreate(view);
   if (!obj)
     return;
@@ -140,6 +142,8 @@ void AutomationManagerAura::OnVirtualViewEvent(
 
   if (!enabled_)
     return;
+
+  DCHECK(tree_.get());
 
   views::AXAuraObjWrapper* obj = virtual_view->GetOrCreateWrapper(cache_.get());
   if (!obj)
@@ -157,6 +161,10 @@ void AutomationManagerAura::ExtensionListenerAdded() {
 }
 
 void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
+  if (!enabled_)
+    return;
+
+  DCHECK(tree_.get());
   views::AXAuraObjWrapper* obj = tree_->GetRoot();
   if (!obj)
     return;
@@ -165,12 +173,19 @@ void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
 }
 
 void AutomationManagerAura::HandleAlert(const std::string& text) {
+  if (!enabled_)
+    return;
+
+  DCHECK(tree_.get());
   if (alert_window_.get())
     alert_window_->HandleAlert(text);
 }
 
 void AutomationManagerAura::PerformAction(const ui::AXActionData& data) {
-  CHECK(enabled_);
+  if (!enabled_)
+    return;
+
+  DCHECK(tree_.get());
 
   base::AutoReset<ax::mojom::Action> reset_currently_performing_action(
       &currently_performing_action_, data.action);
@@ -199,6 +214,8 @@ void AutomationManagerAura::OnChildWindowRemoved(
     views::AXAuraObjWrapper* parent) {
   if (!enabled_)
     return;
+
+  DCHECK(tree_.get());
 
   if (!parent)
     parent = tree_->GetRoot();

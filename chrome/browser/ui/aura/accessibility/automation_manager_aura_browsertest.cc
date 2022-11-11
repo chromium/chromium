@@ -652,3 +652,24 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, ObservedOnEnable) {
   EXPECT_FALSE(
       extensions::AutomationEventRouter::GetInstance()->HasObserver(manager));
 }
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
+                       CallsWhenDisabledDoNotCrash) {
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+
+  // Call some methods while disabled, before the first enable.
+  manager->HandleEvent(ax::mojom::Event::kFocus);
+  manager->HandleAlert("hello");
+  manager->PerformAction(ui::AXActionData());
+  manager->OnChildWindowRemoved(nullptr);
+
+  // Flip things on then immediately off.
+  manager->Enable();
+  manager->Disable();
+
+  // Make the same calls again. We should never crash.
+  manager->HandleEvent(ax::mojom::Event::kFocus);
+  manager->HandleAlert("hello");
+  manager->PerformAction(ui::AXActionData());
+  manager->OnChildWindowRemoved(nullptr);
+}
