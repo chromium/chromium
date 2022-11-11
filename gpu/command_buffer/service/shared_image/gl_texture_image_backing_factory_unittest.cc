@@ -558,7 +558,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   // Allocate a bitmap with much larger stride that necessary. Upload from that
   // bitmap should still work correctly.
   SkBitmap larger_bitmap;
-  size_t larger_stride = stride + 100;
+  size_t larger_stride = stride + 80;
   larger_bitmap.allocPixels(info, larger_stride);
   larger_bitmap.eraseColor(SK_ColorRED);
 
@@ -571,6 +571,7 @@ const auto kSharedImageFormats = ::testing::Values(
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_F16),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
     viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),

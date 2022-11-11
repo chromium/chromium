@@ -100,6 +100,9 @@ bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     case viz::ResourceFormat::RED_8:
     case viz::ResourceFormat::RG_88:
     case viz::ResourceFormat::RGBA_F16:
+    // TODO(kylechar): R16 and RG16 were supported by GLImageMemory and pixel
+    // upload seems to work here. GLTextureImageBacking is missing tests for
+    // these formats though.
     case viz::ResourceFormat::R16_EXT:
     case viz::ResourceFormat::RG16_EXT:
     case viz::ResourceFormat::RGBX_8888:
