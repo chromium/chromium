@@ -11148,12 +11148,16 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // and would leave the NavigationController in a weird state. Kill the
   // renderer before getting to NavigationController::RendererDidNavigate if
   // that happens.
-  if (is_same_document_navigation && frame_tree_node_->navigator()
-                                         .controller()
-                                         .has_post_commit_error_entry()) {
-    bad_message::ReceivedBadMessage(
-        process, bad_message::NC_SAME_DOCUMENT_POST_COMMIT_ERROR);
-    return false;
+  if (is_same_document_navigation) {
+    // `owner_` cannot be null when this is from a same-document navigation.
+    DCHECK(owner_);
+    if (owner_->GetCurrentNavigator()
+            .controller()
+            .has_post_commit_error_entry()) {
+      bad_message::ReceivedBadMessage(
+          process, bad_message::NC_SAME_DOCUMENT_POST_COMMIT_ERROR);
+      return false;
+    }
   }
 
   // Check(s) specific to sub-frame navigation.

@@ -998,4 +998,8 @@ void FrameTreeNode::RestartNavigationAsCrossDocument(
   navigator().RestartNavigationAsCrossDocument(std::move(navigation_request));
 }
 
+Navigator& FrameTreeNode::GetCurrentNavigator() {
+  return navigator();
+}
+
 }  // namespace content

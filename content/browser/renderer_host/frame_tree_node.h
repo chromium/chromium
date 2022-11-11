@@ -616,6 +616,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // RenderFrameHostOwner implementation:
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) override;
+  Navigator& GetCurrentNavigator() override;
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;
