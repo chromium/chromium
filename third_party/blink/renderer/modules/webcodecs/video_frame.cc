@@ -183,6 +183,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
       return;
     // Reset `frame_pool_` because the task runner for purging will get paused.
     frame_pool_.reset();
+    task_handle_.Cancel();
   }
 
   void ContextDestroyed() override { frame_pool_.reset(); }
@@ -290,6 +291,7 @@ class CanvasResourceProviderCache
     // Reset `info_to_provider_` because the task runner for purging will get
     // paused.
     info_to_provider_.clear();
+    task_handle_.Cancel();
   }
 
   void ContextDestroyed() override { info_to_provider_.clear(); }
