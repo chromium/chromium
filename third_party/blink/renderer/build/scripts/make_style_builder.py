@@ -43,7 +43,8 @@ class StyleBuilderWriter(json5_generator.Writer):
     def __init__(self, json5_file_paths, output_dir):
         super(StyleBuilderWriter, self).__init__([], output_dir)
 
-        self._json5_properties = css_properties.CSSProperties(json5_file_paths)
+        self._json5_properties = css_properties.CSSProperties(
+            json5_file_paths[:3])
         self._input_files = json5_file_paths
         self._properties = self._json5_properties.longhands + \
             self._json5_properties.shorthands

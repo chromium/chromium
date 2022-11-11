@@ -19,7 +19,8 @@ class CSSPropertiesWriter(json5_generator.Writer):
             ('CSSPropertiesWriter requires 4 input json5 files, ' +
              'got {}.'.format(len(json5_file_paths)))
 
-        self._css_properties = css_properties.CSSProperties(json5_file_paths)
+        self._css_properties = css_properties.CSSProperties(
+            json5_file_paths[:3])
 
         # Map of property method name -> (return_type, parameters)
         self._property_methods = {}

@@ -17,7 +17,6 @@ PRIMITIVE_TYPES = [
     'LineClampValue'
 ]
 
-
 def validate_property(prop, longhands):
     name = prop['name']
     has_method = lambda x: x in prop['property_methods']
@@ -100,16 +99,33 @@ def needs_style_builders(property_):
     return True
 
 
+def verify_file_path(file_paths, index, expected):
+    assert len(file_paths) > index and file_paths[index].endswith(expected), \
+        'Unexpected file path at index %s (expected path that ends with %s, got .../%s)' \
+            % (index, expected, file_paths[index])
+    return file_paths[index]
+
+
 class CSSProperties(object):
     def __init__(self, file_paths):
-        assert len(file_paths) >= 3, \
-            "CSSProperties at least needs both css_properties.json5, \
-            computed_style_field_aliases.json5 and \
-            runtime_enabled_features.json5 to function"
+        assert len(
+            file_paths) <= 4, 'Superfluous arguments: %s' % file_paths[4:]
+
+        css_properties_path = verify_file_path(file_paths, 0,
+                                               'css_properties.json5')
+        computed_style_field_aliases_path = verify_file_path(
+            file_paths, 1, 'computed_style_field_aliases.json5')
+        runtime_enabled_features_path = verify_file_path(
+            file_paths, 2, 'runtime_enabled_features.json5')
+        # Extra fields are optional:
+        computed_style_extra_fields_path = (
+            len(file_paths) > 3) and verify_file_path(
+                file_paths, 3, 'computed_style_extra_fields.json5')
 
         # computed_style_field_aliases.json5. Used to expand out parameters used
         # in the various generators for ComputedStyle.
-        self._field_alias_expander = FieldAliasExpander(file_paths[1])
+        self._field_alias_expander = FieldAliasExpander(
+            computed_style_field_aliases_path)
 
         # _alias_offset is updated in add_properties().
         self._alias_offset = -1
@@ -129,12 +145,13 @@ class CSSProperties(object):
         # Add default data in css_properties.json5. This must be consistent
         # across instantiations of this class.
         css_properties_file = json5_generator.Json5File.load_from_files(
-            [file_paths[0]])
+            [css_properties_path])
         self._default_parameters = css_properties_file.parameters
         # Map of feature name -> origin trial feature name
         origin_trial_features = {}
         # TODO(crbug/1031309): Refactor OriginTrialsWriter to reuse logic here.
-        origin_trials_writer = OriginTrialsWriter([file_paths[2]], "")
+        origin_trials_writer = OriginTrialsWriter(
+            [runtime_enabled_features_path], "")
         for feature in origin_trials_writer.origin_trial_features:
             origin_trial_features[str(feature['name'])] = True
 
@@ -144,12 +161,13 @@ class CSSProperties(object):
         self._last_unresolved_property_id = max(
             property_["enum_value"] for property_ in self._aliases)
 
-        # Process extra files passed in.
+        # Process extra fields, if any.
         self._extra_fields = []
-        for i in range(3, len(file_paths)):
+        if computed_style_extra_fields_path:
             fields = json5_generator.Json5File.load_from_files(
-                [file_paths[i]], default_parameters=self._default_parameters)
-            self._extra_fields.extend(fields.name_dictionaries)
+                [computed_style_extra_fields_path],
+                default_parameters=self._default_parameters)
+            self._extra_fields = fields.name_dictionaries
         for field in self._extra_fields:
             self.expand_parameters(field)
             validate_field(field)
