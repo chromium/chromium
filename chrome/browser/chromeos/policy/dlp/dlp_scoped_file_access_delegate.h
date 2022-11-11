@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -65,6 +66,8 @@ class DlpScopedFileAccessDelegate
   // browser instance. It is initialized and destructed at the same time as
   // dbus.
   raw_ptr<chromeos::DlpClient> client_;
+
+  base::WeakPtrFactory<DlpScopedFileAccessDelegate> weak_ptr_factory_;
 };
 
 }  // namespace policy
