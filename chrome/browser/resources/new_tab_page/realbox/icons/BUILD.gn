@@ -36,6 +36,7 @@ generate_grd("build_grdp") {
     "share.svg",
     "sites.svg",
     "sunrise.svg",
+    "tab.svg",
     "translation.svg",
     "trending_up.svg",
     "when_is.svg",

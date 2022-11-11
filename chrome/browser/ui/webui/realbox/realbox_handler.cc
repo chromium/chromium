@@ -116,6 +116,7 @@ constexpr char kJourneysIconResourceName[] = "realbox/icons/journeys.svg";
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
+constexpr char kTabIconResourceName[] = "realbox/icons/tab.svg";
 constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
 
 #if BUILDFLAG(IS_MAC)
@@ -178,6 +179,10 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
                                         RealboxHandler::FocusState state) {
   switch (state) {
     case RealboxHandler::FocusState::kFocusedMatch: {
+      if (match.has_tab_match.value_or(false) &&
+          base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+        return l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_SUFFIX);
+      }
       if (match.action) {
         return match.action->GetLabelStrings().accessibility_suffix;
       }
@@ -249,13 +254,23 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         !mojom_match->image_url.empty() ||
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value());
-    const bool has_action = match.action && base::FeatureList::IsEnabled(
-                                                omnibox::kNtpRealboxPedals);
-    if (has_action) {
+    // The realbox only supports one action and priority is given to the actions
+    // instead of the switch to tab button.
+    if (match.has_tab_match.value_or(false) &&
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       mojom_match->action = realbox::mojom::Action::New(
-          match.action->GetLabelStrings().accessibility_hint,
-          match.action->GetLabelStrings().hint,
-          match.action->GetLabelStrings().suggestion_contents,
+          l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON),
+          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
+          std::u16string(), kTabIconResourceName);
+    }
+
+    if (match.action &&
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+      const OmniboxAction::LabelStrings& label_strings =
+          match.action->GetLabelStrings();
+      mojom_match->action = realbox::mojom::Action::New(
+          label_strings.accessibility_hint, label_strings.hint,
+          label_strings.suggestion_contents,
           RealboxHandler::PedalVectorIconToResourceName(
               match.action->GetVectorIcon()));
     }
@@ -764,21 +779,27 @@ void RealboxHandler::ExecuteAction(uint8_t line,
   }
 
   const auto& match = autocomplete_controller_->result().match_at(line);
-  if (!match.action) {
-    return;
+  if (match.action) {
+    WindowOpenDisposition disposition = ui::DispositionFromClick(
+        /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+        shift_key);
+    // TODO(tommycli): Add recording of action shown in the realbox when the
+    // user uses the realbox to go somewhere OTHER than executing an action.
+    match.action->RecordActionShown(line, /*executed=*/true);
+    OmniboxAction::ExecutionContext context(
+        *(autocomplete_controller_->autocomplete_provider_client()),
+        base::BindOnce(&RealboxHandler::OpenURL,
+                       weak_ptr_factory_.GetWeakPtr()),
+        match_selection_timestamp, disposition);
+    match.action->Execute(context);
+  } else if (match.has_tab_match.value_or(false)) {
+    WindowOpenDisposition disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+    ui::PageTransition transition = ui::PageTransitionFromInt(
+        match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    web_contents_->OpenURL(
+        content::OpenURLParams(match.destination_url, content::Referrer(),
+                               disposition, transition, false));
   }
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
-      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-      shift_key);
-
-  // TODO(tommycli): Add recording of action shown in the realbox when the user
-  //  uses the realbox to go somewhere OTHER than executing an action.
-  match.action->RecordActionShown(line, /*executed=*/true);
-  OmniboxAction::ExecutionContext context(
-      *(autocomplete_controller_->autocomplete_provider_client()),
-      base::BindOnce(&RealboxHandler::OpenURL, weak_ptr_factory_.GetWeakPtr()),
-      match_selection_timestamp, disposition);
-  match.action->Execute(context);
 }
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
