@@ -6927,6 +6927,7 @@ test("unit_tests") {
       "../browser/ui/views/file_system_access/file_system_access_permission_dialog_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_unittest.cc",
       "../browser/ui/views/file_system_access/file_system_access_ui_helpers_unittest.cc",
+      "../browser/ui/views/passwords/manage_passwords_view_unittest.cc",
       "../browser/ui/views/passwords/move_to_account_store_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/password_bubble_view_test_base.cc",
       "../browser/ui/views/passwords/password_bubble_view_test_base.h",
