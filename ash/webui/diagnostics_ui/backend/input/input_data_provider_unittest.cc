@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -2406,6 +2407,24 @@ TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
 
   // Confirm the app has been moved back to the original display.
   ASSERT_EQ(primary_display_id, screen->GetDisplayNearestWindow(window).id());
+}
+
+TEST_F(InputDataProviderTest, SetA11yTouchPassthrough) {
+  aura::Window* window = widget_->GetNativeWindow();
+
+  // The value is false in default.
+  ASSERT_FALSE(window->GetProperty(
+      aura::client::kAccessibilityTouchExplorationPassThrough));
+
+  provider_->SetA11yTouchPassthrough(/*enabled=*/true);
+
+  ASSERT_TRUE(window->GetProperty(
+      aura::client::kAccessibilityTouchExplorationPassThrough));
+
+  provider_->SetA11yTouchPassthrough(/*enabled=*/false);
+
+  ASSERT_FALSE(window->GetProperty(
+      aura::client::kAccessibilityTouchExplorationPassThrough));
 }
 
 }  // namespace diagnostics

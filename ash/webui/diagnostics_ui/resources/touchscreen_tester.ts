@@ -172,6 +172,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     this.getDialog(DialogType.INTRO).close();
     this.getDialog(DialogType.CANVAS).close();
     this.eventTracker.removeAll();
+    this.inputDataProvider.setA11yTouchPassthrough(/*enabled=*/ false);
     this.touchscreenIdUnderTesting = -1;
     // Make sure to exit fullscreen if it's not already.
     if (document.fullscreenElement) {
@@ -190,6 +191,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     this.getDialog(DialogType.CANVAS).showModal();
 
     this.setupCanvas();
+    this.inputDataProvider.setA11yTouchPassthrough(/*enabled=*/ true);
   }
 
   /**

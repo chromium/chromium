@@ -22,6 +22,7 @@
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -237,6 +238,11 @@ void InputDataProvider::MoveAppBackToPreviousScreen() {
   // Always reset previous_display_id_ after MoveAppBackToPreviousScreen is
   // called. So it won't affect next time the function is used.
   previous_display_id_ = display::kInvalidDisplayId;
+}
+
+void InputDataProvider::SetA11yTouchPassthrough(bool enabled) {
+  widget_->GetNativeWindow()->SetProperty(
+      aura::client::kAccessibilityTouchExplorationPassThrough, enabled);
 }
 
 void InputDataProvider::UpdateMaySendEvents() {

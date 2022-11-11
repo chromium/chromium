@@ -23,6 +23,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   private touchDevices_: TouchDeviceInfo[] = [];
   private moveAppToTestingScreenCalled: number = 0;
   private moveAppBackToPreviousScreenCalled: number = 0;
+  private a11yTouchPassthroughState: boolean = false;
   constructor() {
     this.registerMethods();
   }
@@ -35,6 +36,7 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
     this.touchDevices_ = [];
     this.moveAppToTestingScreenCalled = 0;
     this.moveAppBackToPreviousScreenCalled = 0;
+    this.a11yTouchPassthroughState = false;
 
     this.registerMethods();
   }
@@ -224,5 +226,19 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
    */
   getMoveAppBackToPreviousScreenCalled(): number {
     return this.moveAppBackToPreviousScreenCalled;
+  }
+
+  /*
+   * Fake function to enable/disable A11y touch exploration passthough.
+   */
+  setA11yTouchPassthrough(enabled: boolean): void {
+    this.a11yTouchPassthroughState = enabled;
+  }
+
+  /**
+   * Get the current state of A11y touch passthrough.
+   */
+  getA11yTouchPassthroughState(): boolean {
+    return this.a11yTouchPassthroughState;
   }
 }

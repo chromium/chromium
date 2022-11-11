@@ -231,4 +231,10 @@ interface InputDataProvider {
   // back to previous screen, only if it was moved to a different screen when
   // the tester was launched.
   MoveAppBackToPreviousScreen();
+
+  // While the user launches touchscreen tester, enable A11y touch exploration
+  // passthrough so canvas can receive web touch events. Disable it when the
+  // user exits the tester. `enabled` is a boolean indicating the just applied
+  // state.
+  SetA11yTouchPassthrough(bool enabled);
 };

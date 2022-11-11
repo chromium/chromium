@@ -94,6 +94,8 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   void MoveAppBackToPreviousScreen() override;
 
+  void SetA11yTouchPassthrough(bool enabled) override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
