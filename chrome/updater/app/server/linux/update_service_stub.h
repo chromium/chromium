@@ -6,9 +6,11 @@
 #define CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
 
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service_internal.mojom.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/update_service_internal.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,6 +62,32 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;
+};
+
+// Same as `UpdateServiceStub` except for serving the UpdateServiceInternal
+// interface.
+class UpdateServiceInternalStub : public mojom::UpdateServiceInternal {
+ public:
+  // Create an UpdateServiceStub which forwards calls to `impl`. Opens a
+  // NamedMojoIpcServer which listens on a socket whose name is decided by
+  // `scope`.
+  UpdateServiceInternalStub(scoped_refptr<updater::UpdateServiceInternal> impl,
+                            UpdaterScope scope);
+  UpdateServiceInternalStub(const UpdateServiceInternalStub&) = delete;
+  UpdateServiceInternalStub& operator=(const UpdateServiceInternalStub&) =
+      delete;
+  ~UpdateServiceInternalStub() override;
+
+  // updater::mojom::UpdateServiceInternal
+  void Run(RunCallback callback) override;
+  void Hello(HelloCallback callback) override;
+
+ private:
+  void OnClientDisconnected();
+
+  named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateServiceInternal>
+      server_;
+  scoped_refptr<updater::UpdateServiceInternal> impl_;
 };
 
 }  // namespace updater

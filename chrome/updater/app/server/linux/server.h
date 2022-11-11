@@ -17,6 +17,7 @@ class App;
 class UpdateService;
 class UpdateServiceInternal;
 class UpdateServiceStub;
+class UpdateServiceInternalStub;
 
 class AppServerLinux : public AppServer {
  public:
@@ -40,6 +41,7 @@ class AppServerLinux : public AppServer {
   void UninstallSelf() override;
 
   std::unique_ptr<UpdateServiceStub> active_duty_stub_;
+  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
 };
 
 scoped_refptr<App> MakeAppServer();

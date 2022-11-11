@@ -17,6 +17,7 @@
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/updater_version.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace updater {
@@ -114,7 +115,8 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
 UpdateServiceStub::~UpdateServiceStub() = default;
 
 void UpdateServiceStub::OnClientDisconnected() {
-  VLOG(1) << "Receiver disconnected: " << server_.current_receiver();
+  VLOG(1) << "UpdateService receiver disconnected: "
+          << server_.current_receiver();
 }
 
 void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
@@ -217,6 +219,36 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, std::move(state_change_callback),
                       std::move(on_complete_callback));
+}
+
+UpdateServiceInternalStub::UpdateServiceInternalStub(
+    scoped_refptr<updater::UpdateServiceInternal> impl,
+    UpdaterScope scope)
+    : server_(
+          GetActiveDutyInternalSocketPath(scope, base::Version(kUpdaterVersion))
+              ->MaybeAsASCII(),
+          this,
+          base::BindRepeating(&IsTrustedIPCEndpoint)),
+      impl_(impl) {
+  server_.set_disconnect_handler(
+      base::BindRepeating(&UpdateServiceInternalStub::OnClientDisconnected,
+                          base::Unretained(this)));
+  server_.StartServer();
+}
+
+UpdateServiceInternalStub::~UpdateServiceInternalStub() = default;
+
+void UpdateServiceInternalStub::OnClientDisconnected() {
+  VLOG(1) << "UpdateServiceInternal receiver disconnected: "
+          << server_.current_receiver();
+}
+
+void UpdateServiceInternalStub::Run(RunCallback callback) {
+  impl_->Run(std::move(callback));
+}
+
+void UpdateServiceInternalStub::Hello(HelloCallback callback) {
+  impl_->Hello(std::move(callback));
 }
 
 }  // namespace updater

@@ -29,10 +29,10 @@ void AppServerLinux::ActiveDuty(scoped_refptr<UpdateService> update_service) {
       std::move(update_service), updater_scope());
 }
 
-// TODO(crbug.com/1276117) - implement.
 void AppServerLinux::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
-  NOTIMPLEMENTED();
+  active_duty_internal_stub_ = std::make_unique<UpdateServiceInternalStub>(
+      std::move(update_service_internal), updater_scope());
 }
 
 bool AppServerLinux::SwapInNewVersion() {

@@ -1,0 +1,23 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module updater.mojom;
+
+// The UpdateServiceInternal is a service abstraction to expose functionality
+// made available only to callers which are part of the same instance of
+// the updater installation. In other words, only a client and a service with
+// identical build versions can communicate using this interface.
+interface UpdateServiceInternal {
+  // Runs the UpdateServiceInternal and checks for updates if needed.
+  Run() => ();
+
+  // When UpdateServiceInternalProxy::Hello is invoked, the
+  // server will wake and do its ModeCheck. As a result, the candidate can be
+  // qualified and promoted (thus initializing the UpdateService for this
+  // candidate). This is intended as a way for --install and --register to have
+  // a way of ensuring there is an active updater on the system, without
+  // performing expensive operations such as checking for updates.
+  Hello() => ();
+};
+

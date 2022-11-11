@@ -20,6 +20,7 @@
 #include "chrome/updater/app/server/linux/update_service_stub.h"
 #include "chrome/updater/ipc/update_service_proxy_linux.h"
 #include "chrome/updater/linux/ipc_support.h"
+#include "chrome/updater/linux/update_service_internal_proxy.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -320,6 +321,65 @@ TEST_F(UpdaterIPCErrorTestCase, DroppedUpdateAll) {
         EXPECT_EQ(result, UpdateService::Result::kIPCConnectionFailed);
       }).Then(run_loop_.QuitClosure()));
 
+  run_loop_.Run();
+}
+
+class FakeUpdateServiceInternal : public UpdateServiceInternal {
+ public:
+  void Run(base::OnceClosure callback) override { std::move(callback).Run(); }
+
+  void Hello(base::OnceClosure callback) override { std::move(callback).Run(); }
+
+ private:
+  ~FakeUpdateServiceInternal() override = default;
+};
+
+class UpdaterIPCInternalTestCase : public testing::Test {
+ public:
+  void SetUp() override {
+    scoped_refptr<UpdateServiceInternal> service =
+        base::MakeRefCounted<FakeUpdateServiceInternal>();
+    service_stub_ = std::make_unique<UpdateServiceInternalStub>(
+        std::move(service), UpdaterScope::kUser);
+    client_proxy_ = CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
+  }
+
+ protected:
+  ScopedIPCSupportWrapper ipc_support_;
+
+  // An IO thread is required for NamedMojoIpcServer's socket fd watching.
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  base::RunLoop run_loop_;
+
+  std::unique_ptr<UpdateServiceInternalStub> service_stub_;
+  scoped_refptr<UpdateServiceInternal> client_proxy_;
+};
+
+TEST_F(UpdaterIPCInternalTestCase, Run) {
+  client_proxy_->Run(run_loop_.QuitClosure());
+  run_loop_.Run();
+}
+
+TEST_F(UpdaterIPCInternalTestCase, Hello) {
+  client_proxy_->Hello(run_loop_.QuitClosure());
+  run_loop_.Run();
+}
+
+class UpdaterIPCInternalErrorTestCase : public UpdaterIPCInternalTestCase {
+ public:
+  void SetUp() override {
+    // Create a Mojo Remote with a bound message pipe but without a receiver.
+    // This will cause RPC calls to eventually be dropped.
+    mojo::Remote<mojom::UpdateServiceInternal> remote;
+    std::ignore = remote.BindNewPipeAndPassReceiver();
+    client_proxy_ = CreateUpdateServiceInternalProxy(
+        UpdaterScope::kUser, nullptr, std::move(remote));
+  }
+};
+
+TEST_F(UpdaterIPCInternalErrorTestCase, Run) {
+  client_proxy_->Run(run_loop_.QuitClosure());
   run_loop_.Run();
 }
 

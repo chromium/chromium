@@ -330,6 +330,7 @@ if (is_win || is_mac || is_linux) {
         "linux/ipc_support.h",
         "linux/setup/setup.h",
         "linux/update_service_internal_proxy.cc",
+        "linux/update_service_internal_proxy.h",
         "net/network_fetcher_linux.cc",
         "prefs_linux.cc",
         "setup_linux.cc",
