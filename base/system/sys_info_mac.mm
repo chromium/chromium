@@ -57,8 +57,8 @@ absl::optional<int> NumberOfPhysicalProcessors() {
 }
 
 absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
-  if (!FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation) ||
-      !g_is_cpu_security_mitigation_enabled) {
+  if (!g_is_cpu_security_mitigation_enabled ||
+      !FeatureList::IsEnabled(kNumberOfCoresWithCpuSecurityMitigation)) {
     return absl::nullopt;
   }
   return NumberOfPhysicalProcessors();

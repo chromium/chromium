@@ -43,21 +43,20 @@ class AudioServiceTestHelper::TestingApi : public audio::mojom::TestingApi {
 };
 
 AudioServiceTestHelper::AudioServiceTestHelper()
-    : testing_api_(new TestingApi) {
-  if (base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess)) {
-    audio::Service::SetTestingApiBinderForTesting(
-        base::BindRepeating(&AudioServiceTestHelper::BindTestingApiReceiver,
-                            base::Unretained(this)));
-  }
+    : testing_api_(std::make_unique<TestingApi>()) {
+  audio::Service::SetTestingApiBinderForTesting(base::BindRepeating(
+      &AudioServiceTestHelper::BindTestingApiReceiver, base::Unretained(this)));
 }
 
 AudioServiceTestHelper::~AudioServiceTestHelper() {
-  if (base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess))
-    audio::Service::SetTestingApiBinderForTesting(base::NullCallback());
+  audio::Service::SetTestingApiBinderForTesting(base::NullCallback());
 }
 
 void AudioServiceTestHelper::BindTestingApiReceiver(
     mojo::PendingReceiver<audio::mojom::TestingApi> receiver) {
+  CHECK(base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess))
+      << "Audio Service API binder shouldn't be invoked from this process when "
+         "the AudioServiceOutOfProcess feature is disabled.";
   testing_api_->BindReceiver(std::move(receiver));
 }
 
