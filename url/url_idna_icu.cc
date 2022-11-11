@@ -15,8 +15,16 @@
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/url_canon_icu.h"
 #include "url/url_canon_internal.h"  // for _itoa_s
+#include "url/url_features.h"
+#include "url/url_idna_icu.h"
 
 namespace url {
+
+namespace {
+
+// Global ICU IDNA instance. Once set, it should never be changed in production
+// code. Can be reset in test code via ResetUIDNAForTesting().
+UIDNA* g_uidna = nullptr;
 
 // Use UIDNA, a C pointer to a UTS46/IDNA 2008 handling object opened with
 // uidna_openUTS46().
@@ -28,8 +36,9 @@ namespace url {
 // 1. Use the up-to-date Unicode data.
 // 2. Define a case folding/mapping with the up-to-date Unicode data as
 //    in IDNA 2003.
-// 3. Use transitional mechanism for 4 deviation characters (sharp-s,
-//    final sigma, ZWJ and ZWNJ) for now.
+// 3. Use non-transitional mechanism for 4 deviation characters (sharp-s,
+//    final sigma, ZWJ and ZWNJ) per url.spec.whatwg.org, unless
+//    UseIDNA2008NonTransitional feature is enabled.
 // 4. Continue to allow symbols and punctuations.
 // 5. Apply new BiDi check rules more permissive than the IDNA 2003 BiDI rules.
 // 6. Do not apply STD3 rules
@@ -40,22 +49,35 @@ namespace url {
 // See http://http://unicode.org/reports/tr46/ and references therein
 // for more details.
 UIDNA* GetUIDNA() {
-  static UIDNA* uidna = [] {
+  if (!g_uidna) {
     UErrorCode err = U_ZERO_ERROR;
-    // TODO(jungshik): Change options as different parties (browsers,
-    // registrars, search engines) converge toward a consensus.
-    UIDNA* value = uidna_openUTS46(UIDNA_CHECK_BIDI, &err);
+    uint32_t options = UIDNA_CHECK_BIDI;
+    if (IsUsingIDNA2008NonTransitional()) {
+      // Use non nontransitional processing if enabled. See
+      // https://url.spec.whatwg.org/#idna for details.
+      options |=
+          UIDNA_NONTRANSITIONAL_TO_ASCII | UIDNA_NONTRANSITIONAL_TO_UNICODE;
+    }
+    g_uidna = uidna_openUTS46(options, &err);
     if (U_FAILURE(err)) {
       CHECK(false) << "failed to open UTS46 data with error: "
                    << u_errorName(err)
                    << ". If you see this error message in a test environment "
                    << "your test environment likely lacks the required data "
                    << "tables for libicu. See https://crbug.com/778929.";
-      value = nullptr;
+      g_uidna = nullptr;
     }
-    return value;
-  }();
-  return uidna;
+  }
+  return g_uidna;
+}
+
+}  // namespace
+
+void ResetUIDNAForTesting() {
+  if (g_uidna) {
+    uidna_close(g_uidna);
+  }
+  g_uidna = nullptr;
 }
 
 // Converts the Unicode input representing a hostname to ASCII using IDN rules.

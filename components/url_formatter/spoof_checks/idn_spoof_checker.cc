@@ -22,6 +22,7 @@
 #include "third_party/icu/source/i18n/unicode/regex.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
+#include "url/url_features.h"
 
 namespace url_formatter {
 
@@ -375,8 +376,10 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // chosen. On the other hand, 'fu<sharp-s>' typed or copy and pasted
   // as Unicode would be canonicalized to 'fuss' by GURL and is displayed as
   // such. See http://crbug.com/595263 .
-  if (deviation_characters_.containsSome(label_string))
+  if (!url::IsUsingIDNA2008NonTransitional() &&
+      deviation_characters_.containsSome(label_string)) {
     return Result::kDeviationCharacters;
+  }
 
   // Disallow Icelandic confusables for domains outside Iceland's ccTLD (.is).
   if (label_string.length() > 1 && top_level_domain != "is" &&

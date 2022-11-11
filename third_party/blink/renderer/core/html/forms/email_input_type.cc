@@ -54,7 +54,10 @@ const char kEmailPattern[] =
 
 // RFC5321 says the maximum total length of a domain name is 255 octets.
 const int32_t kMaximumDomainNameLength = 255;
+
 // Use the same option as in url/url_canon_icu.cc
+// TODO(crbug.com/694157): Change the options if UseIDNA2008NonTransitional flag
+// is enabled.
 const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
 
 }  // namespace
