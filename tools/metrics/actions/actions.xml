@@ -27687,7 +27687,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Settings.PrivacyGuide.ChangeCookiesBlock3PIngonito">
+<action name="Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-friendly-settings@google.com</owner>
