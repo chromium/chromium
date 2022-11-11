@@ -89,7 +89,7 @@ class FullChecker : public TokenHardwareChecker {
       // Volteer is released, so it is allowed as long as the device has an 11th
       // gen i5-i7 with 8G memory and is the correct model.
       if (!ModelIn({"delbin", "voxel", "volta", "lindar", "elemi", "volet",
-                    "drobit"})) {
+                    "drobit", "lillipup", "delbing"})) {
         return AllowStatus::kUnsupportedModel;
       }
       return ReleasedBoardChecks(kBorealisCapableIntelCpuRegex);
