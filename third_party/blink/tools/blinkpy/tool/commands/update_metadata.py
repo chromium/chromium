@@ -218,9 +218,9 @@ class UpdateMetadata(Command):
                          test_files: List[metadata.TestFileData],
                          dry_run: bool = False):
         test_files_to_stage = []
-        update_results = self._io_pool.map(updater.update, test_files)
-        for i, (test_file,
-                modified) in enumerate(zip(test_files, update_results)):
+        update_results = zip(test_files,
+                             self._io_pool.map(updater.update, test_files))
+        for i, (test_file, modified) in enumerate(update_results):
             test_path = pathlib.Path(test_file.test_path).as_posix()
             _log.info("Updated '%s' (%d/%d%s)", test_path, i + 1,
                       len(test_files), ', modified' if modified else '')
@@ -239,6 +239,10 @@ class UpdateMetadata(Command):
                 path for path in self._metadata_paths(test_files_to_stage)
                 if path in unstaged_changes
             ]
+            all_pass = len(test_files_to_stage) - len(paths)
+            if all_pass:
+                _log.info('%d files for all-pass tests do not need staging.',
+                          all_pass)
             self.git.add_list(paths)
             _log.info('Staged %s.',
                       grammar.pluralize('metadata file', len(paths)))
