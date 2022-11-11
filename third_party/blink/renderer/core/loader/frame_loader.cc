@@ -848,6 +848,10 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         parent_local_frame->DomWindow() == origin_window &&
         origin_window->Fetcher()) {
       origin_window->Fetcher()->AttachWebBundleTokenIfNeeded(resource_request);
+      // Report to the UseCounter of the parent frame (i.e. the frame that
+      // loaded a WebBundle).
+      origin_window->CountUse(
+          mojom::blink::WebFeature::kUuidInPackageUrlNavigation);
     }
   }
 
