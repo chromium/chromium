@@ -3284,10 +3284,12 @@
                         "action_chip": "false",
                         "action_chip_time_ms": "3000",
                         "action_chip_with_different_color": "false",
-                        "enable_ui": "true"
+                        "enable_ui": "true",
+                        "reader_mode_session_rate_limiting": "false"
                     },
                     "enable_features": [
                         "ContextualPageActionPriceTracking",
+                        "ContextualPageActionReaderMode",
                         "ContextualPageActions"
                     ]
                 }

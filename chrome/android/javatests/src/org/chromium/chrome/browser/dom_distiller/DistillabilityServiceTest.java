@@ -58,10 +58,12 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // TODO(crbug.com/1225333): Implement Messages based (or feature independent) method of
+    // TODO(crbug.com/1383323): Implement Messages based (or feature independent) method of
     // verification that normal page triggers ReaderMode prompt.
-    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE)
-    public void testServiceAliveAfterNativePage() throws TimeoutException {
+    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE,
+            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
+    public void
+    testServiceAliveAfterNativePage() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
