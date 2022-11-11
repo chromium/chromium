@@ -18,10 +18,10 @@ class KnownExposedPropertiesWriter(json5_generator.Writer):
 
         known_exposed_properties = []
         for property in properties:
-            if not property['is_internal'] and \
-               not property['runtime_flag'] and \
-               not property['in_origin_trial']:
-                known_exposed_properties.append(property['enum_key'])
+            if not property.is_internal and \
+               not property.runtime_flag and \
+               not property.in_origin_trial:
+                known_exposed_properties.append(property.enum_key)
 
         self._known_exposed_properties = known_exposed_properties
 

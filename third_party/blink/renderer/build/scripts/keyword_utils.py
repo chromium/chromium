@@ -25,10 +25,10 @@ def sort_keyword_properties_by_canonical_order(
     name_to_position_dictionary = dict(
         zip(css_values_dictionary, range(len(css_values_dictionary))))
     for css_property in css_properties:
-        if css_property['field_template'] == 'keyword' and len(
-                css_property['include_paths']) == 0:
-            css_property['keywords'] = sorted(
-                css_property['keywords'],
+        if css_property.field_template == 'keyword' and len(
+                css_property.include_paths) == 0:
+            css_property.keywords = sorted(
+                css_property.keywords,
                 key=lambda x: name_to_position_dictionary[x])
 
     return css_properties

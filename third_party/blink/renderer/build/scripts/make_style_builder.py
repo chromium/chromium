@@ -32,11 +32,11 @@ import json5_generator
 
 
 def calculate_apply_functions_to_declare(property_):
-    property_['should_declare_functions'] = \
-        not property_['longhands'] \
-        and property_['is_property']
-    property_['use_property_class_in_stylebuilder'] = \
-        property_['should_declare_functions']
+    property_.should_declare_functions = \
+        not property_.longhands \
+        and property_.is_property
+    property_.use_property_class_in_stylebuilder = \
+        property_.should_declare_functions
 
 
 class StyleBuilderWriter(json5_generator.Writer):

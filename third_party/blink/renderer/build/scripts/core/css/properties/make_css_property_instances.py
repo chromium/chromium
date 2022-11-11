@@ -57,14 +57,14 @@ class CSSPropertyInstancesWriter(json5_generator.Writer):
         Returns:
             The name to use for the property class.
         """
-        namespace_group = 'Shorthand' if property_['longhands'] else 'Longhand'
+        namespace_group = 'Shorthand' if property_.longhands else 'Longhand'
         return PropertyClassData(
-            enum_key=property_['enum_key'],
-            enum_value=property_['enum_value'],
-            property_id=property_['property_id'],
-            classname=property_['name'].to_upper_camel_case(),
+            enum_key=property_.enum_key,
+            enum_value=property_.enum_value,
+            property_id=property_.property_id,
+            classname=property_.name.to_upper_camel_case(),
             namespace_group=namespace_group,
-            filename=property_['name'].to_snake_case())
+            filename=property_.name.to_snake_case())
 
     @property
     def css_properties(self):

@@ -85,9 +85,9 @@ def _find_enum_longest_continuous_segment(property_,
         Build the switch case statements of other enums not in the
         segment. Enums in the segment will be computed in default clause.
     """
-    property_enum_order = range(len(property_['keywords']))
+    property_enum_order = range(len(property_.keywords))
     css_enum_order = [
-        name_to_position_dictionary[x] for x in property_['keywords']
+        name_to_position_dictionary[x] for x in property_.keywords
     ]
     enum_pair_list = zip(css_enum_order, property_enum_order)
     enum_segment, enum_pair_list = _find_continuous_segment(enum_pair_list)
@@ -95,7 +95,7 @@ def _find_enum_longest_continuous_segment(property_,
 
     enum_tuple_list = []
     for x in enum_pair_list:
-        keyword = NameStyleConverter(property_['keywords'][x[1]])
+        keyword = NameStyleConverter(property_.keywords[x[1]])
         enum_tuple_list.append((enum_key_for_css_keyword(keyword), x[1], x[0]))
     return enum_tuple_list, enum_segment, longest_segment
 
@@ -132,22 +132,19 @@ class CSSValueIDMappingsWriter(make_style_builder.StyleBuilderWriter):
                 range(len(css_values_dictionary))))
 
         for property_ in self.css_properties.properties_including_aliases:
-            include_paths.update(property_['include_paths'])
-            if property_['field_template'] in ('multi_keyword',
-                                               'bitset_keyword'):
-                mappings[property_['type_name']] = {
+            include_paths.update(property_.include_paths)
+            if property_.field_template in ('multi_keyword', 'bitset_keyword'):
+                mappings[property_.type_name] = {
                     'default_value':
-                    property_['default_value'],
-                    'mapping': [
-                        enum_key_for_css_keyword(k)
-                        for k in property_['keywords']
-                    ],
+                    property_.default_value,
+                    'mapping':
+                    [enum_key_for_css_keyword(k) for k in property_.keywords],
                 }
-            elif property_['field_template'] == 'keyword':
+            elif property_.field_template == 'keyword':
                 enum_pair_list, enum_segment, p_segment = _find_enum_longest_continuous_segment(
                     property_, name_to_position_dictionary)
-                mappings[property_['type_name']] = {
-                    'default_value': property_['default_value'],
+                mappings[property_.type_name] = {
+                    'default_value': property_.default_value,
                     'mapping': enum_pair_list,
                     'segment': enum_segment,
                     'longest_segment_length': p_segment[1] - p_segment[0],

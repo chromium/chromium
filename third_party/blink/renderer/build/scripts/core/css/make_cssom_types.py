@@ -26,13 +26,13 @@ class CSSOMTypesWriter(json5_generator.Writer):
         for property_ in self._properties:
             types = []
             # Expand types
-            for single_type in property_['typedom_types']:
+            for single_type in property_.typedom_types:
                 types.append(single_type)
-            property_['typedom_types'] = types
+            property_.typedom_types = types
 
             # Generate CSSValueID values from keywords.
-            property_['keywordIDs'] = list(
-                map(enum_key_for_css_keyword, property_['keywords']))
+            property_.keywordIDs = list(
+                map(enum_key_for_css_keyword, property_.keywords))
 
         self._outputs = {
             'cssom_types.cc': self.generate_types,
