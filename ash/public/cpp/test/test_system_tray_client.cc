@@ -70,6 +70,10 @@ void TestSystemTrayClient::ShowPrivacyAndSecuritySettings() {
   show_os_settings_privacy_and_security_count_++;
 }
 
+void TestSystemTrayClient::ShowPrivacyHubSettings() {
+  show_os_settings_privacy_hub_count_++;
+}
+
 void TestSystemTrayClient::ShowSmartPrivacySettings() {
   show_os_smart_privacy_settings_count_++;
 }

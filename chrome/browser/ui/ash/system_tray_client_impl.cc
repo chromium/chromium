@@ -446,6 +446,11 @@ void SystemTrayClientImpl::ShowPrivacyAndSecuritySettings() {
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);
 }
 
+void SystemTrayClientImpl::ShowPrivacyHubSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPrivacyHubSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowSmartPrivacySettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kSmartPrivacySubpagePath);

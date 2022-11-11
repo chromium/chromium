@@ -31,7 +31,8 @@ import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
  * Keep in sync with PrivacyHubNavigationOrigin in
- * tools/metrics/histograms/enums.xml.
+ * tools/metrics/histograms/enums.xml and
+ * ash/system/privacy_hub/privacy_hub_metrics.h.
  */
 export const PrivacyHubNavigationOrigin = {
   SYSTEM_SETTINGS: 0,

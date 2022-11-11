@@ -135,9 +135,16 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
     delegate =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating([](absl::optional<int> button_index) {
-              // Click on the notification body is no-op.
-              if (!button_index)
+              message_center::MessageCenter* message_center =
+                  message_center::MessageCenter::Get();
+              DCHECK(message_center);
+              message_center->RemoveNotification(kNotificationId,
+                                                 /*by_user=*/true);
+
+              if (!button_index) {
+                PrivacyHubNotificationController::OpenPrivacyHubSettingsPage();
                 return;
+              }
 
               SetAndLogMicrophoneMute(false);
             }));

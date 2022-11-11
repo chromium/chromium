@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
@@ -196,8 +197,19 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_FALSE(
       GetNotification(MicrophoneMuteNotificationController::kNotificationId));
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+
   ClickOnNotificationBody();
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
   ExpectNoNotificationActive();
 
   // Go to (quick)settings and enable microphone.
@@ -257,9 +269,36 @@ TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationBody) {
   ShowCombinedNotification();
   EXPECT_TRUE(GetNotification());
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+
   ClickOnNotificationBody();
 
   ExpectNoNotificationActive();
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
+}
+
+TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSettingsPage) {
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+
+  PrivacyHubNotificationController::OpenPrivacyHubSettingsPage();
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
 }
 
 }  // namespace ash

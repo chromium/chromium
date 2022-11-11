@@ -74,6 +74,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowStorageSettings() override;
   void ShowPowerSettings() override;
   void ShowPrivacyAndSecuritySettings() override;
+  void ShowPrivacyHubSettings() override;
   void ShowSmartPrivacySettings() override;
   void ShowChromeSlow() override;
   void ShowIMESettings() override;

@@ -28,4 +28,9 @@ void LogCameraEnabledFromNotification(bool enabled) {
                             enabled);
 }
 
+void LogPrivacyHubOpenedFromNotification() {
+  base::UmaHistogramEnumeration(kPrivacyHubOpenedHistogram,
+                                PrivacyHubNavigationOrigin::kNotification);
+}
+
 }  // namespace ash::privacy_hub_metrics

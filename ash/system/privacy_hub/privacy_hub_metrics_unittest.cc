@@ -45,4 +45,14 @@ TEST(PrivacyHubMetricsTest, EnableFromSettings) {
   }
 }
 
+TEST(PrivacyHubMetricsTest, OpenFromNotification) {
+  const base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectBucketCount(
+      kPrivacyHubOpenedHistogram, PrivacyHubNavigationOrigin::kNotification, 0);
+  LogPrivacyHubOpenedFromNotification();
+  histogram_tester.ExpectBucketCount(
+      kPrivacyHubOpenedHistogram, PrivacyHubNavigationOrigin::kNotification, 1);
+}
+
 }  // namespace ash::privacy_hub_metrics

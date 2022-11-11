@@ -225,16 +225,23 @@ void CameraPrivacySwitchController::ShowNotification(
                             : IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON));
 
   scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(
-              [](bool camera_enabled, absl::optional<int> button_index) {
-                if (!button_index) {
-                  // Click on the notification body is no-op.
-                  return;
-                }
-                SetAndLogCameraPreferenceFromNotification(camera_enabled);
-              },
-              action_enables_camera));
+      base::MakeRefCounted<
+          message_center::HandleNotificationClickDelegate>(base::BindRepeating(
+          [](bool camera_enabled, const char* notification_id,
+             absl::optional<int> button_index) {
+            message_center::MessageCenter* message_center =
+                message_center::MessageCenter::Get();
+            DCHECK(message_center);
+            message_center->RemoveNotification(notification_id,
+                                               /*by_user=*/true);
+
+            if (!button_index) {
+              PrivacyHubNotificationController::OpenPrivacyHubSettingsPage();
+              return;
+            }
+            SetAndLogCameraPreferenceFromNotification(camera_enabled);
+          },
+          action_enables_camera, kNotificationId));
 
   message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
                                                            /*by_user=*/false);

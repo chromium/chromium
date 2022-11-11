@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
@@ -92,6 +93,11 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
     message_center::MessageCenter::Get()->ClickOnNotificationButton(
         MicrophoneMuteNotificationController::kNotificationId,
         /*button_index=*/0);
+  }
+
+  void ClickOnNotificationBody() {
+    message_center::MessageCenter::Get()->ClickOnNotification(
+        MicrophoneMuteNotificationController::kNotificationId);
   }
 
   void SetMicrophoneMuteSwitchState(bool muted) {
@@ -278,6 +284,34 @@ TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionButton) {
                     kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
                 true),
             1);
+}
+
+TEST_F(MicrophoneMuteNotificationControllerTest, MuteNotificationActionBody) {
+  MuteMicrophone();
+  LaunchApp(u"junior");
+  SetNumberOfActiveInputStreams(1);
+
+  // The mute notification should have an action button.
+  message_center::Notification* notification = GetNotification();
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(1u, notification->buttons().size());
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+
+  // Clicking the action button should unmute device.
+  ClickOnNotificationBody();
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_TRUE(chromeos::CrasAudioHandler::Get()->IsInputMuted());
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
+
+  EXPECT_FALSE(GetNotification());
 }
 
 TEST_F(MicrophoneMuteNotificationControllerTest,

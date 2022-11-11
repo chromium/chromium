@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -236,7 +237,8 @@ TEST_F(PrivacyHubCameraControllerTests,
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 }
 
-TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
+TEST_F(PrivacyHubCameraControllerTests,
+       CameraOffNotificationRemoveViaClickOnButton) {
   SetUserPref(false);
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
@@ -268,6 +270,81 @@ TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
                 true),
             1);
+}
+
+TEST_F(PrivacyHubCameraControllerTests,
+       CameraOffNotificationRemoveViaClickOnBody) {
+  SetUserPref(false);
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  ASSERT_TRUE(message_center);
+  ASSERT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  // Emulate camera activity
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    true, {"0"});
+  // A notification should be fired.
+  EXPECT_TRUE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(GetUserPref());
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+
+  // Enabling camera via clicking on the body should open the privacy hub
+  // settings page.
+  message_center->ClickOnNotification(kPrivacyHubCameraOffNotificationId);
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  // The user pref should not be changed.
+  EXPECT_FALSE(GetUserPref());
+  EXPECT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
+
+  SetUserPref(true);
+
+  ASSERT_FALSE(message_center->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+
+  // Flip the hardware switch.
+  Shell::Get()
+      ->privacy_hub_controller()
+      ->camera_controller()
+      .OnCameraHWPrivacySwitchStateChanged(
+          "0", cros::mojom::CameraPrivacySwitchState::ON);
+
+  // A notification should be fired.
+  EXPECT_TRUE(message_center->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  EXPECT_TRUE(GetUserPref());
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
+
+  // Clicking on the body should open the privacy hub settings page.
+  message_center->ClickOnNotification(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 2);
+  // The user pref should not be changed.
+  EXPECT_TRUE(GetUserPref());
+  EXPECT_FALSE(message_center->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            2);
 }
 
 TEST_F(PrivacyHubCameraControllerTests,
