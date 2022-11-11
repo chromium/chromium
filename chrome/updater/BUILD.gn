@@ -245,7 +245,6 @@ if (is_win || is_mac || is_linux) {
         "win/action_handler.cc",
         "win/app_command_runner.cc",
         "win/app_command_runner.h",
-        "win/app_install_controller.cc",
         "win/install_progress_observer.cc",
         "win/install_progress_observer.h",
         "win/installer/exit_code.h",
