@@ -83,7 +83,6 @@ class UpdaterNetworkTest : public ::testing::Test {
     EXPECT_EQ(net_error, 0);
     EXPECT_GT(content_size, 0);
     EXPECT_FALSE(test_file_path.empty());
-    EXPECT_TRUE(base::PathExists(test_file_path));
     DownloadToFileCompleted();
   }
 
@@ -160,6 +159,10 @@ class UpdaterDownloadTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(UpdaterNetworkTest, NetworkFetcherPostRequest) {
+// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
+#if !BUILDFLAG(IS_LINUX)
+  base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
+#endif
   const std::string kPostData = "\x01\x00\x55\x33\xda\x10\x44";
   EXPECT_CALL(*this, PostRequestCompleted())
       .WillOnce(RunClosure(run_loop_.QuitClosure()));
@@ -180,29 +183,40 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherDownloadToFile) {
   const base::FilePath test_file_path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("downloaded_file"));
 
-  EXPECT_CALL(*this, DownloadToFileCompleted())
-      .WillOnce(RunClosure(run_loop_.QuitClosure()));
-  fetcher_->DownloadToFile(
-      test_server_.GetURL("/echo"), test_file_path,
-      base::BindOnce(&UpdaterNetworkTest::StartedCallback,
-                     base::Unretained(this)),
-      base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
-                          base::Unretained(this)),
-      base::BindOnce(&UpdaterNetworkTest::DownloadCallback,
-                     base::Unretained(this), test_file_path));
-  run_loop_.Run();
+  {
+// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
+#if !BUILDFLAG(IS_LINUX)
+    base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
+#endif
+
+    EXPECT_CALL(*this, DownloadToFileCompleted())
+        .WillOnce(RunClosure(run_loop_.QuitClosure()));
+    fetcher_->DownloadToFile(
+        test_server_.GetURL("/echo"), test_file_path,
+        base::BindOnce(&UpdaterNetworkTest::StartedCallback,
+                       base::Unretained(this)),
+        base::BindRepeating(&UpdaterNetworkTest::ProgressCallback,
+                            base::Unretained(this)),
+        base::BindOnce(&UpdaterNetworkTest::DownloadCallback,
+                       base::Unretained(this), test_file_path));
+    run_loop_.Run();
+  }
+
+  EXPECT_TRUE(base::PathExists(test_file_path));
 }
 
 TEST_F(UpdaterDownloadTest, NetworkFetcher) {
   EXPECT_FALSE(base::PathExists(dest_));
-  {
-    // The fetcher must not block the sequence when downloading.
-    base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
 
-    base::RunLoop run_loop;
-    auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-        PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
-    ASSERT_NE(factory, nullptr);
+  base::RunLoop run_loop;
+  auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
+      PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
+  ASSERT_NE(factory, nullptr);
+  {
+// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
+#if !BUILDFLAG(IS_LINUX)
+    base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
+#endif
     std::unique_ptr<update_client::NetworkFetcher> fetcher = factory->Create();
     ASSERT_NE(fetcher, nullptr);
     fetcher->DownloadToFile(
