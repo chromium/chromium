@@ -132,8 +132,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Don't prerender on low-end devices.
-    // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch
-    // since the memory requirements are different.
     if (!DeviceHasEnoughMemoryForPrerender()) {
       RecordPrerenderFinalStatus(PrerenderFinalStatus::kLowEndDevice,
                                  attributes, ukm::kInvalidSourceId);
@@ -155,7 +153,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // TODO(crbug.com/1176054): Support cross-site prerendering.
     // The initiator origin is nullopt when prerendering is initiated by the
     // browser (not by a renderer using Speculation Rules API). In that case,
-    // skip the  same-site and same-origin check.
+    // skip the same-site and same-origin check.
     if (!attributes.IsBrowserInitiated()) {
       if (!prerender_navigation_utils::IsSameSite(
               attributes.prerendering_url,
@@ -216,9 +214,6 @@ int PrerenderHostRegistry::CreateAndStartHost(
       }
     }
 
-    // TODO(crbug.com/1197133): Cancel the started prerender and start a new one
-    // if the score of the new candidate is higher than the started one's.
-    //
     // TODO(crbug.com/1355151): Enqueue the request exceeding the number limit
     // until the forerunners are cancelled, and suspend starting a new prerender
     // when the number reaches the limit.
