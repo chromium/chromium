@@ -470,6 +470,13 @@ void SharedWorkerHost::BindCacheStorageInternal(
                                      std::move(receiver));
 }
 
+void SharedWorkerHost::GetSandboxedFileSystemForBucket(
+    const storage::BucketInfo& bucket,
+    blink::mojom::BucketHost::GetDirectoryCallback callback) {
+  GetProcessHost()->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
+                                                    std::move(callback));
+}
+
 void SharedWorkerHost::AllowFileSystem(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {

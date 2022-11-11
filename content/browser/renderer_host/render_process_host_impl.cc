@@ -1971,6 +1971,22 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
       std::move(receiver));
 }
 
+void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
+    const storage::BucketLocator& bucket,
+    blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+        callback) {
+  auto* manager = storage_partition_impl_->GetFileSystemAccessManager();
+  manager->GetSandboxedFileSystem(
+      FileSystemAccessManagerImpl::BindingContext(
+          bucket.storage_key,
+          // TODO(https://crbug.com/989323): Obtain and use a better
+          // URL for workers instead of the origin as source url.
+          // This URL will be used for SafeBrowsing checks and for
+          // the Quarantine Service.
+          bucket.storage_key.origin().GetURL(), GetID()),
+      bucket, std::move(callback));
+}
+
 void RenderProcessHostImpl::BindNativeIOHost(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {

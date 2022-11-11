@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/strings/string_piece.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace content {
@@ -14,7 +15,7 @@ namespace file_system_access_error {
 
 // Returns a FileSystemAccessError representing a successful result of an
 // operation.
-blink::mojom::FileSystemAccessErrorPtr Ok();
+CONTENT_EXPORT blink::mojom::FileSystemAccessErrorPtr Ok();
 
 // Wraps a base::File::Error in a FileSystemAccessError, optionally with a
 // custom error message.

@@ -17,6 +17,14 @@
 
 namespace content {
 
+// `BucketContext` assumes these two mojom methods have the same signature. This
+// assert is here instead of in `bucket_context.h` to avoid pulling in too many
+// includes in a header.
+static_assert(
+    std::is_same_v<
+        blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback,
+        blink::mojom::BucketHost::GetDirectoryCallback>);
+
 BucketHost::BucketHost(BucketManagerHost* bucket_manager_host,
                        const storage::BucketInfo& bucket_info)
     : bucket_manager_host_(bucket_manager_host), bucket_info_(bucket_info) {
@@ -100,6 +108,15 @@ void BucketHost::GetCaches(
     return;
 
   bucket_context->BindCacheStorageForBucket(bucket_info_, std::move(caches));
+}
+
+void BucketHost::GetDirectory(GetDirectoryCallback callback) {
+  auto bucket_context = receivers_.current_context();
+  if (!bucket_context)
+    return;
+
+  bucket_context->GetSandboxedFileSystemForBucket(bucket_info_,
+                                                  std::move(callback));
 }
 
 void BucketHost::GetLockManager(

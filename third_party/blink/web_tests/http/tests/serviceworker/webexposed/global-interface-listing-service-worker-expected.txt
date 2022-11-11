@@ -1416,6 +1416,7 @@ interface StorageBucket
     method durability
     method estimate
     method expires
+    method getDirectory
     method persisted
     method setExpires
 interface StorageBucketManager

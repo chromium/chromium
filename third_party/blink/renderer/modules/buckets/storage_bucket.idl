@@ -25,4 +25,6 @@
   [SameObject] readonly attribute LockManager locks;
 
   [SameObject, RaisesException] readonly attribute CacheStorage caches;
+
+  [CallWith=ScriptState, RaisesException] Promise<FileSystemDirectoryHandle> getDirectory();
 };

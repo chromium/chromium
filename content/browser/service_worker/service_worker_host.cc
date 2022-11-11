@@ -12,6 +12,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -96,6 +97,24 @@ void ServiceWorkerHost::BindCacheStorage(
   version_->embedded_worker()->BindCacheStorage(
       std::move(receiver),
       storage::BucketLocator::ForDefaultBucket(version_->key()));
+}
+
+void ServiceWorkerHost::GetSandboxedFileSystemForBucket(
+    const storage::BucketInfo& bucket,
+    blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+        callback) {
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (process) {
+    process->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
+                                             std::move(callback));
+  } else {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kInvalidState,
+            "Process gone."),
+        {});
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

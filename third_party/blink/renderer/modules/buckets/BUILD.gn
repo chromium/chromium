@@ -14,6 +14,7 @@ blink_modules_sources("buckets") {
 
   deps = [
     "//third_party/blink/renderer/modules/cache_storage",
+    "//third_party/blink/renderer/modules/file_system_access",
     "//third_party/blink/renderer/modules/indexeddb",
     "//third_party/blink/renderer/modules/locks",
   ]

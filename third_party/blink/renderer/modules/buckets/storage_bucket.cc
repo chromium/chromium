@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/modules/cache_storage/global_cache_storage.h"
+#include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 
@@ -173,6 +174,14 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
   return caches_;
 }
 
+ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
+                                          ExceptionState& exception_state) {
+  return StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed(
+      script_state, exception_state,
+      WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
+                    weak_factory_.GetWeakPtr()));
+}
+
 bool StorageBucket::HasPendingActivity() const {
   return GetExecutionContext();
 }
@@ -302,6 +311,20 @@ void StorageBucket::DidGetExpires(ScriptPromiseResolver* resolver,
   } else {
     resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }
+}
+
+void StorageBucket::GetSandboxedFileSystem(ScriptPromiseResolver* resolver) {
+  // The context may be destroyed and the mojo connection unbound. However the
+  // object may live on, reject any requests after the context is destroyed.
+  if (!remote_.is_bound()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError));
+    return;
+  }
+
+  remote_->GetDirectory(
+      WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
+                    WrapPersistent(resolver)));
 }
 
 void StorageBucket::ContextDestroyed() {

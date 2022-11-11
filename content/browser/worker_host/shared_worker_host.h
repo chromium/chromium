@@ -224,6 +224,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void BindCacheStorageForBucket(
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketInfo& bucket,
+      blink::mojom::BucketHost::GetDirectoryCallback callback) override;
 
  private:
   friend class SharedWorkerHostTest;

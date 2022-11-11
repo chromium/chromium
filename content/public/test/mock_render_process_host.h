@@ -220,6 +220,10 @@ class MockRenderProcessHost : public RenderProcessHost {
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override {}
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketLocator& bucket,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) override;
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;

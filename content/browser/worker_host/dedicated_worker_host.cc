@@ -1019,6 +1019,13 @@ void DedicatedWorkerHost::BindCacheStorageInternal(
                                          bucket_locator, std::move(receiver));
 }
 
+void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(
+    const storage::BucketInfo& bucket,
+    blink::mojom::BucketHost::GetDirectoryCallback callback) {
+  GetProcessHost()->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
+                                                    std::move(callback));
+}
+
 blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   return bfcache_disabling_features_;

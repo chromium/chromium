@@ -14112,6 +14112,15 @@ void RenderFrameHostImpl::BindCacheStorageForBucket(
   BindCacheStorageInternal(std::move(receiver), bucket.ToBucketLocator());
 }
 
+void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
+    const storage::BucketInfo& bucket,
+    blink::mojom::BucketHost::GetDirectoryCallback callback) {
+  GetStoragePartition()->GetFileSystemAccessManager()->GetSandboxedFileSystem(
+      FileSystemAccessManagerImpl::BindingContext(
+          storage_key(), GetLastCommittedURL(), GetGlobalId()),
+      bucket.ToBucketLocator(), std::move(callback));
+}
+
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)

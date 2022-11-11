@@ -13,6 +13,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/buckets/bucket_manager_host.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -84,6 +85,13 @@ class BucketManagerHostTest : public testing::Test {
     void BindCacheStorageForBucket(
         const storage::BucketInfo& bucket,
         mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {}
+
+    void GetSandboxedFileSystemForBucket(
+        const storage::BucketInfo& bucket,
+        blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+            callback) override {
+      std::move(callback).Run(file_system_access_error::Ok(), {});
+    }
 
     void set_permission_status(
         blink::mojom::PermissionStatus permission_status) {

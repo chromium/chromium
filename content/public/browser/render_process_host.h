@@ -36,7 +36,7 @@
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
-#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 #include "third_party/blink/public/mojom/locks/lock_manager.mojom-forward.h"
@@ -583,7 +583,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager>
           receiver) = 0;
-
+  virtual void GetSandboxedFileSystemForBucket(
+      const storage::BucketLocator& bucket_locator,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) = 0;
   virtual void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) = 0;

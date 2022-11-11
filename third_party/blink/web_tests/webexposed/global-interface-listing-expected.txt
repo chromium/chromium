@@ -8828,6 +8828,7 @@ interface StorageBucket
     method durability
     method estimate
     method expires
+    method getDirectory
     method persist
     method persisted
     method setExpires

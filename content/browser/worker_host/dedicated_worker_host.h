@@ -225,6 +225,10 @@ class DedicatedWorkerHost final
   void BindCacheStorageForBucket(
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketInfo& bucket,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures

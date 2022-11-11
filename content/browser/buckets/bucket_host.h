@@ -57,6 +57,7 @@ class BucketHost : public blink::mojom::BucketHost {
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
   void GetCaches(
       mojo::PendingReceiver<blink::mojom::CacheStorage> caches) override;
+  void GetDirectory(GetDirectoryCallback callback) override;
 
  private:
   void OnReceiverDisconnected();

@@ -130,6 +130,10 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   void BindCacheStorageForBucket(
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketInfo& bucket,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) override;
 
  private:
   int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;

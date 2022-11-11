@@ -581,6 +581,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override;
 
+  // Returns an OPFS (origin private file system) associated with
+  // `bucket_locator`.
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketLocator& bucket_locator,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) override;
+
   // Binds |receiver| to a NativeIOHost instance indirectly owned by the
   // StoragePartition. Used by frames and workers via BrowserInterfaceBroker.
   void BindNativeIOHost(

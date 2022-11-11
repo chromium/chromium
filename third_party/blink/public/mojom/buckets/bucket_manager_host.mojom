@@ -6,6 +6,8 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/locks/lock_manager.mojom";
 
@@ -74,6 +76,12 @@ interface BucketHost {
 
   // Connects a CacheStorage implementation in the browser process.
   GetCaches(pending_receiver<CacheStorage> cache_storage);
+
+  // Opens the sandboxed filesystem for this bucket.
+  GetDirectory() =>
+      (FileSystemAccessError result,
+       pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
 };
 
 // Origin-scoped entry point to the Storage Buckets API.

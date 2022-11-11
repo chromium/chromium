@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
@@ -39,6 +40,12 @@ class CONTENT_EXPORT BucketContext {
   virtual void BindCacheStorageForBucket(
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
+
+  // Returns an OPFS file system associated with `bucket`.
+  virtual void GetSandboxedFileSystemForBucket(
+      const storage::BucketInfo& bucket,
+      blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
+          callback) = 0;
 };
 
 }  // namespace content

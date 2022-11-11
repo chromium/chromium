@@ -2669,11 +2669,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindCacheStorageForBucket(
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void GetSandboxedFileSystemForBucket(
+      const storage::BucketInfo& bucket,
+      blink::mojom::BucketHost::GetDirectoryCallback callback) override;
 
   // Sends out all pending beacons held by this document and all its child
   // documents.
   //
-  // This method must be called when navigating away from the current document.
+  // This method must be called when navigating away from the current
+  // document.
   void SendAllPendingBeaconsOnNavigation();
 
   enum class FencedFrameStatus {
