@@ -304,4 +304,10 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-captions': SettingsCaptionsElement;
+  }
+}
+
 customElements.define(SettingsCaptionsElement.is, SettingsCaptionsElement);
