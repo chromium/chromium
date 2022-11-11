@@ -821,18 +821,16 @@
             ],
             "experiments": [
                 {
-                    "name": "ModalV2_20220310",
+                    "name": "Enabled_20221111",
                     "params": {
                         "colorful_mic": "false",
-                        "count": "2",
                         "enable_multi_account_check": "false",
-                        "experiment_id": "48113782",
-                        "min_agsa_version": "12.37"
+                        "experiment_id": "48114790",
+                        "min_agsa_version": "13.37"
                     },
                     "enable_features": [
-                        "AssistantConsentModal",
-                        "AssistantConsentV2",
                         "AssistantIntentExperimentId",
+                        "AssistantNonPersonalizedVoiceSearch",
                         "OmniboxAssistantVoiceSearch",
                         "VoiceSearchAudioCapturePolicy"
                     ]

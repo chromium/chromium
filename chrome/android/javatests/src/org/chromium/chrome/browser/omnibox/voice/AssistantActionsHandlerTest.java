@@ -287,6 +287,8 @@ public class AssistantActionsHandlerTest {
         RecognitionTestHelper.enableFeatures(mFeatures,
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
                 ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         RecognitionTestHelper.startVoiceRecognition(
@@ -380,6 +382,8 @@ public class AssistantActionsHandlerTest {
         RecognitionTestHelper.enableFeatures(mFeatures,
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
                 ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(false).when(mTranslateBridgeWrapper).canManuallyTranslate(notNull());
@@ -405,6 +409,8 @@ public class AssistantActionsHandlerTest {
         RecognitionTestHelper.enableFeatures(mFeatures,
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
                 ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getSourceLanguage(notNull());
@@ -430,6 +436,8 @@ public class AssistantActionsHandlerTest {
         RecognitionTestHelper.enableFeatures(mFeatures,
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH,
                 ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getTargetLanguage();
@@ -479,6 +487,8 @@ public class AssistantActionsHandlerTest {
     public void testCallback_defaultToTranscription() {
         RecognitionTestHelper.enableFeatures(
                 mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid.setVoiceResults(RecognitionTestHelper.createDummyBundle(
                     "testing", VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD));
@@ -542,6 +552,8 @@ public class AssistantActionsHandlerTest {
     public void testRecordSuccessMetrics_splitActionMetrics() {
         RecognitionTestHelper.enableFeatures(
                 mFeatures, ChromeFeatureList.ASSISTANT_INTENT_PAGE_URL);
+        RecognitionTestHelper.disableFeatures(
+                mFeatures, ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH);
         mHandler.setQueryStartTimeForTesting(100L);
         mHandler.recordSuccessMetrics(VoiceInteractionSource.OMNIBOX, VoiceIntentTarget.ASSISTANT,
                 AssistantActionPerformed.TRANSLATE);
