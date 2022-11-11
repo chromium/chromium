@@ -101,7 +101,8 @@
                 "BaselineShiftType", "baseline-shift", "dominant-baseline",
                 "CssDominantBaseline", "text-anchor",
                 "stroke-width", "stroke-miterlimit", "stroke-linecap", "stroke-linejoin",
-                "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box"],
+                "marker-end", "marker-mid", "marker-start", "scrollbar-width", "object-view-box",
+                "position-fallback"],
         methods_to_diff: [
           {
             method: "BorderLeftWidth()",
