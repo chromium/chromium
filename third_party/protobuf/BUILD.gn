@@ -198,6 +198,10 @@ static_library("protobuf_full") {
     "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_ast_fuzzer:tint_ast_fuzzer_proto",
     "//third_party/dawn/third_party/tint/src/tint/fuzzers/tint_spirv_tools_fuzzer:tint_spirv_tools_fuzzer",
 
+    # Dawn LPM Fuzzers
+    "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto",
+    "//third_party/dawn/src/dawn/fuzzers:dawn_lpm_proto_gen",
+
     # The Cast Core gRPC generator tool.
     "//third_party/cast_core/public/src/build/chromium:cast_core_grpc_generator",
 
