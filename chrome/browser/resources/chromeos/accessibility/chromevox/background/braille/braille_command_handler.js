@@ -25,6 +25,7 @@ import {DesktopAutomationInterface} from '../desktop_automation_interface.js';
 import {EventSourceState} from '../event_source.js';
 import {Output} from '../output/output.js';
 import {OutputNodeSpan, OutputSelectionSpan} from '../output/output_types.js';
+import {ChromeVoxPrefs} from '../prefs.js';
 
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -198,7 +199,7 @@ export class BrailleCommandHandler {
    */
   static onEditCommand_(command) {
     const current = ChromeVoxState.instance.currentRange;
-    if (ChromeVox.isStickyModeOn() || !current || !current.start ||
+    if (ChromeVoxPrefs.isStickyModeOn() || !current || !current.start ||
         !current.start.node || !current.start.node.state[StateType.EDITABLE]) {
       return true;
     }

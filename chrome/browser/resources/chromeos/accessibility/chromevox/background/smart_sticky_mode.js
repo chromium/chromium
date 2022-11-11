@@ -34,6 +34,10 @@ export class SmartStickyMode {
     ChromeVoxState.addObserver(this);
   }
 
+  static init() {
+    SmartStickyMode.instance = new SmartStickyMode();
+  }
+
   /**
    * @param {?CursorRange} newRange
    * @param {boolean=} opt_fromEditing
@@ -74,15 +78,15 @@ export class SmartStickyMode {
     }
 
     if (shouldTurnOffStickyMode) {
-      if (!ChromeVox.isStickyPrefOn) {
+      if (!ChromeVoxPrefs.isStickyPrefOn) {
         // Sticky mode was already off; do not track the current sticky state
         // since we may have set it ourselves.
         return;
       }
 
       if (this.didTurnOffStickyMode_) {
-        // This should not be possible with |ChromeVox.isStickyPrefOn| set to
-        // true.
+        // This should not be possible with |ChromeVoxPrefs.isStickyPrefOn| set
+        // to true.
         throw 'Unexpected sticky state value encountered.';
       }
 
@@ -194,3 +198,6 @@ export class SmartStickyMode {
     return null;
   }
 }
+
+/** @public {SmartStickyMode} */
+SmartStickyMode.instance;

@@ -129,28 +129,28 @@ AX_TEST_F(
           .expectSpeech('Sticky mode enabled')
           .call(doCmd('nextFormField'))
           .expectSpeech('Edit text')
-          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('nextFormField'))
           .expectSpeech('Button')
           .call(doCmd('previousFormField'))
           .expectSpeech('Edit text')
-          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('previousObject'))
           .expectSpeech('start')
           .call(doCmd('nextEditText'))
           .expectSpeech('Edit text')
-          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('nextObject'))
           .expectSpeech('Button')
           .call(doCmd('previousEditText'))
           .expectSpeech('Edit text')
-          .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('nextObject'))
           .expectSpeech('Button')
           .call(doCmd('previousObject'))
           .expectSpeech('Sticky mode disabled')
           .expectSpeech('Edit text')
-          .call(() => assertFalse(ChromeVox.isStickyModeOn()));
+          .call(() => assertFalse(ChromeVoxPrefs.isStickyModeOn()));
       await mockFeedback.replay();
     });
 
@@ -168,12 +168,12 @@ AX_TEST_F(
           .expectEarcon(Earcon.SMART_STICKY_MODE_OFF)
           .expectSpeech('Sticky mode disabled')
           .expectSpeech('Edit text')
-          .call(() => assertFalse(ChromeVox.isStickyModeOn()))
+          .call(() => assertFalse(ChromeVoxPrefs.isStickyModeOn()))
           .call(doCmd('nextObject'))
           .expectEarcon(Earcon.SMART_STICKY_MODE_ON)
           .expectSpeech('Sticky mode enabled')
           .expectSpeech('Button')
-          .call(() => assertTrue(ChromeVox.isStickyModeOn()));
+          .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()));
       await mockFeedback.replay();
     });
 
@@ -192,10 +192,10 @@ AX_TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
       .call(doCmd('nextObject'))
       .expectNextSpeechUtteranceIsNot('Sticky mode disabled')
       .expectSpeech('Edit text')
-      .call(() => assertTrue(ChromeVox.isStickyModeOn()))
+      .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()))
       .call(doCmd('nextObject'))
       .expectNextSpeechUtteranceIsNot('Sticky mode enabled')
       .expectSpeech('Button')
-      .call(() => assertTrue(ChromeVox.isStickyModeOn()));
+      .call(() => assertTrue(ChromeVoxPrefs.isStickyModeOn()));
   await mockFeedback.replay();
 });

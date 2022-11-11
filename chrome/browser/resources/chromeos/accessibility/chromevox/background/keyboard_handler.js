@@ -15,6 +15,7 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {EventSourceState} from './event_source.js';
 import {MathHandler} from './math_handler.js';
 import {Output} from './output/output.js';
+import {ChromeVoxPrefs} from './prefs.js';
 import {UserActionMonitor} from './user_action_monitor.js';
 
 /**
@@ -52,7 +53,7 @@ export class BackgroundKeyboardHandler {
     document.addEventListener('keyup', (event) => this.onKeyUp(event), false);
 
     chrome.accessibilityPrivate.setKeyboardListener(
-        true, ChromeVox.isStickyPrefOn);
+        true, ChromeVoxPrefs.isStickyPrefOn);
   }
 
   static init() {
@@ -70,7 +71,7 @@ export class BackgroundKeyboardHandler {
    */
   onKeyDown(evt) {
     EventSourceState.set(EventSourceType.STANDARD_KEYBOARD);
-    evt.stickyMode = ChromeVox.isStickyModeOn();
+    evt.stickyMode = ChromeVoxPrefs.isStickyModeOn();
 
     // If somehow the user gets into a state where there are dangling key downs
     // don't get a key up, clear the eaten key downs. This is detected by a set

@@ -82,12 +82,7 @@ export class CommandHandler extends CommandHandlerInterface {
     /** @private {boolean} */
     this.languageLoggingEnabled_ = false;
 
-    /**
-     * Handles toggling sticky mode when encountering editables.
-     * @private {!SmartStickyMode}
-     */
-    this.smartStickyMode_ = new SmartStickyMode();
-
+    SmartStickyMode.init();
     this.init();
   }
 
@@ -342,27 +337,27 @@ export class CommandHandler extends CommandHandlerInterface {
         skipSettingSelection = true;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_next_edit_text';
-        this.smartStickyMode_.startIgnoringRangeChanges();
+        SmartStickyMode.instance.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_EDIT_TEXT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_previous_edit_text';
-        this.smartStickyMode_.startIgnoringRangeChanges();
+        SmartStickyMode.instance.startIgnoringRangeChanges();
         break;
       case Command.NEXT_FORM_FIELD:
         skipSettingSelection = true;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_next_form_field';
-        this.smartStickyMode_.startIgnoringRangeChanges();
+        SmartStickyMode.instance.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_FORM_FIELD:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_previous_form_field';
-        this.smartStickyMode_.startIgnoringRangeChanges();
+        SmartStickyMode.instance.startIgnoringRangeChanges();
         break;
       case Command.PREVIOUS_GRAPHIC:
         skipSettingSelection = true;
@@ -818,7 +813,7 @@ export class CommandHandler extends CommandHandlerInterface {
    * Finishes processing of a command.
    */
   onFinishCommand() {
-    this.smartStickyMode_.stopIgnoringRangeChanges();
+    SmartStickyMode.instance.stopIgnoringRangeChanges();
   }
 
   /**
@@ -898,7 +893,7 @@ export class CommandHandler extends CommandHandlerInterface {
    * @private
    */
   onEditCommand_(command) {
-    if (ChromeVox.isStickyModeOn()) {
+    if (ChromeVoxPrefs.isStickyModeOn()) {
       return true;
     }
 
@@ -1829,10 +1824,11 @@ export class CommandHandler extends CommandHandlerInterface {
 
   /** @private */
   toggleStickyMode_() {
-    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(!ChromeVox.isStickyPrefOn);
+    ChromeVoxPrefs.instance.setAndAnnounceStickyPref(
+        !ChromeVoxPrefs.isStickyPrefOn);
 
     if (ChromeVoxState.instance.currentRange) {
-      this.smartStickyMode_.onStickyModeCommand(
+      SmartStickyMode.instance.onStickyModeCommand(
           ChromeVoxState.instance.currentRange);
     }
   }

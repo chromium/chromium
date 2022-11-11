@@ -105,6 +105,19 @@ export class ChromeVoxPrefs {
   }
 
   /**
+   * Returns whether sticky mode is on, taking both the global sticky mode
+   * pref and the temporary sticky mode override into account.
+   * @return {boolean} Whether sticky mode is on.
+   */
+  static isStickyModeOn() {
+    if (ChromeVoxPrefs.stickyOverride !== null) {
+      return ChromeVoxPrefs.stickyOverride;
+    } else {
+      return ChromeVoxPrefs.isStickyPrefOn;
+    }
+  }
+
+  /**
    * Sets the value of the sticky mode pref, as well as updating the listeners
    * and announcing.
    * @param {boolean} value
@@ -118,7 +131,7 @@ export class ChromeVoxPrefs {
                     Msgs.getMsg('sticky_mode_disabled'))
         .go();
     this.setPref('sticky', value);
-    ChromeVox.isStickyPrefOn = value;
+    ChromeVoxPrefs.isStickyPrefOn = value;
   }
 
   enableOrDisableLogUrlWatcher_() {
@@ -235,3 +248,19 @@ ChromeVoxPrefs.loggingPrefs = {
 
 /** @type {ChromeVoxPrefs} */
 ChromeVoxPrefs.instance;
+
+/**
+ * This indicates whether or not the sticky mode pref is toggled on.
+ * Use ChromeVoxPrefs.isStickyModeOn() to test if sticky mode is enabled
+ * either through the pref or due to being temporarily toggled on.
+ * @type {boolean}
+ */
+ChromeVoxPrefs.isStickyPrefOn = localStorage['sticky'] === String(true);
+
+/**
+ * If set to true or false, this value overrides ChromeVoxPrefs.isStickyPrefOn
+ * temporarily - in order to temporarily enable sticky mode while doing
+ * 'read from here' or to temporarily disable it while using a widget.
+ * @type {?boolean}
+ */
+ChromeVoxPrefs.stickyOverride = null;
