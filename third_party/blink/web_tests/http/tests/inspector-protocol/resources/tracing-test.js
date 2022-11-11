@@ -118,4 +118,47 @@
     var formattedEvents = this._devtoolsEvents.map(e => e.name + (e.args.data ? '(' + e.args.data.type + ')' : ''));
     return JSON.stringify(formattedEvents, null, 2);
   }
+
+  logEventShape(evt) {
+    const logArray = (prefix, name, array) => {
+      let start = name ? `${name}: ` : '';
+      start = prefix + start;
+      this._testRunner.log(`${start}[`);
+      for (const item of array) {
+        if (item instanceof Array) {
+          logArray(`${prefix}\t`, '', item);
+          continue;
+        }
+        if (item instanceof Object) {
+          logObject(`${prefix}\t`, '', item);
+          continue;
+        }
+        this._testRunner.log(`${prefix}\t${typeof item},`);
+      }
+      this._testRunner.log(`${prefix}]`);
+    };
+    const logObject = (prefix, name, object) => {
+      let start = name ? `${name}: ` : '';
+      start = prefix + start;
+      this._testRunner.log(`${start}{`);
+      for (const key in object) {
+        const value = object[key];
+        if (value instanceof Array) {
+          logArray(`${prefix}\t`, key, value);
+          continue;
+        } else if (value instanceof Object) {
+          logObject(`${prefix}\t`, key, value)
+          continue;
+        }
+        this._testRunner.log(`${prefix}\t${key}: ${typeof value}`);
+      }
+      this._testRunner.log(`${prefix}}`);
+    };
+    if (evt instanceof Array) {
+      logArray('', 'Array', evt);
+      return;
+    }
+
+    logObject('', 'Object', evt);
+  }
 })
