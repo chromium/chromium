@@ -7081,27 +7081,27 @@
   {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "web-feed-awareness",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "web-feed-ios",
     "owners": [ "adamta", "sczs", "tinazwang" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 122
   },
   {
     "name": "web-feed-onboarding",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "web-feed-sort",
     "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "web-midi",
