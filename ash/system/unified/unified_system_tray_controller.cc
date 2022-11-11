@@ -722,6 +722,14 @@ void UnifiedSystemTrayController::CollapseWithoutAnimating() {
   animation_->Reset(0);
 }
 
+bool UnifiedSystemTrayController::IsDetailedViewShown() const {
+  if (quick_settings_view_)
+    return quick_settings_view_->IsDetailedViewShown();
+  if (unified_view_)
+    return unified_view_->IsDetailedViewShown();
+  return false;
+}
+
 void UnifiedSystemTrayController::UpdateDragThreshold() {
   UnifiedSystemTrayView* unified_view = bubble_->unified_view();
   drag_threshold_ = unified_view->GetExpandedSystemTrayHeight() -

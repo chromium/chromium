@@ -27,6 +27,7 @@ using bluetooth_config::mojom::AudioOutputCapability;
 using bluetooth_config::mojom::BatteryProperties;
 using bluetooth_config::mojom::BluetoothDeviceProperties;
 using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
 using bluetooth_config::mojom::DeviceBatteryInfo;
 using bluetooth_config::mojom::DeviceBatteryInfoPtr;
 using bluetooth_config::mojom::DeviceConnectionState;
@@ -74,6 +75,12 @@ std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
 
 void BluetoothDetailedViewController::OnPropertiesUpdated(
     bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
+  if (properties->system_state == BluetoothSystemState::kUnavailable) {
+    tray_controller_->TransitionToMainView(
+        /*restore_focus=*/true);  // Deletes |this|.
+    return;
+  }
+
   const bool has_bluetooth_enabled_state_changed =
       system_state_ != properties->system_state;
   system_state_ = properties->system_state;

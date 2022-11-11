@@ -159,6 +159,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Collapse the tray without animating.
   void CollapseWithoutAnimating();
 
+  // Return whether a detailed view is currently being shown.
+  bool IsDetailedViewShown() const;
+
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
