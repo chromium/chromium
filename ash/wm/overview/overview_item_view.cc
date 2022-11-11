@@ -21,9 +21,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -58,18 +58,16 @@ void AnimateLayerOpacity(ui::Layer* layer, bool visible) {
   if (layer->GetTargetOpacity() == target_opacity)
     return;
 
-  layer->SetOpacity(1.f - target_opacity);
-  gfx::Tween::Type tween =
-      visible ? gfx::Tween::LINEAR_OUT_SLOW_IN : gfx::Tween::FAST_OUT_LINEAR_IN;
-  ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-  settings.SetTransitionDuration(kHeaderFadeDuration);
-  settings.SetTweenType(tween);
-  settings.SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
-  if (visible) {
-    layer->GetAnimator()->SchedulePauseForProperties(
-        kHeaderFadeInDelay, ui::LayerAnimationElement::OPACITY);
-  }
-  layer->SetOpacity(target_opacity);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(layer, 1.f - target_opacity)
+      .At(visible ? kHeaderFadeInDelay : base::TimeDelta())
+      .SetDuration(kHeaderFadeDuration)
+      .SetOpacity(layer, target_opacity,
+                  visible ? gfx::Tween::LINEAR_OUT_SLOW_IN
+                          : gfx::Tween::FAST_OUT_LINEAR_IN);
 }
 
 }  // namespace
@@ -150,15 +148,17 @@ void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
   DCHECK_NE(HeaderVisibility::kInvisible, current_header_visibility_);
   ui::Layer* layer = close_button_->layer();
   DCHECK(layer);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(layer, 0.f)
+      .At(kCloseButtonSlowFadeInDelay)
+      .SetDuration(kCloseButtonSlowFadeInDuration)
+      .SetOpacity(layer, 1.f, gfx::Tween::FAST_OUT_SLOW_IN);
+
   current_header_visibility_ = HeaderVisibility::kVisible;
-  layer->SetOpacity(0.f);
-  ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-  settings.SetTransitionDuration(kCloseButtonSlowFadeInDuration);
-  settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  settings.SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
-  layer->GetAnimator()->SchedulePauseForProperties(
-      kCloseButtonSlowFadeInDelay, ui::LayerAnimationElement::OPACITY);
-  layer->SetOpacity(1.f);
   close_button_->SetEnabled(true);
 }
 
@@ -194,9 +194,9 @@ gfx::Rect OverviewItemView::GetHeaderBounds() const {
   // provided icon (which contains some padding), b represents the right edge of
   // |close_button_| and c represents the right edge of the local bounds.
   // ---------------------------+---------+
-  //                            |  +---+  |
-  //      |title_label_|        |  |   a  b
-  //                            |  +---+  |
+  // |                          |  +---+  |
+  // |    |title_label_|        |  |   a  b
+  // |                          |  +---+  |
   // ---------------------------+---------+
   //                                   c
   //                                   |

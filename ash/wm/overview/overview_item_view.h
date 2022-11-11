@@ -23,7 +23,8 @@ namespace ash {
 class CloseButton;
 class OverviewItem;
 
-// OverviewItemView covers the overview window and listens for events.
+// OverviewItemView covers the overview window, provides an overview only header
+// and handles events. It hosts a mirror view if the window is minimized.
 class ASH_EXPORT OverviewItemView : public WindowMiniView,
                                     public OverviewHighlightableView {
  public:
@@ -43,10 +44,8 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
                    views::Button::PressedCallback close_callback,
                    aura::Window* window,
                    bool show_preview);
-
   OverviewItemView(const OverviewItemView&) = delete;
   OverviewItemView& operator=(const OverviewItemView&) = delete;
-
   ~OverviewItemView() override;
 
   // Fades the app icon and title out if |visibility| is kInvisible, in
