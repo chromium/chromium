@@ -8,10 +8,6 @@ import six
 BLOCKLIST = [
     # Ignore since it holds documentation comments.
     "components/dom_distiller/core/images/dom_distiller_material_spinner.svg",
-    # Ignore since SVGO collapses <g> elements with their ids that are both used
-    # by the embedder HTML.
-    "chrome/browser/resources/signin/dice_web_signin_intercept/images/" +
-    "split_header.svg"
 ]
 
 def CheckOptimized(input_api, output_api):

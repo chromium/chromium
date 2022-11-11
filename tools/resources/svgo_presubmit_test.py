@@ -17,9 +17,9 @@ from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
 
 _OPTIMIZED_SVG = (
     b'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" ' +
-    b'viewBox="0 0 24 24" fill="#757575"><path d="M10 4H4c-1.1 0-1.99.9-1.99' +
-    b' 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>' +
-    b'</svg>')
+    b'id="EXPORT_preserved_id" viewBox="0 0 24 24" fill="#757575"><path ' +
+    b'd="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 ' +
+    b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>')
 
 _UNOPTIMIZED_SVG = (b'''
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -28,6 +28,11 @@ _UNOPTIMIZED_SVG = (b'''
                     b'''2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path>
 </svg>
 ''')
+
+_UNOPTIMIZED_IDS_SVG = (
+    b'<svg xmlns="http://www.w3.org/2000/svg" id="stripped_id"><path d="M10 ' +
+    b'4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 ' +
+    b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>')
 
 
 class SvgPresubmitTest(unittest.TestCase):
@@ -48,11 +53,17 @@ class SvgPresubmitTest(unittest.TestCase):
 
     return svgo_presubmit.CheckOptimized(input_api, MockOutputApi())
 
-  def testUnoptimizedSvg(self):
-    results = self.check_contents(_UNOPTIMIZED_SVG)
+  def assert_unoptimized_svg(self, file_contents):
+    results = self.check_contents(file_contents)
     self.assertEqual(len(results), 1)
     self.assertTrue(results[0].type == 'notify')
     self.assertTrue('svgo' in results[0].message)
+
+  def testUnoptimizedSvg(self):
+    self.assert_unoptimized_svg(_UNOPTIMIZED_SVG)
+
+  def testUnoptimizedIdsSVG(self):
+    self.assert_unoptimized_svg(_UNOPTIMIZED_IDS_SVG)
 
   def testOptimizedSvg(self):
     self.assertEqual(len(self.check_contents(_OPTIMIZED_SVG)), 0)
