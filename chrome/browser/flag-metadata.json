@@ -3610,7 +3610,7 @@
   {
     "name": "fast-pair",
     "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "fast-pair-low-power",
@@ -3618,17 +3618,17 @@
       "//ash/quick_pair/OWNERS",
       "jonmann@chromium.org"
     ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "fast-pair-saved-devices",
     "owners": [ "//ash/quick_pair/OWNERS", "julietlevesque@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "fast-pair-software-scanning",
     "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 112
   },
   {
     "name": "fast-pair-subsequent-pairing-ux",
