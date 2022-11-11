@@ -2217,12 +2217,12 @@
   {
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-drdc-vulkan",
     "owners": [ "vikassoni", "sunnyps" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-enhanced-safe-browsing",
@@ -3089,7 +3089,7 @@
   {
     "name": "enable-surface-control",
     "owners": [ "vikassoni", "vasilyt" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-sync-history-datatype",
