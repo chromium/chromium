@@ -21,6 +21,7 @@
 namespace {
 
 gfx::ImageSkia GetBestImageRep(const gfx::ImageSkia& image) {
+  image.EnsureRepsForSupportedScales();
   float best_scale = 0.0f;
   SkBitmap best_rep;
   for (const auto& rep : image.image_reps()) {
