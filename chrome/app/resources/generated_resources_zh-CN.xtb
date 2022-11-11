@@ -1116,7 +1116,7 @@
 否则，请立即退出，以便在这台设备上反映对此帐号所做的更改。
 
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
-<translation id="2039464276165755892">当系统检测到有其他人在窥探时隐藏通知内容</translation>
+<translation id="2039464276165755892">当系统检测到有人在窥视时隐藏通知内容</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2040894699575719559">无权获取位置信息</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
@@ -7780,7 +7780,7 @@
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
 <translation id="8380266723152870797">窗口名称</translation>
 <translation id="8380941800586852976">危险</translation>
-<translation id="8382715499079447151">窥探保护功能</translation>
+<translation id="8382715499079447151">防窥视功能</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
     <ph name="BEGIN_LIST" />

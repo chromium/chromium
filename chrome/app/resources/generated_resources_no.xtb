@@ -590,7 +590,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1562119309884184621">Hvis du legger til denne kontakten, blir den husket neste gang vedkommende deler</translation>
 <translation id="1563702743503072935">Passordene fra Google-kontoen din blir også tilgjengelige på denne enheten mens du er pålogget</translation>
 <translation id="1566049601598938765">Nettsted</translation>
-<translation id="15662109988763471">Den valgte skriveren er ikke tilgjengelig eller har ikke blitt installert på riktig måte. Kontrollér skriveren din, eller prøv å velge en annen skriver.</translation>
+<translation id="15662109988763471">Den valgte skriveren er ikke tilgjengelig eller har ikke blitt installert på riktig måte. Kontroller skriveren din, eller prøv å velge en annen skriver.</translation>
 <translation id="1567135437923613642">Slå på utvalgte eksperimenter</translation>
 <translation id="1567387640189251553">Et annet tastatur er koblet til etter at du sist skrev inn passordet ditt. Det brukes kanskje til å stjele tastetrykkene dine.</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å <ph name="RESPONSE" />.</translation>
@@ -636,7 +636,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1602085790802918092">Starter den virtuelle maskinen</translation>
 <translation id="1603411913360944381">Glem <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
-<translation id="1604432177629086300">Kunne ikke skrive ut. Kontrollér skriveren og prøv på nytt.</translation>
+<translation id="1604432177629086300">Kunne ikke skrive ut. Kontroller skriveren og prøv på nytt.</translation>
 <translation id="1604774728851271529">Du trenger en nettverkstilkobling for å oppgradere Linux. Koble til internett, og prøv på nytt.</translation>
 <translation id="1605744057217831567">Se alle nettstedsdata og -tillatelser</translation>
 <translation id="1606077700029460857">Endre museinnstillinger</translation>
@@ -658,7 +658,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sjekker disse dataene opp mot sikkerhetsretningslinjene til organisasjonen din …}=1{Sjekker denne filen opp mot sikkerhetsretningslinjene til organisasjonen din …}other{Sjekker disse filene opp mot sikkerhetsretningslinjene til organisasjonen din …}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">&amp;Brukerstøtte</translation>
-<translation id="1619879934359211038">Kunne ikke koble til Google Play. Kontrollér nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="1619879934359211038">Kunne ikke koble til Google Play. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620307519959413822">Feil passord. Prøv på nytt, eller klikk på Glemt passord for å tilbakestille det.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621382140075772850">Tekstverktøy</translation>
@@ -805,7 +805,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="174123615272205933">Egendefinert</translation>
 <translation id="1741314857973421784">Fortsett</translation>
 <translation id="1743970419083351269">Lukk nedlastingsraden</translation>
-<translation id="1744060673522309905">Kan ikke knytte enheten til domenet. Kontrollér at du ikke har overskredet antall enheter som du kan legge til.</translation>
+<translation id="1744060673522309905">Kan ikke knytte enheten til domenet. Kontroller at du ikke har overskredet antall enheter som du kan legge til.</translation>
 <translation id="1744108098763830590">bakgrunnsside</translation>
 <translation id="1745732479023874451">Administrer kontakter</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vil du åpne og redigere # filer i denne nettappen?}}</translation>
@@ -1130,7 +1130,7 @@ Alternativt kan du logge av nå slik at endringene på kontoen gjenspeiles på d
 
 Du kan administrere innstillingene for denne kontoen ved å installere Family Link-appen på enheten din.  Vi har sendt deg en e-post med veiledning.</translation>
 <translation id="2039464276165755892">Skjul varselinnhold når andre personer registreres</translation>
-<translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontrollér påloggingslegitimasjonen, og prøv på nytt.</translation>
+<translation id="2040460856718599782">Beklager!  Det oppsto en feil da vi forsøkte å autentisere deg. Kontroller påloggingslegitimasjonen, og prøv på nytt.</translation>
 <translation id="2040894699575719559">Posisjonen er blokkert</translation>
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Du må verifisere <ph name="ACCOUNT" /> for å låse opp økten.</translation>
@@ -1287,7 +1287,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2173302385160625112">Sjekk internettilkoblingen</translation>
 <translation id="2173801458090845390">Legg til en rekvisisjons-ID for denne enheten</translation>
 <translation id="2175384018164129879">&amp;Administrer søkemotorer og nettstedsøk</translation>
-<translation id="217576141146192373">Kunne ikke legge til skriveren. Kontrollér skriverkonfigurasjonen, og prøv på nytt.</translation>
+<translation id="217576141146192373">Kunne ikke legge til skriveren. Kontroller skriverkonfigurasjonen, og prøv på nytt.</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
 <translation id="2178585470774851578">Du er i ferd med å slå på ChromeOS Flex-feilsøkingsfunksjoner som kommer til å konfigurere sshd daemon og muliggjøre oppstart fra USB-stasjoner.</translation>
@@ -1423,7 +1423,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2299941608784654630">Inkluder alle loggfilene som er samlet inn av debugd, som et eget arkiv.</translation>
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Filen var ikke tilgjengelig på nettstedet</translation>
-<translation id="2300383962156589922">Tilpass og kontrollér <ph name="APP_NAME" /></translation>
+<translation id="2300383962156589922">Tilpass og kontroller <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Utvidelsens rotkatalog er ugyldig.</translation>
 <translation id="2301402091755573488">Delt fane</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
@@ -1497,7 +1497,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2342180549977909852">Barnet ditt kan låse opp denne enheten med et nummer (en PIN-kode) i stedet for et passord. For å angi en PIN-kode senere, gå til Innstillinger.</translation>
 <translation id="2342740338116612727">Bokmerkene er lagt til</translation>
 <translation id="2343747224442182863">Fokusér på denne fanen</translation>
-<translation id="2344032937402519675">Kunne ikke koble til tjeneren. Kontrollér nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt.</translation>
+<translation id="2344032937402519675">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt.</translation>
 <translation id="234559068082989648">Gamle versjoner av Chrome-apper er ikke mulige å åpne etter desember 2022. Kontakt administratoren din for å oppdatere til en ny versjon eller fjerne denne appen.</translation>
 <translation id="2345723121311404059">1 side til <ph name="PRINTER_NAME" /></translation>
 <translation id="23463457491630512">Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
@@ -1578,13 +1578,13 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2428510569851653187">Beskriv hva du holdt på med da fanen krasjet</translation>
 <translation id="2428939361789119025">Slå av Wifi</translation>
 <translation id="2428978615149723410">disse handlekurvene</translation>
-<translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontrollér nettverkstilkoblingen din, og prøv på nytt.</translation>
+<translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontroller nettverkstilkoblingen din, og prøv på nytt.</translation>
 <translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
 <translation id="243275146591958220">Avbryt nedlastingen</translation>
 <translation id="2433452467737464329">Legg til en søkeparameter i nettadressen for å automatisk laste inn siden på nytt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2433836460518180625">Lås kun opp enheten</translation>
-<translation id="2434449159125086437">Kunne ikke konfigurere skriveren. Kontrollér konfigurasjonen og prøv på nytt.</translation>
+<translation id="2434449159125086437">Kunne ikke konfigurere skriveren. Kontroller konfigurasjonen og prøv på nytt.</translation>
 <translation id="2434758125294431199">Velg hvem som kan dele med deg</translation>
 <translation id="2434915728183570229">Nå kan du se appene på telefonen din</translation>
 <translation id="2435137177546457207">Tilleggsvilkår for Google Chrome og ChromeOS Flex</translation>
@@ -1593,7 +1593,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2439626940657133600">Laster inn <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="2441719842399509963">Tilbakestill til standard</translation>
-<translation id="244231003699905658">Ugyldig adresse. Kontrollér adressen og prøv igjen.</translation>
+<translation id="244231003699905658">Ugyldig adresse. Kontroller adressen og prøv igjen.</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
 <translation id="2443487764245141020">Nettsteder trenger kanskje også å gjenkjenne enheten din ved bruk av en identifikator</translation>
 <translation id="244475495405467108">Lukk faner til venstre</translation>
@@ -1822,7 +1822,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funksjonene varierer fra enhet til enhet</translation>
 <translation id="2659971421398561408">Endre diskstørrelsen for Crostini</translation>
 <translation id="2660779039299703961">Aktivitet</translation>
-<translation id="266079277508604648">Kan ikke koble til skriveren. Kontrollér at skriveren er slått på og koblet til Chromebooken din via Wifi eller USB.</translation>
+<translation id="266079277508604648">Kan ikke koble til skriveren. Kontroller at skriveren er slått på og koblet til Chromebooken din via Wifi eller USB.</translation>
 <translation id="2661315027005813059">Side i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Surf raskere og bruk mindre data med forenklet modus. Klikk for å finne ut mer.</translation>
 <translation id="2662876636500006917">Chrome Nettmarked</translation>
@@ -2111,7 +2111,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2908162660801918428">Legg til mediegalleri etter katalog</translation>
 <translation id="2908358077082926882">Trykk på «<ph name="CURRENTKEY" />» på nytt for å fjerne tilordningen og <ph name="RESPONSE" /></translation>
 <translation id="2909380725331714712">Reduksjon av nettsøppel og svindel er avhengig av tillitstokener for å hjelpe nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.</translation>
-<translation id="2909506265808101667">Kunne ikke koble til Google-tjenester. Kontrollér nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2909506265808101667">Kunne ikke koble til Google-tjenester. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Koble til et nettverk og prøv igjen</translation>
 <translation id="291056154577034373">ULEST</translation>
 <translation id="2910718431259223434">Noe gikk galt. Prøv på nytt, eller kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -2207,7 +2207,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3001144475369593262">Barnekontoer</translation>
 <translation id="3003144360685731741">Foretrukne nettverk</translation>
 <translation id="3003623123441819449">CSS-buffer</translation>
-<translation id="3003828226041301643">Kan ikke knytte enheten til domenet. Kontrollér kontoen din for å se om du har rettighet til å legge til enheter.</translation>
+<translation id="3003828226041301643">Kan ikke knytte enheten til domenet. Kontroller kontoen din for å se om du har rettighet til å legge til enheter.</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />-enheten din oppretter en privat Wifi-tilkobling.</translation>
 <translation id="3005574332301273731">Ikke vis</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
@@ -2249,7 +2249,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031557471081358569">Velg elementer som skal importeres:</translation>
 <translation id="3032204772252313646">Automatisk teksting</translation>
-<translation id="3033348223765101500">Kontrollér dataene dine</translation>
+<translation id="3033348223765101500">Kontroller dataene dine</translation>
 <translation id="3034627908241330765">En annen Steam-konfigurering kjører. Vent til den er ferdig, før du kjører konfigureringen igjen.</translation>
 <translation id="3036327949511794916">Tidsfristen for å returnere <ph name="DEVICE_TYPE" /> er utløpt.</translation>
 <translation id="3036546437875325427">Slå på blitsen</translation>
@@ -2508,7 +2508,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3311445899360743395">Data som er tilknyttet denne appen, kan bli fjernet fra denne enheten.</translation>
 <translation id="3312883087018430408">For å søke på et spesifikt nettsted eller i en spesifikk del av Chrome, skriv inn den tilhørende snarveien i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Hvis du for eksempel kun vil søke i Bokmerker, skriver du inn «@bookmarks» og trykker på Tab eller mellomromstasten.</translation>
 <translation id="3313622045786997898">Sertifikatets signaturverdi</translation>
-<translation id="3313950410573257029">Kontrollér tilkoblingen</translation>
+<translation id="3313950410573257029">Kontroller tilkoblingen</translation>
 <translation id="3315158641124845231">Skjul <ph name="PRODUCT_NAME" /></translation>
 <translation id="3315442055907669208">Gå inn i lesermodus</translation>
 <translation id="3317459757438853210">Tosidig</translation>
@@ -2551,7 +2551,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3356469410714175391">(Virtuelt kort er påslått)</translation>
 <translation id="3356580349448036450">Fullført</translation>
 <translation id="3359256513598016054">Retningslinjebegrensninger for sertifikat</translation>
-<translation id="3360297538363969800">Utskriften mislyktes. Kontrollér skriveren og prøv på nytt.</translation>
+<translation id="3360297538363969800">Utskriften mislyktes. Kontroller skriveren og prøv på nytt.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med deg.}other{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med deg.}}</translation>
 <translation id="3361954577771524115">Fra appen</translation>
 <translation id="3363202073972776113">Denne nye profilen administreres av organisasjonen din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -2688,7 +2688,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="347670947055184738">Beklager. Systemet kunne ikke hente reglene for enheten din.</translation>
 <translation id="347785443197175480">Fortsett å gi <ph name="HOST" /> tillatelse til å bruke kameraet og mikrofonen</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
-<translation id="3479685872808224578">Fant ikke utskriftstjeneren. Kontrollér adressen og prøv igjen.</translation>
+<translation id="3479685872808224578">Fant ikke utskriftstjeneren. Kontroller adressen og prøv igjen.</translation>
 <translation id="3480612136143976912">Tilpass størrelse og stil for direkteteksting. Noen apper og nettsteder bruker også denne innstillingen.</translation>
 <translation id="3480827850068960424">Fant <ph name="NUM" /> faner</translation>
 <translation id="3481268647794498892">Åpnes i <ph name="ALTERNATIVE_BROWSER_NAME" /> om <ph name="COUNTDOWN_SECONDS" /> sekunder</translation>
@@ -3016,7 +3016,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="379082410132524484">Kortet ditt er utløpt</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> utvidelser</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome fant ingen skadelig programvare på datamaskinen • sjekket for 1 dag siden}other{Chrome fant ingen skadelig programvare på datamaskinen • sjekket for {NUM_DAYS} dager siden}}</translation>
-<translation id="379500251094592809">For å bruke nærdeling, kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har nærdeling påslått (åpne statusfeltet ved å velge klokkeslettet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="379500251094592809">For å bruke nærdeling, kontroller at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har nærdeling påslått (åpne statusfeltet ved å velge klokkeslettet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Av</translation>
 <translation id="3795766489237825963">Spill av animasjoner</translation>
 <translation id="3796648294839530037">Favorittnettverk:</translation>
@@ -3308,7 +3308,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4047726037116394521">Gå til startskjermen</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt er ikke tilgjengelig. For å bruke nærdeling med vedkommende må du legge til e-postadressen som er knyttet til vedkommendes Google-konto, i kontaktene dine.}other{# kontakter er ikke tilgjengelige. For å bruke nærdeling med dem må du legge til e-postadressene som er knyttet til Google-kontoene deres, i kontaktene dine.}}</translation>
 <translation id="4050225813016893843">Autentiseringsmetode</translation>
-<translation id="4050534976465737778">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har Nærdeling påslått (åpne statusfeltet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="4050534976465737778">Kontroller at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har Nærdeling påslått (åpne statusfeltet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Bitteliten</translation>
 <translation id="4054070260844648638">Synlig for alle</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -3321,7 +3321,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="406213378265872299">Tilpasset atferd</translation>
 <translation id="4062561150282203854">Synkroniser blant annet <ph name="DEVICE_TYPE" />-appene og -innstillingene dine</translation>
 <translation id="4065876735068446555">Det kan hende at nettverket du bruker (<ph name="NETWORK_ID" />), krever at du besøker en påloggingsside.</translation>
-<translation id="4066207411788646768">Kontrollér tilkoblingen din for å se tilgjengelige skrivere på nettverket</translation>
+<translation id="4066207411788646768">Kontroller tilkoblingen din for å se tilgjengelige skrivere på nettverket</translation>
 <translation id="4067839975993712852">Merk denne fanen som lest</translation>
 <translation id="4068776064906523561">Lagrede fingeravtrykk</translation>
 <translation id="407173827865827707">Ved klikk</translation>
@@ -3509,7 +3509,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4260699894265914672">Trykk på en tastaturtast for å tilpasse</translation>
 <translation id="4261429981378979799">Utvidelsestillatelser</translation>
 <translation id="4262004481148703251">Avvis varsel</translation>
-<translation id="4263223596040212967">Kontrollér tastaturoppsettet og prøv på nytt.</translation>
+<translation id="4263223596040212967">Kontroller tastaturoppsettet og prøv på nytt.</translation>
 <translation id="426564820080660648">For å sjekke etter oppdateringer, kan du bruke Ethernet eller Wifi.</translation>
 <translation id="4266679478228765574">Hvis du fjerner mapper, deles de ikke lenger, men filene blir ikke slettet.</translation>
 <translation id="4267455501101322486">For å legge til en konto for tilgang til læringsressurser, be en forelder om å gi deg tillatelse</translation>
@@ -4068,7 +4068,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4801512016965057443">Tillat mobildatabruk på andre nettverk</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="4804827417948292437">Avokado</translation>
-<translation id="4806457879608775995">Gjennomgå disse vilkårene, og kontrollér dataene dine</translation>
+<translation id="4806457879608775995">Gjennomgå disse vilkårene, og kontroller dataene dine</translation>
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
 <translation id="4808024018088054533">Chrome fant ingen skadelig programvare på datamaskinen • sjekket nettopp</translation>
 <translation id="4808667324955055115">Blokkerte forgrunnsvinduer:</translation>
@@ -4336,7 +4336,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5070773577685395116">Fikk du den ikke?</translation>
 <translation id="5071892329440114717">Vis detaljer om standard beskyttelse</translation>
 <translation id="5072836811783999860">Vis administrerte bokmerker</translation>
-<translation id="5072900412896857127">Vilkårene for bruk av Google Play kan ikke lastes inn. Kontrollér nettverkstilkoblingen, og prøv på nytt.</translation>
+<translation id="5072900412896857127">Vilkårene for bruk av Google Play kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> og <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> og # til}}</translation>
 <translation id="5074318175948309511">Du må kanskje laste inn denne siden på nytt for at innstillingene skal bli gjeldende.</translation>
 <translation id="5074761966806028321">Tillatelse kreves fortsatt for å fullføre konfigureringen</translation>
@@ -4397,7 +4397,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5130675701626084557">Profilen kunne ikke lastes ned. Prøv på nytt senere, eller kontakt operatøren for å få hjelp.</translation>
 <translation id="5131591206283983824">Trykk og dra med styreflaten</translation>
 <translation id="5135533361271311778">Kan ikke opprette bokmerkeelement.</translation>
-<translation id="5136343472380336530">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="5136343472380336530">Kontroller at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Slett denne oppføringen</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Søk</translation>
 <translation id="5139823398361067371">Skriv inn PIN-koden for sikkerhetsnøkkelen din. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen.</translation>
@@ -4452,7 +4452,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktivér porten</translation>
 <translation id="5191094172448199359">PIN-kodene du skrev inn, er ikke like</translation>
-<translation id="5191251636205085390">Finn ut om og kontrollér nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
+<translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="519185197579575131">Bruk QT</translation>
 <translation id="5192062846343383368">Åpne Family Link-appen for å se tilsynsinnstillingene dine</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>
@@ -5162,7 +5162,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5876576639916258720">Kjører ...</translation>
 <translation id="5876851302954717356">Ny fane til høyre</translation>
 <translation id="5877064549588274448">Kanalen ble endret. Start enheten på nytt for å aktivere endringene.</translation>
-<translation id="5877584842898320529">Den valgte skriveren er ikke tilgjengelig, eller den er ikke installert på riktig måte. <ph name="BR" /> Kontrollér skriveren din, eller prøv å velge en annen skriver.</translation>
+<translation id="5877584842898320529">Den valgte skriveren er ikke tilgjengelig, eller den er ikke installert på riktig måte. <ph name="BR" /> Kontroller skriveren din, eller prøv å velge en annen skriver.</translation>
 <translation id="5878945009165002849">Blokker påloggingsforespørsler fra identitetstjenester</translation>
 <translation id="5882449899683447569">Noe gikk galt. Passordene ble ikke importert.</translation>
 <translation id="5882919346125742463">Kjente nettverk</translation>
@@ -5274,7 +5274,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5978277834170881274">&amp;Bruk grunnleggende stavekontroll</translation>
 <translation id="5978395054855988504">Batterisparing er på</translation>
 <translation id="5978493744931296692">Administratoren din har deaktivert andre profiler</translation>
-<translation id="5979084224081478209">Kontrollér passordene</translation>
+<translation id="5979084224081478209">Kontroller passordene</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Du har slått på igjen én potensielt skadelig utvidelse}other{Du har slått på igjen {NUM_EXTENSIONS} potensielt skadelige utvidelser}}</translation>
 <translation id="5979353814339191480">Dette alternativet gjelder for Chromebook-enheter med dataabonnement- eller mobilnettverksdongler, eller ved bruk av delt internett fra en flyttbar wifi-sone</translation>
 <translation id="5979421442488174909">Overset&amp;t til <ph name="LANGUAGE" /></translation>
@@ -5951,7 +5951,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> vil ha permanent tilgang til et sertifikat for å autentisere seg på dine vegne.</translation>
 <translation id="6633126565486451781">Filen kan ha blitt lest eller redigert, ettersom dette nettstedet ikke bruker noen sikker tilkobling</translation>
 <translation id="6635362468090274700">Ingen kan dele med deg før du gjør deg selv synlig.<ph name="BR" /><ph name="BR" />For å gjøre deg selv synlig midlertidig, åpne statusfeltet og slå på Nærhetstilgang.</translation>
-<translation id="6635674640674343739">Det kan ikke opprettes noen nettverkstilkobling. Kontrollér nettverkstilkoblingen og prøv på nytt.</translation>
+<translation id="6635674640674343739">Det kan ikke opprettes noen nettverkstilkobling. Kontroller nettverkstilkoblingen og prøv på nytt.</translation>
 <translation id="6635944431854494329">Eieren kan styre denne funksjonen under Innstillinger &gt; Avansert &gt; Send diagnostikk og bruksdata til Google automatisk.</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
@@ -6035,13 +6035,13 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6713233729292711163">Legg til en jobbprofil</translation>
 <translation id="6715803357256707211">Det oppsto en feil under installasjon av Linux-programmet. Klikk på varselet for mer informasjon.</translation>
 <translation id="671619610707606484">Dette sletter <ph name="TOTAL_USAGE" /> data som er lagret av nettsteder</translation>
-<translation id="6716798148881908873">Nettverkstilkoblingen ble brutt. Kontrollér tilkoblingen eller prøv et annet Wifi-nettverk.</translation>
+<translation id="6716798148881908873">Nettverkstilkoblingen ble brutt. Kontroller tilkoblingen eller prøv et annet Wifi-nettverk.</translation>
 <translation id="671928215901716392">Lås skjerm</translation>
 <translation id="6721744718589119342">Vi kan sende deg e-post med oppdateringer eller for å be om mer informasjon</translation>
 <translation id="6721972322305477112">&amp;Fil</translation>
 <translation id="672208878794563299">Dette nettstedet kommer til å spørre på nytt neste gang.</translation>
 <translation id="6723661294526996303">Importér bokmerker og innstillinger...</translation>
-<translation id="6723839827191551955">Kontrollér mediene du caster</translation>
+<translation id="6723839827191551955">Kontroller mediene du caster</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6725073593266469338">UI-tjeneste</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
@@ -6078,7 +6078,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6762833852331690540">På</translation>
 <translation id="676560328519657314">Betalingsmåtene dine i Google Pay</translation>
 <translation id="6767566652486411142">Velg et annet språk</translation>
-<translation id="6767639283522617719">Kan ikke bli med på domenet. Kontrollér at innstillingene for organisasjonsenheten er riktige.</translation>
+<translation id="6767639283522617719">Kan ikke bli med på domenet. Kontroller at innstillingene for organisasjonsenheten er riktige.</translation>
 <translation id="6768034047581882264">Nettsteder som ikke har lov til å vise usikkert innhold</translation>
 <translation id="6770042910635026163">Nettsteder du besøker som definerer interessene dine</translation>
 <translation id="6770602306803890733">Øker sikkerheten for deg og alle andre på nettet</translation>
@@ -6754,7 +6754,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigureringen er fullført</translation>
-<translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontrollér nettverkstilkoblingen, og prøv på nytt.</translation>
+<translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="7416362041876611053">Ukjent nettverksfeil.</translation>
 <translation id="741906494724992817">Denne appen krever ingen spesielle tillatelser.</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
@@ -6770,13 +6770,13 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7427348830195639090">Bakgrunnsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Ring fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">Fant ingen HID-enheter</translation>
-<translation id="7431991332293347422">Kontrollér hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
+<translation id="7431991332293347422">Kontroller hvordan nettleserloggen din brukes til blant annet personlig tilpasning av søk</translation>
 <translation id="7432200167665670017">Administratoren din har blokkert «<ph name="EXTENSION_NAME" />» – app-ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Sett inn smartkortet for å fortsette å bruke <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Nei</translation>
 <translation id="7434509671034404296">Utvikler</translation>
 <translation id="7434757724413878233">Museakselerasjon</translation>
-<translation id="7434969625063495310">Kunne ikke legge til utskriftstjeneren. Kontrollér tjenerens konfigurasjon, og prøv på nytt.</translation>
+<translation id="7434969625063495310">Kunne ikke legge til utskriftstjeneren. Kontroller tjenerens konfigurasjon, og prøv på nytt.</translation>
 <translation id="7436921188514130341">Æsj! Det oppsto en feil under navneendringen.</translation>
 <translation id="7438495332316988804">Du finner standardnettleseren ved å skrive inn «Chrome» i Appoversikt.</translation>
 <translation id="7439519621174723623">Legg til et enhetsnavn for å fortsette</translation>
@@ -6887,7 +6887,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="754207240458482646">Synkronisert med andre enheter på kontoen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Slå på feilsøkingsfunksjoner på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten</translation>
 <translation id="7543525346216957623">Spør forelderen din</translation>
-<translation id="7545466883021407599">Kunne ikke koble til tjeneren. Kontrollér nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
+<translation id="7545466883021407599">Kunne ikke koble til tjeneren. Kontroller nettverkstilkoblingen og prøv på nytt. Hvis du fremdeles har problemer, kan du prøve å starte Chromebook på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advarsel: <ph name="PRODUCT_NAME" />-innstillingene dine lagres på en nettverksdisk. Dette kan forårsake forsinkelser, krasjer og til og med tap av data.</translation>
 <translation id="7548856833046333824">Limonade</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
@@ -7413,7 +7413,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Snarveien er endret</translation>
 <translation id="8018298733481692628">Vil du slette denne profilen?</translation>
-<translation id="8018313076035239964">Kontrollér hva slags informasjon nettsteder kan bruke, og hva slags innhold de kan vise deg</translation>
+<translation id="8018313076035239964">Kontroller hva slags informasjon nettsteder kan bruke, og hva slags innhold de kan vise deg</translation>
 <translation id="8023133589013344428">Administrer språk i ChromeOS Flex-innstillingene</translation>
 <translation id="8023801379949507775">Oppdater utvidelser nå</translation>
 <translation id="8025151549289123443">Låseskjerm og pålogging</translation>
@@ -7873,7 +7873,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8449008133205184768">Lim inn og tilpass til stil</translation>
 <translation id="8449036207308062757">Administrer lagringsplassen</translation>
 <translation id="8456512334795994339">Finn apper for jobb og fritid</translation>
-<translation id="845702320058262034">Kan ikke koble til. Kontrollér at telefonens Bluetooth er på.</translation>
+<translation id="845702320058262034">Kan ikke koble til. Kontroller at telefonens Bluetooth er på.</translation>
 <translation id="8457451314607652708">Importér bokmerker</translation>
 <translation id="8458341576712814616">Snarvei</translation>
 <translation id="8458627787104127436">Åpne alle (<ph name="URL_COUNT" />) i et nytt vindu</translation>
@@ -8032,7 +8032,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="862727964348362408">Stanset</translation>
 <translation id="862750493060684461">CSS-buffer</translation>
 <translation id="8627795981664801467">Bare sikre tilkoblinger</translation>
-<translation id="8627804903623428808">Gjennomgå disse vilkårene, og kontrollér dataene til barnet ditt</translation>
+<translation id="8627804903623428808">Gjennomgå disse vilkårene, og kontroller dataene til barnet ditt</translation>
 <translation id="8630338733867813168">Hvilemodus ved lading</translation>
 <translation id="8631032106121706562">Tusenfryd</translation>
 <translation id="863109444997383731">Nettsteder blir blokkert fra å spørre om å få vise deg varsler. Hvis nettsteder spør om varsler, vises en blokkert-indikator i adressefeltet.</translation>
