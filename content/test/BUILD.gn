@@ -194,6 +194,8 @@ static_library("test_support") {
     "../public/test/mock_client_hints_controller_delegate.h",
     "../public/test/mock_download_manager.cc",
     "../public/test/mock_download_manager.h",
+    "../public/test/mock_media_session.cc",
+    "../public/test/mock_media_session.h",
     "../public/test/mock_navigation_handle.cc",
     "../public/test/mock_navigation_handle.h",
     "../public/test/mock_notification_observer.cc",

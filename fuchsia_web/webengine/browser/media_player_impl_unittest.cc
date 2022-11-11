@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/test/mock_media_session.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,43 +18,13 @@
 
 namespace {
 
-class FakeMediaSession : public content::MediaSession {
+class FakeMediaSession : public content::MockMediaSession {
  public:
   // content::MediaSession APIs mocked to observe if/when they are called.
   void SetDuckingVolumeMultiplier(double multiplier) override { ADD_FAILURE(); }
   void SetAudioFocusGroupId(const base::UnguessableToken& group_id) override {
     ADD_FAILURE();
   }
-  MOCK_METHOD1(Suspend, void(SuspendType));
-  MOCK_METHOD1(Resume, void(SuspendType));
-  MOCK_METHOD0(StartDucking, void());
-  MOCK_METHOD0(StopDucking, void());
-  MOCK_METHOD0(PreviousTrack, void());
-  MOCK_METHOD0(NextTrack, void());
-  MOCK_METHOD0(SkipAd, void());
-  MOCK_METHOD1(Seek, void(base::TimeDelta));
-  MOCK_METHOD1(Stop, void(SuspendType));
-  MOCK_METHOD1(SeekTo, void(base::TimeDelta));
-  MOCK_METHOD1(ScrubTo, void(base::TimeDelta));
-  MOCK_METHOD0(EnterPictureInPicture, void());
-  MOCK_METHOD0(ExitPictureInPicture, void());
-  MOCK_METHOD1(SetAudioSinkId, void(const absl::optional<std::string>& id));
-  MOCK_METHOD0(ToggleMicrophone, void());
-  MOCK_METHOD0(ToggleCamera, void());
-  MOCK_METHOD0(HangUp, void());
-  MOCK_METHOD0(Raise, void());
-  MOCK_METHOD1(SetMute, void(bool));
-
-  // content::MediaSession APIs faked to implement testing behaviour.
-  MOCK_METHOD1(DidReceiveAction,
-               void(media_session::mojom::MediaSessionAction));
-  MOCK_METHOD1(GetMediaSessionInfo, void(GetMediaSessionInfoCallback));
-  MOCK_METHOD1(GetDebugInfo, void(GetDebugInfoCallback));
-  MOCK_METHOD4(GetMediaImageBitmap,
-               void(const media_session::MediaImage& image,
-                    int minimum_size_px,
-                    int desired_size_px,
-                    GetMediaImageBitmapCallback callback));
 
   // content::MediaSession APIs faked to implement testing behaviour.
   void AddObserver(
