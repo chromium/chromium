@@ -43,7 +43,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
-#include "fuchsia_web/webengine/browser/accessibility_bridge.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/event_filter.h"
 #include "fuchsia_web/webengine/browser/frame_layout_manager.h"
@@ -658,7 +657,6 @@ void FrameImpl::DestroyWindowTreeHost() {
   window_tree_host_->compositor()->SetVisible(false);
   window_tree_host_.reset();
   accessibility_bridge_.reset();
-  v2_accessibility_bridge_.reset();
 
   // Allows posted focus events to process before the FocusController is torn
   // down.
@@ -751,36 +749,15 @@ void FrameImpl::UpdateRenderFrameZoomLevel(
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
-  if (use_v2_accessibility_bridge_) {
-    // TODO(crbug.com/1291613): Replace callbacks with an interface that
-    // FrameImpl implements.
-    v2_accessibility_bridge_ =
-        std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
-            root_window(), window_tree_host_->CreateViewRef(),
-            base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
-                                base::Unretained(this)),
-            base::BindRepeating(&FrameImpl::OnAccessibilityError,
-                                base::Unretained(this)),
-            inspect_node_.CreateChild(kAccessibilityInspectNodeName));
-  } else {
-    fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
-    if (!semantics_manager_for_test_) {
-      semantics_manager =
-          base::ComponentContextForProcess()
-              ->svc()
-              ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
-    }
-
-    // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
-    // will cause |this| to be closed.
-    accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-        semantics_manager_for_test_ ? semantics_manager_for_test_
-                                    : semantics_manager.get(),
-        window_tree_host_.get(), web_contents_.get(),
-        base::BindOnce(&FrameImpl::OnAccessibilityError,
-                       base::Unretained(this)),
-        inspect_node_.CreateChild(kAccessibilityInspectNodeName));
-  }
+  // TODO(crbug.com/1291613): Replace callbacks with an interface that
+  // FrameImpl implements.
+  accessibility_bridge_ = std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
+      root_window(), window_tree_host_->CreateViewRef(),
+      base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
+                          base::Unretained(this)),
+      base::BindRepeating(&FrameImpl::OnAccessibilityError,
+                          base::Unretained(this)),
+      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
 }
 
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
@@ -1535,7 +1512,7 @@ void FrameImpl::SetAccessibilityEnabled(bool enabled) {
 }
 
 void FrameImpl::OnPixelScaleUpdate(float pixel_scale) {
-  if (v2_accessibility_bridge_) {
-    v2_accessibility_bridge_->SetPixelScale(pixel_scale);
+  if (accessibility_bridge_) {
+    accessibility_bridge_->SetPixelScale(pixel_scale);
   }
 }

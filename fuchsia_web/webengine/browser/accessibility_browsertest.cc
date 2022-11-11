@@ -15,7 +15,6 @@
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
-#include "fuchsia_web/webengine/browser/accessibility_bridge.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/fake_semantics_manager.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"
@@ -110,7 +109,6 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
 
     frame_impl_ = context_impl()->GetFrameImplForTest(&frame_.ptr());
     frame_impl_->set_window_size_for_test(kTestWindowSize);
-    frame_impl_->set_use_v2_accessibility_bridge(true);
     frame_->EnableHeadlessRendering();
 
     semantics_manager_.WaitUntilViewRegistered();

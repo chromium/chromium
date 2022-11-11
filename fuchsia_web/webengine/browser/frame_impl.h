@@ -30,7 +30,6 @@
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "fuchsia_web/webengine/browser/accessibility_bridge.h"
 #include "fuchsia_web/webengine/browser/event_filter.h"
 #include "fuchsia_web/webengine/browser/frame_permission_controller.h"
 #include "fuchsia_web/webengine/browser/navigation_controller_impl.h"
@@ -123,19 +122,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   bool has_view_for_test() const { return window_tree_host_ != nullptr; }
   FrameWindowTreeHost* window_tree_host_for_test() {
     return window_tree_host_.get();
-  }
-
-  // Accessibility bridge accessor/setter methods.
-  // TODO(crbug.com/1291330): Remove the three methods below.
-  void set_use_v2_accessibility_bridge(bool use_v2_accessibility_bridge) {
-    use_v2_accessibility_bridge_ = use_v2_accessibility_bridge;
-  }
-  AccessibilityBridge* accessibility_bridge_for_test() const {
-    return accessibility_bridge_.get();
-  }
-  void set_semantics_manager_for_test(
-      fuchsia::accessibility::semantics::SemanticsManager* semantics_manager) {
-    semantics_manager_for_test_ = semantics_manager;
   }
 
   // Override |blink_prefs| with settings defined in |content_settings_|.
@@ -382,12 +368,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // Owned via |window_tree_host_|.
   FrameLayoutManager* layout_manager_ = nullptr;
 
-  // TODO(crbug.com/1291330): Remove acessibility_bridge_ and
-  // semantics_manager_for_test_.
-  std::unique_ptr<AccessibilityBridge> accessibility_bridge_;
-  fuchsia::accessibility::semantics::SemanticsManager*
-      semantics_manager_for_test_ = nullptr;
-  std::unique_ptr<ui::AccessibilityBridgeFuchsiaImpl> v2_accessibility_bridge_;
+  std::unique_ptr<ui::AccessibilityBridgeFuchsiaImpl> accessibility_bridge_;
 
   // Test settings.
   absl::optional<gfx::Size> window_size_for_test_;
@@ -426,10 +407,6 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   // Used to publish Frame details to Inspect.
   inspect::Node inspect_node_;
   const inspect::StringProperty inspect_name_property_;
-
-  // TODO(crbug.com/1291330): Remove.
-  // Used to control which accessibility bridge version is live.
-  bool use_v2_accessibility_bridge_ = true;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<ReceiverSessionClient> receiver_session_client_;

@@ -277,7 +277,6 @@ component("web_engine_core") {
   public_deps = [
     "//build:chromecast_buildflags",
     "//content/public/browser",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
 
     # Public because tests include Context, Frame, etc headers, which include
@@ -286,10 +285,6 @@ component("web_engine_core") {
   ]
 
   sources = [
-    "browser/accessibility_bridge.cc",
-    "browser/accessibility_bridge.h",
-    "browser/ax_tree_converter.cc",
-    "browser/ax_tree_converter.h",
     "browser/content_directory_loader_factory.cc",
     "browser/content_directory_loader_factory.h",
     "browser/context_impl.cc",
@@ -562,7 +557,6 @@ source_set("browsertest_core") {
 
 test("web_engine_browsertests") {
   sources = [
-    "browser/accessibility_bridge_browsertest.cc",
     "browser/accessibility_browsertest.cc",
     "browser/autoplay_browsertest.cc",
     "browser/client_hints_browsertest.cc",
@@ -663,7 +657,6 @@ action("web_engine_unittests_fake_instance_manifest") {
 
 test("web_engine_unittests") {
   sources = [
-    "browser/ax_tree_converter_unittest.cc",
     "browser/cookie_manager_impl_unittest.cc",
     "browser/event_filter_unittest.cc",
     "browser/fake_navigation_policy_provider.cc",
@@ -700,7 +693,6 @@ test("web_engine_unittests") {
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/widevine/cdm:buildflags",
