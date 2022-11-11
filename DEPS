@@ -231,9 +231,6 @@ vars = {
   # for info on RTS
   'checkout_rts_model': False,
 
-  # By default, do not check out the re-client binaries.
-  'checkout_reclient': False,
-
   # Make Dawn skip its standalone dependencies
   'dawn_standalone': False,
 
@@ -506,7 +503,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'checkout_reclient',
   },
   'src/third_party/android_rust_toolchain/toolchain': {
     'packages': [
