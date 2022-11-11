@@ -345,37 +345,58 @@ void FloatController::OnDragCompletedForTablet(
 }
 
 void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
-                                              bool left,
+                                              absl::optional<bool> left,
                                               bool up) {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
-  MagnetismCorner magnetism_corner;
-  if (left && up) {
-    magnetism_corner = MagnetismCorner::kTopLeft;
-  } else if (left && !up) {
-    magnetism_corner = MagnetismCorner::kBottomLeft;
-  } else if (!left && up) {
-    magnetism_corner = MagnetismCorner::kTopRight;
-  } else {
-    DCHECK(!left && !up);
-    magnetism_corner = MagnetismCorner::kBottomRight;
+  MagnetismCorner original_corner = floated_window_info->magnetism_corner();
+
+  // If this was a vertical fling, simply update magnetism.
+  if (!left) {
+    switch (original_corner) {
+      case MagnetismCorner::kTopLeft:
+      case MagnetismCorner::kBottomLeft:
+        floated_window_info->set_magnetism_corner(
+            up ? MagnetismCorner::kTopLeft : MagnetismCorner::kBottomLeft);
+        break;
+      case MagnetismCorner::kTopRight:
+      case MagnetismCorner::kBottomRight:
+        floated_window_info->set_magnetism_corner(
+            up ? MagnetismCorner::kTopRight : MagnetismCorner::kBottomRight);
+        break;
+    }
+    UpdateWindowBoundsForTablet(
+        floated_window, WindowState::BoundsChangeAnimationType::kAnimate);
+    return;
   }
 
-  MagnetismCorner original_corner = floated_window_info->magnetism_corner();
+  bool left_value = *left;
+  MagnetismCorner magnetism_corner;
+  if (left_value && up) {
+    magnetism_corner = MagnetismCorner::kTopLeft;
+  } else if (left_value && !up) {
+    magnetism_corner = MagnetismCorner::kBottomLeft;
+  } else if (!left_value && up) {
+    magnetism_corner = MagnetismCorner::kTopRight;
+  } else {
+    DCHECK(!left_value && !up);
+    magnetism_corner = MagnetismCorner::kBottomRight;
+  }
   floated_window_info->set_magnetism_corner(magnetism_corner);
+
   // If the window was flung to the closest edge from `original_corner` then
   // tuck the window, otherwise magnetize it.
   switch (original_corner) {
     case MagnetismCorner::kTopLeft:
     case MagnetismCorner::kBottomLeft:
-      if (left) {
+      if (left_value) {
         floated_window_info->MaybeTuckWindow(true);
         return;
       }
       break;
     case MagnetismCorner::kTopRight:
     case MagnetismCorner::kBottomRight:
-      if (!left) {
+      if (!left_value) {
         floated_window_info->MaybeTuckWindow(false);
         return;
       }

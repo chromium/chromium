@@ -80,10 +80,11 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // desk logic to use only `active_floated_window_`.
   // Called by the resizer when a drag is completed by a fling or swipe gesture
   // event. Updates the magnetism of the window and then tucks the window
-  // offscreen. `left` and `up` are used to determine the direction of the fling
-  // or swipe gesture.
+  // offscreen. If set, `left` and `up` are used to determine the direction
+  // of the fling or swipe gesture. If `left` is empty then there is no
+  // horizontal fling/swipe component.
   void OnFlingOrSwipeForTablet(aura::Window* floated_window,
-                               bool left,
+                               absl::optional<bool> left,
                                bool up);
 
   // Returns the desk where floated window belongs to if window is floated and

@@ -1287,6 +1287,29 @@ TEST_F(TabletWindowFloatTest, UntuckWindowGestures) {
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
 }
 
+// Tests that flinging the window straight up or down does not tuck the window.
+TEST_F(TabletWindowFloatTest, FlingVertical) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  // The window is magnetized to the bottom right by default.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Fling the window straight down. Test that it stays in the bottom right.
+  const gfx::Point start =
+      GetHeaderView(window.get())->GetBoundsInScreen().CenterPoint();
+  GetEventGenerator()->GestureScrollSequence(
+      start, start + gfx::Vector2d(0, 10), base::Milliseconds(10), /*steps=*/1);
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
+
+  // Fling the window straight up. Test that it moves to the top right.
+  GetEventGenerator()->GestureScrollSequence(
+      start, start + gfx::Vector2d(0, -10), base::Milliseconds(10),
+      /*steps=*/1);
+  ASSERT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopRight);
+}
+
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;
 
 // Tests the expected behaviour when a window is floated when there are snapped

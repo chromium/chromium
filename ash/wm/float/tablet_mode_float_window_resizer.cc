@@ -127,16 +127,19 @@ void TabletModeFloatWindowResizer::RevertDrag() {
 void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
   DCHECK(window_state_->IsFloated());
   const ui::GestureEventDetails& details = event->details();
-  bool left, up;
+  // Emplace `left` if the gesture has a horizontal component.
+  absl::optional<bool> left;
+  bool up;
   if (event->type() == ui::ET_SCROLL_FLING_START) {
-    left = details.velocity_x() < 0.f;
+    if (details.velocity_x() != 0.f)
+      left.emplace(details.velocity_x() < 0.f);
     up = details.velocity_y() < 0.f;
   } else {
     DCHECK_EQ(ui::ET_GESTURE_SWIPE, event->type());
-    left = details.swipe_left();
+    if (details.swipe_left() || details.swipe_right())
+      left.emplace(details.swipe_left());
     up = details.swipe_up();
   }
-
   Shell::Get()->float_controller()->OnFlingOrSwipeForTablet(GetTarget(), left,
                                                             up);
 }
