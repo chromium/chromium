@@ -722,14 +722,15 @@ void DevToolsHttpHandler::RespondToJsonList(
     DevToolsAgentHost::List hosts) {
   DevToolsAgentHost::List agent_hosts = std::move(hosts);
   std::sort(agent_hosts.begin(), agent_hosts.end(), TimeComparator);
-  base::ListValue list_value;
+  base::Value::List list_value;
   for (auto& agent_host : agent_hosts) {
     // TODO(caseq): figure out if it makes sense exposing tab target to
     // HTTP clients and potentially compatibility risks involved.
     if (agent_host->GetType() != DevToolsAgentHost::kTypeTab)
       list_value.Append(SerializeDescriptor(agent_host, host));
   }
-  SendJson(connection_id, net::HTTP_OK, &list_value, std::string());
+  base::Value value(std::move(list_value));
+  SendJson(connection_id, net::HTTP_OK, &value, std::string());
 }
 
 void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
