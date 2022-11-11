@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_management_transition.h"
 
 #include <string>
 
+#include "ash/components/arc/session/arc_management_transition.h"
+#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "components/guest_os/guest_os_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -119,6 +120,9 @@ const char kArcShowResizeLockSplashScreenLimits[] =
 const char kArcPlayStoreLaunchMetricCanBeRecorded[] =
     "arc.playstore_launched_by_user";
 
+// An integer preference to indicate the status of ARCVM /data migration.
+const char kArcVmDataMigrationStatus[] = "arc.vm_data_migration_status";
+
 // ======== LOCAL STATE PREFS ========
 // ANR count which is currently pending, not flashed to UMA.
 const char kAnrPendingCount[] = "arc.anr_pending_count";
@@ -199,6 +203,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcTermsAccepted, false);
   registry->RegisterBooleanPref(kArcTermsShownInOobe, false);
   registry->RegisterListPref(kArcVisibleExternalStorages);
+  registry->RegisterIntegerPref(
+      kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kUnnotified));
 }
 
 }  // namespace prefs

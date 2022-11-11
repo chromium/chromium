@@ -92,6 +92,8 @@ static_library("arc_base_enums") {
     "arc_management_transition.h",
     "arc_stop_reason.cc",
     "arc_stop_reason.h",
+    "arc_vm_data_migration_status.cc",
+    "arc_vm_data_migration_status.h",
   ]
 
   deps = [ "//base" ]
