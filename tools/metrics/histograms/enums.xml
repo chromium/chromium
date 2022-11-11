@@ -50226,6 +50226,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147157499" label="media::kErrorZeroProtectionSystemId"/>
   <int value="-2147157498" label="media::kErrorLoadLibrary"/>
   <int value="-2147157497" label="media::kErrorGetFunctionPointer"/>
+  <int value="-2147157496" label="media::kErrorInvalidCdmProxy"/>
   <int value="-2147024894" label="ERROR_FILE_NOT_FOUND"/>
   <int value="-2147024893" label="ERROR_PATH_NOT_FOUND"/>
   <int value="-2147024891" label="E_ACCESSDENIED"/>

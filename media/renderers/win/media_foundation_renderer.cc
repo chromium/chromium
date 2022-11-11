@@ -216,7 +216,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     cdm_proxy_ = cdm_context_->GetMediaFoundationCdmProxy();
     if (!cdm_proxy_) {
       DLOG(ERROR) << __func__ << ": CDM does not support MF CDM interface";
-      return MF_E_UNEXPECTED;
+      return kErrorInvalidCdmProxy;
     }
   }
 
