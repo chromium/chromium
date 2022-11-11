@@ -208,7 +208,8 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
     const AutofillProfileChange& change) {
   DCHECK(change.data_model());
   if (!change_processor()->IsTrackingMetadata() ||
-      change.data_model()->record_type() != AutofillProfile::LOCAL_PROFILE) {
+      change.data_model()->record_type() != AutofillProfile::LOCAL_PROFILE ||
+      change.data_model()->source() != AutofillProfile::Source::kLocal) {
     return;
   }
 

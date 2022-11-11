@@ -62,6 +62,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  // AutofillWebDataServiceObserverOnDBSequence implementation.
+  void AutofillProfileChanged(const AutofillProfileChange& change) override;
+
  private:
   // Returns the `AutofillTable` associated with the `web_data_backend_`.
   AutofillTable* GetAutofillTable();

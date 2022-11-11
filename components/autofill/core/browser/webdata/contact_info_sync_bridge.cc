@@ -174,6 +174,40 @@ std::string ContactInfoSyncBridge::GetStorageKey(
   return AreContactInfoSpecificsValid(specifics) ? specifics.guid() : "";
 }
 
+void ContactInfoSyncBridge::AutofillProfileChanged(
+    const AutofillProfileChange& change) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(change.data_model());
+  if (!change_processor()->IsTrackingMetadata() ||
+      change.data_model()->source() != AutofillProfile::Source::kAccount) {
+    return;
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+  switch (change.type()) {
+    case AutofillProfileChange::ADD:
+    case AutofillProfileChange::UPDATE:
+      change_processor()->Put(
+          change.key(),
+          CreateContactInfoEntityDataFromAutofillProfile(*change.data_model()),
+          metadata_change_list.get());
+      break;
+    case AutofillProfileChange::REMOVE:
+      change_processor()->Delete(change.key(), metadata_change_list.get());
+      break;
+    case AutofillProfileChange::EXPIRE:
+      // EXPIRE changes are not issued for profiles.
+      NOTREACHED();
+      break;
+  }
+
+  // Local changes (written by the processor via the metadata change list) don't
+  // need to be committed, because the open WebDatabase transaction is committed
+  // by the AutofillWebDataService when the original local write operation (that
+  // triggered this notification to the bridge) finishes.
+}
+
 AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }

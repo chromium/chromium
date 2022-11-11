@@ -25,12 +25,26 @@ namespace autofill {
 
 namespace {
 
+using testing::_;
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kGUID2[] = "00000000-0000-0000-0000-000000000002";
 constexpr char kInvalidGUID[] = "1234";
+
+// Matches `syncer::EntityData*` and expects that the specifics of it match
+// the `expected_profile`.
+MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
+  AutofillProfile arg_profile = *CreateAutofillProfileFromContactInfoSpecifics(
+      arg->specifics.contact_info());
+  if (!arg_profile.EqualsIncludingUsageStatsForTesting(expected_profile)) {
+    *result_listener << "entry\n[" << arg_profile << "]\n"
+                     << "did not match expected\n[" << expected_profile << "]";
+    return false;
+  }
+  return true;
+}
 
 // Extracts all `ContactInfoSpecifics` from `batch`, converts them into
 // `AutofillProfile`s and returns the result.
@@ -65,6 +79,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<ContactInfoSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
+    ON_CALL(mock_processor(), IsTrackingMetadata)
+        .WillByDefault(testing::Return(true));
   }
 
   // Tells the processor to starts syncing with pre-existing `remote_profiles`.
@@ -155,7 +171,7 @@ TEST_F(ContactInfoSyncBridgeTest, MergeSyncData) {
 // changes into the local store. New local changes are not applied to sync.
 TEST_F(ContactInfoSyncBridgeTest, ApplySyncChanges) {
   AddAutofillProfilesToTable({TestProfile(kGUID1)});
-  ASSERT_TRUE(StartSyncing({}));
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
 
   AutofillProfile remote = TestProfile(kGUID2);
 
@@ -207,6 +223,49 @@ TEST_F(ContactInfoSyncBridgeTest, GetAllDataForDebugging) {
   const AutofillProfile profile2 = TestProfile(kGUID2);
   AddAutofillProfilesToTable({profile1, profile2});
   EXPECT_THAT(GetAllDataFromBridge(), UnorderedElementsAre(profile1, profile2));
+}
+
+// Tests that new local profiles are pushed to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Add) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  const AutofillProfile profile = TestProfile(kGUID1);
+  const AutofillProfileChange change(AutofillProfileChange::ADD, kGUID1,
+                                     &profile);
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
+  // The bridge does not need to commit when reacting to a notification about a
+  // local change.
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+
+  bridge().AutofillProfileChanged(change);
+}
+
+// Tests that updates to local profiles are pushed to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Update) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  const AutofillProfile profile = TestProfile(kGUID1);
+  const AutofillProfileChange change(AutofillProfileChange::UPDATE, kGUID1,
+                                     &profile);
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+
+  bridge().AutofillProfileChanged(change);
+}
+
+// Tests that the removal of local profiles is communicated to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+
+  const AutofillProfile profile = TestProfile(kGUID1);
+  const AutofillProfileChange change(AutofillProfileChange::REMOVE, kGUID1,
+                                     &profile);
+  EXPECT_CALL(mock_processor(), Delete(kGUID1, _));
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+
+  bridge().AutofillProfileChanged(change);
 }
 
 }  // namespace autofill
