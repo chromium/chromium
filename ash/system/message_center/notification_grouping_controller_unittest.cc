@@ -77,6 +77,7 @@ class NotificationGroupingControllerTest : public AshTestBase {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
+    notifier_id.url = origin_url;
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id_out,
         u"id" + base::NumberToString16(notifications_counter_),
@@ -432,6 +433,32 @@ TEST_F(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
   EXPECT_FALSE(message_center->FindNotificationById(parent_id));
   EXPECT_FALSE(message_center->FindNotificationById(id1));
   EXPECT_FALSE(message_center->FindNotificationById(id2));
+}
+
+// Regression test for b/251684908. Tests that a duplicate `AddNotification`
+// event does not cause the associated notification popup to be dismissed or the
+// original notification to be grouped incorrectly.
+TEST_F(NotificationGroupingControllerTest, DuplicateAddNotificationNotGrouped) {
+  std::string id = AddNotificationWithOriginUrl(GURL(u"http://test-url.com/"));
+
+  auto* popup = GetPopupView(id);
+  EXPECT_TRUE(popup->GetVisible());
+
+  auto* message_center = message_center::MessageCenter::Get();
+
+  // Add a copy of the original notification.
+  auto* original_notification = message_center->FindNotificationById(id);
+  message_center->AddNotification(
+      std::make_unique<Notification>(*original_notification));
+
+  // Add a new notification to force an update to all notification popups.
+  AddNotificationWithOriginUrl(GURL(u"http://other-url.com/"));
+
+  // Make sure the popup for the `original_notification` still exists and is
+  // visible. Also, make sure the `original_notification` was not grouped.
+  EXPECT_TRUE(GetPopupView(id));
+  EXPECT_TRUE(popup->GetVisible());
+  EXPECT_FALSE(message_center->FindNotificationById(id)->group_child());
 }
 
 }  // namespace ash
