@@ -20,7 +20,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,7 +54,6 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForCategory() {
         Assert.assertFalse("The native library should not be loaded yet",
@@ -93,7 +91,6 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1246141")
     @Feature({"Browser", "Notifications"})
     public void testLaunchNotificationPreferencesForWebsite() {
         Assert.assertFalse("The native library should not be loaded yet",
@@ -137,7 +134,6 @@ public class NotificationPlatformBridgeIntentTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/950635")
     @Feature({"Browser", "Notifications"})
     public void testLaunchProcessForNotificationActivation() throws Exception {
         Assert.assertFalse("The native library should not be loaded yet",
