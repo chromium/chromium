@@ -237,6 +237,12 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
       EXPECT_EQ(nullptr, provider_->Get(policy_key));
   }
 
+  void VerifyPolicyList(const char* policy_key,
+                        const base::Value::List& expected_value) {
+    EXPECT_TRUE(provider_->Get(policy_key)->is_list());
+    EXPECT_EQ(expected_value, provider_->Get(policy_key)->GetList());
+  }
+
   // Helper routine to set LoginScreenDomainAutoComplete policy.
   void SetDomainAutoComplete(const std::string& domain) {
     em::LoginScreenDomainAutoCompleteProto* proto =
@@ -833,9 +839,9 @@ TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
       {em::AutoUpdateSettingsProto::CONNECTION_TYPE_ETHERNET};
   // Check some meaningful value. Policy should be set.
   SetAutoUpdateConnectionTypes(single_value);
-  base::ListValue allowed_connections;
+  base::Value::List allowed_connections;
   allowed_connections.Append(0);
-  VerifyPolicyValue(kAllowedConnectionTypesForUpdate, &allowed_connections);
+  VerifyPolicyList(kAllowedConnectionTypesForUpdate, allowed_connections);
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeHostnameTemplate) {
@@ -890,7 +896,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsExtra) {
       "[{\"start\": {\"day_of_week\": \"Monday\", \"hours\": 10, \"minutes\": "
       "50}, \"end\": {\"day_of_week\": \"Wednesday\", \"hours\": 1, "
       "\"minutes\": 20, \"extra\": 50}}]";
-  base::ListValue test_list;
+  base::Value::List test_list;
   base::DictionaryValue interval;
   interval.SetPath({"start", "day_of_week"}, base::Value("Monday"));
   interval.SetPath({"start", "hours"}, base::Value(10));
@@ -900,7 +906,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsExtra) {
   interval.SetPath({"end", "minutes"}, base::Value(20));
   test_list.Append(std::move(interval));
   SetDeviceAutoUpdateTimeRestrictions(extra_field);
-  VerifyPolicyValue(kDeviceAutoUpdateTimeRestrictions, &test_list);
+  VerifyPolicyList(kDeviceAutoUpdateTimeRestrictions, test_list);
 }
 
 // Check valid JSON for DeviceScheduledUpdateCheck.
@@ -1164,9 +1170,9 @@ TEST_F(DeviceSettingsProviderTest, FeatureFlags) {
   device_policy_->payload().mutable_feature_flags()->add_feature_flags("foo");
   BuildAndInstallDevicePolicy();
 
-  base::ListValue expected_feature_flags;
+  base::Value::List expected_feature_flags;
   expected_feature_flags.Append(base::Value("foo"));
-  EXPECT_EQ(expected_feature_flags, *provider_->Get(kFeatureFlags));
+  EXPECT_EQ(expected_feature_flags, provider_->Get(kFeatureFlags)->GetList());
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeBorealisAllowed) {
@@ -1188,9 +1194,10 @@ TEST_F(DeviceSettingsProviderTest, DeviceAllowedBluetoothServices) {
       device_policy_->payload().mutable_device_allowed_bluetooth_services();
   proto->add_allowlist("0x1124");
   BuildAndInstallDevicePolicy();
-  base::ListValue allowlist;
+  base::Value::List allowlist;
   allowlist.Append(base::Value("0x1124"));
-  EXPECT_EQ(allowlist, *provider_->Get(kDeviceAllowedBluetoothServices));
+  EXPECT_EQ(allowlist,
+            provider_->Get(kDeviceAllowedBluetoothServices)->GetList());
 }
 
 // Check valid JSON for DeviceScheduledReboot.
