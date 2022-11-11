@@ -1327,11 +1327,11 @@
     "AutofillMin3FieldTypesForLocalHeuristics": [
         {
             "platforms": [
-                "android_webview",
-                "android_weblayer",
                 "android",
+                "android_webview",
                 "chromeos",
-                "fuchsia",
+                "chromeos_lacros",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
