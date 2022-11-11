@@ -100485,13 +100485,6 @@ Full version information for the fingerprint enum values:
   <int value="5" label="Recently uploaded another trace"/>
 </enum>
 
-<enum name="TracingProducerHostInitializationResult">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kSmbMappingFailed"/>
-  <int value="2" label="kSmbNotAdopted"/>
-  <int value="3" label="kProducerEndpointConstructionFailed"/>
-</enum>
-
 <enum name="TrackedPreference">
   <int value="0" label="kShowHomeButton"/>
   <int value="1" label="kHomePageIsNewTabPage"/>

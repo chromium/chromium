@@ -116,8 +116,8 @@ void PerfettoService::ConnectToProducerHost(
                     base::NumberToString(producer_pid)}),
       std::move(shared_memory), shared_memory_buffer_page_size_bytes);
 
-  base::UmaHistogramEnumeration("Tracing.ProducerHostInitializationResult",
-                                result);
+  // There used to be a histogram that recorded failures, but as of 2022
+  // failures were extremely rare, so we removed it.
 
   if (result == ProducerHost::InitializationResult::kSmbNotAdopted) {
     // When everything else succeeds, but the SMB was not accepted, the producer

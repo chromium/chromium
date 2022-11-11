@@ -14707,16 +14707,6 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="Tracing.ProducerHostInitializationResult"
-    enum="TracingProducerHostInitializationResult" expires_after="2022-12-09">
-  <owner>eseckler@chromium.org</owner>
-  <owner>tracing@chromium.org</owner>
-  <summary>
-    Whenever a producer connects to the tracing service, records the
-    success/failure result of the connection.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
     expires_after="2023-09-19">
   <owner>eseckler@chromium.org</owner>
