@@ -494,7 +494,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
     return;
   absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (value && value->is_list()) {
-    for (base::Value& page_value : value->GetListDeprecated()) {
+    for (base::Value& page_value : value->GetList()) {
       if (page_value.is_dict())
         browser->pages_.push_back(new RemotePage(device, browser->browser_id_,
                                                  browser->version_,
