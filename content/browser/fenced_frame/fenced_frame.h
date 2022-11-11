@@ -36,8 +36,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
  public:
   explicit FencedFrame(
       base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-      blink::mojom::FencedFrameMode mode,
-      const base::UnguessableToken& devtools_frame_token);
+      blink::mojom::FencedFrameMode mode);
   ~FencedFrame() override;
 
   void Bind(mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
@@ -52,7 +51,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   RenderFrameProxyHost* InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
-      const blink::RemoteFrameToken& frame_token);
+      const blink::RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token);
 
   // blink::mojom::FencedFrameOwnerHost implementation.
   void Navigate(const GURL& url,

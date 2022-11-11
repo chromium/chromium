@@ -124,18 +124,16 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
     : attributes_(attributes),
       attempt_(std::move(attempt)),
       web_contents_(web_contents),
-      frame_tree_(
-          std::make_unique<FrameTree>(web_contents.GetBrowserContext(),
-                                      this,
-                                      this,
-                                      &web_contents,
-                                      &web_contents,
-                                      &web_contents,
-                                      &web_contents,
-                                      &web_contents,
-                                      &web_contents,
-                                      FrameTree::Type::kPrerender,
-                                      base::UnguessableToken::Create())) {
+      frame_tree_(std::make_unique<FrameTree>(web_contents.GetBrowserContext(),
+                                              this,
+                                              this,
+                                              &web_contents,
+                                              &web_contents,
+                                              &web_contents,
+                                              &web_contents,
+                                              &web_contents,
+                                              &web_contents,
+                                              FrameTree::Type::kPrerender)) {
   DCHECK(blink::features::IsPrerender2Enabled());
   // If the prerendering is browser-initiated, it is expected to have no
   // initiator. All initiator related information should be null or invalid. On
@@ -177,7 +175,8 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
   frame_tree_->Init(site_instance.get(),
                     /*renderer_initiated_creation=*/false,
                     /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                    /*frame_policy=*/blink::FramePolicy());
+                    /*frame_policy=*/blink::FramePolicy(),
+                    base::UnguessableToken::Create());
 
   // Use the same SessionStorageNamespace as the primary page for the
   // prerendering page.

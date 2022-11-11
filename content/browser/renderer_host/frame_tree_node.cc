@@ -154,7 +154,6 @@ FrameTreeNode::FrameTreeNode(
     RenderFrameHostImpl* parent,
     blink::mojom::TreeScopeType tree_scope_type,
     bool is_created_by_script,
-    const base::UnguessableToken& devtools_frame_token,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType owner_type,
     const blink::FramePolicy& frame_policy)
@@ -165,7 +164,6 @@ FrameTreeNode::FrameTreeNode(
       tree_scope_type_(tree_scope_type),
       pending_frame_policy_(frame_policy),
       is_created_by_script_(is_created_by_script),
-      devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
       attributes_(blink::mojom::IframeAttributes::New()),
       fenced_frame_status_(

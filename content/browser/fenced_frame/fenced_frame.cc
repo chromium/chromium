@@ -43,8 +43,7 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
 
 FencedFrame::FencedFrame(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    blink::mojom::FencedFrameMode mode,
-    const base::UnguessableToken& devtools_frame_token)
+    blink::mojom::FencedFrameMode mode)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
@@ -60,8 +59,7 @@ FencedFrame::FencedFrame(
                                       /*render_widget_delegate=*/web_contents_,
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
-                                      FrameTree::Type::kFencedFrame,
-                                      devtools_frame_token)),
+                                      FrameTree::Type::kFencedFrame)),
       mode_(mode) {}
 
 FencedFrame::~FencedFrame() {
@@ -147,7 +145,8 @@ FrameTree* FencedFrame::LoadingTree() {
 RenderFrameProxyHost*
 FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    const blink::RemoteFrameToken& frame_token) {
+    const blink::RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
   DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
 
@@ -167,9 +166,11 @@ FencedFrame::InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
   // via the mojom.LocalMainFrameHost.ShowCreatedWindow(). This flow does not
   // apply for fenced frames, portals, and prerendered nested FrameTrees, hence
   // the decision to mark it as false.
-  frame_tree_->Init(site_instance.get(), /*renderer_initiated_creation=*/false,
-                    /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
-                    frame_policy);
+  frame_tree_->Init(site_instance.get(),
+                    /*renderer_initiated_creation=*/false,
+                    /*main_frame_name=*/"",
+                    /*opener_for_origin=*/nullptr, frame_policy,
+                    devtools_frame_token);
   // Note that pending frame policy will be passed as `frame_policy` in
   // `replication_state` in `mojom::CreateFrameParams`.
   // See `RenderFrameHostImpl::CreateRenderFrame`.

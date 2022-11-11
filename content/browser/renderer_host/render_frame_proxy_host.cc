@@ -262,17 +262,23 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     if (!parent_proxy->is_render_frame_proxy_live())
       return false;
 
+    // The current RenderFrameHost's devtools_frame_token can be used here
+    // because it is not expected to differ when there is a RenderFrameProxyHost
+    // in a separate window. The token may change on MPArch activations in the
+    // main frame (e.g., prerender), but those cannot occur if the
+    // BrowsingInstance has more than one window. Same for the
+    // CreateRemoteMainFrame call below.
     parent_proxy->GetAssociatedRemoteFrame()->CreateRemoteChild(
         frame_token_, opener_frame_token, frame_tree_node_->tree_scope_type(),
         frame_tree_node_->current_replication_state().Clone(),
-        frame_tree_node_->devtools_frame_token(),
+        frame_tree_node_->current_frame_host()->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces());
 
   } else {
     GetRenderViewHost()->GetAssociatedPageBroadcast()->CreateRemoteMainFrame(
         frame_token_, opener_frame_token,
         frame_tree_node_->current_replication_state().Clone(),
-        frame_tree_node_->devtools_frame_token(),
+        frame_tree_node_->current_frame_host()->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces(),
         CreateAndBindRemoteMainFrameInterfaces());
   }

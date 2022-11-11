@@ -190,8 +190,7 @@ FrameTree::FrameTree(
     RenderWidgetHostDelegate* render_widget_delegate,
     RenderFrameHostManager::Delegate* manager_delegate,
     PageDelegate* page_delegate,
-    Type type,
-    const base::UnguessableToken& devtools_frame_token)
+    Type type)
     : delegate_(delegate),
       render_frame_delegate_(render_frame_delegate),
       render_view_delegate_(render_view_delegate),
@@ -211,7 +210,6 @@ FrameTree::FrameTree(
             // document scope.
             blink::mojom::TreeScopeType::kDocument,
             false,
-            devtools_frame_token,
             blink::mojom::FrameOwnerProperties(),
             blink::FrameOwnerElementType::kNone,
             blink::FramePolicy()) {}
@@ -376,9 +374,9 @@ FrameTreeNode* FrameTree::AddFrame(
   // parent node.
   CHECK_EQ(parent->GetProcess()->GetID(), process_id);
 
-  std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(new FrameTreeNode(
-      this, parent, scope, is_created_by_script, devtools_frame_token,
-      frame_owner_properties, owner_type, frame_policy));
+  std::unique_ptr<FrameTreeNode> new_node = base::WrapUnique(
+      new FrameTreeNode(this, parent, scope, is_created_by_script,
+                        frame_owner_properties, owner_type, frame_policy));
 
   // Set sandbox flags and container policy and make them effective immediately,
   // since initial sandbox flags and permissions policy should apply to the
@@ -396,7 +394,8 @@ FrameTreeNode* FrameTree::AddFrame(
   // Add the new node to the FrameTree, creating the RenderFrameHost.
   FrameTreeNode* added_node = parent->AddChild(
       std::move(new_node), new_routing_id, std::move(frame_remote), frame_token,
-      document_token, frame_policy, frame_name, frame_unique_name);
+      document_token, devtools_frame_token, frame_policy, frame_name,
+      frame_unique_name);
 
   added_node->SetFencedFramePropertiesIfNeeded();
 
@@ -785,13 +784,14 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
                      const std::string& main_frame_name,
                      RenderFrameHostImpl* opener_for_origin,
-                     const blink::FramePolicy& frame_policy) {
+                     const blink::FramePolicy& frame_policy,
+                     const base::UnguessableToken& devtools_frame_token) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
   root_.render_manager()->InitRoot(main_frame_site_instance,
                                    renderer_initiated_creation, frame_policy,
-                                   main_frame_name);
+                                   main_frame_name, devtools_frame_token);
   root_.SetFencedFramePropertiesIfNeeded();
 
   // The initial empty document should inherit the origin of its opener (the

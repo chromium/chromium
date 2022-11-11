@@ -247,7 +247,7 @@ void RenderFrameDevToolsAgentHost::UpdateRawHeadersAccess(
 RenderFrameDevToolsAgentHost::RenderFrameDevToolsAgentHost(
     FrameTreeNode* frame_tree_node,
     RenderFrameHostImpl* frame_host)
-    : DevToolsAgentHostImpl(frame_tree_node->devtools_frame_token().ToString()),
+    : DevToolsAgentHostImpl(frame_host->devtools_frame_token().ToString()),
       auto_attacher_(std::make_unique<FrameAutoAttacher>(GetRendererChannel())),
       frame_tree_node_(nullptr) {
   SetFrameTreeNode(frame_tree_node);
@@ -326,8 +326,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
     session->CreateAndAddHandler<protocol::OverlayHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(),
-      frame_tree_node_ ? frame_tree_node_->devtools_frame_token()
-                       : base::UnguessableToken(),
+      frame_host_ ? frame_host_->devtools_frame_token()
+                  : base::UnguessableToken(),
       GetIOContext(),
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
@@ -697,7 +697,9 @@ std::string RenderFrameDevToolsAgentHost::GetOpenerId() {
     return std::string();
   FrameTreeNode* opener =
       frame_tree_node_->first_live_main_frame_in_original_opener_chain();
-  return opener ? opener->devtools_frame_token().ToString() : std::string();
+  return opener
+             ? opener->current_frame_host()->devtools_frame_token().ToString()
+             : std::string();
 }
 
 std::string RenderFrameDevToolsAgentHost::GetOpenerFrameId() {

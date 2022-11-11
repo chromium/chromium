@@ -639,7 +639,10 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
   }
 
   std::string MainFrameId() {
-    return PrimaryFrameTreeNodeRoot()->devtools_frame_token().ToString();
+    return PrimaryFrameTreeNodeRoot()
+        ->current_frame_host()
+        ->devtools_frame_token()
+        .ToString();
   }
 
   FencedFrameURLMapping::SharedStorageBudgetMetadata*

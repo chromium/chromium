@@ -187,7 +187,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
                    const GURL& url) {
   GURL::Replacements strip_fragment;
   strip_fragment.ClearRef();
-  data->SetString("frame", node->devtools_frame_token().ToString());
+  data->SetString("frame", frame_host->devtools_frame_token().ToString());
   data->SetString("url", url.ReplaceComponents(strip_fragment).spec());
   data->SetString("name", node->frame_name());
   if (node->parent()) {
@@ -201,7 +201,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
       data->SetString("processPseudoId", GetProcessHostHex(process_host));
       frame_host->GetProcess()->PostTaskWhenProcessIsReady(
           base::BindOnce(&SendProcessReadyInBrowserEvent,
-                         node->devtools_frame_token(), process_host));
+                         frame_host->devtools_frame_token(), process_host));
     } else {
       // Cast process id to int to be compatible with tracing.
       data->SetInteger("processId", static_cast<int>(process_handle.Pid()));
@@ -1159,7 +1159,8 @@ void TracingHandler::FrameDeleted(int frame_tree_node_id) {
   FrameTreeNode* node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  data->SetString("frame", node->devtools_frame_token().ToString());
+  data->SetString(
+      "frame", node->current_frame_host()->devtools_frame_token().ToString());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameDeletedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));

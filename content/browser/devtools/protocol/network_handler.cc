@@ -2177,8 +2177,10 @@ void NetworkHandler::NavigationRequestWillBeSent(
   std::string id = nav_request.devtools_navigation_token().ToString();
   double current_ticks = timestamp.since_origin().InSecondsF();
   double current_wall_time = base::Time::Now().ToDoubleT();
-  std::string frame_token =
-      nav_request.frame_tree_node()->devtools_frame_token().ToString();
+  std::string frame_token = nav_request.frame_tree_node()
+                                ->current_frame_host()
+                                ->devtools_frame_token()
+                                .ToString();
 
   const blink::mojom::BeginNavigationParams& begin_params =
       nav_request.begin_params();

@@ -89,7 +89,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       RenderFrameHostImpl* parent,
       blink::mojom::TreeScopeType tree_scope_type,
       bool is_created_by_script,
-      const base::UnguessableToken& devtools_frame_token,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
       const blink::FramePolicy& frame_owner);
@@ -140,17 +139,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return render_manager_.current_replication_state().unique_name;
   }
 
-  // See comment on the member declaration.
-  const base::UnguessableToken& devtools_frame_token() const {
-    return devtools_frame_token_;
-  }
-
-  // This may only change when an RFH changes host frame tree nodes
-  // during prerender activation.
-  // TODO(caseq,dsv): see if we can get rid of it.
-  void set_devtools_frame_token(const base::UnguessableToken& token) {
-    devtools_frame_token_ = token;
-  }
   size_t child_count() const { return current_frame_host()->child_count(); }
 
   RenderFrameHostImpl* parent() const { return parent_; }
@@ -757,15 +745,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // scripts are never recreated with the same unique name - see
   // https://crbug.com/500260).
   const bool is_created_by_script_;
-
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this token in order to attribute them
-  // to the context frame.
-  // |devtools_frame_token_| is only defined by the browser process and is never
-  // sent back from the renderer in the control calls. It should be never used
-  // to look up the FrameTreeNode instance.
-  base::UnguessableToken devtools_frame_token_;
 
   // Tracks the scrolling and margin properties for this frame.  These
   // properties affect the child renderer but are stored on its parent's

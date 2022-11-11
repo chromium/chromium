@@ -1478,6 +1478,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
+    base::UnguessableToken devtools_frame_token,
     bool renderer_initiated_creation_of_main_frame,
     LifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -1514,7 +1515,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           FrameTreeNode::kFrameTreeNodeInvalidId),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
-      fenced_frame_status_(fenced_frame_status) {
+      fenced_frame_status_(fenced_frame_status),
+      devtools_frame_token_(devtools_frame_token) {
   TRACE_EVENT_BEGIN("navigation", "RenderFrameHostImpl",
                     perfetto::Track::FromPointer(this),
                     "render_frame_host_when_created", this);
@@ -2220,7 +2222,7 @@ int RenderFrameHostImpl::GetFrameTreeNodeId() const {
 }
 
 const base::UnguessableToken& RenderFrameHostImpl::GetDevToolsFrameToken() {
-  return frame_tree_node_->devtools_frame_token();
+  return devtools_frame_token();
 }
 
 absl::optional<base::UnguessableToken>
@@ -3177,7 +3179,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->replication_state =
       browsing_context_state_->current_replication_state().Clone();
   params->frame_token = frame_token_;
-  params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
+  params->devtools_frame_token = devtools_frame_token();
   BindAssociatedInterfaceProviderReceiver(
       params->associated_interface_provider_remote
           .InitWithNewEndpointAndPassReceiver());
@@ -4093,6 +4095,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
+    base::UnguessableToken devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     std::string frame_name,
     std::string frame_unique_name) {
@@ -4101,7 +4104,8 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // a different one if they navigate away.
   child->render_manager()->InitChild(
       GetSiteInstance(), frame_routing_id, std::move(frame_remote), frame_token,
-      document_token, frame_policy, frame_name, frame_unique_name);
+      document_token, devtools_frame_token, frame_policy, frame_name,
+      frame_unique_name);
 
   // Other renderer processes in this BrowsingInstance may need to find out
   // about the new frame.  Create a proxy for the child frame in all
@@ -7609,7 +7613,8 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // this tab.
   for (FrameTreeNode* node :
        GetOutermostMainFrame()->frame_tree()->NodesIncludingInnerTreeNodes()) {
-    if (node->devtools_frame_token() == devtools_frame_token) {
+    if (node->current_frame_host()->devtools_frame_token() ==
+        devtools_frame_token) {
       bad_message::ReceivedBadMessage(
           GetProcess(),
           bad_message::RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN);
@@ -7617,12 +7622,13 @@ void RenderFrameHostImpl::CreateFencedFrame(
     }
   }
 
-  fenced_frames_.push_back(std::make_unique<FencedFrame>(
-      weak_ptr_factory_.GetSafeRef(), mode, devtools_frame_token));
+  fenced_frames_.push_back(
+      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
       fenced_frame->InitInnerFrameTreeAndReturnProxyToOuterFrameTree(
-          std::move(remote_frame_interfaces), frame_token);
+          std::move(remote_frame_interfaces), frame_token,
+          devtools_frame_token);
   fenced_frame->Bind(std::move(pending_receiver));
 
   // Since the fenced frame is newly created and has yet to commit a navigation,

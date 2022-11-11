@@ -184,7 +184,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void InitRoot(SiteInstance* site_instance,
                 bool renderer_initiated_creation,
                 blink::FramePolicy initial_main_frame_policy,
-                const std::string& name);
+                const std::string& name,
+                const base::UnguessableToken& devtools_frame_token);
 
   // Initialize this frame as the child of another frame.
   void InitChild(SiteInstance* site_instance,
@@ -192,6 +193,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
                  mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
                  const blink::LocalFrameToken& frame_token,
                  const blink::DocumentToken& document_token,
+                 const base::UnguessableToken& devtools_frame_token,
                  blink::FramePolicy frame_policy,
                  std::string frame_name,
                  std::string frame_unique_name);
@@ -788,6 +790,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
+      base::UnguessableToken devtools_frame_token,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> browsing_context_state);
 
