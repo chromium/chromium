@@ -120,8 +120,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
 
-// TODO(crbug.com/1378338): Re-enable this flaky test on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1378338): Re-enable this flaky test on Linux
+// and lacros asan builder.
+#if BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_HomepageLocation DISABLED_HomepageLocation
 #else
 #define MAYBE_HomepageLocation HomepageLocation
