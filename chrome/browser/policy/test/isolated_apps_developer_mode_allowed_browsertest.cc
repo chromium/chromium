@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -25,15 +26,15 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-constexpr char kIsolatedWebAppHost[] = "isolated-app.com";
-
 using PolicyVerdictPair = std::tuple<policy::PolicyTest::BooleanPolicy, bool>;
 using BooleanPolicy = policy::PolicyTest::BooleanPolicy;
+
+base::FilePath::StringType kSimpleIsolatedWebAppPath =
+    FILE_PATH_LITERAL("web_apps/simple_isolated_app");
 
 class IsolatedWebAppsDeveloperModeAllowedPolicyTest
     : public web_app::IsolatedWebAppBrowserTestHarness,
@@ -41,15 +42,6 @@ class IsolatedWebAppsDeveloperModeAllowedPolicyTest
  public:
   IsolatedWebAppsDeveloperModeAllowedPolicyTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-
-    const std::string isolated_app_origins =
-        std::string("https://") + kIsolatedWebAppHost;
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    isolated_app_origins);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -83,33 +75,33 @@ class IsolatedWebAppsDeveloperModeAllowedPolicyTest
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppsDeveloperModeAllowedPolicyTest, MockTcp) {
-  auto app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(kSimpleIsolatedWebAppPath);
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  content::RenderFrameHost* app_frame = OpenApp(app_id);
-  content::WebContents* app_contents =
-      content::WebContents::FromRenderFrameHost(app_frame);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kIsolatedWebAppHost,
-                             "/policy/direct_sockets.html")));
+  content::RenderFrameHost* navigated_frame = ui_test_utils::NavigateToURL(
+      GetBrowserFromFrame(app_frame),
+      url_info.origin().GetURL().Resolve("/direct_sockets.html"));
 
   const bool enabled = std::get<1>(GetParam());
-  ASSERT_EQ(enabled, EvalJs(app_contents->GetPrimaryMainFrame(), "mockTcp()"));
+  ASSERT_EQ(enabled, EvalJs(navigated_frame, "mockTcp()"));
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppsDeveloperModeAllowedPolicyTest, MockUdp) {
-  auto app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(kSimpleIsolatedWebAppPath);
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  content::RenderFrameHost* app_frame = OpenApp(app_id);
-  content::WebContents* app_contents =
-      content::WebContents::FromRenderFrameHost(app_frame);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      chrome::FindBrowserWithWebContents(app_contents),
-      https_server()->GetURL(kIsolatedWebAppHost,
-                             "/policy/direct_sockets.html")));
+  content::RenderFrameHost* navigated_frame = ui_test_utils::NavigateToURL(
+      GetBrowserFromFrame(app_frame),
+      url_info.origin().GetURL().Resolve("/direct_sockets.html"));
 
   const bool enabled = std::get<1>(GetParam());
-  ASSERT_EQ(enabled, EvalJs(app_contents->GetPrimaryMainFrame(), "mockUdp()"));
+  ASSERT_EQ(enabled, EvalJs(navigated_frame, "mockUdp()"));
 }
 
 INSTANTIATE_TEST_SUITE_P(
