@@ -138,7 +138,7 @@ if (enable_cast_receiver) {
       "//fuchsia_web/webinstance_host",
       "//media",
       "//media/gpu/test:test_helpers",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
