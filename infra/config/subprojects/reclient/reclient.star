@@ -406,8 +406,7 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_bootstrap_env = {
         "RBE_ip_reset_min_delay": "-1s",
-        "RBE_experimental_goma_deps_cache": "true",
-        "RBE_deps_cache_mode": "reproxy",
+        "RBE_deps_cache_dir": "",
         "RBE_clang_depscan_archive": "true",
     },
 )
