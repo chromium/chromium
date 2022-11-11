@@ -37,6 +37,11 @@ class SearchProvider;
 enum class RankingItemType;
 
 // Common types used throughout result ranking.
+//
+// TODO(crbug.com/1383002): Ideally these would be grouped with other common
+// type aliases in types.h, but this creates a circular dependency issue with
+// ChromeSearchResult. Try to iron this out, and group these type aliases with
+// the others.
 
 using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 using ResultsMap = base::flat_map<ProviderType, Results>;

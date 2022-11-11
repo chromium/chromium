@@ -21,6 +21,9 @@ using DisplayType = ash::SearchResultDisplayType;
 
 // Note: Results and ResultsMap should be defined here, but are defined in
 // SearchController to avoid an include loop.
+//
+// TODO(crbug.com/1383002): Iron this out somehow, so that we can house the
+// Results and ResultsMap type aliases here.
 
 // All score information for a single result. This is stored with a result, and
 // is used as 'scratch space' for ranking calculations to pass information
