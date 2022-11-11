@@ -57,6 +57,10 @@ const char kFresnelQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
 // Count number of times a state has been entered.
 const char kHistogramStateCount[] = "Ash.DeviceActiveClient.StateCount";
 
+// Record the preserved file state.
+const char kHistogramsPreservedFileState[] =
+    "Ash.DeviceActiveClient.PreservedFileState";
+
 // Duration histogram uses State variant in order to create
 // unique histograms measuring durations by State.
 const char kHistogramDurationPrefix[] = "Ash.DeviceActiveClient.Duration";
@@ -68,6 +72,10 @@ const char kHistogramResponsePrefix[] = "Ash.DeviceActiveClient.Response";
 // Count the number of boolean membership request results.
 const char kDeviceActiveClientQueryMembershipResult[] =
     "Ash.DeviceActiveClient.QueryMembershipResult";
+
+// Record number of successful saves of the preserved file content.
+const char kDeviceActiveClientSavePreservedFileSuccess[] =
+    "Ash.DeviceActiveClient.SavePreservedFileSuccess";
 
 // Record the minute the device activity client transitions out of idle.
 const char kDeviceActiveClientTransitionOutOfIdleMinute[] =
@@ -127,6 +135,11 @@ void RecordQueryMembershipResultBoolean(bool is_member) {
                             is_member);
 }
 
+void RecordSavePreservedFile(bool success) {
+  base::UmaHistogramBoolean(kDeviceActiveClientSavePreservedFileSuccess,
+                            success);
+}
+
 // Return the minute of the current UTC time.
 int GetCurrentMinute() {
   base::Time cur_time = base::Time::Now();
@@ -180,6 +193,13 @@ void RecordResponseStateMetric(DeviceActivityClient::State state,
 
   base::UmaHistogramEnumeration(
       HistogramVariantName(kHistogramResponsePrefix, state), response);
+}
+
+// Histogram to record number of each PreservedFileState.
+void RecordPreservedFileState(
+    DeviceActivityClient::PreservedFileState preserved_file_state) {
+  base::UmaHistogramEnumeration(kHistogramsPreservedFileState,
+                                preserved_file_state);
 }
 
 std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
@@ -330,6 +350,9 @@ DeviceActiveUseCase* DeviceActivityClient::GetUseCasePtr(
 }
 
 void DeviceActivityClient::SaveLastPingDatesStatus() {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientSaveLastPingDatesStatus);
   private_computing::SaveStatusRequest request = GetSaveStatusRequest();
 
   // Call DBus method with callback to |OnSaveLastPingDatesStatusComplete|.
@@ -341,15 +364,23 @@ void DeviceActivityClient::SaveLastPingDatesStatus() {
 
 void DeviceActivityClient::OnSaveLastPingDatesStatusComplete(
     private_computing::SaveStatusResponse response) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnSaveLastPingDatesStatusComplete);
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to store last ping timestamps with error message: "
             << response.error_message();
+    RecordSavePreservedFile(false);
   } else {
     VLOG(1) << "Successfully stored last ping timestamp to preserved file";
+    RecordSavePreservedFile(true);
   }
 }
 
 void DeviceActivityClient::GetLastPingDatesStatus() {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientGetLastPingDatesStatus);
   PrivateComputingClient::Get()->GetLastPingDatesStatus(
       base::BindOnce(&DeviceActivityClient::OnGetLastPingDatesStatusFetched,
                      weak_factory_.GetWeakPtr()));
@@ -357,6 +388,9 @@ void DeviceActivityClient::GetLastPingDatesStatus() {
 
 void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
     private_computing::GetStatusResponse response) {
+  RecordDeviceActivityMethodCalled(
+      DeviceActivityClient::DeviceActivityMethod::
+          kDeviceActivityClientOnGetLastPingDatesStatusFetched);
   // Update the last ping timestamps if the preserved file has a valid
   // timestamp value for the use case.
   if (!response.has_error_message()) {
@@ -396,12 +430,26 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
       }
 
       if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
+        RecordPreservedFileState(
+            DeviceActivityClient::PreservedFileState::kReadOkLocalStateEmpty);
         VLOG(1) << "Updating local pref timestamp value with file timestamp = "
                 << last_ping_utc_time;
         device_active_use_case_ptr->SetLastKnownPingTimestamp(
             last_ping_utc_time);
+      } else {
+        RecordPreservedFileState(
+            DeviceActivityClient::PreservedFileState::kReadOkLocalStateSet);
+        VLOG(1) << "Preserved File was read successfully but local state is "
+                   "already set. "
+                << "Device was most likely restarted and not powerwashed, so "
+                   "no need to update local state.";
       }
     }
+  } else {
+    RecordPreservedFileState(
+        DeviceActivityClient::PreservedFileState::kReadFail);
+    LOG(ERROR)
+        << "Preserved File read failed. State of local states is not checked.";
   }
 
   // Always trigger step to check for network status changing after reading the

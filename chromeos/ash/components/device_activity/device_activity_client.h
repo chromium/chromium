@@ -74,6 +74,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     kMaxValue = kTimeout,
   };
 
+  // Categorize the preserved file state which will be used when bucketing UMA
+  // histograms.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PreservedFileState {
+    kUnknown = 0,                // Uncategorized state.
+    kReadOkLocalStateEmpty = 1,  // Preserved file read successfully and local
+                                 // state empty.
+    kReadOkLocalStateSet = 2,    // Preserved file read successfully but local
+                                 // state is already set.
+    kReadFail = 3,  // Preserved file read failed and local state can either be
+                    // empty or set.
+    kMaxValue = kReadFail,
+  };
+
   // Categorize device activity methods which will be used when bucketing UMA
   // histograms by number of calls to each method.
   // Enum listed keys map to methods in |DeviceActivityController| and
@@ -106,7 +122,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     kDeviceActivityClientTransitionToIdle = 21,
     kDeviceActivityClientOnSystemClockSyncResult = 22,
     kDeviceActivityClientReportingTriggeredByTimer = 23,
-    kMaxValue = kDeviceActivityClientReportingTriggeredByTimer,
+    kDeviceActivityClientSaveLastPingDatesStatus = 24,
+    kDeviceActivityClientOnSaveLastPingDatesStatusComplete = 25,
+    kDeviceActivityClientGetLastPingDatesStatus = 26,
+    kDeviceActivityClientOnGetLastPingDatesStatusFetched = 27,
+    kMaxValue = kDeviceActivityClientOnGetLastPingDatesStatusFetched,
   };
 
   // Records UMA histogram for number of times various methods are called in

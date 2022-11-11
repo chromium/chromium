@@ -2159,6 +2159,17 @@ chromium-metrics-reviews@google.com.
   <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
 </histogram>
 
+<histogram name="Ash.DeviceActiveClient.PreservedFileState"
+    enum="DeviceActiveClientPreservedFileState" expires_after="2023-05-19">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the states after reading preserved file over DBus for last active utc
+    dates. PreservedFileState is defined in
+    //chromeos/ash/components/device_activity_client.h. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeviceActiveClient.QueryMembershipResult"
     enum="BooleanSuccess" expires_after="2023-03-19">
   <owner>hirthanan@google.com</owner>
@@ -2194,6 +2205,16 @@ chromium-metrics-reviews@google.com.
     {DeviceActiveClientState}
   </summary>
   <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.SavePreservedFileSuccess"
+    enum="BooleanSuccess" expires_after="2023-05-19">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record success boolean after attempting to write last active utc dates for
+    all use case to the preserved file, over DBus.
+  </summary>
 </histogram>
 
 <histogram name="Ash.DeviceActiveClient.StateCount"
