@@ -104,8 +104,9 @@ class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
 
 // Tests that an offscreen document is considered active while playing audio and
 // notifies of inactivity when audio stops.
+// Flaky: https://crbug.com/1383286.
 IN_PROC_BROWSER_TEST_F(AudioLifetimeEnforcerBrowserTest,
-                       DocumentActiveWhilePlayingAudio) {
+                       DISABLED_DocumentActiveWhilePlayingAudio) {
   scoped_refptr<const Extension> extension = LoadOffscreenDocumentExtension();
   ASSERT_TRUE(extension);
 
