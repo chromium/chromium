@@ -3859,31 +3859,6 @@
             ]
         }
     ],
-    "DesktopOmniboxRichAutocompletion": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "RichAutocompletionAutocompleteNonPrefixAll": "true",
-                        "RichAutocompletionAutocompleteTitles": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxRichAutocompletion",
-                        "OmniboxShortcutExpanding"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmnibox_HistoryQuickProviderSpecificity": [
         {
             "platforms": [

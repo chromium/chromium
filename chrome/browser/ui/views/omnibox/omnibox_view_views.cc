@@ -353,7 +353,8 @@ void OmniboxViewViews::SetAdditionalText(
   // between the OmniboxEditModel, which handles setting the omnibox match, and
   // LocationBarView. Perhaps, if we decide to launch rich autocompletion we'll
   // consider alternatives.
-  location_bar_view_->SetOmniboxAdditionalText(additional_text);
+  if (location_bar_view_)
+    location_bar_view_->SetOmniboxAdditionalText(additional_text);
 }
 
 void OmniboxViewViews::EnterKeywordModeForDefaultSearchProvider() {

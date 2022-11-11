@@ -300,7 +300,7 @@ BASE_FEATURE(kBookmarkPaths,
 // is expanded, if possible, to a complete word in the suggestion description.
 BASE_FEATURE(kShortcutExpanding,
              "OmniboxShortcutExpanding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // If enabled, the shortcut provider is more aggressive in scoring. The exact
 // details will change over time; but ATM, the shortcut provider will chose 1
@@ -387,7 +387,7 @@ BASE_FEATURE(kMostVisitedTilesTitleWrapAround,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion,
              "OmniboxRichAutocompletion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Feature used to enable Pedals in the NTP Realbox.
 BASE_FEATURE(kNtpRealboxPedals,

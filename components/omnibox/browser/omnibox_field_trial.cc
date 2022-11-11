@@ -877,12 +877,12 @@ const base::FeatureParam<bool>
     kRichAutocompletionAutocompleteTitlesShortcutProvider(
         &omnibox::kRichAutocompletion,
         "RichAutocompletionAutocompleteTitlesShortcutProvider",
-        false);
+        true);
 
 const base::FeatureParam<int> kRichAutocompletionAutocompleteTitlesMinChar(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteTitlesMinChar",
-    0);
+    3);
 
 const base::FeatureParam<bool> kRichAutocompletionAutocompleteNonPrefixAll(
     &omnibox::kRichAutocompletion,
@@ -908,18 +908,18 @@ const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText(
 const base::FeatureParam<bool> kRichAutocompletionAdditionalTextWithParenthesis(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAdditionalTextWithParenthesis",
-    false);
+    true);
 
 const base::FeatureParam<bool> kRichAutocompletionAutocompleteShortcutText(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteShortcutText",
-    false);
+    true);
 
 const base::FeatureParam<int>
     kRichAutocompletionAutocompleteShortcutTextMinChar(
         &omnibox::kRichAutocompletion,
         "RichAutocompletionAutocompleteShortcutTextMinChar",
-        0);
+        3);
 
 const base::FeatureParam<bool> kRichAutocompletionCounterfactual(
     &omnibox::kRichAutocompletion,
