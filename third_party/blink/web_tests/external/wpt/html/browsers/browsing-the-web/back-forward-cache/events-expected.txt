@@ -3,6 +3,6 @@ PASS SameOrigin
 PASS SameSite
 PASS CrossSite
 PASS beforeunload
-NOTRUN unload Should be BFCached but actually wasn't
+NOTRUN unload Could have been BFCached but actually wasn't
 Harness: the test ran to completion.
 
