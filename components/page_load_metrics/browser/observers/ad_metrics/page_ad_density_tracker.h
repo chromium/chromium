@@ -77,6 +77,9 @@ class PageAdDensityTracker {
   // Called at the end of the page load to finalize metrics measurement.
   void Finalize();
 
+  // Only for test purpose.
+  friend class PageAdDensityTrackerTestPeer;
+
  private:
   // An event to process corresponding to the top or bottom of each rect.
   struct RectEvent {

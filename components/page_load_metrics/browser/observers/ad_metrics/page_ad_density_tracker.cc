@@ -215,9 +215,9 @@ void PageAdDensityTracker::AddRect(int rect_id, const gfx::Rect& rect) {
     return;
 
   auto top_it =
-      rect_events_.insert(RectEvent(rect_id, true /*is_bottom*/, rect)).first;
-  auto bottom_it =
       rect_events_.insert(RectEvent(rect_id, false /*is_bottom*/, rect)).first;
+  auto bottom_it =
+      rect_events_.insert(RectEvent(rect_id, true /*is_bottom*/, rect)).first;
   rect_events_iterators_.emplace(rect_id,
                                  RectEventSetIterators(top_it, bottom_it));
 

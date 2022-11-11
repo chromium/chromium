@@ -11,6 +11,32 @@
 
 namespace page_load_metrics {
 
+// Only for test purpose.
+class PageAdDensityTrackerTestPeer {
+ public:
+  static bool RectExistsAndHasCorrectTopIterator(
+      const PageAdDensityTracker& tracker,
+      int rect_id) {
+    auto it = tracker.rect_events_iterators_.find(rect_id);
+    // Rect not exists.
+    if (it == tracker.rect_events_iterators_.end())
+      return false;
+    const PageAdDensityTracker::RectEventSetIterators& set_its = it->second;
+    return !set_its.top_it->is_bottom;
+  }
+
+  static bool RectExistsAndHasCorrectBottomIterator(
+      const PageAdDensityTracker& tracker,
+      int rect_id) {
+    auto it = tracker.rect_events_iterators_.find(rect_id);
+    // Rect not exists.
+    if (it == tracker.rect_events_iterators_.end())
+      return false;
+    const PageAdDensityTracker::RectEventSetIterators& set_its = it->second;
+    return set_its.bottom_it->is_bottom;
+  }
+};
+
 TEST(PageAdDensityTrackerTest, MultipleRects_MaxDensity) {
   PageAdDensityTracker tracker;
 
@@ -345,6 +371,19 @@ TEST(PageAdDensityTrackerTest,
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
   EXPECT_DOUBLE_EQ(tracker.GetAdDensityByAreaStats().mean, int(3 * 100 / 8));
+}
+
+TEST(PageAdDensityTrackerTest, RectEvent_CheckTopAndBottomIterator) {
+  PageAdDensityTracker tracker;
+  int rect_id = 1;
+  tracker.AddRect(rect_id, gfx::Rect(0, 0, 50, 10));
+
+  EXPECT_TRUE(PageAdDensityTrackerTestPeer::RectExistsAndHasCorrectTopIterator(
+      tracker, rect_id));
+  EXPECT_TRUE(
+      PageAdDensityTrackerTestPeer::RectExistsAndHasCorrectBottomIterator(
+          tracker, rect_id));
+  tracker.RemoveRect(rect_id);
 }
 
 }  // namespace page_load_metrics
