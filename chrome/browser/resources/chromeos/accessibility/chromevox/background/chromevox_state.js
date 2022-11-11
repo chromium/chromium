@@ -130,11 +130,6 @@ export class ChromeVoxState {
    * @return {boolean} True if evt was processed.
    */
   onBrailleKeyEvent(evt, content) {}
-
-  /**
-   * Forces the reading of the next change to the clipboard.
-   */
-  readNextClipboardDataChange() {}
 }
 
 /** @type {ChromeVoxState} */

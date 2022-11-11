@@ -23,6 +23,7 @@ import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
+import {ClipboardHandler} from './clipboard_handler.js';
 import {CommandHandler} from './command_handler.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationHandler} from './desktop_automation_handler.js';
@@ -69,9 +70,6 @@ export class Background extends ChromeVoxState {
     /** @private {boolean} */
     this.isReadingContinuously_ = false;
 
-    /** @private {string|undefined} */
-    this.lastClipboardEvent_;
-
     /** @private {CursorRange} */
     this.pageSel_ = null;
 
@@ -113,13 +111,6 @@ export class Background extends ChromeVoxState {
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
-
-    chrome.clipboard.onClipboardDataChanged.addListener(() => {
-      this.onClipboardDataChanged_();
-    });
-    document.addEventListener('copy', event => {
-      this.onClipboardCopyEvent_(event);
-    });
   }
 
   static init() {
@@ -131,6 +122,7 @@ export class Background extends ChromeVoxState {
     AutoScrollHandler.init();
     BackgroundKeyboardHandler.init();
     BrailleCommandHandler.init();
+    ClipboardHandler.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
     EventStreamLogger.init();
@@ -363,44 +355,6 @@ export class Background extends ChromeVoxState {
     if (!this.currentRange_ || !this.currentRange_.isValid()) {
       this.setCurrentRange(this.previousRange_);
     }
-  }
-
-  /** @override */
-  readNextClipboardDataChange() {
-    this.lastClipboardEvent_ = 'copy';
-  }
-
-  /**
-   * Processes the copy clipboard event.
-   * @param {!Event} evt
-   * @private
-   */
-  onClipboardCopyEvent_(evt) {
-    // This should always be 'copy', but is still important to set for the below
-    // extension event.
-    this.lastClipboardEvent_ = evt.type;
-  }
-
-  /** @private */
-  onClipboardDataChanged_() {
-    // A DOM-based clipboard event always comes before this Chrome extension
-    // clipboard event. We only care about 'copy' events, which gets set above.
-    if (!this.lastClipboardEvent_) {
-      return;
-    }
-
-    const eventType = this.lastClipboardEvent_;
-    this.lastClipboardEvent_ = undefined;
-
-    const textarea = document.createElement('textarea');
-    document.body.appendChild(textarea);
-    textarea.focus();
-    document.execCommand('paste');
-    const clipboardContent = textarea.value;
-    textarea.remove();
-    ChromeVox.tts.speak(
-        Msgs.getMsg(eventType, [clipboardContent]), QueueMode.FLUSH);
-    ChromeVoxState.instance.pageSel = null;
   }
 
   /** @private */

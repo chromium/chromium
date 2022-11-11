@@ -35,6 +35,7 @@ import {BrailleCaptionsBackground} from './braille/braille_captions_background.j
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
+import {ClipboardHandler} from './clipboard_handler.js';
 import {Color} from './color.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
@@ -223,7 +224,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
         // The above command doesn't trigger document clipboard events, so we
         // need to set this manually.
-        ChromeVoxState.instance.readNextClipboardDataChange();
+        ClipboardHandler.instance.readNextClipboardDataChange();
         return false;
       case Command.TOGGLE_DICTATION:
         EventGenerator.sendKeyPress(KeyCode.D, {search: true});

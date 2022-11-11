@@ -62,6 +62,7 @@ chromevox_es6_modules = [
   "background/chromevox_state.js",
   "background/chromevox.js",
   "background/classic_background.js",
+  "background/clipboard_handler.js",
   "background/color.js",
   "background/command_handler.js",
   "background/command_handler_interface.js",
