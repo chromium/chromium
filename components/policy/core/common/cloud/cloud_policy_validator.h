@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/policy_value_validator.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -52,6 +53,9 @@ namespace policy {
 // RunValidation() can be used to perform validation on the current thread.
 class POLICY_EXPORT CloudPolicyValidatorBase {
  public:
+  using SignatureType =
+      enterprise_management::PolicyFetchRequest::SignatureType;
+
   // Validation result codes. These values are also used for UMA histograms by
   // UserCloudPolicyStoreAsh and must stay stable - new elements should
   // be added at the end before VALIDATION_STATUS_SIZE. Also update the
@@ -121,8 +125,6 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
     // The timestamp is not validated.
     TIMESTAMP_NOT_VALIDATED,
   };
-
-  enum SignatureType { SHA1, SHA256 };
 
   struct POLICY_EXPORT ValidationResult {
     // Validation status.
