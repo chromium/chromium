@@ -111,13 +111,6 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       },
       this));
   close->SetVisible(false);
-#if BUILDFLAG(IS_WIN)
-  // Windows will automatically create a tooltip for the close button based on
-  // the HTCLOSE result from NonClientHitTest().
-  close->SetTooltipText(std::u16string());
-  // Specify accessible name instead for screen readers.
-  close->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-#endif
   close_ = AddChildView(std::move(close));
 
   auto minimize = CreateMinimizeButton(base::BindRepeating(
@@ -128,11 +121,6 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       },
       this));
   minimize->SetVisible(false);
-#if BUILDFLAG(IS_WIN)
-  minimize->SetTooltipText(std::u16string());
-  minimize->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
-#endif
   minimize_ = AddChildView(std::move(minimize));
 
   auto progress_indicator = std::make_unique<ProgressBar>(
@@ -158,6 +146,7 @@ std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
   auto close_button = CreateVectorImageButtonWithNativeTheme(
       std::move(callback), vector_icons::kCloseRoundedIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();
 
   InstallCircleHighlightPathGenerator(close_button.get());
@@ -171,6 +160,8 @@ std::unique_ptr<Button> BubbleFrameView::CreateMinimizeButton(
   auto minimize_button = CreateVectorImageButtonWithNativeTheme(
       std::move(callback), kWindowControlMinimizeIcon);
   minimize_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
+  minimize_button->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   minimize_button->SizeToPreferredSize();
 
@@ -234,10 +225,14 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
     return HTNOWHERE;
   if (hit_test_transparent_)
     return HTTRANSPARENT;
+#if !BUILDFLAG(IS_WIN)
+  // Windows will automatically create a tooltip for the button based on
+  // the HTCLOSE or the HTMINBUTTON
   if (close_->GetVisible() && close_->GetMirroredBounds().Contains(point))
     return HTCLOSE;
   if (minimize_->GetVisible() && minimize_->GetMirroredBounds().Contains(point))
     return HTMINBUTTON;
+#endif
 
   // Convert to RRectF to accurately represent the rounded corners of the
   // dialog and allow events to pass through the shadows.
