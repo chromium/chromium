@@ -175,9 +175,9 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // lifecycle update.
   void WillBeginMainFrame();
 
-  // Notifies when this Document will be detached from the associated
-  // LocalFrameView and will no longer be visible to the user.
-  void WillDetachFromView();
+  // Returns true if lifecycle updates should be throttled for the Document
+  // associated with this transition.
+  bool ShouldThrottleRendering() const;
 
  private:
   friend class ViewTransitionTest;
@@ -318,7 +318,24 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
 
   Member<ViewTransitionStyleTracker> style_tracker_;
 
-  std::unique_ptr<cc::ScopedPauseRendering> rendering_paused_scope_;
+  // Manages pausing rendering of the Document between capture and updateDOM
+  // callback finishing.
+  // If the Document is the local root frame then the backing CC instance is
+  // paused which stops compositor driven animations, videos, offscreen canvas
+  // etc. Otherwise only main thread lifecycle updates are paused. We'd like to
+  // pause compositor/Viz driven effects for nested frames as well but
+  // selectively pausing animations for a CC instance is difficult.
+  class ScopedPauseRendering {
+   public:
+    explicit ScopedPauseRendering(const Document& document);
+    ~ScopedPauseRendering();
+
+    bool ShouldThrottleRendering() const;
+
+   private:
+    std::unique_ptr<cc::ScopedPauseRendering> cc_paused_;
+  };
+  absl::optional<ScopedPauseRendering> rendering_paused_scope_;
 
   ViewTransitionStateCallback transition_state_callback_;
 

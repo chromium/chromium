@@ -1017,6 +1017,8 @@ class CORE_EXPORT LocalFrameView final
 
   DarkModeFilter& EnsureDarkModeFilter();
 
+  bool HasViewTransitionThrottlingRendering() const;
+
   LayoutSize size_;
 
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;

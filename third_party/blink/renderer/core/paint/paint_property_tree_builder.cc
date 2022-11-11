@@ -1587,7 +1587,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // without any additional effects, such as overscroll elasticity effects.
       if (object_.GetNode() &&
           object_.GetNode()->GetPseudoId() == kPseudoIdViewTransition) {
-        parent_effect = context_.current_effect->Parent();
+        auto* transition =
+            ViewTransitionUtils::GetActiveTransition(object_.GetDocument());
+        DCHECK(transition);
+
+        parent_effect =
+            transition->GetEffect(*object_.GetDocument().GetLayoutView())
+                ->Parent();
+        DCHECK(parent_effect);
       }
       DCHECK(parent_effect);
 

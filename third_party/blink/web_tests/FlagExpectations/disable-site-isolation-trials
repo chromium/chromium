@@ -149,9 +149,6 @@ crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/
 crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/object-view-box-old-image.html [ Failure ]
 crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/web-animations-api.html [ Failure ]
 
-crbug.com/1311518 virtual/view-transition-wide-gamut/wpt_internal/view-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
-crbug.com/1311518 virtual/view-transition/wpt_internal/view-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
-
 # reenable print ref tests
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]

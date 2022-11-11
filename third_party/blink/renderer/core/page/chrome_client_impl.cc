@@ -1076,8 +1076,7 @@ std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(
   // If |frame| corresponds to an iframe this implies a transition in an iframe
   // will pause rendering for the all ancestor frames (including the main frame)
   // hosted in this process.
-  // TODO(khushalsagar): We need to switch to a different render-blocking
-  // mechanism for nested frames.
+  DCHECK(frame.IsLocalRoot());
   return WebLocalFrameImpl::FromFrame(frame)
       ->FrameWidgetImpl()
       ->PauseRendering();

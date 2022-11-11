@@ -120,6 +120,22 @@ void ViewTransition::ScriptBoundState::Trace(Visitor* visitor) const {
   visitor->Trace(finished_promise_resolver);
 }
 
+ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
+    const Document& document) {
+  if (!document.GetFrame()->IsLocalRoot())
+    return;
+
+  auto& client = document.GetPage()->GetChromeClient();
+  cc_paused_ = client.PauseRendering(*document.GetFrame());
+  DCHECK(cc_paused_);
+}
+
+ViewTransition::ScopedPauseRendering::~ScopedPauseRendering() = default;
+
+bool ViewTransition::ScopedPauseRendering::ShouldThrottleRendering() const {
+  return !cc_paused_;
+}
+
 // static
 const char* ViewTransition::StateToString(State state) {
   switch (state) {
@@ -415,12 +431,6 @@ bool ViewTransition::IsTerminalState(State state) {
          state == State::kTimedOut;
 }
 
-void ViewTransition::WillDetachFromView() {
-  TRACE_EVENT0("blink", "ViewTransition::WillDetachFromView");
-
-  skipTransition();
-}
-
 void ViewTransition::ProcessCurrentState() {
   bool process_next_state = true;
   while (process_next_state) {
@@ -637,8 +647,9 @@ bool ViewTransition::InvokeDOMChangeCallback() {
 
 void ViewTransition::ContextDestroyed() {
   TRACE_EVENT0("blink", "ViewTransition::ContextDestroyed");
+
   // TODO(khushalsagar): This needs to be called for pages entering BFCache.
-  WillDetachFromView();
+  skipTransition();
 }
 
 bool ViewTransition::HasPendingActivity() const {
@@ -806,10 +817,8 @@ void ViewTransition::PauseRendering() {
   if (!document_->GetPage() || !document_->View())
     return;
 
-  auto& client = document_->GetPage()->GetChromeClient();
-  rendering_paused_scope_ = client.PauseRendering(*document_->GetFrame());
-  DCHECK(rendering_paused_scope_);
-  client.UnregisterFromCommitObservation(this);
+  rendering_paused_scope_.emplace(*document_);
+  document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
                                     this);
@@ -864,6 +873,11 @@ void ViewTransition::WillBeginMainFrame() {
   bool process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
   DCHECK(process_next_state);
   ProcessCurrentState();
+}
+
+bool ViewTransition::ShouldThrottleRendering() const {
+  return rendering_paused_scope_ &&
+         rendering_paused_scope_->ShouldThrottleRendering();
 }
 
 }  // namespace blink
