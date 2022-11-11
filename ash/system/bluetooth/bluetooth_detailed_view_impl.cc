@@ -24,6 +24,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -104,15 +105,6 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
       static_cast<BluetoothDeviceListItemView*>(view)->device_properties());
 }
 
-void BluetoothDetailedViewImpl::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  SkColor primary_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary);
-  pair_new_device_icon_->SetImage(
-      gfx::CreateVectorIcon(kSystemMenuBluetoothPlusIcon, primary_color));
-  pair_new_device_view_->text_label()->SetEnabledColor(primary_color);
-}
-
 void BluetoothDetailedViewImpl::CreateTitleSettingsButton() {
   DCHECK(!settings_button_);
 
@@ -144,17 +136,19 @@ void BluetoothDetailedViewImpl::CreateMainContainer() {
 
   // Create the "+" icon.
   auto icon = std::make_unique<views::ImageView>();
-  // The image is set in OnThemeChanged() so it can apply the right color.
+  icon->SetImage(ui::ImageModel::FromVectorIcon(kSystemMenuBluetoothPlusIcon,
+                                                cros_tokens::kCrosSysPrimary));
   icon->SetProperty(views::kMarginsKey, kPairNewDeviceIconMargins);
   pair_new_device_icon_ = icon.get();
   pair_new_device_view_->AddViewAndLabel(
       std::move(icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE));
 
+  views::Label* label = pair_new_device_view_->text_label();
+  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
   // TODO(b/252872600): Apply the correct font to the label.
   TrayPopupUtils::SetLabelFontList(
-      pair_new_device_view_->text_label(),
-      TrayPopupUtils::FontStyle::kDetailedViewLabel);
+      label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
 
   // The device list is a separate view because it cannot contain the "pair new
   // device" row.

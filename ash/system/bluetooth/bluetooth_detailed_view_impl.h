@@ -47,9 +47,6 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
-  // views::View:
-  void OnThemeChanged() override;
-
  private:
   friend class BluetoothDetailedViewImplTest;
 
