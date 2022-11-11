@@ -8,14 +8,13 @@ import android.graphics.Matrix;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 import java.util.Arrays;
-
-import javax.annotation.Nonnull;
 
 /**
  * A state machine interface which receives Chromium internal events to determines when to call
@@ -63,11 +62,11 @@ final class CursorAnchorInfoController {
     @Nullable
     private CursorAnchorInfo mLastCursorAnchorInfo;
 
-    @Nonnull
+    @NonNull
     private final Matrix mMatrix = new Matrix();
-    @Nonnull
+    @NonNull
     private final int[] mViewOrigin = new int[2];
-    @Nonnull
+    @NonNull
     private final CursorAnchorInfo.Builder mCursorAnchorInfoBuilder =
             new CursorAnchorInfo.Builder();
 
@@ -75,7 +74,7 @@ final class CursorAnchorInfoController {
     private InputMethodManagerWrapper mInputMethodManagerWrapper;
     @Nullable
     private final ComposingTextDelegate mComposingTextDelegate;
-    @Nonnull
+    @NonNull
     private final ViewDelegate mViewDelegate;
 
     private CursorAnchorInfoController(InputMethodManagerWrapper inputMethodManagerWrapper,
@@ -149,7 +148,7 @@ final class CursorAnchorInfoController {
      */
     public void onUpdateFrameInfo(float scale, float contentOffsetYPix, boolean hasInsertionMarker,
             boolean isInsertionMarkerVisible, float insertionMarkerHorizontal,
-            float insertionMarkerTop, float insertionMarkerBottom, @Nonnull View view) {
+            float insertionMarkerTop, float insertionMarkerBottom, @NonNull View view) {
         if (!mIsEditable) return;
 
         // Reuse {@param #mViewOrigin} to avoid object creation, as this method is supposed to be
