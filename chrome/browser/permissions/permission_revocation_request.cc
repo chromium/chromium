@@ -165,16 +165,24 @@ void PermissionRevocationRequest::OnSiteReputationReady(
         base::TimeTicks::Now() - crowd_deny_request_start_time_.value();
   }
 
-  if (site_reputation && !site_reputation->warning_only() &&
-      (site_reputation->notification_ux_quality() ==
-           CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS ||
-       site_reputation->notification_ux_quality() ==
-           CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT ||
-       site_reputation->notification_ux_quality() ==
-           CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR)) {
+  if (site_reputation && !site_reputation->warning_only()) {
+    bool should_revoke_permission = false;
+    switch (site_reputation->notification_ux_quality()) {
+      case CrowdDenyPreloadData::SiteReputation::ABUSIVE_PROMPTS:
+      case CrowdDenyPreloadData::SiteReputation::ABUSIVE_CONTENT:
+        should_revoke_permission = NotificationsPermissionRevocationConfig::
+            IsAbusiveOriginPermissionRevocationEnabled();
+        break;
+      case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR:
+        should_revoke_permission = NotificationsPermissionRevocationConfig::
+            IsDisruptiveOriginPermissionRevocationEnabled();
+        break;
+      default:
+        should_revoke_permission = false;
+    }
     DCHECK(g_browser_process->safe_browsing_service());
-
-    if (g_browser_process->safe_browsing_service()) {
+    if (should_revoke_permission &&
+        g_browser_process->safe_browsing_service()) {
       safe_browsing_request_.emplace(
           g_browser_process->safe_browsing_service()->database_manager(),
           base::DefaultClock::GetInstance(), url::Origin::Create(origin_),
