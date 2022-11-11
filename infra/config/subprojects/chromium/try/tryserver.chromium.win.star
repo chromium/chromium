@@ -85,8 +85,7 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    # TODO(crbug.com/1381274): Make this a CQ blocker.
-    #tryjob = try_.job(),
+    tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
@@ -229,7 +228,6 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },

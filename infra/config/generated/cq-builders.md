@@ -73,7 +73,7 @@ These builders must pass before a CL may land that affects files outside of
 
 * [win-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/win-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-libfuzzer-asan-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win-libfuzzer-asan-rel""))
 
-* [win10_chromium_x64_rel_ng](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win10_chromium_x64_rel_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win10_chromium_x64_rel_ng""))
+* [win-rel](https://ci.chromium.org/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win-rel""))
 
 * [win_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/win_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win_chromium_compile_dbg_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win_chromium_compile_dbg_ng""))
 
