@@ -23,26 +23,35 @@ TEST(BluetoothUUIDTest, BluetoothUUID) {
   const char kInvalid4Char[] = "Z101";
   const char kValid16Bit[] = "0x1101";
   const char kValid32Bit[] = "00001101";
+  const std::vector<uint8_t> kValid128BitInBytes0 = {
+      0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
+      0x9a, 0xbc, 0xde, 0xf1, 0x23, 0x45, 0x67, 0x89};
+  const std::vector<uint8_t> kValid128BitInBytes1 = {
+      0x00, 0x00, 0x11, 0x01, 0x00, 0x00, 0x10, 0x00,
+      0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb};
+  const std::vector<uint8_t> kInvalid128BitInBytes0 = {
+      0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
+      0x9a, 0xbc, 0xde, 0xf1, 0x23, 0x45, 0x67,
+  };
+  const std::vector<uint8_t> kInvalid128BitInBytes1 = {
+      0x00, 0x00, 0x11, 0x01, 0x00, 0x00, 0x10, 0x00, 0x80,
+      0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb, 0x00};
 
   // Valid 128-bit custom UUID.
   BluetoothUUID uuid0(kValid128Bit0);
   EXPECT_TRUE(uuid0.IsValid());
   EXPECT_EQ(BluetoothUUID::kFormat128Bit, uuid0.format());
   EXPECT_EQ(uuid0.value(), uuid0.canonical_value());
-  EXPECT_THAT(
-      uuid0.GetBytes(),
-      ::testing::ElementsAre(0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
-                             0x9a, 0xbc, 0xde, 0xf1, 0x23, 0x45, 0x67, 0x89));
+  EXPECT_THAT(uuid0.GetBytes(),
+              ::testing::ElementsAreArray(kValid128BitInBytes0));
 
   // Valid 128-bit UUID.
   BluetoothUUID uuid1(kValid128Bit1);
   EXPECT_TRUE(uuid1.IsValid());
   EXPECT_EQ(BluetoothUUID::kFormat128Bit, uuid1.format());
   EXPECT_EQ(uuid1.value(), uuid1.canonical_value());
-  EXPECT_THAT(
-      uuid1.GetBytes(),
-      ::testing::ElementsAre(0x00, 0x00, 0x11, 0x01, 0x00, 0x00, 0x10, 0x00,
-                             0x80, 0x00, 0x00, 0x80, 0x5f, 0x9b, 0x34, 0xfb));
+  EXPECT_THAT(uuid1.GetBytes(),
+              ::testing::ElementsAreArray(kValid128BitInBytes1));
 
   EXPECT_NE(uuid0, uuid1);
 
@@ -98,6 +107,32 @@ TEST(BluetoothUUIDTest, BluetoothUUID) {
   EXPECT_EQ(uuid5, uuid6);
   EXPECT_EQ(uuid1, uuid5);
   EXPECT_EQ(uuid1, uuid6);
+
+  // Valid byte array
+  BluetoothUUID uuid7(kValid128BitInBytes0);
+  EXPECT_EQ(uuid7, uuid0);
+  EXPECT_NE(uuid7, uuid1);
+
+  // Valid byte array
+  BluetoothUUID uuid8(kValid128BitInBytes1);
+  EXPECT_EQ(uuid8, uuid1);
+  EXPECT_NE(uuid8, uuid0);
+
+  // Invalid byte array
+  BluetoothUUID uuid9(kInvalid128BitInBytes0);
+  EXPECT_FALSE(uuid9.IsValid());
+  EXPECT_EQ(BluetoothUUID::kFormatInvalid, uuid9.format());
+  EXPECT_TRUE(uuid9.value().empty());
+  EXPECT_TRUE(uuid9.canonical_value().empty());
+  EXPECT_THAT(uuid9.GetBytes(), ::testing::ElementsAre());
+
+  // Invalid byte array
+  BluetoothUUID uuid10(kInvalid128BitInBytes1);
+  EXPECT_FALSE(uuid10.IsValid());
+  EXPECT_EQ(BluetoothUUID::kFormatInvalid, uuid10.format());
+  EXPECT_TRUE(uuid10.value().empty());
+  EXPECT_TRUE(uuid10.canonical_value().empty());
+  EXPECT_THAT(uuid10.GetBytes(), ::testing::ElementsAre());
 }
 
 #if BUILDFLAG(IS_WIN)

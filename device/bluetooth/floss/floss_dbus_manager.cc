@@ -22,11 +22,16 @@
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
+
 #include "device/bluetooth/floss/floss_advertiser_client.h"
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
 #include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/floss/floss_admin_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace floss {
 
@@ -210,6 +215,12 @@ FlossBatteryManagerClient* FlossDBusManager::GetBatteryManagerClient() {
   return client_bundle_->battery_manager_client();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+FlossAdminClient* FlossDBusManager::GetAdminClient() {
+  return client_bundle_->admin_client();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void FlossDBusManager::InitializeAdapterClients(int adapter) {
   // Clean up active adapter clients
   if (active_adapter_ != kInvalidAdapter) {
@@ -236,6 +247,10 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
                                             active_adapter_);
   client_bundle_->battery_manager_client()->Init(
       GetSystemBus(), kAdapterService, active_adapter_);
+#if BUILDFLAG(IS_CHROMEOS)
+  client_bundle_->admin_client()->Init(GetSystemBus(), kAdapterService,
+                                       active_adapter_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(
@@ -274,6 +289,12 @@ void FlossDBusManagerSetter::SetFlossBatteryManagerClient(
   FlossDBusManager::Get()->client_bundle_->battery_manager_client_ =
       std::move(client);
 }
+#if BUILDFLAG(IS_CHROMEOS)
+void FlossDBusManagerSetter::SetFlossAdminClient(
+    std::unique_ptr<FlossAdminClient> client) {
+  FlossDBusManager::Get()->client_bundle_->admin_client_ = std::move(client);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
   if (use_stubs) {
@@ -298,6 +319,10 @@ void FlossClientBundle::ResetAdapterClients() {
   lescan_client_ = FlossLEScanClient::Create();
   advertiser_client_ = FlossAdvertiserClient::Create();
   battery_manager_client_ = FlossBatteryManagerClient::Create();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  admin_client_ = FlossAdminClient::Create();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace floss

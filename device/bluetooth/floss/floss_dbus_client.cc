@@ -22,6 +22,7 @@ const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
 const char kBatteryManagerInterface[] = "org.chromium.bluetooth.BatteryManager";
+const char kAdminInterface[] = "org.chromium.bluetooth.BluetoothAdmin";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
@@ -30,6 +31,7 @@ const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
 const char kBatteryManagerObjectFormat[] =
     "/org/chromium/bluetooth/hci%d/battery_manager";
+const char kAdminObjectFormat[] = "/org/chromium/bluetooth/hci%d/admin";
 
 const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
 
@@ -207,6 +209,17 @@ const char kGetBatteryInformation[] = "GetBatteryInformation";
 const char kOnBatteryInfoUpdated[] = "OnBatteryInfoUpdated";
 }  // namespace battery_manager
 
+namespace admin {
+const char kRegisterCallback[] = "RegisterAdminPolicyCallback";
+const char kUnregisterCallback[] = "UnregisterAdminPolicyCallback";
+const char kCallbackInterface[] = "org.chromium.bluetooth.AdminPolicyCallback";
+const char kOnServiceAllowlistChanged[] = "OnServiceAllowlistChanged";
+const char kOnDevicePolicyEffectChanged[] = "OnDevicePolicyEffectChanged";
+const char kSetAllowedServices[] = "SetAllowedServices";
+const char kGetAllowedServices[] = "GetAllowedServices";
+const char kGetDevicePolicyEffect[] = "GetDevicePolicyEffect";
+}  // namespace admin
+
 namespace experimental {
 const char kSetLLPrivacy[] = "SetLLPrivacy";
 }  // namespace experimental
@@ -360,6 +373,11 @@ dbus::ObjectPath FlossDBusClient::GenerateBatteryManagerPath(
     int adapter_index) {
   return dbus::ObjectPath(
       base::StringPrintf(kBatteryManagerObjectFormat, adapter_index));
+}
+
+dbus::ObjectPath FlossDBusClient::GenerateAdminPath(int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kAdminObjectFormat, adapter_index));
 }
 
 // Default error handler for dbus clients is to just print the error right now.

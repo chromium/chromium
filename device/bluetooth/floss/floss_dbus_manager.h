@@ -35,6 +35,9 @@ class FlossSocketManager;
 class FlossLEScanClient;
 class FlossAdvertiserClient;
 class FlossBatteryManagerClient;
+#if BUILDFLAG(IS_CHROMEOS)
+class FlossAdminClient;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // FlossDBusManager manages the lifetimes of D-Bus connections and clients. It
 // ensures the proper ordering of shutdowns for the D-Bus thread, connections
@@ -113,6 +116,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   FlossLEScanClient* GetLEScanClient();
   FlossAdvertiserClient* GetAdvertiserClient();
   FlossBatteryManagerClient* GetBatteryManagerClient();
+#if BUILDFLAG(IS_CHROMEOS)
+  FlossAdminClient* GetAdminClient();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   friend class FlossDBusManagerSetter;
@@ -165,6 +171,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManagerSetter {
   void SetFlossGattClient(std::unique_ptr<FlossGattClient> client);
   void SetFlossBatteryManagerClient(
       std::unique_ptr<FlossBatteryManagerClient> client);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetFlossAdminClient(std::unique_ptr<FlossAdminClient> client);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 // FlossDBusThreadManager manages the D-Bus thread, the thread dedicated to
@@ -220,6 +229,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   FlossAdvertiserClient* advertiser_client() {
     return advertiser_client_.get();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  FlossAdminClient* admin_client() { return admin_client_.get(); }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   FlossBatteryManagerClient* battery_manager_client() {
     return battery_manager_client_.get();
@@ -239,6 +251,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
   std::unique_ptr<FlossLEScanClient> lescan_client_;
   std::unique_ptr<FlossAdvertiserClient> advertiser_client_;
   std::unique_ptr<FlossBatteryManagerClient> battery_manager_client_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<FlossAdminClient> admin_client_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace floss

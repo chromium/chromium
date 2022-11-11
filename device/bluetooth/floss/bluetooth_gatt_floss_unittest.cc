@@ -27,6 +27,10 @@
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/floss/fake_floss_admin_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 // Use this gatt client id for all interaction.
 constexpr int kGattClientId = 39;
@@ -73,6 +77,9 @@ class BluetoothGattFlossTest : public testing::Test {
         std::make_unique<FakeFlossAdvertiserClient>());
     dbus_setter->SetFlossBatteryManagerClient(
         std::make_unique<FakeFlossBatteryManagerClient>());
+#if BUILDFLAG(IS_CHROMEOS)
+    dbus_setter->SetFlossAdminClient(std::make_unique<FakeFlossAdminClient>());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Always initialize and enable adapter for Gatt tests.
     InitializeAdapter();

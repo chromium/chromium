@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
@@ -159,6 +160,9 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
   FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->AddObserver(this);
   FlossDBusManager::Get()->GetBatteryManagerClient()->AddObserver(this);
+#if BUILDFLAG(IS_CHROMEOS)
+  FlossDBusManager::Get()->GetAdminClient()->AddObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BluetoothAdapterFloss::RemoveAdapter() {
@@ -170,6 +174,9 @@ void BluetoothAdapterFloss::RemoveAdapter() {
   // Clean up observers
   FlossDBusManager::Get()->GetAdapterClient()->RemoveObserver(this);
   FlossDBusManager::Get()->GetLEScanClient()->RemoveObserver(this);
+#if BUILDFLAG(IS_CHROMEOS)
+  FlossDBusManager::Get()->GetAdminClient()->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Remove adapter by switching to an invalid adapter (cleans up DBus clients)
   // and then emitting |AdapterPresentChanged| to observers.
@@ -886,6 +893,37 @@ BluetoothAdapterFloss::RetrieveGattConnectedDevicesWithDiscoveryFilter(
   return {};
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothAdapterFloss::DevicePolicyEffectChanged(
+    const FlossDeviceId& device_id,
+    const absl::optional<PolicyEffect>& effect) {
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_id;
+
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+  if (!device) {
+    LOG(WARNING) << "Device disconnected for an unknown device "
+                 << device_id.address;
+    return;
+  }
+
+  device->SetIsBlockedByPolicy(effect.has_value() ? effect.value().affected
+                                                  : false);
+}
+
+void BluetoothAdapterFloss::ServiceAllowlistChanged(
+    const std::vector<device::BluetoothUUID>& allowlist) {
+  std::vector<std::string> uuid_str(allowlist.size());
+
+  base::ranges::transform(
+      allowlist, uuid_str.begin(),
+      [](device::BluetoothUUID dev) { return dev.canonical_value(); });
+
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << base::JoinString(uuid_str, ",");
+  // TODO(b/257877673): Notify observers
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothAdapterFloss::CreateRfcommService(
     const device::BluetoothUUID& uuid,
     const ServiceOptions& options,
@@ -971,7 +1009,11 @@ device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
 void BluetoothAdapterFloss::SetServiceAllowList(const UUIDList& uuids,
                                                 base::OnceClosure callback,
                                                 ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  FlossDBusManager::Get()->GetAdminClient()->SetAllowedServices(
+      base::BindOnce(&BluetoothAdapterFloss::OnMethodResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      uuids);
 }
 
 std::unique_ptr<device::BluetoothLowEnergyScanSession>

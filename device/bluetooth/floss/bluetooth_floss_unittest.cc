@@ -25,6 +25,10 @@
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/floss/fake_floss_admin_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 using ::device::BluetoothAdapter;
@@ -96,6 +100,9 @@ class BluetoothFlossTest : public testing::Test {
         std::make_unique<FakeFlossAdvertiserClient>();
     auto fake_floss_battery_manager_client =
         std::make_unique<FakeFlossBatteryManagerClient>();
+#if BUILDFLAG(IS_CHROMEOS)
+    auto fake_floss_admin_client = std::make_unique<FakeFlossAdminClient>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_adapter_client_ = fake_floss_adapter_client.get();
@@ -103,6 +110,10 @@ class BluetoothFlossTest : public testing::Test {
     fake_floss_advertiser_client_ = fake_floss_advertiser_client.get();
     fake_floss_battery_manager_client_ =
         fake_floss_battery_manager_client.get();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    fake_floss_admin_client_ = fake_floss_admin_client.get();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     dbus_setter->SetFlossManagerClient(std::move(fake_floss_manager_client));
     dbus_setter->SetFlossAdapterClient(std::move(fake_floss_adapter_client));
@@ -114,6 +125,9 @@ class BluetoothFlossTest : public testing::Test {
         std::move(fake_floss_advertiser_client));
     dbus_setter->SetFlossBatteryManagerClient(
         std::move(fake_floss_battery_manager_client));
+#if BUILDFLAG(IS_CHROMEOS)
+    dbus_setter->SetFlossAdminClient(std::move(fake_floss_admin_client));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void InitializeAdapter() {
@@ -197,6 +211,9 @@ class BluetoothFlossTest : public testing::Test {
   raw_ptr<FakeFlossLEScanClient> fake_floss_lescan_client_;
   raw_ptr<FakeFlossAdvertiserClient> fake_floss_advertiser_client_;
   raw_ptr<FakeFlossBatteryManagerClient> fake_floss_battery_manager_client_;
+#if BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<FakeFlossAdminClient> fake_floss_admin_client_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<std::unique_ptr<BluetoothDiscoverySession>> discovery_sessions_;
 

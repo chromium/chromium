@@ -31,6 +31,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kBatteryManagerInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kAdminInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
@@ -210,6 +211,17 @@ namespace experimental {
 extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
 }  // namespace experimental
 
+namespace admin {
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceAllowlistChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDevicePolicyEffectChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetAllowedServices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetAllowedServices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetDevicePolicyEffect[];
+}  // namespace admin
+
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {
   std::string address;
@@ -327,6 +339,15 @@ const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
   return *info;
 }
 
+template <typename T>
+const DBusTypeInfo& GetDBusTypeInfo(const absl::optional<T>*) {
+  static base::NoDestructor<DBusTypeInfo> elem_info(
+      GetDBusTypeInfo(static_cast<T*>(nullptr)));
+  static base::NoDestructor<DBusTypeInfo> info(
+      {"a{sv}", "optional<" + elem_info->type_name + ">"});
+  return *info;
+}
+
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.
 class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
@@ -382,6 +403,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
   // Convert adapter number to battery_manager object path.
   static dbus::ObjectPath GenerateBatteryManagerPath(int adapter_index);
+  // Convert adapter number to admin object path.
+  static dbus::ObjectPath GenerateAdminPath(int adapter_index);
 
   // Generalized DBus serialization (used for generalized method call
   // invocation).

@@ -31,6 +31,10 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "device/bluetooth/floss/fake_floss_admin_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 using ::device::BluetoothAdapter;
@@ -53,6 +57,10 @@ class BluetoothSocketFlossTest : public testing::Test {
     auto fake_floss_battery_manager_client =
         std::make_unique<FakeFlossBatteryManagerClient>();
 
+#if BUILDFLAG(IS_CHROMEOS)
+    auto fake_floss_admin_client = std::make_unique<FakeFlossAdminClient>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     fake_floss_manager_client_ = fake_floss_manager_client.get();
     fake_floss_socket_manager_ = fake_floss_socket_manager.get();
     fake_floss_lescan_client_ = fake_floss_lescan_client.get();
@@ -70,6 +78,9 @@ class BluetoothSocketFlossTest : public testing::Test {
         std::move(fake_floss_advertiser_client));
     dbus_setter->SetFlossBatteryManagerClient(
         std::move(fake_floss_battery_manager_client));
+#if BUILDFLAG(IS_CHROMEOS)
+    dbus_setter->SetFlossAdminClient(std::make_unique<FakeFlossAdminClient>());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     InitializeAndEnableAdapter();
   }

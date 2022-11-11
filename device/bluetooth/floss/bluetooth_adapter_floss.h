@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+#include "device/bluetooth/floss/floss_admin_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace floss {
@@ -48,6 +49,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       public floss::FlossAdapterClient::Observer,
       public floss::FlossBatteryManagerClient::
           FlossBatteryManagerClientObserver,
+#if BUILDFLAG(IS_CHROMEOS)
+      public FlossAdminClientObserver,
+#endif  // BUILDFLAG(IS_CHROMEOS)
       public ScannerClientObserver {
  public:
   static scoped_refptr<BluetoothAdapterFloss> CreateAdapter();
@@ -227,6 +231,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // override.
   void BatteryInfoUpdated(std::string remote_address,
                           BatterySet battery_set) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  // floss::FlossAdminClientObserver override.
+  void DevicePolicyEffectChanged(
+      const FlossDeviceId& device_id,
+      const absl::optional<PolicyEffect>& effect) override;
+  void ServiceAllowlistChanged(
+      const std::vector<device::BluetoothUUID>& allowlist) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // BluetoothAdapter:
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
