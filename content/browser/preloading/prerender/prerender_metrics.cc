@@ -72,10 +72,19 @@ void ReportHeaderMismatch(const std::string& key,
                           HeaderMismatchType mismatch_type,
                           PrerenderTriggerType trigger_type,
                           const std::string& embedder_histogram_suffix) {
+  int32_t hashed = HeaderMismatchHasher(base::ToLowerASCII(key), mismatch_type);
   base::UmaHistogramSparse(
       GenerateHistogramName("Prerender.Experimental.ActivationHeadersMismatch",
                             trigger_type, embedder_histogram_suffix),
-      HeaderMismatchHasher(base::ToLowerASCII(key), mismatch_type));
+      hashed);
+  if (hashed != 308191605)
+    return;
+  // We do not know the header name that the hash value stands for. Capture the
+  // dump for debugging.
+  // TODO(https://crbug.com/1383407): Remove it after we know the answer by the
+  // 11/15/22.
+  SCOPED_CRASH_KEY_STRING256("Prerender", "header_for_308191605", key);
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace
