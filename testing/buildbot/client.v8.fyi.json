@@ -28,7 +28,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -64,7 +64,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -100,7 +100,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -145,7 +145,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -190,7 +190,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -227,7 +227,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -263,7 +263,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -301,7 +301,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
@@ -340,7 +340,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "MMB29Q",
+              "device_os": "N2G48C",
               "device_os_type": "userdebug",
               "device_type": "bullhead",
               "os": "Android"
