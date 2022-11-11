@@ -80980,7 +80980,7 @@ Called by update_net_trust_anchors.py.-->
     http://www.ioplex.com/~miallen/errcmp.html and
     http://www.ioplex.com/~miallen/errcmpp.html for more info.
   </summary>
-  <int value="0" label="0">No error</int>
+  <int value="0" label="OK">No error</int>
   <int value="1" label="EPERM">Operation not permitted</int>
   <int value="2" label="ENOENT">No such file or directory</int>
   <int value="3" label="ESRCH">No such process</int>
@@ -81042,6 +81042,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="95" label="EOPNOTSUPP/_/_">
     Operation not supported on transport endpoint on Linux.
   </int>
+  <int value="117" label="EUCLEAN">Structure needs cleaning</int>
   <int value="122" label="EDQUOT/_/_">Quota exceeeded on Linux.</int>
   <int value="123" label="ENOMEDIUM">No medium found</int>
 </enum>
