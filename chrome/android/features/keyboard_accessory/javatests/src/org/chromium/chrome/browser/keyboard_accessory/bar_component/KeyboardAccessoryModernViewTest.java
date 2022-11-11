@@ -29,9 +29,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.KEYBOARD_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.TAB_LAYOUT_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -48,6 +48,8 @@ import androidx.annotation.Nullable;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -69,10 +71,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
-import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SheetOpenerBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.TabLayoutBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
-import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -213,20 +214,22 @@ public class KeyboardAccessoryModernViewTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManager.setInstanceForTesting(mMockPersonalDataManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = KeyboardAccessoryProperties.defaultModelBuilder()
-                             .with(SHEET_OPENER_ITEM,
-                                     new SheetOpenerBarItem(
-                                             new KeyboardAccessoryTabLayoutCoordinator
-                                                     .SheetOpenerCallbacks() {
-                                                         @Override
-                                                         public void onViewBound(View buttons) {}
-                                                         @Override
-                                                         public void onViewUnbound(View buttons) {}
-                                                     }))
-                             .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
-                             .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
-                             .with(SHOW_SWIPING_IPH, false)
-                             .build();
+            mModel =
+                    KeyboardAccessoryProperties.defaultModelBuilder()
+                            .with(TAB_LAYOUT_ITEM,
+                                    new TabLayoutBarItem(new KeyboardAccessoryTabLayoutCoordinator
+                                                                 .TabLayoutCallbacks() {
+                                                                     @Override
+                                                                     public void onTabLayoutBound(
+                                                                             TabLayout tabs) {}
+                                                                     @Override
+                                                                     public void onTabLayoutUnbound(
+                                                                             TabLayout tabs) {}
+                                                                 }))
+                            .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
+                            .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
+                            .with(SHOW_SWIPING_IPH, false)
+                            .build();
             AsyncViewStub viewStub =
                     mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_stub);
 
@@ -282,7 +285,7 @@ public class KeyboardAccessoryModernViewTest {
                                     false, 1, false, false, false, /* featureForIPH= */ ""),
                             new Action("Unused", AUTOFILL_SUGGESTION,
                                     result -> {}, result -> clickRecorded.set(true))),
-                    createSheetOpener()});
+                    createTabs()});
         });
 
         onViewWaiting(withText("Johnathan")).perform(longClick());
@@ -331,7 +334,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createTabs()});
         });
 
         onViewWaiting(withText("Johnathan"));
@@ -359,7 +362,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createTabs()});
         });
 
         onViewWaiting(withText("Johnathan"));
@@ -385,7 +388,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createTabs()});
         });
 
         onViewWaiting(withText("Johnathan"));
@@ -442,7 +445,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createTabs()});
         });
 
         onViewWaiting(withText("Johnathan"));
@@ -475,8 +478,7 @@ public class KeyboardAccessoryModernViewTest {
                     createAutofillBarItem("SomeOtherRandomLongName", null),
                     createAutofillBarItem("ToddTester", null),
                     createAutofillBarItem("MayaPark", null),
-                    createAutofillBarItem("ThisChipIsProbablyHiddenNow", null),
-                    createSheetOpener()});
+                    createAutofillBarItem("ThisChipIsProbablyHiddenNow", null), createTabs()});
         });
         onViewWaiting(withText("JohnathanSmith"));
         CriteriaHelper.pollUiThread(() -> obfuscatedChildAt.get() > -1);
@@ -501,7 +503,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createTabs()});
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
@@ -532,7 +534,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createTabs()});
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
@@ -556,8 +558,7 @@ public class KeyboardAccessoryModernViewTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(
-                    new BarItem[] {itemWithoutCustomIconUrl, createSheetOpener()});
+            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithoutCustomIconUrl, createTabs()});
         });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
@@ -622,7 +623,7 @@ public class KeyboardAccessoryModernViewTest {
     }
 
     private BarItem[] createAutofillChipAndTab(String label, Callback<Action> chipCallback) {
-        return new BarItem[] {createAutofillBarItem(label, chipCallback), createSheetOpener()};
+        return new BarItem[] {createAutofillBarItem(label, chipCallback), createTabs()};
     }
 
     private AutofillBarItem createAutofillBarItem(String label, Callback<Action> chipCallback) {
@@ -632,22 +633,18 @@ public class KeyboardAccessoryModernViewTest {
                 new KeyboardAccessoryData.Action("Unused", AUTOFILL_SUGGESTION, chipCallback));
     }
 
-    private SheetOpenerBarItem createSheetOpener() {
-        return new SheetOpenerBarItem(
-                new KeyboardAccessoryTabLayoutCoordinator.SheetOpenerCallbacks() {
-                    @Override
-                    public void onViewBound(View buttons) {
-                        if (((KeyboardAccessoryButtonGroupView) buttons).getButtons().size() > 0) {
-                            return;
-                        }
-                        ((KeyboardAccessoryButtonGroupView) buttons)
-                                .addButton(buttons.getContext().getDrawable(
-                                                   R.drawable.ic_vpn_key_grey),
-                                        "Key Icon");
-                    }
+    private TabLayoutBarItem createTabs() {
+        return new TabLayoutBarItem(new KeyboardAccessoryTabLayoutCoordinator.TabLayoutCallbacks() {
+            @Override
+            public void onTabLayoutBound(TabLayout tabs) {
+                if (tabs.getTabCount() > 0) return;
+                tabs.addTab(tabs.newTab()
+                                    .setIcon(R.drawable.ic_vpn_key_grey)
+                                    .setContentDescription("Key Icon"));
+            }
 
-                    @Override
-                    public void onViewUnbound(View buttons) {}
-                });
+            @Override
+            public void onTabLayoutUnbound(TabLayout tabs) {}
+        });
     }
 }
