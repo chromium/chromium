@@ -101,8 +101,9 @@ class VIEWS_EXPORT TooltipController
   // Returns true if the cursor is visible.
   bool IsCursorVisible() const;
 
-  // Get the delay after which the tooltip should be hidden.
-  base::TimeDelta GetHideTooltipTimeout();
+  // Get the delay after which the tooltip should be shown/hidden.
+  base::TimeDelta GetShowTooltipDelay();
+  base::TimeDelta GetHideTooltipDelay();
 
   // Sets observed window to |target| if it is different from existing window.
   // Calls RemoveObserver on the existing window if it is not NULL.
@@ -154,6 +155,11 @@ class VIEWS_EXPORT TooltipController
 
   // Whether tooltips can be displayed or not.
   bool tooltips_enabled_ = true;
+
+  // Whether tooltip should be skip delay before showing.
+  // This may be set to true only for testing.
+  // Do NOT override this value except from TooltipControllerTestHelper.
+  bool skip_show_delay_for_testing_ = false;
 
   // Web content tooltips should be shown indefinitely and those added on Views
   // should be hidden automatically after a timeout. This map stores the timeout

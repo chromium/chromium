@@ -24,7 +24,8 @@
 namespace views::corewm {
 namespace {
 
-constexpr auto kDefaultHideTooltipTimeoutInMs = base::Seconds(10);
+constexpr auto kDefaultShowTooltipDelay = base::Milliseconds(50);
+constexpr auto kDefaultHideTooltipDelay = base::Seconds(10);
 
 // Returns true if |target| is a valid window to get the tooltip from.
 // |event_target| is the original target from the event and |target| the window
@@ -359,7 +360,8 @@ void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   if (!state_manager_->IsVisible() || IsTooltipTextUpdateNeeded() ||
       IsTooltipIdUpdateNeeded()) {
     state_manager_->Show(observed_window_, wm::GetTooltipText(observed_window_),
-                         anchor_point_, trigger, GetHideTooltipTimeout());
+                         anchor_point_, trigger, GetShowTooltipDelay(),
+                         GetHideTooltipDelay());
   }
 }
 
@@ -383,11 +385,16 @@ bool TooltipController::IsCursorVisible() const {
   return !cursor_client || cursor_client->IsCursorVisible();
 }
 
-base::TimeDelta TooltipController::GetHideTooltipTimeout() {
+base::TimeDelta TooltipController::GetShowTooltipDelay() {
+  return skip_show_delay_for_testing_ ? base::TimeDelta()
+                                      : kDefaultShowTooltipDelay;
+}
+
+base::TimeDelta TooltipController::GetHideTooltipDelay() {
   std::map<aura::Window*, base::TimeDelta>::const_iterator it =
       hide_tooltip_timeout_map_.find(observed_window_);
   if (it == hide_tooltip_timeout_map_.end())
-    return kDefaultHideTooltipTimeoutInMs;
+    return kDefaultHideTooltipDelay;
   return it->second;
 }
 

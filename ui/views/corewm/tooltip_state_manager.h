@@ -56,6 +56,7 @@ class VIEWS_EXPORT TooltipStateManager {
             const std::u16string& tooltip_text,
             const gfx::Point& position,
             TooltipTrigger trigger,
+            const base::TimeDelta show_delay,
             const base::TimeDelta hide_delay);
 
   // Returns the |tooltip_id_|, which corresponds to the pointer of the view on
@@ -87,16 +88,13 @@ class VIEWS_EXPORT TooltipStateManager {
     return will_hide_tooltip_timer_.IsRunning();
   }
 
-  // Calling this will enable/disable the delay that prevents the tooltip from
-  // being displayed right away.
-  void SetTooltipShowDelayedForTesting(bool is_delayed);
-
   // Called once the |will_show_timer_| fires to show the tooltip.
   void ShowNow(const std::u16string& trimmed_text,
                const base::TimeDelta hide_delay);
 
   // Start the show timer to show the tooltip.
   void StartWillShowTooltipTimer(const std::u16string& trimmed_text,
+                                 const base::TimeDelta show_delay,
                                  const base::TimeDelta hide_delay);
 
   // The current position of the tooltip. This position is relative to the
@@ -120,10 +118,6 @@ class VIEWS_EXPORT TooltipStateManager {
   // and one to display the tooltip when the timer fires.
   base::OneShotTimer will_hide_tooltip_timer_;
   base::OneShotTimer will_show_tooltip_timer_;
-
-  // The delay after which the tooltip shows up. It is only modified in the unit
-  // tests.
-  base::TimeDelta tooltip_show_delay_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<TooltipStateManager> weak_factory_{this};

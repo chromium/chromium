@@ -17,6 +17,10 @@ namespace aura {
 class Window;
 }
 
+namespace base {
+class TimeDelta;
+}
+
 namespace views::corewm::test {
 
 // TooltipControllerTestHelper provides access to TooltipControllers private
@@ -42,12 +46,13 @@ class TooltipControllerTestHelper {
   const aura::Window* GetTooltipParentWindow();
   const aura::Window* GetObservedWindow();
   const gfx::Point& GetTooltipPosition();
+  base::TimeDelta GetShowTooltipDelay();
   void HideAndReset();
   void UpdateIfRequired(TooltipTrigger trigger);
   void FireHideTooltipTimer();
   bool IsHideTooltipTimerRunning();
   bool IsTooltipVisible();
-  void SetTooltipShowDelayEnable(bool tooltip_show_delay);
+  void SkipTooltipShowDelay(bool enable);
   void MockWindowActivated(aura::Window* window, bool active);
 
  private:
