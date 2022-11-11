@@ -42541,6 +42541,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4385" label="LayoutMediaInlineChildren"/>
   <int value="4386" label="ReduceAcceptLanguage"/>
   <int value="4387" label="UuidInPackageUrlNavigation"/>
+  <int value="4388" label="CSSValueAppearanceMediaSliderRendered"/>
+  <int value="4389" label="CSSValueAppearanceMediaSliderThumbRendered"/>
+  <int value="4390" label="CSSValueAppearanceMediaVolumeSliderRendered"/>
+  <int value="4391" label="CSSValueAppearanceMediaVolumeSliderThumbRendered"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

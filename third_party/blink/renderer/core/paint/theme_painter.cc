@@ -167,9 +167,16 @@ bool ThemePainter::Paint(const LayoutObject& o,
       return PaintSliderThumb(element, style, paint_info, r);
     }
     case kMediaSliderPart:
+      COUNT_APPEARANCE(doc, MediaSlider);
+      return true;
     case kMediaSliderThumbPart:
+      COUNT_APPEARANCE(doc, MediaSliderThumb);
+      return true;
     case kMediaVolumeSliderPart:
+      COUNT_APPEARANCE(doc, MediaVolumeSlider);
+      return true;
     case kMediaVolumeSliderThumbPart:
+      COUNT_APPEARANCE(doc, MediaVolumeSliderThumb);
       return true;
     case kMenulistButtonPart:
       return true;
