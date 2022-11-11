@@ -357,14 +357,6 @@ bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
 }
 
-BASE_FEATURE(kInitialNavigationEntry,
-             "InitialNavigationEntry",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsInitialNavigationEntryEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kInitialNavigationEntry);
-}
-
 // Enable limiting previews loading hints to specific resource types.
 BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
              "PreviewsResourceLoadingHintsSpecificResourceTypes",

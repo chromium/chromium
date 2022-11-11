@@ -2155,14 +2155,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // navigation.
   WebContents* contents = new_shell->web_contents();
   EXPECT_FALSE(contents->GetController().IsInitialNavigation());
-  // The visible entry should either be null or the entry for the synchronously
-  // committed about:blank, resulting in about:blank in the address bar
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(GURL(url::kAboutBlankURL),
-              contents->GetController().GetVisibleEntry()->GetURL());
-  } else {
-    EXPECT_FALSE(contents->GetController().GetVisibleEntry());
-  }
+  // The visible entry should be the entry for the synchronously committed
+  // about:blank, resulting in about:blank in the address bar.
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            contents->GetController().GetVisibleEntry()->GetURL());
 }
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.

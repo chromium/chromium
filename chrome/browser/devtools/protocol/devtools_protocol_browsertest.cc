@@ -222,11 +222,8 @@ IN_PROC_BROWSER_TEST_F(
           url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_TYPED, false));
   tab_added_waiter.Wait();
-  // WaitForLoadStop() checks for the existence of the last committed
-  // NavigationEntry, which will only be there if we have initial
-  // NavigationEntries.
-  ASSERT_EQ(WaitForLoadStop(web_contents),
-            blink::features::IsInitialNavigationEntryEnabled());
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
+
   content::NavigationController& navigation_controller =
       web_contents->GetController();
   content::NavigationEntry* pending_entry =
@@ -243,11 +240,7 @@ IN_PROC_BROWSER_TEST_F(
   // attaches, so that any modified page content is not attributed to the failed
   // URL. (crbug/1192417)
   EXPECT_EQ(nullptr, navigation_controller.GetPendingEntry());
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(GURL(""), navigation_controller.GetVisibleEntry()->GetURL());
-  } else {
-    EXPECT_EQ(nullptr, navigation_controller.GetVisibleEntry());
-  }
+  EXPECT_EQ(GURL(""), navigation_controller.GetVisibleEntry()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

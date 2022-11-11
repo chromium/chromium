@@ -2820,11 +2820,6 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest,
 
 // Tests that an initial NavigationEntry does not get restored.
 IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, RestoreInitialEntry) {
-  if (!blink::features::IsInitialNavigationEntryEnabled()) {
-    // This test specifically tests initial NavigationEntries, which can't be
-    // created when the InitialNavigationEntry flag is turned off.
-    return;
-  }
   GURL main_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
   url::Origin main_origin = url::Origin::Create(main_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));

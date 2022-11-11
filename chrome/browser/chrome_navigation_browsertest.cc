@@ -386,13 +386,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::NavigationController& navigation_controller =
       new_web_contents->GetController();
   WaitForLoadStop(new_web_contents);
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_TRUE(
-        navigation_controller.GetLastCommittedEntry()->IsInitialEntry());
-    EXPECT_EQ(1, navigation_controller.GetEntryCount());
-  } else {
-    EXPECT_EQ(0, navigation_controller.GetEntryCount());
-  }
+  EXPECT_TRUE(navigation_controller.GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_EQ(1, navigation_controller.GetEntryCount());
   EXPECT_NE(new_tab_url, new_web_contents->GetLastCommittedURL());
 
   // Verify that the pending entry is still present, even though the navigation
@@ -455,13 +450,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     content::NavigationController& navigation_controller =
         new_contents->GetController();
     WaitForLoadStop(new_contents);
-    if (blink::features::IsInitialNavigationEntryEnabled()) {
-      EXPECT_TRUE(
-          navigation_controller.GetLastCommittedEntry()->IsInitialEntry());
-      EXPECT_EQ(1, navigation_controller.GetEntryCount());
-    } else {
-      EXPECT_EQ(0, navigation_controller.GetEntryCount());
-    }
+    EXPECT_TRUE(
+        navigation_controller.GetLastCommittedEntry()->IsInitialEntry());
+    EXPECT_EQ(1, navigation_controller.GetEntryCount());
     EXPECT_NE(test_url, new_contents->GetLastCommittedURL());
 
     // Ensure that the omnibox doesn't start with javascript: scheme.
@@ -1015,11 +1006,10 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     popup = popup_observer.GetWebContents();
   }
   content::RenderFrameHost* popup_main_rfh = popup->GetPrimaryMainFrame();
-  // Popup should be on the initial entry, or no NavigationEntry if
-  // InitialNavigationEntry is disabled.
+  // Popup should be on the initial entry,
   content::NavigationEntry* last_entry =
       popup->GetController().GetLastCommittedEntry();
-  EXPECT_TRUE(!last_entry || last_entry->IsInitialEntry());
+  EXPECT_TRUE(last_entry->IsInitialEntry());
 
   // 2. Add blank iframe in popup.
   EXPECT_TRUE(content::ExecJs(popup_main_rfh,
@@ -1060,11 +1050,10 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     ASSERT_TRUE(content::ExecJs(opener, "var w = window.open('', 'my-popup')"));
     popup = popup_observer.GetWebContents();
   }
-  // Popup should be on the initial entry, or no NavigationEntry if
-  // InitialNavigationEntry is disabled.
+  // Popup should be on the initial entry.
   content::NavigationEntry* last_entry =
       popup->GetController().GetLastCommittedEntry();
-  EXPECT_TRUE(!last_entry || last_entry->IsInitialEntry());
+  EXPECT_TRUE(last_entry->IsInitialEntry());
 
   // 2. Same-document navigation in popup.
   {

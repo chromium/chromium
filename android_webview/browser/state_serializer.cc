@@ -17,7 +17,6 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 
 // Reasons for not re-using TabNavigation under chrome/ as of 20121116:
@@ -48,16 +47,10 @@ void WriteToPickle(content::WebContents& web_contents, base::Pickle* pickle) {
   content::NavigationController& controller = web_contents.GetController();
   const int entry_count = controller.GetEntryCount();
   const int selected_entry = controller.GetLastCommittedEntryIndex();
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    // When InitialNavigationEntry is enabled, a NavigationEntry will always
-    // exist, so there will always be at least 1 entry.
-    DCHECK_GE(entry_count, 1);
-    DCHECK_GE(selected_entry, 0);
-  } else {
-    // When InitialNavigationEntry is disabled, there might be 0 entries.
-    DCHECK_GE(entry_count, 0);
-    DCHECK_GE(selected_entry, -1);  // -1 is valid
-  }
+  // A NavigationEntry will always exist, so there will always be at least 1
+  // entry.
+  DCHECK_GE(entry_count, 1);
+  DCHECK_GE(selected_entry, 0);
   DCHECK_LT(selected_entry, entry_count);
 
   pickle->WriteInt(entry_count);

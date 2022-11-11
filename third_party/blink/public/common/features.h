@@ -179,12 +179,6 @@ BLINK_COMMON_EXPORT bool OSKResizesVisualViewportByDefault();
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
-// Whether we will create initial NavigationEntry or not on FrameTree creation,
-// which also impacts the session history replacement decisions made in the
-// renderer.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInitialNavigationEntry);
-BLINK_COMMON_EXPORT bool IsInitialNavigationEntryEnabled();
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPreviewsResourceLoadingHintsSpecificResourceTypes);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPurgeRendererMemoryWhenBackgrounded);

@@ -16,12 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwFeatureList;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Feature;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -118,11 +114,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateOneUrl() throws Throwable {
         NavigationHistory history = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, history.getEntryCount());
-        } else {
-            Assert.assertEquals(0, history.getEntryCount());
-        }
+        Assert.assertEquals(1, history.getEntryCount());
 
         final String pageWithHashTagRedirectUrl = addPageWithHashTagRedirectToServer(mWebServer);
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
@@ -144,11 +136,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateBackForwardWithIntervention() throws Throwable {
         NavigationHistory history = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, history.getEntryCount());
-        } else {
-            Assert.assertEquals(0, history.getEntryCount());
-        }
+        Assert.assertEquals(1, history.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String pageWithSameDocumentUrl = addPageWithSameDocumentToServer(mWebServer);
@@ -175,11 +163,7 @@ public class NavigationHistoryTest {
     @SmallTest
     public void testNavigateTwoUrls() throws Throwable {
         NavigationHistory list = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, list.getEntryCount());
-        } else {
-            Assert.assertEquals(0, list.getEntryCount());
-        }
+        Assert.assertEquals(1, list.getEntryCount());
 
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
@@ -217,11 +201,7 @@ public class NavigationHistoryTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         NavigationHistory list = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, list.getEntryCount());
-        } else {
-            Assert.assertEquals(0, list.getEntryCount());
-        }
+        Assert.assertEquals(1, list.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String page2Url = addPage2ToServer(mWebServer);
@@ -260,11 +240,8 @@ public class NavigationHistoryTest {
                 CommonResources.FAVICON_STATIC_HTML, null);
 
         NavigationHistory list = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, list.getEntryCount());
-        } else {
-            Assert.assertEquals(0, list.getEntryCount());
-        }
+        Assert.assertEquals(1, list.getEntryCount());
+
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setImagesEnabled(true);
         int faviconLoadCount = mContentsClient.getFaviconHelper().getCallCount();
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
@@ -282,11 +259,7 @@ public class NavigationHistoryTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
         NavigationHistory list = getNavigationHistory(mAwContents);
-        if (AwFeatureList.isEnabled(BlinkFeatures.INITIAL_NAVIGATION_ENTRY)) {
-            Assert.assertEquals(1, list.getEntryCount());
-        } else {
-            Assert.assertEquals(0, list.getEntryCount());
-        }
+        Assert.assertEquals(1, list.getEntryCount());
 
         final String page1Url = addPage1ToServer(mWebServer);
         final String page2Url = addPage2ToServer(mWebServer);
@@ -311,23 +284,19 @@ public class NavigationHistoryTest {
     }
 
     // Test that a WebContents which hasn't navigated to any URL has a
-    // NavigationHistory that is either empty (if expectInitialEntry is true) or
-    // has 1 entry: the initial NavigationEntry (if expectInitialEntry is false).
-    private void testFreshWebContentsInitialNavigationHistoryHelper(boolean expectInitialEntry)
-            throws Throwable {
+    // NavigationHistory that has 1 entry: the initial NavigationEntry.
+    @Test
+    @SmallTest
+    public void testFreshWebContentsInitialNavigationHistory() throws Throwable {
         NavigationHistory navHistory = mAwContents.getNavigationHistory();
-        if (expectInitialEntry) {
-            Assert.assertEquals(1, navHistory.getEntryCount());
-            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
-            Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
-            Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
-        } else {
-            Assert.assertEquals(0, navHistory.getEntryCount());
-            Assert.assertEquals(-1, navHistory.getCurrentEntryIndex());
-        }
+        Assert.assertEquals(1, navHistory.getEntryCount());
+        Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+        Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
+        Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
+
         // Navigate the WebContents' main frame to another URL, which will
         // create a new NavigationEntry that replaces the initial
-        // NavigationEntry if it existed.
+        // NavigationEntry.
         String nonEmptyUrl = mWebServer.setResponse("/nonEmptyURL.html", "", null);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), nonEmptyUrl);
@@ -342,28 +311,11 @@ public class NavigationHistoryTest {
         Assert.assertEquals(nonEmptyUrl, navHistory.getEntryAtIndex(0).getUrl().getSpec());
     }
 
+    // Tests that NavigationHistory in a new popup WebContents contains the
+    // initial NavigationEntry.
     @Test
     @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
-    public void testFreshWebContentsInitialNavigationHistory_InitialNavigationEntryEnabled()
-            throws Throwable {
-        testFreshWebContentsInitialNavigationHistoryHelper(/*expectInitialEntry=*/true);
-    }
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
-    public void testFreshWebContentsInitialNavigationHistory_InitialNavigationEntryDisabled()
-            throws Throwable {
-        testFreshWebContentsInitialNavigationHistoryHelper(/*expectInitialEntry=*/false);
-    }
-
-    // Test that a new popup WebContents which hasn't navigated to any URL has a
-    // NavigationHistory that is either empty (if expectInitialEntry is true) or
-    // has 1 entry: the initial NavigationEntry (if expectInitialEntry is false).
-    private void testPopupInitialNavigationHistoryHelper(boolean expectInitialEntry)
-            throws Throwable {
+    public void testPopupInitialNavigationHistory() throws Throwable {
         // Open a popup without an URL.
         final String parentPageHtml = CommonResources.makeHtmlPageFrom("",
                 "<script>"
@@ -376,23 +328,15 @@ public class NavigationHistoryTest {
         final AwContents popupContents = popupInfo.popupContents;
 
         // Test that the new WebContents, which stays on the initial empty
-        // document, stays on the initial NavigationEntry (if expectInitialEntry
-        // is true) or doesn't have a NavigationEntry (if expectInitialEntry is
-        // false).
+        // document, stays on the initial NavigationEntry.
         NavigationHistory navHistory = popupContents.getNavigationHistory();
-        if (expectInitialEntry) {
-            Assert.assertEquals(1, navHistory.getEntryCount());
-            Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
-            Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
-            Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
-        } else {
-            Assert.assertEquals(0, navHistory.getEntryCount());
-            Assert.assertEquals(-1, navHistory.getCurrentEntryIndex());
-        }
+        Assert.assertEquals(1, navHistory.getEntryCount());
+        Assert.assertEquals(0, navHistory.getCurrentEntryIndex());
+        Assert.assertTrue(navHistory.getEntryAtIndex(0).isInitialEntry());
+        Assert.assertEquals(GURL.emptyGURL(), navHistory.getEntryAtIndex(0).getUrl());
 
         // Navigate the popup main frame to another URL, which will create a new
-        // NavigationEntry that replaces the initial NavigationEntry if it
-        // existed.
+        // NavigationEntry that replaces the initial NavigationEntry.
         TestCallbackHelperContainer.OnPageFinishedHelper popupOnPageFinishedHelper =
                 popupInfo.popupContentsClient.getOnPageFinishedHelper();
         String nonEmptyUrl = mWebServer.setResponse("/nonEmptyURL.html", "", null);
@@ -408,26 +352,5 @@ public class NavigationHistoryTest {
         // false and it will be exposed to WebBackForwardList.
         Assert.assertFalse(navHistory.getEntryAtIndex(0).isInitialEntry());
         Assert.assertEquals(nonEmptyUrl, navHistory.getEntryAtIndex(0).getUrl().getSpec());
-    }
-
-    // Tests that NavigationHistory in a new popup WebContents contains the
-    // initial NavigationEntry when InitialNavigationEntry is enabled.
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("enable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
-    public void testPopupInitialNavigationHistory_InitialNavigationEntryEnabled() throws Throwable {
-        testPopupInitialNavigationHistoryHelper(/*expectInitialEntry=*/true);
-    }
-
-    // Tests that NavigationHistory in a new popup WebContents is empty when
-    // InitialNavigationEntry is disabled.
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
-    public void testPopupInitialNavigationHistoryWithInitialNavigationEntryDisabled()
-            throws Throwable {
-        testPopupInitialNavigationHistoryHelper(/*expectInitialEntry=*/false);
     }
 }

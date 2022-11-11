@@ -808,8 +808,7 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
       renderer_initiated_creation ? opener_for_origin->GetLastCommittedOrigin()
                                   : url::Origin());
 
-  if (blink::features::IsInitialNavigationEntryEnabled())
-    controller().CreateInitialEntry();
+  controller().CreateInitialEntry();
 }
 
 void FrameTree::DidAccessInitialMainDocument() {

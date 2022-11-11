@@ -367,14 +367,8 @@ TEST_F(NavigationControllerTest, Defaults) {
   EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
               controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-    EXPECT_EQ(controller.GetEntryCount(), 1);
-  } else {
-    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
-    EXPECT_EQ(controller.GetEntryCount(), 0);
-  }
+  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
+  EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
 }
@@ -463,18 +457,11 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
   // The load should now be pending.
+  EXPECT_EQ(controller.GetEntryCount(), 1);
+  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
+  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
+  EXPECT_TRUE(controller.GetLastCommittedEntry());
 
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(controller.GetEntryCount(), 1);
-    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-    EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-    EXPECT_TRUE(controller.GetLastCommittedEntry());
-  } else {
-    EXPECT_EQ(controller.GetEntryCount(), 0);
-    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
-    EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-    EXPECT_FALSE(controller.GetLastCommittedEntry());
-  }
   ASSERT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(controller.GetPendingEntry(), controller.GetVisibleEntry());
   EXPECT_FALSE(controller.CanGoBack());
@@ -1120,15 +1107,10 @@ TEST_F(NavigationControllerTest, LoadURL_IgnorePreemptsPending) {
   // change, so that we do not keep displaying kNewURL.
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_FALSE(controller.GetPendingEntry());
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    // The pending entry deletion and commit of the new NavigationEntry both
-    // counts as "navigation state change".
-    EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-    EXPECT_EQ(3, delegate->navigation_state_change_count());
-  } else {
-    EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
-    EXPECT_EQ(2, delegate->navigation_state_change_count());
-  }
+  // The pending entry deletion and commit of the new NavigationEntry both
+  // counts as "navigation state change".
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(3, delegate->navigation_state_change_count());
 
   contents()->SetDelegate(nullptr);
 }
@@ -4380,14 +4362,9 @@ TEST_F(NavigationControllerTest,
   FrameTreeNode* node = other_contents_impl->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* frame = node->current_frame_host();
 
-  // The newly created contents has 1 entry, the initial entry. (Or no entries
-  // if InitialNavigationEntry is disabled).
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(1, other_controller.GetEntryCount());
-    EXPECT_TRUE(other_controller.GetLastCommittedEntry()->IsInitialEntry());
-  } else {
-    EXPECT_EQ(0, other_controller.GetEntryCount());
-  }
+  // The newly created contents has 1 entry, the initial entry.
+  EXPECT_EQ(1, other_controller.GetEntryCount());
+  EXPECT_TRUE(other_controller.GetLastCommittedEntry()->IsInitialEntry());
 
   // Simulate the main WebContents navigating the new WebContents with
   // replacement.
@@ -4404,14 +4381,8 @@ TEST_F(NavigationControllerTest,
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    // The request was done with replacement.
-    EXPECT_TRUE(request->common_params().should_replace_current_entry);
-  } else {
-    // Since the new WebContents had no entries, the request is not done with
-    // replacement.
-    EXPECT_FALSE(request->common_params().should_replace_current_entry);
-  }
+  // The request was done with replacement.
+  EXPECT_TRUE(request->common_params().should_replace_current_entry);
 }
 
 // Tests that calling RemoveForwareEntries() clears all forward entries

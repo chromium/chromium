@@ -867,10 +867,8 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   WebContents* new_tab_contents = web_contents_added_observer.GetWebContents();
   content::RenderFrameHost* new_tab_rfh =
       new_tab_contents->GetPrimaryMainFrame();
-  // A fresh WebContents should be on the initial NavigationEntry, or have
-  // no NavigationEntry (if InitialNavigationEntry is disabled).
-  EXPECT_TRUE(!new_tab_contents->GetController().GetLastCommittedEntry() ||
-              new_tab_contents->GetController()
+  // A fresh WebContents should be on the initial NavigationEntry.
+  EXPECT_TRUE(new_tab_contents->GetController()
                   .GetLastCommittedEntry()
                   ->IsInitialEntry());
   EXPECT_EQ(nullptr, new_tab_contents->GetController().GetPendingEntry());
@@ -878,15 +876,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   // Run javascript in the blank new tab to load the malware image.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(img_url)))
       .Times(1);
-  // When InitialNavigationEntry is enabled, wait for 2 navigations to finish:
-  // the synchronous about:blank commit triggered by the window.open() above,
-  // and the interstitial page navigation triggered by Safe Browsing code for
-  // the image load below. When InitialNavigationEntry is disabled, the
-  // synchronous about:blank commit will be ignored (won't create
-  // NavigationEntry).
-  content::TestNavigationObserver observer(
-      new_tab_contents,
-      blink::features::IsInitialNavigationEntryEnabled() ? 2 : 1);
+  // Wait for 2 navigations to finish: the synchronous about:blank commit
+  // triggered by the window.open() above, and the interstitial page
+  // navigation triggered by Safe Browsing code for the image load below.
+  content::TestNavigationObserver observer(new_tab_contents, 2);
   new_tab_rfh->ExecuteJavaScriptForTests(
       u"var img=new Image();"
       u"img.src=\"" +

@@ -3519,12 +3519,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   AlwaysAutoSubframeNavigationObserver auto_subframe_observer(
       shell()->web_contents());
 
-  // MPArch fenced frame has its own NavigationController.
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
-  } else {
-    EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
-  }
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
 
   // 1. Navigate the fenced frame: both cross-document and fragment navigation.
   GURL fenced_frame_url(

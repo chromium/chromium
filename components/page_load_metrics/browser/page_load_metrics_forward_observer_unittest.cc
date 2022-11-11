@@ -85,7 +85,6 @@ class PageLoadMetricsForwardObserverTest
         {
             {blink::features::kFencedFrames,
              {{"implementation_type", "mparch"}}},
-            {blink::features::kInitialNavigationEntry, {}},
         },
         {});
   }

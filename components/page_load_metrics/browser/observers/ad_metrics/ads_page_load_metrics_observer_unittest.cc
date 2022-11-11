@@ -820,7 +820,6 @@ class AdsPageLoadMetricsObserverTest
         {
             {blink::features::kFencedFrames,
              {{"implementation_type", "mparch"}}},
-            {blink::features::kInitialNavigationEntry, {}},
         },
         {});
   }
@@ -3114,7 +3113,6 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
         {
             {blink::features::kFencedFrames,
              {{"implementation_type", "mparch"}}},
-            {blink::features::kInitialNavigationEntry, {}},
             {::features::kV8PerFrameMemoryMonitoring, {}},
         },
         {});

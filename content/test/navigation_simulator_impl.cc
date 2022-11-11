@@ -283,11 +283,9 @@ NavigationSimulatorImpl::CreateRendererInitiated(
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     sim->set_supports_loading_mode_header("fenced-frame");
     sim->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-    // When InitialNavigationEntry is enabled, set should_replace_current_entry
-    // to true, to pass the DidCommitParams check that expects the initial
-    // NavigationEntry to always be replaced.
-    sim->set_should_replace_current_entry(
-        blink::features::IsInitialNavigationEntryEnabled());
+    // Set should_replace_current_entry to true, to pass the DidCommitParams
+    // check that expects the initial NavigationEntry to always be replaced.
+    sim->set_should_replace_current_entry(true);
   }
   return sim;
 }

@@ -766,23 +766,22 @@ void NavigationControllerImpl::Restore(
     return;
   }
 
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    // In InitialNavigationEntry mode, there will always be at least one entry.
-    if (selected_navigation == -1)
-      selected_navigation = 0;
+  // There will always be at least one entry (new NavigationControllers will
+  // have the initial NavigationEntry).
+  if (selected_navigation == -1)
+    selected_navigation = 0;
 
-    if (GetLastCommittedEntry()->IsInitialEntry() && entries->size() > 0) {
-      // If we are on the initial NavigationEntry, it must be the only entry in
-      // the list. Since it's impossible to do a history navigation to the
-      // initial NavigationEntry, `pending_entry_index_` must be -1 (but
-      // `pending_entry` might be set for a new non-history navigation).
-      // Note that we should not clear `entries_` if `entries` is empty (when
-      // InitialNavigationEntry mode is enabled), since that would leave us
-      // without any NavigationEntry.
-      CHECK_EQ(1, GetEntryCount());
-      CHECK_EQ(-1, pending_entry_index_);
-      entries_.clear();
-    }
+  if (GetLastCommittedEntry()->IsInitialEntry() && entries->size() > 0) {
+    // If we are on the initial NavigationEntry, it must be the only entry in
+    // the list. Since it's impossible to do a history navigation to the
+    // initial NavigationEntry, `pending_entry_index_` must be -1 (but
+    // `pending_entry` might be set for a new non-history navigation).
+    // Note that we should not clear `entries_` if `entries` is empty (when
+    // InitialNavigationEntry mode is enabled), since that would leave us
+    // without any NavigationEntry.
+    CHECK_EQ(1, GetEntryCount());
+    CHECK_EQ(-1, pending_entry_index_);
+    entries_.clear();
   }
 
   needs_reload_ = true;
@@ -908,15 +907,11 @@ bool NavigationControllerImpl::IsInitialNavigation() {
 }
 
 bool NavigationControllerImpl::IsInitialBlankNavigation() {
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    // Check that we're on the initial NavigationEntry and that this is not a
-    // cloned tab.
-    return IsInitialNavigation() && GetEntryCount() == 1 &&
-           GetLastCommittedEntry()->IsInitialEntry() &&
-           GetLastCommittedEntry()->restore_type() == RestoreType::kNotRestored;
-  } else {
-    return IsInitialNavigation() && GetEntryCount() == 0;
-  }
+  // Check that we're on the initial NavigationEntry and that this is not a
+  // cloned tab.
+  return IsInitialNavigation() && GetEntryCount() == 1 &&
+         GetLastCommittedEntry()->IsInitialEntry() &&
+         GetLastCommittedEntry()->restore_type() == RestoreType::kNotRestored;
 }
 
 NavigationEntryImpl* NavigationControllerImpl::GetEntryWithUniqueID(
@@ -998,13 +993,7 @@ int NavigationControllerImpl::GetCurrentEntryIndex() {
 }
 
 NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry() {
-  if (last_committed_entry_index_ == -1) {
-    // The last committed entry must always exist when InitialNavigationEntry
-    // is enabled. TODO(https://crbug.com/524208): Remove this case and all
-    // related nullchecks entirely.
-    DCHECK(!blink::features::IsInitialNavigationEntryEnabled());
-    return nullptr;
-  }
+  CHECK_NE(last_committed_entry_index_, -1);
   return entries_[last_committed_entry_index_].get();
 }
 
@@ -2438,12 +2427,8 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
   NavigationControllerImpl* source =
       static_cast<NavigationControllerImpl*>(temp);
   // Verify that we look new.
-  if (blink::features::IsInitialNavigationEntryEnabled()) {
-    DCHECK_EQ(1, GetEntryCount());
-    DCHECK(GetLastCommittedEntry()->IsInitialEntry());
-  } else {
-    DCHECK_EQ(0, GetEntryCount());
-  }
+  DCHECK_EQ(1, GetEntryCount());
+  DCHECK(GetLastCommittedEntry()->IsInitialEntry());
   DCHECK(!GetPendingEntry());
   entries_.clear();
 

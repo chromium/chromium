@@ -8004,30 +8004,8 @@ bool NavigationRequest::
     return false;
   }
 
-  if (!blink::features::IsInitialNavigationEntryEnabled()) {
-    // History replacement behaves a bit differently when we don't have initial
-    // NavigationEntries.
-    if (!frame_tree_node_->GetParentOrOuterDocument()) {
-      // Currently we only handle subframe and non-outermost main frames (fenced
-      // frames and portals) initial empty document replacements.
-      // TODO(https://crbug.com/1215096): Handle the outermost main frame
-      // navigations too.
-      return false;
-    }
-
-    if (!frame_tree_node_->is_on_initial_empty_document()) {
-      // Only replace if we're not on the initial empty document.
-      return false;
-    }
-
-    // If the navigation explicitly requested for history list clearing (e.g.
-    // when running layout tests), don't do a replacement (since there won't be
-    // any entry to replace after the navigation).
-    return !commit_params_->should_clear_history_list;
-  }
-
-  // If InitialNavigationEntry is enabled, we only need to check the "initial
-  // NavigationEntry" status and the "initial empty document" status.
+  // Check the "initial NavigationEntry" status and the "initial empty document"
+  // status.
 
   if (frame_tree_node_->navigator()
           .controller()

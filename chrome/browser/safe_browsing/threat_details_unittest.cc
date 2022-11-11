@@ -1569,10 +1569,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
 }
 
 TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
-  // A fresh WebContents should be on the initial NavigationEntry, or have
-  // no NavigationEntry (if InitialNavigationEntry is disabled).
-  EXPECT_TRUE(!controller().GetLastCommittedEntry() ||
-              controller().GetLastCommittedEntry()->IsInitialEntry());
+  // A fresh WebContents should be on the initial NavigationEntry.
+  EXPECT_TRUE(controller().GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(nullptr, controller().GetPendingEntry());
 
   // Initiate the connection to a (pretend) renderer process.

@@ -572,9 +572,7 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void FrameSizeChanged(RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) {}
 
-  // This method is invoked when the title of the WebContents is set. Note that
-  // |entry| may be null if the web page whose title changed has not yet had a
-  // NavigationEntry assigned to it.
+  // This method is invoked when the title of the WebContents is set.
   virtual void TitleWasSet(NavigationEntry* entry) {}
 
   // These methods are invoked when a Pepper plugin instance is created/deleted

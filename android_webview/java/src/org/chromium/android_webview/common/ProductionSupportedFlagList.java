@@ -247,8 +247,6 @@ public final class ProductionSupportedFlagList {
                             + "background thread."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
                     "Enables prefetching Android fonts on renderer startup."),
-            Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
-                    "Enables creation of initial NavigationEntries on WebContents creation."),
             Flag.baseFeature(BlinkFeatures.EARLY_BODY_LOAD,
                     "Enables loading the response body earlier in navigation."),
             Flag.baseFeature(BlinkFeatures.DEFAULT_STYLE_SHEETS_EARLY_INIT,
