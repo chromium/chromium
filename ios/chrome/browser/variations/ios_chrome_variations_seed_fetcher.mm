@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_url_constants.h"
@@ -25,6 +26,10 @@ namespace {
 
 // Maximum time allowed to fetch the seed before the request is cancelled.
 const base::TimeDelta kRequestTimeout = base::Seconds(2);
+// Histogram names for seed fetch time and result.
+const char kSeedFetchResultHistogram[] =
+    "IOS.Variations.FirstRun.SeedFetchResult";
+const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 
 // Whether a current request for variations seed is being made; this variable
 // exists that only one instance of the manager updates the global seed at one
@@ -57,8 +62,8 @@ static BOOL g_seed_fetching_in_progress = NO;
 @property(nonatomic, readonly) NSURL* variationsUrl;
 
 // The timestamp when the current seed request starts. This is used for metric
-// reporting, and will be reset to `nil` when the request finishes.
-@property(nonatomic, strong) NSDate* startTimeOfOngoingSeedRequest;
+// reporting, and will be reset to null value when the request finishes.
+@property(nonatomic, assign) base::Time startTimeOfOngoingSeedRequest;
 
 @end
 
@@ -151,7 +156,6 @@ static BOOL g_seed_fetching_in_progress = NO;
   // Stops executing if seed fetching is disabled.
   if (!self.fetchingEnabled) {
     [self notifyDelegateSeedFetchResult:NO];
-    [self recordSeedFetchResult];
     return;
   }
 
@@ -172,7 +176,7 @@ static BOOL g_seed_fetching_in_progress = NO;
                                       response:(NSHTTPURLResponse*)response
                                          error:error];
         }];
-  self.startTimeOfOngoingSeedRequest = [NSDate now];
+  self.startTimeOfOngoingSeedRequest = base::Time::Now();
   [task resume];
 }
 
@@ -185,20 +189,37 @@ static BOOL g_seed_fetching_in_progress = NO;
   // successful response, but it is not expected when the request does
   // not contain "If-None-Match" header.
   BOOL success = error == nil && httpResponse.statusCode == net::HTTP_OK;
+  IOSSeedFetchException exception = IOSSeedFetchException::kNotApplicable;
   if (success) {
-    // TODO(crbug.com/1353937): Log time delta.
+    base::UmaHistogramTimes(
+        kSeedFetchTimeHistogram,
+        base::Time::Now() - self.startTimeOfOngoingSeedRequest);
     IOSChromeSeedResponse* seed = [self seedResponseForHTTPResponse:httpResponse
                                                                data:data];
     if (seed == nil) {
+      // Currently, only the IM header is mandatory to create a first run seed,
+      // and is the only possible reason that a seed is downloaded but not
+      // created.
+      exception = IOSSeedFetchException::kInvalidIMHeader;
       success = NO;
     } else {
       [IOSChromeVariationsSeedStore updateSharedSeed:seed];
     }
+  } else if (error.code == NSURLErrorTimedOut) {
+    exception = IOSSeedFetchException::kHTTPSRequestTimeout;
+  } else if (error.code == NSURLErrorBadURL ||
+             error.code == NSURLErrorDNSLookupFailed ||
+             error.code == NSURLErrorCannotFindHost) {
+    exception = IOSSeedFetchException::kHTTPSRequestBadUrl;
   }
-  [self recordSeedFetchResult];
-  self.startTimeOfOngoingSeedRequest = nil;
+  self.startTimeOfOngoingSeedRequest = base::Time();
   g_seed_fetching_in_progress = NO;
 
+  // Log seed fetch result on UMA and notify delegate.
+  int seedFetchResultValue = exception == IOSSeedFetchException::kNotApplicable
+                                 ? static_cast<int>(httpResponse.statusCode)
+                                 : static_cast<int>(exception);
+  base::UmaHistogramSparse(kSeedFetchResultHistogram, seedFetchResultValue);
   [self notifyDelegateSeedFetchResult:success];
 }
 
@@ -233,21 +254,12 @@ static BOOL g_seed_fetching_in_progress = NO;
                                               compressed:YES];
     return seed;
   }
-  [self recordSeedFetchResult];
   return nil;
-}
-
-// Records the seed fetch result on UMA.
-- (void)recordSeedFetchResult {
-  // TODO(crbug.com/3835653): First parameter of this method should be an enum
-  // that is yet to be implemented. Log metrics for seed fetch result.
-  return;
 }
 
 // Notifies the delegate of the seed fetching result. Since the seed fetch
 // request is sent on the background instead of the main queue, this method
 // should explicitly dispatch the result back on the main queue.
-// TODO(crbug.com/3835653): Merge with `recordSeedFetchResult`.
 - (void)notifyDelegateSeedFetchResult:(BOOL)result {
   __weak IOSChromeVariationsSeedFetcher* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{

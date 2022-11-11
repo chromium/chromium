@@ -1961,6 +1961,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Variations.FirstRun.SeedFetchResult"
+    enum="VariationsSeedFetchResult" expires_after="2023-05-09">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The result of attempting to fetch an initial variations seed during iOS
+    Chrome first run. Records both the HTTP code and various error values in one
+    enumeration.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Variations.FirstRun.SeedFetchTime" units="ms"
+    expires_after="2023-05-09">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The latency of fetching an initial variations seed during iOS Chrome first
+    run. Only considers cases where an HTTP 200 result was received.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WarmStartBackgroundTime" units="msec"
     expires_after="2023-04-27">
   <obsolete>

@@ -5,13 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SEED_FETCHER_TESTING_H_
 #define IOS_CHROME_BROWSER_VARIATIONS_IOS_CHROME_VARIATIONS_SEED_FETCHER_TESTING_H_
 
+namespace base {
+class Time;
+}  // namespace base
+
 // Extraction of private properties and methods in
 // IOSChromeVariationsSeedFetcher to be tested.
 @interface IOSChromeVariationsSeedFetcher (Testing)
 
 @property(nonatomic, readonly) NSURL* variationsUrl;
 
-@property(nonatomic, strong) NSDate* startTimeOfOngoingSeedRequest;
+@property(nonatomic, assign) base::Time startTimeOfOngoingSeedRequest;
 
 - (void)applySwitchesFromArguments:(NSArray<NSString*>*)arguments;
 
