@@ -1201,10 +1201,7 @@ NSInteger kTrailingSymbolSize = 18;
   if (!_didReceivePasswords) {
     _blockedSites = blockedSites;
     _affiliatedGroups = affiliatedGroups;
-    _didReceivePasswords = YES;
     [self hideLoadingSpinnerBackground];
-    [self updateUIForEditState];
-    [self reloadData];
   } else {
     if (_affiliatedGroups == affiliatedGroups &&
         _blockedSites == blockedSites) {
