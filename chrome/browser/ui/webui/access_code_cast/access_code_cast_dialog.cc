@@ -7,15 +7,20 @@
 #include "base/json/json_writer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/layout/layout_provider.h"
 #include "url/gurl.h"
+
+using web_modal::ModalDialogHost;
 
 namespace media_router {
 
@@ -30,6 +35,55 @@ void SetCurrentDialog(base::WeakPtr<AccessCodeCastDialog> dialog) {
     (*current_instance)->CloseDialogWidget();
   if (dialog)
     *current_instance = std::move(dialog);
+}
+
+void UpdateDialogPosition(views::Widget* widget,
+                          content::WebContents* web_contents) {
+  auto* dialog_host =
+      CreateChromeConstrainedWindowViewsClient()->GetModalDialogHost(
+          web_contents->GetTopLevelNativeWindow());
+  views::Widget* host_widget =
+      views::Widget::GetWidgetForNativeView(dialog_host->GetHostView());
+
+  // If the host view is not backed by a Views::Widget, just update the widget
+  // size.
+  auto size = widget->GetRootView()->GetPreferredSize();
+  if (!host_widget) {
+    widget->SetSize(size);
+    return;
+  }
+
+  // Get the outer browser window for the web_contents.
+  auto* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
+  auto window_bounds = browser_window->GetBounds();
+
+  gfx::Point position = dialog_host->GetDialogPosition(size);
+  // Align the first row of pixels inside the border. This is the apparent top
+  // of the dialog.
+  position.set_y(position.y() -
+                 widget->non_client_view()->frame_view()->GetInsets().top());
+
+  if (widget->is_top_level()) {
+    position += host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
+    // Move the dialog to the center of the browser window.
+    auto new_x = window_bounds.x() + (window_bounds.width() - size.width()) / 2;
+    position.set_x(new_x);
+    // If the dialog extends partially off any display, clamp its position to
+    // be fully visible within that display. If the dialog doesn't intersect
+    // with any display clamp its position to be fully on the nearest display.
+    gfx::Rect display_rect = gfx::Rect(position, size);
+    const display::Display display =
+        display::Screen::GetScreen()->GetDisplayNearestView(
+            dialog_host->GetHostView());
+    const gfx::Rect work_area = display.work_area();
+
+    if (!work_area.Contains(display_rect))
+      display_rect.AdjustToFit(work_area);
+    position = display_rect.origin();
+  }
+
+  widget->SetBounds(gfx::Rect(position, size));
 }
 
 }  // namespace
@@ -88,10 +142,7 @@ void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
 
   if (dialog_mode == AccessCodeCastDialogMode::kBrowserStandard &&
       web_contents_) {
-    constrained_window::UpdateWidgetModalDialogPosition(
-        dialog_widget,
-        CreateChromeConstrainedWindowViewsClient()->GetModalDialogHost(
-            web_contents_->GetTopLevelNativeWindow()));
+    UpdateDialogPosition(dialog_widget, web_contents_);
   }
 }
 
