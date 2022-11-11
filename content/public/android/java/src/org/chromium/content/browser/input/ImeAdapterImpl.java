@@ -123,7 +123,7 @@ public class ImeAdapterImpl
     // InputMethodManager on appropriate timing, depending on how IME requested the information
     // via InputConnection. The update request is per InputConnection, hence for each time it is
     // re-created, the monitoring status will be reset.
-    private CursorAnchorInfoController mCursorAnchorInfoController;
+    private final CursorAnchorInfoController mCursorAnchorInfoController;
 
     private final List<ImeEventObserver> mEventObservers = new ArrayList<>();
 
@@ -219,7 +219,6 @@ public class ImeAdapterImpl
         // Deep copy newConfig so that we can notice the difference.
         mCurrentConfig = new Configuration(getContainerView().getResources().getConfiguration());
 
-        // CursorAnchroInfo is supported only after L.
         mCursorAnchorInfoController = CursorAnchorInfoController.create(
                 wrapper, new CursorAnchorInfoController.ComposingTextDelegate() {
                     @Override
@@ -1140,7 +1139,6 @@ public class ImeAdapterImpl
             ImeAdapterImplJni.get().requestCursorUpdate(mNativeImeAdapterAndroid,
                     ImeAdapterImpl.this, immediateRequest, monitorRequest);
         }
-        if (mCursorAnchorInfoController == null) return false;
         return mCursorAnchorInfoController.onRequestCursorUpdates(
                 immediateRequest, monitorRequest, getContainerView());
     }
@@ -1162,7 +1160,6 @@ public class ImeAdapterImpl
             boolean hasInsertionMarker, boolean isInsertionMarkerVisible,
             float insertionMarkerHorizontal, float insertionMarkerTop,
             float insertionMarkerBottom) {
-        if (mCursorAnchorInfoController == null) return;
         mCursorAnchorInfoController.onUpdateFrameInfo(scaleFactor, contentOffsetYPix,
                 hasInsertionMarker, isInsertionMarkerVisible, insertionMarkerHorizontal,
                 insertionMarkerTop, insertionMarkerBottom, getContainerView());
@@ -1278,7 +1275,6 @@ public class ImeAdapterImpl
 
     @CalledByNative
     private void setCharacterBounds(float[] characterBounds) {
-        if (mCursorAnchorInfoController == null) return;
         mCursorAnchorInfoController.setCompositionCharacterBounds(
                 characterBounds, getContainerView());
     }
