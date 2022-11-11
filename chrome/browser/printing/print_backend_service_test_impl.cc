@@ -58,10 +58,21 @@ PrintBackendServiceTestImpl::PrintBackendServiceTestImpl(
 
 PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() = default;
 
-void PrintBackendServiceTestImpl::Init(const std::string& locale) {
+void PrintBackendServiceTestImpl::Init(
+#if BUILDFLAG(IS_WIN)
+    const std::string& locale,
+    mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+    const std::string& locale
+#endif  // BUILDFLAG(IS_WIN)
+) {
   DCHECK(test_print_backend_);
   print_backend_ = test_print_backend_;
+#if BUILDFLAG(IS_WIN)
+  PrintBackendServiceImpl::InitCommon(locale, std::move(remote));
+#else
   PrintBackendServiceImpl::InitCommon(locale);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void PrintBackendServiceTestImpl::EnumeratePrinters(
@@ -181,7 +192,14 @@ PrintBackendServiceTestImpl::LaunchForTesting(
   // Private ctor.
   auto service = base::WrapUnique(
       new PrintBackendServiceTestImpl(std::move(receiver), std::move(backend)));
+#if BUILDFLAG(IS_WIN)
+  // Initializes the service with an invalid PrinterXmlParser, so it won't be
+  // able to parse XML.
+  service->Init(/*locale=*/std::string(),
+                mojo::PendingRemote<mojom::PrinterXmlParser>());
+#else
   service->Init(/*locale=*/std::string());
+#endif  // BUILDFLAG(IS_WIN)
 
   // Register this test version of print backend service to be used instead of
   // launching instances out-of-process on-demand.

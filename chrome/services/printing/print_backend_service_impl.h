@@ -97,7 +97,14 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
  protected:
   // Common initialization for both production and test instances.
-  void InitCommon(const std::string& locale);
+  void InitCommon(
+#if BUILDFLAG(IS_WIN)
+      const std::string& locale,
+      mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+      const std::string& locale
+#endif  // BUILDFLAG(IS_WIN)
+  );
 
  private:
   friend class PrintBackendServiceTestImpl;
@@ -128,11 +135,14 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   };
 
   // mojom::PrintBackendService implementation:
-  void Init(const std::string& locale) override;
+  void Init(
 #if BUILDFLAG(IS_WIN)
-  void BindPrinterXmlParser(
-      mojo::PendingRemote<mojom::PrinterXmlParser> remote) override;
+      const std::string& locale,
+      mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+      const std::string& locale
 #endif  // BUILDFLAG(IS_WIN)
+      ) override;
   void Poke() override;
   void EnumeratePrinters(
       mojom::PrintBackendService::EnumeratePrintersCallback callback) override;

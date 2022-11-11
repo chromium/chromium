@@ -425,11 +425,29 @@ PrintBackendServiceImpl::PrintBackendServiceImpl(
 
 PrintBackendServiceImpl::~PrintBackendServiceImpl() = default;
 
-void PrintBackendServiceImpl::InitCommon(const std::string& locale) {
+void PrintBackendServiceImpl::InitCommon(
+#if BUILDFLAG(IS_WIN)
+    const std::string& locale,
+    mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+    const std::string& locale
+#endif  // BUILDFLAG(IS_WIN)
+) {
   context_delegate_.SetAppLocale(locale);
+#if BUILDFLAG(IS_WIN)
+  if (remote.is_valid())
+    xml_parser_remote_.Bind(std::move(remote));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-void PrintBackendServiceImpl::Init(const std::string& locale) {
+void PrintBackendServiceImpl::Init(
+#if BUILDFLAG(IS_WIN)
+    const std::string& locale,
+    mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+    const std::string& locale
+#endif  // BUILDFLAG(IS_WIN)
+) {
   // Test classes should not invoke this base initialization method, as process
   // initialization is very different for test frameworks.  Test classes
   // will also provide their own test version of a `PrintBackend`.
@@ -443,9 +461,13 @@ void PrintBackendServiceImpl::Init(const std::string& locale) {
   // are using `TestPrintingContext`.
   InstantiateLinuxUiDelegate();
   ui::LinuxUi::SetInstance(ui::GetDefaultLinuxUi());
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN)
+  InitCommon(locale, std::move(remote));
+#else
   InitCommon(locale);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // TODO(crbug.com/1225111)  Do nothing, this is just to assist an idle timeout
@@ -756,13 +778,6 @@ void PrintBackendServiceImpl::DocumentDone(
                            base::Unretained(this), std::ref(*document_helper),
                            std::move(callback)));
 }
-
-#if BUILDFLAG(IS_WIN)
-void PrintBackendServiceImpl::BindPrinterXmlParser(
-    mojo::PendingRemote<mojom::PrinterXmlParser> remote) {
-  xml_parser_remote_.Bind(std::move(remote));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,

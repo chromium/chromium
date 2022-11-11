@@ -55,7 +55,14 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   ~PrintBackendServiceTestImpl() override;
 
   // Override which needs special handling for using `test_print_backend_`.
-  void Init(const std::string& locale) override;
+  void Init(
+#if BUILDFLAG(IS_WIN)
+      const std::string& locale,
+      mojo::PendingRemote<mojom::PrinterXmlParser> remote
+#else
+      const std::string& locale
+#endif  // BUILDFLAG(IS_WIN)
+      ) override;
 
   // Overrides to support testing service termination scenarios.
   void EnumeratePrinters(

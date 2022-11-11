@@ -91,13 +91,16 @@ interface SandboxedPrintBackendHost {
 // isolated process.
 interface PrintBackendService {
   // Establish the locale to be used for calls with this service and the
-  // interface to the underlying data source.
-  Init(string locale);
-
-  // Binds an interface that is used to communicate with the browser process
-  // to parse XML in a separate process.
+  // interface to the underlying data source. If `remote` is valid, binds an
+  // interface that is used to communicate with the browser process to parse XML
+  // in a separate process.
   [EnableIf=is_win]
-  BindPrinterXmlParser(pending_remote<PrinterXmlParser> remote);
+  Init(string locale, pending_remote<PrinterXmlParser>? remote);
+
+  // Establish the locale to be used for calls with this service and the
+  // interface to the underlying data source.
+  [EnableIfNot=is_win]
+  Init(string locale);
 
   // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
   // useful to ensure that an idle timeout change takes effect.

@@ -657,19 +657,21 @@ PrintBackendServiceManager::GetServiceFromBundle(
     // We may want to have the service terminated when idle.
     SetServiceIdleHandler(service, sandboxed, remote_id,
                           GetClientTypeIdleTimeout(client_type));
-
-    // Initialize the new service for the desired locale.
-    service->Init(g_browser_process->GetApplicationLocale());
-
 #if BUILDFLAG(IS_WIN)
-    // Bind PrintBackendService with a Remote that allows pass-through requests
-    // to an XML parser.
+    // Initialize the new service for the desired locale. Bind
+    // PrintBackendService with a Remote that allows pass-through requests to an
+    // XML parser.
+    mojo::PendingRemote<mojom::PrinterXmlParser> remote;
     if (base::FeatureList::IsEnabled(
             features::kReadPrinterCapabilitiesWithXps)) {
       if (!xml_parser_)
         xml_parser_ = std::make_unique<PrinterXmlParserImpl>();
-      service->BindPrinterXmlParser(xml_parser_->GetRemote());
+      remote = xml_parser_->GetRemote();
     }
+    service->Init(g_browser_process->GetApplicationLocale(), std::move(remote));
+#else
+    // Initialize the new service for the desired locale.
+    service->Init(g_browser_process->GetApplicationLocale());
 #endif  // BUILDFLAG(IS_WIN)
   }
 
