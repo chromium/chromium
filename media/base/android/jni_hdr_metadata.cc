@@ -43,49 +43,49 @@ jint JniHdrMetadata::Range(JNIEnv* env,
 jfloat JniHdrMetadata::PrimaryRChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_r.x();
+  return hdr_metadata_->color_volume_metadata.primaries.fRX;
 }
 
 jfloat JniHdrMetadata::PrimaryRChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_r.y();
+  return hdr_metadata_->color_volume_metadata.primaries.fRY;
 }
 
 jfloat JniHdrMetadata::PrimaryGChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_g.x();
+  return hdr_metadata_->color_volume_metadata.primaries.fGX;
 }
 
 jfloat JniHdrMetadata::PrimaryGChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_g.y();
+  return hdr_metadata_->color_volume_metadata.primaries.fGY;
 }
 
 jfloat JniHdrMetadata::PrimaryBChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_b.x();
+  return hdr_metadata_->color_volume_metadata.primaries.fBX;
 }
 
 jfloat JniHdrMetadata::PrimaryBChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.primary_b.y();
+  return hdr_metadata_->color_volume_metadata.primaries.fBY;
 }
 
 jfloat JniHdrMetadata::WhitePointChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.white_point.x();
+  return hdr_metadata_->color_volume_metadata.primaries.fWX;
 }
 
 jfloat JniHdrMetadata::WhitePointChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_->color_volume_metadata.white_point.y();
+  return hdr_metadata_->color_volume_metadata.primaries.fWY;
 }
 
 jfloat JniHdrMetadata::MaxColorVolumeLuminance(

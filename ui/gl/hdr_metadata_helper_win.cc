@@ -110,19 +110,15 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
 DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
     const gfx::HDRMetadata& hdr_metadata) {
   DXGI_HDR_METADATA_HDR10 metadata{};
-
-  auto& primary_r = hdr_metadata.color_volume_metadata.primary_r;
-  metadata.RedPrimary[0] = primary_r.x() * kPrimariesFixedPoint;
-  metadata.RedPrimary[1] = primary_r.y() * kPrimariesFixedPoint;
-  auto& primary_g = hdr_metadata.color_volume_metadata.primary_g;
-  metadata.GreenPrimary[0] = primary_g.x() * kPrimariesFixedPoint;
-  metadata.GreenPrimary[1] = primary_g.y() * kPrimariesFixedPoint;
-  auto& primary_b = hdr_metadata.color_volume_metadata.primary_b;
-  metadata.BluePrimary[0] = primary_b.x() * kPrimariesFixedPoint;
-  metadata.BluePrimary[1] = primary_b.y() * kPrimariesFixedPoint;
-  auto& white_point = hdr_metadata.color_volume_metadata.white_point;
-  metadata.WhitePoint[0] = white_point.x() * kPrimariesFixedPoint;
-  metadata.WhitePoint[1] = white_point.y() * kPrimariesFixedPoint;
+  const auto& primaries = hdr_metadata.color_volume_metadata.primaries;
+  metadata.RedPrimary[0] = primaries.fRX * kPrimariesFixedPoint;
+  metadata.RedPrimary[1] = primaries.fRY * kPrimariesFixedPoint;
+  metadata.GreenPrimary[0] = primaries.fGX * kPrimariesFixedPoint;
+  metadata.GreenPrimary[1] = primaries.fGY * kPrimariesFixedPoint;
+  metadata.BluePrimary[0] = primaries.fBX * kPrimariesFixedPoint;
+  metadata.BluePrimary[1] = primaries.fBY * kPrimariesFixedPoint;
+  metadata.WhitePoint[0] = primaries.fWX * kPrimariesFixedPoint;
+  metadata.WhitePoint[1] = primaries.fWY * kPrimariesFixedPoint;
   metadata.MaxMasteringLuminance =
       hdr_metadata.color_volume_metadata.luminance_max;
   metadata.MinMasteringLuminance =

@@ -169,14 +169,14 @@ MT_CUSTOM_VIDEO_PRIMARIES CustomVideoPrimaryToMF(
   // MT_CUSTOM_VIDEO_PRIMARIES stores value in float no scaling factor needed
   // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/ns-mfapi-mt_custom_video_primaries
   MT_CUSTOM_VIDEO_PRIMARIES primaries = {0};
-  primaries.fRx = color_volume_metadata.primary_r.x();
-  primaries.fRy = color_volume_metadata.primary_r.y();
-  primaries.fGx = color_volume_metadata.primary_g.x();
-  primaries.fGy = color_volume_metadata.primary_g.y();
-  primaries.fBx = color_volume_metadata.primary_b.x();
-  primaries.fBy = color_volume_metadata.primary_b.y();
-  primaries.fWx = color_volume_metadata.white_point.x();
-  primaries.fWy = color_volume_metadata.white_point.y();
+  primaries.fRx = color_volume_metadata.primaries.fRX;
+  primaries.fRy = color_volume_metadata.primaries.fRY;
+  primaries.fGx = color_volume_metadata.primaries.fGX;
+  primaries.fGy = color_volume_metadata.primaries.fGY;
+  primaries.fBx = color_volume_metadata.primaries.fBX;
+  primaries.fBy = color_volume_metadata.primaries.fBY;
+  primaries.fWx = color_volume_metadata.primaries.fWX;
+  primaries.fWy = color_volume_metadata.primaries.fWY;
   return primaries;
 }
 

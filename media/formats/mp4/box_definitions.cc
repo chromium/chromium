@@ -129,16 +129,12 @@ VideoColorSpace ConvertColorParameterInformationToColorSpace(
 gfx::ColorVolumeMetadata ConvertMdcvToColorVolumeMetadata(
     const MasteringDisplayColorVolume& mdcv) {
   gfx::ColorVolumeMetadata color_volume_metadata;
-
-  color_volume_metadata.primary_r = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_rx, mdcv.display_primaries_ry);
-  color_volume_metadata.primary_g = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_gx, mdcv.display_primaries_gy);
-  color_volume_metadata.primary_b = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.display_primaries_bx, mdcv.display_primaries_by);
-  color_volume_metadata.white_point = gfx::ColorVolumeMetadata::Chromaticity(
-      mdcv.white_point_x, mdcv.white_point_y);
-
+  color_volume_metadata.primaries = {
+      mdcv.display_primaries_rx, mdcv.display_primaries_ry,
+      mdcv.display_primaries_gx, mdcv.display_primaries_gy,
+      mdcv.display_primaries_bx, mdcv.display_primaries_by,
+      mdcv.white_point_x,        mdcv.white_point_y,
+  };
   color_volume_metadata.luminance_max = mdcv.max_display_mastering_luminance;
   color_volume_metadata.luminance_min = mdcv.min_display_mastering_luminance;
 

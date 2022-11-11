@@ -12,13 +12,7 @@ bool StructTraits<gfx::mojom::ColorVolumeMetadataDataView,
          gfx::ColorVolumeMetadata* output) {
   output->luminance_max = data.luminance_max();
   output->luminance_min = data.luminance_min();
-  if (!data.ReadPrimaryR(&output->primary_r))
-    return false;
-  if (!data.ReadPrimaryG(&output->primary_g))
-    return false;
-  if (!data.ReadPrimaryB(&output->primary_b))
-    return false;
-  if (!data.ReadWhitePoint(&output->white_point))
+  if (!data.ReadPrimaries(&output->primaries))
     return false;
   return true;
 }

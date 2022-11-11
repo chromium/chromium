@@ -259,31 +259,21 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
           case H265SEIMessage::kSEIMasteringDisplayInfo: {
             constexpr auto kChromaDenominator = 50000.0f;
             constexpr auto kLumaDenoninator = 10000.0f;
+            const auto& mdi = sei_msg.mastering_display_info;
             // display primaries are in G/B/R order in MDCV SEI.
-            hdr_metadata.color_volume_metadata.primary_r = gfx::PointF(
-                sei_msg.mastering_display_info.display_primaries[2][0] /
-                    kChromaDenominator,
-                sei_msg.mastering_display_info.display_primaries[2][1] /
-                    kChromaDenominator);
-            hdr_metadata.color_volume_metadata.primary_g = gfx::PointF(
-                sei_msg.mastering_display_info.display_primaries[0][0] /
-                    kChromaDenominator,
-                sei_msg.mastering_display_info.display_primaries[0][1] /
-                    kChromaDenominator);
-            hdr_metadata.color_volume_metadata.primary_b = gfx::PointF(
-                sei_msg.mastering_display_info.display_primaries[1][0] /
-                    kChromaDenominator,
-                sei_msg.mastering_display_info.display_primaries[1][1] /
-                    kChromaDenominator);
-            hdr_metadata.color_volume_metadata.white_point =
-                gfx::PointF(sei_msg.mastering_display_info.white_points[0] /
-                                kChromaDenominator,
-                            sei_msg.mastering_display_info.white_points[1] /
-                                kChromaDenominator);
+            hdr_metadata.color_volume_metadata.primaries = {
+                mdi.display_primaries[2][0] / kChromaDenominator,
+                mdi.display_primaries[2][1] / kChromaDenominator,
+                mdi.display_primaries[0][0] / kChromaDenominator,
+                mdi.display_primaries[0][1] / kChromaDenominator,
+                mdi.display_primaries[1][0] / kChromaDenominator,
+                mdi.display_primaries[1][1] / kChromaDenominator,
+                mdi.white_points[0] / kChromaDenominator,
+                mdi.white_points[1] / kChromaDenominator};
             hdr_metadata.color_volume_metadata.luminance_max =
-                sei_msg.mastering_display_info.max_luminance / kLumaDenoninator;
+                mdi.max_luminance / kLumaDenoninator;
             hdr_metadata.color_volume_metadata.luminance_min =
-                sei_msg.mastering_display_info.min_luminance / kLumaDenoninator;
+                mdi.min_luminance / kLumaDenoninator;
             break;
           }
           case H265SEIMessage::kSEIAlphaChannelInfo:

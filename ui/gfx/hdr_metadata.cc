@@ -20,10 +20,7 @@ ColorVolumeMetadata& ColorVolumeMetadata::operator=(
 ColorVolumeMetadata::ColorVolumeMetadata(const SkColorSpacePrimaries& primaries,
                                          float luminance_max,
                                          float luminance_min)
-    : primary_r(primaries.fRX, primaries.fRY),
-      primary_g(primaries.fGX, primaries.fGY),
-      primary_b(primaries.fBX, primaries.fBY),
-      white_point(primaries.fWX, primaries.fWY),
+    : primaries(primaries),
       luminance_max(luminance_max),
       luminance_min(luminance_min) {}
 
@@ -31,10 +28,10 @@ std::string ColorVolumeMetadata::ToString() const {
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4);
   ss << "{";
-  ss << "red:[" << primary_r.x() << ", " << primary_r.y() << "], ";
-  ss << "green:[" << primary_g.x() << ", " << primary_g.y() << "], ";
-  ss << "blue:[" << primary_b.x() << ", " << primary_b.y() << "], ";
-  ss << "whitePoint:[" << white_point.x() << ", " << white_point.y() << "], ";
+  ss << "red:[" << primaries.fRX << ", " << primaries.fRY << "], ";
+  ss << "green:[" << primaries.fGX << ", " << primaries.fGY << "], ";
+  ss << "blue:[" << primaries.fBX << ", " << primaries.fBY << "], ";
+  ss << "whitePoint:[" << primaries.fWX << ", " << primaries.fWY << "], ";
   ss << "minLum:" << luminance_min << ", "
      << "maxLum:" << luminance_max;
   ss << "}";
@@ -63,18 +60,9 @@ HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
   HDRMetadata result = *hdr_metadata;
 
   // If the gamut is unspecified, replace it with the default Rec2020.
-  if (result.color_volume_metadata.primary_r.IsOrigin() &&
-      result.color_volume_metadata.primary_g.IsOrigin() &&
-      result.color_volume_metadata.primary_b.IsOrigin() &&
-      result.color_volume_metadata.white_point.IsOrigin()) {
-    result.color_volume_metadata.primary_r =
-        defaults.color_volume_metadata.primary_r;
-    result.color_volume_metadata.primary_g =
-        defaults.color_volume_metadata.primary_g;
-    result.color_volume_metadata.primary_b =
-        defaults.color_volume_metadata.primary_b;
-    result.color_volume_metadata.white_point =
-        defaults.color_volume_metadata.white_point;
+  if (result.color_volume_metadata.primaries == SkNamedPrimariesExt::kInvalid) {
+    result.color_volume_metadata.primaries =
+        defaults.color_volume_metadata.primaries;
   }
 
   // If the max luminance is unspecified, replace it with the default 10,000

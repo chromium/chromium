@@ -95,14 +95,9 @@ TEST(VideoDecoderConfigStructTraitsTest,
   gfx::HDRMetadata hdr_metadata;
   hdr_metadata.max_frame_average_light_level = 123;
   hdr_metadata.max_content_light_level = 456;
-  hdr_metadata.color_volume_metadata.primary_r.set_x(0.1f);
-  hdr_metadata.color_volume_metadata.primary_r.set_y(0.2f);
-  hdr_metadata.color_volume_metadata.primary_g.set_x(0.3f);
-  hdr_metadata.color_volume_metadata.primary_g.set_y(0.4f);
-  hdr_metadata.color_volume_metadata.primary_b.set_x(0.5f);
-  hdr_metadata.color_volume_metadata.primary_b.set_y(0.6f);
-  hdr_metadata.color_volume_metadata.white_point.set_x(0.7f);
-  hdr_metadata.color_volume_metadata.white_point.set_y(0.8f);
+  hdr_metadata.color_volume_metadata.primaries = {
+      0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f,
+  };
   hdr_metadata.color_volume_metadata.luminance_max = 1000;
   hdr_metadata.color_volume_metadata.luminance_min = 0;
   input.set_hdr_metadata(hdr_metadata);

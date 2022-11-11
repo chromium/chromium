@@ -733,17 +733,16 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {
-        hdr_metadata.color_volume_metadata.primary_r =
-            gfx::PointF(av_q2d(metadata->display_primaries[0][0]),
-                        av_q2d(metadata->display_primaries[0][1]));
-        hdr_metadata.color_volume_metadata.primary_g =
-            gfx::PointF(av_q2d(metadata->display_primaries[1][0]),
-                        av_q2d(metadata->display_primaries[1][1]));
-        hdr_metadata.color_volume_metadata.primary_b =
-            gfx::PointF(av_q2d(metadata->display_primaries[2][0]),
-                        av_q2d(metadata->display_primaries[2][1]));
-        hdr_metadata.color_volume_metadata.white_point = gfx::PointF(
-            av_q2d(metadata->white_point[0]), av_q2d(metadata->white_point[1]));
+        hdr_metadata.color_volume_metadata.primaries = {
+            static_cast<float>(av_q2d(metadata->display_primaries[0][0])),
+            static_cast<float>(av_q2d(metadata->display_primaries[0][1])),
+            static_cast<float>(av_q2d(metadata->display_primaries[1][0])),
+            static_cast<float>(av_q2d(metadata->display_primaries[1][1])),
+            static_cast<float>(av_q2d(metadata->display_primaries[2][0])),
+            static_cast<float>(av_q2d(metadata->display_primaries[2][1])),
+            static_cast<float>(av_q2d(metadata->white_point[0])),
+            static_cast<float>(av_q2d(metadata->white_point[1])),
+        };
       }
       if (metadata->has_luminance) {
         hdr_metadata.color_volume_metadata.luminance_max =

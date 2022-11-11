@@ -735,18 +735,12 @@ void SurfaceControl::Transaction::SetHDRMetadata(
         .maxFrameAverageLightLevel =
             static_cast<float>(metadata->max_frame_average_light_level)};
 
+    const auto& primaries = metadata->color_volume_metadata.primaries;
     AHdrMetadata_smpte2086 smpte2086 = {
-        .displayPrimaryRed =
-            {.x = metadata->color_volume_metadata.primary_r.x(),
-             .y = metadata->color_volume_metadata.primary_r.y()},
-        .displayPrimaryGreen =
-            {.x = metadata->color_volume_metadata.primary_g.x(),
-             .y = metadata->color_volume_metadata.primary_g.y()},
-        .displayPrimaryBlue =
-            {.x = metadata->color_volume_metadata.primary_b.x(),
-             .y = metadata->color_volume_metadata.primary_b.y()},
-        .whitePoint = {.x = metadata->color_volume_metadata.white_point.x(),
-                       .y = metadata->color_volume_metadata.white_point.y()},
+        .displayPrimaryRed = {.x = primaries.fRX, .y = primaries.fRY},
+        .displayPrimaryGreen = {.x = primaries.fGX, .y = primaries.fGY},
+        .displayPrimaryBlue = {.x = primaries.fBX, .y = primaries.fBY},
+        .whitePoint = {.x = primaries.fWX, .y = primaries.fWY},
         .maxLuminance = metadata->color_volume_metadata.luminance_max,
         .minLuminance = metadata->color_volume_metadata.luminance_min};
 

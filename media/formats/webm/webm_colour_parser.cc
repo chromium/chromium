@@ -20,28 +20,28 @@ WebMColorVolumeMetadataParser::~WebMColorVolumeMetadataParser() = default;
 bool WebMColorVolumeMetadataParser::OnFloat(int id, double val) {
   switch (id) {
     case kWebMIdPrimaryRChromaticityX:
-      color_volume_metadata_.primary_r.set_x(val);
+      color_volume_metadata_.primaries.fRX = val;
       break;
     case kWebMIdPrimaryRChromaticityY:
-      color_volume_metadata_.primary_r.set_y(val);
+      color_volume_metadata_.primaries.fRY = val;
       break;
     case kWebMIdPrimaryGChromaticityX:
-      color_volume_metadata_.primary_g.set_x(val);
+      color_volume_metadata_.primaries.fGX = val;
       break;
     case kWebMIdPrimaryGChromaticityY:
-      color_volume_metadata_.primary_g.set_y(val);
+      color_volume_metadata_.primaries.fGY = val;
       break;
     case kWebMIdPrimaryBChromaticityX:
-      color_volume_metadata_.primary_b.set_x(val);
+      color_volume_metadata_.primaries.fBX = val;
       break;
     case kWebMIdPrimaryBChromaticityY:
-      color_volume_metadata_.primary_b.set_y(val);
+      color_volume_metadata_.primaries.fBY = val;
       break;
     case kWebMIdWhitePointChromaticityX:
-      color_volume_metadata_.white_point.set_x(val);
+      color_volume_metadata_.primaries.fWX = val;
       break;
     case kWebMIdWhitePointChromaticityY:
-      color_volume_metadata_.white_point.set_y(val);
+      color_volume_metadata_.primaries.fWY = val;
       break;
     case kWebMIdLuminanceMax:
       color_volume_metadata_.luminance_max = val;

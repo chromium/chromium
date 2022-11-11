@@ -453,13 +453,13 @@ struct StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace> {
 template <>
 struct StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
                     gfx::ColorVolumeMetadata> {
-  static const gfx::PointF& primary_r(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF primary_r(const gfx::ColorVolumeMetadata& input);
 
-  static const gfx::PointF& primary_g(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF primary_g(const gfx::ColorVolumeMetadata& input);
 
-  static const gfx::PointF& primary_b(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF primary_b(const gfx::ColorVolumeMetadata& input);
 
-  static const gfx::PointF& white_point(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF white_point(const gfx::ColorVolumeMetadata& input);
 
   static float luminance_max(const gfx::ColorVolumeMetadata& input);
 

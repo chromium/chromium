@@ -209,14 +209,14 @@ TEST_F(WebMStreamParserTest, ColourElement) {
   EXPECT_EQ(hdr_metadata->max_frame_average_light_level, 12u);
 
   const gfx::ColorVolumeMetadata& mmdata = hdr_metadata->color_volume_metadata;
-  EXPECT_FLOAT_EQ(mmdata.primary_r.x(), 0.1f);
-  EXPECT_FLOAT_EQ(mmdata.primary_r.y(), 0.2f);
-  EXPECT_FLOAT_EQ(mmdata.primary_g.x(), 0.1f);
-  EXPECT_FLOAT_EQ(mmdata.primary_g.y(), 0.2f);
-  EXPECT_FLOAT_EQ(mmdata.primary_b.x(), 0.1f);
-  EXPECT_FLOAT_EQ(mmdata.primary_b.y(), 0.2f);
-  EXPECT_FLOAT_EQ(mmdata.white_point.x(), 0.1f);
-  EXPECT_FLOAT_EQ(mmdata.white_point.y(), 0.2f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fRX, 0.1f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fRY, 0.2f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fGX, 0.1f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fGY, 0.2f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fBX, 0.1f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fBY, 0.2f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fWX, 0.1f);
+  EXPECT_FLOAT_EQ(mmdata.primaries.fWY, 0.2f);
   EXPECT_EQ(mmdata.luminance_max, 40);
   EXPECT_EQ(mmdata.luminance_min, 30);
 }

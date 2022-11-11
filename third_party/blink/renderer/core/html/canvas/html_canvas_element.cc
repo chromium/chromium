@@ -458,14 +458,12 @@ void HTMLCanvasElement::configureHighDynamicRange(
     hdr_metadata = gfx::HDRMetadata();
     auto& color_volume_metadata = hdr_metadata->color_volume_metadata;
     const auto* v8_metadata = options->smpteSt2086Metadata();
-    color_volume_metadata.primary_r.set_x(v8_metadata->redPrimaryX());
-    color_volume_metadata.primary_r.set_y(v8_metadata->redPrimaryY());
-    color_volume_metadata.primary_g.set_x(v8_metadata->greenPrimaryX());
-    color_volume_metadata.primary_g.set_y(v8_metadata->greenPrimaryY());
-    color_volume_metadata.primary_b.set_x(v8_metadata->bluePrimaryX());
-    color_volume_metadata.primary_b.set_y(v8_metadata->bluePrimaryY());
-    color_volume_metadata.white_point.set_x(v8_metadata->whitePointX());
-    color_volume_metadata.white_point.set_y(v8_metadata->whitePointY());
+    color_volume_metadata.primaries = {
+        v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),
+        v8_metadata->greenPrimaryX(), v8_metadata->greenPrimaryY(),
+        v8_metadata->bluePrimaryX(),  v8_metadata->bluePrimaryY(),
+        v8_metadata->whitePointX(),   v8_metadata->whitePointY(),
+    };
     color_volume_metadata.luminance_min = v8_metadata->minimumLuminance();
     color_volume_metadata.luminance_max = v8_metadata->maximumLuminance();
   }

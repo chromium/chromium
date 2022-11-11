@@ -40,17 +40,9 @@ struct EnumTraits<gfx::mojom::HDRMode, gfx::HDRMode> {
 template <>
 struct StructTraits<gfx::mojom::ColorVolumeMetadataDataView,
                     gfx::ColorVolumeMetadata> {
-  static const gfx::PointF& primary_r(const gfx::ColorVolumeMetadata& input) {
-    return input.primary_r;
-  }
-  static const gfx::PointF& primary_g(const gfx::ColorVolumeMetadata& input) {
-    return input.primary_g;
-  }
-  static const gfx::PointF& primary_b(const gfx::ColorVolumeMetadata& input) {
-    return input.primary_b;
-  }
-  static const gfx::PointF& white_point(const gfx::ColorVolumeMetadata& input) {
-    return input.white_point;
+  static const SkColorSpacePrimaries& primaries(
+      const gfx::ColorVolumeMetadata& input) {
+    return input.primaries;
   }
   static float luminance_max(const gfx::ColorVolumeMetadata& input) {
     return input.luminance_max;

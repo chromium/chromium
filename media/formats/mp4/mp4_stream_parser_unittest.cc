@@ -723,22 +723,17 @@ TEST_F(MP4StreamParserTest, Vp9) {
   EXPECT_EQ(hdr_metadata.max_frame_average_light_level, 640u);
 
   const auto& color_volume_metadata = hdr_metadata.color_volume_metadata;
+  const auto& primaries = color_volume_metadata.primaries;
 
   constexpr float kColorCoordinateUnit = 1 / 16.0f;
-  EXPECT_NEAR(color_volume_metadata.primary_r.x(), 0.68, kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.primary_r.y(), 0.31998,
-              kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.primary_g.x(), 0.26496,
-              kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.primary_g.y(), 0.68998,
-              kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.primary_b.x(), 0.15, kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.primary_b.y(), 0.05998,
-              kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.white_point.x(), 0.314,
-              kColorCoordinateUnit);
-  EXPECT_NEAR(color_volume_metadata.white_point.y(), 0.351,
-              kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fRX, 0.68, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fRY, 0.31998, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fGX, 0.26496, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fGY, 0.68998, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fBX, 0.15, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fBY, 0.05998, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fWX, 0.314, kColorCoordinateUnit);
+  EXPECT_NEAR(primaries.fWY, 0.351, kColorCoordinateUnit);
 
   constexpr float kLuminanceMaxUnit = 1 / 8.0f;
   EXPECT_NEAR(color_volume_metadata.luminance_max, 1000.0f, kLuminanceMaxUnit);

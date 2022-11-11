@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -27,11 +28,7 @@ enum class HDRMode {
 
 // SMPTE ST 2086 color volume metadata.
 struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
-  using Chromaticity = PointF;
-  Chromaticity primary_r;
-  Chromaticity primary_g;
-  Chromaticity primary_b;
-  Chromaticity white_point;
+  SkColorSpacePrimaries primaries = SkNamedPrimariesExt::kInvalid;
   float luminance_max = 0;
   float luminance_min = 0;
 
@@ -45,10 +42,8 @@ struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   std::string ToString() const;
 
   bool operator==(const ColorVolumeMetadata& rhs) const {
-    return ((primary_r == rhs.primary_r) && (primary_g == rhs.primary_g) &&
-            (primary_b == rhs.primary_b) && (white_point == rhs.white_point) &&
-            (luminance_max == rhs.luminance_max) &&
-            (luminance_min == rhs.luminance_min));
+    return (primaries == rhs.primaries && luminance_max == rhs.luminance_max &&
+            luminance_min == rhs.luminance_min);
   }
 };
 

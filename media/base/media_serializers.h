@@ -283,17 +283,13 @@ struct MediaSerializer<gfx::HDRMetadata> {
         base::StringPrintf("%.2f => %.2f",
                            value.color_volume_metadata.luminance_min,
                            value.color_volume_metadata.luminance_max));
-    FIELD_SERIALIZE("primaries",
-                    base::StringPrintf(
-                        "[r:%.4f,%.4f, g:%.4f,%.4f, b:%.4f,%.4f, wp:%.4f,%.4f]",
-                        value.color_volume_metadata.primary_r.x(),
-                        value.color_volume_metadata.primary_r.y(),
-                        value.color_volume_metadata.primary_g.x(),
-                        value.color_volume_metadata.primary_g.y(),
-                        value.color_volume_metadata.primary_b.x(),
-                        value.color_volume_metadata.primary_b.y(),
-                        value.color_volume_metadata.white_point.x(),
-                        value.color_volume_metadata.white_point.y()));
+    const auto& primaries = value.color_volume_metadata.primaries;
+    FIELD_SERIALIZE(
+        "primaries",
+        base::StringPrintf(
+            "[r:%.4f,%.4f, g:%.4f,%.4f, b:%.4f,%.4f, wp:%.4f,%.4f]",
+            primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
+            primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY));
     return result;
   }
 };

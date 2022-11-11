@@ -51,25 +51,29 @@ base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
                 .color_volume_metadata;
 
   constexpr float kColorCoordinateUpperBound = 50000.0f;
-  md.primary_r.Scale(kColorCoordinateUpperBound);
-  md.primary_g.Scale(kColorCoordinateUpperBound);
-  md.primary_b.Scale(kColorCoordinateUpperBound);
-  md.white_point.Scale(kColorCoordinateUpperBound);
-
   constexpr float kUnitOfMasteringLuminance = 10000.0f;
   md.luminance_max *= kUnitOfMasteringLuminance;
   md.luminance_min *= kUnitOfMasteringLuminance;
 
   // Values are stored in big-endian...
   MasteringDisplayColorVolumeSEI sei;
-  sei.primaries[0].x = __builtin_bswap16(md.primary_g.x() + 0.5f);
-  sei.primaries[0].y = __builtin_bswap16(md.primary_g.y() + 0.5f);
-  sei.primaries[1].x = __builtin_bswap16(md.primary_b.x() + 0.5f);
-  sei.primaries[1].y = __builtin_bswap16(md.primary_b.y() + 0.5f);
-  sei.primaries[2].x = __builtin_bswap16(md.primary_r.x() + 0.5f);
-  sei.primaries[2].y = __builtin_bswap16(md.primary_r.y() + 0.5f);
-  sei.white_point.x = __builtin_bswap16(md.white_point.x() + 0.5f);
-  sei.white_point.y = __builtin_bswap16(md.white_point.y() + 0.5f);
+  const auto& primaries = md.primaries;
+  sei.primaries[0].x =
+      __builtin_bswap16(primaries.fGX * kColorCoordinateUpperBound + 0.5f);
+  sei.primaries[0].y =
+      __builtin_bswap16(primaries.fGY * kColorCoordinateUpperBound + 0.5f);
+  sei.primaries[1].x =
+      __builtin_bswap16(primaries.fBX * kColorCoordinateUpperBound + 0.5f);
+  sei.primaries[1].y =
+      __builtin_bswap16(primaries.fBY * kColorCoordinateUpperBound + 0.5f);
+  sei.primaries[2].x =
+      __builtin_bswap16(primaries.fRX * kColorCoordinateUpperBound + 0.5f);
+  sei.primaries[2].y =
+      __builtin_bswap16(primaries.fRY * kColorCoordinateUpperBound + 0.5f);
+  sei.white_point.x =
+      __builtin_bswap16(primaries.fWX * kColorCoordinateUpperBound + 0.5f);
+  sei.white_point.y =
+      __builtin_bswap16(primaries.fWY * kColorCoordinateUpperBound + 0.5f);
   sei.luminance_max = __builtin_bswap32(md.luminance_max + 0.5f);
   sei.luminance_min = __builtin_bswap32(md.luminance_min + 0.5f);
 
