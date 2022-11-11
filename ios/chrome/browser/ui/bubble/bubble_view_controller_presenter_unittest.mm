@@ -56,6 +56,12 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
     [window_ addSubview:parentViewController_.view];
   }
 
+  ~BubbleViewControllerPresenterTest() override {
+    // Dismiss the bubble, to ensure that its dismissalCallback runs
+    // before the test fixture is destroyed.
+    [bubbleViewControllerPresenter_ dismissAnimated:NO];
+  }
+
  protected:
   // The presenter object under test.
   BubbleViewControllerPresenter* bubbleViewControllerPresenter_;
