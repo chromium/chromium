@@ -5501,7 +5501,7 @@
   {
     "name": "partial-split",
     "owners": [ "sophiewen", "chromeos-wmp-eng@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 114
   },
   {
     "name": "partitioned-cookies",
