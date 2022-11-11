@@ -961,6 +961,7 @@
       'android-12-x64-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-12l-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-arm64-all-targets-dbg': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
+      'android-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
       'android-asan': 'android_clang_asan_release_trybot_reclient',
       'android-bfcache-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-binary-size': 'android_binary_size_reclient',
@@ -994,6 +995,7 @@
       'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage',
       'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage',
       'android-pie-arm64-dbg': 'android_debug_trybot_arm64',
+      # TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
       'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
