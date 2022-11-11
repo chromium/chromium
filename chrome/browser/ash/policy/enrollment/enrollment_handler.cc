@@ -519,7 +519,7 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
           PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
       /*force_new_key=*/force_new_key,
-      /*key_crypto_type=*/::attestation::KEY_TYPE_ECC,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
       /*=key_name=*/std::string(), /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));
 }
