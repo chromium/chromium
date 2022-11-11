@@ -2045,4 +2045,39 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest,
+       DirectTransformUpdateSkipsPropertyTreeBuilderForAncestors) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='positioned_ancestor' style="position: relative;">
+      <div id='dom_ancestor'>
+        <div id='div' style="transform:translateX(100px)"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* div_properties = PaintPropertiesForElement("div");
+  ASSERT_TRUE(div_properties);
+  EXPECT_EQ(100, div_properties->Transform()->Translation2D().x());
+  auto* div = GetDocument().getElementById("div");
+  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* dom_ancestor = GetDocument().getElementById("dom_ancestor");
+  EXPECT_FALSE(dom_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* positioned_ancestor =
+      GetDocument().getElementById("positioned_ancestor");
+  EXPECT_FALSE(
+      positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  div->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
+  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(dom_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(
+      positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
+}
+
 }  // namespace blink

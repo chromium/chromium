@@ -842,9 +842,9 @@ TEST_F(IntersectionObserverTest, CachedRectsTest) {
   // Changing layout between root and target should invalidate.
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
                                                    "10px");
-  // Invalidation happens during style recalc, so force it here.
-  GetDocument().EnsurePaintLocationDataValidForNode(
-      target1, DocumentUpdateReason::kTest);
+  // Invalidation happens during compositing inputs update, so force it here.
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+      DocumentUpdateReason::kTest);
   EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
 
   // Moving target2 out from the subscroller should allow it to cache rects.
