@@ -3897,6 +3897,14 @@ const char kRecoverFromNeverSaveAndroidDescription[] =
     "Enables showing UI which allows for easy reverting of the decision to "
     "never save passwords on a certain webiste";
 
+const char kReduceUserAgentAndroidVersionDeviceModelName[] =
+    "Reduce the device model and Android version in the andriod User-Agent "
+    "string";
+const char kReduceUserAgentAndroidVersionDeviceModelDescription[] =
+    "Enables reducing the device model and Android version in the andriod "
+    "User-Agent string. The device model will be reported as `K` and the "
+    "Android version will be reported as a static `10` string.";
+
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";
 const char kReengagementNotificationDescription[] =

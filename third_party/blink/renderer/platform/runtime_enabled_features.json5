@@ -2248,6 +2248,15 @@
       name: "ReduceAcceptLanguage",
       origin_trial_feature_name: "ReduceAcceptLanguage"
     },
+    {
+      // If enabled, the deviceModel will be reduced to "K" and the
+      // androidVersion will be reduced to a static "10" string in android
+      // User-Agent string.
+      name: "ReduceUserAgentAndroidVersionDeviceModel",
+      depends_on: ["ReduceUserAgentMinorVersion"],
+      status: {"Android": "experimental"},
+      base_feature: "ReduceUserAgentAndroidVersionDeviceModel",
+    },
     // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
     // but we still keep this flag for future phase tests.

@@ -623,12 +623,13 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
 
 TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   base::test::ScopedFeatureList scoped_feature_list;
+
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {blink::features::kReduceUserAgentMinorVersion,
        blink::features::kReduceUserAgentPlatformOsCpu},
-      {});
-
-#if BUILDFLAG(IS_ANDROID)
+      {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
   const char* const kArguments[] = {"chrome"};
@@ -659,6 +660,11 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   }
 
 #else
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu},
+      {});
   {
     // Verify desktop unified platform user agent is returned.
     EXPECT_EQ(base::StringPrintf(kDesktop,
@@ -728,21 +734,69 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
   }
 #endif
 
+// Verify only reduce platform and oscpu in desktop user agent string in
+// phase 5.
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentPlatformOsCpu},
+      {blink::features::kReduceUserAgentAndroidVersionDeviceModel});
+  EXPECT_NE(GetUserAgent(), GetReducedUserAgent());
+  EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
+            GetUserAgentPlatformOsCpu(GetUserAgent()));
+#else
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {blink::features::kReduceUserAgentMinorVersion,
        blink::features::kReduceUserAgentPlatformOsCpu},
       {});
-// Verify only reduce platform and oscpu in desktop user agent string in
-// phase 5.
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_NE(GetUserAgent(), GetReducedUserAgent());
-  EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
-            GetUserAgentPlatformOsCpu(GetUserAgent()));
-#else
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgentMinorVersion,
+       blink::features::kReduceUserAgentAndroidVersionDeviceModel},
+      {});
+  // Verify the correct user agent is returned when the UseMobileUserAgent
+  // command line flag is present.
+  const char* const kArguments[] = {"chrome"};
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->InitFromArgv(1, kArguments);
+
+  // Verify the mobile deviceModel and androidVersion in the user agent string
+  // is reduced when not using a mobile user agent.
+  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    std::string buffer = GetUserAgent();
+    EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
+    std::string device_compat = "";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(kAndroid,
+                                 version_info::GetMajorVersionNumber().c_str(),
+                                 device_compat.c_str()));
+  }
+
+  // Verify the mobile deviceModel and androidVersion in the user agent string
+  // is reduced when using a mobile user agent.
+  command_line->AppendSwitch(switches::kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    std::string buffer = GetUserAgent();
+    EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(kAndroid,
+                                 version_info::GetMajorVersionNumber().c_str(),
+                                 device_compat.c_str()));
+  }
+}
+#endif
 
 TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();

@@ -9302,6 +9302,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceUserAgentPlatformOsCpuDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentPlatformOsCpu)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"reduce-user-agent-android-version-device-model",
+     flag_descriptions::kReduceUserAgentAndroidVersionDeviceModelName,
+     flag_descriptions::kReduceUserAgentAndroidVersionDeviceModelDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         blink::features::kReduceUserAgentAndroidVersionDeviceModel)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-variable-refresh-rate",
      flag_descriptions::kEnableVariableRefreshRateName,

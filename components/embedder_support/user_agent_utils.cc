@@ -185,14 +185,26 @@ bool ShouldReduceUserAgentMinorVersion(
               UserAgentReductionEnterprisePolicyState::kForceEnabled);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+// For desktop:
 // Returns true if both kReduceUserAgentMinorVersionName and
 // kReduceUserAgentPlatformOsCpu are enabled. It makes
 // kReduceUserAgentPlatformOsCpu depend on kReduceUserAgentMinorVersionName.
+//
+// For android:
+// Returns true if both kReduceUserAgentMinorVersionName and
+// kReduceUserAgentAndroidVersionDeviceModel are enabled. It makes
+// kReduceUserAgentAndroidVersionDeviceModel depend on
+// kReduceUserAgentMinorVersionName.
+//
 // It helps us avoid introducing individual enterprise policy controls for
-// reducing the user agent platform and oscpu.
-bool ShouldReduceUserAgentPlatformOsCpu(
+// sending unified platform for the user agent string.
+bool ShouldSendUserAgentUnifiedPlatform(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+#if BUILDFLAG(IS_ANDROID)
+  return ShouldReduceUserAgentMinorVersion(user_agent_reduction) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kReduceUserAgentAndroidVersionDeviceModel);
+#else
 // For legacy windows, only reduce the user agent platform and oscpu when
 // kLegacyWindowsPlatform parameter set to true.
 #if BUILDFLAG(IS_WIN)
@@ -208,8 +220,8 @@ bool ShouldReduceUserAgentPlatformOsCpu(
          base::FeatureList::IsEnabled(
              blink::features::kReduceUserAgentPlatformOsCpu) &&
          blink::features::kAllExceptLegacyWindowsPlatform.Get();
-}
 #endif
+}
 
 const std::string& GetMajorInMinorVersionNumber() {
   static const base::NoDestructor<std::string> version_number([] {
@@ -398,14 +410,15 @@ std::string GetUserAgentInternal(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
     product += " Mobile";
-  return content::BuildUserAgentFromProduct(product);
-#else
+#endif
+
   // In User-Agent reduction phase 5, only apply the <unifiedPlatform> to
   // desktop UA strings.
-  return ShouldReduceUserAgentPlatformOsCpu(user_agent_reduction)
+  // In User-Agent reduction phase 6, only apply the <unifiedPlatform> to
+  // android UA strings.
+  return ShouldSendUserAgentUnifiedPlatform(user_agent_reduction)
              ? content::BuildUnifiedPlatformUserAgentFromProduct(product)
              : content::BuildUserAgentFromProduct(product);
-#endif
 }
 
 std::string GetUserAgent(

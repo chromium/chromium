@@ -2240,6 +2240,9 @@ extern const char kReadLaterReminderNotificationDescription[];
 extern const char kRecoverFromNeverSaveAndroidName[];
 extern const char kRecoverFromNeverSaveAndroidDescription[];
 
+extern const char kReduceUserAgentAndroidVersionDeviceModelName[];
+extern const char kReduceUserAgentAndroidVersionDeviceModelDescription[];
+
 extern const char kReengagementNotificationName[];
 extern const char kReengagementNotificationDescription[];
 
