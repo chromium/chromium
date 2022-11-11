@@ -103,6 +103,14 @@ class FastPairRepository {
   // mapping to memory.
   virtual void FetchDeviceImages(scoped_refptr<Device> device) = 0;
 
+  // Fetches the |device| display_name from the cache, this is only called
+  // during the subsequent pairing scenario and is called after the account_key
+  // filter has been matched to an account_key. Therefore the account_key and
+  // associated display_name should already be in the cache so no need for a
+  // server call.
+  virtual absl::optional<std::string> GetDeviceDisplayNameFromCache(
+      std::vector<uint8_t> account_key) = 0;
+
   // Persists the images and device ID belonging to |device| to
   // disk, if model ID is not already persisted.
   virtual bool PersistDeviceImages(scoped_refptr<Device> device) = 0;

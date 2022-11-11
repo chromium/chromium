@@ -130,6 +130,13 @@ void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
   return;
 }
 
+// Unimplemented.
+absl::optional<std::string>
+FakeFastPairRepository::GetDeviceDisplayNameFromCache(
+    std::vector<uint8_t> account_key) {
+  return nullptr;
+}
+
 bool FakeFastPairRepository::IsAccountKeyPairedLocally(
     const std::vector<uint8_t>& account_key) {
   return is_account_key_paired_locally_;

@@ -162,6 +162,15 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+  // Get the device name and add it to the device object, the device will only
+  // have a name in the cache if this is a subsequent pairing scenario.
+  if (device->protocol == Protocol::kFastPairSubsequent &&
+      device->account_key().has_value()) {
+    device->set_display_name(
+        fast_pair_repository_->GetDeviceDisplayNameFromCache(
+            device->account_key().value()));
+  }
+
   // On discovery, download and decode device images. TODO (b/244472452):
   // remove logic that is executed for every advertisement even if no
   // notification is shown.

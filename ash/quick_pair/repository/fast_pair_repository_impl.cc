@@ -686,6 +686,29 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id));
 }
 
+absl::optional<std::string>
+FastPairRepositoryImpl::GetDeviceDisplayNameFromCache(
+    std::vector<uint8_t> account_key) {
+  std::string account_key_str =
+      std::string(account_key.begin(), account_key.end());
+
+  QP_LOG(INFO) << __func__ << ": Scanning cache for device name.";
+  for (const auto& info : user_devices_cache_.fast_pair_info()) {
+    if (!info.has_device()) {
+      continue;
+    }
+    const std::string& device_account_key_str = info.device().account_key();
+
+    if (account_key_str == device_account_key_str) {
+      nearby::fastpair::StoredDiscoveryItem item;
+      item.ParseFromString(info.device().discovery_item_bytes());
+      QP_LOG(VERBOSE) << __func__ << ": Found display name: " << item.title();
+      return item.title();
+    }
+  }
+  return nullptr;
+}
+
 void FastPairRepositoryImpl::CompleteFetchDeviceImages(
     const std::string& hex_model_id,
     DeviceMetadata* device_metadata,

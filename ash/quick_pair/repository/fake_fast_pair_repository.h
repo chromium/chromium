@@ -71,6 +71,8 @@ class FakeFastPairRepository : public FastPairRepository {
   void DeleteAssociatedDevice(const std::string& mac_address,
                               DeleteAssociatedDeviceCallback callback) override;
   void FetchDeviceImages(scoped_refptr<Device> device) override;
+  absl::optional<std::string> GetDeviceDisplayNameFromCache(
+      std::vector<uint8_t> account_key) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const device::BluetoothDevice* device) override;
   absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(

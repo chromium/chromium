@@ -48,6 +48,10 @@ class MockFastPairRepository : public FastPairRepository {
               FetchDeviceImages,
               (scoped_refptr<Device> device),
               (override));
+  MOCK_METHOD(absl::optional<std::string>,
+              GetDeviceDisplayNameFromCache,
+              (std::vector<uint8_t> account_key),
+              (override));
   MOCK_METHOD(bool,
               PersistDeviceImages,
               (scoped_refptr<Device> device),

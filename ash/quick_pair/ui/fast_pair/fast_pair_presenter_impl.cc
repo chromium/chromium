@@ -229,7 +229,7 @@ void FastPairPresenterImpl::ShowSubsequentDiscoveryNotification(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
   notification_controller_->ShowSubsequentDiscoveryNotification(
-      base::ASCIIToUTF16(device_metadata->GetDetails().name()),
+      base::UTF8ToUTF16(device->display_name().value()),
       base::ASCIIToUTF16(email), device_metadata->image(),
       base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
