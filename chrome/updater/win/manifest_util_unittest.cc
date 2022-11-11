@@ -62,6 +62,12 @@ TEST(ManifestUtil, IsArchitectureSupported) {
   }
 }
 
+TEST(ManifestUtil, IsPlatformCompatible) {
+  EXPECT_TRUE(IsPlatformCompatible({}));
+  EXPECT_TRUE(IsPlatformCompatible("win"));
+  EXPECT_FALSE(IsPlatformCompatible("mac"));
+}
+
 TEST(ManifestUtil, IsArchitectureCompatible) {
   for (const char* const current_architecture :
        {update_client::kArchIntel, update_client::kArchAmd64,
@@ -88,6 +94,51 @@ TEST(ManifestUtil, IsArchitectureCompatible) {
           << test_case.arch_list << ": " << current_architecture << ": "
           << test_case.expected_result;
     }
+  }
+}
+
+TEST(ManifestUtil, IsOSVersionCompatible) {
+  EXPECT_TRUE(IsOSVersionCompatible({}));
+  EXPECT_TRUE(IsOSVersionCompatible("6.0"));
+  EXPECT_FALSE(IsOSVersionCompatible("60.0"));
+  EXPECT_TRUE(IsOSVersionCompatible("0.1"));
+  EXPECT_FALSE(IsOSVersionCompatible("foobar"));
+}
+
+TEST(ManifestUtil, IsOsSupported) {
+  const std::string current_architecture = update_client::GetArchitecture();
+
+  const struct {
+    const char* platform;
+    const char* arch_list;
+    const char* min_os_version;
+    const bool expected_result;
+  } test_cases[] = {
+      {"win", "x86", "6.0", true},
+      {"mac", "x86", "6.0", false},
+      {"win", "unknown", "6.0", false},
+      {"win", "x64", "6.0", current_architecture == update_client::kArchAmd64},
+      {"win", "-x64", "6.0", current_architecture != update_client::kArchAmd64},
+      {"win", "x86,-x64", "6.0",
+       current_architecture != update_client::kArchAmd64},
+      {"win", "x86,x64,-arm64", "6.0",
+       current_architecture != update_client::kArchArm64},
+      {"win", "x86", "60.0", false},
+      {"win", "x86", "0.01", true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    update_client::ProtocolParser::Results results;
+    update_client::ProtocolParser::SystemRequirements& system_requirements =
+        results.system_requirements;
+    system_requirements.platform = test_case.platform;
+    system_requirements.arch = test_case.arch_list;
+    system_requirements.min_os_version = test_case.min_os_version;
+
+    EXPECT_EQ(IsOsSupported(results), test_case.expected_result)
+        << test_case.platform << ": " << test_case.arch_list << ": "
+        << test_case.min_os_version << ": " << current_architecture << ": "
+        << test_case.expected_result;
   }
 }
 

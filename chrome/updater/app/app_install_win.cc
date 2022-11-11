@@ -65,7 +65,6 @@
 #include "chrome/updater/win/ui/ui_util.h"
 #pragma clang diagnostic pop
 
-#include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -556,7 +555,7 @@ class AppInstallControllerImpl : public AppInstallController,
   void DoInstallAppOffline(const base::FilePath& installer_path,
                            const std::string& install_args,
                            const std::string& install_data);
-  void HandleArchitectureNotCompatible();
+  void HandleOsNotSupported();
   void InstallComplete(UpdateService::Result result);
 
   [[nodiscard]] static ObserverCompletionInfo HandleInstallResult(
@@ -721,10 +720,8 @@ void AppInstallControllerImpl::InstallAppOffline(
                            base::FilePath /*installer_path*/,
                            std::string /*arguments*/,
                            std::string /*install_data*/>& result) {
-                      if (!IsArchitectureCompatible(
-                              std::get<0>(result).system_requirements.arch,
-                              update_client::GetArchitecture())) {
-                        self->HandleArchitectureNotCompatible();
+                      if (!IsOsSupported(std::get<0>(result))) {
+                        self->HandleOsNotSupported();
                         return;
                       }
 
@@ -812,7 +809,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
               install_data, install_settings)));
 }
 
-void AppInstallControllerImpl::HandleArchitectureNotCompatible() {
+void AppInstallControllerImpl::HandleOsNotSupported() {
   UpdateService::UpdateState update_state;
   update_state.app_id = app_id_;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;

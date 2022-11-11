@@ -579,6 +579,16 @@ that the application requires to install. It has the following members:
  *   `min_os_version`: The minimum required version of the operating system, or
      "" if not applicable.
 
+     The `min_os_version` is in the format `major.minor.build.patch` for
+     Windows. The `major`, `minor` and `build` are the values returned by the
+     `::GetVersionEx` API. The `patch` is the `UBR` value under the registry
+     path `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion`.
+
+     The `build` and the `patch` components may be omitted if all that is needed
+     is a minimum `major.minor` version. For example, `6.0` will match all OS
+     versions that are at or above that version, regardless of `build` and
+     `patch` numbers.
+
 #### `app` Objects (Update Check Response)
 An app object represents a per-application acknowledgement of the request. If an
 application appears in the request, it must have a corresponding acknowledgement

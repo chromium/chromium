@@ -15,6 +15,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
+#include "base/win/windows_version.h"
 #include "chrome/updater/win/protocol_parser_xml.h"
 #include "chrome/updater/win/win_util.h"
 #include "components/update_client/protocol_parser.h"
@@ -165,6 +167,10 @@ bool IsArchitectureSupported(const std::string& arch,
   return arch == update_client::kArchIntel;
 }
 
+bool IsPlatformCompatible(const std::string& platform) {
+  return platform.empty() || base::ToLowerASCII(platform) == "win";
+}
+
 bool IsArchitectureCompatible(const std::string& arch_list,
                               const std::string& current_architecture) {
   std::vector<std::string> architectures = base::SplitString(
@@ -199,6 +205,34 @@ bool IsArchitectureCompatible(const std::string& arch_list,
              architectures, [&current_architecture](const std::string& arch) {
                return IsArchitectureSupported(arch, current_architecture);
              }) != architectures.end();
+}
+
+bool IsOSVersionCompatible(const std::string& min_os_version) {
+  if (min_os_version.empty())
+    return true;
+
+  // `base::win::OSInfo` gets the `major`, `minor` and `build` from
+  // `::GetVersionEx`, and the `patch` from the `UBR` value under the registry
+  // path `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion`.
+  const base::win::OSInfo::VersionNumber& version_number =
+      base::win::OSInfo::GetInstance()->version_number();
+
+  const base::Version current_version(
+      {version_number.major, version_number.minor, version_number.build,
+       version_number.patch});
+  const base::Version other_version(min_os_version);
+  return current_version.IsValid() && other_version.IsValid() &&
+         (current_version.CompareTo(other_version) >= 0);
+}
+
+bool IsOsSupported(const update_client::ProtocolParser::Results& results) {
+  const update_client::ProtocolParser::SystemRequirements& system_requirements =
+      results.system_requirements;
+
+  return IsPlatformCompatible(system_requirements.platform) &&
+         IsArchitectureCompatible(system_requirements.arch,
+                                  update_client::GetArchitecture()) &&
+         IsOSVersionCompatible(system_requirements.min_os_version);
 }
 
 }  // namespace updater

@@ -383,8 +383,15 @@ Offline installs include:
   format.
 * app installer.
 
-The `arch` attribute in the offline update response is used to determine
-compatibility of the app being installed with the host processor architecture.
+For online app installs, the update server checks the compatibility between the
+application and the host OS that the install is attempted on.
+
+The updater client has equivalent support for offline installs, where no update
+server is involved.
+
+The `platform`, `arch`, and `min_os_version` attributes in the offline update
+response are used to determine compatibility of the app being installed with the
+host OS.
 
 Omaha 3 offline manifests have `arch` as "x64", but the Chromium functions
 return "x86_64" as the architecture for amd64. The updater accounts for this by

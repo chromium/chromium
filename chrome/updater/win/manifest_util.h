@@ -53,6 +53,9 @@ void ReadInstallCommandFromManifest(
 bool IsArchitectureSupported(const std::string& arch,
                              const std::string& current_architecture);
 
+// Returns `true` if `platform` is empty or equals "win".
+bool IsPlatformCompatible(const std::string& platform);
+
 // Checks if the current architecture is compatible with the entries in
 // `arch_list`. `arch_list` can be a single entry, or multiple entries separated
 // with `,`. Entries prefixed with `-` (negative entries) indicate
@@ -78,6 +81,24 @@ bool IsArchitectureSupported(const std::string& arch,
 // * `arch_list` == "-arm64": returns `false` if the underlying host is arm64.
 bool IsArchitectureCompatible(const std::string& arch_list,
                               const std::string& current_architecture);
+
+// Returns `true` if `min_os_version` is valid and is less than or equal to the
+// current OS version in the format "major.minor.build.patch".
+//
+// A valid `min_os_version` is in the format `major.minor.build.patch`. The
+// `major`, `minor` and `build` are the values returned by `::GetVersionEx`. The
+// `patch` is the `UBR` value under the registry path
+// `HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion`.
+//
+// The `build` and the `patch` components may be omitted if all that is needed
+// is a minimum `major.minor` version. For example, `6.0` will match all OS
+// versions that are at or above that version, regardless of `build` and `patch`
+// numbers.
+bool IsOSVersionCompatible(const std::string& min_os_version);
+
+// Returns `true` if the platform, architecture, and OS within the parser
+// `results` are all compatible with the current OS.
+bool IsOsSupported(const update_client::ProtocolParser::Results& results);
 
 }  // namespace updater
 
