@@ -1512,24 +1512,23 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   // Flush any pending events to make sure we start with a clean slate.
   content::RunAllPendingInMessageLoop();
 
-  content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  auto* guest_rfh = GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
 
   // Click the <input> element inside the <webview>. In its focus handle, the
   // <input> inside the <webview> initializes its value to "A B X D".
   ExtensionTestMessageListener focus_listener("WebViewImeTest.InputFocused");
-  content::WebContents* target_web_contents = guest_web_contents;
-  WaitForHitTestData(guest_web_contents);
+  WaitForHitTestData(guest_rfh);
 
   // The guest page has a large input box and (50, 50) lies inside the box.
-  content::SimulateMouseClickAt(target_web_contents, 0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(50, 50));
+  content::SimulateMouseClickAt(
+      GetGuestViewManager()->GetLastGuestViewCreated()->embedder_web_contents(),
+      0, blink::WebMouseEvent::Button::kLeft,
+      guest_rfh->GetView()->TransformPointToRootCoordSpace(gfx::Point(50, 50)));
   EXPECT_TRUE(focus_listener.WaitUntilSatisfied());
 
   // Verify the text inside the <input> is "A B X D".
   std::string value;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_web_contents,
+  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_rfh,
                                             "window.domAutomationController."
                                             "send(document.querySelector('"
                                             "input').value)",
@@ -1540,23 +1539,21 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   // For OOPIF guests, the target for IME is the RWH for the guest's main frame.
   // For BrowserPlugin-based guests, input always goes to the embedder.
   ExtensionTestMessageListener input_listener("WebViewImetest.InputReceived");
-  content::RenderWidgetHost* target_rwh_for_input =
-      target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  content::SendImeCommitTextToWidget(target_rwh_for_input, u"C",
+  content::SendImeCommitTextToWidget(guest_rfh->GetRenderWidgetHost(), u"C",
                                      std::vector<ui::ImeTextSpan>(),
                                      gfx::Range(4, 5), 0);
   EXPECT_TRUE(input_listener.WaitUntilSatisfied());
 
   // Get the input value from the guest.
   value.clear();
-  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_web_contents,
+  ASSERT_TRUE(ExecuteScriptAndExtractString(guest_rfh,
                                             "window.domAutomationController."
                                             "send(document.querySelector('"
                                             "input').value)",
                                             &value));
   EXPECT_EQ("A B C D", value);
 }
-#endif  //  OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // This test verifies that focusing an input inside a <webview> will put the
 // guest process's render widget into a monitoring mode for composition range
