@@ -23,10 +23,13 @@ declare_args() {
   # etc.). There is nothing stopping a lazy embedder from ignoring this
   # and unconditionally using PA, but such a setup is inadvisable.
   #
-  # This flag is currently set to false only on Cronet bots, because Cronet
-  # doesn't use PartitionAlloc at all, and doesn't wish to incur the library
-  # size increase (crbug.com/674570).
-  use_partition_alloc = true
+  # In Chromium, this is set false
+  #
+  # 1.  On Cronet bots, because Cronet doesn't use PartitionAlloc at all,
+  #     and doesn't wish to incur the library size increase (crbug.com/674570).
+  # 2.  On NaCl (through this declaration), where PartitionAlloc doesn't
+  #     build at all.
+  use_partition_alloc = !is_nacl
 }
 
 declare_args() {
@@ -95,6 +98,23 @@ declare_args() {
 
 declare_args() {
   enable_shadow_metadata = false
+}
+
+# We want to provide assertions that guard against inconsistent build
+# args, but there is no point in having them fire if we're not building
+# PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
+# related args to `false`. The prime example is NaCl, where
+# PartitionAlloc doesn't build at all.
+if (is_nacl) {
+  assert(!use_partition_alloc, "PartitionAlloc doesn't build on NaCl")
+}
+if (!use_partition_alloc) {
+  enable_backup_ref_ptr_support = false
+  enable_mte_checked_ptr_support = false
+  put_ref_count_in_previous_slot = false
+  enable_backup_ref_ptr_slow_checks = false
+  enable_dangling_raw_ptr_checks = false
+  enable_dangling_raw_ptr_perf_experiment = false
 }
 
 # put_ref_count_in_previous_slot can only be used if
