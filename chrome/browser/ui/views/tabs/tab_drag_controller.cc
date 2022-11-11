@@ -2736,10 +2736,14 @@ void TabDragController::NotifyEventIfTabAddedToGroup() {
     if (!group_id.has_value())
       continue;
 
-    // Finish on the first successful event sent.
-    if (views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-            kTabGroupedCustomEventId, drag_data_[i].attached_view)) {
-      break;
-    }
+    ui::TrackedElement* element =
+        views::ElementTrackerViews::GetInstance()->GetElementForView(
+            drag_data_[i].attached_view);
+    if (!element)
+      continue;
+
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        element, kTabGroupedCustomEventId);
+    break;
   }
 }
