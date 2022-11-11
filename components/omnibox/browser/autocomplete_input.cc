@@ -784,3 +784,7 @@ void AutocompleteInput::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("text", text_);
 }
+
+bool AutocompleteInput::IsZeroSuggest() const {
+  return focus_type_ != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
+}

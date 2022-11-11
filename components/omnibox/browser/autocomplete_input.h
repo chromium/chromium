@@ -296,6 +296,11 @@ class AutocompleteInput {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  // Returns true if in zero prefix input state.
+  // Zero suggest state is determined implicitly from focus type and is
+  // used to inform autocomplete tab matching and action attachment.
+  bool IsZeroSuggest() const;
+
  private:
   friend class AutocompleteProviderTest;
 

@@ -371,8 +371,7 @@ void AutocompleteResult::SortAndCull(
 
   // Limit URL matches per OmniboxMaxURLMatches.
   size_t max_url_count = 0;
-  const bool is_zero_suggest =
-      input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
+  const bool is_zero_suggest = input.IsZeroSuggest();
   if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
       (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0)
     LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,

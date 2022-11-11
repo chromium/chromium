@@ -932,23 +932,6 @@ void AutocompleteController::UpdateResult(
     result_.MergeSuggestionGroupsMap(provider->suggestion_groups_map());
   }
 
-  // Zero suggest state is determined implicitly from focus state and is
-  // used to inform tab matching and action attachment below.
-  // Only attach for the default focus case (not on focus or on delete).
-  const bool is_zero_suggest =
-      input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
-
-  bool perform_tab_match = !is_zero_suggest;
-#if BUILDFLAG(IS_ANDROID)
-  // Do not look for matching tabs on Android unless we collected all the
-  // suggestions. Tab matching is an expensive process with multiple JNI calls
-  // involved. Run it only when all the suggestions are collected.
-  perform_tab_match &= done_;
-#endif
-
-  if (perform_tab_match)
-    result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
-
   // Sort the matches and trim to a small number of "best" matches.
   // Conditionally preserve the default match.
   const AutocompleteMatch* preserve_default_match = nullptr;
@@ -979,8 +962,18 @@ void AutocompleteController::UpdateResult(
 #endif  // DCHECK_IS_ON()
 
   // Below are all annotations after the match list is ready.
+  if (!input_.IsZeroSuggest()) {
+    bool perform_tab_match = true;
+#if BUILDFLAG(IS_ANDROID)
+    // Do not look for matching tabs on Android unless we collected all the
+    // suggestions. Tab matching is an expensive process with multiple JNI calls
+    // involved. Run it only when all the suggestions are collected.
+    perform_tab_match &= done_;
+#endif
+    if (perform_tab_match) {
+      result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
+    }
 
-  if (!is_zero_suggest) {
     result_.AttachPedalsToMatches(input_, *provider_client_);
 
 #if !BUILDFLAG(IS_IOS)
@@ -989,6 +982,7 @@ void AutocompleteController::UpdateResult(
                                  provider_client_->GetPrefs(), result_);
 #endif
   }
+
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);
