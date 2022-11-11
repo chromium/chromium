@@ -125,7 +125,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                                syncer::UpdateResponseDataList updates);
 
   // Instantiates the required objects to track metadata and starts observing
-  // changes from the bookmark model.
+  // changes from the bookmark model. Note that this does not include tracking
+  // of metadata fields managed by the processor but only those tracked by the
+  // bookmark tracker.
   void StartTrackingMetadata();
   void StopTrackingMetadata();
 
@@ -180,6 +182,14 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // of initial sync, which is called during startup, as part of the
   // bookmark-loading process.
   std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker_;
+
+  // Maintains whether the count of remote updates downloaded on the latest
+  // initial merge exceeded the limit. Note that this is set only when limit is
+  // active, i.e. the feature is enabled. Also note that this would only be
+  // relevant where bookmark_tracker is null, since this can be set only in an
+  // error case and in an error case, we clear the tracker(or it remains
+  // uninitialized).
+  bool last_initial_merge_remote_updates_exceeded_limit_ = false;
 
   // GUID string that identifies the sync client and is received from the sync
   // engine.

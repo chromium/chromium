@@ -71,4 +71,9 @@ message BookmarkModelMetadata {
   // time the last update was ignored. To distinguish between these two, the
   // field above can be used.
   optional int64 max_version_among_ignored_updates_due_to_missing_parent = 8;
+
+  // Indicates whether the count of remote updates during the latest initial
+  // merge exceeded the bookmark limit. This field is mutually exclusive to all
+  // the other fields and is managed completely by the processor.
+  optional bool last_initial_merge_remote_updates_exceeded_limit = 9;
 }
