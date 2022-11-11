@@ -12,8 +12,8 @@ control-n (for new window).
 the focused view doesn't handle the event, then Views sends to the
 FocusManager.
 6. FocusManager::OnKeyEvent() calls
-PostTargerAcceleratorHandler::ProcessAccelerator().
-7. PostTargerAcceleratorHandler::ProcessAccelerator() calls to
+PostTargetAcceleratorHandler::ProcessAccelerator().
+7. PostTargetAcceleratorHandler::ProcessAccelerator() calls to
 Ash's AcceleratorController.
 
 Steps 1-3 give Ash the opportunity to have accelerators before the target
