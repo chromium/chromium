@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +45,7 @@ public class HistoryManagerDialog {
         @Override
         public HistoryListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             ArkLogger.e(HistoryListAdapter.class, "onCreateViewHolder i=" + i);
-            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_download, viewGroup, false);
+            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_collection, viewGroup, false);
             return new HistoryListViewHolder(itemView);
         }
 
@@ -57,10 +58,11 @@ public class HistoryManagerDialog {
         public void onBindViewHolder(@NonNull HistoryListViewHolder holder, int i) {
             HistoryItem item = mHistoryItems.get(i);
 
-            holder.tvName.setText(item.getTitle());
+            holder.tvTitle.setText(item.getTitle());
+            holder.tvDesc.setText(item.getUrl().getHost());
 
             holder.itemView.setOnClickListener(v -> {
-                Toast.makeText(v.getContext().getApplicationContext(), "TODO click" + item.getUrl(),
+                Toast.makeText(v.getContext().getApplicationContext(), item.getUrl().toString(),
                         Toast.LENGTH_SHORT).show();
             });
 
@@ -75,11 +77,17 @@ public class HistoryManagerDialog {
 
     private static class HistoryListViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvName;
+        private TextView tvTitle;
+        private ImageView ivIcon;
+        private TextView tvInfo;
+        private TextView tvDesc;
 
         public HistoryListViewHolder(View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_name);
+            tvTitle = itemView.findViewById(R.id.tv_title);
+            ivIcon = itemView.findViewById(R.id.iv_icon);
+            tvInfo = itemView.findViewById(R.id.tv_info);
+            tvDesc = itemView.findViewById(R.id.tv_desc);
         }
     }
 

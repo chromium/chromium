@@ -1099,6 +1099,8 @@ bool BookmarkBridge::IsReachable(const BookmarkNode* node) const {
 }
 
 bool BookmarkBridge::IsLoaded() const {
+    LOG(ERROR) << "BookmarkBridge::IsLoaded bookmark_model_->loaded=" << bookmark_model_->loaded()
+    << " partner_bookmarks_shim_->IsLoaded=" << partner_bookmarks_shim_->IsLoaded();
   return (bookmark_model_->loaded() && partner_bookmarks_shim_->IsLoaded());
 }
 

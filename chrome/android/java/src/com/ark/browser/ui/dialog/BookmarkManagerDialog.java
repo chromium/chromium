@@ -20,10 +20,11 @@ import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.chrome.R;
+import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +42,21 @@ public class BookmarkManagerDialog {
             return mBookmarkItems;
         }
 
+        public void setItems(List<BookmarkItem> items) {
+            mBookmarkItems.clear();
+            for (BookmarkItem item : items) {
+                if (item.getId().getType() == BookmarkType.NORMAL) {
+                    mBookmarkItems.add(item);
+                }
+            }
+            notifyDataSetChanged();
+        }
+
         @NonNull
         @Override
         public BookmarkListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             ArkLogger.e(BookmarkListAdapter.class, "onCreateViewHolder i=" + i);
-            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_download, viewGroup, false);
+            View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_collection, viewGroup, false);
             return new BookmarkListViewHolder(itemView);
         }
 
@@ -58,7 +69,8 @@ public class BookmarkManagerDialog {
         public void onBindViewHolder(@NonNull BookmarkListViewHolder holder, int i) {
             BookmarkItem item = mBookmarkItems.get(i);
 
-            holder.tvName.setText(item.getTitle());
+            holder.tvTitle.setText(item.getTitle());
+            holder.tvDesc.setText(item.getUrl().getHost());
 
             if (item.isFolder()) {
                 holder.ivIcon.setImageResource(R.drawable.ic_folder_blue_24dp);
@@ -67,7 +79,7 @@ public class BookmarkManagerDialog {
             }
 
             holder.itemView.setOnClickListener(v -> {
-                Toast.makeText(v.getContext().getApplicationContext(), "TODO click" + item.getUrl(),
+                Toast.makeText(v.getContext().getApplicationContext(), "bookmarkId=" + item.getId(),
                         Toast.LENGTH_SHORT).show();
             });
 
@@ -82,13 +94,17 @@ public class BookmarkManagerDialog {
 
     private static class BookmarkListViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvName;
+        private TextView tvTitle;
         private ImageView ivIcon;
+        private TextView tvInfo;
+        private TextView tvDesc;
 
         public BookmarkListViewHolder(View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_name);
+            tvTitle = itemView.findViewById(R.id.tv_title);
             ivIcon = itemView.findViewById(R.id.iv_icon);
+            tvInfo = itemView.findViewById(R.id.tv_info);
+            tvDesc = itemView.findViewById(R.id.tv_desc);
         }
     }
 
@@ -107,9 +123,7 @@ public class BookmarkManagerDialog {
             @Override
             public void bookmarkModelChanged() {
                 List<BookmarkItem> items = bookmarkModel.getBookmarksForFolder(bookmarkModel.getDefaultFolder());
-                adapter.getCurrentList().clear();
-                adapter.getCurrentList().addAll(items);
-                adapter.notifyDataSetChanged();
+                adapter.setItems(items);
             }
         });
 
@@ -137,6 +151,30 @@ public class BookmarkManagerDialog {
 //        adapter.getCurrentList().clear();
 //        adapter.getCurrentList().addAll(items);
 //        adapter.notifyDataSetChanged();
+
+
+
+
+
+        bookmarkModel.finishLoadingBookmarkModel(new Runnable() {
+            @Override
+            public void run() {
+                bookmarkModel.getBookmarksForFolder(bookmarkModel.getDefaultFolder(), new BookmarkBridge.BookmarksCallback() {
+                    @Override
+                    public void onBookmarksAvailable(BookmarkId folderId, List<BookmarkItem> bookmarksList) {
+                        adapter.setItems(bookmarksList);
+                    }
+
+                    @Override
+                    public void onBookmarksFolderHierarchyAvailable(BookmarkId folderId, List<BookmarkItem> bookmarksList) {
+
+                    }
+                });
+            }
+        });
+
+        bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+
 
     }
 
