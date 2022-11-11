@@ -43,9 +43,6 @@ class WebViewAPITest : public AppShellTest {
   // Returns the GuestViewManager singleton.
   guest_view::TestGuestViewManager* GetGuestViewManager();
 
-  content::WebContents* GetGuestWebContents();
-  void SendMessageToGuestAndWait(const std::string& message,
-                                 const std::string& wait_message);
   void SendMessageToEmbedder(const std::string& message);
 
   // content::BrowserTestBase implementation.

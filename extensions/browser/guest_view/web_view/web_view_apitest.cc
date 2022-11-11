@@ -362,32 +362,11 @@ TestGuestViewManager* WebViewAPITest::GetGuestViewManager() {
   return manager;
 }
 
-void WebViewAPITest::SendMessageToGuestAndWait(
-    const std::string& message,
-    const std::string& wait_message) {
-  std::unique_ptr<ExtensionTestMessageListener> listener;
-  if (!wait_message.empty()) {
-    listener = std::make_unique<ExtensionTestMessageListener>(wait_message);
-  }
-
-  EXPECT_TRUE(
-      content::ExecuteScript(
-          GetGuestWebContents(),
-          base::StringPrintf("onAppCommand('%s');", message.c_str())));
-
-  if (listener)
-    ASSERT_TRUE(listener->WaitUntilSatisfied());
-}
-
 void WebViewDPIAPITest::SetUp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor,
                                   base::StringPrintf("%f", scale()));
   WebViewAPITest::SetUp();
-}
-
-content::WebContents* WebViewAPITest::GetGuestWebContents() {
-  return GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
 }
 
 // This test verifies that hiding the embedder also hides the guest.
