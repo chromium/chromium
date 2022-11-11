@@ -51,9 +51,7 @@ export class ExtensionBridge {
   }
 
   /**
-   * Provide a function to listen to messages. In page context, this
-   * listens to messages from the background. In background context,
-   * this listens to messages from all pages.
+   * Provide a function to listen to messages from all pages.
    *
    * The function gets called with two parameters: the message, and a
    * port that can be used to send replies.
@@ -94,7 +92,7 @@ export class ExtensionBridge {
   init_() {
     this.id_ = 0;
     chrome.extension.onConnect.addListener(
-        port => this.backgroundOnConnectHandler_(port));
+        port => this.onConnectHandler_(port));
   }
 
   /**
@@ -102,17 +100,16 @@ export class ExtensionBridge {
    * @param {!Port} port
    * @private
    */
-  backgroundOnConnectHandler_(port) {
+  onConnectHandler_(port) {
     if (port.name !== ExtensionBridge.PORT_NAME) {
       return;
     }
 
     this.portCache_.push(port);
 
-    port.onMessage.addListener(
-        message => this.backgroundOnMessage_(message, port));
+    port.onMessage.addListener(message => this.onMessage_(message, port));
 
-    port.onDisconnect.addListener(() => this.backgroundOnDisconnect_(port));
+    port.onDisconnect.addListener(() => this.onDisconnect_(port));
   }
 
   /**
@@ -121,7 +118,7 @@ export class ExtensionBridge {
    * @param {!Port} port
    * @private
    */
-  backgroundOnMessage_(message, port) {
+  onMessage_(message, port) {
     if (message[ExtensionBridge.PING_MSG]) {
       const pongMessage = {[ExtensionBridge.PONG_MSG]: this.nextPongId_++};
       port.postMessage(pongMessage);
@@ -136,26 +133,13 @@ export class ExtensionBridge {
    * @param {!Port} port
    * @private
    */
-  backgroundOnDisconnect_(port) {
+  onDisconnect_(port) {
     for (let i = 0; i < this.portCache_.length; i++) {
       if (this.portCache_[i] === port) {
         this.portCache_.splice(i, 1);
         break;
       }
     }
-  }
-
-  /** @private */
-  contentOnDisconnect_() {
-    // If we're not connected yet, don't give up - try again.
-    if (!this.connected_) {
-      this.backgroundPort_ = null;
-      return;
-    }
-
-    this.backgroundPort_ = null;
-    this.connected_ = false;
-    this.disconnectListeners_.forEach(listener => listener());
   }
 
   /**
