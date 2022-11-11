@@ -341,7 +341,7 @@ def main():
       type=int,
       help='Number of major versions before a code for a policy stops being '
       'generated',
-      default=2)
+      default=3)  # Temporary fix for tree closure. crbug.com/1383391
   args = parser.parse_args()
 
   has_arg_error = False
