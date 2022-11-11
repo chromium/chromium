@@ -704,7 +704,7 @@ void SharedStorageWorkletHost::
   if ((success && index >= it->second.size()) || (!success && index != 0)) {
     // This could indicate a compromised worklet environment, so let's terminate
     // it.
-    mojo::ReportBadMessage(
+    shared_storage_worklet_service_client_.ReportBadMessage(
         "Unexpected index number returned from selectURL().");
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
