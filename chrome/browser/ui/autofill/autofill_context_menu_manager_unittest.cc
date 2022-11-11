@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
-
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -161,14 +160,35 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 
   // Check for submenu with address details.
   auto* address_details_submenu = address_menu_model->GetSubmenuModelAt(0);
-  ASSERT_EQ(address_details_submenu->GetItemCount(), 8u);
+  ASSERT_EQ(address_details_submenu->GetItemCount(), 10u);
   static constexpr std::array expected_address_values = {
-      u"John H. Doe", u"", u"666 Erebus St.\nApt 8", u"Elysium",
-      u"91111",       u"", u"16502111111",           u"johndoe@hades.com"};
+      u"John H. Doe",
+      u"",
+      u"666 Erebus St.\nApt 8",
+      u"Elysium",
+      u"91111",
+      u"",
+      u"16502111111",
+      u"johndoe@hades.com",
+      u"",
+      u"Other"};
   for (size_t i = 0; i < expected_address_values.size(); i++) {
+    SCOPED_TRACE(testing::Message() << "Index " << i);
     ASSERT_EQ(address_details_submenu->GetLabelAt(i),
               expected_address_values[i]);
     all_added_strings.push_back(expected_address_values[i]);
+  }
+
+  // Check for submenu with address other section.
+  auto* address_other_submenu = address_details_submenu->GetSubmenuModelAt(9);
+  ASSERT_EQ(address_other_submenu->GetItemCount(), 5u);
+  static constexpr std::array expected_address_other_section_values = {
+      u"John", u"Doe", u"", u"666 Erebus St.", u"Apt 8"};
+  for (size_t i = 0; i < expected_address_other_section_values.size(); i++) {
+    SCOPED_TRACE(testing::Message() << "Index " << i);
+    ASSERT_EQ(address_other_submenu->GetLabelAt(i),
+              expected_address_other_section_values[i]);
+    all_added_strings.push_back(expected_address_other_section_values[i]);
   }
 
   // Check for submenu with credit card descriptions.
@@ -193,6 +213,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
       u"Test User",
       u"‪•⁠ ⁠•⁠ ⁠•⁠ ⁠•⁠ ⁠1111‬", u""};
   for (size_t i = 0; i < expected_credit_card_values.size(); i++) {
+    SCOPED_TRACE(testing::Message() << "Index " << i);
     ASSERT_EQ(card_details_submenu->GetLabelAt(i),
               expected_credit_card_values[i]);
     all_added_strings.push_back(expected_credit_card_values[i]);

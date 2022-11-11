@@ -13,6 +13,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/models/simple_menu_model.h"
 
 class Browser;
 
@@ -64,6 +65,13 @@ struct ContextMenuItem {
 //                                                      ___________________
 //                                                      +1 858 230 4000
 //                                                      alexpark@gmail.com
+//                                                      ___________________
+//                                                      Other             > Alex
+//                                                                          Park
+//                                                                          ___________
+//                                                                          345
+//                                                                          Spear
+//                                                                          Street
 //                     ______________________________
 //                     Manage Addresses
 // Fill Payment      > Mastercard **** 0952           > Alex Park
@@ -79,11 +87,15 @@ struct ContextMenuItem {
 //
 // From the example, there are 3 layers:
 // 1. Outermost layer that distinguishes between address or payment method
-// filling. Refer to `Append Items` and `CreateSubMenuWithData` for more info.
+// filling. Refer to `AppendItems` and `AddAddressOrCreditCardItemsToMenu` for
+// more info.
 // 2. Profile description layer to identify which profile to use for filling.
-// Refer to `CreateSubMenuWithData` for more info.
+// Refer to `AddAddressOrCreditCardItemsToMenu` for more info.
 // 3. Profile data layer that would be used for filling a single field. See
-// `AddAddressOrCreditCardItems` for details on how this is created.
+// `AddAddressOrCreditCardItemToMenu` and `AddProfileDataToMenu` for details on
+// how this is done.
+// 4. The Other Section, that suggests more granular data for filling. See
+// `AddAddressOrCreditCardItemToMenu` and `AddProfileDataToMenu` for details.
 class AutofillContextMenuManager {
  public:
   // Represents command id used to denote a row in the context menu. The
@@ -133,10 +145,12 @@ class AutofillContextMenuManager {
   }
 
  private:
-  // The "Title" refers to the description of the address and credit cards
+  // The "Titles" refers to the description of the address and credit cards
   // respectively that is shown in the context menu.
-  using AddressesWithTitle = base::flat_map<std::u16string, AutofillProfile*>;
-  using CreditCardProfilesWithTitle =
+  // This stores the mapping of the description of the card/address
+  using AddressProfilesWithTitles =
+      base::flat_map<std::u16string, AutofillProfile*>;
+  using CreditCardProfilesWithTitles =
       base::flat_map<std::u16string, CreditCard*>;
 
   // Used to define the order in which the data is added to the context menu.
@@ -148,9 +162,31 @@ class AutofillContextMenuManager {
     ServerFieldType field_type;
   };
 
+  // Depending on the type
+  // `AddressProfilesWithTitles`/`CreditCardProfilesWithTitle` present in the
+  // variant, it adds an address menu with all the addresses or the credit card
+  // menu with the credit card data to the context menu.
+  void AddAddressOrCreditCardItemsToMenu(
+      std::vector<std::pair<CommandId, ContextMenuItem>>&
+          detail_items_added_to_context_menu,
+      absl::variant<AddressProfilesWithTitles, CreditCardProfilesWithTitles>
+          addresses_or_credit_cards);
+
+  // Creates a submenu for the `profile` data and calls `AddProfileDataToMenu`
+  // to add the corresponding data to the menu.
+  // Also takes care of adding "Other" section for the addresses.
+  void AddAddressOrCreditCardItemToMenu(
+      absl::variant<const AutofillProfile*, const CreditCard*> profile,
+      const std::u16string& profile_title,
+      base::span<const FieldsToShow> field_types_to_show,
+      base::span<const FieldsToShow> other_fields_to_show,
+      ui::SimpleMenuModel* menu,
+      std::vector<std::pair<CommandId, ContextMenuItem>>&
+          detail_items_added_to_context_menu);
+
   // Fetches value from `profile_or_credit_card` based on the type from
   // `field_types_to_show` and adds them to the `menu_model`.
-  bool CreateSubMenuWithData(
+  void AddProfileDataToMenu(
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       base::span<const FieldsToShow> field_types_to_show,
@@ -159,21 +195,24 @@ class AutofillContextMenuManager {
           item_details_added_to_context_menu,
       SubMenuType sub_menu_type);
 
-  // Depending on the type `T` it adds a address menu with all the addresses or
-  // the credit card menu with the credit card data to the context menu.
-  void AddAddressOrCreditCardItems(
-      std::vector<std::pair<CommandId, ContextMenuItem>>&
-          detail_items_added_to_context_menu,
-      absl::variant<AddressesWithTitle, CreditCardProfilesWithTitle>
-          addresses_or_credit_cards,
-      bool is_address_menu);
+  // Returns true if the command ids left are sufficient for showing the whole
+  // profile in the context menu.
+  bool HaveEnoughIdsForProfile(
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      base::span<const FieldsToShow> field_types_to_show,
+      base::span<const FieldsToShow> other_fields_to_show);
 
   // Returns a map of the addresses along with the title to be shown in the
   // context menu.
-  AddressesWithTitle GetAddressProfilesWithTitle();
+  AddressProfilesWithTitles GetAddressProfilesWithTitles();
   // Returns a map of the credit cards along with the title to be shown in the
   // context menu.
-  CreditCardProfilesWithTitle GetCreditCardProfilesWithTitle();
+  CreditCardProfilesWithTitles GetCreditCardProfilesWithTitles();
+
+  // Creates an instance of `ui::SimpleMenuModel` and adds it to
+  // `cached_menu_models_` to maintain it's lifetime.
+  ui::SimpleMenuModel* CreateSimpleMenuModel();
 
   // Returns a description for the given `profile`.
   std::u16string GetProfileDescription(const AutofillProfile& profile);

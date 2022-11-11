@@ -66,7 +66,7 @@ AutofillContextMenuManager::~AutofillContextMenuManager() {
 }
 
 base::flat_map<std::u16string, AutofillProfile*>
-AutofillContextMenuManager::GetAddressProfilesWithTitle() {
+AutofillContextMenuManager::GetAddressProfilesWithTitles() {
   std::vector<std::pair<std::u16string, AutofillProfile*>> profiles;
   for (AutofillProfile* profile : personal_data_manager_->GetProfiles())
     profiles.emplace_back(GetProfileDescription(*profile), profile);
@@ -75,7 +75,7 @@ AutofillContextMenuManager::GetAddressProfilesWithTitle() {
 }
 
 base::flat_map<std::u16string, CreditCard*>
-AutofillContextMenuManager::GetCreditCardProfilesWithTitle() {
+AutofillContextMenuManager::GetCreditCardProfilesWithTitles() {
   std::vector<std::pair<std::u16string, CreditCard*>> cards;
   for (CreditCard* card : personal_data_manager_->GetCreditCards())
     cards.emplace_back(card->CardIdentifierStringForAutofillDisplay(), card);
@@ -131,12 +131,10 @@ void AutofillContextMenuManager::AppendItems() {
   std::vector<std::pair<CommandId, ContextMenuItem>>
       detail_items_added_to_context_menu;
 
-  AddAddressOrCreditCardItems(detail_items_added_to_context_menu,
-                              GetAddressProfilesWithTitle(),
-                              /*is_address_menu=*/true);
-  AddAddressOrCreditCardItems(detail_items_added_to_context_menu,
-                              GetCreditCardProfilesWithTitle(),
-                              /*is_address_menu=*/false);
+  AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
+                                    GetAddressProfilesWithTitles());
+  AddAddressOrCreditCardItemsToMenu(detail_items_added_to_context_menu,
+                                    GetCreditCardProfilesWithTitles());
 
   command_id_to_menu_item_value_mapper_ =
       base::flat_map<CommandId, ContextMenuItem>(
@@ -208,16 +206,18 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
   // of the context menu based on the type.
 }
 
-void AutofillContextMenuManager::AddAddressOrCreditCardItems(
+void AutofillContextMenuManager::AddAddressOrCreditCardItemsToMenu(
     std::vector<std::pair<CommandId, ContextMenuItem>>&
         detail_items_added_to_context_menu,
-    absl::variant<AddressesWithTitle, CreditCardProfilesWithTitle> profiles,
-    bool is_address_menu) {
-  if (is_address_menu && absl::get<AddressesWithTitle>(profiles).empty())
+    absl::variant<AddressProfilesWithTitles, CreditCardProfilesWithTitles>
+        profiles) {
+  bool is_address_menu =
+      absl::holds_alternative<AddressProfilesWithTitles>(profiles);
+  if (is_address_menu && absl::get<AddressProfilesWithTitles>(profiles).empty())
     return;
 
   if (!is_address_menu &&
-      absl::get<CreditCardProfilesWithTitle>(profiles).empty()) {
+      absl::get<CreditCardProfilesWithTitles>(profiles).empty()) {
     return;
   }
 
@@ -235,6 +235,15 @@ void AutofillContextMenuManager::AddAddressOrCreditCardItems(
       {ui::MenuModel::ItemType::TYPE_TITLE, PHONE_HOME_WHOLE_NUMBER},
       {ui::MenuModel::ItemType::TYPE_TITLE, EMAIL_ADDRESS}};
 
+  // Address menu of Others.
+  static constexpr FieldsToShow kAddressFieldTypesToShowOtherSection[] = {
+      {ui::MenuModel::ItemType::TYPE_TITLE, NAME_FIRST},
+      {ui::MenuModel::ItemType::TYPE_TITLE, NAME_LAST},
+      {ui::MenuModel::ItemType::TYPE_SEPARATOR, UNKNOWN_TYPE},
+      {ui::MenuModel::ItemType::TYPE_TITLE, ADDRESS_HOME_LINE1},
+      {ui::MenuModel::ItemType::TYPE_TITLE, ADDRESS_HOME_LINE2},
+  };
+
   // Credit card field types that are supposed to be shown in the menu.
   static constexpr FieldsToShow kCardFieldTypesToShow[] = {
       {ui::MenuModel::ItemType::TYPE_TITLE, CREDIT_CARD_NAME_FULL},
@@ -246,42 +255,30 @@ void AutofillContextMenuManager::AddAddressOrCreditCardItems(
   // Used to create menu model for storing address/card description. Would be
   // attached to the top level "Fill Address Info/Fill Payment" item in the
   // context menu.
-  cached_menu_models_.push_back(
-      std::make_unique<ui::SimpleMenuModel>(delegate_));
-  ui::SimpleMenuModel* menu = cached_menu_models_.back().get();
+  ui::SimpleMenuModel* menu = CreateSimpleMenuModel();
 
   // True if a row is added in the menu.
   bool profile_added = false;
 
+  auto field_types_to_show = is_address_menu
+                                 ? base::span(kAddressFieldTypesToShow)
+                                 : base::span(kCardFieldTypesToShow);
+  auto field_types_to_show_in_other =
+      is_address_menu ? base::span(kAddressFieldTypesToShowOtherSection)
+                      : base::span<const FieldsToShow>();
+
   absl::visit(
       [&](const auto& addresses_or_cards) {
         for (const auto& [profile_title, profile] : addresses_or_cards) {
-          // Creates a menu model for storing address/card details. Would be
-          // attached to the address/card description menu item.
-          cached_menu_models_.push_back(
-              std::make_unique<ui::SimpleMenuModel>(delegate_));
-          ui::SimpleMenuModel* details_submenu =
-              cached_menu_models_.back().get();
-
-          // Create a submenu for each address/card profile with their details.
-          bool submenu_items_added = CreateSubMenuWithData(
-              profile,
-              is_address_menu ? base::span(kAddressFieldTypesToShow)
-                              : base::span(kCardFieldTypesToShow),
-              details_submenu, detail_items_added_to_context_menu,
-              sub_menu_type);
-
-          if (!submenu_items_added)
+          if (!HaveEnoughIdsForProfile(profile, field_types_to_show,
+                                       field_types_to_show_in_other)) {
             break;
-
-          // Add a menu item showing address/card profile description. Hovering
-          // over it opens a submenu with the address/card details.
-          absl::optional<CommandId> menu_id =
-              GetNextAvailableAutofillCommandId();
-          if (menu_id) {
-            profile_added = true;
-            menu->AddSubMenu(menu_id->value(), profile_title, details_submenu);
           }
+          AddAddressOrCreditCardItemToMenu(profile, profile_title,
+                                           field_types_to_show,
+                                           field_types_to_show_in_other, menu,
+                                           detail_items_added_to_context_menu);
+          profile_added = true;
         }
       },
       profiles);
@@ -309,7 +306,51 @@ void AutofillContextMenuManager::AddAddressOrCreditCardItems(
       is_address_menu ? u"Fill Address Info" : u"Fill Payment", menu);
 }
 
-bool AutofillContextMenuManager::CreateSubMenuWithData(
+void AutofillContextMenuManager::AddAddressOrCreditCardItemToMenu(
+    absl::variant<const AutofillProfile*, const CreditCard*> profile,
+    const std::u16string& profile_title,
+    base::span<const FieldsToShow> field_types_to_show,
+    base::span<const FieldsToShow> other_fields_to_show,
+    ui::SimpleMenuModel* menu,
+    std::vector<std::pair<CommandId, ContextMenuItem>>&
+        detail_items_added_to_context_menu) {
+  bool is_address_menu =
+      absl::holds_alternative<const AutofillProfile*>(profile);
+  SubMenuType sub_menu_type =
+      is_address_menu ? SUB_MENU_TYPE_ADDRESS : SUB_MENU_TYPE_CREDIT_CARD;
+
+  // Creates a menu model for storing address/card details.
+  // Is attached to the address/card description menu item as a submenu.
+  ui::SimpleMenuModel* details_submenu = CreateSimpleMenuModel();
+
+  // Create a submenu for each address/card profile with their details.
+  AddProfileDataToMenu(profile, field_types_to_show, details_submenu,
+                       detail_items_added_to_context_menu, sub_menu_type);
+
+  // Add "Other" section for addresses.
+  if (is_address_menu) {
+    details_submenu->AddSeparator(ui::NORMAL_SEPARATOR);
+    ui::SimpleMenuModel* other_menu_model = CreateSimpleMenuModel();
+    AddProfileDataToMenu(profile, other_fields_to_show, other_menu_model,
+                         detail_items_added_to_context_menu, sub_menu_type);
+
+    absl::optional<CommandId> others_menu_id =
+        GetNextAvailableAutofillCommandId();
+    DCHECK(others_menu_id);
+
+    // TODO(crbug.com/1325811): Use i18n string.
+    details_submenu->AddSubMenu(others_menu_id->value(), u"Other",
+                                other_menu_model);
+  }
+
+  // Add a menu item showing address/card profile description. Hovering
+  // over it opens a submenu with the address/card details.
+  absl::optional<CommandId> menu_id = GetNextAvailableAutofillCommandId();
+  if (menu_id)
+    menu->AddSubMenu(menu_id->value(), profile_title, details_submenu);
+}
+
+void AutofillContextMenuManager::AddProfileDataToMenu(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
     base::span<const FieldsToShow> field_types_to_show,
@@ -317,32 +358,6 @@ bool AutofillContextMenuManager::CreateSubMenuWithData(
     std::vector<std::pair<CommandId, ContextMenuItem>>&
         detail_items_added_to_context_menu,
     SubMenuType sub_menu_type) {
-  // Count of items to be added to the context menu. Empty values are not
-  // considered.
-  int count_of_items_to_be_added =
-      base::ranges::count_if(field_types_to_show, [&](const auto& entry) {
-        ServerFieldType field_type = entry.field_type;
-        return field_type != UNKNOWN_TYPE &&
-               !absl::visit(
-                    [field_type](const auto& alternative) {
-                      return alternative->GetRawInfo(field_type);
-                    },
-                    profile_or_credit_card)
-                    .empty();
-      });
-
-  // Check if there are enough command ids for adding all the items to the
-  // context menu.
-  // 1 is added to count for the address/credit card description.
-  // Another 1 is added to account for the manage addresses/payment methods
-  // option.
-  if (!IsAutofillCustomCommandId(CommandId(
-          kAutofillContextCustomFirst + SubMenuType::NUM_SUBMENU_TYPES +
-          count_of_items_added_to_menu_model_ + count_of_items_to_be_added + 1 +
-          1))) {
-    return false;
-  }
-
   std::vector<std::pair<ui::MenuModel::ItemType, std::u16string>>
       items_to_add_to_menu;
   items_to_add_to_menu.reserve(field_types_to_show.size());
@@ -397,8 +412,53 @@ bool AutofillContextMenuManager::CreateSubMenuWithData(
           *value_menu_id, ContextMenuItem{value, sub_menu_type});
     }
   }
+}
+
+bool AutofillContextMenuManager::HaveEnoughIdsForProfile(
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card,
+    base::span<const FieldsToShow> field_types_to_show,
+    base::span<const FieldsToShow> other_fields_to_show) {
+  // Count of items to be added to the context menu. Empty values are not
+  // considered.
+  auto non_empty_values_in_profile = [&](const auto& entry) {
+    ServerFieldType field_type = entry.field_type;
+    return field_type != UNKNOWN_TYPE &&
+           !absl::visit(
+                [field_type](const auto& alternative) {
+                  return alternative->GetRawInfo(field_type);
+                },
+                profile_or_credit_card)
+                .empty();
+  };
+  int count_of_items_to_be_added =
+      base::ranges::count_if(field_types_to_show, non_empty_values_in_profile);
+  // For addresses, include the "Other" section in the count. For credit cards,
+  // this should be empty.
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card))
+    DCHECK(other_fields_to_show.empty());
+  count_of_items_to_be_added +=
+      base::ranges::count_if(other_fields_to_show, non_empty_values_in_profile);
+
+  // Check if there are enough command ids for adding all the items to the
+  // context menu.
+  // 1 is added to count for the address/credit card description.
+  // Another 1 is added to account for the manage addresses/payment methods
+  // option.
+  if (!IsAutofillCustomCommandId(CommandId(
+          kAutofillContextCustomFirst + SubMenuType::NUM_SUBMENU_TYPES +
+          count_of_items_added_to_menu_model_ + count_of_items_to_be_added + 1 +
+          1))) {
+    return false;
+  }
 
   return true;
+}
+
+ui::SimpleMenuModel* AutofillContextMenuManager::CreateSimpleMenuModel() {
+  cached_menu_models_.push_back(
+      std::make_unique<ui::SimpleMenuModel>(delegate_));
+  return cached_menu_models_.back().get();
 }
 
 absl::optional<AutofillContextMenuManager::CommandId>
