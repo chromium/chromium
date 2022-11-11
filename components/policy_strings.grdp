@@ -898,6 +898,14 @@ Additional details:
                 =1 {Uploading this file is blocked by administrator policy}
                 other {Uploading # files is blocked by administrator policy}}
   </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE" desc="The title of the notification informing the user that opening files is blocked.">
+    Blocked open
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE" desc="The title of the notification informing the user that opening files is blocked.">
+     {0, plural,
+                =1 {Opening this file is blocked by administrator policy}
+                other {Opening # files is blocked by administrator policy}}
+  </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon
   </message>

@@ -110,6 +110,7 @@ constexpr char kFilePath5[] = "test5.txt";
 
 constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
 constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
+constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
 
 constexpr char kChromeAppId[] = "chromeApp";
 constexpr char kArcAppId[] = "arcApp";
@@ -1957,6 +1958,8 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
   const std::string path1 = "Documents/foo1.txt";
   const std::string path2 = "Documents/foo2.txt";
 
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(path1);
   ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
@@ -2023,6 +2026,9 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
   EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
   EXPECT_EQ(last_check_files_transfer_request.file_action(),
             ::dlp::FileAction::SHARE);
+
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kOpenBlockedNotificationId));
 }
 
 }  // namespace policy

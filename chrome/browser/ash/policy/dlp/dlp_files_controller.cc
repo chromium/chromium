@@ -76,6 +76,7 @@ constexpr size_t kEntriesLimit = 100;
 
 constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
 constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
+constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
 
 // FileSystemContext instance set for testing.
 storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
@@ -953,7 +954,12 @@ void DlpFilesController::LaunchIfAllowed(
   }
 
   if (!response.files_paths().empty()) {
-    // TODO(crbug.com/1382065): Show block notification.
+    ShowNotification(
+        kOpenBlockedNotificationId,
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE),
+        l10n_util::GetPluralStringFUTF16(
+            IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE,
+            response.files_paths().size()));
     std::move(result_callback).Run(/*is_allowed=*/false);
     return;
   }
