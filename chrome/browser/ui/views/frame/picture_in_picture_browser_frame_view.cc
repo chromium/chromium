@@ -429,6 +429,7 @@ PictureInPictureBrowserFrameView::GetContentSettingBubbleModelDelegate() {
   return browser->content_setting_bubble_model_delegate();
 }
 
+#if BUILDFLAG(IS_MAC)
 ///////////////////////////////////////////////////////////////////////////////
 // GeolocationManager::PermissionObserver implementations:
 void PictureInPictureBrowserFrameView::OnSystemPermissionUpdated(
@@ -436,6 +437,7 @@ void PictureInPictureBrowserFrameView::OnSystemPermissionUpdated(
   // Update icons if the macOS location permission is updated.
   UpdateContentSettingsIcons();
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetObserver implementations:

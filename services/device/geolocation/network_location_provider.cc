@@ -92,6 +92,7 @@ void NetworkLocationProvider::OnPermissionGranted() {
     RequestPosition();
 }
 
+#if BUILDFLAG(IS_MAC)
 void NetworkLocationProvider::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   is_awaiting_initial_permission_status_ = false;
@@ -112,6 +113,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
     OnWifiDataUpdate();
   }
 }
+#endif
 
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());

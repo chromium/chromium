@@ -14,6 +14,8 @@
 
 namespace device {
 
+#if BUILDFLAG(IS_MAC)
+
 // This class is owned by the browser process and keeps track of the macOS
 // location permissions for the browser.
 class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
@@ -67,6 +69,11 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   scoped_refptr<PermissionObserverList> observers_;
   scoped_refptr<PositionObserverList> position_observers_;
 };
+
+#else
+class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {};
+
+#endif
 
 }  // namespace device
 

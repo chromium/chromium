@@ -893,10 +893,12 @@ LocationBarView::GetContentSettingBubbleModelDelegate() {
   return delegate_->GetContentSettingBubbleModelDelegate();
 }
 
+#if BUILDFLAG(IS_MAC)
 void LocationBarView::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   UpdateContentSettingsIcons();
 }
+#endif
 
 void LocationBarView::OnAccuracyTipShown() {
   location_icon_view_->Update(/*suppress_animations=*/false);

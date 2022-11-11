@@ -78,7 +78,9 @@ class LocationBarView : public LocationBar,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
                         public PageActionIconView::Delegate,
+#if BUILDFLAG(IS_MAC)
                         public device::GeolocationManager::PermissionObserver,
+#endif
                         public accuracy_tips::AccuracyService::Observer {
  public:
   METADATA_HEADER(LocationBarView);
@@ -210,9 +212,11 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+#if BUILDFLAG(IS_MAC)
   // GeolocationManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
+#endif
 
   // accuracy_tips::AccuracyService::Observer:
   void OnAccuracyTipShown() override;

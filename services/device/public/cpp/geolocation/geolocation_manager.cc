@@ -6,6 +6,7 @@
 
 namespace device {
 
+#if BUILDFLAG(IS_MAC)
 GeolocationManager::GeolocationManager()
     : observers_(base::MakeRefCounted<PermissionObserverList>()),
       position_observers_(base::MakeRefCounted<PositionObserverList>()) {}
@@ -46,5 +47,6 @@ scoped_refptr<GeolocationManager::PermissionObserverList>
 GeolocationManager::GetObserverList() const {
   return observers_;
 }
+#endif
 
 }  // namespace device

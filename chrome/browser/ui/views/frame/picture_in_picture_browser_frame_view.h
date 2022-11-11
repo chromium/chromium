@@ -34,7 +34,9 @@ class PictureInPictureBrowserFrameView
       public LocationIconView::Delegate,
       public IconLabelBubbleView::Delegate,
       public ContentSettingImageView::Delegate,
+#if BUILDFLAG(IS_MAC)
       public device::GeolocationManager::PermissionObserver,
+#endif
       public views::WidgetObserver {
  public:
   METADATA_HEADER(PictureInPictureBrowserFrameView);
@@ -99,9 +101,11 @@ class PictureInPictureBrowserFrameView
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+#if BUILDFLAG(IS_MAC)
   // GeolocationManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
+#endif
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
