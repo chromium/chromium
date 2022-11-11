@@ -462,11 +462,13 @@ source_set("test_support") {
   testonly = true
   sources = [
     "dns_test_util.cc",
+    "host_resolver_internal_result_test_util.cc",
     "host_resolver_results_test_util.cc",
     "mock_host_resolver.cc",
   ]
   public = [
     "dns_test_util.h",
+    "host_resolver_internal_result_test_util.h",
     "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
   ]
