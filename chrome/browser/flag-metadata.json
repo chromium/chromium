@@ -3078,8 +3078,8 @@
   },
   {
     "name": "enable-storage-pressure-event",
-    "owners": [ "jarrydg", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 89
+    "owners": [ "ayui", "chrome-owp-storage@google.com" ],
+    "expiry_milestone": 116
   },
   {
     "name": "enable-suggestions-with-substring-match",
