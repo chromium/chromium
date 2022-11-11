@@ -159,10 +159,7 @@ class UpdaterDownloadTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(UpdaterNetworkTest, NetworkFetcherPostRequest) {
-// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
-#if !BUILDFLAG(IS_LINUX)
   base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
-#endif
   const std::string kPostData = "\x01\x00\x55\x33\xda\x10\x44";
   EXPECT_CALL(*this, PostRequestCompleted())
       .WillOnce(RunClosure(run_loop_.QuitClosure()));
@@ -184,10 +181,7 @@ TEST_F(UpdaterNetworkTest, NetworkFetcherDownloadToFile) {
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("downloaded_file"));
 
   {
-// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
-#if !BUILDFLAG(IS_LINUX)
     base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
-#endif
 
     EXPECT_CALL(*this, DownloadToFileCompleted())
         .WillOnce(RunClosure(run_loop_.QuitClosure()));
@@ -213,10 +207,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
       PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
   ASSERT_NE(factory, nullptr);
   {
-// TODO (crbug.com/1383276) - Linux fetcher blocks its sequence on creation.
-#if !BUILDFLAG(IS_LINUX)
     base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
-#endif
     std::unique_ptr<update_client::NetworkFetcher> fetcher = factory->Create();
     ASSERT_NE(fetcher, nullptr);
     fetcher->DownloadToFile(
