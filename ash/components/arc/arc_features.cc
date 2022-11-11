@@ -41,6 +41,13 @@ BASE_FEATURE(kEnableArcNearbyShareFuseBox,
              "ArcNearbyShareFuseBox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable ARCVM /data migration. It does not take effect
+// when kEnableVirtioBlkForData is set, in which case virtio-blk is used for
+// /data without going through the migration.
+BASE_FEATURE(kEnableArcVmDataMigration,
+             "ArcVmDataMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether WebView Zygote is lazily initialized in ARC.
 BASE_FEATURE(kEnableLazyWebViewInit,
              "LazyWebViewInit",
