@@ -11,9 +11,17 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './switch_access_setup_guide_warning_dialog.html.js';
+
+interface SettingsSwitchAccessSetupGuideWarningDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class SettingsSwitchAccessSetupGuideWarningDialogElement extends
     PolymerElement {
   static get is() {
@@ -21,24 +29,28 @@ class SettingsSwitchAccessSetupGuideWarningDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_(): void {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onRerunSetupGuideTap_() {
+  private onRerunSetupGuideTap_(): void {
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-switch-access-setup-guide-warning-dialog':
+        SettingsSwitchAccessSetupGuideWarningDialogElement;
   }
 }
 

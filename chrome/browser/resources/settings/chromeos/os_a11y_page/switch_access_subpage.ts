@@ -8,6 +8,7 @@
  */
 
 import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
@@ -15,68 +16,63 @@ import './switch_access_action_assignment_dialog.js';
 import './switch_access_setup_guide_dialog.js';
 import './switch_access_setup_guide_warning_dialog.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
 import {AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {getTemplate} from './switch_access_subpage.html.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+import {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
 
 /**
  * The portion of the setting name common to all Switch Access preferences.
- * @const
  */
-const PREFIX = 'settings.a11y.switch_access.';
+const PREFIX: string = 'settings.a11y.switch_access.';
 
-/** @type {!Array<number>} */
-const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
+const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND: number[] =
+    [25, 50, 75, 100, 150, 200, 300];
 
-/**
- * @param {!Array<number>} ticksInMs
- * @return {!Array<!SliderTick>}
- */
-function ticksWithLabelsInSec(ticksInMs) {
+function ticksWithLabelsInSec(ticksInMs: number[]): SliderTick[] {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
   return ticksInMs.map(x => ({label: `${x / 1000}`, value: x}));
 }
 
-/**
- * @param {!Array<number>} ticks
- * @return {!Array<!SliderTick>}
- */
-function ticksWithCountingLabels(ticks) {
-  return ticks.map((x, i) => ({label: i + 1, value: x}));
+function ticksWithCountingLabels(ticks: number[]): SliderTick[] {
+  return ticks.map((x, i) => ({label: `${i + 1}`, value: x}));
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsSwitchAccessSubpageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      PrefsBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface SettingsSwitchAccessSubpageElement {
+  $: {
+    nextLinkRow: CrLinkRowElement,
+    previousLinkRow: CrLinkRowElement,
+    selectLinkRow: CrLinkRowElement,
+    setupGuideLink: CrLinkRowElement,
+  };
+}
 
-/** @polymer */
+const SettingsSwitchAccessSubpageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          PrefsBehavior,
+        ],
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          DeepLinkingBehaviorInterface & PrefsBehaviorInterface,
+    };
+
 class SettingsSwitchAccessSubpageElement extends
     SettingsSwitchAccessSubpageElementBase {
   static get is() {
@@ -84,55 +80,46 @@ class SettingsSwitchAccessSubpageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
       selectAssignments_: {
         type: Array,
         value: [],
         notify: true,
       },
 
-      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
       nextAssignments_: {
         type: Array,
         value: [],
         notify: true,
       },
 
-      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
       previousAssignments_: {
         type: Array,
         value: [],
         notify: true,
       },
 
-      /** @private {Array<number>} */
       autoScanSpeedRangeMs_: {
         readOnly: true,
         type: Array,
         value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
       },
 
-      /** @private {Array<number>} */
       pointScanSpeedRangeDipsPerSecond_: {
         readOnly: true,
         type: Array,
         value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
       },
 
-      /** @private {Object} */
       formatter_: {
         type: Object,
         value() {
@@ -143,48 +130,42 @@ class SettingsSwitchAccessSubpageElement extends
         },
       },
 
-      /** @private {number} */
       maxScanSpeedMs_: {
         readOnly: true,
         type: Number,
         value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1],
       },
 
-      /** @private {string} */
       maxScanSpeedLabelSec_: {
         readOnly: true,
         type: String,
-        value() {
-          return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
-        },
       },
 
-      /** @private {number} */
-      minScanSpeedMs_:
-          {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
+      minScanSpeedMs_: {
+        readOnly: true,
+        type: Number,
+        value: AUTO_SCAN_SPEED_RANGE_MS[0],
+      },
 
-      /** @private {string} */
       minScanSpeedLabelSec_: {
         readOnly: true,
         type: String,
-        value() {
-          return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
-        },
       },
 
-      /** @private {number} */
       maxPointScanSpeed_: {
         readOnly: true,
         type: Number,
         value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length,
       },
 
-      /** @private {number} */
-      minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
+      minPointScanSpeed_: {
+        readOnly: true,
+        type: Number,
+        value: 1,
+      },
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -195,25 +176,21 @@ class SettingsSwitchAccessSubpageElement extends
         ]),
       },
 
-      /** @private */
       showSwitchAccessActionAssignmentDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showSwitchAccessSetupGuideDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showSwitchAccessSetupGuideWarningDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {?SwitchAccessCommand} */
       action_: {
         type: String,
         value: null,
@@ -222,33 +199,49 @@ class SettingsSwitchAccessSubpageElement extends
     };
   }
 
-  /** @override */
+  private action_: SwitchAccessCommand|null;
+  private autoScanSpeedRangeMs_: number[];
+  private focusAfterDialogClose_: HTMLElement|null;
+  private formatter_: Intl.NumberFormat;
+  private maxPointScanSpeed_: number;
+  private minPointScanSpeed_: number;
+  private maxScanSpeedLabelSec_: string;
+  private maxScanSpeedMs_: number;
+  private minScanSpeedLabelSec_: string;
+  private minScanSpeedMs_: number;
+  private nextAssignments_: KeyAssignment[];
+  private pointScanSpeedRangeDipsPerSecond_: number[];
+  private previousAssignments_: KeyAssignment[];
+  private selectAssignments_: KeyAssignment[];
+  private showSwitchAccessActionAssignmentDialog_: boolean;
+  private showSwitchAccessSetupGuideDialog_: boolean;
+  private showSwitchAccessSetupGuideWarningDialog_: boolean;
+  private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!SwitchAccessSubpageBrowserProxy} */
+    this.maxScanSpeedLabelSec_ =
+        this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+    this.minScanSpeedLabelSec_ =
+        this.scanSpeedStringInSec_(this.minScanSpeedMs_);
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
 
-    /** @private {?HTMLElement} */
     this.focusAfterDialogClose_ = null;
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        value => this.onAssignmentsChanged_(value));
+        (value: SwitchAccessAssignmentsChangedValue) =>
+            this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
       return;
@@ -257,18 +250,15 @@ class SettingsSwitchAccessSubpageElement extends
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onSetupGuideRerunClick_() {
+  private onSetupGuideRerunClick_(): void {
     this.showSwitchAccessSetupGuideWarningDialog_ = true;
   }
 
-  /** @private */
-  onSetupGuideWarningDialogCancel_() {
+  private onSetupGuideWarningDialogCancel_(): void {
     this.showSwitchAccessSetupGuideWarningDialog_ = false;
   }
 
-  /** @private */
-  onSetupGuideWarningDialogClose_() {
+  private onSetupGuideWarningDialogClose_(): void {
     // The on_cancel is followed by on_close, so check cancel didn't happen
     // first.
     if (this.showSwitchAccessSetupGuideWarningDialog_) {
@@ -277,54 +267,41 @@ class SettingsSwitchAccessSubpageElement extends
     }
   }
 
-  /** @private */
-  openSetupGuide_() {
+  private openSetupGuide_(): void {
     this.showSwitchAccessSetupGuideWarningDialog_ = false;
     this.showSwitchAccessSetupGuideDialog_ = true;
   }
 
-  /** @private */
-  onSelectAssignClick_() {
+  private onSelectAssignClick_(): void {
     this.action_ = SwitchAccessCommand.SELECT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ =
-        /** @type {?HTMLElement} */ (this.$.selectLinkRow);
+    this.focusAfterDialogClose_ = this.$.selectLinkRow;
   }
 
-  /** @private */
-  onNextAssignClick_() {
+  private onNextAssignClick_(): void {
     this.action_ = SwitchAccessCommand.NEXT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ =
-        /** @type {?HTMLElement} */ (this.$.nextLinkRow);
+    this.focusAfterDialogClose_ = this.$.nextLinkRow;
   }
 
-  /** @private */
-  onPreviousAssignClick_() {
+  private onPreviousAssignClick_(): void {
     this.action_ = SwitchAccessCommand.PREVIOUS;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ =
-        /** @type {?HTMLElement} */ (this.$.previousLinkRow);
+    this.focusAfterDialogClose_ = this.$.previousLinkRow;
   }
 
-  /** @private */
-  onSwitchAccessSetupGuideDialogClose_() {
+  private onSwitchAccessSetupGuideDialogClose_(): void {
     this.showSwitchAccessSetupGuideDialog_ = false;
     this.$.setupGuideLink.focus();
   }
 
-  /** @private */
-  onSwitchAccessActionAssignmentDialogClose_() {
+  private onSwitchAccessActionAssignmentDialogClose_(): void {
     this.showSwitchAccessActionAssignmentDialog_ = false;
-    this.focusAfterDialogClose_.focus();
+    this.focusAfterDialogClose_!.focus();
   }
 
-  /**
-   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
-   *     !SwitchAccessDeviceType}>>} value
-   * @private
-   */
-  onAssignmentsChanged_(value) {
+  private onAssignmentsChanged_(value: SwitchAccessAssignmentsChangedValue):
+      void {
     this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
     this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
     this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
@@ -337,24 +314,41 @@ class SettingsSwitchAccessSubpageElement extends
     }
   }
 
-  /**
-   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
-   * @return {string}
-   * @private
-   */
-  getLabelForAssignment_(assignment) {
-    return getLabelForAssignment(assignment);
+  private getLabelForDeviceType_(deviceType: SwitchAccessDeviceType):
+      TrustedHTML {
+    switch (deviceType) {
+      case SwitchAccessDeviceType.INTERNAL:
+        return this.i18nAdvanced('switchAccessInternalDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.USB:
+        return this.i18nAdvanced('switchAccessUsbDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.BLUETOOTH:
+        return this.i18nAdvanced('switchAccessBluetoothDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.UNKNOWN:
+        return this.i18nAdvanced('switchAccessUnknownDeviceTypeLabel', {});
+      default:
+        assertNotReached('Invalid device type.');
+    }
   }
 
   /**
-   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
-   *     List of assignments
-   * @return {string} (e.g. 'Alt (USB), Backspace, Enter, and 4 more switches')
-   * @private
+   * Converts assignment object to pretty-formatted label.
+   * E.g. {key: 'Escape', device: 'usb'} -> 'Escape (USB)'
    */
-  getAssignSwitchSubLabel_(assignments) {
-    const switches =
-        assignments.map(assignment => this.getLabelForAssignment_(assignment));
+  private getLabelForAssignment_(assignment: KeyAssignment): TrustedHTML {
+    return this.i18nAdvanced('switchAndDeviceType', {
+      substitutions: [
+        assignment.key,
+        this.getLabelForDeviceType_(assignment.device).toString(),
+      ],
+    });
+  }
+
+  /**
+   * @return (e.g. 'Alt (USB), Backspace, Enter, and 4 more switches')
+   */
+  private getAssignSwitchSubLabel_(assignments: KeyAssignment[]): string {
+    const switches = assignments.map(
+        assignment => this.getLabelForAssignment_(assignment).toString());
     switch (switches.length) {
       case 0:
         return this.i18n('assignSwitchSubLabel0Switches');
@@ -374,28 +368,26 @@ class SettingsSwitchAccessSubpageElement extends
     }
   }
 
-  /**
-   * @return {boolean} Whether to show settings for auto-scan within the
-   *     keyboard.
-   * @private
-   */
-  showKeyboardScanSettings_() {
+  private showKeyboardScanSettings_(): boolean {
     const improvedTextInputEnabled = loadTimeData.getBoolean(
         'showExperimentalAccessibilitySwitchAccessImprovedTextInput');
-    const autoScanEnabled = /** @type {boolean} */
-        (this.getPref(PREFIX + 'auto_scan.enabled').value);
+
+    const pref: chrome.settingsPrivate.PrefObject<boolean> =
+        this.getPref(PREFIX + 'auto_scan.enabled');
+    const autoScanEnabled = pref.value;
     return improvedTextInputEnabled && autoScanEnabled;
   }
 
-  /**
-   * @param {number} scanSpeedValueMs
-   * @return {string} a string representing the scan speed in seconds.
-   * @private
-   */
-  scanSpeedStringInSec_(scanSpeedValueMs) {
+  private scanSpeedStringInSec_(scanSpeedValueMs: number): string {
     const scanSpeedValueSec = scanSpeedValueMs / 1000;
     return this.i18n(
         'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-switch-access-subpage': SettingsSwitchAccessSubpageElement;
   }
 }
 

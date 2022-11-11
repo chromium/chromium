@@ -14,111 +14,77 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../os_icons.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './switch_access_action_assignment_pane.html.js';
 import {actionToPref, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+import {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
 
 /**
  * Different states of the assignment flow dictating which overall view should
  * be shown.
- * @enum {number}
  */
-export const AssignmentState = {
-  WAIT_FOR_CONFIRMATION_REMOVAL: 0,
-  WAIT_FOR_CONFIRMATION: 1,
-  WAIT_FOR_KEY: 2,
-  WARN_ALREADY_ASSIGNED_ACTION: 3,
-  WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH: 4,
-  WARN_NOT_CONFIRMED_REMOVAL: 5,
-  WARN_NOT_CONFIRMED: 6,
-  WARN_UNRECOGNIZED_KEY: 7,
-};
+enum AssignmentState {
+  WAIT_FOR_CONFIRMATION_REMOVAL = 0,
+  WAIT_FOR_CONFIRMATION = 1,
+  WAIT_FOR_KEY = 2,
+  WARN_ALREADY_ASSIGNED_ACTION = 3,
+  WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH = 4,
+  WARN_NOT_CONFIRMED_REMOVAL = 5,
+  WARN_NOT_CONFIRMED = 6,
+  WARN_UNRECOGNIZED_KEY = 7,
+}
 
 /**
  * Various icons representing the state of a given key assignment.
- * @enum {string}
  */
-export const AssignmentIcon = {
-  ASSIGNED: 'assigned',
-  ADD_ASSIGNMENT: 'add-assignment',
-  REMOVE_ASSIGNMENT: 'remove-assignment',
-};
+enum AssignmentIcon {
+  ASSIGNED = 'assigned',
+  ADD_ASSIGNMENT = 'add-assignment',
+  REMOVE_ASSIGNMENT = 'remove-assignment',
+}
 
-/** @enum {string} */
-const AssignmentResponse = {
-  EXIT: 'switchAccessActionAssignmentExitResponse',
-  CONTINUE: 'switchAccessActionAssignmentContinueResponse',
-  TRY_AGAIN: 'switchAccessActionAssignmentTryAgainResponse',
-};
+enum AssignmentResponse {
+  EXIT = 'switchAccessActionAssignmentExitResponse',
+  CONTINUE = 'switchAccessActionAssignmentContinueResponse',
+  TRY_AGAIN = 'switchAccessActionAssignmentTryAgainResponse',
+}
+
+interface OnKeyWebUiEvent {
+  key: string;
+  keyCode: number;
+  device: SwitchAccessDeviceType;
+}
 
 /**
  * Mapping of a stringified key code to a list of Switch Access device types
  * for that key code.
- * @typedef {!Object<string, !Array<!SwitchAccessDeviceType>>}
  */
-let SwitchAccessKeyAssignmentInfoMapping;
-
-/**
- * @param {!SwitchAccessDeviceType} deviceType
- * @return {string}
- */
-export function getLabelForDeviceType(deviceType) {
-  switch (deviceType) {
-    case SwitchAccessDeviceType.INTERNAL:
-      return I18nBehavior.i18nAdvanced(
-          'switchAccessInternalDeviceTypeLabel', {});
-    case SwitchAccessDeviceType.USB:
-      return I18nBehavior.i18nAdvanced('switchAccessUsbDeviceTypeLabel', {});
-    case SwitchAccessDeviceType.BLUETOOTH:
-      return I18nBehavior.i18nAdvanced(
-          'switchAccessBluetoothDeviceTypeLabel', {});
-    case SwitchAccessDeviceType.UNKNOWN:
-      return I18nBehavior.i18nAdvanced(
-          'switchAccessUnknownDeviceTypeLabel', {});
-  }
-  throw new Error('Invalid device type.');
+interface SwitchAccessKeyAssignmentInfoMapping {
+  [key: string]: SwitchAccessDeviceType[];
 }
 
-/**
- * Converts assignment object to pretty-formatted label.
- * E.g. {key: 'Escape', device: 'usb'} -> 'Escape (USB)'
- * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
- * @return {string}
- */
-export function getLabelForAssignment(assignment) {
-  return I18nBehavior.i18nAdvanced('switchAndDeviceType', {
-    substitutions: [assignment.key, getLabelForDeviceType(assignment.device)],
-  });
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSwitchAccessActionAssignmentPaneElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
-class SettingsSwitchAccessActionAssignmentPaneElement extends
+export class SettingsSwitchAccessActionAssignmentPaneElement extends
     SettingsSwitchAccessActionAssignmentPaneElementBase {
   static get is() {
     return 'settings-switch-access-action-assignment-pane';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Specify which switch action this pane handles.
-       * @type {SwitchAccessCommand}
        */
       action: {
         type: String,
@@ -126,13 +92,11 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
 
       /**
        * Specify the context this pane is located in.
-       * @type {AssignmentContext}
        */
       context: String,
 
       /**
        * Enable the html template to use AssignmentState.
-       * @private {AssignmentState}
        */
       assignmentState_: {
         type: Number,
@@ -141,7 +105,6 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
 
       /**
        * Assignments for the current action.
-       * @private {!Array<{key: string, device: !SwitchAccessDeviceType}>}
        */
       assignments_: {
         type: Array,
@@ -151,11 +114,6 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       /**
        * A dictionary containing all Switch Access key codes (mapped from
        * actions).
-       * @private {{
-       *         select: SwitchAccessKeyAssignmentInfoMapping,
-       *         next: SwitchAccessKeyAssignmentInfoMapping,
-       *         previous: SwitchAccessKeyAssignmentInfoMapping
-       * }}
        */
       keyCodes_: {
         type: Object,
@@ -164,7 +122,6 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
 
       /**
        * User prompt text shown at the top of the pane.
-       * @private
        */
       promptText_: {
         type: String,
@@ -172,8 +129,7 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       },
 
       /**
-       * Error text shown on the pane with error symbol. Hidden if blank.
-       * @private
+       * Error text shown on the pane with error symbol. Hidden if  blank.
        */
       errorText_: {
         type: String,
@@ -182,53 +138,63 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
 
       /**
        * The label indicating there are no switches.
-       * @private
        */
       noSwitchesLabel_: String,
 
-      /** @private {!SwitchAccessCommand} */
       alreadyAssignedAction_: String,
 
-      /** @private {!string} */
       currentKey_: String,
 
-      /** @private {?number} */
       currentKeyCode_: {
         type: Number,
         value: null,
       },
 
-      /** @private {!SwitchAccessDeviceType} */
       currentDeviceType_: String,
     };
   }
 
-  /** @override */
+  action: SwitchAccessCommand;
+  context: AssignmentContext;
+  private alreadyAssignedAction_: SwitchAccessCommand;
+  private assignmentState_: AssignmentState;
+  private assignments_: KeyAssignment[];
+  private currentDeviceType_: SwitchAccessDeviceType;
+  private currentKey_: string;
+  private currentKeyCode_: number|null;
+  private errorText_: string;
+  private keyCodes_:
+      {[key in SwitchAccessCommand]: SwitchAccessKeyAssignmentInfoMapping};
+  private noSwitchesLabel_: string;
+  private promptText_: string;
+  private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!SwitchAccessSubpageBrowserProxy} */
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Save all existing prefs.
     for (const action in actionToPref) {
-      chrome.settingsPrivate.getPref(actionToPref[action], (pref) => {
-        this.keyCodes_[action] = pref.value;
-      });
+      chrome.settingsPrivate
+          .getPref(actionToPref[action as SwitchAccessCommand])
+          .then((pref: {value: SwitchAccessKeyAssignmentInfoMapping}) => {
+            this.keyCodes_[action as SwitchAccessCommand] = pref.value;
+          });
     }
 
     this.addWebUIListener(
         'switch-access-got-key-press-for-assignment',
-        event => this.onKeyDown_(event));
+        (event: OnKeyWebUiEvent) => this.onKeyDown_(event));
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        value => this.onAssignmentsChanged_(value));
+        (value: SwitchAccessAssignmentsChangedValue) =>
+            this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneActive();
 
@@ -239,8 +205,7 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
     }
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.switchAccessBrowserProxy_
@@ -249,15 +214,12 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
     // Restore everything before we close.
     for (const action in actionToPref) {
       chrome.settingsPrivate.setPref(
-          actionToPref[action], this.keyCodes_[action]);
+          actionToPref[action as SwitchAccessCommand],
+          this.keyCodes_[action as SwitchAccessCommand]);
     }
   }
 
-  /**
-   * @param {{key: string, keyCode: number}} event
-   * @private
-   */
-  onKeyDown_(event) {
+  private onKeyDown_(event: OnKeyWebUiEvent): void {
     switch (this.assignmentState_) {
       case AssignmentState.WAIT_FOR_KEY:
         this.handleKeyEventInWaitForKey_(event);
@@ -281,10 +243,8 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
   /**
    * In this state, the pane waits for the user to press the initial switch key
    * to be assigned.
-   * @param {{key: string, keyCode: number}} event
-   * @private
    */
-  handleKeyEventInWaitForKey_(event) {
+  private handleKeyEventInWaitForKey_(event: OnKeyWebUiEvent): void {
     this.currentKeyCode_ = event.keyCode;
     this.currentKey_ = event.key;
     this.currentDeviceType_ = event.device;
@@ -326,10 +286,8 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
    * In this state, the user has pressed the initial switch key, which is not
    * already assigned to any action. The pane waits for the user to press the
    * switch key again to confirm assignment.
-   * @param {{key: string, keyCode: number}} event
-   * @private
    */
-  handleKeyEventInWaitForConfirmation_(event) {
+  private handleKeyEventInWaitForConfirmation_(event: OnKeyWebUiEvent): void {
     if (this.currentKeyCode_ !== event.keyCode ||
         this.currentDeviceType_ !== event.device) {
       this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED;
@@ -360,10 +318,9 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
    * In this state, the user has pressed the initial switch key, which is
    * already assigned to the current action. The pane waits for the user to
    * press the switch key again to confirm removal.
-   * @param {{key: string, keyCode: number}} event
-   * @private
    */
-  handleKeyEventInWaitForConfirmationRemoval_(event) {
+  private handleKeyEventInWaitForConfirmationRemoval_(event: OnKeyWebUiEvent):
+      void {
     if (this.currentKeyCode_ !== event.keyCode ||
         this.currentDeviceType_ !== event.device) {
       this.assignmentState_ = AssignmentState.WARN_NOT_CONFIRMED_REMOVAL;
@@ -380,31 +337,21 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
     this.fireExitPane_();
   }
 
-  /**
-   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
-   *     !SwitchAccessDeviceType}>>} value
-   * @private
-   */
-  onAssignmentsChanged_(value) {
+  private onAssignmentsChanged_(value: SwitchAccessAssignmentsChangedValue):
+      void {
     this.assignments_ = value[this.action];
   }
 
   /**
    * Fires an 'exit-pane' event.
-   * @private
    */
-  fireExitPane_() {
+  private fireExitPane_(): void {
     const exitPaneEvent =
         new CustomEvent('exit-pane', {bubbles: true, composed: true});
     this.dispatchEvent(exitPaneEvent);
   }
 
-  /**
-   * @param {SwitchAccessCommand} action
-   * @return {string}
-   * @private
-   */
-  getLabelForAction_(action) {
+  private getLabelForAction_(action: SwitchAccessCommand): string {
     switch (action) {
       case SwitchAccessCommand.SELECT:
         return this.i18n('assignSelectSwitchLabel');
@@ -413,27 +360,44 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       case SwitchAccessCommand.PREVIOUS:
         return this.i18n('assignPreviousSwitchLabel');
       default:
-        return '';
+        assertNotReached();
+    }
+  }
+
+  private getLabelForDeviceType_(deviceType: SwitchAccessDeviceType):
+      TrustedHTML {
+    switch (deviceType) {
+      case SwitchAccessDeviceType.INTERNAL:
+        return this.i18nAdvanced('switchAccessInternalDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.USB:
+        return this.i18nAdvanced('switchAccessUsbDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.BLUETOOTH:
+        return this.i18nAdvanced('switchAccessBluetoothDeviceTypeLabel', {});
+      case SwitchAccessDeviceType.UNKNOWN:
+        return this.i18nAdvanced('switchAccessUnknownDeviceTypeLabel', {});
+      default:
+        assertNotReached('Invalid device type.');
     }
   }
 
   /**
-   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
-   * @return {string}
-   * @private
+   * Converts assignment object to pretty-formatted label.
+   * E.g. {key: 'Escape', device: 'usb'} -> 'Escape (USB)'
    */
-  getLabelForAssignment_(assignment) {
-    return getLabelForAssignment(assignment);
+  private getLabelForAssignment_(assignment: KeyAssignment): TrustedHTML {
+    return this.i18nAdvanced('switchAndDeviceType', {
+      substitutions: [
+        assignment.key,
+        this.getLabelForDeviceType_(assignment.device).toString(),
+      ],
+    });
   }
 
   /**
    * Returns the image to use for the assignment's icon. The value must match
    * one of iron-icon's os-settings:(*) icon names.
-   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
-   * @return {AssignmentIcon}
-   * @private
    */
-  computeIcon_(assignment) {
+  private computeIcon_(assignment: KeyAssignment): AssignmentIcon {
     if (assignment.key !== this.currentKey_ ||
         assignment.device !== this.currentDeviceType_) {
       return AssignmentIcon.ASSIGNED;
@@ -451,17 +415,15 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
       case AssignmentState.WARN_NOT_CONFIRMED_REMOVAL:
         return AssignmentIcon.REMOVE_ASSIGNMENT;
+      default:
+        assertNotReached('Invalid assignment state.');
     }
-    throw new Error('Invalid assignment state.');
   }
 
   /**
    * Returns the icon label describing the icon for the specified assignment.
-   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
-   * @return {string}
-   * @private
    */
-  computeIconLabel_(assignment) {
+  private computeIconLabel_(assignment: KeyAssignment): string {
     const icon = this.computeIcon_(assignment);
     switch (icon) {
       case AssignmentIcon.ASSIGNED:
@@ -471,18 +433,14 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       case AssignmentIcon.REMOVE_ASSIGNMENT:
         return this.i18n(
             'switchAccessActionAssignmentRemoveAssignmentIconLabel');
+      default:
+        assertNotReached('Invalid assignment icon.');
     }
-    throw new Error('Invalid assignment icon.');
   }
 
-  /**
-   * @param {!AssignmentState} assignmentState
-   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
-   * @return {string}
-   * @private
-   */
-  computePromptText_(assignmentState, assignments) {
-    let response;
+  private computePromptText_(
+      assignmentState: AssignmentState, assignments: KeyAssignment[]): string {
+    let response: AssignmentResponse;
     switch (assignmentState) {
       case AssignmentState.WAIT_FOR_KEY:
       case AssignmentState.WARN_ALREADY_ASSIGNED_ACTION:
@@ -516,16 +474,12 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
         return this.i18n(
             'switchAccessActionAssignmentWaitForConfirmationRemovalPrompt',
             this.currentKey_, this.i18n(response));
+      default:
+        assertNotReached('Invalid assignment state.');
     }
-    throw new Error('Invalid assignment state.');
   }
 
-  /**
-   * @param {!AssignmentState} assignmentState
-   * @return {string}
-   * @private
-   */
-  computeErrorText_(assignmentState) {
+  private computeErrorText_(assignmentState: AssignmentState): string {
     let response = this.context === AssignmentContext.SETUP_GUIDE ?
         AssignmentResponse.TRY_AGAIN :
         AssignmentResponse.EXIT;
@@ -556,8 +510,16 @@ class SettingsSwitchAccessActionAssignmentPaneElement extends
       case AssignmentState.WAIT_FOR_CONFIRMATION:
       case AssignmentState.WAIT_FOR_CONFIRMATION_REMOVAL:
         return '';
+      default:
+        assertNotReached('Invalid assignment state.');
     }
-    throw new Error('Invalid assignment state.');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-switch-access-action-assignment-pane':
+        SettingsSwitchAccessActionAssignmentPaneElement;
   }
 }
 

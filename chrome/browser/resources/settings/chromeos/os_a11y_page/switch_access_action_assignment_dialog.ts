@@ -13,21 +13,24 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './switch_access_action_assignment_dialog.html.js';
 import {SwitchAccessCommand} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsSwitchAccessActionAssignmentDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface SettingsSwitchAccessActionAssignmentDialogElement {
+  $: {
+    switchAccessActionAssignmentDialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SettingsSwitchAccessActionAssignmentDialogElementBase =
+    I18nMixin(PolymerElement);
+
 class SettingsSwitchAccessActionAssignmentDialogElement extends
     SettingsSwitchAccessActionAssignmentDialogElementBase {
   static get is() {
@@ -35,7 +38,7 @@ class SettingsSwitchAccessActionAssignmentDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -43,7 +46,6 @@ class SettingsSwitchAccessActionAssignmentDialogElement extends
       /**
        * Set by the main Switch Access subpage to specify which switch action
        * this dialog handles.
-       * @type {SwitchAccessCommand}
        */
       action: {
         type: String,
@@ -51,7 +53,6 @@ class SettingsSwitchAccessActionAssignmentDialogElement extends
 
       /**
        * The localized action label.
-       * @private {string}
        */
       dialogTitle_: {
         type: String,
@@ -60,48 +61,38 @@ class SettingsSwitchAccessActionAssignmentDialogElement extends
     };
   }
 
-  /** @override */
+  action: SwitchAccessCommand;
+  private dialogTitle_: string;
+  private switchAccessBrowserProxy_: SwitchAccessSubpageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!SwitchAccessSubpageBrowserProxy} */
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener('exit-pane', this.onPaneExit_);
   }
 
-  /** @private */
-  onPaneExit_() {
+  private onPaneExit_(): void {
     this.$.switchAccessActionAssignmentDialog.close();
   }
 
-  /** @private */
-  onExitClick_() {
+  private onExitClick_(): void {
     this.$.switchAccessActionAssignmentDialog.close();
   }
 
-  /**
-   * @param {SwitchAccessCommand} action
-   * @return {string}
-   * @private
-   */
-  getDialogTitleForAction_(action) {
+  private getDialogTitleForAction_(action: SwitchAccessCommand): string {
     return this.i18n(
         'switchAccessActionAssignmentDialogTitle',
         this.getLabelForAction_(action));
   }
 
-  /**
-   * @param {SwitchAccessCommand} action
-   * @return {string}
-   * @private
-   */
-  getLabelForAction_(action) {
+  private getLabelForAction_(action: SwitchAccessCommand): string {
     switch (action) {
       case SwitchAccessCommand.SELECT:
         return this.i18n('assignSelectSwitchLabel');
@@ -110,8 +101,15 @@ class SettingsSwitchAccessActionAssignmentDialogElement extends
       case SwitchAccessCommand.PREVIOUS:
         return this.i18n('assignPreviousSwitchLabel');
       default:
-        return '';
+        assertNotReached();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-switch-access-action-assignment-dialog':
+        SettingsSwitchAccessActionAssignmentDialogElement;
   }
 }
 

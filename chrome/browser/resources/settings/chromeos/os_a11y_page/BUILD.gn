@@ -16,13 +16,6 @@ js_type_check("closure_compile_module") {
     ":manage_a11y_page_browser_proxy",
     ":os_a11y_page",
     ":os_a11y_page_browser_proxy",
-    ":switch_access_action_assignment_dialog",
-    ":switch_access_action_assignment_pane",
-    ":switch_access_constants",
-    ":switch_access_setup_guide_dialog",
-    ":switch_access_setup_guide_warning_dialog",
-    ":switch_access_subpage",
-    ":switch_access_subpage_browser_proxy",
   ]
 }
 
@@ -80,99 +73,10 @@ js_library("os_a11y_page_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-js_library("switch_access_action_assignment_dialog") {
-  deps = [
-    ":switch_access_constants",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("switch_access_action_assignment_pane") {
-  deps = [
-    ":switch_access_constants",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("switch_access_constants") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("switch_access_setup_guide_dialog") {
-  deps = [
-    ":switch_access_constants",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
-  ]
-}
-
-js_library("switch_access_setup_guide_warning_dialog") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("switch_access_subpage") {
-  deps = [
-    ":switch_access_constants",
-    ":switch_access_subpage_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:prefs_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
-}
-
-js_library("switch_access_subpage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "change_dictation_locale_dialog.js",
     "manage_a11y_page.js",
     "os_a11y_page.js",
-    "switch_access_action_assignment_dialog.js",
-    "switch_access_action_assignment_pane.js",
-    "switch_access_setup_guide_dialog.js",
-    "switch_access_setup_guide_warning_dialog.js",
-    "switch_access_subpage.js",
   ]
 }

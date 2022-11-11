@@ -2,65 +2,55 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @interface */
-export class SwitchAccessSubpageBrowserProxy {
+export interface SwitchAccessSubpageBrowserProxy {
   /**
    * Refresh assignments by requesting SwitchAccessHandler send all readable key
    * names for each action pref via the 'switch-access-assignments-changed'
    * message.
    */
-  refreshAssignmentsFromPrefs() {}
+  refreshAssignmentsFromPrefs(): void;
 
   /**
    * Notifies SwitchAccessHandler an assignment dialog has been attached.
    */
-  notifySwitchAccessActionAssignmentPaneActive() {}
+  notifySwitchAccessActionAssignmentPaneActive(): void;
 
   /**
    * Notifies SwitchAccessHandler an assignment dialog is closing.
    */
-  notifySwitchAccessActionAssignmentPaneInactive() {}
+  notifySwitchAccessActionAssignmentPaneInactive(): void;
 
   /**
    * Notifies when the setup guide dialog is ready.
    */
-  notifySwitchAccessSetupGuideAttached() {}
+  notifySwitchAccessSetupGuideAttached(): void;
 }
 
-/** @type {?SwitchAccessSubpageBrowserProxy} */
-let instance = null;
+let instance: SwitchAccessSubpageBrowserProxy|null = null;
 
-/**
- * @implements {SwitchAccessSubpageBrowserProxy}
- */
-export class SwitchAccessSubpageBrowserProxyImpl {
-  /** @return {!SwitchAccessSubpageBrowserProxy} */
-  static getInstance() {
+export class SwitchAccessSubpageBrowserProxyImpl implements
+    SwitchAccessSubpageBrowserProxy {
+  static getInstance(): SwitchAccessSubpageBrowserProxy {
     return instance || (instance = new SwitchAccessSubpageBrowserProxyImpl());
   }
 
-  /** @param {!SwitchAccessSubpageBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: SwitchAccessSubpageBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  refreshAssignmentsFromPrefs() {
+  refreshAssignmentsFromPrefs(): void {
     chrome.send('refreshAssignmentsFromPrefs');
   }
 
-  /** @override */
-  notifySwitchAccessActionAssignmentPaneActive() {
+  notifySwitchAccessActionAssignmentPaneActive(): void {
     chrome.send('notifySwitchAccessActionAssignmentPaneActive');
   }
 
-  /** @override */
-  notifySwitchAccessActionAssignmentPaneInactive() {
+  notifySwitchAccessActionAssignmentPaneInactive(): void {
     chrome.send('notifySwitchAccessActionAssignmentPaneInactive');
   }
 
-  /** @override */
-  notifySwitchAccessSetupGuideAttached() {
+  notifySwitchAccessSetupGuideAttached(): void {
     // Currently only used in testing, so no event is fired.
   }
 }

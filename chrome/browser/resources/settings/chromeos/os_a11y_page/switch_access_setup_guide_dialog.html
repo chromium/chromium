@@ -39,37 +39,37 @@
         url(chrome://os-settings/images/computer_and_bluetooth_switch.svg);
   }
 
-  #assign-switch .illustration.select {
+  #assignSwitch .illustration.select {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_select.svg);
   }
 
-  #assign-switch .illustration.next {
+  #assignSwitch .illustration.next {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_next.svg);
   }
 
-  #assign-switch .illustration.previous {
+  #assignSwitch .illustration.previous {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_previous.svg);
   }
 
-  #choose-switch-count .illustration.one-switch {
+  #chooseSwitchCount .illustration.one-switch {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch.svg);
   }
 
-  #choose-switch-count .illustration.two-switches {
+  #chooseSwitchCount .illustration.two-switches {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
   }
 
-  #choose-switch-count .illustration.three-switches {
+  #chooseSwitchCount .illustration.three-switches {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches.svg);
   }
 
-  #auto-scan-enabled .illustration {
+  #autoScanEnabled .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled.svg);
   }
@@ -85,37 +85,37 @@
           url(chrome://os-settings/images/computer_and_bluetooth_switch_dark.svg);
     }
 
-    #assign-switch .illustration.select {
+    #assignSwitch .illustration.select {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_select_dark.svg);
     }
 
-    #assign-switch .illustration.next {
+    #assignSwitch .illustration.next {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_next_dark.svg);
     }
 
-    #assign-switch .illustration.previous {
+    #assignSwitch .illustration.previous {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_previous_dark.svg);
     }
 
-    #choose-switch-count .illustration.one-switch {
+    #chooseSwitchCount .illustration.one-switch {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch_dark.svg);
     }
 
-    #choose-switch-count .illustration.two-switches {
+    #chooseSwitchCount .illustration.two-switches {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches_dark.svg);
     }
 
-    #choose-switch-count .illustration.three-switches {
+    #chooseSwitchCount .illustration.three-switches {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches_dark.svg);
     }
 
-    #auto-scan-enabled .illustration {
+    #autoScanEnabled .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled_dark.svg);
     }
@@ -126,7 +126,7 @@
     }
   }
 
-  #button-container {
+  #buttonContainer {
     padding: 24px;
   }
 
@@ -168,20 +168,20 @@
       </div>
       <div class="illustration"></div>
     </div>
-    <div id="assign-switch" class="flex" hidden>
+    <div id="assignSwitch" class="flex" hidden>
       <div class="sa-setup-contents"></div>
       <div class="illustration"></div>
     </div>
-    <div id="auto-scan-enabled" class="flex" hidden>
+    <div id="autoScanEnabled" class="flex" hidden>
       <div class="sa-setup-contents">
         <p>$i18n{switchAccessSetupAutoScanEnabledExplanation}</p>
         <p>$i18n{switchAccessSetupAutoScanEnabledDirections}</p>
       </div>
       <div class="illustration"></div>
     </div>
-    <div id="choose-switch-count" class="flex" hidden>
+    <div id="chooseSwitchCount" class="flex" hidden>
       <div class="sa-setup-contents">
-        <cr-radio-group id="switch-count-group" selected="one-switch"
+        <cr-radio-group id="switchCountGroup" selected="one-switch"
             on-selected-changed="onSwitchCountChanged_">
           <cr-radio-button name="one-switch" class="list-item"
               aria-label="$i18n{switchAccessSetupChoose1Switch}">
@@ -210,10 +210,10 @@
         </cr-radio-button-group>
       </div>
       <div class="illustration one-switch"
-           id="choose-switch-count-illustration">
+           id="chooseSwitchCountIllustration">
       </div>
     </div>
-    <div id="auto-scan-speed" hidden>
+    <div id="autoScanSpeed" hidden>
       <p>$i18n{switchAccessSetupAutoScanSpeedDescription}</p>
       <cr-button id="autoScanSpeedSlower" on-click="onAutoScanSpeedSlower_">
         $i18n{switchAccessSetupAutoScanSlower}
@@ -233,20 +233,20 @@
     </div>
     <div id="closing" class="flex" hidden>
       <div class="sa-setup-contents">
-        <p id="closing-instructions"></p>
+        <p id="closingInstructions"></p>
         <p>$i18n{switchAccessSetupClosingInfo}</p>
       </div>
       <div class="illustration"></div>
     </div>
   </div>
-  <div id="button-container" slot="button-container">
+  <div id="buttonContainer" slot="button-container">
     <cr-button on-click="onBluetoothClick_" id="bluetooth">
       $i18n{switchAccessSetupPairBluetooth}
     </cr-button>
     <cr-button on-click="onPreviousClick_" id="previous" hidden>
       $i18n{switchAccessSetupPrevious}
     </cr-button>
-    <cr-button on-click="onStartOverClick_" id="start-over" hidden>
+    <cr-button on-click="onStartOverClick_" id="startOver" hidden>
       $i18n{switchAccessSetupStartOver}
     </cr-button>
     <cr-button class="action-button" on-click="onExitClick_"
