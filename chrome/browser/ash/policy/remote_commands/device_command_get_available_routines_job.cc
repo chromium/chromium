@@ -77,8 +77,9 @@ void DeviceCommandGetAvailableRoutinesJob::RunImpl(
     CallbackWithResult failed_callback) {
   SYSLOG(INFO) << "Executing GetAvailableRoutines command.";
 
-  ash::cros_healthd::ServiceConnection::GetInstance()->GetAvailableRoutines(
-      base::BindOnce(
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetDiagnosticsService()
+      ->GetAvailableRoutines(base::BindOnce(
           &DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived,
           weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
           std::move(failed_callback)));

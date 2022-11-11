@@ -175,12 +175,14 @@ void DeviceCommandGetRoutineUpdateJob::RunImpl(
       << "Executing GetRoutineUpdate command with DiagnosticRoutineCommandEnum "
       << command_;
 
-  ash::cros_healthd::ServiceConnection::GetInstance()->GetRoutineUpdate(
-      routine_id_, command_, include_output_,
-      base::BindOnce(
-          &DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived,
-          weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-          std::move(failed_callback)));
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetDiagnosticsService()
+      ->GetRoutineUpdate(
+          routine_id_, command_, include_output_,
+          base::BindOnce(
+              &DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
 }
 
 void DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived(
