@@ -334,7 +334,7 @@ download::DownloadItemImpl* DownloadManagerImpl::CreateActiveItem(
     const download::DownloadCreateInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::Contains(downloads_by_guid_, info.guid))
+  if (base::Contains(downloads_, id))
     return nullptr;
 
   download::DownloadItemImpl* download =
@@ -561,14 +561,11 @@ void DownloadManagerImpl::Shutdown() {
   // dangerous downloads which will remain in history if they aren't explicitly
   // accepted or discarded. Canceling will remove the intermediate download
   // file.
-  for (const auto& it : downloads_by_guid_) {
-    download::DownloadItemImpl* download = it.second;
-    if (download != nullptr &&
-        download->GetState() == download::DownloadItem::IN_PROGRESS) {
+  for (const auto& it : downloads_) {
+    download::DownloadItemImpl* download = it.second.get();
+    if (download->GetState() == download::DownloadItem::IN_PROGRESS)
       download->Cancel(false);
-    }
   }
-
   downloads_.clear();
   downloads_by_guid_.clear();
 
@@ -775,8 +772,8 @@ void DownloadManagerImpl::StartDownload(
 
 void DownloadManagerImpl::CheckForHistoryFilesRemoval() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (const auto& it : downloads_by_guid_) {
-    download::DownloadItemImpl* item = it.second;
+  for (const auto& it : downloads_) {
+    download::DownloadItemImpl* item = it.second.get();
     CheckForFileRemoval(item);
   }
 }
@@ -801,26 +798,26 @@ void DownloadManagerImpl::CheckForFileRemoval(
 
   // Check whether an task is already queued or running for the current download
   // and skip this check if it is the case.
-  if (!pending_disk_access_query_.insert(download_item->GetGuid()).second)
+  if (!pending_disk_access_query_.insert(download_item->GetId()).second)
     return;
 
   base::PostTaskAndReplyWithResult(
       disk_access_task_runner_.get(), FROM_HERE,
       base::BindOnce(&base::PathExists, download_item->GetTargetFilePath()),
       base::BindOnce(&DownloadManagerImpl::OnFileExistenceChecked,
-                     weak_factory_.GetWeakPtr(), download_item->GetGuid()));
+                     weak_factory_.GetWeakPtr(), download_item->GetId()));
 }
 
-void DownloadManagerImpl::OnFileExistenceChecked(const std::string& guid,
+void DownloadManagerImpl::OnFileExistenceChecked(uint32_t download_id,
                                                  bool result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Remove the pending check flag for this download to allow new requests.
-  pending_disk_access_query_.erase(guid);
+  pending_disk_access_query_.erase(download_id);
 
   if (!result) {  // File does not exist.
-    auto it = downloads_by_guid_.find(guid);
-    if (it != downloads_by_guid_.end())
+    auto it = downloads_.find(download_id);
+    if (it != downloads_.end())
       it->second->OnDownloadedFileRemoved();
   }
 }
@@ -974,9 +971,9 @@ int DownloadManagerImpl::RemoveDownloadsByURLAndTime(
     base::Time remove_begin,
     base::Time remove_end) {
   int count = 0;
-  auto it = downloads_by_guid_.begin();
-  while (it != downloads_by_guid_.end()) {
-    download::DownloadItemImpl* download = it->second;
+  auto it = downloads_.begin();
+  while (it != downloads_.end()) {
+    download::DownloadItemImpl* download = it->second.get();
 
     // Increment done here to protect against invalidation below.
     ++it;
@@ -1203,7 +1200,7 @@ void DownloadManagerImpl::OnDownloadManagerInitialized() {
   for (auto& observer : observers_)
     observer.OnManagerInitialized();
   size_t size = 0;
-  for (const auto& it : downloads_by_guid_)
+  for (const auto& it : downloads_)
     size += it.second->GetApproximateMemoryUsage();
   if (!IsOffTheRecord() && size > 0)
     download::RecordDownloadManagerMemoryUsage(size);
@@ -1215,7 +1212,7 @@ bool DownloadManagerImpl::IsManagerInitialized() {
 
 int DownloadManagerImpl::InProgressCount() {
   int count = 0;
-  for (const auto& it : downloads_by_guid_) {
+  for (const auto& it : downloads_) {
     if (it.second->GetState() == download::DownloadItem::IN_PROGRESS)
       ++count;
   }
@@ -1224,7 +1221,7 @@ int DownloadManagerImpl::InProgressCount() {
 
 int DownloadManagerImpl::NonMaliciousInProgressCount() {
   int count = 0;
-  for (const auto& it : downloads_by_guid_) {
+  for (const auto& it : downloads_) {
     if (it.second->IsTransient())
       continue;
     if (it.second->GetState() == download::DownloadItem::IN_PROGRESS &&
@@ -1265,8 +1262,8 @@ download::DownloadItem* DownloadManagerImpl::GetDownloadByGuid(
 
 void DownloadManagerImpl::GetAllDownloads(
     download::SimpleDownloadManager::DownloadVector* downloads) {
-  for (const auto& it : downloads_by_guid_)
-    downloads->push_back(it.second);
+  for (const auto& it : downloads_)
+    downloads->push_back(it.second.get());
 }
 
 void DownloadManagerImpl::GetUninitializedActiveDownloadsIfAny(
@@ -1277,8 +1274,8 @@ void DownloadManagerImpl::GetUninitializedActiveDownloadsIfAny(
 
 void DownloadManagerImpl::OpenDownload(download::DownloadItemImpl* download) {
   int num_unopened = 0;
-  for (const auto& it : downloads_by_guid_) {
-    download::DownloadItemImpl* item = it.second;
+  for (const auto& it : downloads_) {
+    download::DownloadItemImpl* item = it.second.get();
     if ((item->GetState() == download::DownloadItem::COMPLETE) &&
         !item->GetOpened())
       ++num_unopened;
