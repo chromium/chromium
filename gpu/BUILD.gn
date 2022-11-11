@@ -421,10 +421,7 @@ test("gl_tests") {
     ]
   } else if (is_mac) {
     frameworks = [ "IOSurface.framework" ]
-    sources += [
-      "command_buffer/service/shared_image/gl_image_backing_factory_unittest.cc",
-      "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc",
-    ]
+    sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
     deps += [
       "//ui/platform_window",
