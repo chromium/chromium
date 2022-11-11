@@ -2033,7 +2033,7 @@ BASE_FEATURE(kUseAuthFactors,
 // instead of legacy CheckKey.
 BASE_FEATURE(kUseAuthsessionForWebAuthN,
              "UseAuthsessionForWebAuthN",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
