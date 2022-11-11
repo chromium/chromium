@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -275,6 +276,16 @@ public class DistilledPagePrefsView extends LinearLayout
         // progress = [0, 30]
         int progress = (int) Math.round((newValue - .5) * 20);
         mFontScaleSeekBar.setProgress(progress);
+
+        // On Android R+, use stateDescription so the only percentage announced to the user is
+        // the scaling percent. For previous versions the SeekBar percentage is always announced.
+        String userFriendlyFontDescription = getContext().getResources().getString(
+                R.string.font_size_accessibility_label, mPercentageFormatter.format(newValue));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            mFontScaleSeekBar.setStateDescription(userFriendlyFontDescription);
+        } else {
+            mFontScaleSeekBar.setContentDescription(userFriendlyFontDescription);
+        }
     }
 
     /**

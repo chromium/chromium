@@ -912,6 +912,9 @@
       <message name="IDS_FONT_SIZE" desc="Title for font size preference.">
         Text scaling
       </message>
+      <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
+        Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
+      </message>
       <message name="IDS_FONT_SIZE_PREVIEW_TEXT" desc="Preview text for font-size slider.">
         Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.
       </message>
