@@ -37,6 +37,10 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardAutocorrectAccentKey",
   "inputs.PhysicalKeyboardKoreanTyping",
 
+  # b/258714568
+  "inputs.InputMethodManagement.guest",
+  "inputs.PhysicalKeyboardEmojiSuggestion.guest",
+
   # b/251833060
   "peripherals.LaunchAppFromGuestSession.diagnostics",
 
