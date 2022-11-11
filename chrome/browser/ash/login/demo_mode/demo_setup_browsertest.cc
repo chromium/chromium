@@ -333,6 +333,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::OobeJS().ExpectVisiblePath(kCCAcceptButton);
   }
 
+  // Type in valid input and the "continue" button is enabled.
   void ContinueForValidRetailerAndStoreId(
       const std::string& expected_retailer_store_id) {
     test::OobeJS().TypeIntoPath(expected_retailer_store_id,
@@ -349,20 +350,16 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
                                               ->get_retailer_store_id_input());
   }
 
-  void ContinueForInvalidRetailerAndStoreId(
+  // Type in invalid input and the "continue" button is disabled.
+  void DisableContinueButtonForInvalidRetailerAndStoreId(
       const std::string& expected_retailer_store_id) {
     test::OobeJS().TypeIntoPath(expected_retailer_store_id,
                                 kDemoPreferencesRetailerStoreId);
-    test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
+    test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
     test::OobeJS().ExpectElementText(
         l10n_util::GetStringUTF8(
             IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT),
         kDemoPreferencesRetailerStoreIdInputDisplayMessage);
-    test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-    EXPECT_EQ(expected_retailer_store_id, WizardController::default_controller()
-                                              ->demo_setup_controller()
-                                              ->get_retailer_store_id_input());
   }
 
   void AcceptArcTos() {
@@ -645,6 +642,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupValidRetailerAndStoreIdTest,
 
   UseOnlineModeOnNetworkScreen();
 
+  DisableContinueButtonForInvalidRetailerAndStoreId("ABC-12345");
+
+  // Clear the input, the "continue" button is enabled.
   ContinueForValidRetailerAndStoreId("");
 
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
@@ -679,6 +679,9 @@ IN_PROC_BROWSER_TEST_F(
 
   UseOnlineModeOnNetworkScreen();
 
+  DisableContinueButtonForInvalidRetailerAndStoreId("AB-1235");
+
+  // Type in the valid input, the "continue" button is enabled.
   ContinueForValidRetailerAndStoreId("BBY-1234");
 
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
@@ -721,11 +724,9 @@ INSTANTIATE_TEST_SUITE_P(
         ));
 
 IN_PROC_BROWSER_TEST_P(DemoSetupInvalidRetailerAndStoreIdTest,
-                       OnlineSetupFlowSuccessWithInvalidRetailerAndStoreId) {
-  // Simulate successful online setup.
-  enrollment_helper_.ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_ATTESTATION);
-  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+                       OnlineSetupNoEnrollmentWithInvalidRetailerAndStoreId) {
+  // Simulate demo online setup not finished.
+  enrollment_helper_.ExpectNoEnrollment();
   SimulateNetworkConnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -737,19 +738,12 @@ IN_PROC_BROWSER_TEST_P(DemoSetupInvalidRetailerAndStoreIdTest,
       l10n_util::GetStringUTF8(
           IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_HELP_TEXT),
       kDemoPreferencesRetailerStoreIdInputDisplayMessage);
+  test::OobeJS().ExpectEnabledPath(kDemoPreferencesNext);
 
-  ContinueForInvalidRetailerAndStoreId(GetParam());
+  DisableContinueButtonForInvalidRetailerAndStoreId(GetParam());
 
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  AcceptTermsAndExpectDemoSetupProgress();
-
-  // LoginOrLockScreen is shown at beginning of OOBE, so we need to wait until
-  // it's shown again when Demo setup completes.
-  LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
-
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
