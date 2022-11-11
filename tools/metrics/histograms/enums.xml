@@ -34768,7 +34768,6 @@ Called by update_extension_histograms.py.-->
   <int value="496" label="INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED"/>
   <int value="497" label="PASSWORDS_PRIVATE_ON_PASSWORD_MANAGER_AUTH_TIMEOUT"/>
   <int value="498" label="PASSWORDS_PRIVATE_ON_INSECURE_CREDENTIALS_CHANGED"/>
-  <int value="499" label="VIRTUAL_KEYBOARD_PRIVATE_ON_COLOR_PROVIDER_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
