@@ -85,6 +85,11 @@ extern const char kNativeMessagingUserLevelHosts[];
 // Time of the next scheduled extensions auto-update checks.
 extern const char kNextUpdateCheck[];
 
+// An integer indicates the availability of manifest v2 extensions. The value is
+// controlled by the ExtensionManifestV2Availability policy. More details can
+// be found at ExtensionManifestV2Availability.yaml.
+extern const char kManifestV2Availability[];
+
 // A preference that tracks extensions pinned to the toolbar. This is a list
 // object stored in the Preferences file. The extensions are stored by ID.
 extern const char kPinnedExtensions[];

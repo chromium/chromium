@@ -1028,6 +1028,7 @@ policies:
   1027: LensDesktopNTPSearchEnabled
   1028: AccessControlAllowMethodsInCORSPreflightSpecConformant
   1029: AllowWebAuthnWithBrokenTlsCerts
+  1030: ExtensionManifestV2Availability
 atomic_groups:
   1: Homepage
   2: RemoteAccess

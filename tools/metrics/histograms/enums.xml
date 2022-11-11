@@ -33422,6 +33422,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1028"
       label="AccessControlAllowMethodsInCORSPreflightSpecConformant"/>
   <int value="1029" label="AllowWebAuthnWithBrokenTlsCerts"/>
+  <int value="1030" label="ExtensionManifestV2Availability"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
