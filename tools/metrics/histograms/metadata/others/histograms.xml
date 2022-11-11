@@ -6309,6 +6309,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.GetFeedbackLogsV2.DBusResult"
+    enum="GetFeedbackLogsV2DbusResult" expires_after="2023-10-30">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the different results of fetching the feedback logs via debus method
+    GetFeedbackLogsV2. Fires during the process of sending a feedback report on
+    Chrome OS, or when the user previews the system logs from the feedback app
+    on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.HelpContentOutcome"
     enum="FeedbackAppHelpContentOutcome" expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

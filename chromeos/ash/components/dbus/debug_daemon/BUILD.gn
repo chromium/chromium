@@ -24,5 +24,7 @@ component("debug_daemon") {
     "debug_daemon_client_provider.h",
     "fake_debug_daemon_client.cc",
     "fake_debug_daemon_client.h",
+    "metrics.cc",
+    "metrics.h",
   ]
 }

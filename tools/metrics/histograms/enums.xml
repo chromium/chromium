@@ -47807,6 +47807,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Error adding a new key"/>
 </enum>
 
+<enum name="GetFeedbackLogsV2DbusResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorNoReply"/>
+  <int value="2" label="kErrorTimeout"/>
+  <int value="3" label="kErrorServiceUnknown"/>
+  <int value="4" label="kErrorNotSupported"/>
+  <int value="5" label="kErrorDisconnected"/>
+  <int value="6" label="kErrorResponseMissing"/>
+  <int value="7" label="kErrorGeneric"/>
+  <int value="8" label="kErrorReadingData"/>
+  <int value="9" label="kErrorDeserializingJSonLogs"/>
+</enum>
+
 <enum name="GetOriginIdResult">
   <int value="0" label="Success with pre-provisioned origin ID"/>
   <int value="1" label="Success with newly provisioned origin ID"/>
