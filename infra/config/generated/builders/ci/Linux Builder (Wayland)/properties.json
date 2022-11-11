@@ -82,10 +82,6 @@
           "group": "tryserver.chromium.linux"
         },
         {
-          "builder": "linux-wayland-rel-inverse-fyi",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-wayland-rel-orchestrator",
           "group": "tryserver.chromium.linux"
         }
@@ -107,6 +103,6 @@
   "builder_group": "chromium.linux",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

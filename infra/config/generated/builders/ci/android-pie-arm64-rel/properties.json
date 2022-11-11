@@ -46,10 +46,6 @@
         {
           "builder": "android-pie-arm64-rel",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-pie-arm64-rel-inverse-fyi",
-          "group": "tryserver.chromium.android"
         }
       ]
     }
@@ -69,6 +65,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }
