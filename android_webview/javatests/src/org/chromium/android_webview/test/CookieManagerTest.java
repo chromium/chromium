@@ -4,6 +4,10 @@
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -31,6 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -52,6 +57,7 @@ import java.util.TimeZone;
 /**
  * Tests for the CookieManager.
  */
+@DoNotBatch(reason = "The cookie manager is global state")
 @RunWith(AwJUnit4ClassRunner.class)
 public class CookieManagerTest {
     @Rule
@@ -1242,6 +1248,49 @@ public class CookieManagerTest {
         mAwContents.getSettings().setAllowFileAccess(true);
         mAwContents.getSettings().setAcceptThirdPartyCookies(false);
         Assert.assertTrue(fileURLCanSetCookie("7", ";SameSite=Lax"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testFileSchemeCookies_treatedAsSameSite() throws Throwable {
+        mCookieManager.setAcceptFileSchemeCookies(true);
+        mCookieManager.setCookie("file:///android_asset/first_url.html", "testCookie=value");
+        String cookie = mCookieManager.getCookie("file:///android_asset/second_url.html");
+        assertThat(cookie, containsString("testCookie"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testFileSchemeCookies_canBeAccessedFromChildPath() throws Throwable {
+        mCookieManager.setAcceptFileSchemeCookies(true);
+        mCookieManager.setCookie("file:///android_asset/first_url.html",
+                "testCookie=value;path=file:///android_asset/");
+        String cookie = mCookieManager.getCookie("file:///android_asset/child/second_url.html");
+        assertThat(cookie, containsString("testCookie"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testFileSchemeCookies_cannotBeAccessedFromParentPath() throws Throwable {
+        mCookieManager.setAcceptFileSchemeCookies(true);
+        mCookieManager.setCookie("file:///android_asset/child/first_url.html",
+                "testCookie=value;path=file:///android_asset/child/");
+        String cookie = mCookieManager.getCookie("file:///android_asset/second_url.html");
+        assertThat(cookie, not(containsString("testCookie")));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "Privacy"})
+    public void testFileSchemeCookies_cannotBeAccessedFromDifferentPath() throws Throwable {
+        mCookieManager.setAcceptFileSchemeCookies(true);
+        mCookieManager.setCookie("file:///android_asset/first/first_url.html",
+                "testCookie=value;path=file:///android_asset/first/");
+        String cookie = mCookieManager.getCookie("file:///android_asset/second/second_url.html");
+        assertThat(cookie, not(containsString("testCookie")));
     }
 
     private boolean fileURLCanSetCookie(String valueSuffix, String settings) throws Throwable {
