@@ -24,6 +24,7 @@
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
 #include "chrome/browser/usb/web_usb_histograms.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -66,7 +67,6 @@ namespace {
 using ::base::test::TestFuture;
 using ::testing::Return;
 
-constexpr char kIsolatedWebAppHost[] = "app.com";
 constexpr char kNonAppHost[] = "nonapp.com";
 constexpr char kNonAppHost2[] = "nonapp2.com";
 constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
@@ -567,15 +567,6 @@ class IsolatedWebAppUsbBrowserTest
   IsolatedWebAppUsbBrowserTest() = default;
   ~IsolatedWebAppUsbBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
-    command_line->AppendSwitchASCII(
-        switches::kIsolatedAppOrigins,
-        std::string("https://") + kIsolatedWebAppHost);
-  }
-
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
 
@@ -592,15 +583,19 @@ class IsolatedWebAppUsbBrowserTest
 
  private:
   device::FakeUsbDeviceManager device_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebApps};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
   auto* non_app_frame = ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/banners/isolated/simple.html"));
 
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
-  auto* app_frame = OpenApp(app_id);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   auto fake_device_info = CreateSmartCardDevice();
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
@@ -648,18 +643,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a same-origin iframe on the page that does not specify an
   // allow attribute, and expect that usb is accessible on the main frame, as
   // well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/simple.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
-
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
-  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   const std::string permissions_policy = "";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -671,6 +662,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 
   // Create a cross-origin iframe and expect usb to be disabled in that context
   // since it does not specify usb in the allowlist.
+  GURL non_app_url =
+      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
   CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
@@ -684,19 +677,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a same-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'self', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedWebAppHost);
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/simple.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
-
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
-  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   const std::string permissions_policy = "usb 'self'";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -710,6 +698,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // Perform a cross-origin navigation in the iframe, which should no longer
   // match the 'self' permissions policy token, and verify the permissions
   // policy blocks access to usb.
+  GURL non_app_url =
+      https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
   EXPECT_TRUE(content::NavigateToURLFromRenderer(iframe, non_app_url));
   iframe = ChildFrameAt(app_frame, 0);
 
@@ -723,19 +713,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'src', and expect that usb is accessible on the
   // main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  const url::Origin app_origin = https_server()->GetOrigin(kIsolatedWebAppHost);
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
-  GURL non_app_url_2 =
-      https_server()->GetURL(kNonAppHost2, "/banners/isolated/simple.html");
-
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
-  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   const std::string permissions_policy = "usb 'src'";
   CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
@@ -752,6 +737,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // origin from that which the iframe originally loaded, as well as the main
   // frame), which should no longer match the 'src' permissions policy token,
   // and verify the permissions policy blocks access to usb.
+  GURL non_app_url_2 =
+      https_server()->GetURL(kNonAppHost2, "/banners/isolated/simple.html");
   EXPECT_TRUE(content::NavigateToURLFromRenderer(iframe, non_app_url_2));
   iframe = ChildFrameAt(app_frame, 0);
 
@@ -766,16 +753,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // attribute allowing usb with the 'none' token, and expect that usb is
   // accessible on the main frame, but is blocked by permissions policy in the
   // iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/simple.html");
-
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
-  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   const std::string permissions_policy = "usb 'none'";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -795,16 +780,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // attribute allowing usb for the iframe by explicitly listing the iframe
   // origin in the allowlist, and expect that usb is accessible on the main
   // frame as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/simple.html");
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
-
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
-  app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   const std::string permissions_policy = base::StringPrintf(
       "usb %s", https_server()->GetURL(kNonAppHost, "/").spec().c_str());
   CreateIframe(app_frame, "child", non_app_url, permissions_policy);
@@ -826,16 +809,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // Create a same-origin iframe on the page that does not specify an allow
   // attribute, and expect that usb is not accessible on the main frame or in
   // the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/usb-none.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-none.html");
-
-  auto* app_frame = OpenApp(app_id);
+  GURL app_url = url_info.origin().GetURL().Resolve("/usb_none.html");
   auto* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
+
   const std::string permissions_policy = "";
   CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
@@ -850,6 +833,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 
   // Create a cross-origin iframe and expect usb to be disabled in that context.
+  GURL non_app_url = https_server()->GetURL(
+      kNonAppHost, "/web_apps/simple_isolated_app/usb_none.html");
   CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
@@ -865,16 +850,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // same-origin iframe on the page that does not specify an allow attribute,
   // and expect that usb is accessible on the main frame, as well as in the
   // iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/usb-self.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-self.html");
-
-  auto* app_frame = OpenApp(app_id);
+  GURL app_url = url_info.origin().GetURL().Resolve("/usb_self.html");
   auto* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
+
   const std::string permissions_policy = "";
   CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
@@ -887,6 +872,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
 
   // Create a cross-origin iframe and expect usb to be disabled in that context.
+  GURL non_app_url = https_server()->GetURL(
+      kNonAppHost, "/web_apps/simple_isolated_app/usb_self.html");
   CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
@@ -901,16 +888,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // header which allows usb on any origin. Create a same-origin iframe on the
   // page that does not specify an allow attribute, and expect that usb is
   // accessible on the main frame, as well as in the iframe.
-  web_app::AppId app_id = InstallIsolatedWebApp(kIsolatedWebAppHost);
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  GURL app_url = https_server()->GetURL(kIsolatedWebAppHost,
-                                        "/banners/isolated/usb-all.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/usb-all.html");
-
-  auto* app_frame = OpenApp(app_id);
+  GURL app_url = url_info.origin().GetURL().Resolve("/usb_all.html");
   auto* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
+
   const std::string permissions_policy = "";
   CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
@@ -924,6 +911,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 
   // Create a cross-origin iframe with "usb" in the allow attribute and expect
   // usb to be enabled in that context.
+  GURL non_app_url = https_server()->GetURL(
+      kNonAppHost, "/web_apps/simple_isolated_app/usb_all.html");
   CreateIframe(app_frame, "child2", non_app_url, "usb");
   iframe = ChildFrameAt(app_frame, 1);
 
