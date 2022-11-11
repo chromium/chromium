@@ -25,14 +25,6 @@ const int kAuthFailSleepMs = 100;
 // Log a warning after failing to authenticate for this many milliseconds.
 const int kLogAuthFailDelayMs = 1000;
 
-bool Authenticate(int fd) {
-  drm_magic_t magic;
-  memset(&magic, 0, sizeof(magic));
-  // We need to make sure the DRM device has enough privilege. Use the DRM
-  // authentication logic to figure out if the device has enough permissions.
-  return !drmGetMagic(fd, &magic) && !drmAuthMagic(fd, magic);
-}
-
 }  // namespace
 
 DrmDeviceHandle::DrmDeviceHandle() {
@@ -56,7 +48,6 @@ bool DrmDeviceHandle::Initialize(const base::FilePath& dev_path,
                                                 base::BlockingType::MAY_BLOCK);
 
   int num_auth_attempts = 0;
-  bool logged_warning = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   while (true) {
     file_.reset();
@@ -70,26 +61,40 @@ bool DrmDeviceHandle::Initialize(const base::FilePath& dev_path,
     sys_path_ = sys_path;
 
     num_auth_attempts++;
-    if (Authenticate(file_.get())) {
-      struct drm_set_client_cap cap = {DRM_CLIENT_CAP_ATOMIC, 1};
-      has_atomic_capabilities_ =
-          !drmIoctl(file_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
-
-      cap = {DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1};
-      drmIoctl(file_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
-      break;
-    }
-
     // To avoid spamming the logs, hold off before logging a warning (some
-    // failures are expected at first) and only log a single message.
-    if (!logged_warning &&
+    // failures are expected at first).
+    const bool should_log_error =
         (base::TimeTicks::Now() - start_time).InMilliseconds() >=
-            kLogAuthFailDelayMs) {
-      LOG(WARNING) << "Failed to authenticate " << dev_path.value()
-                   << " within " << kLogAuthFailDelayMs << " ms";
-      logged_warning = true;
+        kLogAuthFailDelayMs;
+    drm_magic_t magic;
+    memset(&magic, 0, sizeof(magic));
+    // We need to make sure the DRM device has enough privilege. Use the DRM
+    // authentication logic to figure out if the device has enough permissions.
+    int drm_errno = drmGetMagic(fd, &magic);
+    if (drm_errno) {
+      LOG_IF(ERROR, should_log_error)
+          << "Failed to get magic cookie to authenticate: " << dev_path.value()
+          << " with errno: " << drm_errno << " after " << num_auth_attempts
+          << " attempt(s)";
+      usleep(kAuthFailSleepMs * 1000);
+      continue;
     }
-    usleep(kAuthFailSleepMs * 1000);
+    drm_errno = drmAuthMagic(fd, magic);
+    if (drm_errno) {
+      LOG_IF(ERROR, should_log_error)
+          << "Failed to authenticate: " << dev_path.value()
+          << " with errno: " << drm_errno << " after " << num_auth_attempts
+          << " attempt(s)";
+      usleep(kAuthFailSleepMs * 1000);
+      continue;
+    }
+    struct drm_set_client_cap cap = {DRM_CLIENT_CAP_ATOMIC, 1};
+    has_atomic_capabilities_ =
+        !drmIoctl(file_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
+
+    cap = {DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1};
+    drmIoctl(file_.get(), DRM_IOCTL_SET_CLIENT_CAP, &cap);
+    break;
   }
 
   VLOG(1) << "Succeeded authenticating " << dev_path.value() << " in "
