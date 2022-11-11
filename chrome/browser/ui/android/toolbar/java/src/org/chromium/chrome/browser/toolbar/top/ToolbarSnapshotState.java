@@ -62,9 +62,9 @@ public class ToolbarSnapshotState {
     private final int mTabCount;
     private final ButtonData mOptionalButtonData;
     private final @VisualState int mVisualState;
-    private String mUrlText = "";
+    private final String mUrlText;
     @Nullable
-    private CharSequence mVisibleTextPrefixHint;
+    private final CharSequence mVisibleTextPrefixHint;
     private final @DrawableRes int mSecurityIcon;
     private final ColorStateList mColorStateList;
     private final boolean mIsShowingUpdateBadgeDuringLastCapture;
