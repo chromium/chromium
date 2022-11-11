@@ -625,8 +625,30 @@ inline constexpr char16_t kUrlSearchActionRe[] =
 /////////////////////////////////////////////////////////////////////////////
 inline constexpr char16_t kSocialSecurityRe[] =
     u"ssn|social.?security.?(num(ber)?|#)*";
+// TODO(crbug.com/1382805): Remove it once the new regex launched.
 inline constexpr char16_t kOneTimePwdRe[] =
     u"one.?time|sms.?(code|token|password|pwd|pass)";
+inline constexpr char16_t kNewOneTimePwdRe[] =
+    // "One time" is good signal that it is an OTP field.
+    u"one.?time|"
+    // The main tokens are good signals, but they are short, require word
+    // boundaries around them.
+    u"(\\b|_)(otp|otc|totp|sms|2fa|mfa)(\\b|_)|"
+    // Alternatively, require companion tokens before or after the main tokens.
+    u"(otp|otc|totp|sms|2fa|mfa).?(code|token|input|value|pin|login|verif|pass|"
+    u"pwd|psw|auth|field)|"
+    u"(verif(y|ication)?|email|phone|text|login|input|txt|user).?(otp|otc|totp|"
+    u"sms|2fa|mfa)|"
+    // Sometimes the main tokens are combined with each other.
+    u"sms.?otp|mfa.?otp|"
+    // "code" is not so strong signal as the main tokens, but in combination
+    // with "verification" and its variations it is.
+    u"verif(y|ication)?.?code|(\\b|_)vcode|"
+    // 'Second factor' and its variations are good signals.
+    u"(second|two|2).?factor|"
+    // A couple of custom strings that are usually OTP fields.
+    u"wfls-token|email_code";
+
 // Matches strings that consist of one repeated non alphanumeric symbol,
 // that is likely a result of website modifying the value to hide it.
 inline constexpr char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
