@@ -56,9 +56,10 @@ std::string PredictionResultToString(
   std::ostringstream time_string;
   time_string << time;
   const float kInvalidScore = -1;
+  // TODO(ritikagup) : Make changes to print all the values in result.
   return base::StringPrintf(
       "result: %f, time: %s, rank: %f",
-      prediction_result.has_result() ? prediction_result.result() : 0,
+      prediction_result.result_size() > 0 ? prediction_result.result()[0] : 0,
       time_string.str().c_str(), segment_rank ? *segment_rank : kInvalidScore);
 }
 

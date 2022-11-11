@@ -168,7 +168,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     segment_info->set_model_update_time_s(
         model_update_time.ToDeltaSinceWindowsEpoch().InSeconds());
     auto* prediction_result = segment_info->mutable_prediction_result();
-    prediction_result->set_result(0.6);
+    prediction_result->add_result(0.6);
     return segment_info;
   }
 

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using InitStatus = leveldb_proto::Enums::InitStatus;
@@ -32,7 +33,7 @@ proto::SegmentInfo CreateSegment(SegmentId segment_id,
   info.set_segment_id(segment_id);
 
   if (result.has_value()) {
-    info.mutable_prediction_result()->set_result(result.value());
+    info.mutable_prediction_result()->add_result(result.value());
   }
   return info;
 }
@@ -85,7 +86,7 @@ class SegmentInfoDatabaseTest : public testing::Test,
   void WriteResult(SegmentId segment_id, absl::optional<float> result) {
     proto::PredictionResult prediction_result;
     if (result.has_value())
-      prediction_result.set_result(result.value());
+      prediction_result.add_result(result.value());
 
     segment_db_->SaveSegmentResult(segment_id,
                                    result.has_value()
@@ -111,8 +112,8 @@ class SegmentInfoDatabaseTest : public testing::Test,
     EXPECT_EQ(segment_id, get_segment_result_->segment_id());
     EXPECT_EQ(result.has_value(), get_segment_result_->has_prediction_result());
     if (result.has_value()) {
-      EXPECT_EQ(result.value(),
-                get_segment_result_->prediction_result().result());
+      EXPECT_THAT(get_segment_result_->prediction_result().result(),
+                  testing::ElementsAre(result.value()));
     }
   }
 

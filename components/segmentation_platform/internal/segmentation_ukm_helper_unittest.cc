@@ -47,7 +47,7 @@ void CompareEncodeDecodeDifference(float tensor) {
 
 absl::optional<proto::PredictionResult> GetPredictionResult() {
   proto::PredictionResult result;
-  result.set_result(0.5);
+  result.add_result(0.5);
   return result;
 }
 

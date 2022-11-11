@@ -13,7 +13,7 @@ import "components/segmentation_platform/public/proto/segmentation_platform.prot
 // Result from the model evaluation for a given segment.
 message PredictionResult {
   // The result is the confidence rating from the model evaluation.
-  optional float result = 1;
+  repeated float result = 1;
 
   // The time when the prediction was made, in terms of the number of
   // microseconds since Windows epoch.
@@ -56,4 +56,15 @@ message SegmentInfo {
 
   // Model source indicating if model is a client model or a server model.
   optional ModelSource model_source = 6;
+}
+
+// Used to test that the model evaluation score for given segment supports the
+// new PredictionResult proto.
+message LegacyPredictionResultForTesting {
+  // The result is the confidence rating from the model evaluation.
+  optional float result = 1;
+
+  // The time when the prediction was made, in terms of the number of
+  // microseconds since Windows epoch.
+  optional int64 timestamp_us = 2;
 }

@@ -74,9 +74,7 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
   if (!result.has_value()) {
     info->clear_prediction_result();
   } else {
-    auto* mutable_result = info->mutable_prediction_result();
-    mutable_result->set_result(result->result());
-    mutable_result->set_timestamp_us(result->timestamp_us());
+    info->mutable_prediction_result()->Swap(&result.value());
   }
   std::move(callback).Run(true);
 }
@@ -154,7 +152,8 @@ void TestSegmentInfoDatabase::AddPredictionResult(SegmentId segment_id,
                                                   base::Time timestamp) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   proto::PredictionResult* result = info->mutable_prediction_result();
-  result->set_result(score);
+  result->clear_result();
+  result->add_result(score);
   result->set_timestamp_us(
       timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }

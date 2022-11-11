@@ -25,11 +25,11 @@ namespace {
 float ComputeDiscreteMapping(const std::string& discrete_mapping_key,
                              const proto::SegmentInfo& segment_info) {
   float rank = metadata_utils::ConvertToDiscreteScore(
-      discrete_mapping_key, segment_info.prediction_result().result(),
+      discrete_mapping_key, segment_info.prediction_result().result()[0],
       segment_info.model_metadata());
   VLOG(1) << __func__
           << ": segment=" << SegmentId_Name(segment_info.segment_id())
-          << ": result=" << segment_info.prediction_result().result()
+          << ": result=" << segment_info.prediction_result().result()[0]
           << ", rank=" << rank;
 
   return rank;
@@ -227,10 +227,10 @@ void SegmentResultProviderImpl::GetCachedModelScore(
 
   float rank = ComputeDiscreteMapping(
       request_state->options->discrete_mapping_key, *db_segment_info);
+  const auto& output = db_segment_info->prediction_result().result();
   auto execution_result = std::make_unique<ModelExecutionResult>(
       ModelProvider::Request(),
-      ModelProvider::Response(1,
-                              db_segment_info->prediction_result().result()));
+      ModelProvider::Response(output.begin(), output.end()));
   std::move(callback).Run(
       std::move(request_state),
       std::make_unique<SegmentResult>(ResultState::kSuccessFromDatabase, rank,
@@ -310,8 +310,9 @@ void SegmentResultProviderImpl::OnModelExecuted(
   auto* segment_info =
       FilterSegmentInfoBySource(request_state->available_segments, source);
   if (result->status == ModelExecutionStatus::kSuccess) {
-    // TODO(ritikagup): Change as per MultiOutputModel.
-    segment_info->mutable_prediction_result()->set_result(result->scores[0]);
+    segment_info->mutable_prediction_result()->clear_result();
+    segment_info->mutable_prediction_result()->mutable_result()->Add(
+        result->scores.begin(), result->scores.end());
     float rank = ComputeDiscreteMapping(
         request_state->options->discrete_mapping_key, *segment_info);
     ResultState state =

@@ -55,9 +55,10 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
       const proto::SegmentInfo& info = pair.second;
       if (!info.has_prediction_result())
         continue;
-      // TODO(ritikagup): Change as per use for MultiOutputModel.
+
+      const auto& scores = info.prediction_result().result();
       scores_last_session_.emplace(
-          id, ModelProvider::Response(1, info.prediction_result().result()));
+          id, ModelProvider::Response(scores.begin(), scores.end()));
     }
 
     initialized_ = true;

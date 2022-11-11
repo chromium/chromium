@@ -113,7 +113,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
   // If we just got a new result, we SHOULD NOT try to execute the model.
   auto* prediction_result = segment_info->mutable_prediction_result();
-  prediction_result->set_result(0.9);
+  prediction_result->add_result(0.9);
   prediction_result->set_timestamp_us(
       clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
@@ -125,7 +125,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   // execute the model.
   base::Time not_expired_timestamp =
       clock_.Now() - base::Days(1) + base::Hours(1);
-  prediction_result->set_result(0.9);
+  prediction_result->add_result(0.9);
   prediction_result->set_timestamp_us(
       not_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
@@ -134,7 +134,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   // If we have an expired result, we SHOULD try to execute the model.
   base::Time just_expired_timestamp =
       clock_.Now() - base::Days(1) - base::Hours(1);
-  prediction_result->set_result(0.9);
+  prediction_result->add_result(0.9);
   prediction_result->set_timestamp_us(
       just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_CALL(model_execution_manager_, GetProvider(kTestSegmentId))
@@ -182,7 +182,8 @@ TEST_F(ModelExecutionSchedulerTest, OnModelExecutionCompleted) {
   // Verify that the results are written to the DB.
   segment_info = segment_database_->FindOrCreateSegment(kTestSegmentId);
   ASSERT_TRUE(segment_info->has_prediction_result());
-  ASSERT_EQ(score, segment_info->prediction_result().result());
+  EXPECT_THAT(segment_info->prediction_result().result(),
+              testing::ElementsAre(score));
 }
 
 }  // namespace segmentation_platform

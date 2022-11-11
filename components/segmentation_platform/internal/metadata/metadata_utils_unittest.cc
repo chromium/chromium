@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -60,6 +61,30 @@ TEST_F(MetadataUtilsTest, SegmentInfoValidation) {
   segment_info.set_model_source(proto::ModelSource::DEFAULT_MODEL_SOURCE);
   EXPECT_EQ(proto::ModelSource::DEFAULT_MODEL_SOURCE,
             segment_info.model_source());
+}
+
+TEST_F(MetadataUtilsTest, ValidatingPredictionResultOptionalVsRepeated) {
+  proto::SegmentInfo segment_info;
+  // PredictionResult with repeated float result.
+  proto::PredictionResult result;
+
+  // Serialised string for optional float result = 0.8.
+  proto::LegacyPredictionResultForTesting legacy_result;
+  legacy_result.set_result(0.8);
+  std::string serialised_result_without_repeated =
+      legacy_result.SerializeAsString();
+
+  // Serialised string for repeated float result = {0.8}
+  segment_info.mutable_prediction_result()->add_result(0.8);
+  std::string serialised_result_with_repeated =
+      segment_info.prediction_result().SerializeAsString();
+
+  EXPECT_EQ(serialised_result_without_repeated,
+            serialised_result_with_repeated);
+
+  // Deserialising the serialised string back.
+  result.ParseFromString(serialised_result_without_repeated);
+  EXPECT_THAT(result.result(), testing::ElementsAre(0.8f));
 }
 
 TEST_F(MetadataUtilsTest, DefaultMetadataIsInvalid) {

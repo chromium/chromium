@@ -222,7 +222,7 @@ TEST_F(UkmDataManagerImplTest, HistoryNotification) {
   TestServicesForPlatform& platform1 = CreatePlatform();
   platform1.AddModel(PageLoadModelMetadata());
   proto::PredictionResult prediction_result;
-  prediction_result.set_result(10);
+  prediction_result.add_result(10);
   prediction_result.set_timestamp_us(1000);
   platform1.SaveSegmentResult(kSegmentId, prediction_result);
   EXPECT_TRUE(platform1.HasSegmentResult(kSegmentId));

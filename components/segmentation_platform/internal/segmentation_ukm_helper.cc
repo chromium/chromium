@@ -144,9 +144,10 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     return ukm::kInvalidSourceId;
   }
 
-  if (prediction_result.has_value()) {
+  if (prediction_result.has_value() && prediction_result->result_size() > 0) {
+    // TODO(ritikagup): Add support for uploading multiple outputs.
     execution_result.SetPredictionResult(
-        FloatToInt64(prediction_result->result()));
+        FloatToInt64(prediction_result->result()[0]));
   }
   if (selected_segment.has_value()) {
     execution_result.SetSelectionResult(selected_segment->segment_id);

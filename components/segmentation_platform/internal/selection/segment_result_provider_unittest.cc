@@ -141,7 +141,7 @@ class SegmentResultProviderTest : public testing::Test {
     absl::optional<proto::PredictionResult> result;
     if (score) {
       result = proto::PredictionResult();
-      result->set_result(*score);
+      result->add_result(*score);
     }
     base::RunLoop wait_for_save;
     segment_database_->SetBucketDuration(segment, 1, proto::TimeUnit::DAY);

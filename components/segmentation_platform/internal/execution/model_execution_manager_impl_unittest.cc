@@ -206,10 +206,13 @@ TEST_F(ModelExecutionManagerTest,
   segment_database_->GetSegmentInfo(segment_id, db_callback_1.Get());
   EXPECT_TRUE(segment_info_from_db_1.has_value());
   EXPECT_EQ(segment_id, segment_info_from_db_1->segment_id());
+
   // Verify the old metadata and prediction result has been stored correctly.
   EXPECT_EQ(456u, segment_info_from_db_1->model_metadata().bucket_duration());
-  EXPECT_EQ(2, segment_info_from_db_1->prediction_result().result());
+  EXPECT_THAT(segment_info_from_db_1->prediction_result().result(),
+              testing::ElementsAre(2));
   EXPECT_FALSE(segment_info_from_db_1->has_model_source());
+
   // Verify the metadata features have been stored correctly.
   EXPECT_EQ(proto::SignalType::USER_ACTION,
             segment_info_from_db_1->model_metadata()
@@ -258,7 +261,8 @@ TEST_F(ModelExecutionManagerTest,
             segment_info.model_metadata().features(0).name_hash());
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info.model_metadata().features(0).aggregation());
-  EXPECT_EQ(2, segment_info.prediction_result().result());
+  EXPECT_THAT(segment_info.prediction_result().result(),
+              testing::ElementsAre(2));
   EXPECT_EQ(clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds(),
             segment_info.prediction_result().timestamp_us());
 
@@ -285,7 +289,8 @@ TEST_F(ModelExecutionManagerTest,
   EXPECT_EQ(proto::Aggregation::BUCKETED_SUM,
             segment_info_from_db_2->model_metadata().features(0).aggregation());
   // We shuold have kept the prediction result.
-  EXPECT_EQ(2, segment_info_from_db_2->prediction_result().result());
+  EXPECT_THAT(segment_info.prediction_result().result(),
+              testing::ElementsAre(2));
 }
 
 }  // namespace segmentation_platform
