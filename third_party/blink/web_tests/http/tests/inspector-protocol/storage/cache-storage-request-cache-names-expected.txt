@@ -1,0 +1,16 @@
+Tests that requesting cache names for origin works correctly
+
+Open cache, add item
+cache item added successfully
+
+Request cache names for origin
+[
+    [0] : {
+        cacheId : http://127.0.0.1:8000/|test-cache
+        cacheName : test-cache
+        securityOrigin : http://127.0.0.1:8000
+        storageKey : <string>
+    }
+]
+security origin differs from storage key: true
+

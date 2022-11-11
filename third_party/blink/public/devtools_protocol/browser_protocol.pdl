@@ -2065,6 +2065,8 @@ experimental domain CacheStorage
       CacheId cacheId
       # Security origin of the cache.
       string securityOrigin
+      # Storage key of the cache.
+      string storageKey
       # The name of the cache.
       string cacheName
 

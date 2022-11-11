@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using blink::protocol::Array;
@@ -63,32 +65,46 @@ namespace blink {
 
 namespace {
 
-String BuildCacheId(const String& security_origin, const String& cache_name) {
+String BuildCacheId(const String& storage_key, const String& cache_name) {
+  DCHECK(storage_key.find('|') == WTF::kNotFound);
   StringBuilder id;
-  id.Append(security_origin);
+  id.Append(storage_key);
   id.Append('|');
   id.Append(cache_name);
   return id.ToString();
 }
 
 ProtocolResponse ParseCacheId(const String& id,
-                              String* security_origin,
+                              String* storage_key,
                               String* cache_name) {
   wtf_size_t pipe = id.find('|');
   if (pipe == WTF::kNotFound)
     return ProtocolResponse::ServerError("Invalid cache id.");
-  *security_origin = id.Substring(0, pipe);
+  *storage_key = id.Substring(0, pipe);
   *cache_name = id.Substring(pipe + 1);
+
+  absl::optional<StorageKey> key =
+      StorageKey::Deserialize(StringUTF8Adaptor(*storage_key).AsStringPiece());
+  if (!key.has_value()) {
+    return ProtocolResponse::ServerError("Not able to deserialize storage key");
+  }
+  scoped_refptr<SecurityOrigin> origin =
+      SecurityOrigin::CreateFromUrlOrigin(key->origin());
+
+  if (!origin->IsPotentiallyTrustworthy()) {
+    return ProtocolResponse::ServerError(
+        origin->IsPotentiallyTrustworthyErrorMessage().Utf8());
+  }
   return ProtocolResponse::Success();
 }
 
 ProtocolResponse GetExecutionContext(InspectedFrames* frames,
-                                     const String& security_origin,
+                                     const String& storage_key,
                                      ExecutionContext** context) {
-  LocalFrame* frame = frames->FrameWithSecurityOrigin(security_origin);
+  LocalFrame* frame = frames->FrameWithStorageKey(storage_key);
   if (!frame) {
-    String msg = "No frame with origin " + security_origin;
-    return ProtocolResponse::ServerError(msg.Utf8());
+    return ProtocolResponse::InvalidParams(
+        "No frame found for given storage key");
   }
 
   *context = frame->DomWindow();
@@ -97,26 +113,17 @@ ProtocolResponse GetExecutionContext(InspectedFrames* frames,
 }
 
 ProtocolResponse AssertCacheStorage(
-    const String& security_origin,
+    const String& storage_key,
     InspectedFrames* frames,
     InspectorCacheStorageAgent::CachesMap* caches,
     mojom::blink::CacheStorage** result) {
-  scoped_refptr<const SecurityOrigin> sec_origin =
-      SecurityOrigin::CreateFromString(security_origin);
-
-  // Cache Storage API is restricted to trustworthy origins.
-  if (!sec_origin->IsPotentiallyTrustworthy()) {
-    return ProtocolResponse::ServerError(
-        sec_origin->IsPotentiallyTrustworthyErrorMessage().Utf8());
-  }
-
   ExecutionContext* context = nullptr;
   ProtocolResponse response =
-      GetExecutionContext(frames, security_origin, &context);
+      GetExecutionContext(frames, storage_key, &context);
   if (!response.IsSuccess())
     return response;
 
-  auto it = caches->find(security_origin);
+  auto it = caches->find(storage_key);
 
   if (it == caches->end()) {
     mojo::Remote<mojom::blink::CacheStorage> cache_storage_remote;
@@ -124,7 +131,7 @@ ProtocolResponse AssertCacheStorage(
         cache_storage_remote.BindNewPipeAndPassReceiver(
             frames->Root()->GetTaskRunner(TaskType::kFileReading)));
     *result = cache_storage_remote.get();
-    caches->Set(security_origin, std::move(cache_storage_remote));
+    caches->Set(storage_key, std::move(cache_storage_remote));
   } else {
     *result = it->value.get();
   }
@@ -138,12 +145,12 @@ ProtocolResponse AssertCacheStorageAndNameForId(
     String* cache_name,
     InspectorCacheStorageAgent::CachesMap* caches,
     mojom::blink::CacheStorage** result) {
-  String security_origin;
-  ProtocolResponse response =
-      ParseCacheId(cache_id, &security_origin, cache_name);
+  String storage_key;
+  ProtocolResponse response = ParseCacheId(cache_id, &storage_key, cache_name);
+
   if (!response.IsSuccess())
     return response;
-  return AssertCacheStorage(security_origin, frames, caches, result);
+  return AssertCacheStorage(storage_key, frames, caches, result);
 }
 
 const char* CacheStorageErrorString(mojom::blink::CacheStorageError error) {
@@ -521,7 +528,6 @@ void InspectorCacheStorageAgent::requestCacheNames(
 
   scoped_refptr<const SecurityOrigin> sec_origin =
       SecurityOrigin::CreateFromString(security_origin);
-
   // Cache Storage API is restricted to trustworthy origins.
   if (!sec_origin->IsPotentiallyTrustworthy()) {
     // Don't treat this as an error, just don't attempt to open and enumerate
@@ -529,34 +535,38 @@ void InspectorCacheStorageAgent::requestCacheNames(
     callback->sendSuccess(std::make_unique<protocol::Array<ProtocolCache>>());
     return;
   }
+  url::Origin origin = sec_origin->ToUrlOrigin();
+  const String storage_key =
+      WTF::String::FromUTF8((StorageKey(origin).Serialize()));
 
   mojom::blink::CacheStorage* cache_storage = nullptr;
 
   ProtocolResponse response =
-      AssertCacheStorage(security_origin, frames_, &caches_, &cache_storage);
+      AssertCacheStorage(storage_key, frames_, &caches_, &cache_storage);
   if (!response.IsSuccess()) {
     callback->sendFailure(response);
     return;
   }
 
   cache_storage->Keys(
-      trace_id,
-      WTF::BindOnce(
-          [](String security_origin,
-             std::unique_ptr<RequestCacheNamesCallback> callback,
-             const Vector<String>& caches) {
-            auto array = std::make_unique<protocol::Array<ProtocolCache>>();
-            for (auto& cache : caches) {
-              array->emplace_back(
-                  ProtocolCache::create()
-                      .setSecurityOrigin(security_origin)
-                      .setCacheName(cache)
-                      .setCacheId(BuildCacheId(security_origin, cache))
-                      .build());
-            }
-            callback->sendSuccess(std::move(array));
-          },
-          security_origin, std::move(callback)));
+      trace_id, WTF::BindOnce(
+                    [](String security_origin, String storage_key,
+                       std::unique_ptr<RequestCacheNamesCallback> callback,
+                       const Vector<String>& caches) {
+                      auto array =
+                          std::make_unique<protocol::Array<ProtocolCache>>();
+                      for (auto& cache : caches) {
+                        array->emplace_back(
+                            ProtocolCache::create()
+                                .setSecurityOrigin(security_origin)
+                                .setStorageKey(storage_key)
+                                .setCacheName(cache)
+                                .setCacheId(BuildCacheId(storage_key, cache))
+                                .build());
+                      }
+                      callback->sendSuccess(std::move(array));
+                    },
+                    security_origin, storage_key, std::move(callback)));
 }
 
 void InspectorCacheStorageAgent::requestEntries(
