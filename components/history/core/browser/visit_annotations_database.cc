@@ -588,11 +588,13 @@ void VisitAnnotationsDatabase::AddClusters(
                                  "INSERT INTO cluster_keywords"
                                  "(cluster_id,keyword,type,score,collections)"
                                  "VALUES(?,?,?,?,?)"));
-  sql::Statement cluster_visit_duplicates_statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "INSERT INTO cluster_visit_duplicates"
-                                 "(visit_id,duplicate_visit_id)"
-                                 "VALUES(?,?)"));
+  // INSERT OR IGNORE, because these rows are not keyed on `cluster_id`, so it's
+  // difficult to guarantee complete cleanup. https://crbug.com/1383274
+  sql::Statement cluster_visit_duplicates_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO cluster_visit_duplicates"
+      "(visit_id,duplicate_visit_id)"
+      "VALUES(?,?)"));
 
   for (const auto& cluster : clusters) {
     if (cluster.visits.empty())
@@ -838,12 +840,33 @@ void VisitAnnotationsDatabase::DeleteClusters(
   sql::Statement cluster_keywords_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM cluster_keywords WHERE cluster_id=?"));
 
+  sql::Statement cluster_visit_duplicates_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "DELETE FROM cluster_visit_duplicates "
+                                 "WHERE visit_id=? OR duplicate_visit_id=?"));
+
   for (auto cluster_id : cluster_ids) {
     clusters_statement.Reset(true);
     clusters_statement.BindInt64(0, cluster_id);
     if (!clusters_statement.Run()) {
       DVLOG(0) << "Failed to execute clusters delete statement:  "
                << "cluster_id = " << cluster_id;
+    }
+
+    // Delete all duplicates for these visits, because clusters are recreated.
+    // Note that this cleanup implicitly assumes that no two clusters have the
+    // same visits inside. In practice, this is true. The previous status-quo
+    // was to leave these rows around, but that causes UNIQUE constraint
+    // violations. https://crbug.com/1383274
+    for (auto visit_id : GetVisitIdsInCluster(cluster_id)) {
+      cluster_visit_duplicates_statement.Reset(true);
+      cluster_visit_duplicates_statement.BindInt64(0, visit_id);
+      cluster_visit_duplicates_statement.BindInt64(1, visit_id);
+      if (!cluster_visit_duplicates_statement.Run()) {
+        DVLOG(0)
+            << "Failed to execute cluster_visit_duplicates delete statement:  "
+            << "visit_id = " << visit_id;
+      }
     }
 
     clusters_and_visits_statement.Reset(true);
@@ -859,12 +882,6 @@ void VisitAnnotationsDatabase::DeleteClusters(
       DVLOG(0) << "Failed to execute cluster_keywords delete statement:  "
                << "cluster_id = " << cluster_id;
     }
-
-    // TODO(manukh): (Maybe) for each visit deleted from 'clusters_and_visits',
-    //  delete the visits from 'cluster_visit_duplicates'. This is a maybe
-    //  because even though we compute visit duplicates during clustering, it's
-    //  not dependent on the cluster; 2 duplicate visits are duplicates
-    //  regardless of what cluster they belong to.
   }
 }
 

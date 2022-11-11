@@ -511,7 +511,9 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
-  AddClusters(CreateClusters({{3, 2, 5}, {3, 2, 5}, {6}}));
+  auto clusters = CreateClusters({{3, 2, 5}, {3, 2, 5}, {6}});
+  clusters.back().visits[0].duplicate_visits.push_back({7});
+  AddClusters(clusters);
 
   auto cluster_with_keyword_data = CreateCluster({10});
   cluster_with_keyword_data.keyword_to_data_map[u"keyword1"];
@@ -526,6 +528,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
   EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
+  EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre(7));
   EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
 
   DeleteClusters({});
@@ -538,6 +541,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
   EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
+  EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre(7));
   EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
 
   DeleteClusters({1, 3, 4, 5});
@@ -546,12 +550,13 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   EXPECT_EQ(GetCluster(2).cluster_id, 2);
   EXPECT_EQ(GetCluster(3).cluster_id, 0);
   EXPECT_EQ(GetCluster(4).cluster_id, 0);
-  EXPECT_EQ(GetCluster(5).cluster_id, 0);
   EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre());
   EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
   EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre());
   EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre());
-  EXPECT_THAT(GetVisitIdsInCluster(5), ElementsAre());
+  // Verifies that the `cluster_visit_duplicates` table is also cleaned up.
+  // https://crbug.com/1383274
+  EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre());
   EXPECT_TRUE(GetClusterKeywords(4).empty());
 }
 
