@@ -66,9 +66,9 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
   // just notifies the observers and serves the same policies.
   void SetAutoRefresh();
 
- private:
   void RefreshWithSamePolicies();
 
+ private:
   SchemaRegistry registry_;
 };
 

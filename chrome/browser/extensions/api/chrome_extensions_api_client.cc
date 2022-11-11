@@ -114,8 +114,8 @@ void ChromeExtensionsAPIClient::AddAdditionalValueStoreCaches(
       new SyncValueStoreCache(factory, observer, context->GetPath());
 
   // Add support for chrome.storage.managed.
-  (*caches)[settings_namespace::MANAGED] =
-      new ManagedValueStoreCache(context, factory, observer);
+  (*caches)[settings_namespace::MANAGED] = new ManagedValueStoreCache(
+      *Profile::FromBrowserContext(context), factory, observer);
 }
 
 void ChromeExtensionsAPIClient::AttachWebContentsHelpers(

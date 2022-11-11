@@ -53,6 +53,10 @@ const value_store_util::ModelType kManagedModelType =
 
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+/// ExtensionTracker
+////////////////////////////////////////////////////////////////////////////////
+
 // This helper observes initialization of all the installed extensions and
 // subsequent loads and unloads, and keeps the SchemaRegistry of the Profile
 // in sync with the current list of extensions. This allows the PolicyService
@@ -220,13 +224,17 @@ void ManagedValueStoreCache::ExtensionTracker::Register(
   schema_registry_->SetExtensionsDomainsReady();
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// ManagedValueStoreCache
+////////////////////////////////////////////////////////////////////////////////
+
 ManagedValueStoreCache::ManagedValueStoreCache(
-    BrowserContext* context,
+    Profile& profile,
     scoped_refptr<value_store::ValueStoreFactory> factory,
     SettingsChangedCallback observer)
-    : profile_(Profile::FromBrowserContext(context)),
-      policy_domain_(GetPolicyDomain(profile_)),
-      policy_service_(profile_->GetProfilePolicyConnector()->policy_service()),
+    : profile_(profile),
+      policy_domain_(GetPolicyDomain(profile)),
+      policy_service_(*profile.GetProfilePolicyConnector()->policy_service()),
       storage_factory_(std::move(factory)),
       observer_(GetSequenceBoundSettingsChangedCallback(
           base::SequencedTaskRunner::GetCurrentDefault(),
@@ -237,7 +245,7 @@ ManagedValueStoreCache::ManagedValueStoreCache(
   policy_service_->AddObserver(policy_domain_, this);
 
   extension_tracker_ =
-      std::make_unique<ExtensionTracker>(profile_, policy_domain_);
+      std::make_unique<ExtensionTracker>(&profile, policy_domain_);
 
   if (policy_service_->IsInitializationComplete(policy_domain_))
     OnPolicyServiceInitialized(policy_domain_);
@@ -264,7 +272,18 @@ void ManagedValueStoreCache::RunWithValueStoreForExtension(
     StorageCallback callback,
     scoped_refptr<const Extension> extension) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
-  std::move(callback).Run(GetOrCreateStore(extension->id()));
+
+  if (is_policy_service_initialized_) {
+    std::move(callback).Run(&GetOrCreateStore(extension->id()));
+  } else {
+    // Delay invoking the callback if the store has not been initialized yet.
+    // The store will be initialized as soon as the policy service is
+    // initialized, and returning the store beforehand leads to race conditions
+    // where the extension can try to fetch a policy value before the store is
+    // populated, which results in an empty policy value being returned.
+    pending_storage_callbacks_.emplace_back(extension->id(),
+                                            std::move(callback));
+  }
 }
 
 void ManagedValueStoreCache::DeleteStorageSoon(
@@ -275,7 +294,7 @@ void ManagedValueStoreCache::DeleteStorageSoon(
   // clear it if it exists.
   if (!HasStore(extension_id))
     return;
-  GetOrCreateStore(extension_id)->DeleteStorage();
+  GetOrCreateStore(extension_id).DeleteStorage();
   store_map_.erase(extension_id);
 }
 
@@ -292,15 +311,28 @@ void ManagedValueStoreCache::OnPolicyServiceInitialized(
       profile_->GetPolicySchemaRegistryService()->registry();
   const policy::ComponentMap* map =
       registry->schema_map()->GetComponents(policy_domain_);
-  if (!map)
-    return;
 
-  const policy::PolicyMap empty_map;
-  for (const auto& [extension_id, _] : *map) {
-    const policy::PolicyNamespace ns(policy_domain_, extension_id);
-    // If there is no policy for |ns| then this will clear the previous store,
-    // if there is one.
-    OnPolicyUpdated(ns, empty_map, policy_service_->GetPolicies(ns));
+  if (map) {
+    const policy::PolicyMap empty_map;
+    for (const auto& [extension_id, _] : *map) {
+      const policy::PolicyNamespace ns(policy_domain_, extension_id);
+      // If there is no policy for |ns| then this will clear the previous
+      // store, if there is one.
+      OnPolicyUpdated(ns, empty_map, policy_service_->GetPolicies(ns));
+    }
+  }
+
+  GetBackendTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ManagedValueStoreCache::InitializeOnBackend,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ManagedValueStoreCache::InitializeOnBackend() {
+  is_policy_service_initialized_ = true;
+
+  auto pending_callbacks = std::move(pending_storage_callbacks_);
+  for (auto& [extension_id, callback] : pending_callbacks) {
+    std::move(callback).Run(&GetOrCreateStore(extension_id));
   }
 }
 
@@ -308,13 +340,6 @@ void ManagedValueStoreCache::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                              const policy::PolicyMap& previous,
                                              const policy::PolicyMap& current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-
-  if (!policy_service_->IsInitializationComplete(policy_domain_)) {
-    // OnPolicyUpdated is called whenever a policy changes, but it doesn't
-    // mean that all the policy providers are ready; wait until we get the
-    // final policy values before passing them to the store.
-    return;
-  }
 
   // This WeakPtr usage *should* be safe. Even though we are "vending" WeakPtrs
   // from the UI thread, they are only ever dereferenced or invalidated from
@@ -327,9 +352,10 @@ void ManagedValueStoreCache::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 }
 
 // static
-policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(Profile* profile) {
+policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(
+    const Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::ProfileHelper::IsSigninProfile(profile)
+  return ash::ProfileHelper::IsSigninProfile(&profile)
              ? policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
              : policy::POLICY_DOMAIN_EXTENSIONS;
 #else
@@ -339,22 +365,22 @@ policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(Profile* profile) {
 
 void ManagedValueStoreCache::UpdatePolicyOnBackend(
     const std::string& extension_id,
-    const policy::PolicyMap& current_policy) {
-  if (!HasStore(extension_id) && current_policy.empty()) {
+    const policy::PolicyMap& new_policy) {
+  if (!HasStore(extension_id) && new_policy.empty()) {
     // Don't create the store now if there are no policies configured for this
     // extension. If the extension uses the storage.managed API then the store
     // will be created at RunWithValueStoreForExtension().
     return;
   }
 
-  GetOrCreateStore(extension_id)->SetCurrentPolicy(current_policy);
+  GetOrCreateStore(extension_id).SetCurrentPolicy(new_policy);
 }
 
-PolicyValueStore* ManagedValueStoreCache::GetOrCreateStore(
+PolicyValueStore& ManagedValueStoreCache::GetOrCreateStore(
     const std::string& extension_id) {
-  auto it = store_map_.find(extension_id);
+  const auto& it = store_map_.find(extension_id);
   if (it != store_map_.end())
-    return it->second.get();
+    return *it->second;
 
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.
@@ -366,7 +392,7 @@ PolicyValueStore* ManagedValueStoreCache::GetOrCreateStore(
   PolicyValueStore* raw_store = store.get();
   store_map_[extension_id] = std::move(store);
 
-  return raw_store;
+  return *raw_store;
 }
 
 bool ManagedValueStoreCache::HasStore(const std::string& extension_id) const {

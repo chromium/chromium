@@ -6,11 +6,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service_impl.h"
@@ -18,6 +16,7 @@
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/value_store.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -33,53 +32,6 @@ constexpr auto kAnyPolicyScope = policy::PolicyScope::POLICY_SCOPE_USER;
 constexpr auto kAnyPolicySource = policy::PolicySource::POLICY_SOURCE_PLATFORM;
 constexpr auto kAnotherPolicyDomain =
     policy::PolicyDomain::POLICY_DOMAIN_SIGNIN_EXTENSIONS;
-
-policy::Schema CreateSchema(const std::string& value) {
-  std::string error;
-  policy::Schema result = policy::Schema::Parse(value, &error);
-  EXPECT_EQ(error, "") << "Error parsing schema '" << value << "'";
-  return result;
-}
-
-policy::Schema SchemaWithoutProperties() {
-  return CreateSchema(R"(
-      {
-        "type": "object",
-        "properties": {
-        }
-      }
-    )");
-}
-
-// A schema that has a single property with the given name.
-policy::Schema SchemaWithProperty(const std::string& property) {
-  return CreateSchema(base::StringPrintf(
-      R"(
-      {
-        "type": "object",
-        "properties": {
-            "%s" : { "type": "string"},
-        }
-      }
-    )",
-      property.c_str()));
-}
-
-// A schema that has two properties with the given names.
-policy::Schema SchemaWithProperties(const std::string& property1,
-                                    const std::string& property2) {
-  return CreateSchema(base::StringPrintf(
-      R"(
-      {
-        "type": "object",
-        "properties": {
-            "%s" : { "type": "string"},
-            "%s" : { "type": "string"},
-        }
-      }
-    )",
-      property1.c_str(), property2.c_str()));
-}
 
 base::Value::Dict CreateDict(const std::string& json) {
   auto dict = base::JSONReader::Read(json);
@@ -108,6 +60,14 @@ class PolicyBuilder {
     bundle_.Get({domain_, extension->id()})
         .Set(key, policy::POLICY_LEVEL_RECOMMENDED, kAnyPolicyScope,
              kAnyPolicySource, base::Value(value), nullptr);
+    return *this;
+  }
+
+  PolicyBuilder& AddPolicyWithoutProperties(
+      scoped_refptr<const Extension> extension) {
+    // Calling 'Get' will create an empty policy map for the extension.
+    bundle_.Get(
+        {policy::PolicyDomain::POLICY_DOMAIN_EXTENSIONS, extension->id()});
     return *this;
   }
 
@@ -168,8 +128,8 @@ class ManagedValueStoreCacheTest : public testing::Test {
     policy_provider_ = std::make_unique<
         testing::NiceMock<policy::MockConfigurationPolicyProvider>>();
     policy_provider_->SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
+        /*is_initialization_complete_return=*/false,
+        /*is_first_policy_load_complete_return=*/false);
 
     policy::PolicyServiceImpl::Providers providers{policy_provider_.get()};
     auto policy_service =
@@ -190,78 +150,56 @@ class ManagedValueStoreCacheTest : public testing::Test {
     }
   }
 
-  void CreateCache() {
-    DCHECK_EQ(cache_, nullptr);
+  ManagedValueStoreCache& InitializeCache() {
+    DCHECK_EQ(cache_, nullptr) << "Can't create cache twice";
     cache_ = std::make_unique<ManagedValueStoreCache>(
-        profile_.get(), factory_, observer_.GetObserverCallback());
+        *profile_, factory_, observer_.GetObserverCallback());
+    return *cache_;
+  }
+
+  void SetPolicyServiceInitialized(bool is_initialized) {
+    policy_provider().SetDefaultReturns(
+        /*is_initialization_complete_return=*/is_initialized,
+        /*is_first_policy_load_complete_return=*/is_initialized);
+    // We must trigger a refresh, otherwise the policy service will not
+    // read the new values of `IsInitializationComplete()` and
+    // `IsFirstPolicyLoadComplete()`.
+    policy_provider().RefreshWithSamePolicies();
+  }
+
+  void InitializeCacheAndPolicyService() {
+    SetPolicyServiceInitialized(true);
+    InitializeCache();
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id) {
     return ExtensionBuilder(id).Build();
   }
 
-  // Informs the Schema registry that the schema of this extension has been
-  // loaded from the disk.
-  void SetExtensionSchema(const Extension& extension,
-                          const policy::Schema& schema) {
-    policy::SchemaRegistry* registry =
-        profile().GetPolicySchemaRegistryService()->registry();
-    registry->RegisterComponent(
-        {policy::PolicyDomain::POLICY_DOMAIN_EXTENSIONS, extension.id()},
-        schema);
+  // Sends the new policy values to the policy provider, and wait until the
+  // policy has been applied.
+  void UpdatePolicyAndWait(PolicyBuilder& new_policy_builder) {
+    UpdatePolicyAndWait(new_policy_builder.Build());
   }
 
-  // Creates an extension with the given id, and register the given schema
-  // with this extension. This simulates that the schema has been loaded from
-  // the disk.
-  scoped_refptr<const Extension> CreateExtensionWithSchema(
-      const std::string& extension_id,
-      const policy::Schema& schema) {
-    auto extension = CreateExtension(extension_id);
-    SetExtensionSchema(*extension, schema);
-    return extension;
+  policy::PolicyDomain policy_domain() const {
+    return ManagedValueStoreCache::GetPolicyDomain(profile());
   }
+
+  PolicyBuilder GetPolicyBuilder() { return PolicyBuilder(policy_domain()); }
 
   // Sends the new policy values to the policy provider, and wait until the
   // policy has been applied.
-  void UpdatePolicy(PolicyBuilder& new_policy_builder) {
-    UpdatePolicy(new_policy_builder.Build());
-  }
-
-  policy::PolicyDomain policy_domain() const { return cache_->policy_domain(); }
-
-  PolicyBuilder GetPolicyBuilder() {
-    return PolicyBuilder(cache_->policy_domain());
-  }
-
-  // Sends the new policy values to the policy provider, and wait until the
-  // policy has been applied.
-  void UpdatePolicy(policy::PolicyBundle new_policy) {
-    EXPECT_NE(cache_, nullptr) << "Call CreateCache() first";
+  void UpdatePolicyAndWait(policy::PolicyBundle new_policy) {
     policy_provider().UpdatePolicy(std::move(new_policy));
-    observer().WaitForPolicyUpdate();
+    content::RunAllTasksUntilIdle();
   }
 
   ValueStore& GetValueStoreForExtension(
       scoped_refptr<const Extension> extension) {
     base::test::TestFuture<ValueStore*> waiter;
 
-    // Since RunWithValueStoreForExtension can only be invoked from the backend
-    // sequence, we have to do a few thread jumps:
-    //   1) Invoke RunWithValueStoreForExtension on the Backend sequence
-    //   2) This will invoke the base post task callback (on the backend
-    //      sequence).
-    //   3) This callback will post a task to the current sequence.
-    //   4) That task will invoke the TestFuture's callback on the current
-    //   sequence.
-    GetBackendTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ManagedValueStoreCache::RunWithValueStoreForExtension,
-            base::Unretained(&cache()),
-            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                               waiter.GetCallback()),
-            extension));
+    RunWithValueStoreForExtension(waiter.GetCallback(), extension);
 
     EXPECT_TRUE(waiter.Wait())
         << "Timeout waiting for value store for extension " << extension->id();
@@ -270,10 +208,32 @@ class ManagedValueStoreCacheTest : public testing::Test {
     return *waiter.Get();
   }
 
+  // Since RunWithValueStoreForExtension can only be invoked from the backend
+  // sequence, this method does a few thread jumps:
+  //   1) Invoke RunWithValueStoreForExtension on the Backend sequence
+  //   2) This will invoke the base post task callback (on the backend
+  //      sequence).
+  //   3) This callback will post a task to the current sequence.
+  //   4) That task will invoke the TestFuture's callback on the current
+  //   sequence.
+  void RunWithValueStoreForExtension(
+      ManagedValueStoreCache::StorageCallback callback,
+      scoped_refptr<const Extension> extension) {
+    GetBackendTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ManagedValueStoreCache::RunWithValueStoreForExtension,
+            base::Unretained(&cache()),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                               std::move(callback)),
+            extension));
+  }
+
   TestingProfile& profile() { return *profile_; }
+  const TestingProfile& profile() const { return *profile_; }
 
   ManagedValueStoreCache& cache() {
-    EXPECT_NE(cache_, nullptr) << "Call CreateCache() first";
+    DCHECK(cache_) << "Must call InitializeCache() first";
     return *cache_;
   }
 
@@ -294,9 +254,8 @@ class ManagedValueStoreCacheTest : public testing::Test {
 
 TEST_F(ManagedValueStoreCacheTest,
        ShouldInformObserverWhenPolicyValuesAreUpdated) {
-  CreateCache();
-  auto extension =
-      CreateExtensionWithSchema("ExtensionId-1", SchemaWithProperty("color"));
+  InitializeCacheAndPolicyService();
+  auto extension = CreateExtension("ExtensionId-1");
 
   policy_provider().UpdatePolicy(
       GetPolicyBuilder()
@@ -309,11 +268,10 @@ TEST_F(ManagedValueStoreCacheTest,
 
 TEST_F(ManagedValueStoreCacheTest,
        ShouldStoreMandatoryPolicyValuesForAnExtension) {
-  CreateCache();
-  auto extension =
-      CreateExtensionWithSchema("ExtensionId-1", SchemaWithProperty("color"));
+  InitializeCacheAndPolicyService();
+  auto extension = CreateExtension("ExtensionId-1");
 
-  UpdatePolicy(
+  UpdatePolicyAndWait(
       GetPolicyBuilder().AddMandatoryPolicy(extension, "color", "red"));
 
   ValueStore& value_store = GetValueStoreForExtension(extension);
@@ -323,30 +281,29 @@ TEST_F(ManagedValueStoreCacheTest,
 
 TEST_F(ManagedValueStoreCacheTest,
        ShouldIgnoreRecommendedPolicyValuesForAnExtension) {
-  CreateCache();
-  auto extension = CreateExtensionWithSchema(
-      "ExtensionId-1", SchemaWithProperties("mandatory", "recommended"));
+  InitializeCacheAndPolicyService();
+  auto extension = CreateExtension("ExtensionId-1");
 
-  UpdatePolicy(GetPolicyBuilder()
-                   .AddMandatoryPolicy(extension, "mandatory", "<value>")
-                   .AddRecommendedPolicy(extension, "recommended", "<value-2>")
-                   .Build());
+  UpdatePolicyAndWait(
+      GetPolicyBuilder()
+          .AddMandatoryPolicy(extension, "mandatory", "<value>")
+          .AddRecommendedPolicy(extension, "recommended", "<value-2>")
+          .Build());
 
   ValueStore& value_store = GetValueStoreForExtension(extension);
   EXPECT_EQ(value_store.Get("recommended").settings(), CreateDict(R"( { } )"));
 }
 
 TEST_F(ManagedValueStoreCacheTest, ShouldIgnorePoliciesInAnotherDomain) {
-  CreateCache();
-  auto extension = CreateExtensionWithSchema("ExtensionId-1",
-                                             SchemaWithProperty("property"));
+  InitializeCacheAndPolicyService();
+  auto extension = CreateExtension("ExtensionId-1");
 
-  UpdatePolicy(GetPolicyBuilder()
-                   .AddPolicyInDomain(extension, policy_domain(), "property",
-                                      "right-domain")
-                   .AddPolicyInDomain(extension, kAnotherPolicyDomain,
-                                      "property", "wrong-domain")
-                   .Build());
+  UpdatePolicyAndWait(GetPolicyBuilder()
+                          .AddPolicyInDomain(extension, policy_domain(),
+                                             "property", "right-domain")
+                          .AddPolicyInDomain(extension, kAnotherPolicyDomain,
+                                             "property", "wrong-domain")
+                          .Build());
 
   ValueStore& value_store = GetValueStoreForExtension(extension);
   EXPECT_EQ(value_store.Get("property").settings(),
@@ -355,14 +312,13 @@ TEST_F(ManagedValueStoreCacheTest, ShouldIgnorePoliciesInAnotherDomain) {
 
 TEST_F(ManagedValueStoreCacheTest,
        ValueStoreShouldNotContainValuesOfOtherExtensions) {
-  CreateCache();
-  auto extension1 = CreateExtensionWithSchema(
-      "extension-1", SchemaWithProperty("own-property"));
-  auto extension2 = CreateExtensionWithSchema(
-      "extension-2", SchemaWithProperty("other-extension-property"));
+  InitializeCacheAndPolicyService();
+  auto extension1 = CreateExtension("extension-1");
+  auto extension2 = CreateExtension("extension-2");
 
-  UpdatePolicy(
+  UpdatePolicyAndWait(
       GetPolicyBuilder()
+          .AddMandatoryPolicy(extension1, "own-property", "value-1")
           .AddMandatoryPolicy(extension2, "other-extension-property", "value-2")
           .Build());
 
@@ -372,9 +328,12 @@ TEST_F(ManagedValueStoreCacheTest,
 }
 
 TEST_F(ManagedValueStoreCacheTest, FetchingUnknownValueShouldNotReturnAnError) {
-  CreateCache();
-  auto extension1 =
-      CreateExtensionWithSchema("extension-1", SchemaWithoutProperties());
+  InitializeCacheAndPolicyService();
+  auto extension1 = CreateExtension("extension-1");
+
+  UpdatePolicyAndWait(GetPolicyBuilder()
+                          .AddMandatoryPolicy(extension1, "color", "blue")
+                          .Build());
 
   ValueStore& value_store = GetValueStoreForExtension(extension1);
 
@@ -383,17 +342,103 @@ TEST_F(ManagedValueStoreCacheTest, FetchingUnknownValueShouldNotReturnAnError) {
 }
 
 TEST_F(ManagedValueStoreCacheTest, FetchingUnsetValueShouldNotReturnAnError) {
-  CreateCache();
-  auto extension1 = CreateExtensionWithSchema(
-      "extension-1", SchemaWithProperties("set-property", "unset-property"));
+  InitializeCacheAndPolicyService();
+  auto extension1 = CreateExtension("extension-1");
 
-  UpdatePolicy(GetPolicyBuilder().AddMandatoryPolicy(extension1, "set-property",
-                                                     "value"));
+  UpdatePolicyAndWait(GetPolicyBuilder().AddMandatoryPolicy(
+      extension1, "set-property", "value"));
 
   ValueStore& value_store = GetValueStoreForExtension(extension1);
 
   EXPECT_EQ(value_store.Get("unset-property").status().code, ValueStore::OK);
   EXPECT_EQ(value_store.Get("unset-property").settings(), CreateDict(" {} "));
+}
+
+TEST_F(ManagedValueStoreCacheTest, ShouldBeAbleToFetchAnEmptyValueStore) {
+  InitializeCacheAndPolicyService();
+  auto extension1 = CreateExtension("extension-1");
+
+  UpdatePolicyAndWait(
+      GetPolicyBuilder().AddPolicyWithoutProperties(extension1));
+
+  base::test::TestFuture<ValueStore*> value_store_waiter;
+  RunWithValueStoreForExtension(value_store_waiter.GetCallback(), extension1);
+
+  EXPECT_TRUE(value_store_waiter.Wait())
+      << "Failed to fetch an empty value store";
+}
+
+TEST_F(ManagedValueStoreCacheTest,
+       RunWithValueStoreForExtensionShouldWaitUntilPolicyServiceIsInitialized) {
+  auto extension1 = CreateExtension("extension-1");
+
+  SetPolicyServiceInitialized(false);
+  InitializeCache();
+
+  base::test::TestFuture<ValueStore*> value_store_waiter;
+  RunWithValueStoreForExtension(value_store_waiter.GetCallback(), extension1);
+
+  // Value store should not be passed yet.
+  content::RunAllTasksUntilIdle();
+  EXPECT_FALSE(value_store_waiter.IsReady());
+
+  // Even a policy update should be ignored if the policy service is not
+  // initialized.
+  UpdatePolicyAndWait(GetPolicyBuilder().AddMandatoryPolicy(
+      extension1, "set-property", "first-value"));
+  EXPECT_FALSE(value_store_waiter.IsReady());
+
+  // But after initializing the policy service RunWithValueStoreForExtension
+  // should pass the value store to our waiter.
+  SetPolicyServiceInitialized(true);
+  EXPECT_TRUE(value_store_waiter.Wait());
+}
+
+TEST_F(ManagedValueStoreCacheTest,
+       ShouldStorePolicyValuesSetBeforePolicyServiceIsInitialized) {
+  auto extension = CreateExtension("extension");
+
+  SetPolicyServiceInitialized(false);
+  InitializeCache();
+
+  // Set a policy before the policy service is initialized.
+  UpdatePolicyAndWait(GetPolicyBuilder().AddMandatoryPolicy(
+      extension, "property", "early-value"));
+
+  SetPolicyServiceInitialized(true);
+
+  ValueStore& value_store = GetValueStoreForExtension(extension);
+
+  EXPECT_EQ(value_store.Get("property").settings(),
+            CreateDict(R"( { "property": "early-value" } )"));
+}
+
+TEST_F(ManagedValueStoreCacheTest,
+       RunWithValueStoreForExtensionCallbackShouldOnlyBeInvokedOnce) {
+  auto extension1 = CreateExtension("extension-1");
+
+  SetPolicyServiceInitialized(false);
+  InitializeCache();
+
+  base::test::RepeatingTestFuture<ValueStore*> value_store_waiter;
+  RunWithValueStoreForExtension(value_store_waiter.GetCallback(), extension1);
+  content::RunAllTasksUntilIdle();
+
+  // Value store should not be passed yet, as the policy service is not
+  // initialized.
+  ASSERT_TRUE(value_store_waiter.IsEmpty());
+
+  // After initializing the policy service the callback should be invoked, and
+  // the value store waiter should be ready.
+  SetPolicyServiceInitialized(true);
+  UpdatePolicyAndWait(GetPolicyBuilder().AddMandatoryPolicy(
+      extension1, "set-property", "first-value"));
+  value_store_waiter.Take();
+
+  // Consecutive policy updates should not call the callback again.
+  UpdatePolicyAndWait(GetPolicyBuilder().AddMandatoryPolicy(
+      extension1, "set-property", "other-value"));
+  EXPECT_TRUE(value_store_waiter.IsEmpty());
 }
 
 }  // namespace
