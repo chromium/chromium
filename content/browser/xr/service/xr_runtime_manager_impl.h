@@ -43,8 +43,8 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
       public device::VRDeviceProviderClient {
  public:
   friend base::RefCounted<XRRuntimeManagerImpl>;
-  static constexpr auto kRefCountPreference =
-      base::subtle::kStartRefCountFromOneTag;
+
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   friend XRRuntimeManagerTest;
   XRRuntimeManagerImpl(const XRRuntimeManagerImpl&) = delete;
