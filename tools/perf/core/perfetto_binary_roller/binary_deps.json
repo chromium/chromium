@@ -6,7 +6,7 @@
         },
         "win": {
             "hash": "f6f21222f464155cbd210a23841c62fce5a330ed",
-            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/d68f6678747d24378b2377bace2dd22df359bb16/trace_processor_shell.exe"
+            "full_remote_path": "chromium-telemetry/perfetto_binaries/trace_processor_shell/win/4fbf05c049284e3807046b7229cc1da565baf367/trace_processor_shell.exe"
         },
         "linux_arm": {
             "hash": "58893933be305d3bfe0a72ebebcacde2ac3ca893",
