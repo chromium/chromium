@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 
+#include "base/files/file_path.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,6 +29,17 @@ namespace web_app {
 IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() = default;
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
+
+std::unique_ptr<net::EmbeddedTestServer>
+IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
+    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+  base::FilePath server_root =
+      GetChromeTestDataDir().Append(chrome_test_data_relative_root);
+  auto server = std::make_unique<net::EmbeddedTestServer>();
+  server->AddDefaultHandlers(server_root);
+  CHECK(server->Start());
+  return server;
+}
 
 AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
     const std::string& host) {
@@ -39,6 +55,24 @@ AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
       browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   return test::InstallPwaForCurrentUrl(browser());
+}
+
+IsolatedWebAppUrlInfo
+IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
+    const url::Origin& origin) {
+  base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
+                                        InstallIsolatedWebAppCommandError>>
+      future;
+
+  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+  WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
+      url_info, IsolationData{IsolationData::DevModeProxy{.proxy_url = origin}},
+      future.GetCallback());
+
+  CHECK(future.Get().has_value()) << future.Get().error();
+
+  return url_info;
 }
 
 Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(

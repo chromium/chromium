@@ -5,21 +5,42 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
-WebAppCommandScheduler::WebAppCommandScheduler(WebAppProvider* provider)
-    : provider_(provider) {}
+namespace {
+
+std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
+    Profile& profile) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          /*context=*/&profile));
+
+  webapps::InstallableManager::CreateForWebContents(web_contents.get());
+
+  return web_contents;
+}
+
+}  // namespace
+
+WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile,
+                                               WebAppProvider* provider)
+    : profile_(profile), provider_(provider) {}
 
 WebAppCommandScheduler::~WebAppCommandScheduler() = default;
 
@@ -169,6 +190,29 @@ void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
           url, web_contents, std::make_unique<web_app::WebAppUrlLoader>(),
           std::make_unique<web_app::WebAppDataRetriever>(),
           std::move(callback)));
+}
+
+void WebAppCommandScheduler::InstallIsolatedWebApp(
+    const IsolatedWebAppUrlInfo& url_info,
+    const IsolationData& isolation_data,
+    InstallIsolatedWebAppCallback callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::InstallIsolatedWebApp,
+                       weak_ptr_factory_.GetWeakPtr(), url_info, isolation_data,
+                       std::move(callback)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallIsolatedWebAppCommand>(
+          url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
+          std::make_unique<WebAppUrlLoader>(), *profile_,
+          provider_->install_finalizer(), std::move(callback)));
 }
 
 void WebAppCommandScheduler::Shutdown() {

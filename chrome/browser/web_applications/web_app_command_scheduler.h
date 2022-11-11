@@ -6,22 +6,27 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
+#include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 class GURL;
+class Profile;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace web_app {
 
+class IsolatedWebAppUrlInfo;
 class WebAppProvider;
+struct IsolationData;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -37,8 +42,11 @@ class WebAppCommandScheduler {
       ManifestUpdateDataFetchCommand::ManifestFetchCallback;
   using ManifestWriteCallback =
       ManifestUpdateFinalizeCommand::ManifestWriteCallback;
+  using InstallIsolatedWebAppCallback = base::OnceCallback<void(
+      base::expected<InstallIsolatedWebAppCommandSuccess,
+                     InstallIsolatedWebAppCommandError>)>;
 
-  explicit WebAppCommandScheduler(WebAppProvider* provider);
+  WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
   ~WebAppCommandScheduler();
 
   void Shutdown();
@@ -83,10 +91,17 @@ class WebAppCommandScheduler {
       base::WeakPtr<content::WebContents> web_contents,
       FetchInstallabilityForChromeManagementCallback callback);
 
+  // Schedules a command that installs the Isolated Web App described by the
+  // given IsolatedWebAppUrlInfo and IsolationData.
+  void InstallIsolatedWebApp(const IsolatedWebAppUrlInfo& url_info,
+                             const IsolationData& isolation_data,
+                             InstallIsolatedWebAppCallback callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 
  private:
+  const raw_ref<Profile> profile_;
   raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
   bool is_in_shutdown_ = false;
 

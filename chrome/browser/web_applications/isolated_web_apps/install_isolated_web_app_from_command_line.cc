@@ -22,12 +22,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_manager.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -46,28 +45,6 @@ void ReportInstallationResult(
                   "failed. Error: "
                << result.error();
   }
-}
-
-std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          /*context=*/&profile));
-
-  webapps::InstallableManager::CreateForWebContents(web_contents.get());
-
-  return web_contents;
-}
-
-void ScheduleInstallIsolatedWebApp(const IsolatedWebAppUrlInfo& isolation_info,
-                                   IsolationData isolation_data,
-                                   WebAppProvider& provider,
-                                   Profile& profile) {
-  provider.command_manager().ScheduleCommand(
-      std::make_unique<InstallIsolatedWebAppCommand>(
-          isolation_info, isolation_data, CreateWebContents(profile),
-          std::make_unique<WebAppUrlLoader>(), profile,
-          provider.install_finalizer(),
-          base::BindOnce(&ReportInstallationResult)));
 }
 
 base::expected<absl::optional<IsolationData>, std::string>
@@ -201,10 +178,9 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
     return;
   }
 
-  provider->on_registry_ready().Post(
-      FROM_HERE,
-      base::BindOnce(&ScheduleInstallIsolatedWebApp, isolation_info.value(),
-                     **isolation_data, std::ref(*provider), std::ref(profile)));
+  provider->scheduler().InstallIsolatedWebApp(
+      isolation_info.value(), **isolation_data,
+      base::BindOnce(&ReportInstallationResult));
 }
 
 }  // namespace web_app

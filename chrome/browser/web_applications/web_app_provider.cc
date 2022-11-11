@@ -293,7 +293,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   }
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile, this);
-  command_scheduler_ = std::make_unique<WebAppCommandScheduler>(this);
+  command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile, this);
 
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);

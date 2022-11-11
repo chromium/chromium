@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -24,6 +25,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -381,15 +383,6 @@ class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-
-    const std::string isolated_app_origins =
-        std::string("https://") + kHostname;
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    isolated_app_origins);
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -399,10 +392,11 @@ using ChromeDirectSocketsTcpIsolatedWebAppTest = ChromeDirectSocketsTcpTest<
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   // Install & open the IWA.
-  web_app::AppId app_id = InstallIsolatedWebApp(kHostname);
-  content::RenderFrameHost* app_frame = ui_test_utils::NavigateToURL(
-      GetBrowserFromFrame(OpenApp(app_id)),
-      https_server()->GetURL(kHostname, "/banners/isolated/simple.html"));
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Run the echo script.
   constexpr base::StringPiece kTcpSendReceiveHttpScript = R"(
@@ -470,10 +464,11 @@ using ChromeDirectSocketsUdpIsolatedWebAppTest = ChromeDirectSocketsUdpTest<
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   // Install & open the IWA.
-  web_app::AppId app_id = InstallIsolatedWebApp(kHostname);
-  content::RenderFrameHost* app_frame = ui_test_utils::NavigateToURL(
-      GetBrowserFromFrame(OpenApp(app_id)),
-      https_server()->GetURL(kHostname, "/banners/isolated/simple.html"));
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
+      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server->GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Run the echo script.
   constexpr base::StringPiece kUdpSendReceiveEchoScript = R"(

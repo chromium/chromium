@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "isolated_web_app_test_utils\.cc": [
+    "+components/web_package/signed_web_bundles",
+  ],
   "system_web_app_interactive_uitest\.cc": [
     "+ash/shell.h",
     "+ash/wm/window_util.h",
