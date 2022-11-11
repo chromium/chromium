@@ -7,39 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
-#include "components/reporting/metrics/multi_samplers_collector.h"
-#include "components/reporting/util/status.h"
 
 namespace reporting {
-namespace {
-
-void ReportMetricData(MetricReportQueue* metric_report_queue,
-                      MetricData metric_data,
-                      base::OnceClosure on_data_reported = base::DoNothing()) {
-  auto enqueue_cb = base::BindOnce(
-      [](base::OnceClosure on_data_reported, Status status) {
-        if (!status.ok()) {
-          DVLOG(1) << "Could not enqueue event to reporting queue because of: "
-                   << status;
-        }
-        std::move(on_data_reported).Run();
-      },
-      std::move(on_data_reported));
-  metric_report_queue->Enqueue(
-      std::make_unique<MetricData>(std::move(metric_data)),
-      std::move(enqueue_cb));
-}
-
-}  // namespace
 
 CollectorBase::CollectorBase(Sampler* sampler) : sampler_(sampler) {}
 
@@ -57,12 +33,13 @@ void CollectorBase::Collect() {
       base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
 }
 
-OneShotCollector::OneShotCollector(Sampler* sampler,
-                                   MetricReportQueue* metric_report_queue,
-                                   ReportingSettings* reporting_settings,
-                                   const std::string& setting_path,
-                                   bool setting_enabled_default_value,
-                                   base::OnceClosure on_data_reported)
+OneShotCollector::OneShotCollector(
+    Sampler* sampler,
+    MetricReportQueue* metric_report_queue,
+    ReportingSettings* reporting_settings,
+    const std::string& setting_path,
+    bool setting_enabled_default_value,
+    ReportQueue::EnqueueCallback on_data_reported)
     : CollectorBase(sampler),
       metric_report_queue_(metric_report_queue),
       on_data_reported_(std::move(on_data_reported)) {
@@ -93,8 +70,8 @@ void OneShotCollector::OnMetricDataCollected(
   }
 
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_report_queue_, std::move(metric_data.value()),
-                   std::move(on_data_reported_));
+  metric_report_queue_->Enqueue(std::move(metric_data.value()),
+                                std::move(on_data_reported_));
 }
 
 PeriodicCollector::PeriodicCollector(Sampler* sampler,
@@ -133,7 +110,7 @@ void PeriodicCollector::OnMetricDataCollected(
   }
 
   metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
-  ReportMetricData(metric_report_queue_, std::move(metric_data.value()));
+  metric_report_queue_->Enqueue(std::move(metric_data.value()));
 }
 
 void PeriodicCollector::StartPeriodicCollection() {

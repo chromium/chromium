@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -22,7 +21,6 @@
 #include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
-#include "components/reporting/util/status.h"
 
 namespace reporting {
 
@@ -94,15 +92,6 @@ void MetricEventObserverManager::MergeAndReport(
     metric_data.CheckTypeAndMergeFrom(telemetry_data.value());
   }
 
-  auto enqueue_cb = base::BindOnce([](Status status) {
-    if (!status.ok()) {
-      DVLOG(1)
-          << "Could not enqueue observed event to reporting queue because of: "
-          << status;
-    }
-  });
-  metric_report_queue_->Enqueue(
-      std::make_unique<MetricData>(std::move(metric_data)),
-      std::move(enqueue_cb));
+  metric_report_queue_->Enqueue(std::move(metric_data));
 }
 }  // namespace reporting

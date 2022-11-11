@@ -66,8 +66,8 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
     const auto& metric_data_reported =
         metric_report_queue_->GetMetricDataReported();
     ASSERT_THAT(metric_data_reported, ::testing::SizeIs(i + 1));
-    EXPECT_TRUE(metric_data_reported[i]->has_timestamp_ms());
-    EXPECT_TRUE(metric_data_reported[i]->has_event_data());
+    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
+    EXPECT_TRUE(metric_data_reported[i].has_event_data());
   }
 
   // Setting disabled, no more data should be reported even if the callback is
@@ -106,7 +106,7 @@ TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
   const auto& metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  EXPECT_TRUE(metric_data_reported[0].has_event_data());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
@@ -126,8 +126,8 @@ TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
   const auto& metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_event_data());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
@@ -192,14 +192,14 @@ TEST_F(MetricEventObserverManagerTest, EventDrivenTelemetry) {
       metric_report_queue_->GetMetricDataReported();
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
-  ASSERT_TRUE(metric_data_reported[0]->has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[0]->telemetry_data().has_audio_telemetry());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  ASSERT_TRUE(metric_data_reported[0].has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[0].telemetry_data().has_audio_telemetry());
   EXPECT_FALSE(
-      metric_data_reported[0]->telemetry_data().has_peripherals_telemetry());
+      metric_data_reported[0].telemetry_data().has_peripherals_telemetry());
   EXPECT_TRUE(
-      metric_data_reported[0]->telemetry_data().has_networks_telemetry());
+      metric_data_reported[0].telemetry_data().has_networks_telemetry());
 }
 
 }  // namespace

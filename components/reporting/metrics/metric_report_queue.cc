@@ -4,7 +4,7 @@
 
 #include "components/reporting/metrics/metric_report_queue.h"
 
-#include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -34,10 +34,19 @@ MetricReportQueue::MetricReportQueue(
 
 MetricReportQueue::~MetricReportQueue() = default;
 
-void MetricReportQueue::Enqueue(std::unique_ptr<const MetricData> metric_data,
+void MetricReportQueue::Enqueue(MetricData metric_data,
                                 ReportQueue::EnqueueCallback callback) {
-  report_queue_->Enqueue(std::move(metric_data), priority_,
-                         std::move(callback));
+  auto enqueue_cb = base::BindOnce(
+      [](ReportQueue::EnqueueCallback callback, Status status) {
+        if (!status.ok()) {
+          DVLOG(1) << "Could not enqueue to reporting queue because of: "
+                   << status;
+        }
+        std::move(callback).Run(std::move(status));
+      },
+      std::move(callback));
+  report_queue_->Enqueue(std::make_unique<MetricData>(std::move(metric_data)),
+                         priority_, std::move(enqueue_cb));
 }
 
 void MetricReportQueue::Upload() {

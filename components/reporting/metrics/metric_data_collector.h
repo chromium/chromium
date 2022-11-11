@@ -9,14 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
-#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,12 +54,13 @@ class CollectorBase {
 // setting is enabled.
 class OneShotCollector : public CollectorBase {
  public:
-  OneShotCollector(Sampler* sampler,
-                   MetricReportQueue* metric_report_queue,
-                   ReportingSettings* reporting_settings,
-                   const std::string& setting_path,
-                   bool setting_enabled_default_value,
-                   base::OnceClosure on_data_reported = base::DoNothing());
+  OneShotCollector(
+      Sampler* sampler,
+      MetricReportQueue* metric_report_queue,
+      ReportingSettings* reporting_settings,
+      const std::string& setting_path,
+      bool setting_enabled_default_value,
+      ReportQueue::EnqueueCallback on_data_reported = base::DoNothing());
 
   OneShotCollector(const OneShotCollector& other) = delete;
   OneShotCollector& operator=(const OneShotCollector& other) = delete;
@@ -78,7 +77,7 @@ class OneShotCollector : public CollectorBase {
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
 
-  base::OnceClosure on_data_reported_;
+  ReportQueue::EnqueueCallback on_data_reported_;
 
   bool data_collected_ = false;
 };

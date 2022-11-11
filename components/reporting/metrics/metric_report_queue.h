@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
@@ -43,8 +44,9 @@ class MetricReportQueue {
   virtual ~MetricReportQueue();
 
   // Enqueue the metric data.
-  virtual void Enqueue(std::unique_ptr<const MetricData> metric_data,
-                       ReportQueue::EnqueueCallback callback);
+  virtual void Enqueue(
+      MetricData metric_data,
+      ReportQueue::EnqueueCallback callback = base::DoNothing());
 
   // Initiate manual upload of records with `priority_` and restart timer if
   // exists.

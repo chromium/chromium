@@ -5,15 +5,18 @@
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/reporting_settings.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/util/status.h"
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 FakeMetricReportQueue::FakeMetricReportQueue(Priority priority)
     : MetricReportQueue(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
@@ -38,9 +41,8 @@ FakeMetricReportQueue::FakeMetricReportQueue(
                         default_rate,
                         rate_unit_to_ms) {}
 
-void FakeMetricReportQueue::Enqueue(
-    std::unique_ptr<const MetricData> metric_data,
-    ReportQueue::EnqueueCallback callback) {
+void FakeMetricReportQueue::Enqueue(MetricData metric_data,
+                                    ReportQueue::EnqueueCallback callback) {
   reported_data_.emplace_back(std::move(metric_data));
   std::move(callback).Run(Status());
 }
@@ -51,13 +53,12 @@ void FakeMetricReportQueue::Flush() {
   num_flush_++;
 }
 
-const std::vector<std::unique_ptr<const MetricData>>&
-FakeMetricReportQueue::GetMetricDataReported() const {
+const std::vector<MetricData>& FakeMetricReportQueue::GetMetricDataReported()
+    const {
   return reported_data_;
 }
 
 int FakeMetricReportQueue::GetNumFlush() const {
   return num_flush_;
 }
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test

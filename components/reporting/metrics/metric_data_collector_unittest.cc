@@ -19,6 +19,7 @@
 #include "components/reporting/metrics/fakes/fake_sampler.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/util/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -60,12 +61,12 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyEnabled) {
   sampler_->SetMetricData(std::move(metric_data));
   bool callback_called = false;
 
-  OneShotCollector collector(sampler_.get(), metric_report_queue_.get(),
-                             settings_.get(), kEnableSettingPath,
-                             /*setting_enabled_default_value=*/false,
-                             base::BindLambdaForTesting([&callback_called]() {
-                               callback_called = true;
-                             }));
+  OneShotCollector collector(
+      sampler_.get(), metric_report_queue_.get(), settings_.get(),
+      kEnableSettingPath,
+      /*setting_enabled_default_value=*/false,
+      base::BindLambdaForTesting(
+          [&callback_called](Status) { callback_called = true; }));
 
   // Setting is initially enabled, data is being collected.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
@@ -83,8 +84,8 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyEnabled) {
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
   EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_NoMetricData) {
@@ -93,12 +94,12 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_NoMetricData) {
   sampler_->SetMetricData(absl::nullopt);
   bool callback_called = false;
 
-  OneShotCollector collector(sampler_.get(), metric_report_queue_.get(),
-                             settings_.get(), kEnableSettingPath,
-                             /*setting_enabled_default_value=*/false,
-                             base::BindLambdaForTesting([&callback_called]() {
-                               callback_called = true;
-                             }));
+  OneShotCollector collector(
+      sampler_.get(), metric_report_queue_.get(), settings_.get(),
+      kEnableSettingPath,
+      /*setting_enabled_default_value=*/false,
+      base::BindLambdaForTesting(
+          [&callback_called](Status) { callback_called = true; }));
 
   // Setting is initially enabled, data is being collected.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
@@ -141,8 +142,8 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyDisabled) {
       metric_report_queue_->GetMetricDataReported();
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultEnabled) {
@@ -151,12 +152,12 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultEnabled) {
   sampler_->SetMetricData(std::move(metric_data));
   bool callback_called = false;
 
-  OneShotCollector collector(sampler_.get(), metric_report_queue_.get(),
-                             settings_.get(), "invalid/path",
-                             /*setting_enabled_default_value=*/true,
-                             base::BindLambdaForTesting([&callback_called]() {
-                               callback_called = true;
-                             }));
+  OneShotCollector collector(
+      sampler_.get(), metric_report_queue_.get(), settings_.get(),
+      "invalid/path",
+      /*setting_enabled_default_value=*/true,
+      base::BindLambdaForTesting(
+          [&callback_called](Status) { callback_called = true; }));
 
   // Setting is enabled by default, data is being collected.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
@@ -167,8 +168,8 @@ TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultEnabled) {
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
   EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_info_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_info_data());
 }
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_DefaultDisabled) {
@@ -252,12 +253,12 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyEnabled) {
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(5));
   for (int i = 0; i < 5; ++i) {
-    EXPECT_TRUE(metric_data_reported[i]->has_timestamp_ms());
-    EXPECT_EQ(metric_data_reported[i]->has_telemetry_data(),
+    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
+    EXPECT_EQ(metric_data_reported[i].has_telemetry_data(),
               metric_data[i].has_telemetry_data());
-    EXPECT_EQ(metric_data_reported[i]->has_info_data(),
+    EXPECT_EQ(metric_data_reported[i].has_info_data(),
               metric_data[i].has_info_data());
-    EXPECT_EQ(metric_data_reported[i]->has_event_data(),
+    EXPECT_EQ(metric_data_reported[i].has_event_data(),
               metric_data[i].has_event_data());
   }
 }
@@ -316,10 +317,10 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_InitiallyDisabled) {
       metric_report_queue_->GetMetricDataReported();
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(2));
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[1]->has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[1].has_telemetry_data());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultEnabled) {
@@ -352,11 +353,11 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultEnabled) {
       metric_report_queue_->GetMetricDataReported();
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(2));
-  EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1]->has_timestamp_ms());
-  EXPECT_FALSE(metric_data_reported[1]->has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[1]->has_event_data());
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1].has_timestamp_ms());
+  EXPECT_FALSE(metric_data_reported[1].has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported[1].has_event_data());
 }
 
 TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultDisabled) {
