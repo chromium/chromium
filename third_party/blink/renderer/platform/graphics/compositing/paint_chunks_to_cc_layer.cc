@@ -143,17 +143,18 @@ class ConversionContext {
   void ApplyTransform(const TransformPaintPropertyNode& target_transform) {
     if (&target_transform == current_transform_)
       return;
-    gfx::Transform projection = TargetToCurrentProjection(target_transform);
-    if (projection.IsIdentityOr2DTranslation()) {
-      gfx::Vector2dF translation = projection.To2dTranslation();
+    const auto& translation_2d_or_matrix =
+        GetTranslation2DOrMatrix(target_transform);
+    if (translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
+      const auto& translation = translation_2d_or_matrix.Translation2D();
       if (!translation.IsZero())
         cc_list_.push<cc::TranslateOp>(translation.x(), translation.y());
     } else {
-      cc_list_.push<cc::ConcatOp>(gfx::TransformToSkM44(projection));
+      cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkM44());
     }
   }
 
-  gfx::Transform TargetToCurrentProjection(
+  GeometryMapper::Translation2DOrMatrix GetTranslation2DOrMatrix(
       const TransformPaintPropertyNode& target_transform) const {
     return GeometryMapper::SourceToDestinationProjection(target_transform,
                                                          *current_transform_);
@@ -699,17 +700,18 @@ void ConversionContext::SwitchToTransform(
   if (&target_transform == current_transform_)
     return;
 
-  gfx::Transform projection = TargetToCurrentProjection(target_transform);
-  if (projection.IsIdentity())
+  const auto& translation_2d_or_matrix =
+      GetTranslation2DOrMatrix(target_transform);
+  if (translation_2d_or_matrix.IsIdentity())
     return;
 
   cc_list_.StartPaint();
   cc_list_.push<cc::SaveOp>();
-  if (projection.IsIdentityOr2DTranslation()) {
-    gfx::Vector2dF translation = projection.To2dTranslation();
+  if (translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
+    const auto& translation = translation_2d_or_matrix.Translation2D();
     cc_list_.push<cc::TranslateOp>(translation.x(), translation.y());
   } else {
-    cc_list_.push<cc::ConcatOp>(gfx::TransformToSkM44(projection));
+    cc_list_.push<cc::ConcatOp>(translation_2d_or_matrix.ToSkM44());
   }
   cc_list_.EndPaintOfPairedBegin();
   previous_transform_ = current_transform_;

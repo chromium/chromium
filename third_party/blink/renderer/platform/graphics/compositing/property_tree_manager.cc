@@ -69,14 +69,21 @@ static void UpdateCcTransformLocalMatrix(
     // Same for anchor positioning.
     DCHECK(compositor_node.local.IsIdentity());
     DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
-  } else if (transform_node.ScrollNode()) {
-    DCHECK(transform_node.IsIdentityOr2dTranslation());
-    // Blink creates a 2d transform node just for scroll offset whereas cc's
-    // transform node has a special scroll offset field.
-    compositor_node.scroll_offset =
-        gfx::PointAtOffsetFromOrigin(-transform_node.Get2dTranslation());
-    DCHECK(compositor_node.local.IsIdentity());
-    DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
+  } else if (transform_node.IsIdentityOr2DTranslation()) {
+    auto translation = transform_node.Translation2D();
+    if (transform_node.ScrollNode()) {
+      // Blink creates a 2d transform node just for scroll offset whereas cc's
+      // transform node has a special scroll offset field.
+      compositor_node.scroll_offset =
+          gfx::PointAtOffsetFromOrigin(-translation);
+      DCHECK(compositor_node.local.IsIdentity());
+      DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
+    } else {
+      compositor_node.local.MakeIdentity();
+      compositor_node.local.Translate(translation);
+      DCHECK_EQ(gfx::Point3F(), transform_node.Origin());
+      compositor_node.origin = gfx::Point3F();
+    }
   } else {
     DCHECK(!transform_node.ScrollNode());
     compositor_node.local = transform_node.Matrix();
@@ -139,7 +146,7 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
   DCHECK(!cc_transform->is_currently_animating);
 
   gfx::PointF scroll_offset =
-      gfx::PointAtOffsetFromOrigin(-transform.Get2dTranslation());
+      gfx::PointAtOffsetFromOrigin(-transform.Translation2D());
   DirectlySetScrollOffset(host, scroll_node->GetCompositorElementId(),
                           scroll_offset);
   if (cc_transform->scroll_offset != scroll_offset) {
@@ -324,10 +331,11 @@ bool TransformsMayBe2dAxisMisaligned(const TransformPaintPropertyNode& a,
                                      const TransformPaintPropertyNode& b) {
   if (&a == &b)
     return false;
-  if (!GeometryMapper::SourceToDestinationProjection(a, b)
-           .Preserves2dAxisAlignment()) {
+  const auto& translation_2d_or_matrix =
+      GeometryMapper::SourceToDestinationProjection(a, b);
+  if (!translation_2d_or_matrix.IsIdentityOr2DTranslation() &&
+      !translation_2d_or_matrix.Matrix().Preserves2dAxisAlignment())
     return true;
-  }
   const auto& lca = a.LowestCommonAncestor(b).Unalias();
   if (TransformsToAncestorHaveNonAxisAlignedActiveAnimation(a, lca) ||
       TransformsToAncestorHaveNonAxisAlignedActiveAnimation(b, lca))

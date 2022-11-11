@@ -125,10 +125,11 @@ int LayersAsJSON::AddTransformJSON(
 
   if (!transform.IsIdentity()) {
     transform_json->SetArray("transform",
-                             TransformAsJSONArray(transform.Matrix()));
+                             TransformAsJSONArray(transform.SlowMatrix()));
   }
 
-  if (!transform.Matrix().IsIdentityOrTranslation()) {
+  if (!transform.IsIdentityOr2DTranslation() &&
+      !transform.Matrix().IsIdentityOrTranslation()) {
     transform_json->SetArray("origin", Point3AsJSONArray(transform.Origin()));
   }
 

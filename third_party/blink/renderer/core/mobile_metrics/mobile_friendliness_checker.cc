@@ -214,7 +214,7 @@ void MobileFriendlinessChecker::UpdateBeyondViewportAreaSizes(
     auto projection = GeometryMapper::SourceToDestinationProjection(
         current_transform, *viewport_transform_);
     if (projection.IsIdentityOr2DTranslation()) {
-      current_x_offset_ = projection.To2dTranslation().x();
+      current_x_offset_ = projection.Translation2D().x();
       previous_transform_ = &current_transform;
     } else {
       // For now we ignore offsets caused by non-2d-translation transforms.

@@ -1123,7 +1123,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, CompositedStickyDescendant) {
   EXPECT_EQ(gfx::Vector2dF(0, 50), sticky->FirstFragment()
                                        .PaintProperties()
                                        ->StickyTranslation()
-                                       ->Get2dTranslation());
+                                       ->Translation2D());
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, StickyPositionUseCounter) {

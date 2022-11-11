@@ -10,24 +10,29 @@
 
 namespace blink {
 
-namespace {
-
-bool Keeps2dAxisAlignmentStatus(const gfx::Transform& a,
-                                const gfx::Transform& b) {
-  if (a.Preserves2dAxisAlignment() && b.Preserves2dAxisAlignment())
-    return true;
-
-  return (a.InverseOrIdentity() * b).Preserves2dAxisAlignment();
+TransformPaintPropertyNode::TransformAndOrigin::TransformAndOrigin(
+    const AffineTransform& transform) {
+  if (transform.IsIdentityOrTranslation()) {
+    translation_2d_ = gfx::Vector2dF(transform.E(), transform.F());
+  } else {
+    matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(
+        transform.ToTransform(), gfx::Point3F());
+  }
 }
 
-}  // anonymous namespace
+gfx::Transform TransformPaintPropertyNode::TransformAndOrigin::SlowMatrix()
+    const {
+  return matrix_and_origin_ ? matrix_and_origin_->matrix
+                            : gfx::Transform::MakeTranslation(
+                                  translation_2d_.x(), translation_2d_.y());
+}
 
 PaintPropertyChangeType
 TransformPaintPropertyNode::State::ComputeTransformChange(
     const TransformAndOrigin& other,
     const AnimationState& animation_state) const {
-  bool matrix_changed = transform_and_origin.matrix != other.matrix;
-  bool origin_changed = transform_and_origin.origin != other.origin;
+  bool matrix_changed = !transform_and_origin.TransformEquals(other);
+  bool origin_changed = transform_and_origin.Origin() != other.Origin();
   bool transform_changed = matrix_changed || origin_changed;
 
   if (!transform_changed)
@@ -47,13 +52,12 @@ TransformPaintPropertyNode::State::ComputeTransformChange(
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
       direct_compositing_reasons & CompositingReason::kStickyPosition) {
     // The compositor handles sticky offset changes automatically.
-    DCHECK(transform_and_origin.matrix.Preserves2dAxisAlignment());
-    DCHECK(other.matrix.Preserves2dAxisAlignment());
+    DCHECK(transform_and_origin.ChangePreserves2dAxisAlignment(other));
     return PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
   if (matrix_changed &&
-      !Keeps2dAxisAlignmentStatus(transform_and_origin.matrix, other.matrix)) {
+      !transform_and_origin.ChangePreserves2dAxisAlignment(other)) {
     // An additional cc::EffectNode may be required if
     // blink::TransformPaintPropertyNode is not axis-aligned (see:
     // PropertyTreeManager::SyntheticEffectType). Changes to axis alignment
@@ -135,11 +139,10 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
   DEFINE_STATIC_REF(
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
-          nullptr, State{{},
-                         &ScrollPaintPropertyNode::Root(),
-                         nullptr,
-                         State::Flags{false /* flattens_inherited_transform */,
-                                      false /* in_subtree_of_page_scale */}})));
+          nullptr,
+          State{gfx::Vector2dF(), &ScrollPaintPropertyNode::Root(), nullptr,
+                State::Flags{false /* flattens_inherited_transform */,
+                             false /* in_subtree_of_page_scale */}})));
   return *root;
 }
 
@@ -160,9 +163,9 @@ bool TransformPaintPropertyNodeOrAlias::Changed(
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
-  if (IsIdentityOr2dTranslation()) {
-    if (!Get2dTranslation().IsZero())
-      json->SetString("translation2d", String(Get2dTranslation().ToString()));
+  if (IsIdentityOr2DTranslation()) {
+    if (!Translation2D().IsZero())
+      json->SetString("translation2d", String(Translation2D().ToString()));
   } else {
     String matrix(Matrix().ToDecomposedString());
     if (matrix.EndsWith("\n"))

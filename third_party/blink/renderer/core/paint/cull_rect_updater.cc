@@ -127,7 +127,8 @@ bool ShouldUseInfiniteCullRect(
       // "transform: perspective(100px) rotateY(45deg)". In these cases, we
       // also want to skip cull rect mapping. See http://crbug.com/887558 for
       // details.
-      if (transform->Matrix().HasPerspective()) {
+      if (!transform->IsIdentityOr2DTranslation() &&
+          transform->Matrix().HasPerspective()) {
         subtree_should_use_infinite_cull_rect = true;
         return true;
       }
@@ -164,7 +165,7 @@ bool HasScrolledEnough(const LayoutObject& object) {
     if (const auto* scroll_translation = properties->ScrollTranslation()) {
       const auto* scrollable_area = To<LayoutBox>(object).GetScrollableArea();
       DCHECK(scrollable_area);
-      gfx::Vector2dF delta = -scroll_translation->Get2dTranslation() -
+      gfx::Vector2dF delta = -scroll_translation->Translation2D() -
                              scrollable_area->LastCullRectUpdateScrollOffset();
       return object.FirstFragment().GetContentsCullRect().HasScrolledEnough(
           delta, *scroll_translation);

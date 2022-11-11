@@ -637,7 +637,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 
   if (paint_offset_translation) {
     TransformPaintPropertyNode::State state{
-        {gfx::Transform::MakeTranslation(*paint_offset_translation)}};
+        gfx::Vector2dF(*paint_offset_translation)};
     state.flags.flattens_inherited_transform =
         context_.should_flatten_inherited_transform;
     state.rendering_context_id = context_.rendering_context_id;
@@ -688,8 +688,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
-          gfx::Vector2dF(box_model.StickyPositionOffset()))}};
+      TransformPaintPropertyNode::State state{
+          gfx::Vector2dF(box_model.StickyPositionOffset())};
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kStickyPosition;
@@ -779,8 +779,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
           *To<Element>(box.GetNode())->GetAnchorScrollData();
       gfx::Vector2dF translation_offset =
           -anchor_scroll_data.AccumulatedScrollOffset();
-      TransformPaintPropertyNode::State state{
-          {gfx::Transform::MakeTranslation(translation_offset)}};
+      TransformPaintPropertyNode::State state{translation_offset};
 
       // TODO(crbug.com/1309178): We should disable composited scrolling if the
       // snapshot's scrollers do not match the current scrollers.
@@ -925,9 +924,16 @@ FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
                   object_, ComputedStyle::kExcludeTransformOrigin)
                   .ToTransform(),
               gfx::Point3F(TransformHelper::ComputeTransformOrigin(object_))};
+    } else {
+      // We composite the object but can't start composited animation. Still
+      // keep the compositing reason because it still improves performance of
+      // main thread animation, but avoid the 2d translation optimization to
+      // meet the requirement of TransformPaintPropertyNode.
+      return {object_.LocalToSVGParentTransform().ToTransform()};
     }
   }
-  return {object_.LocalToSVGParentTransform().ToTransform()};
+  return TransformPaintPropertyNode::TransformAndOrigin(
+      object_.LocalToSVGParentTransform());
 }
 
 // SVG does not use the general transform update of |UpdateTransform|, instead
@@ -1102,6 +1108,16 @@ static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
                            gfx::Transform& matrix)) {
   gfx::Transform matrix;
   compute_matrix(box.StyleRef(), size, matrix);
+  // If we are running transform animation on compositor, we should
+  // disable 2d translation optimization to ensure that the compositor
+  // gets the correct origin (which might be omitted by the optimization)
+  // to the compositor, in case later animated values will use the origin.
+  // See http://crbug.com/937929 for why we are not using
+  // style.IsRunningTransformAnimationOnCompositor() etc. here.
+  if (!has_transform_animation_compositing_reasons &&
+      matrix.IsIdentityOr2DTranslation()) {
+    return {matrix.To2dTranslation()};
+  }
   return {matrix, GetTransformOrigin(box, size)};
 }
 
@@ -1218,15 +1234,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
 
   if (const auto* transform = (properties_->*getter)()) {
     context_.current.transform = transform;
-    if (!transform->Matrix().Is2dTransform()) {
+    if (!transform->IsIdentityOr2DTranslation() &&
+        !transform->Matrix().Is2dTransform()) {
       // We need to not flatten from this node through to this element's
       // transform node.  (If this is the transform node, we'll undo
       // this in the caller.)
       context_.should_flatten_inherited_transform = false;
     }
-    if (transform->IsIdentityOr2dTranslation()) {
+    if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
-          transform->Get2dTranslation();
+          transform->Translation2D();
     }
   }
 }
@@ -2071,7 +2088,7 @@ static PhysicalOffset VisualOffsetFromPaintOffsetRoot(
     if (const auto* scroll_translation = properties->ScrollTranslation()) {
       // VisualOffsetFromAncestor() uses integer-snapped scroll offsets. Do the
       // same here, to cancel out the scroll offset correctly.
-      gfx::Vector2dF scroll_offset = -scroll_translation->Get2dTranslation();
+      gfx::Vector2dF scroll_offset = -scroll_translation->Translation2D();
       result += PhysicalOffset::FromVector2dFFloor(
           gfx::ToFlooredVector2d(scroll_offset));
     }
@@ -2269,9 +2286,10 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       gfx::Transform matrix;
       matrix.ApplyPerspectiveDepth(style.UsedPerspective());
       TransformPaintPropertyNode::State state{
-          {matrix,
-           gfx::Point3F(PerspectiveOrigin(To<LayoutBox>(object_)) +
-                        gfx::Vector2dF(context_.current.paint_offset))}};
+          TransformPaintPropertyNode::TransformAndOrigin(
+              matrix,
+              gfx::Point3F(PerspectiveOrigin(To<LayoutBox>(object_)) +
+                           gfx::Vector2dF(context_.current.paint_offset)))};
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
@@ -2305,7 +2323,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     }
     if (!content_to_parent_space.IsIdentity()) {
       TransformPaintPropertyNode::State state;
-      state.transform_and_origin = {content_to_parent_space.ToTransform()};
+      state.transform_and_origin =
+          TransformPaintPropertyNode::TransformAndOrigin(
+              content_to_parent_space);
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
@@ -2473,8 +2493,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       DCHECK(box.GetScrollableArea());
 
       gfx::PointF scroll_position = box.GetScrollableArea()->ScrollPosition();
-      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
-          -scroll_position.OffsetFromOrigin())}};
+      TransformPaintPropertyNode::State state{
+          -scroll_position.OffsetFromOrigin()};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
         context_.current.pending_scroll_anchor_adjustment +=
             box.GetScrollableArea()->PendingScrollAnchorAdjustment();
@@ -2541,8 +2561,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
     // A scroller creates a layout shift root, so we just calculate one scroll
     // offset delta without accumulation.
     context_.current.scroll_offset_to_layout_shift_root_delta =
-        scroll_translation->Get2dTranslation() -
-        full_context_.old_scroll_offset;
+        scroll_translation->Translation2D() - full_context_.old_scroll_offset;
   }
 }
 
@@ -3041,7 +3060,7 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
     return true;
   for (const TransformPaintPropertyNode* transform :
        properties->AllCSSTransformPropertiesOutsideToInside()) {
-    if (transform && !transform->IsIdentityOr2dTranslation())
+    if (transform && !transform->IsIdentityOr2DTranslation())
       return true;
   }
   if (properties->ReplacedContentTransform())
@@ -3226,14 +3245,14 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
       // of additional_offset_to_layout_shift_root_delta is the difference
       // between the old and new paint offset translation.
       context.pending_additional_offset_to_layout_shift_root_delta =
-          -PhysicalOffset::FromVector2dFRound(translation->Get2dTranslation());
+          -PhysicalOffset::FromVector2dFRound(translation->Translation2D());
     }
     gfx::Vector2dF translation2d;
     for (const TransformPaintPropertyNode* transform :
          properties->AllCSSTransformPropertiesOutsideToInside()) {
       if (transform) {
-        if (transform->IsIdentityOr2dTranslation()) {
-          translation2d += transform->Get2dTranslation();
+        if (transform->IsIdentityOr2DTranslation()) {
+          translation2d += transform->Translation2D();
         } else {
           translation2d = gfx::Vector2dF();
           break;
@@ -4090,7 +4109,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   if (const auto* properties = object_.FirstFragment().PaintProperties()) {
     if (const auto* old_scroll_translation = properties->ScrollTranslation()) {
       DCHECK(context_.was_layout_shift_root);
-      context_.old_scroll_offset = old_scroll_translation->Get2dTranslation();
+      context_.old_scroll_offset = old_scroll_translation->Translation2D();
     }
   }
 
@@ -4295,7 +4314,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
     DCHECK(box.HasSelfPaintingLayer());
     gfx::Vector2dF old_scroll_offset;
     if (const auto* scroll_translation = properties->ScrollTranslation()) {
-      old_scroll_offset = scroll_translation->Get2dTranslation();
+      old_scroll_offset = scroll_translation->Translation2D();
     }
     OldCullRectUpdater::PaintPropertiesChanged(
         object, *box.Layer(), properties_changed, old_scroll_offset);
@@ -4368,8 +4387,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
     if (const auto* properties = object_.FirstFragment().PaintProperties()) {
       if (const auto* scroll_translation = properties->ScrollTranslation()) {
-        if (scroll_translation->Get2dTranslation() !=
-            context_.old_scroll_offset) {
+        if (scroll_translation->Translation2D() != context_.old_scroll_offset) {
           // Scrolling can change overlap relationship for elements fixed to an
           // overflow: hidden view that programmatically scrolls via script.
           // In this case the fixed transform doesn't have enough information to

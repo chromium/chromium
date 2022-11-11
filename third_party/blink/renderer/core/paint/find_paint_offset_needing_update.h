@@ -38,7 +38,7 @@ class FindPaintOffsetNeedingUpdateScope {
     if (const auto* properties = fragment_data.PaintProperties()) {
       if (const auto* translation = properties->PaintOffsetTranslation()) {
         old_parent_ = translation->Parent();
-        old_translation_ = translation->Get2dTranslation();
+        old_translation_ = translation->Translation2D();
       }
     }
   }
@@ -54,7 +54,7 @@ class FindPaintOffsetNeedingUpdateScope {
     if (const auto* properties = fragment_data_.PaintProperties()) {
       if (const auto* translation = properties->PaintOffsetTranslation()) {
         new_parent = translation->Parent();
-        new_translation = translation->Get2dTranslation();
+        new_translation = translation->Translation2D();
       }
     }
     DCHECK_EQ(!!old_translation_, !!new_translation) << object_;

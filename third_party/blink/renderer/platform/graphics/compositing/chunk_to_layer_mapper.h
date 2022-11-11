@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 
 namespace blink {
 
@@ -32,7 +33,7 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   gfx::Rect MapVisualRect(const gfx::Rect&) const;
 
   // Returns the combined transform from the current chunk to the layer.
-  const gfx::Transform& Transform() const { return transform_; }
+  SkMatrix Transform() const { return translation_2d_or_matrix_.ToSkMatrix(); }
 
   // Returns the combined clip from the current chunk to the layer if it can
   // be calculated (there is no filter that moves pixels), or infinite loose
@@ -51,7 +52,7 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   // The following fields are chunk-specific which are updated in
   // SwitchToChunk().
   PropertyTreeState chunk_state_;
-  gfx::Transform transform_;
+  GeometryMapper::Translation2DOrMatrix translation_2d_or_matrix_;
   FloatClipRect clip_rect_;
   RasterEffectOutset raster_effect_outset_ = RasterEffectOutset::kNone;
   // True if there is any pixel-moving filter between chunk state and layer

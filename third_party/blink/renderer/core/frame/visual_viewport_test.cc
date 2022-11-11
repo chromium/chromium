@@ -371,13 +371,14 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
     EXPECT_EQ(gfx::Transform::MakeScale(2),
               visual_viewport.GetPageScaleNode()->Matrix());
     EXPECT_EQ(gfx::Vector2dF(0, -300),
-              visual_viewport.GetScrollTranslationNode()->Get2dTranslation());
+              visual_viewport.GetScrollTranslationNode()->Translation2D());
     auto expected_projection = gfx::Transform::MakeScale(2);
     expected_projection.Translate(0, -300);
     EXPECT_EQ(expected_projection,
               GeometryMapper::SourceToDestinationProjection(
                   *visual_viewport.GetScrollTranslationNode(),
-                  TransformPaintPropertyNode::Root()));
+                  TransformPaintPropertyNode::Root())
+                  .Matrix());
   }
 
   // Perform the resizing
@@ -396,13 +397,14 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
     EXPECT_EQ(gfx::Transform::MakeScale(4),
               visual_viewport.GetPageScaleNode()->Matrix());
     EXPECT_EQ(gfx::Vector2dF(0, -75),
-              visual_viewport.GetScrollTranslationNode()->Get2dTranslation());
+              visual_viewport.GetScrollTranslationNode()->Translation2D());
     auto expected_projection = gfx::Transform::MakeScale(4);
     expected_projection.Translate(0, -75);
     EXPECT_EQ(expected_projection,
               GeometryMapper::SourceToDestinationProjection(
                   *visual_viewport.GetScrollTranslationNode(),
-                  TransformPaintPropertyNode::Root()));
+                  TransformPaintPropertyNode::Root())
+                  .Matrix());
   }
 }
 
@@ -460,13 +462,14 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
     EXPECT_EQ(gfx::Transform::MakeScale(2),
               visual_viewport.GetPageScaleNode()->Matrix());
     EXPECT_EQ(gfx::Vector2dF(-150, 0),
-              visual_viewport.GetScrollTranslationNode()->Get2dTranslation());
+              visual_viewport.GetScrollTranslationNode()->Translation2D());
     auto expected_projection = gfx::Transform::MakeScale(2);
     expected_projection.Translate(-150, 0);
     EXPECT_EQ(expected_projection,
               GeometryMapper::SourceToDestinationProjection(
                   *visual_viewport.GetScrollTranslationNode(),
-                  TransformPaintPropertyNode::Root()));
+                  TransformPaintPropertyNode::Root())
+                  .Matrix());
   }
 
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(200, 100));
@@ -484,13 +487,14 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
     EXPECT_EQ(gfx::Transform::MakeScale(4),
               visual_viewport.GetPageScaleNode()->Matrix());
     EXPECT_EQ(gfx::Vector2dF(-150, 0),
-              visual_viewport.GetScrollTranslationNode()->Get2dTranslation());
+              visual_viewport.GetScrollTranslationNode()->Translation2D());
     auto expected_projection = gfx::Transform::MakeScale(4);
     expected_projection.Translate(-150, 0);
     EXPECT_EQ(expected_projection,
               GeometryMapper::SourceToDestinationProjection(
                   *visual_viewport.GetScrollTranslationNode(),
-                  TransformPaintPropertyNode::Root()));
+                  TransformPaintPropertyNode::Root())
+                  .Matrix());
   }
 }
 
