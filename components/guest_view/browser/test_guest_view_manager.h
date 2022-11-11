@@ -86,8 +86,6 @@ class TestGuestViewManager : public GuestViewManager {
   int last_instance_id_removed() const { return last_instance_id_removed_; }
 
   // Returns the list of guests that were created by this manager.
-  void DeprecatedGetGuestWebContentsList(
-      std::vector<content::WebContents*>* guest_web_contents_list);
   void GetGuestRenderFrameHostList(
       std::vector<content::RenderFrameHost*>* guest_render_frame_host_list);
 

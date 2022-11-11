@@ -206,17 +206,6 @@ void TestGuestViewManager::AttachGuest(int embedder_process_id,
   }
 }
 
-void TestGuestViewManager::DeprecatedGetGuestWebContentsList(
-    std::vector<content::WebContents*>* guest_web_contents_list) {
-  for (auto& watcher : guest_view_watchers_) {
-    if (!watcher->IsDeleted()) {
-      auto ftn_id = watcher->GetFrameTreeNodeId();
-      guest_web_contents_list->push_back(
-          content::WebContents::FromFrameTreeNodeId(ftn_id));
-    }
-  }
-}
-
 void TestGuestViewManager::GetGuestRenderFrameHostList(
     std::vector<content::RenderFrameHost*>* guest_render_frame_host_list) {
   for (auto& watcher : guest_view_watchers_) {
