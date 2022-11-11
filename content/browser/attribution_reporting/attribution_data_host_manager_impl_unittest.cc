@@ -1131,7 +1131,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                                         raw_ref(task_environment_)};
     data_host_manager_.RegisterNavigationDataHost(
         data_host_remote.data_host.BindNewPipeAndPassReceiver(),
-        attribution_src_token);
+        attribution_src_token, AttributionInputEvent());
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
@@ -1274,7 +1274,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
-      attribution_src_token);
+      attribution_src_token, AttributionInputEvent());
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1315,7 +1315,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -1333,7 +1334,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -1351,7 +1353,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
@@ -1371,7 +1374,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   data_host_manager_.NotifyNavigationFailure(attribution_src_token);
 
   // Wait for parsing to finish.
@@ -1388,12 +1392,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token, source_site,
@@ -1415,12 +1421,14 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, "!!!invalid json", reporter, source_site);
+      attribution_src_token, "!!!invalid json", reporter, source_site,
+      AttributionInputEvent());
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token, source_site,
@@ -1447,7 +1455,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1497,9 +1506,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
 
   // Wait for parsing.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1545,9 +1556,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
   data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
+      attribution_src_token, kRegisterSourceJson, reporter, source_site,
+      AttributionInputEvent());
 
   // Wait for parsing.
   data_host_manager_.NotifyNavigationForDataHost(
@@ -1659,7 +1672,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
       source_data_host_remote.BindNewPipeAndPassReceiver(),
-      attribution_src_token);
+      attribution_src_token, AttributionInputEvent());
 
   mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1948,7 +1961,7 @@ TEST_F(AttributionDataHostManagerImplTest, InsecureNavigationOrigin_Dropped) {
     mojo::Remote<blink::mojom::AttributionDataHost> source_data_host_remote;
     data_host_manager_.RegisterNavigationDataHost(
         source_data_host_remote.BindNewPipeAndPassReceiver(),
-        attribution_src_token);
+        attribution_src_token, AttributionInputEvent());
 
     mojo::Remote<blink::mojom::AttributionDataHost> trigger_data_host_remote;
     data_host_manager_.RegisterDataHost(
@@ -2052,7 +2065,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   const blink::AttributionSrcToken attribution_src_token;
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterNavigationDataHost(
-      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token);
+      data_host_remote.BindNewPipeAndPassReceiver(), attribution_src_token,
+      AttributionInputEvent());
 
   data_host_manager_.NotifyNavigationForDataHost(
       attribution_src_token, url::Origin::Create(GURL("https://s.test")),
@@ -2089,12 +2103,14 @@ TEST_F(AttributionDataHostManagerImplTest,
     base::HistogramTester histograms;
 
     EXPECT_TRUE(data_host_manager_.RegisterNavigationDataHost(
-        data_host_remote1.BindNewPipeAndPassReceiver(), attribution_src_token));
+        data_host_remote1.BindNewPipeAndPassReceiver(), attribution_src_token,
+        AttributionInputEvent()));
 
     // This one should not be registered, as `attribution_src_token` is already
     // associated with a receiver.
     EXPECT_FALSE(data_host_manager_.RegisterNavigationDataHost(
-        data_host_remote2.BindNewPipeAndPassReceiver(), attribution_src_token));
+        data_host_remote2.BindNewPipeAndPassReceiver(), attribution_src_token,
+        AttributionInputEvent()));
 
     // kRegistered = 0.
     histograms.ExpectUniqueSample("Conversions.NavigationDataHostStatus", 0, 1);

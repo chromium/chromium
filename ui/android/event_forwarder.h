@@ -7,13 +7,28 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "ui/android/ui_android_export.h"
 
 namespace ui {
 
+class MotionEventAndroid;
 class ViewAndroid;
 
-class EventForwarder {
+class UI_ANDROID_EXPORT EventForwarder {
  public:
+  // Interface for observing events on the `EventForwarder`.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnTouchEvent(const ui::MotionEventAndroid&) {}
+
+    virtual void OnMouseEvent(const ui::MotionEventAndroid&) {}
+
+    virtual void OnGenericMotionEvent(const ui::MotionEventAndroid&) {}
+  };
+
   EventForwarder(const EventForwarder&) = delete;
   EventForwarder& operator=(const EventForwarder&) = delete;
 
@@ -131,6 +146,10 @@ class EventForwarder {
                    jlong time_ms,
                    jboolean prevent_boosting);
 
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
+
  private:
   friend class ViewAndroid;
 
@@ -140,6 +159,8 @@ class EventForwarder {
 
   const raw_ptr<ViewAndroid> view_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ui

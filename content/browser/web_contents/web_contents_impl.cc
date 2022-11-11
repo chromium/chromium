@@ -957,12 +957,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
           &WebContentsImpl::OnScreensChange, base::Unretained(this)));
 
-  // AttributionHost takes a weak ref on |this|, so it must be created outside
-  // of the initializer list.
-  if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
-    AttributionHost::CreateForWebContents(this);
-  }
-
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     SharedStorageBudgetCharger::CreateForWebContents(this);
   }
@@ -3121,6 +3115,12 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 #if BUILDFLAG(IS_ANDROID)
   DateTimeChooserAndroid::CreateForWebContents(this);
 #endif
+
+  // AttributionHost must be created after `view_->CreateView()` is called as it
+  // may invoke `WebContentsAndroid::AddObserver()`.
+  if (base::FeatureList::IsEnabled(blink::features::kConversionMeasurement)) {
+    AttributionHost::CreateForWebContents(this);
+  }
 
   // BrowserPluginGuest::Init needs to be called after this WebContents has
   // a RenderWidgetHostViewChildFrame. That is, |view_->CreateView| above.

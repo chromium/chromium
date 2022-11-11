@@ -7,7 +7,11 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -20,7 +24,12 @@ class Origin;
 
 namespace content {
 
+struct AttributionInputEvent;
 class WebContents;
+
+#if BUILDFLAG(IS_ANDROID)
+class AttributionInputEventTrackerAndroid;
+#endif
 
 // Class responsible for listening to conversion events originating from blink,
 // and verifying that they are valid. Owned by the WebContents. Lifetime is
@@ -40,6 +49,12 @@ class CONTENT_EXPORT AttributionHost
   static void BindReceiver(
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
       RenderFrameHost* rfh);
+
+#if BUILDFLAG(IS_ANDROID)
+  AttributionInputEventTrackerAndroid* input_event_tracker() {
+    return input_event_tracker_android_.get();
+  }
+#endif
 
  private:
   friend class AttributionHostTestPeer;
@@ -67,6 +82,8 @@ class CONTENT_EXPORT AttributionHost
   // associated `AttributionDataHost` failed, if necessary.
   void MaybeNotifyFailedSourceNavigation(NavigationHandle* navigation_handle);
 
+  AttributionInputEvent GetMostRecentNavigationInputEvent() const;
+
   // Map which stores the top-frame origin an impression occurred on for all
   // navigations with an associated impression, keyed by navigation ID.
   // Initiator origins are stored at navigation start time to have the best
@@ -79,10 +96,16 @@ class CONTENT_EXPORT AttributionHost
   //
   // A flat_map is used as the number of ongoing impression navigations is
   // expected to be very small in a given WebContents.
-  using NavigationSourceOriginMap = base::flat_map<int64_t, url::Origin>;
-  NavigationSourceOriginMap navigation_source_origins_;
+  struct NavigationInfo;
+  using NavigationInfoMap = base::flat_map<int64_t, NavigationInfo>;
+  NavigationInfoMap navigation_info_map_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<AttributionInputEventTrackerAndroid>
+      input_event_tracker_android_;
+#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

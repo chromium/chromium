@@ -33,6 +33,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -177,7 +178,8 @@ class MockDataHostManager : public AttributionDataHostManager {
       bool,
       RegisterNavigationDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       const blink::AttributionSrcToken& attribution_src_token),
+       const blink::AttributionSrcToken& attribution_src_token,
+       AttributionInputEvent input_event),
       (override));
 
   MOCK_METHOD(void,
@@ -185,7 +187,8 @@ class MockDataHostManager : public AttributionDataHostManager {
               (const blink::AttributionSrcToken& attribution_src_token,
                std::string header_value,
                url::Origin reporting_origin,
-               const url::Origin& source_origin),
+               const url::Origin& source_origin,
+               AttributionInputEvent input_event),
               (override));
 
   MOCK_METHOD(void,

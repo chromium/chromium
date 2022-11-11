@@ -228,6 +228,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void SetLayoutForTesting(int x, int y, int width, int height);
 
+  EventForwarder* event_forwarder() { return event_forwarder_.get(); }
+
  protected:
   void RemoveAllChildren(bool attached_to_window);
 

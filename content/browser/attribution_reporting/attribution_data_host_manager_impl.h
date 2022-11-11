@@ -54,12 +54,14 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       bool is_within_fenced_frame) override;
   bool RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token) override;
+      const blink::AttributionSrcToken& attribution_src_token,
+      AttributionInputEvent input_event) override;
   void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
       std::string header_value,
       url::Origin reporting_origin,
-      const url::Origin& source_origin) override;
+      const url::Origin& source_origin,
+      AttributionInputEvent input_event) override;
   void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
       const url::Origin& source_origin,

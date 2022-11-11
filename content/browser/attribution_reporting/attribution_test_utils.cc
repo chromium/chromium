@@ -22,6 +22,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -35,6 +37,10 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_input_event_tracker_android.h"
+#endif
 
 namespace content {
 
@@ -61,6 +67,12 @@ MockAttributionReportingContentBrowserClient::
 
 // static
 MockAttributionHost* MockAttributionHost::Override(WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  auto* old_host = AttributionHost::FromWebContents(web_contents);
+  if (auto* input_event_tracker = old_host->input_event_tracker()) {
+    input_event_tracker->RemoveObserverForTesting(web_contents);
+  }
+#endif
   auto host = base::WrapUnique(new MockAttributionHost(web_contents));
   auto* raw = host.get();
   web_contents->SetUserData(AttributionHost::UserDataKey(), std::move(host));

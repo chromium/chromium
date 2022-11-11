@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -168,6 +169,10 @@ struct AttributionDataHostManagerImpl::FrozenContext {
 
   // Whether the attribution is registered within a fenced frame tree.
   bool is_within_fenced_frame;
+
+  // Input event associated with the navigation for navigation source data
+  // hosts, `absl::nullopt` otherwise.
+  absl::optional<AttributionInputEvent> input_event;
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -190,6 +195,7 @@ struct AttributionDataHostManagerImpl::DelayedTrigger {
 struct AttributionDataHostManagerImpl::NavigationDataHost {
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   base::TimeTicks register_time;
+  AttributionInputEvent input_event;
 };
 
 struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
@@ -208,6 +214,9 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
   // The time the first registration header was received for the redirect chain.
   // Will not change over the course of the redirect chain.
   base::TimeTicks register_time;
+
+  // Input event associated with the navigation.
+  AttributionInputEvent input_event;
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -239,11 +248,13 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 
 bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    const blink::AttributionSrcToken& attribution_src_token) {
+    const blink::AttributionSrcToken& attribution_src_token,
+    AttributionInputEvent input_event) {
   auto [it, inserted] = navigation_data_host_map_.try_emplace(
       attribution_src_token,
       NavigationDataHost{.data_host = std::move(data_host),
-                         .register_time = base::TimeTicks::Now()});
+                         .register_time = base::TimeTicks::Now(),
+                         .input_event = input_event});
   // Should only be possible with a misbehaving renderer.
   if (!inserted)
     return false;
@@ -258,7 +269,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const blink::AttributionSrcToken& attribution_src_token,
     std::string header_value,
     url::Origin reporting_origin,
-    const url::Origin& source_origin) {
+    const url::Origin& source_origin,
+    AttributionInputEvent input_event) {
   if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
       !network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
     return;
@@ -275,7 +287,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   auto [it, inserted] = redirect_registrations_.try_emplace(
       attribution_src_token, NavigationRedirectSourceRegistrations{
                                  .source_origin = source_origin,
-                                 .register_time = base::TimeTicks::Now()});
+                                 .register_time = base::TimeTicks::Now(),
+                                 .input_event = input_event});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -313,7 +326,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
         FrozenContext{.context_origin = source_origin,
                       .source_type = AttributionSourceType::kNavigation,
                       .register_time = it->second.register_time,
-                      .is_within_fenced_frame = false});
+                      .is_within_fenced_frame = false,
+                      .input_event = it->second.input_event});
 
     navigation_data_host_map_.erase(it);
     RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
