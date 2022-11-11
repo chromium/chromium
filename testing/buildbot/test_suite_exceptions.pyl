@@ -2228,6 +2228,11 @@
       'Android FYI Release (Nexus 5X)',
     ],
     'modifications': {
+      'Android FYI Release (Samsung A13)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter',
+        ],
+      },
       'Android FYI Release (Samsung A23)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter',

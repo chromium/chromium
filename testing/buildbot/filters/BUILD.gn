@@ -257,6 +257,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.emulator_12.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_n.gl_tests.filter",
     "//testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
+    "//testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
     "//testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
   ]
 }

@@ -1,0 +1,2 @@
+# https://crbug.com/1368306
+-RasterInProcessCommandBufferTest.AllowedBetweenBeginEndRasterCHROMIUM
