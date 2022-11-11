@@ -1882,23 +1882,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R109-15201.0.0",
-        "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "DEDEDE_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "dedede",
-        "cros_img": "dedede-release/R108-15183.14.0",
+        "cros_img": "dedede-release/R109-15227.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1914,7 +1898,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R108-15183.28.0",
+        "cros_img": "dedede-release/R108-15183.38.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1930,7 +1914,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R107-15117.86.0",
+        "cros_img": "dedede-release/R107-15117.112.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1946,23 +1930,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R109-15201.0.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "eve",
-        "cros_img": "eve-release/R108-15183.14.0",
+        "cros_img": "eve-release/R109-15227.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1978,7 +1946,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R108-15183.28.0",
+        "cros_img": "eve-release/R108-15183.38.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1994,7 +1962,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R107-15117.87.0",
+        "cros_img": "eve-release/R107-15117.112.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2089,23 +2057,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R109-15201.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [],
-        "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R108-15183.14.0",
+        "cros_img": "jacuzzi-release/R109-15231.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2121,7 +2073,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R108-15183.28.0",
+        "cros_img": "jacuzzi-release/R108-15183.38.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2137,7 +2089,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R107-15117.86.0",
+        "cros_img": "jacuzzi-release/R107-15117.111.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -2190,24 +2142,7 @@
       "symupload",
       "strip_lacros_files"
     ],
-    "skylab_tests": [
-      {
-        "args": [],
-        "cros_board": "herobrine",
-        "cros_img": "herobrine-release/R109-15201.0.0",
-        "name": "lacros_fyi_tast_tests HEROBRINE_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros_unstable\" && !informational)",
-        "test": "lacros_fyi_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "HEROBRINE_RELEASE_LKGM"
-      }
-    ]
+    "skylab_tests": []
   },
   "linux-chrome": {
     "additional_compile_targets": [
