@@ -143,11 +143,6 @@ TEST_F(ReportSchedulerTimerTest, MultipleSetTimers_FiredAtAppropriateTime) {
   std::move(saved_cb_2).Run(absl::nullopt);
 }
 
-TEST_F(ReportSchedulerTimerTest, Refresh_CallsGetNextReportTime) {
-  EXPECT_CALL(*timer_delegate_, GetNextReportTime);
-  timer_->Refresh();
-}
-
 TEST_F(ReportSchedulerTimerTest, NetworkChange) {
   Checkpoint checkpoint;
   {

@@ -51,11 +51,7 @@ void ReportSchedulerTimer::MaybeSet(absl::optional<base::Time> reporting_time) {
   }
 }
 
-void ReportSchedulerTimer::Refresh() {
-  RefreshImpl(base::Time::Now());
-}
-
-void ReportSchedulerTimer::RefreshImpl(base::Time now) {
+void ReportSchedulerTimer::Refresh(base::Time now) {
   if (IsOffline()) {
     return;
   }
@@ -68,7 +64,7 @@ void ReportSchedulerTimer::RefreshImpl(base::Time now) {
 void ReportSchedulerTimer::OnTimerFired() {
   base::Time now = base::Time::Now();
   delegate_->OnReportingTimeReached(now);
-  RefreshImpl(now);
+  Refresh(now);
 }
 
 void ReportSchedulerTimer::OnConnectionChanged(

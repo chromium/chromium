@@ -67,13 +67,9 @@ class CONTENT_EXPORT ReportSchedulerTimer
   // timer is already set to fire earlier.
   void MaybeSet(absl::optional<base::Time> reporting_time);
 
-  // Updates the timer based on the returned value from
-  // `Delegate::GetNextReportTime()`.
-  void Refresh();
-
  private:
   void OnTimerFired();
-  void RefreshImpl(base::Time now);
+  void Refresh(base::Time now);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType) override;

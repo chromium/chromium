@@ -779,7 +779,6 @@ void AttributionManagerImpl::ClearData(
             std::move(done).Run();
 
             if (manager) {
-              manager->scheduler_timer_.Refresh();
               manager->NotifySourcesChanged();
               manager->NotifyReportsChanged(
                   AttributionReport::Type::kEventLevel);
