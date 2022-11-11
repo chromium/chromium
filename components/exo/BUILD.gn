@@ -308,6 +308,7 @@ source_set("unit_tests") {
       "data_source_unittest.cc",
       "display_unittest.cc",
       "drag_drop_operation_unittest.cc",
+      "event_latency_metrics_unittest.cc",
       "extended_drag_source_unittest.cc",
       "gamepad_unittest.cc",
       "gaming_seat_unittest.cc",

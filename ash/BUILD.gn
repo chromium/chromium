@@ -2836,6 +2836,7 @@ test("ash_unittests") {
     "metrics/stylus_metrics_recorder_unittest.cc",
     "metrics/task_switch_metrics_recorder_unittest.cc",
     "metrics/task_switch_time_tracker_unittest.cc",
+    "metrics/ui_metrics_recorder_unittest.cc",
     "metrics/user_metrics_recorder_unittest.cc",
     "multi_device_setup/multi_device_notification_presenter_unittest.cc",
     "policy/policy_recommendation_restorer_unittest.cc",
