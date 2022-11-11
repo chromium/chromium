@@ -64,12 +64,6 @@ class DownloadBubbleUIController
   virtual void InitOfflineItems(DownloadDisplayController* display_controller,
                                 base::OnceCallback<void()> callback);
 
-  // Submits download to download feedback service if the user has approved and
-  // the download is suitable for submission, then applies |command|.
-  // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
-  void MaybeSubmitDownloadToFeedbackService(DownloadUIModel* model,
-                                            DownloadCommands::Command command);
-
   // Process button press on the bubble.
   void ProcessDownloadButtonPress(DownloadUIModel* model,
                                   DownloadCommands::Command command);
@@ -145,17 +139,6 @@ class DownloadBubbleUIController
 
   // Common method for getting main and partial views.
   std::vector<DownloadUIModelPtr> GetDownloadUIModels(bool is_main_view);
-
-  // Submits the downloaded file to the safebrowsing download feedback service.
-  // Applies |command| if submission succeeds. Returns whether submission was
-  // successful.
-  bool SubmitDownloadToFeedbackService(DownloadUIModel* model,
-                                       DownloadCommands::Command command) const;
-
-  // Process Warning keep or discard button press on the bubble. Submit
-  // download to feedback service for non-mixed content downloads.
-  void ProcessDownloadWarningButtonPress(DownloadUIModel* model,
-                                         DownloadCommands::Command command);
 
   // Kick off retrying an eligible interrupted download.
   void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);

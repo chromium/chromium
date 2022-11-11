@@ -5375,12 +5375,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
       *(downloads[0])));
 
   // Begin feedback and check that the file is "stolen".
-  safe_browsing::SafeBrowsingService* sb_service =
-      g_browser_process->safe_browsing_service();
-  safe_browsing::DownloadProtectionService* download_protection_service =
-      sb_service->download_protection_service();
-  download_protection_service->MaybeBeginFeedbackForDownload(
-      browser()->profile(), downloads[0], DownloadCommands::DISCARD);
+  DownloadItemModel model(downloads[0]);
+  DownloadCommands(model.GetWeakPtr())
+      .ExecuteCommand(DownloadCommands::DISCARD);
   std::vector<DownloadItem*> updated_downloads;
   GetDownloads(browser(), &updated_downloads);
   ASSERT_TRUE(updated_downloads.empty());
@@ -5444,12 +5441,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_FeedbackServiceKeepDownload) {
       *(downloads[0])));
 
   // Begin feedback and check that file is still there.
-  safe_browsing::SafeBrowsingService* sb_service =
-      g_browser_process->safe_browsing_service();
-  safe_browsing::DownloadProtectionService* download_protection_service =
-      sb_service->download_protection_service();
-  download_protection_service->MaybeBeginFeedbackForDownload(
-      browser()->profile(), downloads[0], DownloadCommands::KEEP);
+  DownloadItemModel model(downloads[0]);
+  DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
   completion_observer->WaitForFinished();
 
   std::vector<DownloadItem*> updated_downloads;

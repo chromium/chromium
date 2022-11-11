@@ -57,7 +57,6 @@ class DownloadItemModel : public DownloadUIModel,
   bool MightBeMalicious() const override;
   bool IsMalicious() const override;
   bool IsMixedContent() const override;
-  bool ShouldAllowDownloadFeedback() const override;
   bool ShouldRemoveFromShelfWhenComplete() const override;
   bool ShouldShowDownloadStartedAnimation() const override;
   bool ShouldShowInShelf() const override;

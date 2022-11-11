@@ -278,9 +278,6 @@ TEST_F(DownloadFeedbackServiceTest, SingleFeedbackCompleteAndKeepDownload) {
                     bool _, download::DownloadItem::AcquireFileCallback arg) {
         download_discarded_callback = std::move(arg);
       });
-  EXPECT_CALL(item, ValidateDangerousDownload()).Times(1);
-  GURL empty_url;
-  EXPECT_CALL(item, GetURL()).WillOnce(ReturnRef(empty_url));
 
   DownloadFeedbackService service(&fake_download_service_,
                                   file_task_runner_.get());

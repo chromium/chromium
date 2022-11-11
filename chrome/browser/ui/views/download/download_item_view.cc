@@ -328,11 +328,11 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       l10n_util::GetStringUTF16(IDS_OPEN_DOWNLOAD_NOW)));
 
   save_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&DownloadItemView::SaveOrDiscardButtonPressed,
+      base::BindRepeating(&DownloadItemView::ExecuteCommand,
                           base::Unretained(this), DownloadCommands::KEEP)));
 
   discard_button_ = AddChildView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&DownloadItemView::SaveOrDiscardButtonPressed,
+      base::BindRepeating(&DownloadItemView::ExecuteCommand,
                           base::Unretained(this), DownloadCommands::DISCARD),
       l10n_util::GetStringUTF16(IDS_DISCARD_DOWNLOAD)));
 
@@ -539,13 +539,6 @@ void DownloadItemView::AnimationProgressed(const gfx::Animation* animation) {
 
 void DownloadItemView::AnimationEnded(const gfx::Animation* animation) {
   AnimationProgressed(animation);
-}
-
-void DownloadItemView::MaybeSubmitDownloadToFeedbackService(
-    DownloadCommands::Command command) {
-  if (!model_->ShouldAllowDownloadFeedback() ||
-      !SubmitDownloadToFeedbackService(command))
-    ExecuteCommand(command);
 }
 
 gfx::Size DownloadItemView::CalculatePreferredSize() const {
@@ -1240,15 +1233,6 @@ void DownloadItemView::OpenButtonPressed() {
   }
 }
 
-void DownloadItemView::SaveOrDiscardButtonPressed(
-    DownloadCommands::Command command) {
-  if (is_mixed_content(mode_))
-    ExecuteCommand(command);
-  else
-    MaybeSubmitDownloadToFeedbackService(command);
-  // WARNING: |this| may be deleted!
-}
-
 void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
   SetDropdownPressed(true);
 
@@ -1341,27 +1325,9 @@ void DownloadItemView::OpenDownloadDuringAsyncScanning() {
   model_->SetOpenWhenComplete(true);
 }
 
-bool DownloadItemView::SubmitDownloadToFeedbackService(
-    DownloadCommands::Command command) const {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  auto* const sb_service = g_browser_process->safe_browsing_service();
-  if (!sb_service)
-    return false;
-  auto* const dp_service = sb_service->download_protection_service();
-  if (!dp_service)
-    return false;
-  // TODO(shaktisahu): Enable feedback service for offline item.
-  return !model_->GetDownloadItem() ||
-         dp_service->MaybeBeginFeedbackForDownload(
-             shelf_->browser()->profile(), model_->GetDownloadItem(), command);
-#else
-  NOTREACHED();
-  return false;
-#endif
-}
-
 void DownloadItemView::ExecuteCommand(DownloadCommands::Command command) {
   commands_.ExecuteCommand(command);
+  // WARNING: |this| may be deleted!
 }
 
 std::u16string DownloadItemView::GetStatusTextForTesting() const {

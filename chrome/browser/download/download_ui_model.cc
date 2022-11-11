@@ -411,10 +411,6 @@ bool DownloadUIModel::IsMixedContent() const {
   return false;
 }
 
-bool DownloadUIModel::ShouldAllowDownloadFeedback() const {
-  return false;
-}
-
 bool DownloadUIModel::ShouldRemoveFromShelfWhenComplete() const {
   return false;
 }

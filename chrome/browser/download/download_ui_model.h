@@ -277,9 +277,6 @@ class DownloadUIModel {
   // Implies IsDangerous() and !IsMalicious().
   virtual bool IsMixedContent() const;
 
-  // Is safe browsing download feedback feature available for this download?
-  virtual bool ShouldAllowDownloadFeedback() const;
-
   // Returns |true| if this download is expected to complete successfully and
   // thereafter be removed from the shelf.  Downloads that are opened
   // automatically or are temporary will be removed from the shelf on successful

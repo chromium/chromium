@@ -203,6 +203,31 @@ void MaybeSendDownloadReport(const GURL& url,
     }
   }
 }
+
+// Submits download to download feedback service if the user has approved and
+// the download is suitable for submission.
+// If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
+bool MaybeSubmitDownloadToFeedbackService(DownloadCommands::Command command,
+                                          Profile* profile,
+                                          download::DownloadItem* download) {
+  if (!download->IsDangerous() || download->IsMixedContent()) {
+    return false;
+  }
+  if (!safe_browsing::DownloadFeedbackService::IsEnabledForDownload(
+          *download)) {
+    return false;
+  }
+
+  auto* const sb_service = g_browser_process->safe_browsing_service();
+  if (!sb_service)
+    return false;
+  auto* const dp_service = sb_service->download_protection_service();
+  if (!dp_service)
+    return false;
+  // TODO(shaktisahu): Enable feedback service for offline item.
+  return dp_service->MaybeBeginFeedbackForDownload(profile, download, command);
+}
+
 #endif
 
 // Enum representing reasons why a download is not preferred to be opened in
@@ -370,17 +395,6 @@ bool DownloadItemModel::IsMalicious() const {
 
 bool DownloadItemModel::IsMixedContent() const {
   return download_->IsMixedContent();
-}
-
-bool DownloadItemModel::ShouldAllowDownloadFeedback() const {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  if (!IsDangerous())
-    return false;
-  return safe_browsing::DownloadFeedbackService::IsEnabledForDownload(
-      *download_);
-#else
-  return false;
-#endif
 }
 
 bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
@@ -851,6 +865,11 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       [[fallthrough]];
     case DownloadCommands::KEEP:
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+      if (command == DownloadCommands::KEEP) {
+        MaybeSubmitDownloadToFeedbackService(command, profile(), download_);
+      }
+#endif
       if (IsMixedContent()) {
         download_->ValidateMixedContentDownload();
         break;
@@ -869,6 +888,10 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/false,
                               profile(), download_);
+      if (MaybeSubmitDownloadToFeedbackService(command, profile(), download_)) {
+        // Skip Remove because it is handled by download feedback service.
+        break;
+      }
 #endif
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;

@@ -378,18 +378,6 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
   return list;
 }
 
-void DownloadBubbleUIController::ProcessDownloadWarningButtonPress(
-    DownloadUIModel* model,
-    DownloadCommands::Command command) {
-  DownloadCommands commands(model->GetWeakPtr());
-  DCHECK(command == DownloadCommands::KEEP ||
-         command == DownloadCommands::DISCARD);
-  if (model->IsMixedContent())
-    commands.ExecuteCommand(command);
-  else
-    MaybeSubmitDownloadToFeedbackService(model, command);
-}
-
 void DownloadBubbleUIController::ProcessDownloadButtonPress(
     DownloadUIModel* model,
     DownloadCommands::Command command) {
@@ -397,10 +385,6 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
   base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
                                 DownloadCommands::MAX + 1);
   switch (command) {
-    case DownloadCommands::KEEP:
-    case DownloadCommands::DISCARD:
-      ProcessDownloadWarningButtonPress(model, command);
-      break;
     case DownloadCommands::REVIEW:
       model->ReviewScanningVerdict(
           browser_->tab_strip_model()->GetActiveWebContents());
@@ -418,42 +402,14 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::KEEP:
+    case DownloadCommands::DISCARD:
       commands.ExecuteCommand(command);
       break;
     default:
       NOTREACHED() << "Unexpected button pressed on download bubble: "
                    << command;
   }
-}
-
-void DownloadBubbleUIController::MaybeSubmitDownloadToFeedbackService(
-    DownloadUIModel* model,
-    DownloadCommands::Command command) {
-  DownloadCommands commands(model->GetWeakPtr());
-  if (!model->ShouldAllowDownloadFeedback() ||
-      !SubmitDownloadToFeedbackService(model, command)) {
-    commands.ExecuteCommand(command);
-  }
-}
-
-bool DownloadBubbleUIController::SubmitDownloadToFeedbackService(
-    DownloadUIModel* model,
-    DownloadCommands::Command command) const {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  auto* const sb_service = g_browser_process->safe_browsing_service();
-  if (!sb_service)
-    return false;
-  auto* const dp_service = sb_service->download_protection_service();
-  if (!dp_service)
-    return false;
-  // TODO(shaktisahu): Enable feedback service for offline item.
-  return !model->GetDownloadItem() ||
-         dp_service->MaybeBeginFeedbackForDownload(
-             profile_, model->GetDownloadItem(), command);
-#else
-  NOTREACHED();
-  return false;
-#endif
 }
 
 void DownloadBubbleUIController::RetryDownload(

@@ -104,11 +104,6 @@ class DownloadItemView : public views::View,
   DownloadUIModel* model() { return model_.get(); }
   const DownloadUIModel* model() const { return model_.get(); }
 
-  // Submits download to download feedback service if the user has approved and
-  // the download is suitable for submission, then applies |command|.
-  // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
-  void MaybeSubmitDownloadToFeedbackService(DownloadCommands::Command command);
-
   std::u16string GetStatusTextForTesting() const;
   void OpenItemForTesting();
 
@@ -209,7 +204,6 @@ class DownloadItemView : public views::View,
 
   // Called when various buttons are pressed.
   void OpenButtonPressed();
-  void SaveOrDiscardButtonPressed(DownloadCommands::Command command);
   void DropdownButtonPressed(const ui::Event& event);
   void ReviewButtonPressed();
 
@@ -224,11 +218,6 @@ class DownloadItemView : public views::View,
 
   // Opens a file while async scanning is still pending.
   void OpenDownloadDuringAsyncScanning();
-
-  // Submits the downloaded file to the safebrowsing download feedback service.
-  // Applies |command| if submission succeeds. Returns whether submission was
-  // successful.
-  bool SubmitDownloadToFeedbackService(DownloadCommands::Command command) const;
 
   // Forwards |command| to |commands_|; useful for callbacks.
   void ExecuteCommand(DownloadCommands::Command command);

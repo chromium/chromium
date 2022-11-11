@@ -137,10 +137,6 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
       base::BindOnce(&DownloadFeedbackService::BeginFeedbackOrDeleteFile,
                      file_task_runner_, weak_ptr_factory_.GetWeakPtr(), profile,
                      pings->ping_request(), pings->ping_response()));
-  if (download_command == DownloadCommands::KEEP) {
-    DownloadItemModel model(download);
-    DownloadCommands(model.GetWeakPtr()).ExecuteCommand(download_command);
-  }
 }
 
 // static
