@@ -32,7 +32,7 @@
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Marker &amp;alt</translation>
 <translation id="19085484004813472">Dette er en ny funksjon</translation>
-<translation id="2006524834898217237">Kontrollér at enheten er koblet til internett.</translation>
+<translation id="2006524834898217237">Kontroller at enheten er koblet til internett.</translation>
 <translation id="208586643495776849">Prøv på nytt</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -213,7 +213,7 @@
 <translation id="8867568208303837180">Sender …</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8996630695507351249">Kontrollér at <ph name="TARGET_DEVICE_NAME" /> er koblet til internett.</translation>
+<translation id="8996630695507351249">Kontroller at <ph name="TARGET_DEVICE_NAME" /> er koblet til internett.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek}other{# sek}}</translation>
 <translation id="9059834730836941392">Skjul varselet</translation>
 <translation id="9170848237812810038">&amp;Angre</translation>

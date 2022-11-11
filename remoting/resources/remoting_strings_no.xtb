@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
-<translation id="1002108253973310084">Det ble oppdaget en ikke-kompatibel protokollversjon. Kontrollér at du har nyeste programvareversjon installert på begge datamaskinene, og prøv igjen.</translation>
+<translation id="1002108253973310084">Det ble oppdaget en ikke-kompatibel protokollversjon. Kontroller at du har nyeste programvareversjon installert på begge datamaskinene, og prøv igjen.</translation>
 <translation id="1008557486741366299">Ikke nå</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1297009705180977556">Det oppsto en feil ved tilkobling til <ph name="HOSTNAME" /></translation>
@@ -43,7 +43,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="2919669478609886916">Du deler denne datamaskinen med en annen bruker. Vil du fortsette å dele?</translation>
 <translation id="2939145106548231838">Autentiser for å være vert</translation>
 <translation id="3027681561976217984">Berøringsmodus</translation>
-<translation id="3106379468611574572">Den eksterne datamaskinen svarer ikke på tilkoblingsforespørsler. Kontrollér at datamaskinen er koblet til Internett, og prøv på nytt.</translation>
+<translation id="3106379468611574572">Den eksterne datamaskinen svarer ikke på tilkoblingsforespørsler. Kontroller at datamaskinen er koblet til Internett, og prøv på nytt.</translation>
 <translation id="3150823315463303127">Verten kunne ikke lese policyen.</translation>
 <translation id="3171922709365450819">Denne enheten støttes ikke av denne klienten fordi den krever tredjepartsautentisering.</translation>
 <translation id="3197730452537982411">Eksternt skrivebord</translation>
@@ -66,7 +66,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4060747889721220580">Last ned fil</translation>
 <translation id="4126409073460786861">Når konfigureringen er fullført, laster du inn denne siden på nytt, så kan du bruke datamaskinen ved å velge enhet og skrive inn PIN-koden.</translation>
 <translation id="4145029455188493639">Logget på som <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="4155497795971509630">Det mangler noen nødvendige komponenter. Kontrollér at du kjører den nyeste versjonen av programvaren, og prøv på nytt.</translation>
+<translation id="4155497795971509630">Det mangler noen nødvendige komponenter. Kontroller at du kjører den nyeste versjonen av programvaren, og prøv på nytt.</translation>
 <translation id="4176825807642096119">Tilgangskode</translation>
 <translation id="4227991223508142681">Verktøy for vertsidentitetshåndtering</translation>
 <translation id="4240294130679914010">Avinstalleringsprogram for Chromoting-vert</translation>
@@ -164,7 +164,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="806699900641041263">Kobler til <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Hvis du vil bruke Chrome Eksternt skrivebord, må du legge til en Google-konto på enheten din.</translation>
 <translation id="809687642899217504">Mine datamaskiner</translation>
-<translation id="8116630183974937060">Det oppsto en nettverksfeil. Kontrollér at enheten er tilkoblet nettet, og prøv på nytt.</translation>
+<translation id="8116630183974937060">Det oppsto en nettverksfeil. Kontroller at enheten er tilkoblet nettet, og prøv på nytt.</translation>
 <translation id="8295077433896346116">For å bruke <ph name="PRODUCT_NAME" /> må du innvilge «Tilgjengelighet»-tillatelsen, slik at inndata fra den eksterne maskinen kan sendes til denne Macen.
 
 For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under. I innstillingsfeltet for «Tilgjengelighet» som åpnes, merker du av i boksen ved siden av «<ph name="SERVICE_SCRIPT_NAME" />».

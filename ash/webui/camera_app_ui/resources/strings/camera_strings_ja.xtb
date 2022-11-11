@@ -12,6 +12,7 @@
 <translation id="1300209025925956156">ドキュメントをスキャンします</translation>
 <translation id="1309250603447638106">ドキュメント スキャン機能のアップデートをダウンロードしています</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。アクセスするには検索+左矢印キーを押します。</translation>
+<translation id="1417314334557041815">ページ <ph name="INDEX" /> を編集</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> が外されました。</translation>
 <translation id="1473110567575736769">3 秒タイマー</translation>
@@ -24,6 +25,7 @@
 <translation id="1644345013557678440">HD（720p）</translation>
 <translation id="1664224225747386870">何も記録されていません</translation>
 <translation id="1838104802459806957">上にティルト</translation>
+<translation id="1843105061469674856">追加のページをスキャン</translation>
 <translation id="1851169887664797861">カメラの設定が追加されました</translation>
 <translation id="1851616744363735765">一時停止</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> をエクスポートできません</translation>
@@ -81,6 +83,7 @@
 <translation id="414641094616694804">このカメラでは解像度を変更できません</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
 <translation id="4281620174117014503">解像度: 中</translation>
+<translation id="428234092390943511">ページのサムネイル</translation>
 <translation id="4329152592498422850">スクエア写真の撮影に切り替え</translation>
 <translation id="4340659173795395806">複数ページの PDF を作成できるようになりました</translation>
 <translation id="4383571725254449280">パフォーマンス ログを印刷する</translation>

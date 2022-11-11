@@ -84,6 +84,7 @@
 <translation id="753732157349120914">தாவல் மாற்றி</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Googleளில் இருந்து <ph name="REVIEWS_COUNT_ONE" /> கருத்து}other{Googleளில் இருந்து <ph name="REVIEWS_COUNT_MANY" /> கருத்துகள்}}</translation>
 <translation id="7559245342362162951">குழு தாவல்களை முழுத்திரை கட்டத்தில் காட்டு</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பகிரும்}other{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பகிரும்}}</translation>
 <translation id="7792771145871471484">பரிந்துரைகளை சரிபார்க்கும்.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவாக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவாக்கும்}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை}other{ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்}}</translation>
