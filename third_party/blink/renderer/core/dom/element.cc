@@ -7484,7 +7484,7 @@ void Element::UpdatePresentationAttributeStyle() {
     // those functions aren't necessarily called every time. This function
     // actually gets called every time, so we must do this check here.
     AttributeCollection attributes = AttributesWithoutUpdate();
-    auto* hidden_attr = attributes.Find("hidden");
+    auto* hidden_attr = attributes.Find(html_names::kHiddenAttr);
     if (hidden_attr && hidden_attr->Value() == "until-found") {
       EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
     } else if (DisplayLockContext* context = GetDisplayLockContext()) {
