@@ -151,7 +151,6 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Flaking on Mac / Linux
-crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
 # Flakily not getting WebGL blocked on context loss
 
