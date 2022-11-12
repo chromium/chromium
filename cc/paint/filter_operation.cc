@@ -331,7 +331,6 @@ void FilterOperation::AsValueInto(base::trace_event::TracedValue* value) const {
     case FilterOperation::ALPHA_THRESHOLD: {
       value->SetDouble("inner_threshold", amount_);
       value->SetDouble("outer_threshold", outer_threshold_);
-      std::unique_ptr<base::ListValue> shape_value(new base::ListValue());
       value->BeginArray("shape");
       for (const gfx::Rect& rect : shape_) {
         value->AppendInteger(rect.x());
