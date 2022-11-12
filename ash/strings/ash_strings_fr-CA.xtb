@@ -140,7 +140,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1708345662127501511">Bureau : <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Paramètres réseau</translation>
 <translation id="1715293566947629045">Désactivation du profil en cours… Patientez quelques minutes.</translation>
-<translation id="1719094688023114093">La transcription instantanée est activée.</translation>
+<translation id="1719094688023114093">Les sous-titres instantanés sont activés.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
 <translation id="1733996486177697563">Basculez entre les thèmes sombre et clair. Maintenez le doigt sur le bureau et sélectionnez Fond d'écran et style.</translation>
 <translation id="1736898441010944794">« <ph name="NAME" /> » visible par les appareils Bluetooth.</translation>
@@ -591,7 +591,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="439598569299422042">Téléchargement interrompu, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Impossible d'enregistrer la vidéocapture d'écran</translation>
 <translation id="4405151984121254935">Le périphérique connecté n'est pas pris en charge</translation>
-<translation id="4406883609789734330">Transcription instantanée</translation>
+<translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4421231901400348175">Partage du contrôle de votre écran avec <ph name="HELPER_NAME" /> au moyen de l’assistance à distance.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
@@ -987,7 +987,7 @@ Nouvelle installation</translation>
 <translation id="6627638273713273709">Recherche+Maj+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> demande l'autorisation d'utiliser le microphone</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
-<translation id="6641720045729354415">Basculer la transcription instantanée. <ph name="STATE_TEXT" /></translation>
+<translation id="6641720045729354415">Acviter/désactiver les sous-titres instantanés. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Annuler l'ordre de tri par nom</translation>
 <translation id="6649641931981131786">Ajustez la caméra de manière à ce que vous soyez au centre de l'écran.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
@@ -1095,7 +1095,7 @@ Nouvelle installation</translation>
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />,
         <ph name="EVENT_SUMMARY" />. Sélectionnez cet événement pour voir davantage d'information dans Google Agenda.</translation>
-<translation id="7302889331339392448">La transcription instantanée est désactivée.</translation>
+<translation id="7302889331339392448">Les sous-titres instantanés sont désactivés.</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Développer le bouton caméra</translation>

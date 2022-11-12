@@ -15,7 +15,7 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») er blokkert av administratoren. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Kunne ikke installere pakken: <ph name="ERROR_CODE" /></translation>
 <translation id="3115238746683532089">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /> (serienummer: <ph name="SERIAL_NUMBER" /> )</translation>
-<translation id="3144135466825225871">Kunne ikke erstatte .crx-fil. Kontrollér om filen er i bruk.</translation>
+<translation id="3144135466825225871">Kunne ikke erstatte .crx-fil. Kontroller om filen er i bruk.</translation>
 <translation id="3163201441334626963">Ukjent produkt, <ph name="PRODUCT_ID" />, fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3302709122321372472">Kan ikke laste inn <ph name="RELATIVE_PATH" /> for innholdsskript.</translation>
 <translation id="3369521687965833290">Kan ikke pakke ut utvidelse. For å kunne pakke ut en utvidelse på en sikker måte, må det finnes en bane til profilkatalogen din som begynner med en harddiskbokstav og som ikke inneholder en forbindelse, et innsettingspunkt eller en symlink. Det finnes ingen slik bane for profilen din.</translation>

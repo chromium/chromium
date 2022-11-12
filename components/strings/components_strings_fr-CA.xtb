@@ -54,7 +54,7 @@
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiquités et objets de collection</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
-<translation id="1123753900084781868">La transcription instantanée n'est pas accessible pour le moment</translation>
+<translation id="1123753900084781868">Les sous-titres instantanés sont inaccessibles pour le moment</translation>
 <translation id="1125573121925420732">Les avertissements peuvent être fréquents lorsque les sites Web mettent à jour leurs mesures de sécurité. Cette situation devrait bientôt s'améliorer.</translation>
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1130564665089811311">Bouton Traduire la page, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
@@ -1108,7 +1108,7 @@
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
 <translation id="398470910934384994">Oiseaux</translation>
 <translation id="3985750352229496475">Gérer les adresses…</translation>
-<translation id="3986705137476756801">Désactiver la transcription instantanée pour le moment</translation>
+<translation id="3986705137476756801">Désactiver les sous-titres instantanés pour le moment</translation>
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
@@ -1265,7 +1265,7 @@
 <translation id="4386413576162606861">Jeux de rôle</translation>
 <translation id="4390472908992056574">Bord</translation>
 <translation id="4393632246160856858">Produits de soin pour les ongles</translation>
-<translation id="4406883609789734330">Transcription instantanée</translation>
+<translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4407755609041463909">Flammes</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
@@ -1365,7 +1365,7 @@
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
-<translation id="4702656508969495934">La transcription instantanée est visible, servez-vous du commutateur de fenêtre pour y accéder</translation>
+<translation id="4702656508969495934">Les sous-titres instantanés sont visibles; servez-vous du commutateur de fenêtre pour y accéder</translation>
 <translation id="470284880436071933">Crime et justice</translation>
 <translation id="4704732901923281920">Biologie</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
@@ -1836,7 +1836,7 @@
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Ouverture du site <ph name="SITE_NAME" /> en cours…</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
-<translation id="5953516610448771166">La transcription instantanée n'est pas offerte pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
+<translation id="5953516610448771166">Les sous-titres instantanés ne sont pas offerts pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5955063559762970069">Hôtels et hébergement</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
