@@ -12,8 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/grpc/src/include/grpcpp/channel.h"
-#include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {

@@ -92,8 +92,6 @@ cast_source_set("core_service_bindings") {
     "//components/cast/message_port",
     "//components/cast/message_port:blink_message_port_adapter",
     "//components/cast_receiver/browser:runtime",
-    "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
-    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
   ]
 
   if (is_linux || is_chromeos || is_android) {
@@ -137,8 +135,6 @@ cast_source_set("streaming_receiver_session_client") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
-    "//third_party/cast_core/public/src/proto/common:application_state_proto",
-    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/openscreen/src/cast/streaming:receiver",
   ]
 
@@ -176,7 +172,6 @@ cast_source_set("runtime_application_dispatcher") {
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//third_party/abseil-cpp:absl",
-    "//third_party/cast_core/public/src/proto/common:application_config_proto",
   ]
 
   deps = [
@@ -191,8 +186,6 @@ cast_source_set("runtime_application_dispatcher") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
-    "//third_party/cast_core/public/src/proto/common:application_state_proto",
-    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/openscreen/src/cast/common:public",
     "//url",
   ]
