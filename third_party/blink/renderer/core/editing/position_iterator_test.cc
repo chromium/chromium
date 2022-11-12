@@ -6,6 +6,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
@@ -64,7 +66,14 @@ class PositionIteratorTest : public EditingTestBase {
     std::ostringstream os;
     os << (it.AtStart() ? "S" : "-") << (it.AtStartOfNode() ? "S" : "-")
        << (it.AtEnd() ? "E" : "-") << (it.AtEndOfNode() ? "E" : "-") << " "
-       << it.GetNode() << "@" << it.OffsetInLeafNode() << " " << position1;
+       << it.GetNode();
+    if (IsA<Text>(it.GetNode())) {
+      os << "@" << it.OffsetInTextNode();
+    } else if (EditingIgnoresContent(*it.GetNode()) ||
+               IsUserSelectContain(*it.GetNode())) {
+      os << "@" << (it.IsBeforeNode(*it.GetNode()) ? "0" : "1");
+    }
+    os << " " << position1;
     if (position1 != position2)
       os << " " << position2;
     return os.str();
@@ -76,25 +85,25 @@ TEST_F(PositionIteratorTest, DecrementWithInlineElemnt) {
 
   EXPECT_THAT(
       ScanBackward(selection_text),
-      ElementsAre(
-          "---E BODY@1 BODY@afterChildren", "---E P@0 P@afterChildren",
-          "---E I@0 I@afterChildren", "---E S@0 S@afterChildren",
-          "---E #text \"DEF\"@3 #text \"DEF\"@offsetInAnchor[3]",
-          "---- #text \"DEF\"@2 #text \"DEF\"@offsetInAnchor[2]",
-          "---- #text \"DEF\"@1 #text \"DEF\"@offsetInAnchor[1]",
-          "-S-- #text \"DEF\"@0 #text \"DEF\"@offsetInAnchor[0]",
-          "-S-- S@0 S@offsetInAnchor[0]", "-S-- I@0 I@offsetInAnchor[0]",
-          "---- P@0 P@offsetInAnchor[1]", "---E A@0 A@afterChildren",
-          "---E B@0 B@afterChildren",
-          "---E #text \"ABC\"@3 #text \"ABC\"@offsetInAnchor[3]",
-          "---- #text \"ABC\"@2 #text \"ABC\"@offsetInAnchor[2]",
-          "---- #text \"ABC\"@1 #text \"ABC\"@offsetInAnchor[1]",
-          "-S-- #text \"ABC\"@0 #text \"ABC\"@offsetInAnchor[0]",
-          "-S-- B@0 B@offsetInAnchor[0]", "-S-- A@0 A@offsetInAnchor[0]",
-          "-S-- P@0 P@offsetInAnchor[0]", "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+      ElementsAre("---E BODY BODY@afterChildren", "---E P P@afterChildren",
+                  "---E I I@afterChildren", "---E S S@afterChildren",
+                  "---E #text \"DEF\"@3 #text \"DEF\"@offsetInAnchor[3]",
+                  "---- #text \"DEF\"@2 #text \"DEF\"@offsetInAnchor[2]",
+                  "---- #text \"DEF\"@1 #text \"DEF\"@offsetInAnchor[1]",
+                  "-S-- #text \"DEF\"@0 #text \"DEF\"@offsetInAnchor[0]",
+                  "-S-- S S@offsetInAnchor[0]", "-S-- I I@offsetInAnchor[0]",
+                  "---- P P@offsetInAnchor[1]", "---E A A@afterChildren",
+                  "---E B B@afterChildren",
+                  "---E #text \"ABC\"@3 #text \"ABC\"@offsetInAnchor[3]",
+                  "---- #text \"ABC\"@2 #text \"ABC\"@offsetInAnchor[2]",
+                  "---- #text \"ABC\"@1 #text \"ABC\"@offsetInAnchor[1]",
+                  "-S-- #text \"ABC\"@0 #text \"ABC\"@offsetInAnchor[0]",
+                  "-S-- B B@offsetInAnchor[0]", "-S-- A A@offsetInAnchor[0]",
+                  "-S-- P P@offsetInAnchor[0]",
+                  "-S-- BODY BODY@offsetInAnchor[0]",
+                  "---- HTML HTML@offsetInAnchor[1]",
+                  "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+                  "-S-- HTML HTML@offsetInAnchor[0]"));
 }
 
 // For http://crbug.com/695317
@@ -103,35 +112,35 @@ TEST_F(PositionIteratorTest, decrementWithInputElement) {
 
   EXPECT_THAT(
       ScanBackward(selection_text),
-      ElementsAre("---E BODY@2 BODY@afterChildren",
+      ElementsAre("---E BODY BODY@afterChildren",
                   "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
                   "-S-- INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor",
-                  "---- BODY@1 BODY@offsetInAnchor[1]",
+                  "---- BODY BODY@offsetInAnchor[1]",
                   "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
                   "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
                   "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
                   "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-                  "-S-- BODY@0 BODY@offsetInAnchor[0]",
-                  "---- HTML@0 HTML@offsetInAnchor[1]",
-                  "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-                  "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+                  "-S-- BODY BODY@offsetInAnchor[0]",
+                  "---- HTML HTML@offsetInAnchor[1]",
+                  "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+                  "-S-- HTML HTML@offsetInAnchor[0]"));
 
   EXPECT_THAT(
       ScanBackwardInFlatTree(selection_text),
       ElementsAre(
-          "---E BODY@2 BODY@afterChildren",
+          "---E BODY BODY@afterChildren",
           "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
           "---E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor INPUT "
           "id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+          "-S-- BODY BODY@offsetInAnchor[0]",
+          "---- HTML HTML@offsetInAnchor[1]",
+          "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+          "-S-- HTML HTML@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, decrementWithSelectElement) {
@@ -141,36 +150,36 @@ TEST_F(PositionIteratorTest, decrementWithSelectElement) {
   EXPECT_THAT(
       ScanBackward(selection_text),
       ElementsAre(
-          "---E BODY@2 BODY@afterChildren",
+          "---E BODY BODY@afterChildren",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+          "-S-- BODY BODY@offsetInAnchor[0]",
+          "---- HTML HTML@offsetInAnchor[1]",
+          "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+          "-S-- HTML HTML@offsetInAnchor[0]"));
 
   EXPECT_THAT(
       ScanBackwardInFlatTree(selection_text),
       ElementsAre(
-          "---E BODY@2 BODY@afterChildren",
+          "---E BODY BODY@afterChildren",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+          "-S-- BODY BODY@offsetInAnchor[0]",
+          "---- HTML HTML@offsetInAnchor[1]",
+          "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+          "-S-- HTML HTML@offsetInAnchor[0]"));
 }
 
 // For http://crbug.com/695317
@@ -180,36 +189,36 @@ TEST_F(PositionIteratorTest, decrementWithTextAreaElement) {
   EXPECT_THAT(
       ScanBackward(selection_text),
       ElementsAre(
-          "---E BODY@2 BODY@afterChildren",
+          "---E BODY BODY@afterChildren",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+          "-S-- BODY BODY@offsetInAnchor[0]",
+          "---- HTML HTML@offsetInAnchor[1]",
+          "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+          "-S-- HTML HTML@offsetInAnchor[0]"));
 
   EXPECT_THAT(
       ScanBackwardInFlatTree(selection_text),
       ElementsAre(
-          "---E BODY@2 BODY@afterChildren",
+          "---E BODY BODY@afterChildren",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
-          "---- HTML@0 HTML@offsetInAnchor[1]",
-          "-S-E HEAD@0 HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
-          "-S-- HTML@0 HTML@offsetInAnchor[0]"));
+          "-S-- BODY BODY@offsetInAnchor[0]",
+          "---- HTML HTML@offsetInAnchor[1]",
+          "-S-E HEAD HEAD@beforeAnchor HEAD@offsetInAnchor[0]",
+          "-S-- HTML HTML@offsetInAnchor[0]"));
 }
 
 // For http://crbug.com/695317
@@ -218,30 +227,30 @@ TEST_F(PositionIteratorTest, incrementWithInputElement) {
 
   EXPECT_THAT(
       ScanForward(selection_text),
-      ElementsAre("-S-- BODY@0 BODY@offsetInAnchor[0]",
+      ElementsAre("-S-- BODY BODY@offsetInAnchor[0]",
                   "-S-- INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor",
                   "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
-                  "---- BODY@1 BODY@offsetInAnchor[1]",
+                  "---- BODY BODY@offsetInAnchor[1]",
                   "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
                   "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
                   "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
                   "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
-                  "---E BODY@2 BODY@afterChildren",
-                  "---E HTML@2 HTML@afterChildren"));
+                  "---E BODY BODY@afterChildren",
+                  "---E HTML HTML@afterChildren"));
 
   EXPECT_THAT(
       ScanForwardInFlatTree(selection_text),
-      ElementsAre("-S-- BODY@0 BODY@offsetInAnchor[0]",
+      ElementsAre("-S-- BODY BODY@offsetInAnchor[0]",
                   "---E INPUT id=\"target\"@0 INPUT id=\"target\"@beforeAnchor "
                   "INPUT id=\"target\"@afterAnchor",
                   "---E INPUT id=\"target\"@1 INPUT id=\"target\"@afterAnchor",
-                  "---- BODY@1 BODY@offsetInAnchor[1]",
+                  "---- BODY BODY@offsetInAnchor[1]",
                   "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
                   "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
                   "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
                   "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
-                  "---E BODY@2 BODY@afterChildren",
-                  "---E HTML@2 HTML@afterChildren"));
+                  "---E BODY BODY@afterChildren",
+                  "---E HTML HTML@afterChildren"));
 }
 
 TEST_F(PositionIteratorTest, incrementWithSelectElement) {
@@ -251,30 +260,30 @@ TEST_F(PositionIteratorTest, incrementWithSelectElement) {
   EXPECT_THAT(
       ScanForward(selection_text),
       ElementsAre(
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
+          "-S-- BODY BODY@offsetInAnchor[0]",
           "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
-          "---E BODY@2 BODY@afterChildren", "---E HTML@2 HTML@afterChildren"));
+          "---E BODY BODY@afterChildren", "---E HTML HTML@afterChildren"));
 
   EXPECT_THAT(
       ScanForwardInFlatTree(selection_text),
       ElementsAre(
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
+          "-S-- BODY BODY@offsetInAnchor[0]",
           "---E SELECT id=\"target\"@0 SELECT id=\"target\"@beforeAnchor "
           "SELECT id=\"target\"@afterAnchor",
           "---E SELECT id=\"target\"@1 SELECT id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "-S-- #text \"123\"@0 #text \"123\"@offsetInAnchor[0]",
           "---- #text \"123\"@1 #text \"123\"@offsetInAnchor[1]",
           "---- #text \"123\"@2 #text \"123\"@offsetInAnchor[2]",
           "---E #text \"123\"@3 #text \"123\"@offsetInAnchor[3]",
-          "---E BODY@2 BODY@afterChildren", "---E HTML@2 HTML@afterChildren"));
+          "---E BODY BODY@afterChildren", "---E HTML HTML@afterChildren"));
 }
 
 // For http://crbug.com/695317
@@ -284,30 +293,30 @@ TEST_F(PositionIteratorTest, incrementWithTextAreaElement) {
   EXPECT_THAT(
       ScanForward(selection_text),
       ElementsAre(
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
+          "-S-- BODY BODY@offsetInAnchor[0]",
           "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "-S-- #text \"456\"@0 #text \"456\"@offsetInAnchor[0]",
           "---- #text \"456\"@1 #text \"456\"@offsetInAnchor[1]",
           "---- #text \"456\"@2 #text \"456\"@offsetInAnchor[2]",
           "---E #text \"456\"@3 #text \"456\"@offsetInAnchor[3]",
-          "---E BODY@2 BODY@afterChildren", "---E HTML@2 HTML@afterChildren"));
+          "---E BODY BODY@afterChildren", "---E HTML HTML@afterChildren"));
 
   EXPECT_THAT(
       ScanForwardInFlatTree(selection_text),
       ElementsAre(
-          "-S-- BODY@0 BODY@offsetInAnchor[0]",
+          "-S-- BODY BODY@offsetInAnchor[0]",
           "---E TEXTAREA id=\"target\"@0 TEXTAREA id=\"target\"@beforeAnchor "
           "TEXTAREA id=\"target\"@afterAnchor",
           "---E TEXTAREA id=\"target\"@1 TEXTAREA id=\"target\"@afterAnchor",
-          "---- BODY@1 BODY@offsetInAnchor[1]",
+          "---- BODY BODY@offsetInAnchor[1]",
           "-S-- #text \"456\"@0 #text \"456\"@offsetInAnchor[0]",
           "---- #text \"456\"@1 #text \"456\"@offsetInAnchor[1]",
           "---- #text \"456\"@2 #text \"456\"@offsetInAnchor[2]",
           "---E #text \"456\"@3 #text \"456\"@offsetInAnchor[3]",
-          "---E BODY@2 BODY@afterChildren", "---E HTML@2 HTML@afterChildren"));
+          "---E BODY BODY@afterChildren", "---E HTML HTML@afterChildren"));
 }
 
 // For http://crbug.com/1248744

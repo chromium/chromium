@@ -727,9 +727,10 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
       return last_visible.DeprecatedComputePosition();
 
     // skip position in non-laid out or invisible node
-    const LayoutObject* const layout_object =
-        AssociatedLayoutObjectOf(*current_node, current_pos.OffsetInLeafNode(),
-                                 LayoutObjectSide::kFirstLetterIfOnBoundary);
+    const LayoutObject* const layout_object = AssociatedLayoutObjectOf(
+        *current_node,
+        IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0,
+        LayoutObjectSide::kFirstLetterIfOnBoundary);
     if (!layout_object ||
         layout_object->Style()->Visibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
@@ -797,10 +798,10 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
           text_layout_object->CaretMaxOffset() + text_start_offset);
     }
 
-    DCHECK_GE(current_pos.OffsetInLeafNode(),
+    DCHECK_GE(current_pos.OffsetInTextNode(),
               static_cast<int>(text_layout_object->TextStartOffset()));
     if (text_layout_object->IsAfterNonCollapsedCharacter(
-            current_pos.OffsetInLeafNode() -
+            current_pos.OffsetInTextNode() -
             text_layout_object->TextStartOffset()))
       return current_pos.ComputePosition();
   }
@@ -905,8 +906,9 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
       return last_visible.DeprecatedComputePosition();
 
     // skip position in non-laid out or invisible node
-    const LayoutObject* const layout_object =
-        AssociatedLayoutObjectOf(*current_node, current_pos.OffsetInLeafNode());
+    const LayoutObject* const layout_object = AssociatedLayoutObjectOf(
+        *current_node,
+        IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0);
     if (!layout_object ||
         layout_object->Style()->Visibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
@@ -941,7 +943,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     // ignored.
     if (EditingIgnoresContent(*current_node) ||
         IsDisplayInsideTable(current_node)) {
-      if (current_pos.OffsetInLeafNode() <= 0)
+      if (current_pos.IsBeforeNode(*current_node))
         return PositionTemplate<Strategy>::EditingPositionOf(current_node, 0);
       continue;
     }
@@ -961,10 +963,10 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
           text_layout_object->CaretMinOffset() + text_start_offset);
     }
 
-    DCHECK_GE(current_pos.OffsetInLeafNode(),
+    DCHECK_GE(current_pos.OffsetInTextNode(),
               static_cast<int>(text_layout_object->TextStartOffset()));
     if (text_layout_object->IsBeforeNonCollapsedCharacter(
-            current_pos.OffsetInLeafNode() -
+            current_pos.OffsetInTextNode() -
             text_layout_object->TextStartOffset()))
       return current_pos.ComputePosition();
   }

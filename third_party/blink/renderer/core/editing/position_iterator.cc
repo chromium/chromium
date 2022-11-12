@@ -351,6 +351,11 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
 }
 
 template <typename Strategy>
+bool PositionIteratorAlgorithm<Strategy>::IsBeforeNode(const Node& node) const {
+  return anchor_node_ == &node && !offset_in_anchor_;
+}
+
+template <typename Strategy>
 bool PositionIteratorAlgorithm<Strategy>::AtStart() const {
   DCHECK(IsValid());
   if (!anchor_node_)

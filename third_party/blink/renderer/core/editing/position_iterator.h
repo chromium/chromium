@@ -62,8 +62,14 @@ class PositionIteratorAlgorithm {
   void Decrement();
 
   Node* GetNode() const { return anchor_node_; }
-  // TODO(crbug.com/1323777): Rename or refactor this method.
-  int OffsetInLeafNode() const { return offset_in_anchor_; }
+
+  // Returns true if current position is before `node`.
+  bool IsBeforeNode(const Node& node) const;
+
+  int OffsetInTextNode() const {
+    DCHECK(anchor_node_->IsTextNode());
+    return offset_in_anchor_;
+  }
 
   bool AtStart() const;
   bool AtEnd() const;
@@ -71,7 +77,7 @@ class PositionIteratorAlgorithm {
   bool AtEndOfNode() const;
 
  private:
-  PositionIteratorAlgorithm(Node* anchor_node, int offset_in_anchoror_node);
+  PositionIteratorAlgorithm(Node* anchor_node, int offset_in_anchor_node);
 
   bool IsValid() const {
     return !anchor_node_ ||
@@ -82,6 +88,7 @@ class PositionIteratorAlgorithm {
   // If this is non-null, Strategy::Parent(*node_after_position_in_anchor_) ==
   // anchor_node_;
   Node* node_after_position_in_anchor_ = nullptr;
+  // In `Decrement()` `offset_in_anchor_` may not be valid.
   int offset_in_anchor_;
   wtf_size_t depth_to_anchor_node_;
   // If |node_after_position_in_anchor_| is not null,
