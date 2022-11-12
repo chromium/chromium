@@ -16,6 +16,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -25,6 +26,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -253,6 +256,9 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::wm::features::kFloatWindow},
+        /*disabled_features=*/{});
     AshTestBase::SetUp();
 
     WindowRestoreController::Get()->SetSaveWindowCallbackForTesting(
@@ -328,6 +334,8 @@ class WindowRestoreControllerTest : public AshTestBase,
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests window save with setting on or off.
@@ -394,7 +402,7 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDesks) {
   ASSERT_EQ(0, desks_controller->GetDeskIndex(
                    desks_controller->GetTargetActiveDesk()));
 
-  auto window = CreateAppWindow(gfx::Rect(100, 100), AppType::BROWSER);
+  auto window = CreateAppWindow(gfx::Rect(200, 200), AppType::BROWSER);
   aura::Window* previous_parent = window->parent();
   ResetSaveWindowsCount();
 
@@ -433,7 +441,7 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
 TEST_F(WindowRestoreControllerTest, WindowMovedDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
 
-  auto window = CreateAppWindow(gfx::Rect(50, 50, 100, 100), AppType::BROWSER);
+  auto window = CreateAppWindow(gfx::Rect(50, 50, 200, 200), AppType::BROWSER);
   ResetSaveWindowsCount();
 
   // Move the window to the next display. Test that we save the window in
@@ -697,6 +705,33 @@ TEST_F(WindowRestoreControllerTest, ClamshellSnapWindow) {
   right_window_state->Restore();
   EXPECT_EQ(restored_bounds, left_window->GetBoundsInScreen());
   EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
+}
+
+// Tests clamshell Floated window functionality when creating a window from
+// window restore.
+TEST_F(WindowRestoreControllerTest, ClamshellFloatWindow) {
+  // Add one floated window entry to our fake window restore file.
+  const gfx::Rect restored_bounds(200, 200);
+  AddEntryToFakeFile(/*restore_window_id=*/1, restored_bounds,
+                     chromeos::WindowStateType::kFloated);
+
+  // Create one window restore window with the same restore window id as the
+  // entries we added. Test they are floated and have moved floated bounds.
+  aura::Window* floated_window =
+      CreateTestWindowRestoredWidgetFromRestoreId(/*restore_window_id=*/1)
+          ->GetNativeWindow();
+  auto* floated_window_state = WindowState::Get(floated_window);
+  EXPECT_TRUE(floated_window_state->IsFloated());
+
+  auto* float_controller = Shell::Get()->float_controller();
+  EXPECT_EQ(
+      float_controller->GetPreferredFloatWindowClamshellBounds(floated_window),
+      floated_window->GetBoundsInScreen());
+
+  // Test that after restoring the floated windows, they have the bounds we
+  // saved into the fake file.
+  floated_window_state->Restore();
+  EXPECT_EQ(restored_bounds, floated_window->GetBoundsInScreen());
 }
 
 // Tests window restore behavior when a display is disconnected before

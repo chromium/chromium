@@ -23,6 +23,7 @@ class Compositor;
 
 namespace ash {
 
+class Desk;
 namespace desks_util {
 
 // Note: the max number of desks depends on a runtime flag and the function
@@ -60,6 +61,12 @@ ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window);
 // `context` is a descendent of the float container, even if it is associated
 // with a desk container.
 ASH_EXPORT aura::Window* GetDeskContainerForContext(aura::Window* context);
+
+// If `context` belong to a desk, return the desk pointer, otherwise return
+// nullptr. Note that floated window is not in the desk container but still
+// considered as "belonging" to the desk, as it's only visible on a particular
+// desk.
+const Desk* GetDeskForContext(aura::Window* context);
 
 // Returns true if the DesksBar widget should be created in overview mode.
 ASH_EXPORT bool ShouldDesksBarBeCreated();

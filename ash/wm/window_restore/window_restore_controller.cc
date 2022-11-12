@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -513,6 +514,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
     // Snap the window if necessary.
     auto state_type = window_info->window_state_type;
     if (state_type) {
+      auto* window_state = WindowState::Get(window);
       // Add the window to be tracked by the tablet mode window manager
       // manually. It is normally tracked when it becomes visible, but in snap
       // case we want to track it before it becomes visible. This will allow us
@@ -531,7 +533,11 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
             *state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? WM_EVENT_SNAP_PRIMARY
                 : WM_EVENT_SNAP_SECONDARY);
-        WindowState::Get(window)->OnWMEvent(&snap_event);
+        window_state->OnWMEvent(&snap_event);
+      }
+      if (*state_type == chromeos::WindowStateType::kFloated) {
+        const WMEvent float_event(WM_EVENT_FLOAT);
+        window_state->OnWMEvent(&float_event);
       }
     }
   }

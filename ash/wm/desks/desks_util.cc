@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -137,6 +138,22 @@ aura::Window* GetDeskContainerForContext(aura::Window* context) {
 
     context = context->parent();
   }
+
+  return nullptr;
+}
+
+const Desk* GetDeskForContext(aura::Window* context) {
+  DCHECK(context);
+
+  for (const auto& desk : DesksController::Get()->desks()) {
+    if (desk.get()->container_id() ==
+        GetDeskContainerForContext(context)->GetId()) {
+      return desk.get();
+    }
+  }
+
+  if (WindowState::Get(context)->IsFloated())
+    return Shell::Get()->float_controller()->FindDeskOfFloatedWindow(context);
 
   return nullptr;
 }
