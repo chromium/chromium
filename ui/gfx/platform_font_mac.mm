@@ -98,13 +98,13 @@ Weight GetFontWeightFromNSFont(NSFont* font) {
   if (!cf_weight)
     return Weight::NORMAL;
 
-  // macOS 13 bug: For non-system fonts with 0-valued traits, `kCFBooleanFalse`
-  // is used instead of a `CFNumberRef` of 0. See https://crbug.com/1372420.
-  // Filed as FB11673021. In this code path, the
-  // `base::mac::GetValueFromDictionary` call above will DLOG for this case and
-  // return a null `CFNumberRef`, which will cause this function to return
-  // `Weight::NORMAL`, which happens to be the correct thing to do for a trait
-  // with value 0.
+  // macOS 13.0 bug: For non-system fonts with 0-valued traits,
+  // `kCFBooleanFalse` is used instead of a `CFNumberRef` of 0. See
+  // https://crbug.com/1372420. Filed as FB11673021, fixed in macOS 13.1. In
+  // this code path, the `base::mac::GetValueFromDictionary` call above will
+  // DLOG for this case and return a null `CFNumberRef`, which will cause this
+  // function to return `Weight::NORMAL`, which happens to be the correct thing
+  // to do for a trait with value 0.
 
   // The value of kCTFontWeightTrait empirically is a kCFNumberFloat64Type
   // (double) on all tested versions of macOS. However, that doesn't really

@@ -17,16 +17,21 @@ namespace gfx {
 using Weight = Font::Weight;
 
 TEST(PlatformFontMacTest, DeriveFont) {
-  // macOS 13 bug: For non-system fonts with 0-valued traits,
+  // macOS 13.0 bug: For non-system fonts with 0-valued traits,
   // `kCFBooleanFalse` is used instead of a `CFNumberRef` of 0. See
-  // https://crbug.com/1372420. Filed as FB11673021.
+  // https://crbug.com/1372420. Filed as FB11673021, fixed in macOS 13.1.
   auto GetValueFromDictionaryAndWorkAroundMacOS13Bug = [](CFDictionaryRef dict,
                                                           CFStringRef key) {
-    CFTypeRef value = CFDictionaryGetValue(dict, key);
-    if (value == kCFBooleanFalse) {
-      CGFloat zero = 0;
-      return (CFNumberRef)CFAutorelease(
-          CFNumberCreate(nullptr, kCFNumberCGFloatType, &zero));
+    NSOperatingSystemVersion version =
+        [[NSProcessInfo processInfo] operatingSystemVersion];
+
+    if (version.majorVersion == 13 && version.minorVersion == 0) {
+      CFTypeRef value = CFDictionaryGetValue(dict, key);
+      if (value == kCFBooleanFalse) {
+        CGFloat zero = 0;
+        return (CFNumberRef)CFAutorelease(
+            CFNumberCreate(nullptr, kCFNumberCGFloatType, &zero));
+      }
     }
 
     return base::mac::GetValueFromDictionary<CFNumberRef>(dict, key);
