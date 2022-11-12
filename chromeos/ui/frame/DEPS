@@ -2,6 +2,8 @@ include_rules = [
   "+ui/aura",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+ui/base",
+  "+ui/chromeos",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",

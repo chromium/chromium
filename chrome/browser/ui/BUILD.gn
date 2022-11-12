@@ -4090,6 +4090,7 @@ static_library("ui") {
     }
     if (is_chromeos_lacros) {
       sources += [
+        "views/chrome_views_delegate_lacros.cc",
         "views/frame/browser_desktop_window_tree_host_lacros.cc",
         "views/frame/browser_desktop_window_tree_host_lacros.h",
       ]

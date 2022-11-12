@@ -15,6 +15,7 @@
 #include "ui/platform_window/extensions/pinned_mode_extension.h"
 #include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/views_delegate.h"
@@ -71,6 +72,7 @@ void DesktopWindowTreeHostLacros::OnNativeWidgetCreated(
     const Widget::InitParams& params) {
   CreateNonClientEventFilter();
   DesktopWindowTreeHostPlatform::OnNativeWidgetCreated(params);
+  platform_window()->SetUseNativeFrame(false);
 }
 
 void DesktopWindowTreeHostLacros::InitModalType(ui::ModalType modal_type) {
