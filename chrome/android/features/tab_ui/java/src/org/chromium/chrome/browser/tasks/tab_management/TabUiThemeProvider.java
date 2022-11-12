@@ -19,6 +19,7 @@ import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
@@ -52,6 +53,34 @@ public class TabUiThemeProvider {
                               .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
             return colorInt;
         }
+    }
+
+    /**
+     * Returns the color for the tab strip background.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The {@link ColorInt} for tab strip redesign background.
+     */
+    public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            if (isIncognito) {
+                return Color.BLACK;
+            }
+            // @TODO(crbug.com/1373630): May change the color for night theme after finalizing the
+            // spec
+            return ChromeColors.getSurfaceColor(
+                    context, org.chromium.chrome.R.dimen.default_elevation_2);
+        } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+            if (isIncognito) {
+                // Use a non-dynamic dark background color for incognito, slightly greyer than
+                // Color.BLACK
+                return ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
+            }
+            return ChromeColors.getSurfaceColor(
+                    context, org.chromium.chrome.R.dimen.default_elevation_0);
+        }
+        return Color.BLACK;
     }
 
     /**
