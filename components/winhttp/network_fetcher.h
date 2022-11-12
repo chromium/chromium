@@ -133,6 +133,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   std::string path_for_request_;
 
   base::WStringPiece verb_;
+  std::string request_data_;
   // The value of Content-Type header, e.g. "application/json".
   std::string content_type_;
   WriteDataCallback write_data_callback_;
