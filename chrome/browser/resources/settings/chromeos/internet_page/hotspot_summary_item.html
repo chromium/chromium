@@ -1,0 +1,28 @@
+<style include="internet-shared iron-flex">
+  .settings-box {
+    border-top: var(
+        --network-summary-item-border-top, var(--cr-separator-line));
+  }
+  #hotspotPageTitle {
+    padding-inline-start: 22px;
+  }
+</style>
+
+<div class="settings-box two-line no-padding">
+  <div id="hotspotSummaryItemRow"
+      actionable on-click="onWrapperClick_"
+      class="flex layout horizontal center link-wrapper">
+    <iron-icon id="hotspotIcon">
+    </iron-icon>
+    <div id="hotspotPageTitle" class="middle settings-box-text"
+        aria-hidden="true">
+      $i18n{hotspotPageTitle}
+    </div>
+    <cr-icon-button id="hotspotSummaryItemRowArrowIcon"
+        class="subpage-arrow layout end"
+        aria-labelledby="hotspotPageTitle"
+        aria-roledescription="$i18n{subpageArrowRoleDescription}"
+        on-click="onSubpageArrowClick_">
+    </cr-icon-button>
+  </div>
+</div>

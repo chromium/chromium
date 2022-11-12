@@ -22,4 +22,10 @@ suite('NetworkSummary', function() {
     assertEquals(1, summaryItems.length);
     assertEquals('WiFi', summaryItems[0].id);
   });
+
+  test('Hotspot summary item', function() {
+    const hotspotSummaryItem = netSummary.$$('hotspot-summary-item');
+    assertTrue(!!hotspotSummaryItem);
+  });
+
 });

@@ -2818,6 +2818,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET" desc="Name of the settings page which displays internet preferences.">
     Network
   </message>
+  <message name="IDS_SETTINGS_INTERNET_HOTSPOT" desc="Name of the settings page which displays hotspot preferences.">
+    Hotspot
+  </message>
   <message name="IDS_SETTINGS_INTERNET_SUMMARY_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility only label for network summary item button that opens network details.">
     <ph name="NETWORK_TYPE">$1<ex>Mobile Data</ex></ph> - <ph name="NETWORK_DISPLAY_NAME">$2<ex>Verizon Wireless</ex></ph>
   </message>

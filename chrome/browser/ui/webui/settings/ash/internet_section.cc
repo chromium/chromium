@@ -853,6 +853,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
       {"cellularNetworkResettingESim",
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM},
+      {"hotspotPageTitle", IDS_SETTINGS_INTERNET_HOTSPOT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -880,6 +881,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showHiddenToggle",
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
+  html_source->AddBoolean("isHotspotEnabled",
+                          ash::features::IsHotspotEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);

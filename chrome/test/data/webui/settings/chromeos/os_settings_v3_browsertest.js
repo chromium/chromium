@@ -443,7 +443,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.js'],
  ['NetworkProxySection', 'network_proxy_section_test.js'],
- ['NetworkSummary', 'network_summary_test.js'],
+ [
+   'NetworkSummary',
+   'network_summary_test.js',
+   {enabled: ['ash::features::kHotspot']},
+ ],
  ['NetworkSummaryItem', 'network_summary_item_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],

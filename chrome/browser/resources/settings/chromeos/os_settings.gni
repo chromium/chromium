@@ -319,6 +319,7 @@ generated_web_component_files = [
   "chromeos/internet_page/esim_install_error_dialog.js",
   "chromeos/internet_page/esim_remove_profile_dialog.js",
   "chromeos/internet_page/esim_rename_dialog.js",
+  "chromeos/internet_page/hotspot_summary_item.js",
   "chromeos/internet_page/internet_config.js",
   "chromeos/internet_page/internet_detail_menu.js",
   "chromeos/internet_page/internet_detail_page.js",

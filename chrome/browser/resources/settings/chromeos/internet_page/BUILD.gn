@@ -19,6 +19,7 @@ js_type_check("closure_compile_module") {
     ":esim_install_error_dialog",
     ":esim_remove_profile_dialog",
     ":esim_rename_dialog",
+    ":hotspot_summary_item",
     ":internet_config",
     ":internet_detail_menu",
     ":internet_detail_page",
@@ -54,6 +55,14 @@ js_library("cellular_setup_dialog") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+}
+
+js_library("hotspot_summary_item") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("internet_config") {
@@ -268,6 +277,7 @@ js_library("network_proxy_section") {
 
 js_library("network_summary") {
   deps = [
+    ":hotspot_summary_item",
     ":network_summary_item",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:network_listener_behavior",
@@ -416,6 +426,7 @@ html_to_js("web_components") {
     "esim_install_error_dialog.js",
     "esim_remove_profile_dialog.js",
     "esim_rename_dialog.js",
+    "hotspot_summary_item.js",
     "internet_config.js",
     "internet_detail_menu.js",
     "internet_detail_page.js",
