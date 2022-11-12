@@ -7950,6 +7950,22 @@
             ]
         }
     ],
+    "OutOfProcessSystemDnsResolution": [
+        {
+            "platforms": [
+                "linux",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OutOfProcessSystemDnsResolution"
+                    ]
+                }
+            ]
+        }
+    ],
     "OverlayPrioritizationExtended": [
         {
             "platforms": [
