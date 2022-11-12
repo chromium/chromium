@@ -194,7 +194,6 @@ foreach(f, css_files) {
 
 non_web_component_files = [
   "chromeos/assert_extras.ts",
-  "chromeos/combined_search_handler.js",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
   "chromeos/crostini_page/crostini_shared_usb_devices.ts",
   "chromeos/date_time_page/date_time_types.ts",
@@ -279,12 +278,13 @@ non_web_component_files = [
   "chromeos/os_settings_routes.js",
   "chromeos/parental_controls_page/parental_controls_browser_proxy.ts",
   "chromeos/personalization_page/personalization_hub_browser_proxy.ts",
-  "chromeos/personalization_search_handler.js",
   "chromeos/pref_to_setting_metric_converter.js",
   "chromeos/prefs_behavior.js",
   "chromeos/route_observer_behavior.js",
   "chromeos/route_origin_behavior.js",
-  "chromeos/settings_search_handler.js",
+  "chromeos/search/combined_search_handler.ts",
+  "chromeos/search/personalization_search_handler.ts",
+  "chromeos/search/settings_search_handler.ts",
 
   # Files below are from Browser Settings and shared with ChromeOS Settings
   "appearance_page/fonts_browser_proxy.ts",

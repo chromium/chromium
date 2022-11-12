@@ -342,7 +342,6 @@ js_type_check("closure_compile_local_module") {
   closure_flags = os_settings_closure_flags
 
   deps = [
-    ":combined_search_handler",
     ":deep_linking_behavior",
     ":find_shortcut_behavior",
     ":global_scroll_target_behavior",
@@ -356,12 +355,10 @@ js_type_check("closure_compile_local_module") {
     ":os_settings",
     ":os_settings_icons_css",
     ":os_settings_routes",
-    ":personalization_search_handler",
     ":pref_to_setting_metric_converter",
     ":prefs_behavior",
     ":route_observer_behavior",
     ":route_origin_behavior",
-    ":settings_search_handler",
   ]
 }
 
@@ -469,25 +466,5 @@ js_library("route_origin_behavior") {
   ]
 }
 
-js_library("combined_search_handler") {
-  deps = [
-    ":personalization_search_handler",
-    ":settings_search_handler",
-    "//ash/webui/personalization_app/search:mojo_bindings_webui_js",
-    "//mojo/public/mojom/base:base_webui_js",
-  ]
-}
-
 js_library("icon") {
-}
-
-js_library("personalization_search_handler") {
-  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_webui_js" ]
-}
-
-js_library("settings_search_handler") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
-  ]
 }
