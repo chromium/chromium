@@ -212,12 +212,12 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterPingPong) {
 
   InterfaceEndpointClient client0(
       router0->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle0,
-      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
+      nullptr, {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
   InterfaceEndpointClient client1(
       router1->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle1,
-      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
+      nullptr, {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
 
   paddle0.set_sender(&client0);
   paddle1.set_sender(&client1);
@@ -264,8 +264,8 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
   CounterReceiver receiver;
   InterfaceEndpointClient client(
       router->CreateLocalEndpointHandle(kPrimaryInterfaceId), &receiver,
-      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
-      kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
+      nullptr, {}, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToMethodInfo, MessageToMethodName);
 
   static const uint32_t kIterations[] = {1000, 3000000};
 

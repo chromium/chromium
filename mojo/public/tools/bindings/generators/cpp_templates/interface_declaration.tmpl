@@ -32,7 +32,12 @@ class {{export_attribute}} {{interface.name}}
 {%- endif %}
   static constexpr uint32_t Version_ = {{interface.version}};
   static constexpr bool PassesAssociatedKinds_ = {% if interface|passes_associated_kinds %}true{% else %}false{% endif %};
-  static constexpr bool HasSyncMethods_ = {% if interface|has_sync_methods %}true{% else %}false{% endif %};
+{%- set sync_method_ordinals = interface|get_sync_method_ordinals -%}
+{%- if sync_method_ordinals %}
+  static inline constexpr uint32_t kSyncMethodOrdinals[] = {
+    {{sync_method_ordinals|sort|join(', \n')|indent(4)}}
+  };
+{%- endif %}
   static constexpr bool HasUninterruptableMethods_ =
       {%- if interface|has_uninterruptable_methods %} true
       {%- else %} false{% endif %};
