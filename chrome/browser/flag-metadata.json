@@ -1334,11 +1334,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "deprecate-low-usage-codecs",
-    "owners": [ "dalecurtis", "sweyn" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "desktop-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115
