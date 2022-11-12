@@ -40,6 +40,11 @@ public class TabInteractionRecorder {
         mNativeTabInteractionRecorder = nativePtr;
     }
 
+    @VisibleForTesting
+    TabInteractionRecorder() {
+        this(1L);
+    }
+
     @CalledByNative
     private static @Nullable TabInteractionRecorder create(long nativePtr) {
         if (nativePtr == 0) return null;
