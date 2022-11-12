@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -186,8 +187,11 @@ void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
   if (!GetVisible())
     return;
 
-  camera_icon_->SetVisible(IsCameraUsed());
-  microphone_icon_->SetVisible(IsMicrophoneUsed());
+  camera_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
+                           IsCameraUsed());
+  microphone_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
+                               IsMicrophoneUsed());
+
   TooltipTextChanged();
   RecordPrivacyIndicatorsType();
 }
@@ -202,7 +206,8 @@ void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
   if (!GetVisible())
     return;
 
-  screen_share_icon_->SetVisible(is_screen_sharing_);
+  screen_share_icon_->SetVisible(animation_state_ != AnimationState::kIdle &&
+                                 is_screen_sharing_);
   TooltipTextChanged();
   RecordPrivacyIndicatorsType();
 }
@@ -257,6 +262,7 @@ void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
   // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
   // short side to the final size (a green dot).
   expand_animation_->Start();
+  animation_state_ = AnimationState::kExpand;
   StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
 
   // At the same time, fade in icons.
@@ -341,7 +347,7 @@ const char* PrivacyIndicatorsTrayItemView::GetClassName() const {
 void PrivacyIndicatorsTrayItemView::AnimationProgressed(
     const gfx::Animation* animation) {
   if (animation == expand_animation_.get()) {
-    animation_state_ = AnimationState::kExpand;
+    DCHECK_EQ(animation_state_, AnimationState::kExpand);
   } else if (animation == longer_side_shrink_animation_.get() &&
              !shorter_side_shrink_animation_->is_animating()) {
     animation_state_ = AnimationState::kOnlyLongerSideShrink;

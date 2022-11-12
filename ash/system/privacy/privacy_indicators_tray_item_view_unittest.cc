@@ -128,6 +128,10 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
   PrivacyIndicatorsTrayItemView::AnimationState animation_state() {
     return privacy_indicators_view_->animation_state_;
   }
+  void set_animation_state(
+      PrivacyIndicatorsTrayItemView::AnimationState state) {
+    privacy_indicators_view_->animation_state_ = state;
+  }
 
   gfx::LinearAnimation* longer_side_shrink_animation() {
     return privacy_indicators_view_->longer_side_shrink_animation_.get();
@@ -145,6 +149,9 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  // Set animation to expand to allow showing icons.
+  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
 
   privacy_indicators_view()->Update(/*app_id=*/"app_id",
                                     /*is_camera_used=*/true,
@@ -175,6 +182,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  // Set animation to expand to allow showing icons.
+  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
 
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/true);
@@ -457,6 +467,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  // Set animation to expand to allow showing icons.
+  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
 
   privacy_indicators_view()->Update(/*app_id=*/"app_id1",
                                     /*is_camera_used=*/true,
