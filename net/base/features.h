@@ -429,6 +429,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseNAT64ForIPv4Literal);
 // Whether to block newly added forbidden headers (https://crbug.com/1362331).
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockNewForbiddenHeaders);
 
+#if BUILDFLAG(IS_WIN)
+// Whether to probe for SHA-256 on some legacy platform keys, before assuming
+// the key requires SHA-1. See SSLPlatformKeyWin for details.
+NET_EXPORT BASE_DECLARE_FEATURE(kPlatformKeyProbeSHA256);
+#endif
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

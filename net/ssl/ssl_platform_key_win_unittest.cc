@@ -9,9 +9,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
+#include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -53,8 +55,10 @@ const TestKey kTestKeys[] = {
      /*is_rsa_1024=*/true},
 };
 
-std::string TestKeyToString(const testing::TestParamInfo<TestKey>& params) {
-  return params.param.name;
+std::string TestParamsToString(
+    const testing::TestParamInfo<std::tuple<TestKey, bool>>& params) {
+  return std::string(std::get<0>(params.param).name) +
+         (std::get<1>(params.param) ? "" : "NoSHA1Probe");
 }
 
 // Appends |bn| to |cbb|, represented as |len| bytes in little-endian order,
@@ -228,11 +232,29 @@ bool PKCS8ToBLOBForCNG(const std::string& pkcs8,
 
 }  // namespace
 
-class SSLPlatformKeyWinTest : public testing::TestWithParam<TestKey>,
-                              public WithTaskEnvironment {};
+class SSLPlatformKeyWinTest
+    : public testing::TestWithParam<std::tuple<TestKey, bool>>,
+      public WithTaskEnvironment {
+ public:
+  SSLPlatformKeyWinTest() {
+    if (SHA256ProbeEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kPlatformKeyProbeSHA256);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kPlatformKeyProbeSHA256);
+    }
+  }
+
+  const TestKey& GetTestKey() const { return std::get<0>(GetParam()); }
+  bool SHA256ProbeEnabled() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
-  const TestKey& test_key = GetParam();
+  const TestKey& test_key = GetTestKey();
 
   // Load test data.
   scoped_refptr<X509Certificate> cert =
@@ -269,13 +291,14 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
       WrapCNGPrivateKey(cert.get(), std::move(ncrypt_key));
   ASSERT_TRUE(key);
 
-  if (test_key.is_rsa_1024) {
-    // For RSA-1024 and below, we conservatively prefer to sign SHA-1 hashes.
-    // See https://crbug.com/278370.
+  if (test_key.is_rsa_1024 && !SHA256ProbeEnabled()) {
+    // For RSA-1024 and below, if SHA-256 probing is disabled, we conservatively
+    // prefer to sign SHA-1 hashes. See https://crbug.com/278370.
     std::vector<uint16_t> expected = {
         SSL_SIGN_RSA_PKCS1_SHA1,   SSL_SIGN_RSA_PKCS1_SHA256,
         SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
-        SSL_SIGN_RSA_PSS_SHA256,   SSL_SIGN_RSA_PSS_SHA384};
+        SSL_SIGN_RSA_PSS_SHA256,   SSL_SIGN_RSA_PSS_SHA384,
+        SSL_SIGN_RSA_PSS_SHA512};
     EXPECT_EQ(expected, key->GetAlgorithmPreferences());
   } else {
     EXPECT_EQ(SSLPrivateKey::DefaultAlgorithmPreferences(test_key.type,
@@ -287,7 +310,7 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCNG) {
 }
 
 TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
-  const TestKey& test_key = GetParam();
+  const TestKey& test_key = GetTestKey();
   if (test_key.type != EVP_PKEY_RSA) {
     GTEST_SKIP() << "CAPI only supports RSA keys";
   }
@@ -326,18 +349,33 @@ TEST_P(SSLPlatformKeyWinTest, KeyMatchesCAPI) {
       WrapCAPIPrivateKey(cert.get(), std::move(prov), AT_SIGNATURE);
   ASSERT_TRUE(key);
 
-  std::vector<uint16_t> expected = {
-      SSL_SIGN_RSA_PKCS1_SHA1, SSL_SIGN_RSA_PKCS1_SHA256,
-      SSL_SIGN_RSA_PKCS1_SHA384, SSL_SIGN_RSA_PKCS1_SHA512,
-  };
-  EXPECT_EQ(expected, key->GetAlgorithmPreferences());
+  if (SHA256ProbeEnabled()) {
+    std::vector<uint16_t> expected = {
+        SSL_SIGN_RSA_PKCS1_SHA256,
+        SSL_SIGN_RSA_PKCS1_SHA384,
+        SSL_SIGN_RSA_PKCS1_SHA512,
+        SSL_SIGN_RSA_PKCS1_SHA1,
+    };
+    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
+  } else {
+    // When the SHA-256 probe is disabled, we conservatively assume every CAPI
+    // key may be SHA-1-only.
+    std::vector<uint16_t> expected = {
+        SSL_SIGN_RSA_PKCS1_SHA1,
+        SSL_SIGN_RSA_PKCS1_SHA256,
+        SSL_SIGN_RSA_PKCS1_SHA384,
+        SSL_SIGN_RSA_PKCS1_SHA512,
+    };
+    EXPECT_EQ(expected, key->GetAlgorithmPreferences());
+  }
 
   TestSSLPrivateKeyMatches(key.get(), pkcs8);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SSLPlatformKeyWinTest,
-                         testing::ValuesIn(kTestKeys),
-                         TestKeyToString);
+                         testing::Combine(testing::ValuesIn(kTestKeys),
+                                          testing::Bool()),
+                         TestParamsToString);
 
 }  // namespace net
