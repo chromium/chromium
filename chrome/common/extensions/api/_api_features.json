@@ -67,16 +67,13 @@
     "channel": "dev"
   },
   "action.isEnabled": {
-    // TODO(https://crbug.com/1189295): Upgrade to stable channel.
-    "channel": "dev"
+    "channel": "stable"
   },
   "action.getBadgeTextColor": {
-    // TODO(https://crbug.com/1337783): Upgrade to stable channel.
-    "channel": "dev"
+    "channel": "stable"
   },
   "action.setBadgeTextColor": {
-    // TODO(https://crbug.com/1337783): Upgrade to stable channel.
-    "channel": "dev"
+    "channel": "stable"
   },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
