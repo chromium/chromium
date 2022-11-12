@@ -507,8 +507,8 @@ if (is_win || is_mac || is_linux) {
       "update_service.h",
       "updater_scope.cc",
       "updater_scope.h",
-      "util.cc",
-      "util.h",
+      "util/util.cc",
+      "util/util.h",
     ]
 
     deps = [
@@ -523,15 +523,14 @@ if (is_win || is_mac || is_linux) {
       sources += [
         "ipc/update_service_proxy_win.cc",
         "ipc/update_service_proxy_win.h",
-        "util_win.cc",
+        "util/win_util.cc",
+        "util/win_util.h",
         "win/proxy_impl_base.h",
         "win/scoped_handle.h",
         "win/user_info.cc",
         "win/user_info.h",
         "win/win_constants.cc",
         "win/win_constants.h",
-        "win/win_util.cc",
-        "win/win_util.h",
       ]
 
       deps += [ "//chrome/updater/app/server/win:updater_idl_idl" ]
@@ -549,8 +548,8 @@ if (is_win || is_mac || is_linux) {
         "ipc/update_service_proxy_linux.h",
         "linux/ipc_constants.cc",
         "linux/ipc_constants.h",
-        "linux/linux_util.cc",
-        "linux/linux_util.h",
+        "util/linux_util.cc",
+        "util/linux_util.h",
       ]
 
       deps += [ "//chrome/updater/app/server/linux/mojom" ]
@@ -564,12 +563,11 @@ if (is_win || is_mac || is_linux) {
         "app/server/mac/update_service_wrappers.mm",
         "ipc/update_service_proxy_mac.h",
         "ipc/update_service_proxy_mac.mm",
-        "mac/mac_util.h",
-        "mac/mac_util.mm",
         "mac/privileged_helper/service_protocol.h",
         "mac/xpc_service_names.h",
         "mac/xpc_service_names.mm",
-        "util_mac.mm",
+        "util/mac_util.h",
+        "util/mac_util.mm",
       ]
 
       deps += [ "//chrome/common/mac:launchd" ]

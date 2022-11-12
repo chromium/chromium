@@ -19,7 +19,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util_win.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"

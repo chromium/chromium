@@ -16,9 +16,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_scope.h"
-#import "chrome/updater/util.h"
+#import "chrome/updater/util/mac_util.h"
+#import "chrome/updater/util/util.h"
 
 namespace updater {
 

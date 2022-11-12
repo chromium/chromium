@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace updater {

@@ -17,7 +17,7 @@
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

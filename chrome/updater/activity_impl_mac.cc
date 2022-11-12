@@ -17,9 +17,9 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/mac_util.h"
 
 namespace updater {
 namespace {

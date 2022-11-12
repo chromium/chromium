@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 
 #include <shellapi.h>
 #include <shlobj.h>

@@ -22,15 +22,15 @@
 #include "base/task/thread_pool.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
 #endif
 
 namespace updater {

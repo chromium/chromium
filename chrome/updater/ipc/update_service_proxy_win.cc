@@ -29,7 +29,7 @@
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/win/proxy_impl_base.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

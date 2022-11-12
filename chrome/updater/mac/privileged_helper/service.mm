@@ -35,7 +35,7 @@
 #include "chrome/updater/mac/privileged_helper/server.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 
 @interface PrivilegedHelperServiceImpl
     : NSObject <PrivilegedHelperServiceProtocol> {

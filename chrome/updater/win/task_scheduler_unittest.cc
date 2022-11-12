@@ -35,10 +35,10 @@
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
-#include "chrome/updater/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

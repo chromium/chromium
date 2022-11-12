@@ -20,7 +20,7 @@
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/update_service_impl.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 

@@ -14,7 +14,7 @@
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 
 namespace updater {
 

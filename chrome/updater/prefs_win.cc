@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 

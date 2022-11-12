@@ -30,7 +30,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/scoped_token_privilege.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 
 namespace {
 

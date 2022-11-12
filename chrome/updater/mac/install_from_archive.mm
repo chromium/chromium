@@ -28,9 +28,9 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {

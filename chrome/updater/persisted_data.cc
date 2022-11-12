@@ -27,7 +27,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 #endif
 
 namespace {

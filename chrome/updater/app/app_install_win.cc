@@ -48,13 +48,13 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"

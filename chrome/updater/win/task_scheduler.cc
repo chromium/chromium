@@ -33,7 +33,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 
 namespace updater {
 

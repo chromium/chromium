@@ -19,7 +19,7 @@
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

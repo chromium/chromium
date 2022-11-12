@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_MAC_MAC_UTIL_H_
-#define CHROME_UPDATER_MAC_MAC_UTIL_H_
+#ifndef CHROME_UPDATER_UTIL_MAC_UTIL_H_
+#define CHROME_UPDATER_UTIL_MAC_UTIL_H_
 
 #include "base/mac/scoped_cftyperef.h"
 #include "chrome/common/mac/launchd.h"
@@ -38,4 +38,4 @@ bool RemoveJobFromLaunchd(UpdaterScope scope,
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_MAC_MAC_UTIL_H_
+#endif  // CHROME_UPDATER_UTIL_MAC_UTIL_H_

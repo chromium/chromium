@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 
 #include <string>
 #include <vector>

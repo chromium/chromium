@@ -21,7 +21,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,14 +29,14 @@
 #include "third_party/crashpad/crashpad/client/settings.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/util/mac_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
 #endif
 
 namespace updater {

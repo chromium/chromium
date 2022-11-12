@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 
 #include <cctype>
 #include <string>
@@ -37,9 +37,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX)
-#include "chrome/updater/linux/linux_util.h"
+#include "chrome/updater/util/linux_util.h"
 #elif BUILDFLAG(IS_MAC)
-#import "chrome/updater/mac/mac_util.h"
+#import "chrome/updater/util/mac_util.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX)

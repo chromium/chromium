@@ -13,8 +13,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
-#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 

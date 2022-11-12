@@ -9,9 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
-#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace ui {

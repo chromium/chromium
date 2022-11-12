@@ -15,13 +15,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_ctls.h"
 #include "chrome/updater/win/ui/ui_util.h"
-#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace ui {

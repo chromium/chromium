@@ -29,7 +29,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

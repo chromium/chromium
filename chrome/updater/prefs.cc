@@ -18,7 +18,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

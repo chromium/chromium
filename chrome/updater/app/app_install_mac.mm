@@ -9,8 +9,8 @@
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/launchd_util.h"
-#import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
+#import "chrome/updater/util/mac_util.h"
 
 namespace updater {
 

@@ -18,8 +18,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/util/mac_util.h"
 
 namespace updater {
 namespace {

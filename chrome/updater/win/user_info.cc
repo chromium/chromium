@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/check.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 
 namespace updater {
 

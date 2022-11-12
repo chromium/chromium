@@ -32,7 +32,7 @@
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,7 +41,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
-#include "chrome/updater/win/win_util.h"
+#include "chrome/updater/util/win_util.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/app/server/mac/server.h"
 #elif BUILDFLAG(IS_LINUX)

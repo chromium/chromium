@@ -13,11 +13,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/util/mac_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
