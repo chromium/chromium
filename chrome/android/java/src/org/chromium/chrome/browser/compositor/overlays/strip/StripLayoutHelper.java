@@ -133,6 +133,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET = 12.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DEFAULT = 1.f;
     static final float BACKGROUND_TAB_BRIGHTNESS_DIMMED = 0.65f;
+    static final float DIVIDER_HIDDEN_OPACITY = 0.f;
+    static final float DIVIDER_DEFAULT_OPACITY = 0.2f;
+    static final float DIVIDER_BOLD_OPACITY = 0.6f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
 
     private static final int MESSAGE_RESIZE = 1;
@@ -753,6 +756,35 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 boolean canShowCloseButton = tab.getWidth() >= TAB_WIDTH_MEDIUM
                         || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab, i));
                 mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
+            }
+        }
+    }
+
+    /**
+     * Called to hide dividers when adjacent to the selected tab. Also bolds the first divider for
+     * a tab group when in edit mode.
+     */
+    private void updateDividers() {
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled() || mMultiStepTabCloseAnimRunning) {
+            return;
+        }
+
+        // Divider is never shown for the first tab.
+        mStripTabs[0].setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
+
+        int selectedTabId = mStripTabs[mModel.index()].getId();
+        for (int i = 1; i < mStripTabs.length; i++) {
+            final StripLayoutTab prevTab = mStripTabs[i - 1];
+            final StripLayoutTab currTab = mStripTabs[i];
+            if (prevTab.getTrailingMargin() > 0) {
+                // The first divider after a tab group margin is bolded to help indicate separation.
+                currTab.setDividerOpacity(DIVIDER_BOLD_OPACITY);
+            } else if (prevTab.getId() == selectedTabId || currTab.getId() == selectedTabId) {
+                // Dividers adjacent to the selected tab are hidden.
+                currTab.setDividerOpacity(DIVIDER_HIDDEN_OPACITY);
+            } else {
+                // Otherwise return the divider to the default opacity.
+                currTab.setDividerOpacity(DIVIDER_DEFAULT_OPACITY);
             }
         }
     }
@@ -1481,8 +1513,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 7. Invalidate the accessibility provider in case the visible virtual views have changed.
         mRenderHost.invalidateAccessibilityProvider();
 
-        // 8. Hide close buttons if tab width gets lower than 156dp
+        // 8. Hide close buttons if tab width gets lower than 156dp.
         updateCloseButtons();
+
+        // 9. Show dividers between inactive tabs.
+        updateDividers();
     }
 
     private void computeTabInitialPositions() {

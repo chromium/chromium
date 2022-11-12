@@ -358,6 +358,7 @@ chrome_java_resources = [
   "java/res/drawable/adaptive_toolbar_preference_header.xml",
   "java/res/drawable/arrow_down.xml",
   "java/res/drawable/arrow_up.xml",
+  "java/res/drawable/bg_tabstrip_tab_divider.xml",
   "java/res/drawable/bg_white_dialog.xml",
   "java/res/drawable/bookmark_save_flow_ripple.xml",
   "java/res/drawable/bookmark_title_bar_shadow.xml",

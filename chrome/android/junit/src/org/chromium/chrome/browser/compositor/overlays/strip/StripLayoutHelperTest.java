@@ -64,10 +64,13 @@ import java.util.List;
 
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+// clang-format off
 @Features.EnableFeatures({ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
-        ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
+        ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
+        ChromeFeatureList.TAB_GROUPS_FOR_TABLETS})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutHelperTest {
+    // clang-format on
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
@@ -469,6 +472,62 @@ public class StripLayoutHelperTest {
         Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close btn should be hidden for the partially visible edge tab.
         Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testUpdateDividers_WithTabSelected() {
+        // Setup with 5 tabs. Select tab 2.
+        initializeTest(false, false, 2);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+
+        // Trigger update to set divider values.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify tabs 2 and 3's dividers are hidden due to selection.
+        float hiddenOpacity = StripLayoutHelper.DIVIDER_HIDDEN_OPACITY;
+        float visibleOpacity = StripLayoutHelper.DIVIDER_DEFAULT_OPACITY;
+        // clang-format off
+        assertEquals("First divider should always be hidden.",
+                hiddenOpacity, tabs[0].getDividerOpacity(), EPSILON);
+        assertEquals("Divider should be at default opacity.",
+                visibleOpacity, tabs[1].getDividerOpacity(), EPSILON);
+        assertEquals("Divider is adjacent to selected tab and should be hidden.",
+                hiddenOpacity, tabs[2].getDividerOpacity(), EPSILON);
+        assertEquals("Divider is adjacent to selected tab and should be hidden.",
+                hiddenOpacity, tabs[3].getDividerOpacity(), EPSILON);
+        assertEquals("Divider should be at default opacity.",
+                visibleOpacity, tabs[4].getDividerOpacity(), EPSILON);
+        // clang-format on
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testUpdateDividers_WithTabGroups() {
+        // Setup with 5 tabs. Select tab 4.
+        initializeTest(false, false, 4);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+
+        // Trigger update to set divider values. Mock a tab group margin after tab 1.
+        tabs[1].setTrailingMargin(100.f);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify tab 2's divider is bolded.
+        float hiddenOpacity = StripLayoutHelper.DIVIDER_HIDDEN_OPACITY;
+        float visibleOpacity = StripLayoutHelper.DIVIDER_DEFAULT_OPACITY;
+        float boldedOpacity = StripLayoutHelper.DIVIDER_BOLD_OPACITY;
+        // clang-format off
+        assertEquals("First divider should always be hidden.",
+                hiddenOpacity, tabs[0].getDividerOpacity(), EPSILON);
+        assertEquals("Divider should be at default opacity.",
+                visibleOpacity, tabs[1].getDividerOpacity(), EPSILON);
+        assertEquals("Divider is after tab group margin and should be bolded.",
+                boldedOpacity, tabs[2].getDividerOpacity(), EPSILON);
+        assertEquals("Divider should be at default opacity.",
+                visibleOpacity, tabs[3].getDividerOpacity(), EPSILON);
+        assertEquals("Divider is adjacent to selected tab and should be hidden.",
+                hiddenOpacity, tabs[4].getDividerOpacity(), EPSILON);
+        // clang-format on
     }
 
     @Test
@@ -1461,7 +1520,7 @@ public class StripLayoutHelperTest {
         // Arrange
         int tabCount = 4;
         TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
-        initializeTest(false, false, false, 4, tabCount);
+        initializeTest(false, false, false, 3, tabCount);
         StripLayoutTab[] tabs = getRealStripLayoutTabs(TAB_WIDTH_MEDIUM, tabCount);
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);

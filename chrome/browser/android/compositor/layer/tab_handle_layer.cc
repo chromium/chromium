@@ -28,6 +28,7 @@ scoped_refptr<TabHandleLayer> TabHandleLayer::Create(
 void TabHandleLayer::SetProperties(
     int id,
     ui::Resource* close_button_resource,
+    ui::Resource* divider_resource,
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
     bool foreground,
@@ -38,7 +39,9 @@ void TabHandleLayer::SetProperties(
     float width,
     float height,
     float content_offset_x,
+    float divider_offset_x,
     float close_button_alpha,
+    float divider_alpha,
     bool is_loading,
     float spinner_rotation,
     float brightness,
@@ -91,7 +94,7 @@ void TabHandleLayer::SetProperties(
 
   if (title_layer) {
     title_layer->setOpacity(1.0f);
-    unsigned expected_children = 4;
+    unsigned expected_children = 5;
     title_layer_ = title_layer->layer();
     if (layer_->children().size() < expected_children) {
       layer_->AddChild(title_layer_);
@@ -145,6 +148,19 @@ void TabHandleLayer::SetProperties(
     }
   }
 
+  if (divider_alpha == 0.f) {
+    divider_->SetIsDrawable(false);
+  } else {
+    divider_->SetIsDrawable(true);
+    divider_->SetUIResourceId(divider_resource->ui_resource()->id());
+    divider_->SetBounds(divider_resource->size());
+    int divider_y = (tab_handle_resource->padding().y() + height) / 2 -
+                    divider_->bounds().height() / 2;
+    int divider_x = is_rtl ? width - divider_offset_x : divider_offset_x;
+    divider_->SetPosition(gfx::PointF(divider_x, divider_y));
+    divider_->SetOpacity(divider_alpha);
+  }
+
   if (title_layer) {
     int title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
                   title_layer->size().height() / 2;
@@ -193,6 +209,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
     : layer_title_cache_(layer_title_cache),
       layer_(cc::Layer::Create()),
       close_button_(cc::UIResourceLayer::Create()),
+      divider_(cc::UIResourceLayer::Create()),
       decoration_tab_(cc::NinePatchLayer::Create()),
       tab_outline_(cc::NinePatchLayer::Create()),
       brightness_(1.0f),
@@ -205,6 +222,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   layer_->AddChild(decoration_tab_);
   layer_->AddChild(tab_outline_);
   layer_->AddChild(close_button_);
+  layer_->AddChild(divider_);
 }
 
 TabHandleLayer::~TabHandleLayer() {

@@ -187,15 +187,16 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
             TabStripSceneLayerJni.get().putStripTabLayer(mNativePtr, TabStripSceneLayer.this,
-                    st.getId(), st.getCloseButton().getResourceId(), st.getResourceId(),
-                    st.getOutlineResourceId(), st.getCloseButton().getTint(),
-                    st.getTint(isSelected), st.getOutlineTint(isSelected), isSelected,
-                    st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
+                    st.getId(), st.getCloseButton().getResourceId(), st.getDividerResourceId(),
+                    st.getResourceId(), st.getOutlineResourceId(), st.getCloseButton().getTint(),
+                    st.getDividerTint(), st.getTint(isSelected), st.getOutlineTint(isSelected),
+                    isSelected, st.getClosePressed(), layoutHelper.getWidth() * mDpToPx,
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
-                    st.getCloseButton().getOpacity(), st.isLoading(),
-                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getOpacity(isSelected),
-                    layerTitleCache, resourceManager);
+                    st.getDividerOffsetX() * mDpToPx, st.getCloseButton().getOpacity(),
+                    st.getDividerOpacity(), st.isLoading(), st.getLoadingSpinnerRotation(),
+                    st.getBrightness(), st.getOpacity(isSelected), layerTitleCache,
+                    resourceManager);
         }
     }
 
@@ -230,10 +231,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int resourceId, float opacity, ResourceManager resourceManager,
                 @ColorInt int rightFadeColor);
         void putStripTabLayer(long nativeTabStripSceneLayer, TabStripSceneLayer caller, int id,
-                int closeResourceId, int handleResourceId, int handleOutlineResourceId,
-                int closeTint, int handleTint, int handleOutlineTint, boolean foreground,
-                boolean closePressed, float toolbarWidth, float x, float y, float width,
-                float height, float contentOffsetX, float closeButtonAlpha, boolean isLoading,
+                int closeResourceId, int dividerResourceId, int handleResourceId,
+                int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
+                int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
+                float x, float y, float width, float height, float contentOffsetX,
+                float dividerOffsetX, float closeButtonAlpha, float dividerAlpha, boolean isLoading,
                 float spinnerRotation, float brightness, float opacity,
                 LayerTitleCache layerTitleCache, ResourceManager resourceManager);
         void setContentTree(

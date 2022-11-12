@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.util.FloatProperty;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.LayoutResource;
@@ -164,6 +166,10 @@ public class StripLayoutTab implements VirtualView {
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
     private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
 
+    // Divider Constants
+    // TODO(crbug.com/1373632): Temp value until the 9-patches are updated.
+    private static final int DIVIDER_OFFSET_X = 9;
+
     private int mId = Tab.INVALID_TAB_ID;
 
     private final Context mContext;
@@ -178,6 +184,7 @@ public class StripLayoutTab implements VirtualView {
     private boolean mCanShowCloseButton = true;
     private final boolean mIncognito;
     private float mContentOffsetX;
+    private float mDividerOpacity;
     private float mVisiblePercentage = 1.f;
     private String mAccessibilityDescription;
 
@@ -323,6 +330,13 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
+     * @return The Android resource that represents the tab divider.
+     */
+    public int getDividerResourceId() {
+        return R.drawable.bg_tabstrip_tab_divider;
+    }
+
+    /**
      * @param foreground Whether or not this tab is a foreground tab.
      * @return The tint color resource that represents the tab background.
      */
@@ -362,6 +376,27 @@ public class StripLayoutTab implements VirtualView {
         final float overlayAlpha = ResourcesCompat.getFloat(
                 mContext.getResources(), R.dimen.compositor_background_tab_outline_alpha);
         return ColorUtils.getColorWithOverlay(baseColor, overlayColor, overlayAlpha);
+    }
+
+    /**
+     * @return The tint color resource for the tab divider.
+     */
+    public @ColorInt int getDividerTint() {
+        return SemanticColorUtils.getDefaultIconColorAccent1(mContext);
+    }
+
+    /**
+     * @param dividerOpacity The new opacity for the tab divider.
+     */
+    public void setDividerOpacity(float dividerOpacity) {
+        mDividerOpacity = dividerOpacity;
+    }
+
+    /**
+     * @return The opacity of the tab divider.
+     */
+    public float getDividerOpacity() {
+        return mDividerOpacity;
     }
 
     /**
@@ -491,6 +526,13 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getContentOffsetX() {
         return mContentOffsetX;
+    }
+
+    /**
+     * @return The trailing offset for the tab divider.
+     */
+    public float getDividerOffsetX() {
+        return DIVIDER_OFFSET_X;
     }
 
     /**
