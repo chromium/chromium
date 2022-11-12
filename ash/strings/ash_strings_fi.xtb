@@ -352,6 +352,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2960314608273155470">Tallennustila, oletuksena on <ph name="SOURCE" /> <ph name="TYPE" />. Aloita näppäimistöllä siirtyminen painamalla sarkainta.</translation>
 <translation id="2961963223658824723">Jotain meni pieleen. Yritä uudelleen parin sekunnin kuluttua.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Laitetaanko mikrofonin käyttölupa päälle?</translation>
 <translation id="296762781903199866">Puhetiedostojen (<ph name="LANGUAGE" />) lataaminen epäonnistui</translation>
 <translation id="2970920913501714344">asentaa sovelluksia, laajennuksia ja teemoja</translation>
 <translation id="2977598380246111477">Seuraava numero</translation>
@@ -430,6 +431,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3400357268283240774">Lisäasetukset</translation>
+<translation id="3405101454990027959">Laita mikrofonin käyttölupa päälle</translation>
 <translation id="3410336247007142655">Näytä tumman teeman asetukset</translation>
 <translation id="3413817803639110246">Ei mitään nähtävää vielä</translation>
 <translation id="3428447136709161042">Katkaistaanko yhteys (<ph name="NETWORK_NAME" />)?</translation>
@@ -516,6 +518,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
 <translation id="3861651314799684201">Tallenna koko näytön sisältö painamalla Enter</translation>
+<translation id="3885531177412808398">Sallii mikrofonin käytön kaikille sovelluksille ja verkkosivustoille, joilla on mikrofonin käyttölupa</translation>
 <translation id="3886872229787704059">Avattu tänään</translation>
 <translation id="3891340733213178823">Kirjaudu ulos painamalla Ctrl+Shift+Q kahdesti.</translation>
 <translation id="3893630138897523026">ChromeVox (äänipalaute)</translation>
@@ -1375,6 +1378,7 @@ Uusi asennus</translation>
 <translation id="8666856788528804727">Avaa <ph name="NAME" /> ottaaksesi laitteen käyttöön</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8683506306463609433">Tehokkuuden seuranta aktiivinen</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> saa pääsyn mikrofoniin ja kaikkiin sovelluksiin ja verkkosivustoille, joilla on mikrofonin käyttölupa</translation>
 <translation id="8685326675965865247">Hae laitteelta, sovelluksista, asetuksista ja verkosta. Siirry sovellusten välillä nuolinäppäimillä.</translation>
 <translation id="8703634754197148428">Aloita tallentaminen. Kun tallentaminen on alkanut, avaa hylly painamalla Alt + Vaihto + L ja etsi tallennuksen lopetuspainike</translation>
 <translation id="8721053961083920564">Muuta äänenvoimakkuutta. <ph name="STATE_TEXT" /></translation>

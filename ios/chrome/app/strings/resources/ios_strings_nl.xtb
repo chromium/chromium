@@ -571,6 +571,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5489208564673669003">Ga naar <ph name="BEGIN_LINK" />Cookie-instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="5490005495580364134">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> u geleden</translation>
+<translation id="5520466080178053306">Tik op Wachtwoordmanager en tik dan op Toevoegen</translation>
 <translation id="5525095647255982834">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chrome.</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gevonden</translation>
@@ -878,6 +879,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7726702057919861819">Menu → Geschiedenis → Browsegegevens wissen</translation>
 <translation id="7738120385185846461">Een probleem melden…</translation>
 <translation id="7741325291586284254">Nieuw incognitotabblad</translation>
+<translation id="7744394900930577716">Wachtwoorden in andere apps</translation>
 <translation id="7756478488453921771">Menu → Instellingen → Betaalmethoden</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
@@ -1054,6 +1056,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9081058212938299310">Wachtwoord voor <ph name="USERNAME" /> updaten?</translation>
 <translation id="9083838294503912307">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren.</translation>
 <translation id="9087108903408689779">Wachtwoord voorgesteld door Chrome:</translation>
+<translation id="9093271241977565440">Tik bovenaan het scherm op het zoekicoon</translation>
 <translation id="9094033019050270033">Wachtwoord updaten</translation>
 <translation id="9097506547406246598">Ontvolgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>

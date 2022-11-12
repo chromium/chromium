@@ -2372,6 +2372,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3143515551205905069">Annulla sincronizzazione</translation>
 <translation id="3143754809889689516">Riproduci dall'inizio</translation>
 <translation id="3144647712221361880">Apri link come</translation>
+<translation id="3144896554017119333">Estensioni e altro ancora</translation>
 <translation id="3149510190863420837">Applicazioni Chrome</translation>
 <translation id="3150693969729403281">Esegui subito il controllo di sicurezza</translation>
 <translation id="3150927491400159470">Ricaricamento manuale</translation>
@@ -2480,6 +2481,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3268451620468152448">Schede aperte</translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="326911502853238749">Non mostrare <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Attiva la sincronizzazione per eseguire il backup dei tuoi dati e usarli su qualsiasi dispositivo</translation>
 <translation id="3269612321104318480">Verde acqua e bianco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="326999365752735949">Download delle differenze in corso...</translation>
@@ -3740,6 +3742,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha rilevato un TPM attivo che può memorizzare i tuoi dati in modo più sicuro.</translation>
 <translation id="4451479197788154834">La password è salvata su questo dispositivo e nel tuo Account Google</translation>
 <translation id="4451757071857432900">Bloccati sui siti che mostrano annunci invasivi o fuorvianti (consigliato)</translation>
+<translation id="4452898361839215358">oppure seleziona un file PPD. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Cerca su <ph name="SEARCH_ENGINE_NAME" /> o digita un URL</translation>
 <translation id="4458535500699390320">Mentre questa scheda non era attiva, la funzionalità Risparmio memoria ha liberato memoria per altre attività. Puoi modificare questa preferenza in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="4459169140545916303">Attivo <ph name="DEVICE_LAST_ACTIVATED_TIME" /> giorni fa</translation>
@@ -4276,6 +4279,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4950993567860689081">La sessione è gestita dalla tua organizzazione. Gli amministratori possono eliminare il tuo profilo e monitorare il tuo traffico di rete.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un file}other{# file}}</translation>
 <translation id="495170559598752135">Azioni</translation>
+<translation id="4951966678293618079">Non salvare mai le password per questo sito</translation>
 <translation id="4953808748584563296">Avatar arancione predefinito</translation>
 <translation id="4955710816792587366">Scegli il PIN</translation>
 <translation id="4959262764292427323">Le password vengono salvate nel tuo Account Google affinché tu possa usarle su qualsiasi dispositivo</translation>
@@ -4305,6 +4309,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Accedi<ph name="END_LINK" /> per cancellare i dati di navigazione da tutti i dispositivi sincronizzati e dal tuo Account Google.</translation>
 <translation id="4982111327868342436">Continua da dove avevi interrotto su qualsiasi dispositivo</translation>
 <translation id="4982236238228587209">Software dispositivo</translation>
+<translation id="4986706507552097681">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4986728572522335985">Questa operazione eliminerà tutti i dati sul token di sicurezza, incluso il suo PIN</translation>
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="49896407730300355">Ruota in senso anti&amp;orario</translation>
@@ -7540,6 +7545,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8046132381940444654">Un rappresentante dell'assistenza clienti potrebbe usare questo numero EID per aiutarti ad attivare il servizio</translation>
 <translation id="8047242494569930800">Sposta nell'Account Google</translation>
 <translation id="804786196054284061">Contratto di licenza con l'utente finale</translation>
+<translation id="8048728378294435881">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo</translation>
 <translation id="8048977114738515028">Crea un collegamento sul desktop del dispositivo per accedere direttamente al profilo</translation>
 <translation id="8049029041626250638">Collega una tastiera o un mouse. Se usi dispositivi Bluetooth, assicurati che siano pronti per essere accoppiati.</translation>
 <translation id="8049122382261047457">Cerca in qualsiasi immagine con Google Lens</translation>
@@ -8364,6 +8370,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8823514049557262177">Copia testo del lin&amp;k</translation>
 <translation id="8823559166155093873">Blocca i cookie</translation>
 <translation id="8823704566850948458">Suggerisci password...</translation>
+<translation id="8823963789776061136">In alternativa, seleziona il file PPD della stampante. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Aggiungi pa&amp;gina...</translation>
 <translation id="8827125715368568315">Autorizzazioni bloccate: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Blocca estensione</translation>
@@ -8620,6 +8627,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> richiede l'accesso ai seguenti contenuti:</translation>
 <translation id="9057354806206861646">Aggiornamenti programmati</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Circa 1 notifica al giorno}other{Circa {NUM_NOTIFICATION} notifiche al giorno}}</translation>
+<translation id="9058760336383947367">Visualizza PPD stampante</translation>
 <translation id="9061383912634843744">Accedi automaticamente ai siti e alle app usando le credenziali salvate. Se la funzionalità è disattivata, ti verrà chiesta una conferma ogni volta che vuoi accedere a un sito o a un'app.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>

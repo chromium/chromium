@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">کیپچر وضع، <ph name="SOURCE" /> <ph name="TYPE" /> ڈیفالٹ موڈ ہے۔ کی بورڈ نیویگیشن کے لیے ٹیب دبائیں۔</translation>
 <translation id="2961963223658824723">کچھ غلط ہو گیا۔ چند سیکنڈ میں دوبارہ کوشش کریں۔</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">مائیکروفون تک رسائی آن کریں؟</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکے</translation>
 <translation id="2970920913501714344">ایپس، ایکسٹینشنز اور تھیمز انسٹال کریں</translation>
 <translation id="2977598380246111477">اگلا نمبر</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">پوری اسکرین کا مکبّر</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
+<translation id="3405101454990027959">مائیکروفون تک رسائی آن کریں</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> سے غیر منسلک کریں</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="385300504083504382">شروعات</translation>
 <translation id="3861651314799684201">فُل اسکرین ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
+<translation id="3885531177412808398">مائیکروفون کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے مائیکروفون تک رسائی کی اجازت دیتا ہے</translation>
 <translation id="3886872229787704059">آج کھولا گیا</translation>
 <translation id="3891340733213178823">‏سائن آؤٹ کرنے کیلئے Ctrl+Shift+Q کو دو بار دبائیں۔</translation>
 <translation id="3893630138897523026">‏ChromeVox (صوتی تاثرات)</translation>
@@ -1374,6 +1377,7 @@
 <translation id="8666856788528804727">اپنا آلہ سیٹ اپ کرنے کے لیے <ph name="NAME" /> کھولیں</translation>
 <translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>
 <translation id="8683506306463609433">کارکردگی کا پتا لگانا فعال ہے</translation>
+<translation id="8684405646663021166">مائیکروفون کی اجازت کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس کو مائیکروفون تک رسائی کی اجازت دیتا ہے</translation>
 <translation id="8685326675965865247">اپنا آلہ، ایپس، ترتیبات اور ویب تلاش کریں۔ اپنی ایپس کو نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدیں استعمال کریں۔</translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>

@@ -680,7 +680,6 @@
 <translation id="2674804415323431591">추천 숨기기</translation>
 <translation id="2677696497921480781">생일 및 영명 축일</translation>
 <translation id="2677748264148917807">나가기</translation>
-<translation id="2679714844901977852">카드 및 결제 정보를 Google 계정(<ph name="USER_EMAIL" />)에 저장하여 더 빠르고 안전하게 결제하세요.</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
 <translation id="2688186765492306706">500x760mm</translation>
 <translation id="2688969097326701645">예, 계속 진행합니다</translation>
@@ -718,7 +717,6 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">연결이 재설정되었습니다.</translation>
-<translation id="2791176355335562114">다음에는 더 빨리 결제하세요</translation>
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
 <translation id="2799020568854403057">방문하려는 사이트에 유해한 앱이 있습니다.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
@@ -1042,7 +1040,6 @@
 <translation id="3633738897356909127">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 Enter 누르기</translation>
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
-<translation id="3637662659967048211">Google 계정에 저장</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
 <translation id="3650584904733503804">유효성 검사 성공</translation>
@@ -2264,7 +2261,6 @@
 <translation id="6826993739343257035">AR을 허용하시겠습니까?</translation>
 <translation id="6828866289116430505">유전학</translation>
 <translation id="6831043979455480757">번역</translation>
-<translation id="6833752742582340615">카드 및 결제 정보를 Google 계정에 저장하여 더 빠르고 안전하게 결제하세요.</translation>
 <translation id="6842196666980060516">184x260mm</translation>
 <translation id="6846340164947227603">가상 카드 번호 사용...</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>

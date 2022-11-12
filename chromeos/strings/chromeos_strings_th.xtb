@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="404928562651467259">คำเตือน</translation>
+<translation id="4060260348856573701">APN ใหม่</translation>
 <translation id="4093865285251893588">รูปโปรไฟล์</translation>
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
 <translation id="4110686435123617899">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -606,6 +607,7 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6791471867139427246">สีไฟแป้นพิมพ์</translation>
+<translation id="6793680441750437230">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน กดแป้น Alt + Esc เพื่อปิดกล่องโต้ตอบ</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>

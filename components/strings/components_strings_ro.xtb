@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sunt disponibile mai multe acțiuni, apasă pe Tab pentru a le răsfoi</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Detaliile cardului virtual</translation>
 <translation id="1803020234906945288">Alimentație sănătoasă</translation>
 <translation id="1803264062614276815">Numele titularului cardului</translation>
 <translation id="1803351196216024260">Poate solicita permisiunea de a folosi microfonul</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugestie}few{# sugestii}other{# de sugestii}}</translation>
 <translation id="2066915425250589881">solicitare de ștergere</translation>
+<translation id="2066969741541525119">Site-ul care urmează este blocat de organizația ta</translation>
 <translation id="2068528718802935086">Bebeluși și copii</translation>
 <translation id="2071156619270205202">Cardul nu este eligibil pentru un număr de card virtual.</translation>
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="219906046732893612">Renovarea casei</translation>
 <translation id="2202020181578195191">Introdu un an de expirare valid</translation>
+<translation id="2202627062836089804">spatele cardului</translation>
 <translation id="22081806969704220">Tava 3</translation>
 <translation id="2210794033760923560">Încarcă raportul</translation>
 <translation id="2212735316055980242">Politica nu a fost găsită</translation>
@@ -680,7 +683,6 @@
 <translation id="2674804415323431591">Ascunde sugestiile</translation>
 <translation id="2677696497921480781">Aniversări și onomastici</translation>
 <translation id="2677748264148917807">Ieși</translation>
-<translation id="2679714844901977852">Salvează-ți cardul și informațiile de facturare în Contul Google <ph name="USER_EMAIL" /> ca să finalizezi achizițiile mai rapid și în siguranță</translation>
 <translation id="2687555958734450033">Potrivire optimă</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Da, continuă</translation>
@@ -718,7 +720,6 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Conexiunea a fost resetată.</translation>
-<translation id="2791176355335562114">Plătești mai repede data viitoare</translation>
 <translation id="2792012897584536778">Administratorii acestui dispozitiv au configurat certificate de securitate cu care pot vedea conținutul site-urilor pe care le accesezi.</translation>
 <translation id="2799020568854403057">Site-ul pe care urmează să îl accesezi conține aplicații dăunătoare</translation>
 <translation id="2799223571221894425">Repornește</translation>
@@ -986,6 +987,7 @@
 <translation id="350069200438440499">Nume fișier:</translation>
 <translation id="3507936815618196901">să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="3512163584740124171">Această politică este ignorată deoarece o altă politică din același grup de politici are prioritate ridicată.</translation>
+<translation id="3515972145999192222">Organizația ta a blocat aplicația <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, deoarece încalcă o politică. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Butonul Gestionează adresele, apasă pe Enter pentru a adăuga și a gestiona adrese din setările Chrome</translation>
 <translation id="3518941727116570328">Gestionarea mai multor obiecte</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
@@ -1042,7 +1044,6 @@
 <translation id="3633738897356909127">Butonul Actualizează Chrome, apasă pe Enter pentru a actualiza Chrome din setările Chrome</translation>
 <translation id="3634530185120165534">Tava 5</translation>
 <translation id="3634567936866541746">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chrome recomandă să verifici parolele salvate.</translation>
-<translation id="3637662659967048211">Salvează în Contul Google</translation>
 <translation id="3642638418806704195">Aplicație:</translation>
 <translation id="3647286794400715637">Fiecare intrare de șir de adrese URL trebuie să conțină una sau două adrese URL.</translation>
 <translation id="3650584904733503804">Validarea a reușit</translation>
@@ -1061,6 +1062,7 @@
 <translation id="3678342917559046352">Extensie nevalidă: se aștepta ca valoarea să aibă una dintre următoarele forme: &lt;extension_id&gt; sau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Deschide pagina într-o fereastră incognito nouă (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informații despre certificat</translation>
+<translation id="3693327506115126094">Alege cum să-ți confirmi identitatea</translation>
 <translation id="3699374065820972102">TouchID este activat pentru completarea parolelor</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
 <translation id="3704162925118123524">Rețeaua pe care o folosești poate solicita accesarea paginii de conectare.</translation>
@@ -1145,6 +1147,7 @@
 <translation id="3906954721959377182">Tabletă</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vrea să redea conținut protejat. Identitatea dispozitivului tău va fi verificată de Google și poate fi accesată de acest site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Introdu codul de securitate</translation>
 <translation id="3927932062596804919">Refuză</translation>
 <translation id="393316646445601645">Internet și telecomunicații</translation>
 <translation id="3939773374150895049">Folosești WebAuthn în loc de CVC?</translation>
@@ -1391,6 +1394,7 @@
 <translation id="4524805452350978254">Gestionează cardurile</translation>
 <translation id="4526465106919207193">Oameni și societate</translation>
 <translation id="4530347922939905757">Mesaj text</translation>
+<translation id="4531477351494678589">Numărul cardului virtual:</translation>
 <translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4541810033354695636">Realitate augmentată</translation>
 <translation id="4542971377163063093">Tava 6</translation>
@@ -1400,6 +1404,7 @@
 <translation id="4567686777917670400">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Livrare</translation>
 <translation id="4582204425268416675">Elimină cardul</translation>
+<translation id="4582595824823167856">Primește un mesaj text</translation>
 <translation id="4587425331216688090">Elimini adresa din Chrome?</translation>
 <translation id="459089498662672729">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație nu este recomandată de politica implementată de administrator</translation>
 <translation id="4592951414987517459">Conexiunea la <ph name="DOMAIN" /> este criptată folosind o suită de codificare modernă.</translation>
@@ -1411,6 +1416,7 @@
 <translation id="4606870351894164739">De impact</translation>
 <translation id="4607603470419975064">Butonul Vezi sfaturile privind Chrome, apasă pe Enter pentru a afla despre funcțiile Chrome</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
+<translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
 <translation id="4617273035598175554">Software pentru elemente grafice și animație</translation>
 <translation id="4622292761762557753">Transferă oricum</translation>
@@ -1877,6 +1883,7 @@
 <translation id="57689295674415555">Numărul de card virtual nu este completat?</translation>
 <translation id="5772086939108830423">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="5776313857861697733">Prioritară</translation>
+<translation id="5776574724412881956">Cardul virtual nu e completat? Dă clic pe detaliile cardului virtual pentru a le copia în clipboard. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experimentul a fost activat</translation>
 <translation id="578305955206182703">Chihlimbar</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
@@ -2006,6 +2013,7 @@
 <translation id="6116338172782435947">să afișeze textul și imaginile copiate în clipboard</translation>
 <translation id="6118782133429281336">Lista de origini este goală.</translation>
 <translation id="6120179357481664955">Îți amintești ID-ul UPI?</translation>
+<translation id="6122181661879998141">partea din față a cardului</translation>
 <translation id="6124432979022149706">Conectori Chrome Enterprise</translation>
 <translation id="6126565365696310362">Plic chinezesc 2</translation>
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
@@ -2264,7 +2272,6 @@
 <translation id="6826993739343257035">Permiți RA?</translation>
 <translation id="6828866289116430505">Genetică</translation>
 <translation id="6831043979455480757">Tradu</translation>
-<translation id="6833752742582340615">Salvează-ți cardul și informațiile de facturare în Contul Google ca să finalizezi achizițiile mai rapid și în siguranță</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6846340164947227603">Folosește un număr de card virtual…</translation>
 <translation id="6852204201400771460">Reîncarci aplicația?</translation>
@@ -2373,6 +2380,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> dorește să utilizeze camera foto</translation>
 <translation id="7108819624672055576">Permisă de o extensie</translation>
 <translation id="7111012039238467737">(Valid)</translation>
+<translation id="7112327784801341716">Nu apar informațiile curente? Contactează-ți banca pentru a le actualiza.</translation>
 <translation id="7118618213916969306">Caută URL-ul din clipboard, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">închide celelalte file sau programe;</translation>
 <translation id="7129355289156517987">Când închizi toate filele incognito din Chromium, activitatea ta din acele file este ștearsă de pe dispozitiv:
@@ -2676,6 +2684,7 @@ Detalii suplimentare:
 <translation id="7798389633136518089">Ignorată, deoarece politica nu este configurată de o sursă din cloud.</translation>
 <translation id="7800304661137206267">Conexiunea este criptată utilizând <ph name="CIPHER" />, cu <ph name="MAC" /> pentru autentificarea mesajelor și <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
 <translation id="7802523362929240268">Site-ul este legitim</translation>
+<translation id="7802989406998618639">Introdu codul de securitate din <ph name="NUMBER_OF_DIGITS" /> cifre în <ph name="SIDE_OF_CARD" />, pentru ca banca să-ți poată confirma identitatea</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805571567667010077">Gestionată de organizația ta</translation>
 <translation id="7805768142964895445">Stare</translation>
@@ -3004,6 +3013,7 @@ Detalii suplimentare:
 <translation id="8725066075913043281">Încearcă din nou</translation>
 <translation id="8726549941689275341">Dimensiunea paginii:</translation>
 <translation id="8730621377337864115">Terminat</translation>
+<translation id="8731268612289859741">Cod de securitate</translation>
 <translation id="8731544501227493793">Butonul Gestionează parolele, apasă pe Enter pentru a vedea și a gestiona parolele în setările Chrome</translation>
 <translation id="8734529307927223492">Dispozitivul <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 in</translation>
@@ -3109,6 +3119,7 @@ Detalii suplimentare:
 <translation id="9005998258318286617">Documentul PDF nu a fost încărcat.</translation>
 <translation id="9008178007718859630">Casă și decorațiuni interioare</translation>
 <translation id="9008201768610948239">Ignorați</translation>
+<translation id="9018120810758822233">Introdu codul de securitate pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9020200922353704812">Este necesară adresa de facturare a cardului</translation>
 <translation id="9020542370529661692">Această pagină a fost tradusă în <ph name="TARGET_LANGUAGE" /></translation>

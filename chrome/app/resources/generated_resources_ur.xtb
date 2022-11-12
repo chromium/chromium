@@ -928,6 +928,7 @@
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="1834503245783133039">ڈاؤن لوڈ ناکام: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">‏Linux اپ گریڈ کیا جا رہا ہے</translation>
+<translation id="1835612721186505600">کیمرا کی اجازت کے ساتھ ایپس اور ویب سائٹس تک رسائی کی اجازت دیں</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1839021455997460752">آپ کا ای میل پتہ</translation>
 <translation id="1839540115464516994"><ph name="LOCATION" /> میں دکھائیں</translation>
@@ -2496,6 +2497,7 @@
 <translation id="3279230909244266691">اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ ورچوئل مشین شروع ہو رہی ہے۔</translation>
 <translation id="3280237271814976245">محفوظ کریں &amp;بطور…</translation>
 <translation id="3280243678470289153">‏Chrome میں رہیں</translation>
+<translation id="328119399589609861">مائیکروفون، کیمرا اور مزید تک آلے کی رسائی کو کنٹرول کریں</translation>
 <translation id="3281892622610078515">فائلز اور پروگرامز جن کو قوارنٹین فولڈر میں منتقل کرنا ہے:</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> کے ساتھ ایک ٹیب کا اشتراک کیا جا رہا ہے</translation>
 <translation id="3285322247471302225">نیا &amp;ٹیب</translation>
@@ -3740,6 +3742,7 @@
 <translation id="445099924538929605">‏<ph name="DEVICE_OS" /> نے ایک فعال TPM کا پتہ لگایا ہے جو آپ کے ڈیٹا کو زیادہ محفوظ طریقے سے اسٹور کر سکتا ہے۔</translation>
 <translation id="4451479197788154834">‏آپ کا پاس ورڈ اس آلے پر اور آپ کے Google اکاؤنٹ میں محفوظ ہے</translation>
 <translation id="4451757071857432900">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر مسدود کر دیا گيا (تجویز کردہ)</translation>
+<translation id="4452898361839215358">‏یا PPD کو منتخب کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">‏<ph name="SEARCH_ENGINE_NAME" /> پر تلاش کریں یا URL ٹائپ کریں</translation>
 <translation id="4458535500699390320">جب یہ ٹیب غیر فعال تھا، میموری سیور نے دوسرے ٹاسکس کے لیے میموری کو خالی کر دیا۔ آپ اسے ترتیبات میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دنوں قبل فعال کیا گیا</translation>
@@ -4500,6 +4503,7 @@
 <translation id="5185500136143151980">انٹرنیٹ نہیں ہے</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">پورٹ فعال کریں</translation>
+<translation id="5190959794678983197">مائیکروفون نہیں ہے</translation>
 <translation id="5191094172448199359">‏آپ کے درج کردہ PINs مماثل نہیں ہیں</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="519185197579575131">‏QT کا استعمال کریں</translation>
@@ -4858,6 +4862,7 @@
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
+<translation id="5522403133543437426">ایڈریس بار میں سرچ انجن کا استعمال کیا جاتا ہے۔</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{آپ کے منتظم نے ایک ایکسٹینشن انسٹال کر دی ہے}other{# ایکسٹینشنز انسٹال کر دی گئی ہیں}}</translation>
 <translation id="5523558474028191231">نام میں کلمات، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے اور نام میں <ph name="MAX_CHARACTER_COUNT" /> یا اس سے کم حروف کا ہونا ضروری ہے</translation>
 <translation id="5526701598901867718">تمام (غیر محفوظ)</translation>
@@ -7040,6 +7045,7 @@
 <translation id="7607002721634913082">موقوف</translation>
 <translation id="7608810328871051088">‏Android کی ترجیحات</translation>
 <translation id="7609148976235050828">براہ کرم انٹر نیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
+<translation id="7612401678989660900">مائیکروفون کی اجازت کے ساتھ ایپس اور ویب سائٹس تک رسائی کی اجازت دیں</translation>
 <translation id="7612655942094160088">منسلک کردہ فون کی خصوصیات فعال کریں۔</translation>
 <translation id="7614260613810441905">آپ کے آلہ پر جب کوئی سائٹ فائلز یا فولڈرز میں ترمیم کرنا چاہے تو پوچھیں (تجویز کردہ)</translation>
 <translation id="761530003705945209">‏Google Drive میں بیک اپ لیں۔ آسانی سے اپنا ڈیٹا بحال کریں یا کسی بھی وقت آلہ کو سوئچ کریں۔ آپ کے بیک اپ میں ایپ کا ڈیٹا شامل ہے۔ آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
@@ -7538,6 +7544,7 @@
 <translation id="8046132381940444654">‏سروس فعال کرنے میں آپ کی مدد کرنے کیلئے کسٹمر سروس کا نمائندہ اس EID نمبر کا استعمال کر سکتا ہے</translation>
 <translation id="8047242494569930800">‏‫Google اکاؤنٹ میں منتقل کریں؟</translation>
 <translation id="804786196054284061">انتہائی صارف کے لائسنس کا اقرار نامہ</translation>
+<translation id="8048728378294435881">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>
 <translation id="8048977114738515028">اس پروفائل تک براہ راست رسائی حاصل کرنے کے لیے اپنے آلے پر ایک ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="8049029041626250638">ایک کی بورڈ یا ماؤس منسلک کریں۔ اگر آپ بلوٹوتھ آلات کا استعمال کر رہے ہیں تو یہ یقینی بنائیں کہ آپ کے آلات جوڑا بنانے کیلئے تیار ہیں۔</translation>
 <translation id="8049122382261047457">‏Google لینز کے ساتھ کوئی بھی تصویر تلاش کریں</translation>
@@ -8362,6 +8369,7 @@
 <translation id="8823514049557262177">لنک کا مت&amp;ن کاپی کریں</translation>
 <translation id="8823559166155093873">کوکیز کو مسدود کریں</translation>
 <translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
+<translation id="8823963789776061136">‏متبادل طور پر، پرنٹر PPD منتخب کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">&amp;صفحہ شامل کریں…</translation>
 <translation id="8827125715368568315"><ph name="PERMISSION" /> اور مزید <ph name="COUNT" /> کو مسدود کر دیا گیا</translation>
 <translation id="8827289157496676362">ایکسٹینشن پن کریں</translation>
@@ -8421,6 +8429,7 @@
 <translation id="8872155268274985541">‏کیوسک کی خارجی اپ ڈیٹ مینی فیسٹ کی غلط فائل ملی۔ کیوسک ایپ کو اپ ڈیٹ کرنے میں ناکام۔ براہ کرم USB اسٹک ہٹائیں۔</translation>
 <translation id="8872506776304248286">ایپ میں کھولیں</translation>
 <translation id="8872777911145321141">جب کوئی سائٹ آپ کے ورچوئل ریئلٹی آلات اور ڈیٹا کا استعمال کرنا چاہے تو پوچھیں (تجویز کردہ)</translation>
+<translation id="887292602123626481">ڈیفالٹ سرچ انجنز کے بارے میں مزید جانیں</translation>
 <translation id="8874341931345877644">کسی آلہ میں کاسٹ کریں:</translation>
 <translation id="8875520811099717934">‏Linux اپ گریڈ</translation>
 <translation id="8875736897340638404">اپنے نظر آنے کو منتخب کریں</translation>
@@ -8541,6 +8550,7 @@
 <translation id="8987927404178983737">ماہ</translation>
 <translation id="8989359959810288806">ٹیدرنگ کی صورتحال کو ریفریش کریں</translation>
 <translation id="8991520179165052608">سائٹ آپ کا مائیکروفون استعمال کر سکتی ہے</translation>
+<translation id="8991694323904646277">کوئی کیمرا نہیں ہے</translation>
 <translation id="8993059306046735527">‏اگر آپ اپنے <ph name="DEVICE_TYPE" /> کا پاس ورڈ بھول جاتے ہیں تب بھی آپ اپنا مقامی ڈیٹا بحال کر سکتے ہیں۔ آپ کو اپنے Google اکاؤنٹ میں سائن ان کرنے یا اکاؤنٹ کی بازیابی کا استعمال کرنے کی ضرورت ہوگی۔</translation>
 <translation id="899384117894244799">محدود صارف کو ہٹائیں</translation>
 <translation id="899403249577094719">‏Netscape سرٹیفکیٹ بیس URL</translation>
@@ -8616,6 +8626,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> درج ذیل مواد تک رسائی حاصل کرنا چاہتا ہے:</translation>
 <translation id="9057354806206861646">شیڈول اپ ڈیٹ کریں</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{تقریباً 1 اطلاع ایک دن میں}other{تقریباً {NUM_NOTIFICATION} اطلاعات ایک دن میں}}</translation>
+<translation id="9058760336383947367">‏پرنٹر PPD دیکھیں</translation>
 <translation id="9061383912634843744">اسٹور کردہ اسناد کا استعمال کر کے سائٹس اور ایپس میں خود کار طور پر سائن ان کریں۔ اگر آف ہے تو کسی سائٹ یا ایپ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کے لیے کہا جائے گا۔</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">لائن <ph name="ERROR_LINE_START" /> سے <ph name="ERROR_LINE_END" /> تک خرابی</translation>

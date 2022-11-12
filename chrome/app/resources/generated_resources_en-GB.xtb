@@ -2387,6 +2387,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
 <translation id="3144647712221361880">Open link as</translation>
+<translation id="3144896554017119333">Extensions and more</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">Run safety check now</translation>
 <translation id="3150927491400159470">Hard Reload</translation>
@@ -2495,6 +2496,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3269093882174072735">Load image</translation>
 <translation id="326911502853238749">Don't show <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Turn on sync to back up your stuff and use it on any device</translation>
 <translation id="3269612321104318480">Light teal and white</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# files}}</translation>
 <translation id="326999365752735949">Downloading diff</translation>
@@ -4293,6 +4295,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4950993567860689081">Your session is managed by your organisation. Administrators can delete your profile and also monitor your network traffic.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{a file}other{# files}}</translation>
 <translation id="495170559598752135">Actions</translation>
+<translation id="4951966678293618079">Never save passwords for this site</translation>
 <translation id="4953808748584563296">Default orange avatar</translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
@@ -4322,6 +4325,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4981449534399733132">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />sign in<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Pick up where you left off on any device</translation>
 <translation id="4982236238228587209">Device software</translation>
+<translation id="4986706507552097681">You can always choose what to sync in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4986728572522335985">This will delete all data on the security key, including its PIN</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="49896407730300355">Rotate a&amp;nti-clockwise</translation>
@@ -7560,6 +7564,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8046132381940444654">A customer service rep can use this EID number to help you activate the service</translation>
 <translation id="8047242494569930800">Move to Google Account</translation>
 <translation id="804786196054284061">End User Licence Agreement</translation>
+<translation id="8048728378294435881">Back up your stuff and use it on any device</translation>
 <translation id="8048977114738515028">Create a desktop shortcut on your device to access directly to this profile</translation>
 <translation id="8049029041626250638">Connect a keyboard or mouse. If you are using Bluetooth devices, make sure that your devices are ready to pair.</translation>
 <translation id="8049122382261047457">Search any image with Google Lens</translation>

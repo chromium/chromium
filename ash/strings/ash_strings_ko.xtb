@@ -191,7 +191,7 @@
 <translation id="1957958912175573503">언어 설정</translation>
 <translation id="1961239773406905488">동영상 카메라 미리보기 숨겨짐</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
-<translation id="1962969542251276847">화면 잠금</translation>
+<translation id="1962969542251276847">잠금 화면</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />님, 안녕하세요.</translation>
 <translation id="1978498689038657292">텍스트 입력</translation>
@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">캡처 모드, 기본값은 <ph name="SOURCE" /> <ph name="TYPE" />입니다. 키보드 탐색을 사용하려면 Tab 키를 누르세요.</translation>
 <translation id="2961963223658824723">문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">마이크 액세스를 사용 설정하시겠습니까?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> 음성 파일을 다운로드할 수 없음</translation>
 <translation id="2970920913501714344">앱, 확장 프로그램 및 테마 설치</translation>
 <translation id="2977598380246111477">다음 번호</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">전체 화면 돋보기</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">추가 설정</translation>
+<translation id="3405101454990027959">마이크 액세스를 사용 설정합니다.</translation>
 <translation id="3410336247007142655">어두운 테마 설정 표시</translation>
 <translation id="3413817803639110246">표시할 내용 없음</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />에서 연결 해제</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="385300504083504382">시작</translation>
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
+<translation id="3885531177412808398">마이크 권한이 있는 모든 앱 및 웹사이트의 마이크 액세스를 허용합니다.</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727"><ph name="NAME" /> 앱을 열어 기기를 설정하세요</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
 <translation id="8683506306463609433">성능 추적 활성화</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> 및 마이크 권한이 있는 모든 앱 및 웹사이트의 마이크 액세스를 허용합니다.</translation>
 <translation id="8685326675965865247">기기, 앱, 설정, 웹에서 검색합니다. 앱에서 탐색하려면 화살표 키를 사용하세요.</translation>
 <translation id="8703634754197148428">녹화 시작 녹화가 시작된 후에는 Alt + Shift + L을 눌러 실행기로 이동하여 녹화 중지 버튼을 찾으세요.</translation>
 <translation id="8721053961083920564">볼륨 변경. <ph name="STATE_TEXT" /></translation>

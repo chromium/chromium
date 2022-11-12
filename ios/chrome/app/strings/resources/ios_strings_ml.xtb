@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="3863769054730344136">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="387280738075653372">ഇവിടെ Chrome ഡൗൺലോഡ് ചെയ്യുക.</translation>
+<translation id="3888863481921783344">നിങ്ങളുടെ ഇവന്റിലേക്ക് ക്ഷണിക്കപ്പെടാൻ സാധ്യതയുള്ള ആളുകളെ കാണിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
 <translation id="3892144330757387737">നിങ്ങളുടെ ചരിത്രം ഇവിടെ കാണാം</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3904829425754749514">നിങ്ങളുടെ സ്ഥാപനം സമന്വയം ഓഫാക്കി. ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവും നിങ്ങൾക്ക് തുടർന്നും കാണാം. മാറ്റങ്ങൾ വരുത്തിയാൽ, അവ നിങ്ങളുടെ അക്കൗണ്ടിൽ സമന്വയിപ്പിക്കില്ല.</translation>
@@ -571,6 +572,7 @@
 <translation id="5489208564673669003">എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ, <ph name="BEGIN_LINK" />കുക്കി ക്രമീകരണം<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5490005495580364134">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> മണിക്കൂർ മുമ്പ്</translation>
+<translation id="5520466080178053306">Password Manager ടാപ്പ് ചെയ്ത ശേഷം, ചേർക്കുക ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5525095647255982834">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, അതിലെ Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="5525269841082836315">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> എണ്ണം കണ്ടെത്തി</translation>
@@ -878,6 +880,7 @@
 <translation id="7726702057919861819">മെനു → ചരിത്രം → ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കുക</translation>
 <translation id="7738120385185846461">പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക…</translation>
 <translation id="7741325291586284254">പുതിയ അദൃശ്യ ടാബ് പേജ്</translation>
+<translation id="7744394900930577716">മറ്റ് ആപ്പുകളിലെ പാസ്‌വേഡുകൾ</translation>
 <translation id="7756478488453921771">മെനു → ക്രമീകരണം → പേയ്മെന്റ് രീതികൾ</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
@@ -940,6 +943,7 @@
 <translation id="8105368624971345109">ഓഫാക്കുക</translation>
 <translation id="8114753159095730575">ഫയൽ ഡൗൺലോഡ് ചെയ്യൽ ലഭ്യമാണ്. സ്ക്രീനിന്റെ ചുവടെ ഓപ്ഷനുകളുണ്ട്.</translation>
 <translation id="8132598642024322408">ഇപ്പോൾ <ph name="PRICE" />, മുമ്പത്തെ വില <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Chrome, Google Lens എന്നിവയിൽ നിന്ന് Apple കലണ്ടറിൽ ഇവന്റുകൾ സൃഷ്ടിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1054,6 +1058,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> എന്നയാളുടെ പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="9083838294503912307">ഉപകരണങ്ങളിൽ ഉടനീളം സമന്വയിപ്പിക്കാനും വ്യക്തിപരമാക്കാനും, സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="9087108903408689779">Chrome നിർദ്ദേശിക്കുന്ന പാസ്‌വേഡ്:</translation>
+<translation id="9093271241977565440">സ്‌ക്രീനിന്റെ മുകളിലുള്ള തിരയൽ ഐക്കൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="9094033019050270033">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="9097506547406246598">പിന്തുടരുന്നത് ഒഴിവാക്കാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="9100610230175265781">പാസ്‌ഫ്രെയ്‌സ് ആവശ്യമാണ്</translation>

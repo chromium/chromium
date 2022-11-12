@@ -928,6 +928,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1834503245783133039">No se ha podido completar la descarga: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux se ha actualizado</translation>
+<translation id="1835612721186505600">Permite que accedan los sitios web y aplicaciones con el permiso de cámara</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
 <translation id="1839021455997460752">Tu dirección de correo</translation>
 <translation id="1839540115464516994">Mostrar en <ph name="LOCATION" /></translation>
@@ -2495,6 +2496,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3279230909244266691">Iniciando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
 <translation id="3280237271814976245">Gu&amp;ardar como...</translation>
 <translation id="3280243678470289153">Permanecer en Chrome</translation>
+<translation id="328119399589609861">Controla el acceso del dispositivo al micrófono, la cámara y más</translation>
 <translation id="3281892622610078515">Archivos y programas que se pondrán en cuarentena:</translation>
 <translation id="3282210178675490297">Compartiendo una pestaña con <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nueva &amp;pestaña</translation>
@@ -4499,6 +4501,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5185500136143151980">Sin conexión a Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Activar puerto</translation>
+<translation id="5190959794678983197">No hay micrófono</translation>
 <translation id="5191094172448199359">Los PINs que has introducido no coinciden</translation>
 <translation id="5191251636205085390">Más información sobre las nuevas tecnologías que aspiran a reemplazar las cookies de terceros y cómo controlarlas</translation>
 <translation id="519185197579575131">Usar QT</translation>
@@ -4858,6 +4861,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="5522156646677899028">Esta extensión tiene una vulnerabilidad de seguridad grave.</translation>
+<translation id="5522403133543437426">Buscador utilizado en la barra de direcciones.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Tu administrador ha instalado 1 extensión}other{Tu administrador ha instalado # extensiones}}</translation>
 <translation id="5523558474028191231">El nombre puede contener letras, números y caracteres especiales, y debe tener como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
@@ -7040,6 +7044,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7608810328871051088">Preferencias de Android</translation>
 <translation id="7609148976235050828">Conéctate a Internet y vuelve a intentarlo.</translation>
+<translation id="7612401678989660900">Permite que accedan los sitios web y aplicaciones con el permiso de micrófono</translation>
 <translation id="7612655942094160088">Habilitar funciones de teléfono conectado.</translation>
 <translation id="7614260613810441905">Preguntar cuando un sitio web quiera editar archivos o carpetas de tu dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Crea copias de seguridad en Google Drive. Recupera tus datos de forma sencilla o cambia de dispositivo en cualquier momento. La copia de seguridad también incluye datos de las aplicaciones. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
@@ -7539,6 +7544,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8046132381940444654">Un representante del servicio de atención al cliente puede usar este número EID para ayudarte a activar el servicio</translation>
 <translation id="8047242494569930800">Mover a cuenta de Google</translation>
 <translation id="804786196054284061">Contrato de licencia de usuario final</translation>
+<translation id="8048728378294435881">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo</translation>
 <translation id="8048977114738515028">Crea un acceso directo en el escritorio de tu dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049029041626250638">Conecta un teclado o un ratón. Si usas dispositivos Bluetooth, asegúrate de que estén listos para emparejarse.</translation>
 <translation id="8049122382261047457">Buscar cualquier imagen con Google Lens</translation>
@@ -8423,6 +8429,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8872155268274985541">El archivo de manifiesto de la actualización externa de kiosco no es válido. Se ha producido un error al actualizar la aplicación de kiosco. Extrae el dispositivo USB.</translation>
 <translation id="8872506776304248286">Abrir en aplicación</translation>
 <translation id="8872777911145321141">Preguntar cuando un sitio web quiera usar tus dispositivos y datos de realidad virtual (recomendado)</translation>
+<translation id="887292602123626481">Más información sobre los buscadores predeterminados</translation>
 <translation id="8874341931345877644">Enviar a un dispositivo:</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
 <translation id="8875736897340638404">Elige tu visibilidad</translation>
@@ -8543,6 +8550,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8989359959810288806">Actualizar estado de la conexión compartida</translation>
 <translation id="8991520179165052608">El sitio web puede usar tu micrófono</translation>
+<translation id="8991694323904646277">No hay cámara</translation>
 <translation id="8993059306046735527">Aunque olvides la contraseña de tu <ph name="DEVICE_TYPE" />, puedes restaurar tus datos locales. Deberás iniciar sesión en tu cuenta de Google o usar la recuperación de la cuenta.</translation>
 <translation id="899384117894244799">Quitar usuario restringido</translation>
 <translation id="899403249577094719">URL base de certificado de Netscape</translation>

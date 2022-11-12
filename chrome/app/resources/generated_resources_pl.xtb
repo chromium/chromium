@@ -926,6 +926,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
 <translation id="1834503245783133039">Nie udało się pobrać: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Uaktualnianie Linuksa</translation>
+<translation id="1835612721186505600">Zezwalanie na dostęp w przypadku aplikacji i stron internetowych, które mają uprawnienia do korzystania z aparatu</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="1839021455997460752">Twój adres e-mail</translation>
 <translation id="1839540115464516994">Pokaż w tej lokalizacji: <ph name="LOCATION" /></translation>
@@ -2481,6 +2482,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3279230909244266691">Może to potrwać kilka minut. Uruchamiam maszynę wirtualną.</translation>
 <translation id="3280237271814976245">Zapisz &amp;jako...</translation>
 <translation id="3280243678470289153">Zostań w Chrome</translation>
+<translation id="328119399589609861">Zarządzanie dostępem urządzenia do mikrofonu, aparatu i innych funkcji</translation>
 <translation id="3281892622610078515">Pliki i programy do kwarantanny:</translation>
 <translation id="3282210178675490297">Udostępniam kartę aplikacji <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nowa &amp;karta</translation>
@@ -3725,6 +3727,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="445099924538929605">System operacyjny <ph name="DEVICE_OS" /> wykrył aktywny moduł TPM, który umożliwia bezpieczniejsze przechowywanie Twoich danych.</translation>
 <translation id="4451479197788154834">Hasło zostało zapisane na urządzeniu i na koncie Google</translation>
 <translation id="4451757071857432900">Blokowane na stronach, które wyświetlają uciążliwe lub wprowadzające w błąd reklamy (zalecane)</translation>
+<translation id="4452898361839215358">lub wybierz plik PPD. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Wyszukaj w <ph name="SEARCH_ENGINE_NAME" /> lub wpisz URL</translation>
 <translation id="4458535500699390320">Gdy ta karta była nieaktywna, funkcja Oszczędzanie pamięci zwolniła pamięć na inne zadania. Możesz to zmienić w dowolnym momencie w ustawieniach.</translation>
 <translation id="4459169140545916303">Aktywność: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dni temu</translation>
@@ -4485,6 +4488,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5185500136143151980">Brak internetu</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktywuj port</translation>
+<translation id="5190959794678983197">Brak mikrofonu</translation>
 <translation id="5191094172448199359">Wpisane kody PIN nie są jednakowe</translation>
 <translation id="5191251636205085390">Poznaj nowe technologie, które będą używane zamiast plików cookie innych firm, i naucz się je kontrolować</translation>
 <translation id="519185197579575131">Użyj motywu QT</translation>
@@ -4843,6 +4847,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Czy to oczekiwana strona główna?</translation>
 <translation id="5522156646677899028">To rozszerzenie zawiera poważną lukę w zabezpieczeniach.</translation>
+<translation id="5522403133543437426">Wyszukiwarka używana w pasku adresu</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrator zainstalował rozszerzenie}few{Administrator zainstalował # rozszerzenia}many{Administrator zainstalował # rozszerzeń}other{Administrator zainstalował # rozszerzenia}}</translation>
 <translation id="5523558474028191231">Nazwa może zawierać litery, cyfry i znaki specjalne, a liczba znaków nie może przekraczać <ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="5526701598901867718">Wszystkie (niebezpieczne)</translation>
@@ -7027,6 +7032,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7608810328871051088">Ustawienia Androida</translation>
 <translation id="7609148976235050828">Połącz się z internetem i spróbuj ponownie.</translation>
+<translation id="7612401678989660900">Zezwalanie na dostęp w przypadku aplikacji i stron internetowych, które mają uprawnienia do korzystania z mikrofonu</translation>
 <translation id="7612655942094160088">Włącznik funkcji połączonego telefonu.</translation>
 <translation id="7614260613810441905">Pytaj, gdy witryna chce edytować pliki lub foldery na urządzeniu (zalecane)</translation>
 <translation id="761530003705945209">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane z użyciem hasła do Twojego konta Google i przesyłane do Google.</translation>
@@ -7526,6 +7532,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8046132381940444654">Pracownik obsługi klienta może użyć tego numeru EID do aktywowania usługi</translation>
 <translation id="8047242494569930800">Przenieś na konto Google</translation>
 <translation id="804786196054284061">Umowa licencyjna użytkownika</translation>
+<translation id="8048728378294435881">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu</translation>
 <translation id="8048977114738515028">Utwórz skrót na pulpicie swojego urządzenia, by mieć bezpośredni dostęp do tego profilu</translation>
 <translation id="8049029041626250638">Podłącz klawiaturę lub mysz. Jeśli używasz urządzeń Bluetooth, upewnij się, że są one gotowe do sparowania.</translation>
 <translation id="8049122382261047457">Wyszukaj dowolny obraz za pomocą Obiektywu Google</translation>
@@ -8352,6 +8359,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8823514049557262177">Kopiuj te&amp;kst linku</translation>
 <translation id="8823559166155093873">Blokuj pliki cookie</translation>
 <translation id="8823704566850948458">Zaproponuj hasło…</translation>
+<translation id="8823963789776061136">Możesz też wybrać plik PPD drukarki. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Dodaj &amp;stronę</translation>
 <translation id="8827125715368568315">Zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Przypnij rozszerzenie</translation>
@@ -8411,6 +8419,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8872155268274985541">Odnaleziono nieprawidłowy plik manifestu zewnętrznej aktualizacji aplikacji kiosku. Aplikacja nie została zaktualizowana. Odłącz pamięć USB.</translation>
 <translation id="8872506776304248286">Otwórz w aplikacji</translation>
 <translation id="8872777911145321141">Pytaj, gdy strona chce korzystać z urządzeń i danych rzeczywistości wirtualnej (zalecane)</translation>
+<translation id="887292602123626481">Więcej informacji o domyślnych wyszukiwarkach</translation>
 <translation id="8874341931345877644">Przesyłaj na urządzenie:</translation>
 <translation id="8875520811099717934">Uaktualnienie Linuksa</translation>
 <translation id="8875736897340638404">Wybierz widoczność</translation>
@@ -8531,6 +8540,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8987927404178983737">Miesiąc</translation>
 <translation id="8989359959810288806">Aktualizuj stan tetheringu</translation>
 <translation id="8991520179165052608">Strona może używać mikrofonu</translation>
+<translation id="8991694323904646277">Brak aparatu</translation>
 <translation id="8993059306046735527">Jeśli zapomnisz hasło do urządzenia <ph name="DEVICE_TYPE" />, nadal możesz przywrócić dane lokalne. Musisz zalogować się na swoje konto Google lub skorzystać z funkcji odzyskiwania konta.</translation>
 <translation id="899384117894244799">Usuwanie użytkownika z ograniczonym dostępem</translation>
 <translation id="899403249577094719">Podstawowy adres URL certyfikatu firmy Netscape</translation>
@@ -8606,6 +8616,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> chce uzyskać dostęp do tych treści:</translation>
 <translation id="9057354806206861646">Harmonogram aktualizacji</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Około 1 powiadomienia dziennie}few{Około {NUM_NOTIFICATION} powiadomień dziennie}many{Około {NUM_NOTIFICATION} powiadomień dziennie}other{Około {NUM_NOTIFICATION} powiadomienia dziennie}}</translation>
+<translation id="9058760336383947367">Wyświetl plik PPD drukarki</translation>
 <translation id="9061383912634843744">Loguj się automatycznie do witryn i aplikacji, korzystając z zapisanych danych logowania. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się w witrynie lub aplikacji zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Błąd w wierszach od <ph name="ERROR_LINE_START" /> do <ph name="ERROR_LINE_END" /></translation>

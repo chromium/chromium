@@ -370,6 +370,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3861486700625780712">Ngừng theo dõi</translation>
 <translation id="3863769054730344136">Gửi đến các thiết bị của bạn</translation>
 <translation id="387280738075653372">Tải Chrome xuống tại đây.</translation>
+<translation id="3888863481921783344">Thông tin này sẽ được dùng để cho bạn biết những người bạn có thể mời tham gia sự kiện.</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Tổ chức của bạn đã tắt tính năng đồng bộ hoá. Bạn vẫn có thể xem dấu trang, nhật ký duyệt web, mật khẩu và các chế độ cài đặt khác trên thiết bị này. Nếu bạn thực hiện thay đổi thì những thay đổi đó sẽ không đồng bộ hoá với tài khoản của bạn.</translation>
@@ -571,6 +572,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5489208564673669003">Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Chặn tất cả cookie (Không khuyến nghị)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> giờ trước</translation>
+<translation id="5520466080178053306">Nhấn vào Trình quản lý mật khẩu rồi nhấn vào Thêm</translation>
 <translation id="5525095647255982834">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên thiết bị đó.</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
 <translation id="5542540507657872337">Đã tìm thấy <ph name="COUNT" /></translation>
@@ -878,6 +880,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7726702057919861819">Trình đơn → Nhật ký → Xoá dữ liệu duyệt web</translation>
 <translation id="7738120385185846461">Báo cáo lỗi…</translation>
 <translation id="7741325291586284254">Trang Thẻ ẩn danh mới</translation>
+<translation id="7744394900930577716">Mật khẩu trong các ứng dụng khác</translation>
 <translation id="7756478488453921771">Trình đơn → Cài đặt → Phương thức thanh toán</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
@@ -940,6 +943,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8105368624971345109">Tắt</translation>
 <translation id="8114753159095730575">Hiện đã có tệp tải xuống. Bạn có thể sử dụng các tùy chọn ở gần cuối màn hình.</translation>
 <translation id="8132598642024322408">Giá mới: <ph name="PRICE" />, giá cũ: <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Thông tin này sẽ được dùng để tạo sự kiện trong Lịch Apple trên Chrome và Google Ống kính.</translation>
 <translation id="8156478151976189188">Tính năng đồng bộ hóa mật khẩu hiện không hoạt động</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tài khoản</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Thiết bị của bạn<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1054,6 +1058,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9081058212938299310">Bạn có muốn cập nhật mật khẩu cho <ph name="USERNAME" /> không?</translation>
 <translation id="9083838294503912307">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy bật tính năng đồng bộ hóa.</translation>
 <translation id="9087108903408689779">Mật khẩu do Chrome đề xuất:</translation>
+<translation id="9093271241977565440">Nhấn vào biểu tượng Tìm kiếm ở đầu màn hình</translation>
 <translation id="9094033019050270033">Cập nhật mật khẩu</translation>
 <translation id="9097506547406246598">Không ngừng theo dõi được. Đã xảy ra lỗi.</translation>
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>

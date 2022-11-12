@@ -683,7 +683,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2674804415323431591">Oculte as sugestões</translation>
 <translation id="2677696497921480781">Aniversários e dias onomásticos</translation>
 <translation id="2677748264148917807">Sair</translation>
-<translation id="2679714844901977852">Guarde o seu cartão e informações de faturação na sua Conta Google, <ph name="USER_EMAIL" />, para pagamentos seguros e mais rápidos</translation>
 <translation id="2687555958734450033">Tamanho otimizado</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Sim, continuar</translation>
@@ -721,7 +720,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">A ligação foi reposta.</translation>
-<translation id="2791176355335562114">Pague mais rapidamente da próxima vez</translation>
 <translation id="2792012897584536778">Os administradores deste dispositivo configuraram certificados de segurança que lhes podem permitir visualizar os conteúdos dos Websites visitados por si.</translation>
 <translation id="2799020568854403057">O site que pretende visitar contém aplicações prejudiciais</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
@@ -1046,7 +1044,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3633738897356909127">Botão Atualizar Chrome; prima Enter para atualizar o Chrome nas Definições do Chrome.</translation>
 <translation id="3634530185120165534">Tabuleiro 5</translation>
 <translation id="3634567936866541746">Acabou de introduzir a sua palavra-passe num site fraudulento. Para proteger as suas contas, o Chrome recomenda verificar as palavras-passe guardadas.</translation>
-<translation id="3637662659967048211">Guardar na Conta Google</translation>
 <translation id="3642638418806704195">Aplicação:</translation>
 <translation id="3647286794400715637">Cada entrada de string de URLs tem de conter entre 1 e 2 URLs.</translation>
 <translation id="3650584904733503804">Validação com êxito</translation>
@@ -1434,6 +1431,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4646534391647090355">Aceder agora</translation>
 <translation id="4648262692072505866">O hash tem de ter o formato SHA-256.</translation>
 <translation id="4652266463001779298">Não permitida</translation>
+<translation id="4652440160515225514">A sua organização bloqueou este site porque viola uma política.</translation>
 <translation id="4653167719759882810">Fusões e aquisições</translation>
 <translation id="4658638640878098064">Agrafar parte superior esquerda</translation>
 <translation id="4660119392514473465">Agora, pode navegar em privado e as outras pessoas que utilizarem este dispositivo não veem a sua atividade. No entanto, as transferências, os marcadores e os itens da Lista de leitura são guardados.</translation>
@@ -2275,7 +2273,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6826993739343257035">Permitir a realidade aumentada?</translation>
 <translation id="6828866289116430505">Genética</translation>
 <translation id="6831043979455480757">Traduzir</translation>
-<translation id="6833752742582340615">Guarde o seu cartão e informações de faturação na sua Conta Google para pagamentos seguros e mais rápidos</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6846340164947227603">Utilizar um número de cartão virtual…</translation>
 <translation id="6852204201400771460">Pretende atualizar a aplicação?</translation>
@@ -2922,6 +2919,7 @@ Detalhes adicionais:
 <translation id="8437238597147034694">&amp;Anular movimentação</translation>
 <translation id="8438476240229491014">Memorizar esta definição</translation>
 <translation id="8438786541497918448">Pretende utilizar a câmara e o microfone?</translation>
+<translation id="8438923942245957911">Este site foi denunciado pela sua organização</translation>
 <translation id="8443613539889492016">Rap e hip-hop</translation>
 <translation id="8444543005280733648">Redes de computadores</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>

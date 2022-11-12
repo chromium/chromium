@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">ເຊົາຕິດຕາມ</translation>
 <translation id="3863769054730344136">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="387280738075653372">ດາວໂຫຼດ Chrome ຢູ່ບ່ອນນີ້.</translation>
+<translation id="3888863481921783344">ຂໍ້ມູນນີ້ຈະໃຊ້ເພື່ອສະແດງໃຫ້ທ່ານເຫັນວ່າມີຜູ້ໄດ້ຮັບເຊີນເຂົ້າຮ່ວມນັດໝາຍຂອງທ່ານ.</translation>
 <translation id="3892144330757387737">ທ່ານຈະເຫັນປະຫວັດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3904829425754749514">ອົງການຂອງທ່ານປິດການຊິ້ງຂໍ້ມູນແລ້ວ. ທ່ານຍັງຄົງສາມາດເບິ່ງເຫັນບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຢູ່ອຸປະກອນນີ້ໄດ້. ຫາກທ່ານປ່ຽນແປງ, ພວກມັນຈະບໍ່ຊິ້ງຂໍ້ມູນໄປໃສ່ບັນຊີຂອງທ່ານ.</translation>
@@ -942,6 +943,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8105368624971345109">ປິດ</translation>
 <translation id="8114753159095730575">ການດາວໂຫຼດໄຟລ໌ບໍ່ສາມາດໃຊ້ໄດ້. ມີຕົວເລືອກຕ່າງໆຢູ່ໃກ້ສ່ວນລຸ່ມຂອງໜ້າຈໍ.</translation>
 <translation id="8132598642024322408">ຕອນນີ້ <ph name="PRICE" /> ກ່ອນໜ້ານີ້ <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">ຂໍ້ມູນນີ້ຈະໃຊ້ເພື່ອສ້າງນັດໝາຍໃນປະຕິທິນ Apple ຂອງທ່ານຈາກ Chrome ແລະ Google Lens.</translation>
 <translation id="8156478151976189188">ການຊິ້ງຂໍ້ມູນລະຫັດຜ່ານບໍ່ເຮັດວຽກ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ບັນ​ຊີ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ອຸປະກອນຂອງທ່ານ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

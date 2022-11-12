@@ -3740,6 +3740,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ตรวจพบ TPM ที่มีการใช้งานอยู่ซึ่งจะจัดเก็บข้อมูลของคุณได้อย่างปลอดภัยยิ่งขึ้น</translation>
 <translation id="4451479197788154834">บันทึกรหัสผ่านในอุปกรณ์นี้และในบัญชี Google ของคุณแล้ว</translation>
 <translation id="4451757071857432900">บล็อกในเว็บไซต์ที่แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด (แนะนำ)</translation>
+<translation id="4452898361839215358">หรือเลือก PPD <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">ค้นหาใน <ph name="SEARCH_ENGINE_NAME" /> หรือพิมพ์ URL</translation>
 <translation id="4458535500699390320">ขณะที่แท็บนี้ไม่มีการใช้งาน โหมดประหยัดหน่วยความจำจะช่วยประหยัดหน่วยความจําสำหรับงานอื่นๆ คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="4459169140545916303">ใช้งานเมื่อ <ph name="DEVICE_LAST_ACTIVATED_TIME" /> วันที่ผ่านมา</translation>
@@ -7540,6 +7541,7 @@
 <translation id="8046132381940444654">ตัวแทนฝ่ายบริการลูกค้าจะใช้หมายเลข EID นี้เพื่อช่วยคุณเปิดใช้งานบริการ</translation>
 <translation id="8047242494569930800">ย้ายไปไว้ในบัญชี Google</translation>
 <translation id="804786196054284061">ข้อตกลงใบอนุญาตผู้ใช้ปลายทาง</translation>
+<translation id="8048728378294435881">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8048977114738515028">สร้างทางลัดบนเดสก์ท็อปในอุปกรณ์เพื่อเข้าถึงโปรไฟล์นี้โดยตรง</translation>
 <translation id="8049029041626250638">เชื่อมต่อแป้นพิมพ์หรือเมาส์ หากกำลังใช้อุปกรณ์บลูทูธ ให้ตรวจสอบว่าอุปกรณ์พร้อมที่จะจับคู่</translation>
 <translation id="8049122382261047457">ค้นหารูปภาพต่างๆ ด้วย Google Lens</translation>
@@ -8364,6 +8366,7 @@
 <translation id="8823514049557262177">คัดลอก&amp;ข้อความของลิงก์</translation>
 <translation id="8823559166155093873">บล็อกคุกกี้</translation>
 <translation id="8823704566850948458">แนะนำรหัสผ่าน...</translation>
+<translation id="8823963789776061136">หรือเลือก PPD ของเครื่องพิมพ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">เพิ่มหน้&amp;า...</translation>
 <translation id="8827125715368568315">บล็อก<ph name="PERMISSION" />และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="8827289157496676362">ปักหมุดส่วนขยาย</translation>
@@ -8620,6 +8623,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ต้องการเข้าถึงเนื้อหาต่อไปนี้</translation>
 <translation id="9057354806206861646">อัปเดตกำหนดการ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{การแจ้งเตือนประมาณ 1 รายการต่อวัน}other{การแจ้งเตือนประมาณ {NUM_NOTIFICATION} รายการต่อวัน}}</translation>
+<translation id="9058760336383947367">ดู PPD ของเครื่องพิมพ์</translation>
 <translation id="9061383912634843744">ลงชื่อเข้าใช้เว็บไซต์และแอปโดยอัตโนมัติด้วยข้อมูลเข้าสู่ระบบที่บันทึกไว้ หากปิดการตั้งค่านี้ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์หรือแอป</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">เกิดข้อผิดพลาดในบรรทัดที่ <ph name="ERROR_LINE_START" /> ถึง <ph name="ERROR_LINE_END" /></translation>

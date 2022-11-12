@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
+<translation id="5520466080178053306">Нажмите "Менеджер паролей", а затем "Добавить"</translation>
 <translation id="5525095647255982834">Чтобы отправить вкладку на другое устройство, войдите на нем в Chrome.</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
 <translation id="5542540507657872337">Найдено вкладок: <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">Меню → История → Очистить историю</translation>
 <translation id="7738120385185846461">Сообщить о проблеме</translation>
 <translation id="7741325291586284254">Страница "Новая вкладка инкогнито"</translation>
+<translation id="7744394900930577716">Пароли в других приложениях</translation>
 <translation id="7756478488453921771">Меню → Настройки → Способы оплаты</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310">Обновить пароль для аккаунта <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
 <translation id="9087108903408689779">Сгенерированный в Chrome пароль:</translation>
+<translation id="9093271241977565440">В верхней части экрана нажмите на значок поиска</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9097506547406246598">Не удалось отменить подписку. Произошла ошибка.</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>

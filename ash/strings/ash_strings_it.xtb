@@ -175,6 +175,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1862380676329487333">Aggiorna e disconnetti</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta posteriore)</translation>
 <translation id="1869497990620230175">File rapidi</translation>
+<translation id="1871703283152909317">Attiva entrambi gli accessi</translation>
 <translation id="1879018240766558464">Al momento le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6095008505822982596">Velocità voce</translation>
 <translation id="6099678161144790572">Modificato il mese scorso</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="6107292179555508368">Gli accessi a microfono e fotocamera sono disattivati su questo dispositivo</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Non è stato concesso l'accesso alla fotocamera su questo dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: attivazione in corso...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6282694724099204652">Attiva gli accessi per consentire alle app e alle pagine web autorizzate di usare i microfoni e le fotocamere presenti su questo dispositivo.</translation>
 <translation id="6283712521836204486">La modalità Non disturbare è disattivata.</translation>
 <translation id="6284232397434400372">Risoluzione modificata</translation>
 <translation id="6288235558961782912">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> potrà essere aggiunto di nuovo in un secondo momento con l'autorizzazione di un genitore.</translation>

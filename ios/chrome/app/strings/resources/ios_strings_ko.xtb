@@ -571,6 +571,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5489208564673669003">모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />쿠키 설정<ph name="END_LINK" />을 참조하세요.</translation>
 <translation id="5490005495580364134">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="5513681519188741830"><ph name="TIME" />시간 전</translation>
+<translation id="5520466080178053306">비밀번호 관리자를 탭한 후 추가를 탭합니다.</translation>
 <translation id="5525095647255982834">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
 <translation id="5525269841082836315">암호 만들기</translation>
 <translation id="5542540507657872337"><ph name="COUNT" />개 탭 검색됨</translation>
@@ -878,6 +879,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7726702057919861819">메뉴 → 방문 기록 → 인터넷 사용 기록 삭제</translation>
 <translation id="7738120385185846461">문제 신고…</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
+<translation id="7744394900930577716">다른 앱의 비밀번호</translation>
 <translation id="7756478488453921771">메뉴 → 설정 → 결제 수단</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7772032839648071052">암호 확인</translation>
@@ -1054,6 +1056,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9081058212938299310"><ph name="USERNAME" />님의 비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="9083838294503912307">모든 기기에서 동기화 및 맞춤설정하려면 동기화를 사용 설정하세요.</translation>
 <translation id="9087108903408689779">Chrome 추천 비밀번호:</translation>
+<translation id="9093271241977565440">화면 상단에서 검색 아이콘을 탭합니다.</translation>
 <translation id="9094033019050270033">비밀번호 업데이트</translation>
 <translation id="9097506547406246598">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>

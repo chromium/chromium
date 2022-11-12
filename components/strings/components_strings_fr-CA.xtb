@@ -56,7 +56,7 @@
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiquités et objets de collection</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
-<translation id="1123753900084781868">La transcription instantanée n'est pas accessible pour le moment</translation>
+<translation id="1123753900084781868">Les sous-titres instantanés sont inaccessibles pour le moment</translation>
 <translation id="1125573121925420732">Les avertissements peuvent être fréquents lorsque les sites Web mettent à jour leurs mesures de sécurité. Cette situation devrait bientôt s'améliorer.</translation>
 <translation id="112840717907525620">Cache de la règle valide</translation>
 <translation id="1130564665089811311">Bouton Traduire la page, appuyez sur la touche Entrée pour traduire cette page avec Google Traduction</translation>
@@ -683,7 +683,6 @@
 <translation id="2674804415323431591">Masquer les suggestions</translation>
 <translation id="2677696497921480781">Fêtes et anniversaires</translation>
 <translation id="2677748264148917807">Quitter</translation>
-<translation id="2679714844901977852">Enregistrez votre carte et vos données de facturation dans votre compte Google <ph name="USER_EMAIL" /> pour effectuer des paiements sécurisés et plus rapides</translation>
 <translation id="2687555958734450033">Ajustement optimal</translation>
 <translation id="2688186765492306706">500 mm x 760 mm</translation>
 <translation id="2688969097326701645">Oui, continuer</translation>
@@ -721,7 +720,6 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
-<translation id="2791176355335562114">Payer plus rapidement la prochaine fois</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité qui leur permettent de voir le contenu des sites Web que vous visitez.</translation>
 <translation id="2799020568854403057">Ce site contient des applications malveillantes</translation>
 <translation id="2799223571221894425">Redémarrer</translation>
@@ -1046,7 +1044,6 @@
 <translation id="3633738897356909127">Bouton Mise à jour de Chrome, appuyez sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez d'entrer votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
-<translation id="3637662659967048211">Enregistrer dans le compte Google</translation>
 <translation id="3642638418806704195">Application :</translation>
 <translation id="3647286794400715637">Chaque entrée de chaîne d'URL doit contenir entre une et deux URL.</translation>
 <translation id="3650584904733503804">Validation réussie</translation>
@@ -1173,7 +1170,7 @@
 <translation id="3984581365661308170">Enveloppe nᵒ 11</translation>
 <translation id="398470910934384994">Oiseaux</translation>
 <translation id="3985750352229496475">Gérer les adresses…</translation>
-<translation id="3986705137476756801">Désactiver la transcription instantanée pour le moment</translation>
+<translation id="3986705137476756801">Désactiver les sous-titres instantanés pour le moment</translation>
 <translation id="3987940399970879459">Moins de 1 Mo</translation>
 <translation id="3990250421422698716">Décalage</translation>
 <translation id="3992684624889376114">À propos de cette page</translation>
@@ -1348,7 +1345,7 @@
 <translation id="4386413576162606861">Jeux de rôle</translation>
 <translation id="4390472908992056574">Bord</translation>
 <translation id="4393632246160856858">Produits de soin pour les ongles</translation>
-<translation id="4406883609789734330">Transcription instantanée</translation>
+<translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
 <translation id="4407755609041463909">Flammes</translation>
 <translation id="4408413947728134509">Témoins <ph name="NUM_COOKIES" /></translation>
@@ -1452,7 +1449,7 @@
 <translation id="4692623383562244444">Moteurs de recherche</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Côté</translation>
-<translation id="4702656508969495934">La transcription instantanée est visible, servez-vous du commutateur de fenêtre pour y accéder</translation>
+<translation id="4702656508969495934">Les sous-titres instantanés sont visibles; servez-vous du commutateur de fenêtre pour y accéder</translation>
 <translation id="470284880436071933">Crime et justice</translation>
 <translation id="4704732901923281920">Biologie</translation>
 <translation id="4708268264240856090">Votre connexion a été interrompue</translation>
@@ -1946,7 +1943,7 @@
 <translation id="5946937721014915347">Ouverture du site <ph name="SITE_NAME" /> en cours…</translation>
 <translation id="5947508410139465809">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
-<translation id="5953516610448771166">La transcription instantanée n'est pas offerte pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
+<translation id="5953516610448771166">Les sous-titres instantanés ne sont pas offerts pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5955063559762970069">Hôtels et hébergement</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5967260682280773804">36 po x 48 po</translation>
@@ -2275,7 +2272,6 @@
 <translation id="6826993739343257035">Autoriser la RA?</translation>
 <translation id="6828866289116430505">Génétique</translation>
 <translation id="6831043979455480757">Traduire</translation>
-<translation id="6833752742582340615">Enregistrez votre carte et vos données de facturation dans votre compte Google pour effectuer des paiements sécurisés et plus rapides</translation>
 <translation id="6842196666980060516">184 mm x 260 mm</translation>
 <translation id="6846340164947227603">Utiliser un numéro de carte virtuelle…</translation>
 <translation id="6852204201400771460">Actualiser l'application?</translation>

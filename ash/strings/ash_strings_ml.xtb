@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">ക്യാപ്‌ചർ മോഡ്, <ph name="SOURCE" /> <ph name="TYPE" /> ഡിഫോൾട്ട് ആണ്. കീബോർഡ് നാവിഗേഷന് Tab അമർത്തുക.</translation>
 <translation id="2961963223658824723">എന്തോ കുഴപ്പം സംഭവിച്ചു. അൽപ്പസമയത്തിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">മൈക്രോഫോൺ ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
 <translation id="2970920913501714344">ആപ്പുകൾ, വിപുലീകരണങ്ങൾ, തീമുകൾ എന്നിവ ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുക</translation>
 <translation id="2977598380246111477">അടുത്ത നമ്പർ</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">പൂര്‍‌ണ്ണ-സ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">അധിക ക്രമീകരണങ്ങൾ</translation>
+<translation id="3405101454990027959">മൈക്രോഫോൺ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="3410336247007142655">ഡാർക്ക് തീം ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="3413817803639110246">ഇതുവരെ കാണാൻ ഒന്നുമില്ല</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-ൽ നിന്ന് വിച്ഛേദിക്കുക</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="385300504083504382">ആരംഭം</translation>
 <translation id="3861651314799684201">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
+<translation id="3885531177412808398">മൈക്രോഫോൺ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും മൈക്രോഫോൺ ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="3886872229787704059">ഇന്ന് തുറന്നത്</translation>
 <translation id="3891340733213178823">സൈൻ ഔട്ട് ചെയ്യുന്നതിന് രണ്ടു‌തവണ Ctrl+Shift+Q അമർത്തുക.</translation>
 <translation id="3893630138897523026">ChromeVox (സ്‌പോക്കൺ ഫീഡ്‌ബാക്ക്)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">നിങ്ങളുടെ ഉപകരണം സജ്ജീകരിക്കാൻ <ph name="NAME" /> തുറക്കുക</translation>
 <translation id="8676770494376880701">കുറഞ്ഞ തോതിൽ വൈദ്യുതി പ്രവഹിക്കുന്ന ചാർജർ കണക്റ്റുചെയ്‌തു</translation>
 <translation id="8683506306463609433">പ്രകടനം പിന്തുടരൽ സജീവം</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> ആപ്പിനും മൈക്രോഫോൺ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും മൈക്രോഫോൺ ആക്‌സസ് അനുവദിക്കുക</translation>
 <translation id="8685326675965865247">നിങ്ങളുടെ ഉപകരണവും ആപ്പുകളും ക്രമീകരണവും വെബും തിരയുക. നിങ്ങളുടെ ആപ്പുകൾ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
 <translation id="8703634754197148428">റെക്കോർഡിംഗ് ആരംഭിക്കൂ. റെക്കോർഡിംഗ് ആരംഭിച്ചുകഴിഞ്ഞാൽ, ഷെൽഫിലേക്ക് പോയി റെക്കോർഡിംഗ് നിർത്തുക ബട്ടൺ കണ്ടെത്താൻ Alt + Shift + L ഉപയോഗിക്കുക</translation>
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>

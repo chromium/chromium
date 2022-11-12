@@ -940,6 +940,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1832848789136765277">Para garantir o acesso aos seus dados sincronizados, confirme sua identidade</translation>
 <translation id="1834503245783133039">Falha no download: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Fazendo upgrade do Linux</translation>
+<translation id="1835612721186505600">Dê acesso a apps e sites com a permissão da câmera</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839021455997460752">Seu endereço de e-mail</translation>
 <translation id="1839540115464516994">Mostrar no <ph name="LOCATION" /></translation>
@@ -2510,6 +2511,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3279230909244266691">O processo pode levar alguns minutos. Iniciando a máquina virtual.</translation>
 <translation id="3280237271814976245">Salvar &amp;como...</translation>
 <translation id="3280243678470289153">Ficar no Chrome</translation>
+<translation id="328119399589609861">Controle o acesso do dispositivo ao microfone, à câmera e muito mais</translation>
 <translation id="3281892622610078515">Arquivos e programas a serem colocados em quarentena:</translation>
 <translation id="3282210178675490297">Compartilhando uma guia com <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Nova &amp;guia</translation>
@@ -4516,6 +4518,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5185500136143151980">Sem Internet</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Ativar porta</translation>
+<translation id="5190959794678983197">Nenhum microfone</translation>
 <translation id="5191094172448199359">Os PINs que você digitou não são iguais</translation>
 <translation id="5191251636205085390">Descubra e controle novas tecnologias para substituir cookies de terceiros</translation>
 <translation id="519185197579575131">Usar QT</translation>
@@ -4875,6 +4878,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Esta é a página inicial que você esperava?</translation>
 <translation id="5522156646677899028">Esta extensão contém uma grave vulnerabilidade de segurança.</translation>
+<translation id="5522403133543437426">Mecanismo de pesquisa usado na barra de endereço.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo administrador}one{# extensão foi instalada pelo administrador}other{# extensões foram instaladas pelo administrador}}</translation>
 <translation id="5523558474028191231">Os nomes precisam ter <ph name="MAX_CHARACTER_COUNT" /> caracteres ou menos e podem usar letras, números e caracteres especiais</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
@@ -7060,6 +7064,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608810328871051088">Preferências do Android</translation>
 <translation id="7609148976235050828">Conecte-se à Internet e tente novamente.</translation>
+<translation id="7612401678989660900">Dê acesso a apps e sites com a permissão do microfone</translation>
 <translation id="7612655942094160088">Ativar recursos do smartphone conectado.</translation>
 <translation id="7614260613810441905">Perguntar quando um site quiser editar arquivos ou pastas do dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app. Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
@@ -7559,6 +7564,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8046132381940444654">Um representante de atendimento ao cliente pode usar esse número EID para ajudar você a ativar o serviço</translation>
 <translation id="8047242494569930800">Mover para a Conta do Google</translation>
 <translation id="804786196054284061">Contrato de licença do usuário final</translation>
+<translation id="8048728378294435881">Faça backup e use seus dados em qualquer dispositivo</translation>
 <translation id="8048977114738515028">Criar um atalho na área de trabalho no seu dispositivo para acessar este perfil diretamente</translation>
 <translation id="8049029041626250638">Conecte um teclado ou um mouse. Se você está usando dispositivos Bluetooth, confira se eles estão prontos para o pareamento.</translation>
 <translation id="8049122382261047457">Pesquise qualquer imagem com o Google Lens</translation>
@@ -8443,6 +8449,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8872155268274985541">Arquivo de manifesto de atualização externa do modo quiosque inválido encontrado. Falha ao atualizar o aplicativo de quiosque. Remova o pendrive.</translation>
 <translation id="8872506776304248286">Abrir no app</translation>
 <translation id="8872777911145321141">Perguntar quando um site quiser usar seus dispositivos e dados de realidade virtual (recomendado)</translation>
+<translation id="887292602123626481">Saiba mais sobre os mecanismos de pesquisa padrão</translation>
 <translation id="8874341931345877644">Transmitir para um dispositivo:</translation>
 <translation id="8875520811099717934">Upgrade do Linux</translation>
 <translation id="8875736897340638404">Escolher sua visibilidade</translation>
@@ -8563,6 +8570,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
 <translation id="8991520179165052608">O site pode usar seu microfone</translation>
+<translation id="8991694323904646277">Sem câmera</translation>
 <translation id="8993059306046735527">Se você esquecer a senha do <ph name="DEVICE_TYPE" />, ainda poderá restaurar seus dados locais. Faça login na sua Conta do Google ou use a recuperação de conta.</translation>
 <translation id="899384117894244799">Remover usuário restrito</translation>
 <translation id="899403249577094719">URL base do certificado do Netscape</translation>

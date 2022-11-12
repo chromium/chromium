@@ -571,6 +571,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5489208564673669003">Lai pārvaldītu visu vietņu sīkfailus, skatiet sadaļu <ph name="BEGIN_LINK" />Sīkfailu iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloķēt visus sīkfailus (nav ieteicams)</translation>
 <translation id="5513681519188741830">Pirms <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Pieskarieties vienumam Paroļu pārvaldnieks un pēc tam — vienumam Pievienot.</translation>
 <translation id="5525095647255982834">Lai nosūtītu šo cilni uz citu ierīci, otrā ierīcē pierakstieties pārlūkā Chrome.</translation>
 <translation id="5525269841082836315">Ieejas frāz. izveide</translation>
 <translation id="5542540507657872337">Atrasto ciļņu skaits: <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7726702057919861819">Izvēlne → Vēsture → Notīrīt pārlūkošanas datus</translation>
 <translation id="7738120385185846461">Ziņot par problēmu…</translation>
 <translation id="7741325291586284254">Jauna inkognito cilnes lapa</translation>
+<translation id="7744394900930577716">Paroles citās lietotnēs</translation>
 <translation id="7756478488453921771">Izvēlne → Iestatījumi → Maksājumu veidi</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
@@ -1054,6 +1056,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9081058212938299310">Vai atjaunināt lietotājvārda <ph name="USERNAME" /> paroli?</translation>
 <translation id="9083838294503912307">Lai sinhronizētu un personalizētu saturu dažādās ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="9087108903408689779">Chrome ieteiktā parole:</translation>
+<translation id="9093271241977565440">Ekrāna augšdaļā pieskarieties meklēšanas ikonai</translation>
 <translation id="9094033019050270033">Atjaunināt paroli</translation>
 <translation id="9097506547406246598">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>

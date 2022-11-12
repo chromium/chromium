@@ -1129,7 +1129,7 @@
 否则，请立即退出，以便在这台设备上反映对此帐号所做的更改。
 
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
-<translation id="2039464276165755892">当系统检测到有其他人在窥探时隐藏通知内容</translation>
+<translation id="2039464276165755892">当系统检测到有人在窥视时隐藏通知内容</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
 <translation id="2040894699575719559">无权获取位置信息</translation>
 <translation id="2042279886444479655">使用中的配置文件</translation>
@@ -2257,7 +2257,7 @@
 <translation id="3024374909719388945">使用24小时制</translation>
 <translation id="3027296729579831126">开启“附近分享”功能</translation>
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
-<translation id="3029808567601324798">锁定时间</translation>
+<translation id="3029808567601324798">锁定前的等待时长</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天下载更新。当您连接到互联网后，系统会自动下载更新。}other{<ph name="MANAGER" /> 要求您在截止日期前下载更新。当您连接到互联网后，系统会自动下载更新。}}</translation>
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">女特工</translation>
@@ -7529,6 +7529,7 @@
 <translation id="8046132381940444654">客户服务代表可使用此 EID 号码帮助您激活服务</translation>
 <translation id="8047242494569930800">移至 Google 帐号</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
+<translation id="8048728378294435881">备份您的资料，以便在任意设备上使用</translation>
 <translation id="8048977114738515028">在设备上创建桌面快捷方式，以便直接访问此个人资料</translation>
 <translation id="8049029041626250638">您可以连接一个键盘或鼠标。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="8049122382261047457">使用 Google 智能镜头搜索任意图片</translation>
@@ -7894,7 +7895,7 @@
 <translation id="8380266723152870797">窗口名称</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8382677870544805359">您必须将此设备恢复出厂设置才能使用企业功能。</translation>
-<translation id="8382715499079447151">窥探保护功能</translation>
+<translation id="8382715499079447151">防窥视功能</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />请尝试执行以下问题排查步骤：
     <ph name="BEGIN_LIST" />

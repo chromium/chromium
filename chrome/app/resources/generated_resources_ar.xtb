@@ -3741,6 +3741,7 @@
 <translation id="445099924538929605">‏رصدَ <ph name="DEVICE_OS" /> وحدة TPM نشطة يمكنها تخزين البيانات بمزيد من الأمان.</translation>
 <translation id="4451479197788154834">‏تم حفظ كلمة المرور على هذا الجهاز وعلى حسابك في Google.</translation>
 <translation id="4451757071857432900">تم حظر الإعلانات على المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها (مُستحسَن)</translation>
+<translation id="4452898361839215358">‏أو اختَر ملف PPD. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">‏البحث في <ph name="SEARCH_ENGINE_NAME" /> أو كتابة عنوان URL</translation>
 <translation id="4458535500699390320">عندما كانت علامة التبويب هذه غير نشطة، نجحت ميزة "توفير الذاكرة" في تفريغ مساحة من الذاكرة لتنفيذ مهام أخرى. يمكنك تعديل هذا الإعداد في أي وقت من خلال الإعدادات.</translation>
 <translation id="4459169140545916303">نشط قبل <ph name="DEVICE_LAST_ACTIVATED_TIME" /> يوم</translation>
@@ -7550,6 +7551,7 @@
 <translation id="8046132381940444654">‏يمكن أن يستخدم ممثِّل خدمة العملاء رقم EID هذا لمساعدتك في تفعيل الخدمة.</translation>
 <translation id="8047242494569930800">‏نقل كلمات المرور إلى حساب Google</translation>
 <translation id="804786196054284061">اتفاقية ترخيص المستخدم</translation>
+<translation id="8048728378294435881">الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز</translation>
 <translation id="8048977114738515028">أنشِئ اختصارًا على سطح المكتب في جهازك للدخول إلى هذا الملف الشخصي مباشرةً.</translation>
 <translation id="8049029041626250638">يمكنك توصيل لوحة مفاتيح أو ماوس. وإذا كنت تستخدم أجهزة تتضمّن بلوتوث، يجب أن تكون هذه الأجهزة جاهزة لعملية الإقران.</translation>
 <translation id="8049122382261047457">‏البحث عن أي صورة باستخدام "عدسة Google"</translation>
@@ -8379,6 +8381,7 @@
 <translation id="8823514049557262177">نسخ &amp;نص الرابط</translation>
 <translation id="8823559166155093873">حظر ملفات تعريف الارتباط</translation>
 <translation id="8823704566850948458">اقتراح كلمة مرور...</translation>
+<translation id="8823963789776061136">‏يمكنك، بدلاً من ذلك، اختيار ملف PPD للطابعة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">إضافة &amp;صفحة...</translation>
 <translation id="8827125715368568315">تم حظر إذن <ph name="PERMISSION" /> و<ph name="COUNT" /> إذن آخر.</translation>
 <translation id="8827289157496676362">تثبيت الإضافة</translation>
@@ -8633,6 +8636,7 @@
 <translation id="9057007989365783744">هناك طلب من <ph name="SUPERVISED_USER_NAME" /> بالوصول إلى المحتوى التالي:</translation>
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{إشعار واحد تقريبًا في اليوم}zero{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}two{إشعاران ({NUM_NOTIFICATION}) تقريبًا في اليوم}few{{NUM_NOTIFICATION} إشعارات تقريبًا في اليوم}many{{NUM_NOTIFICATION} إشعارًا تقريبًا في اليوم}other{{NUM_NOTIFICATION} إشعار تقريبًا في اليوم}}</translation>
+<translation id="9058760336383947367">‏الاطّلاع على ملف PPD للطابعة</translation>
 <translation id="9061383912634843744">تتيح لك هذه الميزة إمكانية تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية والتطبيقات باستخدام بيانات الاعتماد المحفوظة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلَب منك تأكيد بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني أو تطبيق.</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>

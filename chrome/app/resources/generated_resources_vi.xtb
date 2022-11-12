@@ -3755,6 +3755,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> đã phát hiện một đơn vị xử lý TPM đang hoạt động có thể lưu trữ dữ liệu của bạn an toàn hơn.</translation>
 <translation id="4451479197788154834">Mật khẩu của bạn được lưu trên thiết bị này và trong Tài khoản Google</translation>
 <translation id="4451757071857432900">Đã chặn trên những trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm (khuyên dùng)</translation>
+<translation id="4452898361839215358">hoặc chọn PPD. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Tìm kiếm <ph name="SEARCH_ENGINE_NAME" /> hoặc nhập một URL</translation>
 <translation id="4458535500699390320">Mặc dù thẻ này không hoạt động nhưng Trình tiết kiệm bộ nhớ đã giải phóng bộ nhớ cho các tác vụ khác. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần cài đặt.</translation>
 <translation id="4459169140545916303">Hoạt động <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ngày trước</translation>
@@ -7559,6 +7560,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8046132381940444654">Người đại diện bộ phận dịch vụ khách hàng có thể dùng số EID này để giúp bạn kích hoạt dịch vụ</translation>
 <translation id="8047242494569930800">Di chuyển sang Tài khoản Google</translation>
 <translation id="804786196054284061">Thỏa thuận cấp phép người dùng cuối</translation>
+<translation id="8048728378294435881">Sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị</translation>
 <translation id="8048977114738515028">Tạo một lối tắt trên màn hình trên thiết bị của bạn để truy cập ngay vào hồ sơ này</translation>
 <translation id="8049029041626250638">Kết nối bàn phím hoặc chuột. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="8049122382261047457">Tìm bằng hình ảnh qua Google Ống kính</translation>
@@ -8383,6 +8385,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8823514049557262177">Sao chép &amp;văn bản liên kết</translation>
 <translation id="8823559166155093873">Chặn cookie</translation>
 <translation id="8823704566850948458">Đề xuất mật khẩu...</translation>
+<translation id="8823963789776061136">Hoặc, chọn PPD trong máy in. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Thêm tran&amp;g...</translation>
 <translation id="8827125715368568315">Đã chặn <ph name="PERMISSION" /> và <ph name="COUNT" /> quyền khác</translation>
 <translation id="8827289157496676362">Ghim tiện ích</translation>
@@ -8639,6 +8642,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> muốn truy cập nội dung sau:</translation>
 <translation id="9057354806206861646">Cập nhật lịch biểu</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Khoảng 1 thông báo mỗi ngày}other{Khoảng {NUM_NOTIFICATION} thông báo mỗi ngày}}</translation>
+<translation id="9058760336383947367">Xem PPD trong máy in</translation>
 <translation id="9061383912634843744">Tự động đăng nhập vào các trang web và ứng dụng bằng thông tin xác thực đã lưu. Nếu bạn tắt tính năng này, bạn sẽ luôn được yêu cầu xác nhận trước khi đăng nhập vào một trang web hoặc ứng dụng.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Lỗi từ dòng <ph name="ERROR_LINE_START" /> đến <ph name="ERROR_LINE_END" /></translation>

@@ -574,6 +574,7 @@
 <translation id="5489208564673669003">لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الاطّلاع على <ph name="BEGIN_LINK" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
+<translation id="5520466080178053306">انقر على "مدير كلمات المرور"، ثم على "إضافة".</translation>
 <translation id="5525095647255982834">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
 <translation id="5542540507657872337">تم العثور على <ph name="COUNT" /> علامة تبويب مفتوحة.</translation>
@@ -881,6 +882,7 @@
 <translation id="7726702057919861819">القائمة ← السجلّ ← محو بيانات التصفُّح</translation>
 <translation id="7738120385185846461">الإبلاغ عن مشكلة…</translation>
 <translation id="7741325291586284254">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
+<translation id="7744394900930577716">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="7756478488453921771">القائمة ← الإعدادات ← طُرق الدفع</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
@@ -1057,6 +1059,7 @@
 <translation id="9081058212938299310">هل تريد تحديث كلمة مرور <ph name="USERNAME" />؟</translation>
 <translation id="9083838294503912307">للمزامنة والتخصيص على جميع الأجهزة، يمكنك تفعيل المزامنة.</translation>
 <translation id="9087108903408689779">‏كلمة المرور المقترحة في Chrome:</translation>
+<translation id="9093271241977565440">انقر على رمز البحث في أعلى الشاشة.</translation>
 <translation id="9094033019050270033">تحديث كلمة المرور</translation>
 <translation id="9097506547406246598">يتعذّر إلغاء المتابعة. حدث خطأ.</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>

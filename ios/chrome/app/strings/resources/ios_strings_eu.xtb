@@ -571,6 +571,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5489208564673669003">Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />"Cookieen ezarpenak" atala<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="5513681519188741830">Duela <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Sakatu Pasahitz-kudeatzailea eta, gero, sakatu Gehitu</translation>
 <translation id="5525095647255982834">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan.</translation>
 <translation id="5525269841082836315">Sortu pasaesaldia</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> aurkitu dira</translation>
@@ -878,6 +879,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7726702057919861819">Menua → Historia → Garbitu arakatze-datuak</translation>
 <translation id="7738120385185846461">Eman arazo baten berri…</translation>
 <translation id="7741325291586284254">Ezkutuko moduko beste fitxa baten orria</translation>
+<translation id="7744394900930577716">Beste aplikazio batzuetako pasahitzak</translation>
 <translation id="7756478488453921771">Menua → Ezarpenak → Ordainketa-metodoak</translation>
 <translation id="7765158879357617694">Eraman</translation>
 <translation id="7772032839648071052">Berretsi pasaesaldia</translation>
@@ -1054,6 +1056,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9081058212938299310"><ph name="USERNAME" /> erabiltzailearen pasahitza eguneratu nahi duzu?</translation>
 <translation id="9083838294503912307">Gailu guztiak sinkronizatu eta pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="9087108903408689779">Chrome-k iradokitako pasahitza:</translation>
+<translation id="9093271241977565440">Pantailaren goialdean, sakatu bilatzeko botoia</translation>
 <translation id="9094033019050270033">Aldatu pasahitza</translation>
 <translation id="9097506547406246598">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>

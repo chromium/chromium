@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">कैप्चर मोड में, <ph name="SOURCE" /> <ph name="TYPE" /> डिफ़ॉल्ट के तौर पर सेट है. कीबोर्ड नेविगेशन के लिए, Tab दबाएं.</translation>
 <translation id="2961963223658824723">कुछ गड़बड़ी हो गई. कुछ सेकंड में फिर से कोशिश करें.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">माइक्रोफ़ोन का ऐक्सेस देना है?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
 <translation id="2970920913501714344">ऐप्लिकेशन, एक्सटेंशन, और थीम इंस्टॉल करें</translation>
 <translation id="2977598380246111477">अगला नंबर</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">सामग्री को बड़ा दिखाने की फ़ुल-स्क्रीन की सुविधा</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">अतिरिक्त सेटिंग</translation>
+<translation id="3405101454990027959">माइक्रोफ़ोन का ऐक्सेस दें</translation>
 <translation id="3410336247007142655">गहरे रंग वाली थीम की सेटिंग दिखाएं</translation>
 <translation id="3413817803639110246">अभी देखने के लिए कुछ भी नहीं है</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> से डिसकनेक्ट करें</translation>
@@ -517,6 +519,7 @@
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="385300504083504382">टेक्स्ट की शुरुआत में जाएं</translation>
 <translation id="3861651314799684201">पूरी स्क्रीन को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
+<translation id="3885531177412808398">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन का ऐक्सेस मिलेगा जिनके पास माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
 <translation id="3886872229787704059">इसे आज खोला गया था</translation>
 <translation id="3891340733213178823">साइन आउट करने के लिए दो बार Ctrl+Shift+Q दबाएं.</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
@@ -1376,6 +1379,7 @@
 <translation id="8666856788528804727">अपना डिवाइस सेट अप करने के लिए <ph name="NAME" /> खोलें</translation>
 <translation id="8676770494376880701">कम-शक्ति वाला चार्जर</translation>
 <translation id="8683506306463609433">'परफ़ॉर्मेंस ट्रेसिंग' चालू है</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन ऐक्सेस करने की अनुमति मिलती है जिनके पास माइक्रोफ़ोन का इस्तेमाल करने की अनुमति है</translation>
 <translation id="8685326675965865247">अपने डिवाइस, ऐप्लिकेशन, सेटिंग के साथ-साथ वेब पर भी खोजें. अपने ऐप्लिकेशन नेविगेट करने के लिए, तीर के निशान वाले बटन का इस्तेमाल करें.</translation>
 <translation id="8703634754197148428">रिकॉर्डिंग शुरू करें. रिकॉर्डिंग शुरू होने के बाद, शेल्फ़ पर जाने के लिए Alt + Shift + L का इस्तेमाल करें और रिकॉर्डिंग बंद करने वाले बटन को ढूंढें</translation>
 <translation id="8721053961083920564">आवाज़ टॉगल करें. <ph name="STATE_TEXT" /></translation>

@@ -571,6 +571,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5489208564673669003">Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas las cookies (no se recomienda)</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Presiona el Administrador de contraseñas y, luego, Agregar</translation>
 <translation id="5525095647255982834">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ese dispositivo.</translation>
 <translation id="5525269841082836315">Crear frase contras.</translation>
 <translation id="5542540507657872337">Pestañas encontradas: <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7726702057919861819">Menú → Historial → Borrar datos de navegación</translation>
 <translation id="7738120385185846461">Informar un problema…</translation>
 <translation id="7741325291586284254">Nueva página de pestañas de incógnito</translation>
+<translation id="7744394900930577716">Contraseñas en otras apps</translation>
 <translation id="7756478488453921771">Menú → Configuración → Formas de pago</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
@@ -1054,6 +1056,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña para <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar diferentes dispositivos y personalizar tu experiencia, activa la sincronización.</translation>
 <translation id="9087108903408689779">Contraseña sugerida de Chrome:</translation>
+<translation id="9093271241977565440">En la parte superior de la pantalla, presiona el ícono de Búsqueda</translation>
 <translation id="9094033019050270033">Actualizar contraseña</translation>
 <translation id="9097506547406246598">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="9100610230175265781">Se necesita una frase de contraseña.</translation>

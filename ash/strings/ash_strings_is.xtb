@@ -352,6 +352,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2960314608273155470">Tökustilling, <ph name="SOURCE" /> <ph name="TYPE" /> er sjálfgefið. Ýttu á Tab (dálkalykilinn) til að fletta á lyklaborði.</translation>
 <translation id="2961963223658824723">Eitthvað fór úrskeiðis. Reyndu aftur eftir nokkrar sekúndur.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Kveikja á hljóðnemaaðgangi?</translation>
 <translation id="296762781903199866">Ekki tókst að sækja <ph name="LANGUAGE" /> talskrár</translation>
 <translation id="2970920913501714344">Sett upp forrit, viðbætur og þemu</translation>
 <translation id="2977598380246111477">Næsta tala</translation>
@@ -430,6 +431,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3386978599540877378">stækkunargler á öllum skjánum</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Viðbótarstillingar</translation>
+<translation id="3405101454990027959">Kveikja á hljóðnemaaðgangi</translation>
 <translation id="3410336247007142655">Sýna stillingar fyrir dökkt þema</translation>
 <translation id="3413817803639110246">Ekkert að sjá enn</translation>
 <translation id="3428447136709161042">Viltu aftengjast <ph name="NETWORK_NAME" />?</translation>
@@ -516,6 +518,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="385300504083504382">Byrjun</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
+<translation id="3885531177412808398">Veitir öllum forritum og vefsvæðum með hljóðnemaheimild aðgang að hljóðnema</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
@@ -1375,6 +1378,7 @@ Ný uppsetning</translation>
 <translation id="8666856788528804727">Opnaðu <ph name="NAME" /> til að setja tækið upp</translation>
 <translation id="8676770494376880701">Afllítið hleðslutæki tengt</translation>
 <translation id="8683506306463609433">Afkastarakning virk</translation>
+<translation id="8684405646663021166">Veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með hljóðnemaheimild aðgang að hljóðnema</translation>
 <translation id="8685326675965865247">Leitaðu í tækinu þínu, forritum, stillingum og á vefnum. Notaðu örvatakkana til að fletta í gegnum forritin þín.</translation>
 <translation id="8703634754197148428">Hefja upptöku. Eftir að upptaka hefst geturðu notað Alt + Shift + L til að fara á hilluna og finna hnappinn til að hætta upptöku</translation>
 <translation id="8721053961083920564">Kveikja/slökkva á hljóði. <ph name="STATE_TEXT" /></translation>

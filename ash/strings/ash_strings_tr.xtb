@@ -352,6 +352,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2960314608273155470">Ekran Görüntüsü Alma Modu, varsayılan <ph name="SOURCE" /> <ph name="TYPE" />. Klavyeyle gezinmek için sekme tuşuna basın.</translation>
 <translation id="2961963223658824723">Bir sorun oluştu. Birkaç saniye sonra tekrar deneyin.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Mikrofon erişimi açılsın mı?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
@@ -430,6 +431,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3386978599540877378">tam ekran büyüteci</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Ek ayarlar</translation>
+<translation id="3405101454990027959">Mikrofon erişimini aç</translation>
 <translation id="3410336247007142655">Koyu tema ayarlarını göster</translation>
 <translation id="3413817803639110246">Henüz görülecek bir şey yok</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> bağlantısını kes</translation>
@@ -516,6 +518,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
+<translation id="3885531177412808398">Mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -1375,6 +1378,7 @@ Yeni yüklenmiş</translation>
 <translation id="8666856788528804727">Cihazınızı kurmak için <ph name="NAME" /> uygulamasını açın</translation>
 <translation id="8676770494376880701">Düşük güçlü şarj cihazı bağlandı</translation>
 <translation id="8683506306463609433">Performans izleme etkin</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> adlı uygulamanın yanı sıra mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="8685326675965865247">Cihazınızda, uygulamalarınızda, ayarlarınızda ve web'de arama yapın. Uygulamalarınız arasında gezinmek için ok tuşlarını kullanın.</translation>
 <translation id="8703634754197148428">Kaydı başlat. Kayıt başladıktan sonra Alt+Üst Karakter+L tuşlarını kullanarak rafta bulunan kaydı durdur düğmesine gidebilirsiniz</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>

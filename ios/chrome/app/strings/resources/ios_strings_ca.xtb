@@ -571,6 +571,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5489208564673669003">Per gestionar les galetes de tots els llocs web, consulta <ph name="BEGIN_LINK" />Configuració de les galetes<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloqueja totes les galetes (opció no recomanada)</translation>
 <translation id="5513681519188741830">Fa <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Toca Gestor de contrasenyes i, a continuació, toca Afegeix</translation>
 <translation id="5525095647255982834">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome en el dispositiu en qüestió.</translation>
 <translation id="5525269841082836315">Crea una frase de contrasenya</translation>
 <translation id="5542540507657872337">Se n'han trobat <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7726702057919861819">Menú → Historial → Esborra les dades de navegació</translation>
 <translation id="7738120385185846461">Informa d'un problema…</translation>
 <translation id="7741325291586284254">Pàgina de pestanya d'incògnit nova</translation>
+<translation id="7744394900930577716">Contrasenyes en altres aplicacions</translation>
 <translation id="7756478488453921771">Menú → Configuració → Formes de pagament</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
@@ -1054,6 +1056,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9081058212938299310">Vols actualitzar la contrasenya per a <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Per sincronitzar i personalitzar el contingut en tots els dispositius, activa la sincronització.</translation>
 <translation id="9087108903408689779">Contrasenya suggerida per Chrome:</translation>
+<translation id="9093271241977565440">A la part superior de la pantalla, toca la icona de cerca</translation>
 <translation id="9094033019050270033">Actualitza la contrasenya</translation>
 <translation id="9097506547406246598">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>

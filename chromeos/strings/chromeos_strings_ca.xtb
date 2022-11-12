@@ -305,6 +305,7 @@
 <translation id="4044093238444069296">No es pot contactar amb la passarel·la</translation>
 <translation id="4046123991198612571">Pista següent</translation>
 <translation id="404928562651467259">ADVERTIMENT</translation>
+<translation id="4060260348856573701">APN nou</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4110686435123617899">Selecciona l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -606,6 +607,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6791471867139427246">color de la llum del teclat</translation>
+<translation id="6793680441750437230">Prem qualsevol tecla del teclat, fins a 4 alhora. Prem Alt+Esc per tancar el quadre de diàleg.</translation>
 <translation id="680983167891198932">Clau</translation>
 <translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
