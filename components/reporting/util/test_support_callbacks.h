@@ -14,77 +14,16 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
 namespace test {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   Now wait for e.cb() to be called and return the collected result.
-//
-//   ... = e.result();
-//
-template <typename ResType>
-class TestEvent : base::test::TestFuture<ResType> {
- public:
-  TestEvent() = default;
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-
-  template <std::enable_if_t<std::is_move_constructible<ResType>::value, bool> =
-                false>
-  [[nodiscard]] const ResType& ref_result() {
-    return std::forward<ResType>(base::test::TestFuture<ResType>::Get());
-  }
-
-  template <
-      std::enable_if_t<std::is_move_constructible<ResType>::value, bool> = true>
-  [[nodiscard]] ResType result() {
-    return std::forward<ResType>(base::test::TestFuture<ResType>::Take());
-  }
-
-  // Returns true if the event callback was never invoked.
-  [[nodiscard]] bool no_result() const {
-    return !base::test::TestFuture<ResType>::IsReady();
-  }
-
-  // Completion callback to hand over to the processing method.
-  [[nodiscard]] base::OnceCallback<void(ResType res)> cb() {
-    return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                              base::test::TestFuture<ResType>::GetCallback());
-  }
-
-  // Repeating completion callback to hand over to the processing method.
-  // Even though it is repeating, it can be only called once, since
-  // `result` only waits for one value; repeating declaration is only needed
-  // for cases when the caller requires it.
-  [[nodiscard]] base::RepeatingCallback<void(ResType res)> repeating_cb() {
-    return base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
-        base::BindRepeating(
-            [](base::WeakPtr<TestEvent<ResType>> self, ResType res) {
-              if (self) {
-                std::move(self->GetCallback()).Run(res);
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-
- private:
-  base::WeakPtrFactory<TestEvent<ResType>> weak_ptr_factory_{this};
-};
 
 // Usage (in tests only):
 //
@@ -98,39 +37,37 @@ class TestEvent : base::test::TestFuture<ResType> {
 //   std::tie(res1, res2, ...) = e.result();
 //
 template <typename... ResType>
-class TestMultiEvent : base::test::TestFuture<ResType...> {
+class TestMultiEvent {
  public:
   TestMultiEvent() = default;
   ~TestMultiEvent() = default;
   TestMultiEvent(const TestMultiEvent& other) = delete;
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
 
-  template <std::enable_if_t<
-                std::is_move_constructible<std::tuple<ResType...>>::value,
-                bool> = false>
-  [[nodiscard]] const std::tuple<ResType...>& ref_result() {
-    return std::forward<std::tuple<ResType...>>(
-        base::test::TestFuture<ResType...>::Get());
+  using TupleType = std::tuple<std::decay_t<ResType>...>;
+
+  template <
+      typename = std::enable_if<!std::is_move_constructible<TupleType>::value>>
+  [[nodiscard]] const TupleType& ref_result() {
+    RunUntilHasResult();
+    return result_.value();
   }
 
-  template <std::enable_if_t<
-                std::is_move_constructible<std::tuple<ResType...>>::value,
-                bool> = true>
-  [[nodiscard]] std::tuple<ResType...> result() {
-    return std::forward<std::tuple<ResType...>>(
-        base::test::TestFuture<ResType...>::Take());
+  template <
+      typename = std::enable_if<std::is_move_constructible<TupleType>::value>>
+  [[nodiscard]] TupleType result() {
+    RunUntilHasResult();
+    return std::move(result_.value());
   }
 
   // Returns true if the event callback was never invoked.
-  [[nodiscard]] bool no_result() const {
-    return !base::test::TestFuture<ResType...>::IsReady();
-  }
+  [[nodiscard]] bool no_result() const { return !result_.has_value(); }
 
   // Completion callback to hand over to the processing method.
   [[nodiscard]] base::OnceCallback<void(ResType... res)> cb() {
-    return base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
-        base::test::TestFuture<ResType...>::GetCallback());
+    return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                              base::BindOnce(&TestMultiEvent::SetResult,
+                                             weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Repeating completion callback to hand over to the processing method.
@@ -140,17 +77,64 @@ class TestMultiEvent : base::test::TestFuture<ResType...> {
   [[nodiscard]] base::RepeatingCallback<void(ResType... res)> repeating_cb() {
     return base::BindPostTask(
         base::SequencedTaskRunnerHandle::Get(),
-        base::BindRepeating(
-            [](base::WeakPtr<TestMultiEvent<ResType...>> self, ResType... res) {
-              if (self) {
-                std::move(self->GetCallback()).Run(res...);
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(&TestMultiEvent::SetResult,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
+  void RunUntilHasResult() {
+    base::RunLoop run_loop;
+    while (true) {
+      {
+        base::AutoLock auto_lock(lock_);
+        if (result_.has_value()) {
+          break;
+        }
+      }
+      run_loop.RunUntilIdle();
+    }
+  }
+
+  void SetResult(ResType... res) {
+    base::AutoLock auto_lock(lock_);
+    result_ = std::make_tuple(std::forward<ResType>(res)...);
+  }
+
+  base::Lock lock_;
+  absl::optional<TupleType> result_;
   base::WeakPtrFactory<TestMultiEvent<ResType...>> weak_ptr_factory_{this};
+};
+
+// Usage (in tests only):
+//
+//   TestEvent<ResType> e;
+//
+//   ... Do some async work passing e.cb() as a completion callback of
+//   base::OnceCallback<void(ResType res)> type which also may perform some
+//   other action specified by |done| callback provided by the caller.
+//   Now wait for e.cb() to be called and return the collected result.
+//
+//   ... = e.result();
+//
+template <typename ResType>
+class TestEvent : public TestMultiEvent<ResType> {
+ public:
+  TestEvent() = default;
+  ~TestEvent() = default;
+  TestEvent(const TestEvent& other) = delete;
+  TestEvent& operator=(const TestEvent& other) = delete;
+
+  template <std::enable_if_t<std::is_move_constructible<ResType>::value, bool> =
+                false>
+  [[nodiscard]] const ResType& ref_result() {
+    return std::get<0>(TestMultiEvent<ResType>::ref_result());
+  }
+
+  template <
+      std::enable_if_t<std::is_move_constructible<ResType>::value, bool> = true>
+  [[nodiscard]] ResType result() {
+    return std::get<0>(TestMultiEvent<ResType>::result());
+  }
 };
 
 // Usage (in tests only):
@@ -168,7 +152,7 @@ class TestMultiEvent : base::test::TestFuture<ResType...> {
 //
 //  And  in each of N actions: waiter.Signal(); when done
 
-class TestCallbackWaiter : public base::test::TestFuture<bool> {
+class TestCallbackWaiter : public TestEvent<bool> {
  public:
   TestCallbackWaiter();
   ~TestCallbackWaiter();
@@ -191,7 +175,7 @@ class TestCallbackWaiter : public base::test::TestFuture<bool> {
 
   void Wait() {
     Signal();  // Rid of the constructor's ownership.
-    ASSERT_TRUE(base::test::TestFuture<bool>::Get());
+    ASSERT_TRUE(result());
   }
 
  private:

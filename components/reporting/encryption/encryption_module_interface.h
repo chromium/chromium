@@ -9,10 +9,8 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
@@ -32,8 +30,7 @@ class EncryptionModuleInterface
   using PublicKeyId = int32_t;
 
   explicit EncryptionModuleInterface(
-      base::TimeDelta renew_encryption_key_period,
-      const base::TickClock* clock);
+      base::TimeDelta renew_encryption_key_period = base::Days(1));
   EncryptionModuleInterface(const EncryptionModuleInterface& other) = delete;
   EncryptionModuleInterface& operator=(const EncryptionModuleInterface& other) =
       delete;
@@ -88,9 +85,6 @@ class EncryptionModuleInterface
 
   // Period of encryption key update.
   const base::TimeDelta renew_encryption_key_period_;
-
-  // Clock reference (real clock for prod, simulated clock for tests).
-  const base::raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace reporting

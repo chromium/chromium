@@ -29,10 +29,8 @@ bool EncryptionModuleInterface::is_enabled() {
 }
 
 EncryptionModuleInterface::EncryptionModuleInterface(
-    base::TimeDelta renew_encryption_key_period,
-    const base::TickClock* clock)
-    : renew_encryption_key_period_(renew_encryption_key_period),
-      clock_(clock) {}
+    base::TimeDelta renew_encryption_key_period)
+    : renew_encryption_key_period_(renew_encryption_key_period) {}
 
 EncryptionModuleInterface::~EncryptionModuleInterface() = default;
 
@@ -71,7 +69,7 @@ void EncryptionModuleInterface::UpdateAsymmetricKey(
              base::OnceCallback<void(Status)> response_cb, Status status) {
             if (status.ok()) {
               encryption_module_interface->last_encryption_key_update_.store(
-                  encryption_module_interface->clock_->NowTicks());
+                  base::TimeTicks::Now());
             }
             std::move(response_cb).Run(status);
           },
@@ -85,7 +83,7 @@ bool EncryptionModuleInterface::has_encryption_key() const {
 bool EncryptionModuleInterface::need_encryption_key() const {
   return !has_encryption_key() ||
          last_encryption_key_update_.load() + renew_encryption_key_period_ <
-             clock_->NowTicks();
+             base::TimeTicks::Now();
 }
 
 }  // namespace reporting

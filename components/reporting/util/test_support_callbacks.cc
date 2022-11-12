@@ -4,16 +4,10 @@
 
 #include "components/reporting/util/test_support_callbacks.h"
 
-#include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-
 namespace reporting {
 namespace test {
 
-TestCallbackWaiter::TestCallbackWaiter()
-    : signaled_cb_(
-          base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                             base::test::TestFuture<bool>::GetCallback())) {}
+TestCallbackWaiter::TestCallbackWaiter() : signaled_cb_(cb()) {}
 TestCallbackWaiter::~TestCallbackWaiter() = default;
 
 TestCallbackAutoWaiter::TestCallbackAutoWaiter() {
