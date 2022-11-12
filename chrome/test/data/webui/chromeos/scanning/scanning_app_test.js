@@ -14,7 +14,7 @@ import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.js';
+import {isVisible} from '../test_util.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';

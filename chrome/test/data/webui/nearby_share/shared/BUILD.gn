@@ -43,7 +43,7 @@ js_library("nearby_contact_visibility_test") {
     ":fake_nearby_contact_manager",
     ":fake_nearby_share_settings",
     "../..:chai_assert",
-    "../..:test_util",
+    "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -69,7 +69,7 @@ js_library("nearby_onboarding_one_page_test") {
   deps = [
     ":fake_nearby_share_settings",
     "../..:chai_assert",
-    "../..:test_util",
+    "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
   ]
   externs_list = [
@@ -82,7 +82,7 @@ js_library("nearby_onboarding_page_test") {
   deps = [
     ":fake_nearby_share_settings",
     "../..:chai_assert",
-    "../..:test_util",
+    "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
   ]
   externs_list = [
@@ -94,7 +94,7 @@ js_library("nearby_onboarding_page_test") {
 js_library("nearby_page_template_test") {
   deps = [
     "../..:chai_assert",
-    "../..:test_util",
+    "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

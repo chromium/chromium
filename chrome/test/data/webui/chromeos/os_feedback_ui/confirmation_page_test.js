@@ -11,7 +11,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, isVisible} from '../../test_util.js';
+import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */
 const ONLINE_TITLE = 'Thanks for your feedback';

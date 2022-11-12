@@ -11,7 +11,7 @@ import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';
-import {isVisible} from '../../../test_util.js';
+import {isVisible} from '../../../chromeos/test_util.js';
 
 import {FakeNetworkDiagnostics} from './fake_network_diagnostics_routines.js';
 import {getIconFromSrc} from './network_health_test_utils.js';

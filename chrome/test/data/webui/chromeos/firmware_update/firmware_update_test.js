@@ -17,7 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise} from '../../test_util.js';
+import {eventToPromise} from '../test_util.js';
 
 export function firmwareUpdateAppTest() {
   /** @type {?FirmwareUpdateAppElement} */

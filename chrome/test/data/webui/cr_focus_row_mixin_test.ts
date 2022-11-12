@@ -7,7 +7,7 @@ import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from './test_util.js';
 
 import {waitAfterNextRender} from './polymer_test_util.js';
 

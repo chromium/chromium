@@ -14,7 +14,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, isVisible} from '../../test_util.js';
+import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */
 const fakeImageUrl = 'chrome://os_feedback/app_icon_48.png';

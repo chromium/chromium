@@ -19,7 +19,10 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   composite = true
-  deps = [ "//chrome/browser/resources/chromeos/cloud_upload:build_ts" ]
+  deps = [
+    "../..:build_ts",
+    "//chrome/browser/resources/chromeos/cloud_upload:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

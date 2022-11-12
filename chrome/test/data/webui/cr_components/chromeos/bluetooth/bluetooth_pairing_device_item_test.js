@@ -10,7 +10,7 @@ import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome:/
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
-import {eventToPromise} from '../../../test_util.js';
+import {eventToPromise} from '../../../chromeos/test_util.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 

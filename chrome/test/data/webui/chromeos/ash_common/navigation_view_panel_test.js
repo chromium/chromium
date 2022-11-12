@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertThrows, assertTrue} from '../../chai_assert.js';
-import {eventToPromise} from '../../test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 export function navigationViewPanelTestSuite() {
   /** @type {?NavigationViewPanelElement} */

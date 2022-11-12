@@ -8,7 +8,7 @@ import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.js';
+import {isVisible} from '../test_util.js';
 
 export function helpContentTestSuite() {
   /** @type {?HelpContentElement} */

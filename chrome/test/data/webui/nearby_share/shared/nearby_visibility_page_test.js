@@ -9,7 +9,7 @@ import {NearbyVisibilityPageElement} from 'chrome://nearby/shared/nearby_visibil
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isChildVisible} from '../../test_util.js';
+import {isChildVisible} from '../../chromeos/test_util.js';
 
 import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';
 

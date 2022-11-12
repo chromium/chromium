@@ -140,8 +140,8 @@ js_library("scanner_select_test") {
 js_library("scanning_app_test") {
   deps = [
     ":scanning_app_test_utils",
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/scanning/resources:scanning_app",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
   ]

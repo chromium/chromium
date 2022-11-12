@@ -17,6 +17,7 @@ js_type_check("closure_compile_local") {
   deps = [
     ":fake_network_config_mojom",
     ":mock_controller.m",
+    ":test_util",
   ]
 }
 
@@ -29,6 +30,10 @@ js_library("fake_network_config_mojom") {
 }
 
 js_library("mock_controller.m") {
+}
+
+js_library("test_util") {
+  deps = [ "//ui/webui/resources/js/cr:event_target" ]
 }
 
 group("closure_compile") {

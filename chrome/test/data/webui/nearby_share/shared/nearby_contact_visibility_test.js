@@ -10,7 +10,7 @@ import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_sh
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isChildVisible} from '../../test_util.js';
+import {isChildVisible} from '../../chromeos/test_util.js';
 
 import {FakeContactManager} from './fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';

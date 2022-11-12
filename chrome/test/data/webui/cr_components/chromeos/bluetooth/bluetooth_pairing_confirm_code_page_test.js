@@ -8,7 +8,7 @@ import './fake_bluetooth_config.js';
 import {SettingsBluetoothPairingConfirmCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_confirm_code_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
-import {eventToPromise} from '../../../test_util.js';
+import {eventToPromise} from '../../../chromeos/test_util.js';
 
 suite('CrComponentsBluetoothPairingConfirmCodePageTest', function() {
   /** @type {?SettingsBluetoothPairingConfirmCodePageElement} */

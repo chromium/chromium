@@ -12,7 +12,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../mock_controller.m.js';
-import {isChildVisible, isVisible} from '../../test_util.js';
+import {isChildVisible, isVisible} from '../test_util.js';
 
 import {assertElementContainsText} from './diagnostics_test_utils.js';
 

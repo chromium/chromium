@@ -50,8 +50,8 @@ js_library("fake_update_provider_test") {
 
 js_library("firmware_update_dialog_test") {
   deps = [
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -66,8 +66,8 @@ js_library("firmware_update_dialog_test") {
 
 js_library("firmware_update_test") {
   deps = [
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_controller",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
@@ -88,8 +88,8 @@ js_library("firmware_update_test") {
 
 js_library("peripheral_updates_list_test") {
   deps = [
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -103,8 +103,8 @@ js_library("peripheral_updates_list_test") {
 
 js_library("update_card_test") {
   deps = [
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_utils",

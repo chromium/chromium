@@ -314,12 +314,7 @@ js_type_check("closure_compile_local") {
   deps = [
     ":chai_assert",
     ":test_browser_proxy",
-    ":test_util",
   ]
-}
-
-js_library("test_util") {
-  deps = [ "//ui/webui/resources/js/cr:event_target" ]
 }
 
 js_library("chai_assert") {
@@ -391,11 +386,7 @@ copy("copy_checked_in_dts_files") {
   outputs = [ "$target_gen_dir/tsc/{{source_target_relative}}" ]
 }
 
-generate_definitions_js_files = [
-  "mojo_webui_test_support.js",
-  "test_util.js",
-]
-
+generate_definitions_js_files = [ "mojo_webui_test_support.js" ]
 if (is_chromeos_ash) {
   generate_definitions_js_files += [ "chromeos/test_store.js" ]
 }
@@ -437,6 +428,7 @@ ts_library("build_ts") {
     "text_defaults_test.ts",
     "test_plural_string_proxy.ts",
     "test_store_ts.ts",
+    "test_util.ts",
   ]
 
   if (is_chromeos_ash) {
@@ -481,7 +473,6 @@ generate_grd("build_grd") {
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
-    "test_util.js",
     "usb_internals_test.js",
 
     "invalidations/invalidations_test.js",

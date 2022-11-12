@@ -105,8 +105,8 @@ js_library("navigation_view_panel_test") {
 
 js_library("page_toolbar_test") {
   deps = [
+    "..:test_util",
     "../..:chai_assert",
-    "../..:test_util",
     "//ash/webui/common/resources:page_toolbar",
   ]
 }

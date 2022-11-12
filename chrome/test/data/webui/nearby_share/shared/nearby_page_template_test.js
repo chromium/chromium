@@ -8,7 +8,7 @@ import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_temp
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isChildVisible} from '../../test_util.js';
+import {isChildVisible} from '../../chromeos/test_util.js';
 
 suite('nearby-page-template', function() {
   /** @type {!NearbyPageTemplateElement} */
