@@ -507,27 +507,25 @@ void SynthesizedClip::UpdateLayer(const ClipPaintPropertyNode& clip,
   gfx::Rect layer_rect = gfx::ToEnclosingRect(clip.PaintClipRect().Rect());
   bool needs_display = false;
 
-  auto new_translation_2d_or_matrix =
-      GeometryMapper::SourceToDestinationProjection(clip.LocalTransformSpace(),
-                                                    transform);
-  new_translation_2d_or_matrix.MapRect(layer_rect);
+  gfx::Transform new_projection = GeometryMapper::SourceToDestinationProjection(
+      clip.LocalTransformSpace(), transform);
+  layer_rect = new_projection.MapRect(layer_rect);
   gfx::Vector2dF layer_offset(layer_rect.OffsetFromOrigin());
   gfx::Size layer_bounds = layer_rect.size();
   AdjustMaskLayerGeometry(transform, layer_offset, layer_bounds);
-  new_translation_2d_or_matrix.PostTranslate(-layer_offset.x(),
-                                             -layer_offset.y());
+  new_projection.PostTranslate(-layer_offset);
 
-  if (!path && new_translation_2d_or_matrix.IsIdentityOr2DTranslation()) {
-    const auto& translation = new_translation_2d_or_matrix.Translation2D();
+  if (!path && new_projection.IsIdentityOr2DTranslation()) {
+    gfx::Vector2dF translation = new_projection.To2dTranslation();
     new_rrect.offset(translation.x(), translation.y());
     needs_display = !rrect_is_local_ || new_rrect != rrect_;
-    translation_2d_or_matrix_ = GeometryMapper::Translation2DOrMatrix();
+    projection_.MakeIdentity();
     rrect_is_local_ = true;
   } else {
     needs_display = rrect_is_local_ || new_rrect != rrect_ ||
-                    new_translation_2d_or_matrix != translation_2d_or_matrix_ ||
+                    new_projection != projection_ ||
                     !clip.ClipPathEquals(path_);
-    translation_2d_or_matrix_ = new_translation_2d_or_matrix;
+    projection_ = new_projection;
     rrect_is_local_ = false;
   }
 
@@ -551,11 +549,11 @@ SynthesizedClip::PaintContentsToDisplayList() {
     cc_list->push<cc::DrawRRectOp>(rrect_, flags);
   } else {
     cc_list->push<cc::SaveOp>();
-    if (translation_2d_or_matrix_.IsIdentityOr2DTranslation()) {
-      const auto& translation = translation_2d_or_matrix_.Translation2D();
+    if (projection_.IsIdentityOr2DTranslation()) {
+      gfx::Vector2dF translation = projection_.To2dTranslation();
       cc_list->push<cc::TranslateOp>(translation.x(), translation.y());
     } else {
-      cc_list->push<cc::ConcatOp>(translation_2d_or_matrix_.ToSkM44());
+      cc_list->push<cc::ConcatOp>(gfx::TransformToSkM44(projection_));
     }
     if (path_) {
       cc_list->push<cc::ClipPathOp>(path_->GetSkPath(), SkClipOp::kIntersect,

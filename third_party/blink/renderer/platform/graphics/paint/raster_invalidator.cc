@@ -57,16 +57,21 @@ wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
   return kNotFound;
 }
 
-static bool ApproximatelyEqual(const SkMatrix& a, const SkMatrix& b) {
-  static constexpr float kTolerance = 1e-5f;
-  for (int i = 0; i < 9; i++) {
-    auto difference = std::abs(a[i] - b[i]);
+// TODO(crbug.com/1359528): Make gfx::Transform::ApproximatelyEqual() more
+// generic and remove this function.
+static bool ApproximatelyEqual(const gfx::Transform& a,
+                               const gfx::Transform& b) {
+  static constexpr double kTolerance = 1e-5f;
+  for (int i = 0; i < 16; i++) {
+    double x = a.ColMajorData(i);
+    double y = b.ColMajorData(i);
+    auto difference = std::abs(x - y);
     // Check for absolute difference.
     if (difference > kTolerance)
       return false;
     // For scale components, also check for relative difference.
-    if ((i == 0 || i == 4 || i == 9) &&
-        difference > (std::abs(a[i]) + std::abs(b[i])) * kTolerance)
+    if ((i == 0 || i == 5) &&
+        difference > (std::abs(x) + std::abs(y)) * kTolerance)
       return false;
   }
   return true;

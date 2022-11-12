@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/transform.h"
@@ -207,7 +208,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     bool has_animation = false;
     USING_FAST_MALLOC(PlaneRootTransform);
   };
-  std::unique_ptr<PlaneRootTransform> plane_root_transform_;
+  absl::optional<PlaneRootTransform> plane_root_transform_;
 
   struct ScreenTransform {
     gfx::Transform to_screen;
@@ -216,7 +217,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     bool has_animation = false;
     USING_FAST_MALLOC(ScreenTransform);
   };
-  std::unique_ptr<ScreenTransform> screen_transform_;
+  absl::optional<ScreenTransform> screen_transform_;
 
   const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
   const TransformPaintPropertyNode* nearest_directly_composited_ancestor_ =

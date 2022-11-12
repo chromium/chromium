@@ -118,11 +118,16 @@ class GEOMETRY_SKIA_EXPORT Transform {
   static Transform MakeTranslation(float tx, float ty) {
     return Transform(1, 1, tx, ty);
   }
+  static Transform MakeTranslation(const Vector2dF& v) {
+    return MakeTranslation(v.x(), v.y());
+  }
+
   // Creates a transform as a 2d scale.
   static Transform MakeScale(float scale) { return MakeScale(scale, scale); }
   static Transform MakeScale(float sx, float sy) {
     return Transform(sx, sy, 0, 0);
   }
+
   // Accurately rotate by 90, 180 or 270 degrees about the z axis.
   static Transform Make90degRotation() { return Affine(0, 1, -1, 0, 0, 0); }
   static Transform Make180degRotation() { return MakeScale(-1); }

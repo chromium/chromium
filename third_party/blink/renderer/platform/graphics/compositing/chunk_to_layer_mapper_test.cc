@@ -57,7 +57,7 @@ TEST_F(ChunkToLayerMapperTest, OneChunkUsingLayerState) {
   auto chunk = Chunk(LayerState());
   mapper.SwitchToChunk(chunk);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
   EXPECT_EQ(gfx::Rect(20, 10, 88, 99),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -71,7 +71,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkUsingLayerState) {
 
   mapper.SwitchToChunk(chunk1);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
   EXPECT_EQ(gfx::Rect(20, 10, 88, 99),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -79,7 +79,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkUsingLayerState) {
 
   mapper.SwitchToChunk(chunk2);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
   EXPECT_EQ(gfx::Rect(20, 10, 88, 99),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -98,8 +98,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkSameState) {
 
   mapper.SwitchToChunk(chunk1);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  SkMatrix expected_transform = SkMatrix::Translate(-10, -20);
-  expected_transform.preScale(2, 2);
+  gfx::Transform expected_transform = MakeTranslationMatrix(-10, -20);
+  expected_transform.Scale(2);
   EXPECT_EQ(expected_transform, mapper.Transform());
   EXPECT_EQ(gfx::RectF(0, -10, 100, 100), mapper.ClipRect().Rect());
   EXPECT_TRUE(mapper.ClipRect().IsTight());
@@ -133,8 +133,8 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
 
   mapper.SwitchToChunk(chunk1);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  SkMatrix expected_transform = SkMatrix::Translate(-10, -20);
-  expected_transform.preScale(2, 2);
+  gfx::Transform expected_transform = MakeTranslationMatrix(-10, -20);
+  expected_transform.Scale(2);
   EXPECT_EQ(expected_transform, mapper.Transform());
   EXPECT_EQ(gfx::RectF(0, -10, 100, 100), mapper.ClipRect().Rect());
   EXPECT_TRUE(mapper.ClipRect().IsTight());
@@ -144,7 +144,7 @@ TEST_F(ChunkToLayerMapperTest, TwoChunkDifferentState) {
 
   mapper.SwitchToChunk(chunk2);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  expected_transform.preTranslate(20, 30);
+  expected_transform.Translate(20, 30);
   EXPECT_EQ(expected_transform, mapper.Transform());
   EXPECT_EQ(gfx::RectF(30, 40, 40, 40), mapper.ClipRect().Rect());
   EXPECT_FALSE(mapper.ClipRect().IsTight());
@@ -185,12 +185,12 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
 
   mapper.SwitchToChunk(chunk1);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
 
   mapper.SwitchToChunk(chunk2);
   EXPECT_TRUE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_TRUE(mapper.ClipRect().IsInfinite());
   EXPECT_EQ(gfx::Rect(-40, -50, 208, 219),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -198,7 +198,7 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
 
   mapper.SwitchToChunk(chunk3);
   EXPECT_TRUE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_TRUE(mapper.ClipRect().IsInfinite());
   EXPECT_EQ(gfx::Rect(-40, -50, 208, 219),
             mapper.MapVisualRect(gfx::Rect(30, 30, 88, 99)));
@@ -206,12 +206,12 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
 
   mapper.SwitchToChunk(chunk4);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
 
   mapper.SwitchToChunk(chunk5);
   EXPECT_FALSE(HasFilterThatMovesPixels(mapper));
-  EXPECT_EQ(SkMatrix::Translate(-10, -20), mapper.Transform());
+  EXPECT_EQ(MakeTranslationMatrix(-10, -20), mapper.Transform());
   EXPECT_EQ(FloatClipRect(), mapper.ClipRect());
 }
 

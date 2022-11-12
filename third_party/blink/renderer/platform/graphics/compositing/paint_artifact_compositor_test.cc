@@ -449,7 +449,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     auto transform2 =
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     TransformPaintPropertyNode::State transform3_state{
-        MakeRotationMatrix(0, 45, 0)};
+        {MakeRotationMatrix(0, 45, 0)}};
     transform3_state.flags.flattens_inherited_transform =
         transform_is_flattened;
     auto transform3 = TransformPaintPropertyNode::Create(
@@ -503,7 +503,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
         CreateTransform(*transform1, MakeRotationMatrix(0, 45, 0));
     auto transform2 = TransformPaintPropertyNodeAlias::Create(*real_transform2);
     TransformPaintPropertyNode::State transform3_state{
-        MakeRotationMatrix(0, 45, 0)};
+        {MakeRotationMatrix(0, 45, 0)}};
     transform3_state.flags.flattens_inherited_transform =
         transform_is_flattened;
     auto real_transform3 = TransformPaintPropertyNode::Create(
@@ -1827,7 +1827,7 @@ scoped_refptr<EffectPaintPropertyNode> CreateSampleEffectNodeWithElementId() {
 
 scoped_refptr<TransformPaintPropertyNode>
 CreateSampleTransformNodeWithElementId() {
-  TransformPaintPropertyNode::State state{MakeRotationMatrix(90)};
+  TransformPaintPropertyNode::State state{{MakeRotationMatrix(90)}};
   state.direct_compositing_reasons = CompositingReason::k3DTransform;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       3, CompositorElementIdNamespace::kPrimaryTransform);
@@ -3757,7 +3757,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
 // viewport's page scale and scroll layers to support pinch-zooming.
 TEST_P(PaintArtifactCompositorTest, CreatesViewportNodes) {
   auto matrix = MakeScaleMatrix(2);
-  TransformPaintPropertyNode::State transform_state{matrix};
+  TransformPaintPropertyNode::State transform_state{{matrix}};
   transform_state.flags.in_subtree_of_page_scale = false;
   const CompositorElementId compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
@@ -3837,7 +3837,7 @@ TEST_P(PaintArtifactCompositorTest, InSubtreeOfPageScale) {
 // Test that PaintArtifactCompositor pushes page scale to the transform tree.
 TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // Create a page scale transform node with a page scale factor of 2.0.
-  TransformPaintPropertyNode::State transform_state{MakeScaleMatrix(2)};
+  TransformPaintPropertyNode::State transform_state{{MakeScaleMatrix(2)}};
   transform_state.flags.in_subtree_of_page_scale = false;
   transform_state.compositor_element_id =
       CompositorElementIdFromUniqueObjectId(1);
@@ -4352,7 +4352,6 @@ TEST_P(PaintArtifactCompositorTest,
   // due to floating-point errors, we should choose other transformation values
   // to make it succeed.
   ASSERT_TRUE(GeometryMapper::SourceToDestinationProjection(t0(), *rotate2)
-                  .Matrix()
                   .Preserves2dAxisAlignment());
 
   TestPaintArtifact artifact;
@@ -4378,8 +4377,8 @@ TEST_P(PaintArtifactCompositorTest,
 }
 
 static TransformPaintPropertyNode::State Transform3dState(
-    TransformPaintPropertyNode::TransformAndOrigin&& transform) {
-  TransformPaintPropertyNode::State state{std::move(transform)};
+    const gfx::Transform& transform) {
+  TransformPaintPropertyNode::State state{{transform}};
   state.direct_compositing_reasons = CompositingReason::k3DTransform;
   return state;
 }
@@ -4403,7 +4402,8 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   // Change t1 but not t2.
   layer->ClearSubtreePropertyChangedForTesting();
   ClearPropertyTreeChangedState();
-  t1->Update(t0(), TransformPaintPropertyNode::State{gfx::Vector2dF(20, 30)});
+  t1->Update(
+      t0(), TransformPaintPropertyNode::State{{MakeTranslationMatrix(20, 30)}});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
             t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t2->NodeChanged());
@@ -4453,7 +4453,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
   // Change t2 to be 2d translation which will be decomposited.
   layer->ClearSubtreePropertyChangedForTesting();
   ClearPropertyTreeChangedState();
-  t2->Update(*t1, Transform3dState(gfx::Vector2dF(20, 30)));
+  t2->Update(*t1, Transform3dState(MakeTranslationMatrix(20, 30)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, t2->NodeChanged());
   Update(TestPaintArtifact()

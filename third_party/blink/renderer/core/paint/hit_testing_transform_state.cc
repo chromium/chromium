@@ -36,20 +36,11 @@ void HitTestingTransformState::Translate(const gfx::Vector2dF& offset) {
 
 void HitTestingTransformState::ApplyTransform(
     const TransformPaintPropertyNode& transform) {
-  if (transform.IsIdentityOr2DTranslation()) {
-    Translate(transform.Translation2D());
-  } else {
-    accumulated_transform_.PreConcat(transform.MatrixWithOriginApplied());
-  }
+  accumulated_transform_.PreConcat(transform.MatrixWithOriginApplied());
 }
 
-void HitTestingTransformState::ApplyTransform(
-    const GeometryMapper::Translation2DOrMatrix& transform) {
-  if (transform.IsIdentityOr2DTranslation()) {
-    Translate(transform.Translation2D());
-  } else {
-    accumulated_transform_.PreConcat(transform.Matrix());
-  }
+void HitTestingTransformState::ApplyTransform(const gfx::Transform& transform) {
+  accumulated_transform_.PreConcat(transform);
 }
 
 void HitTestingTransformState::Flatten() {

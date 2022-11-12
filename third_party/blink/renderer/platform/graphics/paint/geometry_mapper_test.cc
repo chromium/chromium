@@ -131,14 +131,13 @@ void GeometryMapperTest::CheckSourceToDestinationRect() {
 }
 
 void GeometryMapperTest::CheckSourceToDestinationProjection() {
-  const auto& actual_transform_to_ancestor =
-      GeometryMapper::SourceToDestinationProjection(local_state.Transform(),
-                                                    ancestor_state.Transform());
+  gfx::Transform projection = GeometryMapper::SourceToDestinationProjection(
+      local_state.Transform(), ancestor_state.Transform());
   if (expected_transform) {
-    EXPECT_EQ(*expected_transform, actual_transform_to_ancestor.Matrix());
+    EXPECT_EQ(*expected_transform, projection);
   } else {
-    EXPECT_EQ(expected_translation_2d,
-              actual_transform_to_ancestor.Translation2D());
+    EXPECT_TRUE(projection.IsIdentityOr2DTranslation());
+    EXPECT_EQ(expected_translation_2d, projection.To2dTranslation());
   }
 }
 
@@ -340,7 +339,7 @@ TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
   auto transform1 = CreateTransform(t0(), rotate_transform);
 
   auto inverse_rotate_transform = MakeRotationMatrix(-45, 0, 0);
-  TransformPaintPropertyNode::State inverse_state{inverse_rotate_transform};
+  TransformPaintPropertyNode::State inverse_state{{inverse_rotate_transform}};
   inverse_state.flags.flattens_inherited_transform = true;
   auto transform2 =
       TransformPaintPropertyNode::Create(*transform1, std::move(inverse_state));
@@ -656,10 +655,10 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
     expected_visual_rect_expanded_for_compositing =
         InfiniteLooseFloatClipRect();
   }
-  EXPECT_FALSE(expected_visual_rect.IsTight());
+  EXPECT_TRUE(expected_visual_rect.IsTight());
   expected_clip = clip->LayoutClipRect();
   expected_clip.Map(*expected_transform);
-  EXPECT_FALSE(expected_clip.IsTight());
+  EXPECT_TRUE(expected_clip.IsTight());
   expected_clip_has_sticky_transform = true;
   expected_transformed_rect = expected_transform->MapRect(input_rect);
   CheckMappings();
@@ -718,7 +717,7 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
   expected_visual_rect = FloatClipRect(input_rect);
   expected_visual_rect.Map(*expected_transform);
   expected_visual_rect.Intersect(clip->LayoutClipRect());
-  EXPECT_FALSE(expected_visual_rect.IsTight());
+  EXPECT_TRUE(expected_visual_rect.IsTight());
   expected_clip = clip->LayoutClipRect();
   EXPECT_TRUE(expected_clip.IsTight());
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
@@ -804,12 +803,12 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
   expected_clip = clip2->LayoutClipRect();
   expected_clip.Map(*expected_transform);
   expected_clip.Intersect(clip1->LayoutClipRect());
-  EXPECT_FALSE(expected_clip.IsTight());
+  EXPECT_TRUE(expected_clip.IsTight());
   expected_clip_has_sticky_transform = true;
   expected_visual_rect = FloatClipRect(input_rect);
   expected_visual_rect.Map(*expected_transform);
   expected_visual_rect.Intersect(expected_clip);
-  EXPECT_FALSE(expected_visual_rect.IsTight());
+  EXPECT_TRUE(expected_visual_rect.IsTight());
   if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
     // The visual rect is expanded to infinity because of the sticky transform,
     // then clipped by clip1. clip2 doesn't apply because it's below the sticky
@@ -857,7 +856,6 @@ TEST_P(GeometryMapperTest, ExpandVisualRectForFixed) {
   ancestor_state.SetTransform(*above_viewport);
   expected_transform =
       MakeTranslationMatrix(descendant_offset.x(), descendant_offset.y());
-  expected_visual_rect.ClearIsTight();
   expected_visual_rect_expanded_for_compositing = expected_visual_rect;
   CheckMappings();
 }
@@ -965,7 +963,7 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transform_below_effect
   auto output = input_rect;
-  output.Offset(transform_below_effect->Translation2D());
+  output.Offset(transform_below_effect->Get2dTranslation());
   // 2. clip_below_effect
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
@@ -976,11 +974,11 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(-40, -30, 140, 130), output);
   // 5. transform_above_effect
-  output.Offset(transform_above_effect->Translation2D());
+  output.Offset(transform_above_effect->Get2dTranslation());
   EXPECT_EQ(gfx::RectF(0, 20, 140, 130), output);
 
-  expected_translation_2d = transform_above_effect->Translation2D() +
-                            transform_below_effect->Translation2D();
+  expected_translation_2d = transform_above_effect->Get2dTranslation() +
+                            transform_below_effect->Get2dTranslation();
   expected_transformed_rect = input_rect;
   expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(output);
@@ -1017,7 +1015,7 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transformBelowEffect
   auto output = input_rect;
-  output.Offset(transform_below_effect->Translation2D());
+  output.Offset(transform_below_effect->Get2dTranslation());
   // 2. clipBelowEffect
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
@@ -1028,11 +1026,11 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(-40, -30, 140, 130), output);
   // 5. transformAboveEffect
-  output.Offset(transform_above_effect->Translation2D());
+  output.Offset(transform_above_effect->Get2dTranslation());
   EXPECT_EQ(gfx::RectF(0, 20, 140, 130), output);
 
-  expected_translation_2d = transform_above_effect->Translation2D() +
-                            transform_below_effect->Translation2D();
+  expected_translation_2d = transform_above_effect->Get2dTranslation() +
+                            transform_below_effect->Get2dTranslation();
   expected_transformed_rect = input_rect;
   expected_transformed_rect.Offset(expected_translation_2d);
   expected_visual_rect = FloatClipRect(output);

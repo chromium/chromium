@@ -309,9 +309,9 @@ void LayoutShiftTracker::ObjectShifted(
   // TODO(crbug.com/1187979): Shift by |scroll_delta| to keep backward
   // compatibility in https://crrev.com/c/2754969. See the bug for details.
   old_rect_in_root.Offset(scroll_delta);
-  transform.MapRect(old_rect_in_root);
+  old_rect_in_root = transform.MapRect(old_rect_in_root);
   gfx::RectF new_rect_in_root(new_rect);
-  transform.MapRect(new_rect_in_root);
+  new_rect_in_root = transform.MapRect(new_rect_in_root);
 
   gfx::Rect visible_old_rect = gfx::ToRoundedRect(
       gfx::IntersectRects(old_rect_in_root, clip_rect.Rect()));

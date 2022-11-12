@@ -728,7 +728,7 @@ TEST_P(PaintPropertyTreeUpdateTest, TransformUpdatesOnRelativeLengthChanges) {
   EXPECT_EQ(gfx::Vector2dF(50, 100), transform_object->FirstFragment()
                                          .PaintProperties()
                                          ->Transform()
-                                         ->Translation2D());
+                                         ->Get2dTranslation());
 
   transform->setAttribute(html_names::kStyleAttr,
                           "width: 200px; height: 300px;");
@@ -736,7 +736,7 @@ TEST_P(PaintPropertyTreeUpdateTest, TransformUpdatesOnRelativeLengthChanges) {
   EXPECT_EQ(gfx::Vector2dF(100, 150), transform_object->FirstFragment()
                                           .PaintProperties()
                                           ->Transform()
-                                          ->Translation2D());
+                                          ->Get2dTranslation());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CSSClipDependingOnSize) {
@@ -1383,8 +1383,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ForwardReferencedSVGElementUpdate) {
   EXPECT_EQ(MakeTranslationMatrix(1, 0),
             GeometryMapper::SourceToDestinationProjection(
                 *rect_properties->Transform(),
-                *svg2_properties->PaintOffsetTranslation())
-                .Matrix());
+                *svg2_properties->PaintOffsetTranslation()));
 
   // Change filter which forward references rect, and insert a transform
   // node above rect's transform.
@@ -1405,8 +1404,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ForwardReferencedSVGElementUpdate) {
   EXPECT_EQ(MakeTranslationMatrix(3, 0),
             GeometryMapper::SourceToDestinationProjection(
                 *rect_properties->Transform(),
-                *svg2_properties->PaintOffsetTranslation())
-                .Matrix());
+                *svg2_properties->PaintOffsetTranslation()));
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, OverflowClipUpdateForImage) {
@@ -1611,7 +1609,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
   EXPECT_EQ(PhysicalOffset(LayoutUnit(10.25), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
   EXPECT_EQ(gfx::Vector2dF(10, 0),
-            isolation_properties->PaintOffsetTranslation()->Translation2D());
+            isolation_properties->PaintOffsetTranslation()->Get2dTranslation());
   EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
 
   parent_element->setAttribute(html_names::kStyleAttr, "margin-left: 12.75px");
@@ -1620,7 +1618,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
   EXPECT_EQ(PhysicalOffset(LayoutUnit(12.75), LayoutUnit()),
             parent->FirstFragment().PaintOffset());
   EXPECT_EQ(gfx::Vector2dF(13, 0),
-            isolation_properties->PaintOffsetTranslation()->Translation2D());
+            isolation_properties->PaintOffsetTranslation()->Get2dTranslation());
   EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
 }
 
@@ -1738,19 +1736,22 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionCompositing) {
   ASSERT_TRUE(properties);
   auto* paint_offset_translation = properties->PaintOffsetTranslation();
   ASSERT_TRUE(paint_offset_translation);
-  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(60, 50),
+            paint_offset_translation->Get2dTranslation());
   EXPECT_FALSE(paint_offset_translation->HasDirectCompositingReasons());
 
   auto* space = GetDocument().getElementById("space");
   space->setAttribute(html_names::kStyleAttr, "height: 2000px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(60, 50),
+            paint_offset_translation->Get2dTranslation());
   EXPECT_TRUE(paint_offset_translation->HasDirectCompositingReasons());
   EXPECT_FALSE(properties->Transform());
 
   space->setAttribute(html_names::kStyleAttr, "height: 100px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Vector2dF(60, 50), paint_offset_translation->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(60, 50),
+            paint_offset_translation->Get2dTranslation());
   EXPECT_FALSE(paint_offset_translation->HasDirectCompositingReasons());
 }
 
@@ -1866,7 +1867,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
   auto* child1 = GetLayoutObjectByElementId("child1");
   auto* child2 = GetLayoutObjectByElementId("child2");
   EXPECT_EQ(gfx::Vector2dF(-20, 0),
-            container_properties->ScrollTranslation()->Translation2D());
+            container_properties->ScrollTranslation()->Get2dTranslation());
   EXPECT_EQ(PhysicalOffset(), child1->FirstFragment().PaintOffset());
   EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
 
@@ -1874,7 +1875,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
       ->setAttribute(html_names::kStyleAttr, "width: 100px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Vector2dF(-120, 0),
-            container_properties->ScrollTranslation()->Translation2D());
+            container_properties->ScrollTranslation()->Get2dTranslation());
   EXPECT_EQ(PhysicalOffset(100, 0), child1->FirstFragment().PaintOffset());
   EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
 }
@@ -1895,14 +1896,16 @@ TEST_P(PaintPropertyTreeUpdateTest, IFrameContainStrictChangeBorderTopWidth) {
       ChildDocument().GetLayoutView()->FirstFragment().PaintProperties();
   ASSERT_TRUE(child_view_properties);
   ASSERT_TRUE(child_view_properties->PaintOffsetTranslation());
-  EXPECT_EQ(gfx::Vector2dF(2, 2),
-            child_view_properties->PaintOffsetTranslation()->Translation2D());
+  EXPECT_EQ(
+      gfx::Vector2dF(2, 2),
+      child_view_properties->PaintOffsetTranslation()->Get2dTranslation());
 
   GetDocument().getElementById("iframe")->setAttribute(
       html_names::kStyleAttr, "border-top-width: 10px");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(gfx::Vector2dF(2, 10),
-            child_view_properties->PaintOffsetTranslation()->Translation2D());
+  EXPECT_EQ(
+      gfx::Vector2dF(2, 10),
+      child_view_properties->PaintOffsetTranslation()->Get2dTranslation());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, LocalBorderBoxPropertiesChange) {
@@ -1960,7 +1963,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
   auto* div_properties = PaintPropertiesForElement("div");
   ASSERT_TRUE(div_properties);
-  EXPECT_EQ(100, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(100, div_properties->Transform()->Get2dTranslation().x());
   auto* div = GetDocument().getElementById("div");
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
@@ -1970,7 +1973,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(200, div_properties->Transform()->Get2dTranslation().x());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ChangeMaskOutputClip) {
@@ -2030,7 +2033,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
   auto* div_properties = PaintPropertiesForElement("div");
   ASSERT_TRUE(div_properties);
   EXPECT_EQ(0.5, div_properties->Effect()->Opacity());
-  EXPECT_EQ(100, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(100, div_properties->Transform()->Get2dTranslation().x());
   auto* div = GetDocument().getElementById("div");
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
@@ -2042,7 +2045,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
-  EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(200, div_properties->Transform()->Get2dTranslation().x());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest,
@@ -2057,7 +2060,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
   auto* div_properties = PaintPropertiesForElement("div");
   ASSERT_TRUE(div_properties);
-  EXPECT_EQ(100, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(100, div_properties->Transform()->Get2dTranslation().x());
   auto* div = GetDocument().getElementById("div");
   EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   auto* dom_ancestor = GetDocument().getElementById("dom_ancestor");
@@ -2077,7 +2080,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
       positioned_ancestor->GetLayoutObject()->NeedsPaintPropertyUpdate());
 
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
+  EXPECT_EQ(200, div_properties->Transform()->Get2dTranslation().x());
 }
 
 }  // namespace blink

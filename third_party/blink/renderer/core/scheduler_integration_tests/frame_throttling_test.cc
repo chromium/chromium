@@ -1324,7 +1324,7 @@ TEST_P(FrameThrottlingTest, UpdatePaintPropertiesOnUnthrottling) {
                                        ->FirstFragment()
                                        .PaintProperties()
                                        ->Transform()
-                                       ->Translation2D());
+                                       ->Get2dTranslation());
 }
 
 TEST_P(FrameThrottlingTest, DisplayNoneNotThrottled) {

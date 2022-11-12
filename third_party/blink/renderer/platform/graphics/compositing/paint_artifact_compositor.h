@@ -122,7 +122,7 @@ class SynthesizedClip : private cc::ContentLayerClient {
 
  private:
   scoped_refptr<cc::PictureLayer> layer_;
-  GeometryMapper::Translation2DOrMatrix translation_2d_or_matrix_;
+  gfx::Transform projection_;
   bool rrect_is_local_ = false;
   SkRRect rrect_;
   absl::optional<Path> path_;

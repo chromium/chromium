@@ -2043,9 +2043,7 @@ namespace {
 
 void UpdateDummyTransformNode(ObjectPaintProperties& properties,
                               CompositingReasons reasons) {
-  // Initialize with gfx::Transform() to avoid 2d translation optimization
-  // in case of transform animation.
-  TransformPaintPropertyNode::State state{gfx::Transform()};
+  TransformPaintPropertyNode::State state;
   state.direct_compositing_reasons = reasons;
   properties.UpdateTransform(TransformPaintPropertyNode::Root(),
                              std::move(state));

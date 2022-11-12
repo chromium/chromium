@@ -36,93 +36,6 @@ class PLATFORM_EXPORT GeometryMapper {
   STATIC_ONLY(GeometryMapper);
 
  public:
-  // The return value of SourceToDestinationProjection. If the result is known
-  // to be accumulation of 2d translations, |matrix| is nullptr, and
-  // |translation_2d| is the accumulated 2d translation. Otherwise |matrix|
-  // points to the accumulated projection, and |translation_2d| is zero.
-  class Translation2DOrMatrix {
-    DISALLOW_NEW();
-
-   public:
-    Translation2DOrMatrix() { DCHECK(IsIdentity()); }
-    explicit Translation2DOrMatrix(const gfx::Vector2dF& translation_2d)
-        : translation_2d_(translation_2d) {
-      DCHECK(IsIdentityOr2DTranslation());
-    }
-    explicit Translation2DOrMatrix(const gfx::Transform& matrix)
-        : matrix_(matrix) {
-      DCHECK(!IsIdentityOr2DTranslation());
-    }
-
-    bool IsIdentity() const { return !matrix_ && translation_2d_.IsZero(); }
-    bool IsIdentityOr2DTranslation() const { return !matrix_; }
-    const gfx::Vector2dF& Translation2D() const {
-      DCHECK(IsIdentityOr2DTranslation());
-      return translation_2d_;
-    }
-    const gfx::Transform& Matrix() const {
-      DCHECK(!IsIdentityOr2DTranslation());
-      return *matrix_;
-    }
-
-    template <typename Rect>
-    void MapRect(Rect& rect) const {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        MoveRect(rect, Translation2D());
-      else
-        rect = Matrix().MapRect(rect);
-    }
-
-    void MapQuad(gfx::QuadF& quad) const {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        quad += Translation2D();
-      else
-        quad = Matrix().MapQuad(quad);
-    }
-
-    void MapFloatClipRect(FloatClipRect& rect) const {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        rect.Move(Translation2D());
-      else
-        rect.Map(Matrix());
-    }
-
-    gfx::PointF MapPoint(const gfx::PointF& point) const {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        return point + Translation2D();
-      return Matrix().MapPoint(point);
-    }
-
-    void PostTranslate(float x, float y) {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        translation_2d_ += gfx::Vector2dF(x, y);
-      else
-        matrix_->PostTranslate(x, y);
-    }
-
-    SkM44 ToSkM44() const { return gfx::TransformToSkM44(Matrix()); }
-
-    SkMatrix ToSkMatrix() const {
-      if (LIKELY(IsIdentityOr2DTranslation())) {
-        return SkMatrix::Translate(Translation2D().x(), Translation2D().y());
-      }
-      return gfx::TransformToFlattenedSkMatrix(Matrix());
-    }
-
-    bool operator==(const Translation2DOrMatrix& other) const {
-      return translation_2d_ == other.translation_2d_ &&
-             matrix_ == other.matrix_;
-    }
-
-    bool operator!=(const Translation2DOrMatrix& other) const {
-      return !(*this == other);
-    }
-
-   private:
-    gfx::Vector2dF translation_2d_;
-    absl::optional<gfx::Transform> matrix_;
-  };
-
   // Returns the matrix that is suitable to map geometries on the source plane
   // to some backing in the destination plane.
   // Formal definition:
@@ -133,13 +46,13 @@ class PLATFORM_EXPORT GeometryMapper {
   // 2. Both nodes are co-planar to a common singular ancestor:
   // Not every cases outlined above are supported!
   // Read implementation comments for specific restrictions.
-  static Translation2DOrMatrix SourceToDestinationProjection(
+  static gfx::Transform SourceToDestinationProjection(
       const TransformPaintPropertyNodeOrAlias& source,
       const TransformPaintPropertyNodeOrAlias& destination) {
     return SourceToDestinationProjection(source.Unalias(),
                                          destination.Unalias());
   }
-  static Translation2DOrMatrix SourceToDestinationProjection(
+  static gfx::Transform SourceToDestinationProjection(
       const TransformPaintPropertyNode& source,
       const TransformPaintPropertyNode& destination);
 
@@ -160,7 +73,8 @@ class PLATFORM_EXPORT GeometryMapper {
       const TransformPaintPropertyNode& source,
       const TransformPaintPropertyNode& destination,
       Rect& mapping_rect) {
-    SourceToDestinationProjection(source, destination).MapRect(mapping_rect);
+    mapping_rect = SourceToDestinationProjection(source, destination)
+                       .MapRect(mapping_rect);
   }
 
   static float SourceToDestinationApproximateMinimumScale(
@@ -260,7 +174,7 @@ class PLATFORM_EXPORT GeometryMapper {
     STACK_ALLOCATED();
   };
 
-  static Translation2DOrMatrix SourceToDestinationProjectionInternal(
+  static gfx::Transform SourceToDestinationProjectionInternal(
       const TransformPaintPropertyNode& source,
       const TransformPaintPropertyNode& destination,
       ExtraProjectionResult&,
