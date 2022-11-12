@@ -123,9 +123,9 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
                                          backing->shared_bitmap_id);
 
     if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
-      viz::RecordReplayNotifyRasterBuffer(backing->shared_bitmap_id,
-                                          backing->mapping.memory(),
-                                          backing->mapping.size());
+      recordreplay::NotifyRasterBuffer(backing->shared_bitmap_id,
+                                       backing->mapping.memory(),
+                                       backing->mapping.size());
     }
 
     resource.set_software_backing(std::move(backing));

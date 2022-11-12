@@ -7,6 +7,8 @@
 #include "base/base64.h"
 #include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
+#include "cc/animation/animation_events.h"
+#include "cc/trees/compositor_commit_data.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display/software_renderer.h"
@@ -17,36 +19,37 @@ namespace blink {
 extern bool RecordReplayStateEnsureInitialized();
 }
 
-namespace viz {
+namespace recordreplay {
 
 struct SharedBitmapInfo {
-  SharedBitmapId id_;
+  viz::SharedBitmapId id_;
   uint8_t* memory_;
   size_t size_;
 };
 typedef std::vector<SharedBitmapInfo> SharedBitmapInfoVector;
 static SharedBitmapInfoVector* gSharedBitmaps;
 
-void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
-                                    void* memory, size_t size) {
+void NotifyRasterBuffer(const viz::SharedBitmapId& shared_bitmap_id,
+                        void* memory, size_t size) {
   if (!gSharedBitmaps) {
     gSharedBitmaps = new SharedBitmapInfoVector();
   }
   gSharedBitmaps->push_back({ shared_bitmap_id, (uint8_t*)memory, size });
 }
 
-static SoftwareOutputSurface* gOutputSurface;
-static SoftwareRenderer* gRenderer;
+static viz::SoftwareOutputSurface* gOutputSurface;
+static viz::SoftwareRenderer* gRenderer;
 
 static void InitializeRenderer() {
-  std::unique_ptr<SoftwareOutputDevice> output_device = std::make_unique<SoftwareOutputDevice>();
-  gOutputSurface = new SoftwareOutputSurface(std::move(output_device));
+  std::unique_ptr<viz::SoftwareOutputDevice> output_device =
+      std::make_unique<viz::SoftwareOutputDevice>();
+  gOutputSurface = new viz::SoftwareOutputSurface(std::move(output_device));
 
-  gRenderer = new SoftwareRenderer(new RendererSettings(),
-                                   new DebugRendererSettings(),
-                                   gOutputSurface,
-                                   nullptr,
-                                   nullptr);
+  gRenderer = new viz::SoftwareRenderer(new viz::RendererSettings(),
+                                        new viz::DebugRendererSettings(),
+                                        gOutputSurface,
+                                        nullptr,
+                                        nullptr);
 }
 
 static std::string SurfaceIdString(const viz::LocalSurfaceId& local_surface_id) {
@@ -64,9 +67,9 @@ static viz::LocalSurfaceId* gSurfaceId;
 // Current compositor frame.
 static const viz::CompositorFrame* gCurrentFrame;
 
-void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
-                                       const viz::CompositorFrame& frame) {
-  CHECK(recordreplay::IsRecordingOrReplaying());
+void SubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_id,
+                           const viz::CompositorFrame& frame) {
+  CHECK(IsRecordingOrReplaying());
 
   if (!gSurfaceId) {
     gSurfaceId = new viz::LocalSurfaceId(local_surface_id);
@@ -77,13 +80,13 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
   // original one.
   if (gSurfaceId->child_sequence_number() != local_surface_id.child_sequence_number() ||
       gSurfaceId->embed_token() != local_surface_id.embed_token()) {
-    recordreplay::Print("Ignoring composite to unknown surface %s, expected %s",
-                        SurfaceIdString(local_surface_id).c_str(),
-                        SurfaceIdString(*gSurfaceId).c_str());
+    Print("Ignoring composite to unknown surface %s, expected %s",
+          SurfaceIdString(local_surface_id).c_str(),
+          SurfaceIdString(*gSurfaceId).c_str());
     return;
   }
 
-  AggregatedRenderPassList render_passes;
+  viz::AggregatedRenderPassList render_passes;
   for (const auto& pass : frame.render_pass_list) {
     render_passes.push_back(pass->DeepCopyAggregated());
   }
@@ -94,16 +97,16 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
                        1,
                        frame.size_in_pixels(),
                        gfx::DisplayColorSpaces(),
-                       SurfaceDamageRectList());
+                       viz::SurfaceDamageRectList());
 
   gCurrentFrame = nullptr;
 }
 
-bool RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id) {
+bool PopulateSkBitmapWithResource(SkBitmap* sk_bitmap, viz::ResourceId resource_id) {
   CHECK(gCurrentFrame);
 
-  const TransferableResource* transferable = nullptr;
-  for (const TransferableResource& resource : gCurrentFrame->resource_list) {
+  const viz::TransferableResource* transferable = nullptr;
+  for (const viz::TransferableResource& resource : gCurrentFrame->resource_list) {
     if (resource.id == resource_id) {
       transferable = &resource;
       break;
@@ -138,12 +141,7 @@ extern "C" void V8RecordReplaySetPaintCallback(char* (*callback)(const char*, in
 
 const SkPixmap* gCurrentPixmap;
 
-static char* PaintCallback(const char* mime_type, int jpeg_quality) {
-  if (recordreplay::HasDivergedFromRecording()) {
-    // NYI
-    return nullptr;
-  }
-
+static char* EncodeBitmapContents(const char* mime_type, int jpeg_quality) {
   CHECK(gCurrentPixmap);
 
   if (strcmp(mime_type, "image/jpeg")) {
@@ -154,12 +152,25 @@ static char* PaintCallback(const char* mime_type, int jpeg_quality) {
   std::vector<unsigned char> data;
   if (!gfx::JPEGCodec::Encode(*gCurrentPixmap, jpeg_quality,
                               SkJpegEncoder::Downsample::k444, &data)) {
-    recordreplay::Print("Error: JPEG encoding failed");
+    Print("Error: JPEG encoding failed");
     return nullptr;
   }
 
   std::string encoded = base::Base64Encode(data);
   return strdup(encoded.c_str());
+}
+
+static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality);
+
+static char* PaintCallback(const char* mime_type, int jpeg_quality) {
+  // The paint callback can be invoked either when we call RecordReplayPaintFinished
+  // on the compositor thread, or at any time after diverging from the recording and
+  // we are on the main thread. These invocations need different handling.
+  if (HasDivergedFromRecording()) {
+    return PaintWhenDiverged(mime_type, jpeg_quality);
+  }
+
+  return EncodeBitmapContents(mime_type, jpeg_quality);
 }
 
 // Paints generally occur in the following way:
@@ -187,7 +198,7 @@ static std::atomic<size_t> gCurrentPaintBookmark;
 // Bookmark for the last point where a paint was committed on the main thread.
 static size_t gLastCommitBookmark;
 
-void RecordReplayOnCommitPaint() {
+void OnCommitPaint() {
   // Record/replay state has to be initialized before the first paint
   // starts, as a checkpoint must have been taken.
   if (blink::RecordReplayStateEnsureInitialized()) {
@@ -197,24 +208,83 @@ void RecordReplayOnCommitPaint() {
   }
 }
 
-void RecordReplayOnReadyToCommit() {
+void OnReadyToCommit() {
   gLastCommitBookmark = gCurrentPaintBookmark;
 }
 
-void RecordReplayPaintFinished(const SkPixmap& pixmap) {
+// Whether the compositor thread is currently repainting.
+static bool gCompositorRepainting = false;
+
+void OnCompositorRepainting() {
+  gCompositorRepainting = true;
+}
+
+// How to encode repainted graphics.
+static const char* gRepaintMimeType;
+static int gRepaintJPEGQuality;
+
+// Event to signal when repainting has finished.
+static base::WaitableEvent* gRepaintEvent;
+
+// Encoded result of repainting.
+static char* gRepaintResult;
+
+void OnPaintFinished(const SkPixmap& pixmap) {
   static bool hasPaints = false;
   if (!hasPaints) {
     hasPaints = true;
     V8RecordReplaySetPaintCallback(PaintCallback);
   }
 
-  size_t bookmark = gLastCommitBookmark;
+  gCurrentPixmap = &pixmap;
 
-  if (bookmark) {
-    gCurrentPixmap = &pixmap;
-    V8RecordReplayPaintFinished(bookmark);
-    gCurrentPixmap = nullptr;
+  if (gCompositorRepainting) {
+    CHECK(HasDivergedFromRecording());
+
+    char* encoded = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
+    CHECK(!gRepaintResult);
+    gRepaintResult = encoded;
+
+    gRepaintEvent->Signal();
+  } else {
+    size_t bookmark = gLastCommitBookmark;
+    if (bookmark) {
+      V8RecordReplayPaintFinished(bookmark);
+    }
   }
+
+  gCurrentPixmap = nullptr;
 }
 
-} // namespace viz
+static cc::ProxyMain* gCurrentCompositorProxy;
+
+void SetCompositorProxy(cc::ProxyMain* proxy) {
+  gCurrentCompositorProxy = proxy;
+}
+
+static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
+  gRepaintMimeType = mime_type;
+  gRepaintJPEGQuality = jpeg_quality;
+
+  base::WaitableEvent event;
+  gRepaintEvent = &event;
+
+  // Update layout state on the main thread and commit a new paint.
+  std::unique_ptr<cc::BeginMainFrameAndCommitState> begin_main_frame_state(
+      new cc::BeginMainFrameAndCommitState);
+  begin_main_frame_state->mutator_events = std::make_unique<cc::AnimationEvents>();
+  begin_main_frame_state->commit_data = std::make_unique<cc::CompositorCommitData>();
+  gCurrentCompositorProxy->BeginMainFrame(std::move(begin_main_frame_state));
+
+  // Trigger a new frame on the compositor thread.
+  gCurrentCompositorProxy->RecordReplayRepaint();
+
+  // Wait for the repainting frame to complete.
+  bool signaled = event.TimedWait(base::TimeDelta::FromMilliseconds(200));
+  CHECK(signaled);
+
+  gRepaintEvent = nullptr;
+  return gRepaintResult;
+}
+
+} // namespace recordreplay

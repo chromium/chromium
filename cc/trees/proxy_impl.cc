@@ -267,7 +267,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     const viz::BeginFrameArgs& commit_args,
     bool hold_commit_for_activation) {
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
-    viz::RecordReplayOnReadyToCommit();
+    recordreplay::OnReadyToCommit();
   }
 
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
@@ -745,6 +745,9 @@ void ProxyImpl::ScheduledActionBeginMainFrameNotExpectedUntil(
                                 proxy_main_weak_ptr_, time));
 }
 
+// Sequence number used for frames triggered while repainting when replaying.
+static const uint64_t RepaintSequenceNumber = UINT32_MAX;
+
 DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
@@ -774,6 +777,11 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
     draw_frame = forced_draw || result == DRAW_SUCCESS;
   } else {
     result = DRAW_ABORTED_CANT_DRAW;
+  }
+
+  if (recordreplay::HasDivergedFromRecording() &&
+      frame.begin_frame_ack.frame_id.sequence_number == RepaintSequenceNumber) {
+    recordreplay::OnCompositorRepainting();
   }
 
   if (draw_frame) {
@@ -855,6 +863,24 @@ void ProxyImpl::SetRenderFrameObserver(
 void ProxyImpl::SetEnableFrameRateThrottling(
     bool enable_frame_rate_throttling) {
   host_impl_->SetEnableFrameRateThrottling(enable_frame_rate_throttling);
+}
+
+void ProxyImpl::RecordReplayRepaint() {
+  // When repainting, the main thread has already updated the layout tree and committed
+  // any changes, but the OnBeginFrame IPC message instructing the compositor to do
+  // the resulting paint will not be received, because we're diverged from the recording
+  // and won't get any IPC messages triggered by activity in this process. So, we trigger
+  // a new frame in the scheduler directly, which will hopefully be sufficient to perform
+  // a paint shortly with the special repaint sequence number that will cause the main
+  // thread to be notified about the repaint result.
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE,
+                                                         viz::BeginFrameArgs::kManualSourceId,
+                                                         RepaintSequenceNumber,
+                                                         base::TimeTicks::Now(),
+                                                         base::TimeTicks(),
+                                                         viz::BeginFrameArgs::DefaultInterval(),
+                                                         viz::BeginFrameArgs::NORMAL);
+  scheduler_->OnBeginFrameDerivedImpl(args);
 }
 
 }  // namespace cc

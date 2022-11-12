@@ -122,6 +122,8 @@ void ProxyMain::DidCompletePageScaleAnimation() {
 
 void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
+  recordreplay::SetCompositorProxy(this);
+
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 
@@ -299,6 +301,11 @@ void ProxyMain::BeginMainFrame(
   if (begin_main_frame_state->evicted_ui_resources)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
+  // When repainting, force a commit to occur so that a paint will happen even if
+  // nothing has changed since the last one.
+  if (recordreplay::HasDivergedFromRecording())
+    final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
+
   current_pipeline_stage_ = UPDATE_LAYERS_PIPELINE_STAGE;
   bool should_update_layers =
       final_pipeline_stage_ >= UPDATE_LAYERS_PIPELINE_STAGE;
@@ -363,7 +370,7 @@ void ProxyMain::BeginMainFrame(
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
     if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
-      viz::RecordReplayOnCommitPaint();
+      recordreplay::OnCommitPaint();
     }
 
     bool hold_commit_for_activation = commit_waits_for_activation_;
@@ -726,6 +733,12 @@ void ProxyMain::SetEnableFrameRateThrottling(
       FROM_HERE, base::BindOnce(&ProxyImpl::SetEnableFrameRateThrottling,
                                 base::Unretained(proxy_impl_.get()),
                                 enable_frame_rate_throttling));
+}
+
+void ProxyMain::RecordReplayRepaint() {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::RecordReplayRepaint,
+                                base::Unretained(proxy_impl_.get())));
 }
 
 }  // namespace cc

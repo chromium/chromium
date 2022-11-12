@@ -54,14 +54,11 @@ const {
   getCurrentError,
   getCurrentNetworkRequestEvent,
   getCurrentNetworkStreamData,
-  dump,
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
 
 try {
-
-window.dump = dump;
 
 // Save these before page code potentially overwrites them.
 const JSON_stringify = JSON.stringify;
@@ -172,6 +169,7 @@ addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
 sendMessage("Runtime.enable");
 
 const CommandCallbacks = {
+  "Graphics.getDevicePixelRatio": Graphics_getDevicePixelRatio,
   "Target.getCurrentMessageContents": Target_getCurrentMessageContents,
   "Target.getSourceMapURL": Target_getSourceMapURL,
   "Target.getStepOffsets": Target_getStepOffsets,
@@ -405,6 +403,10 @@ function Pause_getObjectProperty({ object, name }) {
 function Pause_getScope({ scope }) {
   const scopeData = createProtocolScope(scope);
   return { data: { scopes: [scopeData] } };
+}
+
+function Graphics_getDevicePixelRatio() {
+  return { ratio: window?.devicePixelRatio || 0 };
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1254,17 +1256,6 @@ static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 extern "C" void V8RecordReplayFinishRecording();
 
-// Mimic the gecko test runner behavior when using window.dump() to signal that the
-// recording is finished. This is pretty hacky.
-static void DumpCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() == 1 && args[0]->IsString()) {
-    v8::String::Utf8Value message(args.GetIsolate(), args[0]);
-    if (!strcmp(*message, "RecReplaySendAsyncMessage Example__Finished")) {
-      V8RecordReplayFinishRecording();
-    }
-  }
-}
-
 // When JS assertions are enabled, this callback is used to get any pointer ID
 // associated with a given API object.
 static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
@@ -1635,8 +1626,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       GetCurrentNetworkRequestEvent);
   SetFunctionProperty(isolate, args, "getCurrentNetworkStreamData",
                       GetCurrentNetworkStreamData);
-  SetFunctionProperty(isolate, args, "dump",
-                      DumpCallback);
   SetFunctionProperty(isolate, args, "getRecordingId",
                       GetRecordingId);
   SetFunctionProperty(isolate, args, "sha256DigestHex",

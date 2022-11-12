@@ -54,7 +54,7 @@ void SoftwareOutputDevice::EndPaint() {
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     SkPixmap pixmap;
     if (surface_ && surface_->peekPixels(&pixmap)) {
-      RecordReplayPaintFinished(pixmap);
+      recordreplay::OnPaintFinished(pixmap);
     }
   }
 }

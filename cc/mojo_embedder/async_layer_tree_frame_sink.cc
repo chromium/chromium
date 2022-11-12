@@ -205,7 +205,7 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                          "SubmitHitTestData");
 
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
-    RecordReplaySubmitCompositorFrame(local_surface_id_, frame);
+    recordreplay::SubmitCompositorFrame(local_surface_id_, frame);
   }
 
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
@@ -247,6 +247,14 @@ void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
 void AsyncLayerTreeFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details) {
+  // After diverging from the recording, the only paints we want to perform are
+  // repaints, which are triggered from the main thread rather than OnBeginFrame
+  // IPC messages. Ignore any IPC messages replayed from the recording so that
+  // we can get to the repainting frame faster.
+  if (recordreplay::HasDivergedFromRecording()) {
+    return;
+  }
+
   for (const auto& pair : timing_details) {
     client_->DidPresentCompositorFrame(pair.first, pair.second);
   }

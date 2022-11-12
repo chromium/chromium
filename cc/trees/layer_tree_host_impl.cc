@@ -28,6 +28,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -1122,6 +1123,12 @@ bool LayerTreeHostImpl::HasDamage() const {
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId()) {
     return true;
   }
+
+  // When repainting while diverged from the recording, always treat the frame
+  // as damaged so that painting will occur even if nothing has changed since
+  // the last paint.
+  if (recordreplay::HasDivergedFromRecording())
+    return true;
 
   const LayerTreeImpl* active_tree = active_tree_.get();
 
