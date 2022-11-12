@@ -29,8 +29,7 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
                                            public display::DisplayObserver {
  public:
   TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
-                          aura::Window* window,
-                          base::RepeatingClosure hide_menu);
+                          aura::Window* window);
 
   TabletModeMultitaskMenu(const TabletModeMultitaskMenu&) = delete;
   TabletModeMultitaskMenu& operator=(const TabletModeMultitaskMenu&) = delete;

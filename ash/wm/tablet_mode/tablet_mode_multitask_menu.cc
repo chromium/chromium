@@ -43,7 +43,7 @@ class TabletModeMultitaskMenuView : public views::View {
   METADATA_HEADER(TabletModeMultitaskMenuView);
 
   TabletModeMultitaskMenuView(aura::Window* window,
-                              base::RepeatingClosure hide_menu) {
+                              base::RepeatingClosure callback) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshShieldAndBase80, kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -69,7 +69,7 @@ class TabletModeMultitaskMenuView : public views::View {
 
     menu_view_for_testing_ =
         AddChildView(std::make_unique<chromeos::MultitaskMenuView>(
-            window, hide_menu, buttons));
+            window, std::move(callback), buttons));
 
     auto* layout = menu_view_for_testing_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
@@ -102,8 +102,7 @@ END_METADATA
 
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     TabletModeMultitaskMenuEventHandler* event_handler,
-    aura::Window* window,
-    base::RepeatingClosure callback)
+    aura::Window* window)
     : event_handler_(event_handler), window_(window) {
   // Start observing the window.
   DCHECK(window);
@@ -132,8 +131,10 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   root_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   root_view->layer()->SetMasksToBounds(true);
 
-  menu_view_ = widget_->SetContentsView(
-      std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
+  menu_view_ =
+      widget_->SetContentsView(std::make_unique<TabletModeMultitaskMenuView>(
+          window_, base::BindRepeating(&TabletModeMultitaskMenu::Reset,
+                                       weak_factory_.GetWeakPtr())));
 
   const gfx::Size menu_size = menu_view_->GetPreferredSize();
   const gfx::Size widget_size(menu_size.width(),

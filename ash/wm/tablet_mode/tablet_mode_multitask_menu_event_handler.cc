@@ -34,11 +34,8 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
     aura::Window* active_window) {
   if (!multitask_menu_) {
-    multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(
-        this, active_window,
-        base::BindRepeating(
-            &TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu,
-            base::Unretained(this)));
+    multitask_menu_ =
+        std::make_unique<TabletModeMultitaskMenu>(this, active_window);
   }
 }
 
