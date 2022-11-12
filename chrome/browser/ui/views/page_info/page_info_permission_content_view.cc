@@ -112,7 +112,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       PageInfoViewFactory::GetSiteSettingsIcon(),
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(), 0,
+      std::u16string(),
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));

@@ -43,7 +43,6 @@ RichHoverButton::RichHoverButton(
     const ui::ImageModel& main_image_icon,
     const std::u16string& title_text,
     const std::u16string& secondary_text,
-    int click_target_id,
     const std::u16string& tooltip_text,
     const std::u16string& subtitle_text,
     absl::optional<ui::ImageModel> action_image_icon,
@@ -148,7 +147,6 @@ RichHoverButton::RichHoverButton(
   SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
 
-  SetID(click_target_id);
   SetTooltipText(tooltip_text);
   UpdateAccessibleName();
 

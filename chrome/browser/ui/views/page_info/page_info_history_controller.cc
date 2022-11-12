@@ -56,14 +56,16 @@ void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
 std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
     std::u16string last_visit) {
   // TODO(crbug.com/1275042): Use correct icons and strings (tooltip).
-  return std::make_unique<RichHoverButton>(
+  auto button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
       PageInfoViewFactory::GetHistoryIcon(),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY), last_visit,
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
+
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());
+  button->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON);
+  return button;
 }
 
 void PageInfoHistoryController::OpenHistoryPage() {

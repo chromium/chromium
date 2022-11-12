@@ -45,7 +45,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
       PageInfoViewFactory::GetSiteSettingsIcon(),
       l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON),
-      std::u16string(), 0,
+      std::u16string(),
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon()));
 

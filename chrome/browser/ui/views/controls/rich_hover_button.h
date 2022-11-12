@@ -46,7 +46,6 @@ class RichHoverButton : public HoverButton {
       const ui::ImageModel& main_image_icon,
       const std::u16string& title_text,
       const std::u16string& secondary_text,
-      int click_target_id,
       const std::u16string& tooltip_text,
       const std::u16string& subtitle_text,
       absl::optional<ui::ImageModel> action_image_icon = absl::nullopt,
