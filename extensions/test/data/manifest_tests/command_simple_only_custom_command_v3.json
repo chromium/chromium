@@ -1,0 +1,12 @@
+{
+  "name": "Command test - Only Custom Commands - MV3",
+  "manifest_version": 3,
+  "version": "1",
+  "commands": {
+    "feature1": {
+      "suggested_key": "Ctrl+Shift+F",
+      "description": "desc"
+    }
+  },
+  "action" : {}
+}

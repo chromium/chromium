@@ -1,5 +1,5 @@
 {
-  "name": "Command test - Simple",
+  "name": "Command test - Multiple Action Commands",
   "manifest_version": 2,
   "version": "1",
   "commands": {
@@ -15,5 +15,6 @@
       "suggested_key": "Ctrl+F",
       "description": ""
     }
-  }
+  },
+  "browser_action" : {}
 }

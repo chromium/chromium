@@ -77,6 +77,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
 
   std::unique_ptr<CommandsInfo> commands_info(new CommandsInfo);
 
+  bool invalid_action_command_specified = false;
   int command_index = 0;
   int keybindings_found = 0;
   for (const auto item : dict->GetDict()) {
@@ -112,20 +113,35 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     std::string command_name = binding->command_name();
-    if (command_name == manifest_values::kBrowserActionCommandEvent) {
-      commands_info->browser_action_command = std::move(binding);
+    // Set the command only if it's correct for the manifest's action type. This
+    // relies on the fact that manifests cannot have multiple action types.
+    if (command_name == manifest_values::kActionCommandEvent) {
+      if (extension->manifest()->FindKey(keys::kAction))
+        commands_info->action_command = std::move(binding);
+      else
+        invalid_action_command_specified = true;
+    } else if (command_name == manifest_values::kBrowserActionCommandEvent) {
+      if (extension->manifest()->FindKey(keys::kBrowserAction))
+        commands_info->browser_action_command = std::move(binding);
+      else
+        invalid_action_command_specified = true;
     } else if (command_name == manifest_values::kPageActionCommandEvent) {
-      commands_info->page_action_command = std::move(binding);
-    } else if (command_name == manifest_values::kActionCommandEvent) {
-      commands_info->action_command = std::move(binding);
-    } else {
-      if (command_name[0] != '_')  // All commands w/underscore are reserved.
-        commands_info->named_commands[command_name] = *binding;
+      if (extension->manifest()->FindKey(keys::kPageAction))
+        commands_info->page_action_command = std::move(binding);
+      else
+        invalid_action_command_specified = true;
+    } else if (command_name[0] != '_') {  // Commands w/underscore are reserved.
+      commands_info->named_commands[command_name] = *binding;
     }
   }
 
-  MaybeSetBrowserActionDefault(extension, commands_info.get());
+  if (invalid_action_command_specified) {
+    extension->AddInstallWarning(InstallWarning(
+        manifest_errors::kCommandActionIncorrectForManifestActionType,
+        manifest_keys::kCommands));
+  }
 
+  MaybeSetBrowserActionDefault(extension, commands_info.get());
   extension->SetManifestData(keys::kCommands, std::move(commands_info));
   return true;
 }

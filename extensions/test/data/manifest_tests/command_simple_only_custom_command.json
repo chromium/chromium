@@ -1,0 +1,12 @@
+{
+  "name": "Command test - Only Custom Commands",
+  "manifest_version": 2,
+  "version": "1",
+  "commands": {
+    "feature1": {
+      "suggested_key": "Ctrl+Shift+F",
+      "description": "desc"
+    }
+  },
+  "browser_action" : {}
+}

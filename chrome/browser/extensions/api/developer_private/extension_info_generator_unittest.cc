@@ -877,10 +877,12 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
     const char* name;
     const char* command_key;
     ActionInfo::Type action_type;
+    const int manifest_version;
   } test_cases[] = {
-      {"browser action", "_execute_browser_action", ActionInfo::TYPE_BROWSER},
-      {"page action", "_execute_page_action", ActionInfo::TYPE_PAGE},
-      {"action", "_execute_action", ActionInfo::TYPE_ACTION},
+      {"browser action", "_execute_browser_action", ActionInfo::TYPE_BROWSER,
+       2},
+      {"page action", "_execute_page_action", ActionInfo::TYPE_PAGE, 2},
+      {"action", "_execute_action", ActionInfo::TYPE_ACTION, 3},
   };
 
   for (const auto& test_case : test_cases) {
@@ -898,6 +900,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
                                             .Set(test_case.command_key,
                                                  std::move(command_dict))
                                             .Build())
+            .SetManifestVersion(test_case.manifest_version)
             .Build();
     service()->AddExtension(extension.get());
     auto info = GenerateExtensionInfo(extension->id());

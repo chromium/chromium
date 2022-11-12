@@ -1,0 +1,20 @@
+{
+  "name": "Command test - Multiple Action Commands But None Correct",
+  "manifest_version": 2,
+  "version": "1",
+  "commands": {
+    "feature1": {
+      "suggested_key": "Ctrl+Shift+F",
+      "description": "desc"
+    },
+    "_execute_action": {
+      "suggested_key": "Alt+Shift+F",
+      "description": "browser action"
+    },
+    "_execute_page_action": {
+      "suggested_key": "Ctrl+F",
+      "description": ""
+    }
+  },
+  "browser_action" : {}
+}

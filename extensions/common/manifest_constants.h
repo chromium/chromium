@@ -466,6 +466,7 @@ extern const char kUnrecognizedManifestProperty[];
 extern const char16_t kWebRequestConflictsWithLazyBackground[];
 extern const char kInvalidExtensionOriginPopup[];
 extern const char kNonexistentDefaultPopup[];
+extern const char kCommandActionIncorrectForManifestActionType[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char16_t kInvalidFileSystemProviderMissingCapabilities[];
 extern const char kInvalidFileSystemProviderMissingPermission[];

@@ -10,6 +10,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/warnings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -18,48 +19,236 @@ namespace errors = manifest_errors;
 
 using CommandsManifestTest = ManifestTest;
 
-TEST_F(CommandsManifestTest, CommandManifestSimple) {
 #if BUILDFLAG(IS_MAC)
-  int ctrl = ui::EF_COMMAND_DOWN;
+constexpr int kControlKey = ui::EF_COMMAND_DOWN;
 #else
-  int ctrl = ui::EF_CONTROL_DOWN;
+constexpr int kControlKey = ui::EF_CONTROL_DOWN;
 #endif
 
-  const ui::Accelerator ctrl_f = ui::Accelerator(ui::VKEY_F, ctrl);
-  const ui::Accelerator ctrl_shift_f =
-      ui::Accelerator(ui::VKEY_F, ctrl | ui::EF_SHIFT_DOWN);
-  const ui::Accelerator alt_shift_f =
-      ui::Accelerator(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
-
+TEST_F(CommandsManifestTest, CommandManifestParseCommandsBrowserAction) {
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("command_simple.json");
+      LoadAndExpectSuccess("command_simple_browser_action.json");
   ASSERT_TRUE(extension.get());
 
   const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
-  ASSERT_EQ(1u, commands->size());
+  EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  ASSERT_TRUE(commands->end() != iter);
   const Command* named_command = &(*iter).second;
-  ASSERT_STREQ("feature1", named_command->command_name().c_str());
-  ASSERT_STREQ("desc",
-               base::UTF16ToASCII(named_command->description()).c_str());
-  ASSERT_EQ(ctrl_shift_f, named_command->accelerator());
+  EXPECT_EQ("feature1", named_command->command_name());
+  EXPECT_EQ(u"desc", named_command->description());
+  const ui::Accelerator ctrl_shift_f =
+      ui::Accelerator(ui::VKEY_F, kControlKey | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(ctrl_shift_f, named_command->accelerator());
 
   const Command* browser_action =
       CommandsInfo::GetBrowserActionCommand(extension.get());
-  ASSERT_TRUE(nullptr != browser_action);
-  ASSERT_STREQ("_execute_browser_action",
-               browser_action->command_name().c_str());
-  ASSERT_STREQ("", base::UTF16ToASCII(browser_action->description()).c_str());
-  ASSERT_EQ(alt_shift_f, browser_action->accelerator());
+  ASSERT_TRUE(browser_action);
+  EXPECT_EQ("_execute_browser_action", browser_action->command_name());
+  EXPECT_EQ(u"", browser_action->description());
+  const ui::Accelerator alt_shift_f =
+      ui::Accelerator(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(alt_shift_f, browser_action->accelerator());
+
+  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+TEST_F(CommandsManifestTest, CommandManifestParseCommandsPageAction) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_simple_page_action.json");
+  ASSERT_TRUE(extension.get());
+
+  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  ASSERT_TRUE(commands);
+  EXPECT_EQ(1u, commands->size());
+  auto iter = commands->begin();
+  const Command* named_command = &(*iter).second;
+  EXPECT_EQ("feature1", named_command->command_name());
+  EXPECT_EQ(u"desc", named_command->description());
 
   const Command* page_action =
       CommandsInfo::GetPageActionCommand(extension.get());
-  ASSERT_TRUE(nullptr != page_action);
-  ASSERT_STREQ("_execute_page_action", page_action->command_name().c_str());
-  ASSERT_STREQ("", base::UTF16ToASCII(page_action->description()).c_str());
-  ASSERT_EQ(ctrl_f, page_action->accelerator());
+  ASSERT_TRUE(page_action);
+  EXPECT_EQ("_execute_page_action", page_action->command_name());
+  EXPECT_EQ(u"", page_action->description());
+  const ui::Accelerator ctrl_f = ui::Accelerator(ui::VKEY_F, kControlKey);
+  EXPECT_EQ(ctrl_f, page_action->accelerator());
+
+  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+TEST_F(CommandsManifestTest, CommandManifestParseCommandsAction) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_simple_action.json");
+  ASSERT_TRUE(extension.get());
+
+  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  ASSERT_TRUE(commands);
+  EXPECT_EQ(1u, commands->size());
+  auto iter = commands->begin();
+  const Command* named_command = &(*iter).second;
+  EXPECT_EQ("feature1", named_command->command_name());
+  EXPECT_EQ(u"desc", named_command->description());
+
+  const Command* action = CommandsInfo::GetActionCommand(extension.get());
+  ASSERT_TRUE(action);
+  EXPECT_EQ("_execute_action", action->command_name());
+  EXPECT_EQ(u"", action->description());
+  const ui::Accelerator ctrl_g = ui::Accelerator(ui::VKEY_G, kControlKey);
+  EXPECT_EQ(ctrl_g, action->accelerator());
+
+  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that when only a custom action command is specified we create a
+// default action command for the action type for MV2.
+TEST_F(CommandsManifestTest,
+       CommandManifestParseCommandsOnlyCustomCommandGetsDefault_MV2) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_simple_only_custom_command.json");
+  ASSERT_TRUE(extension.get());
+
+  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  ASSERT_TRUE(commands);
+  EXPECT_EQ(1u, commands->size());
+  auto iter = commands->begin();
+  const Command* named_command = &(*iter).second;
+  EXPECT_EQ("feature1", named_command->command_name());
+  EXPECT_EQ(u"desc", named_command->description());
+
+  const Command* browser_action =
+      CommandsInfo::GetBrowserActionCommand(extension.get());
+  ASSERT_TRUE(browser_action);
+  EXPECT_EQ("",
+            browser_action->AcceleratorToString(browser_action->accelerator()));
+
+  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that when only a custom action command is specified we create a
+// default action command for the action type for MV3.
+TEST_F(CommandsManifestTest,
+       CommandManifestParseCommandsOnlyCustomCommandGetsDefault_MV3) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_simple_only_custom_command_v3.json");
+  ASSERT_TRUE(extension.get());
+
+  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  ASSERT_TRUE(commands);
+  EXPECT_EQ(1u, commands->size());
+  auto iter = commands->begin();
+  const Command* named_command = &(*iter).second;
+  EXPECT_EQ("feature1", named_command->command_name());
+  EXPECT_EQ(u"desc", named_command->description());
+
+  const Command* action = CommandsInfo::GetActionCommand(extension.get());
+  ASSERT_TRUE(action);
+  EXPECT_EQ("", action->AcceleratorToString(action->accelerator()));
+
+  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that only the correct action command (_execute_browser_action) is
+// used from the manifest for MV2, but others are ignored and we install a
+// warning for the incorrect command. See https://crbug.com/1353210.
+TEST_F(CommandsManifestTest,
+       CommandManifestIgnoreInvalidActionCommandsAndInstallWarning_MV2) {
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess(
+      "command_multiple_action_commands_install_warning.json");
+  ASSERT_TRUE(extension.get());
+
+  const Command* browser_action =
+      CommandsInfo::GetBrowserActionCommand(extension.get());
+  ASSERT_TRUE(browser_action);
+  EXPECT_EQ("_execute_browser_action", browser_action->command_name());
+  EXPECT_EQ(u"", browser_action->description());
+  const ui::Accelerator alt_shift_f =
+      ui::Accelerator(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(alt_shift_f, browser_action->accelerator());
+
+  EXPECT_FALSE(CommandsInfo::GetPageActionCommand(extension.get()));
+  EXPECT_FALSE(CommandsInfo::GetActionCommand(extension.get()));
+
+  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that only the correct action command (_execute_action) is used
+// from the manifest for MV3, but others are ignored and we install a warning
+// for the incorrect command. See https://crbug.com/1353210.
+TEST_F(CommandsManifestTest,
+       CommandManifestIgnoreInvalidActionCommandsAndInstallWarning_MV3) {
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess(
+      "command_multiple_action_commands_install_warning_v3.json");
+  ASSERT_TRUE(extension.get());
+
+  const Command* action = CommandsInfo::GetActionCommand(extension.get());
+  ASSERT_TRUE(action);
+  EXPECT_EQ("_execute_action", action->command_name());
+  EXPECT_EQ(u"", action->description());
+  const ui::Accelerator alt_shift_f =
+      ui::Accelerator(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(alt_shift_f, action->accelerator());
+
+  EXPECT_FALSE(CommandsInfo::GetBrowserActionCommand(extension.get()));
+  EXPECT_FALSE(CommandsInfo::GetPageActionCommand(extension.get()));
+
+  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that when only incorrect action commands are specified we install
+// a warning and set a default (for MV2). See https://crbug.com/1353210.
+TEST_F(CommandsManifestTest,
+       CommandManifestAllInvalidActionCommandsInstallWarning_MV2) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_action_incorrect_install_warnings.json");
+  ASSERT_TRUE(extension.get());
+
+  const Command* browser_action =
+      CommandsInfo::GetBrowserActionCommand(extension.get());
+  ASSERT_TRUE(browser_action);
+  EXPECT_EQ("",
+            browser_action->AcceleratorToString(browser_action->accelerator()));
+
+  EXPECT_FALSE(CommandsInfo::GetActionCommand(extension.get()));
+  EXPECT_FALSE(CommandsInfo::GetPageActionCommand(extension.get()));
+
+  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
+}
+
+// Tests that when only incorrect execute commands are specified we install
+// a warning and set a default (for MV3). See https://crbug.com/1353210.
+TEST_F(CommandsManifestTest,
+       CommandManifestAllInvalidActionCommandsInstallWarning_MV3) {
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("command_action_incorrect_install_warnings_v3.json");
+  ASSERT_TRUE(extension.get());
+
+  const Command* action = CommandsInfo::GetActionCommand(extension.get());
+  ASSERT_TRUE(action);
+  EXPECT_EQ("", action->AcceleratorToString(action->accelerator()));
+
+  EXPECT_FALSE(CommandsInfo::GetBrowserActionCommand(extension.get()));
+  EXPECT_FALSE(CommandsInfo::GetPageActionCommand(extension.get()));
+
+  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
+      extension,
+      manifest_errors::kCommandActionIncorrectForManifestActionType));
 }
 
 TEST_F(CommandsManifestTest, CommandManifestShortcutsTooMany) {
@@ -89,8 +278,8 @@ TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {
   // should get a command assigned to it.
   const extensions::Command* command =
       CommandsInfo::GetBrowserActionCommand(extension.get());
-  ASSERT_TRUE(command != nullptr);
-  ASSERT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
+  ASSERT_TRUE(command);
+  EXPECT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
 }
 
 // An extension with an action but no extension command specified should get a
@@ -99,8 +288,8 @@ TEST_F(CommandsManifestTest, ActionSynthesizesCommand) {
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("action_synthesizes_command.json");
   const Command* command = CommandsInfo::GetActionCommand(extension.get());
-  ASSERT_TRUE(command != nullptr);
-  ASSERT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
+  ASSERT_TRUE(command);
+  EXPECT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
 }
 
 // This test makes sure that the "commands" feature and the "commands.global"
