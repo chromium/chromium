@@ -422,11 +422,11 @@ void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
   }
 }
 
+// TODO(crbug.com/1014591): handle the install cancellation.
 void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
                                      const std::u16string& app_name,
-                                     bool* can_start_install) {
+                                     bool* /*can_start_install*/) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(can_start_install);
   if (!IsWindow())
     return;
 
@@ -436,8 +436,6 @@ void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
                    GetLocalizedString(IDS_WAITING_TO_INSTALL_BASE).c_str());
     ChangeControlState();
   }
-
-  *can_start_install = !IsInstallStoppedWindowPresent();
 }
 
 // May be called repeatedly during install.
