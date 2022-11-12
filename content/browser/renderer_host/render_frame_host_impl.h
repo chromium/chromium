@@ -3660,6 +3660,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   raw_ptr<FrameTree> frame_tree_ = nullptr;
 
   // The FrameTreeNode which this RenderFrameHostImpl is hosted in.
+  // TODO(crbug.com/1179502): Remove this after clearing directly all references
+  // of FrameTreeNode in RenderFrameHost. Please refer to the description of the
+  // new `owner_` field.
   raw_ptr<FrameTreeNode> frame_tree_node_ = nullptr;
 
   // Interface for RenderFrameHost to communicate with FrameTreeNode owning it,
@@ -3669,12 +3672,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // activations).
   //
   // This points to:
-  // - Parent FrameTreeNode for subframes (which stays the same for the entire
-  //   lifetime of a subframe RenderFrameHostImpl).
-  // - Owning FrameTreeNode main RenderFrameHosts in kActive, kPrerender,
+  // - Owning FrameTreeNode for main RenderFrameHosts in kActive, kPrerender,
   //   kSpeculative or kPendingCommit lifecycle states.
   // - Null for main RenderFrameHosts in kPendingDeletion lifecycle state.
   // - Null for main RenderFrameHosts stored in BFCache.
+  // - Owning FrameTreeNode for subframes (which stays the same for the entire
+  //   lifetime of a subframe RenderFrameHostImpl).
   raw_ptr<RenderFrameHostOwner> owner_ = nullptr;
 
   // Stores all of the state related to each browsing context +

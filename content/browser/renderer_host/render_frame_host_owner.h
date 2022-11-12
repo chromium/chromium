@@ -16,7 +16,7 @@ class Navigator;
 // As main RenderFrameHostImpl can be moved between different FrameTreeNodes
 // (i.e.during prerender activations), RenderFrameHostImpl should not reference
 // FrameTreeNode directly to prevent accident violation of implicit "associated
-// FTN says the same" assumptions. Instead, a targeted interface is exposed
+// FTN stays the same" assumptions. Instead, a targeted interface is exposed
 // instead.
 //
 // If you need to store information which should persist during prerender
