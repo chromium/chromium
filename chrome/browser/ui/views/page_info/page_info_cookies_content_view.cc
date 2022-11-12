@@ -111,7 +111,9 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
                 view->presenter_->OpenCookiesDialog();
               },
               this),
-          icon, IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE, std::u16string(),
+          icon,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE),
+          std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
           tooltip, /*subtitle_text=*/u" ",
           PageInfoViewFactory::GetLaunchIcon()));
@@ -346,8 +348,8 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::FpsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetFpsIcon(), IDS_PAGE_INFO_COOKIES,
-          std::u16string(),
+          PageInfoViewFactory::GetFpsIcon(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
           tooltip, /*secondary_text=*/u" ",
           PageInfoViewFactory::GetLaunchIcon(),

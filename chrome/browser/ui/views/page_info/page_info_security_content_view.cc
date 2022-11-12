@@ -118,7 +118,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                       view->certificate_.get());
                 },
                 this),
-            icon, title_id, std::u16string(),
+            icon, l10n_util::GetStringUTF16(title_id), std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER,
             tooltip, subtitle_text, PageInfoViewFactory::GetLaunchIcon())

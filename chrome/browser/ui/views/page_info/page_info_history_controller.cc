@@ -15,6 +15,7 @@
 #include "components/page_info/core/page_info_history_data_source.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
 PageInfoHistoryController::PageInfoHistoryController(
@@ -58,7 +59,8 @@ std::unique_ptr<views::View> PageInfoHistoryController::CreateHistoryButton(
   return std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoHistoryController::OpenHistoryPage,
                           weak_factory_.GetWeakPtr()),
-      PageInfoViewFactory::GetHistoryIcon(), IDS_PAGE_INFO_HISTORY, last_visit,
+      PageInfoViewFactory::GetHistoryIcon(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_HISTORY), last_visit,
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon());

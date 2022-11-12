@@ -115,7 +115,8 @@ PageInfoMainView::PageInfoMainView(
             },
             this),
         PageInfoViewFactory::GetSiteSettingsIcon(),
-        /*title_resource_id=*/link_text_id, std::u16string(),
+        /*title_text=*/l10n_util::GetStringUTF16(link_text_id),
+        std::u16string(),
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
         /*tooltip_text=*/l10n_util::GetStringUTF16(tooltip_text_id),
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
@@ -152,7 +153,8 @@ void PageInfoMainView::EnsureCookieInfo() {
                                                          RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          icon, IDS_PAGE_INFO_COOKIES_HEADER, std::u16string(),
+          icon, l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
           tooltip, std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
@@ -166,7 +168,8 @@ void PageInfoMainView::EnsureCookieInfo() {
                 view->HandleMoreInfoRequest(view->cookie_button_);
               },
               this),
-          icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
+          icon, l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
+          /*secondary_text=*/u"",
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
           tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
     }
@@ -201,7 +204,8 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
 
   // Update the text displaying the number of allowed cookies.
   if (!base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage))
-    cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES, num_cookies_text);
+    cookie_button_->SetTitleText(
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), num_cookies_text);
 
   PreferredSizeChanged();
 }
@@ -359,7 +363,8 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
         std::make_unique<RichHoverButton>(
             base::BindRepeating(&PageInfoNavigationHandler::OpenSecurityPage,
                                 base::Unretained(navigation_handler_)),
-            PageInfoViewFactory::GetConnectionSecureIcon(), 0, std::u16string(),
+            PageInfoViewFactory::GetConnectionSecureIcon(), std::u16string(),
+            std::u16string(),
             PageInfoViewFactory::
                 VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION,
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_BUTTON),
@@ -597,7 +602,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                 },
                 this, GURL(info.more_about().url()), info.has_description()),
             PageInfoViewFactory::GetAboutThisPageIcon(),
-            IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE, std::u16string(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
+            std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
             description, PageInfoViewFactory::GetLaunchIcon()));
@@ -616,7 +622,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                 },
                 this, info),
             PageInfoViewFactory::GetAboutThisSiteIcon(),
-            IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER, std::u16string(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER),
+            std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP),
             base::UTF8ToUTF16(info.description().description()),
@@ -639,7 +646,8 @@ PageInfoMainView::CreateAdPersonalizationSection() {
           },
           this),
       PageInfoViewFactory::GetAdPersonalizationIcon(),
-      IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER),
+      std::u16string(),
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_TOOLTIP),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon()));

@@ -43,8 +43,9 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
-      IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON, std::u16string(),
-      0,
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON),
+      std::u16string(), 0,
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon()));
 
