@@ -542,11 +542,16 @@ public class SectionHeaderView extends LinearLayout {
             contentDescription = contentDescription + ", "
                     + getResources().getString(R.string.accessibility_ntp_following_unread_content);
 
-            if (state.unreadIndicator == null) {
-                if (tab.getCustomView() != null) {
-                    state.unreadIndicator =
-                            new UnreadIndicator(tab.view.findViewById(android.R.id.text1));
-                }
+            // The unread indicator is re-created on every update is because the sticky header
+            // gets the wrong position when we calculate its position the same as the real header.
+            // So, we want it to be recalculated every time we we change the visibility of the
+            // sticky header, to get the correct position.
+            if (state.unreadIndicator != null) {
+                state.unreadIndicator.destroy();
+            }
+            if (tab.getCustomView() != null) {
+                state.unreadIndicator =
+                        new UnreadIndicator(tab.view.findViewById(android.R.id.text1));
             }
             state.unreadIndicator.mNewBadge.setText(state.unreadIndicatorText);
             if (state.shouldAnimateIndicator) {
