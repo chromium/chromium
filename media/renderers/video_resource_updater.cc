@@ -1205,9 +1205,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
           // the compositor. Note: It'd save a few bytes not to do this...
           auto* dest_ptr = upload_pixels_.get() +
                            video_frame->visible_rect().y() * bytes_per_row +
-                           video_frame->visible_rect().x() *
-                               VideoFrame::BytesPerElement(
-                                   input_frame_format, VideoFrame::kARGBPlane);
+                           video_frame->visible_rect().x() * sizeof(uint32_t);
           PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
               video_frame.get(), dest_ptr, bytes_per_row);
           source_pixels = upload_pixels_.get();

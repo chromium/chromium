@@ -202,6 +202,31 @@ class VideoResourceUpdaterTest : public testing::Test {
     return video_frame;
   }
 
+  scoped_refptr<VideoFrame> CreateTestY16VideoFrameWithVisibleRect() {
+    constexpr int kMaxDimension = 5;
+    constexpr gfx::Size kSize = gfx::Size(kMaxDimension, kMaxDimension);
+    constexpr gfx::Rect kVisibleRect = gfx::Rect(2, 1, 3, 3);
+    constexpr uint16_t kPix = 0xFFFF;
+    static uint16_t y16_data[kMaxDimension * kMaxDimension] = {
+        0x00, 0x00, 0x00, 0x00, 0x00,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, kPix, kPix, kPix,  //
+        0x00, 0x00, 0x00, 0x00, 0x00,  //
+    };
+
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
+        PIXEL_FORMAT_Y16,
+        kSize,                                 // coded_size
+        kVisibleRect,                          // visible_rect
+        kVisibleRect.size(),                   // natural_size
+        reinterpret_cast<uint8_t*>(y16_data),  // data,
+        sizeof(y16_data),                      // data_size
+        base::TimeDelta());                    // timestamp
+    EXPECT_TRUE(video_frame);
+    return video_frame;
+  }
+
   scoped_refptr<VideoFrame> CreateTestHighBitFrame() {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
@@ -411,6 +436,37 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
         const auto pos = y * bytes_per_row + x;
         ASSERT_EQ(src_pixels[pos], dest_pixels[pos]);
       }
+    }
+  }
+}
+
+// Ensure the visible data is where it's supposed to be.
+TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+
+  auto video_frame = CreateTestY16VideoFrameWithVisibleRect();
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::RGBA, resources.type);
+  EXPECT_EQ(resources.resources[0].size, video_frame->coded_size());
+
+  auto rect = video_frame->visible_rect();
+
+  // Just used for sizing information, channel order doesn't matter.
+  constexpr auto kOutputFormat = PIXEL_FORMAT_ARGB;
+
+  const auto bytes_per_row = VideoFrame::RowBytes(
+      VideoFrame::kARGBPlane, kOutputFormat, video_frame->coded_size().width());
+  const auto bytes_per_element =
+      VideoFrame::BytesPerElement(kOutputFormat, VideoFrame::kARGBPlane);
+  auto* dest_pixels = gl_->last_upload() + rect.y() * bytes_per_row +
+                      rect.x() * bytes_per_element;
+
+  // Pixels are 0xFFFFFFFF, so channel reordering doesn't matter.
+  for (int y = 0; y < rect.height(); ++y) {
+    for (int x = 0; x < rect.width() * bytes_per_element; ++x) {
+      const auto pos = y * bytes_per_row + x;
+      ASSERT_EQ(0xFF, dest_pixels[pos]);
     }
   }
 }
