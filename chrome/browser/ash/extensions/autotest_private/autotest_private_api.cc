@@ -248,7 +248,8 @@ NOINLINE int AccessArray(const int arr[], const int* index) {
   return arr[*index];
 }
 
-base::ListValue GetHostPermissions(const Extension* ext, bool effective_perm) {
+base::Value::List GetHostPermissions(const Extension* ext,
+                                     bool effective_perm) {
   const PermissionsData* permissions_data = ext->permissions_data();
 
   const URLPatternSet* pattern_set = nullptr;
@@ -260,15 +261,15 @@ base::ListValue GetHostPermissions(const Extension* ext, bool effective_perm) {
     pattern_set = &permissions_data->active_permissions().explicit_hosts();
   }
 
-  base::ListValue permissions;
+  base::Value::List permissions;
   for (const auto& perm : *pattern_set)
     permissions.Append(perm.GetAsString());
 
   return permissions;
 }
 
-base::ListValue GetAPIPermissions(const Extension* ext) {
-  base::ListValue permissions;
+base::Value::List GetAPIPermissions(const Extension* ext) {
+  base::Value::List permissions;
   std::set<std::string> perm_list =
       ext->permissions_data()->active_permissions().GetAPIsAsStrings();
   for (const auto& perm : perm_list) {
