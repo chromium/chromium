@@ -19,7 +19,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -145,7 +144,7 @@ public class StatusBarColorController
 
             @Override
             public void onDidChangeThemeColor(Tab tab, int color) {
-                if (ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+                if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
                     // The theme color change assignment will override the feature flag which
                     // matches the toolbar and the status bar color, specifically for custom tabs
                     // with theme colors.
@@ -260,7 +259,7 @@ public class StatusBarColorController
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
     public void onToolbarColorChanged(int color) {
-        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+        if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             return;
         }
 
@@ -278,12 +277,12 @@ public class StatusBarColorController
     @Override
     public void onStatusIndicatorColorChanged(@ColorInt int newColor) {
         mStatusIndicatorColor = newColor;
-        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
-            updateStatusBarColor();
-        } else {
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             // The status indicator color assignment will override the feature flag which matches
             // the toolbar and the status bar color.
             updateStatusBarColor(calculateBaseStatusBarColor());
+        } else {
+            updateStatusBarColor();
         }
     }
 
@@ -299,12 +298,12 @@ public class StatusBarColorController
      */
     public void setStatusBarScrimFraction(float fraction) {
         mStatusBarScrimFraction = fraction;
-        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
-            updateStatusBarColor();
-        } else {
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             // The scrim fraction color assignment will override the feature flag which matches
             // the toolbar and the status bar color.
             updateStatusBarColor(calculateBaseStatusBarColor());
+        } else {
+            updateStatusBarColor();
         }
     }
 
@@ -324,7 +323,7 @@ public class StatusBarColorController
     public void updateStatusBarColor() {
         // We will synchronize the status bar's color with toolbar's color if the feature flag is
         // toggled, so we skip the original color assignment here.
-        if (ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
             return;
         }
         updateStatusBarColor(calculateBaseStatusBarColor());
@@ -344,7 +343,7 @@ public class StatusBarColorController
 
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
         statusBarColor = applyCurrentScrimToColor(statusBarColor);
-        setStatusBarColor(statusBarColor);
+        setStatusBarColor(mWindow, statusBarColor);
     }
 
     // TODO(sinansahin): Confirm pre-M expectations with UX and update as needed.
@@ -418,15 +417,16 @@ public class StatusBarColorController
     /**
      * Set device status bar to a given color. Also, set the status bar icons to a dark color if
      * needed.
+     * @param window The current window of the UI view.
      * @param color The color that the status bar should be set to.
      */
-    private void setStatusBarColor(@ColorInt int color) {
+    public static void setStatusBarColor(Window window, @ColorInt int color) {
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
-        final View root = mWindow.getDecorView().getRootView();
+        final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
         ApiCompatibilityUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
-        ApiCompatibilityUtils.setStatusBarColor(mWindow, color);
+        ApiCompatibilityUtils.setStatusBarColor(window, color);
     }
 
     /**

@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -191,6 +192,16 @@ public class SearchActivity extends AsyncInitializationActivity
                 R.id.search_location_bar);
         mAnchorView = mContentView.findViewById(R.id.toolbar);
         updateAnchorViewLayout();
+
+        // Create status bar color controller and assign to search activity.
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+            // Update the status bar's color based on the toolbar color.
+            Drawable anchorViewBackground = mAnchorView.getBackground();
+            if (anchorViewBackground instanceof ColorDrawable) {
+                int anchorViewColor = ((ColorDrawable) anchorViewBackground).getColor();
+                StatusBarColorController.setStatusBarColor(this.getWindow(), anchorViewColor);
+            }
+        }
 
         OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,
@@ -613,6 +624,10 @@ public class SearchActivity extends AsyncInitializationActivity
         Drawable toolbarBackground = mContentView.findViewById(R.id.toolbar).getBackground();
         locationbarBackground.setTint(color);
         toolbarBackground.setTint(color);
+
+        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+            StatusBarColorController.setStatusBarColor(this.getWindow(), color);
+        }
     }
 
     @Override
