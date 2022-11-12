@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3810 tests; 3797 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3812 tests; 3799 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -290,6 +290,7 @@ PASS HTMLElement interface: attribute onratechange
 PASS HTMLElement interface: attribute onreset
 PASS HTMLElement interface: attribute onresize
 PASS HTMLElement interface: attribute onscroll
+PASS HTMLElement interface: attribute onscrollend
 PASS HTMLElement interface: attribute onsecuritypolicyviolation
 PASS HTMLElement interface: attribute onseeked
 PASS HTMLElement interface: attribute onseeking
@@ -390,6 +391,7 @@ PASS HTMLElement interface: document.createElement("noscript") must inherit prop
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onreset" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onresize" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onscroll" with the proper type
+PASS HTMLElement interface: document.createElement("noscript") must inherit property "onscrollend" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onsecuritypolicyviolation" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onseeked" with the proper type
 PASS HTMLElement interface: document.createElement("noscript") must inherit property "onseeking" with the proper type

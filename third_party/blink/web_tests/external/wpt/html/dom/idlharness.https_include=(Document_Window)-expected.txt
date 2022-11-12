@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1008 tests; 1007 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1014 tests; 1013 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -271,6 +271,7 @@ PASS Window interface: attribute onratechange
 PASS Window interface: attribute onreset
 PASS Window interface: attribute onresize
 PASS Window interface: attribute onscroll
+PASS Window interface: attribute onscrollend
 PASS Window interface: attribute onsecuritypolicyviolation
 PASS Window interface: attribute onseeked
 PASS Window interface: attribute onseeking
@@ -428,6 +429,7 @@ PASS Window interface: window must inherit property "onratechange" with the prop
 PASS Window interface: window must inherit property "onreset" with the proper type
 PASS Window interface: window must inherit property "onresize" with the proper type
 PASS Window interface: window must inherit property "onscroll" with the proper type
+PASS Window interface: window must inherit property "onscrollend" with the proper type
 PASS Window interface: window must inherit property "onsecuritypolicyviolation" with the proper type
 PASS Window interface: window must inherit property "onseeked" with the proper type
 PASS Window interface: window must inherit property "onseeking" with the proper type
@@ -591,6 +593,7 @@ PASS Document interface: attribute onratechange
 PASS Document interface: attribute onreset
 PASS Document interface: attribute onresize
 PASS Document interface: attribute onscroll
+PASS Document interface: attribute onscrollend
 PASS Document interface: attribute onsecuritypolicyviolation
 PASS Document interface: attribute onseeked
 PASS Document interface: attribute onseeking
@@ -723,6 +726,7 @@ PASS Document interface: iframe.contentDocument must inherit property "onratecha
 PASS Document interface: iframe.contentDocument must inherit property "onreset" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onresize" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onscroll" with the proper type
+PASS Document interface: iframe.contentDocument must inherit property "onscrollend" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onsecuritypolicyviolation" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onseeked" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onseeking" with the proper type
@@ -855,6 +859,7 @@ PASS Document interface: new Document() must inherit property "onratechange" wit
 PASS Document interface: new Document() must inherit property "onreset" with the proper type
 PASS Document interface: new Document() must inherit property "onresize" with the proper type
 PASS Document interface: new Document() must inherit property "onscroll" with the proper type
+PASS Document interface: new Document() must inherit property "onscrollend" with the proper type
 PASS Document interface: new Document() must inherit property "onsecuritypolicyviolation" with the proper type
 PASS Document interface: new Document() must inherit property "onseeked" with the proper type
 PASS Document interface: new Document() must inherit property "onseeking" with the proper type
@@ -987,6 +992,7 @@ PASS Document interface: documentWithHandlers must inherit property "onratechang
 PASS Document interface: documentWithHandlers must inherit property "onreset" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onresize" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onscroll" with the proper type
+PASS Document interface: documentWithHandlers must inherit property "onscrollend" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onsecuritypolicyviolation" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onseeked" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onseeking" with the proper type

@@ -90,6 +90,7 @@ PASS playing is unaffected on a windowless body
 PASS progress is unaffected on a windowless body
 PASS ratechange is unaffected on a windowless body
 PASS reset is unaffected on a windowless body
+PASS scrollend is unaffected on a windowless body
 PASS securitypolicyviolation is unaffected on a windowless body
 PASS seeked is unaffected on a windowless body
 PASS seeking is unaffected on a windowless body
@@ -201,6 +202,7 @@ PASS playing is unaffected on a windowless frameset
 PASS progress is unaffected on a windowless frameset
 PASS ratechange is unaffected on a windowless frameset
 PASS reset is unaffected on a windowless frameset
+PASS scrollend is unaffected on a windowless frameset
 PASS securitypolicyviolation is unaffected on a windowless frameset
 PASS seeked is unaffected on a windowless frameset
 PASS seeking is unaffected on a windowless frameset

@@ -179,6 +179,7 @@ interface RTCIceCandidate {
   readonly attribute unsigned short? relatedPort;
   readonly attribute DOMString? usernameFragment;
   readonly attribute RTCIceServerTransportProtocol? relayProtocol;
+  readonly attribute DOMString? url;
   RTCIceCandidateInit toJSON();
 };
 
@@ -316,6 +317,7 @@ dictionary RTCRtpCodingParameters {
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
   boolean active = true;
   unsigned long maxBitrate;
+  double maxFramerate;
   double scaleResolutionDownBy;
 };
 

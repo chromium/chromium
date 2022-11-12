@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1148 tests; 1116 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1162 tests; 1130 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -50,11 +50,14 @@ PASS AudioContext interface: existence and properties of interface prototype obj
 PASS AudioContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS AudioContext interface: attribute baseLatency
 PASS AudioContext interface: attribute outputLatency
+PASS AudioContext interface: attribute sinkId
 FAIL AudioContext interface: attribute renderCapacity assert_true: The prototype object must have a property "renderCapacity" expected true got false
+PASS AudioContext interface: attribute onsinkchange
 PASS AudioContext interface: operation getOutputTimestamp()
 PASS AudioContext interface: operation resume()
 PASS AudioContext interface: operation suspend()
 PASS AudioContext interface: operation close()
+PASS AudioContext interface: operation setSinkId((DOMString or AudioSinkOptions))
 PASS AudioContext interface: operation createMediaElementSource(HTMLMediaElement)
 PASS AudioContext interface: operation createMediaStreamSource(MediaStream)
 FAIL AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack) assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamTrackSource" missing
@@ -63,11 +66,15 @@ PASS AudioContext must be primary interface of context
 PASS Stringification of context
 PASS AudioContext interface: context must inherit property "baseLatency" with the proper type
 PASS AudioContext interface: context must inherit property "outputLatency" with the proper type
+PASS AudioContext interface: context must inherit property "sinkId" with the proper type
 FAIL AudioContext interface: context must inherit property "renderCapacity" with the proper type assert_inherits: property "renderCapacity" not found in prototype chain
+PASS AudioContext interface: context must inherit property "onsinkchange" with the proper type
 PASS AudioContext interface: context must inherit property "getOutputTimestamp()" with the proper type
 PASS AudioContext interface: context must inherit property "resume()" with the proper type
 PASS AudioContext interface: context must inherit property "suspend()" with the proper type
 PASS AudioContext interface: context must inherit property "close()" with the proper type
+PASS AudioContext interface: context must inherit property "setSinkId((DOMString or AudioSinkOptions))" with the proper type
+PASS AudioContext interface: calling setSinkId((DOMString or AudioSinkOptions)) on context with too few arguments must throw TypeError
 PASS AudioContext interface: context must inherit property "createMediaElementSource(HTMLMediaElement)" with the proper type
 PASS AudioContext interface: calling createMediaElementSource(HTMLMediaElement) on context with too few arguments must throw TypeError
 PASS AudioContext interface: context must inherit property "createMediaStreamSource(MediaStream)" with the proper type
@@ -109,6 +116,13 @@ PASS BaseAudioContext interface: context must inherit property "createStereoPann
 PASS BaseAudioContext interface: context must inherit property "createWaveShaper()" with the proper type
 PASS BaseAudioContext interface: context must inherit property "decodeAudioData(ArrayBuffer, optional DecodeSuccessCallback?, optional DecodeErrorCallback?)" with the proper type
 PASS BaseAudioContext interface: calling decodeAudioData(ArrayBuffer, optional DecodeSuccessCallback?, optional DecodeErrorCallback?) on context with too few arguments must throw TypeError
+PASS AudioSinkInfo interface: existence and properties of interface object
+PASS AudioSinkInfo interface object length
+PASS AudioSinkInfo interface object name
+PASS AudioSinkInfo interface: existence and properties of interface prototype object
+PASS AudioSinkInfo interface: existence and properties of interface prototype object's "constructor" property
+PASS AudioSinkInfo interface: existence and properties of interface prototype object's @@unscopables property
+PASS AudioSinkInfo interface: attribute type
 FAIL AudioRenderCapacity interface: existence and properties of interface object assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
 FAIL AudioRenderCapacity interface object length assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
 FAIL AudioRenderCapacity interface object name assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing

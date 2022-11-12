@@ -1773,20 +1773,6 @@ interface BarProp {
   readonly attribute boolean visible;
 };
 
-enum ScrollRestoration { "auto", "manual" };
-
-[Exposed=Window]
-interface History {
-  readonly attribute unsigned long length;
-  attribute ScrollRestoration scrollRestoration;
-  readonly attribute any state;
-  undefined go(optional long delta = 0);
-  undefined back();
-  undefined forward();
-  undefined pushState(any data, DOMString unused, optional USVString? url = null);
-  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
-};
-
 [Exposed=Window]
 interface Location { // but see also additional creation steps and overridden internal methods
   [LegacyUnforgeable] stringifier attribute USVString href;
@@ -1804,6 +1790,20 @@ interface Location { // but see also additional creation steps and overridden in
   [LegacyUnforgeable] undefined reload();
 
   [LegacyUnforgeable, SameObject] readonly attribute DOMStringList ancestorOrigins;
+};
+
+enum ScrollRestoration { "auto", "manual" };
+
+[Exposed=Window]
+interface History {
+  readonly attribute unsigned long length;
+  attribute ScrollRestoration scrollRestoration;
+  readonly attribute any state;
+  undefined go(optional long delta = 0);
+  undefined back();
+  undefined forward();
+  undefined pushState(any data, DOMString unused, optional USVString? url = null);
+  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
 };
 
 [Exposed=Window]
@@ -1944,6 +1944,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onreset;
   attribute EventHandler onresize;
   attribute EventHandler onscroll;
+  attribute EventHandler onscrollend;
   attribute EventHandler onsecuritypolicyviolation;
   attribute EventHandler onseeked;
   attribute EventHandler onseeking;

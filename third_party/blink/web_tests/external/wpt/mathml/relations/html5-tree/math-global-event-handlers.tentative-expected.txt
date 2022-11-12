@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 345 tests; 343 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 350 tests; 348 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -260,6 +260,11 @@ PASS onscroll: the default value must be null
 PASS onscroll: the content attribute must be compiled into a function as the corresponding property
 PASS onscroll: dynamic changes on the attribute
 PASS onscroll: dispatching an Event at a <math> element must trigger element.onscroll
+PASS onscrollend: must be on the appropriate locations for GlobalEventHandlers
+PASS onscrollend: the default value must be null
+PASS onscrollend: the content attribute must be compiled into a function as the corresponding property
+PASS onscrollend: dynamic changes on the attribute
+PASS onscrollend: dispatching an Event at a <math> element must trigger element.onscrollend
 PASS onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers
 PASS onsecuritypolicyviolation: the default value must be null
 PASS onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property

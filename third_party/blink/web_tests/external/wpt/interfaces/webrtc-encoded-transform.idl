@@ -80,7 +80,7 @@ dictionary RTCEncodedVideoFrameMetadata {
 [Exposed=(Window,DedicatedWorker)]
 interface RTCEncodedVideoFrame {
     readonly attribute RTCEncodedVideoFrameType type;
-    readonly attribute unsigned long timestamp; // RTP timestamp.
+    readonly attribute unsigned long timestamp;
     attribute ArrayBuffer data;
     RTCEncodedVideoFrameMetadata getMetadata();
 };
@@ -93,12 +93,10 @@ dictionary RTCEncodedAudioFrameMetadata {
 
 [Exposed=(Window,DedicatedWorker)]
 interface RTCEncodedAudioFrame {
-    readonly attribute unsigned long timestamp; // RTP timestamp.
+    readonly attribute unsigned long timestamp;
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
 };
-
-// New interfaces to expose JavaScript-based transforms.
 
 [Exposed=DedicatedWorker]
 interface RTCTransformEvent : Event {

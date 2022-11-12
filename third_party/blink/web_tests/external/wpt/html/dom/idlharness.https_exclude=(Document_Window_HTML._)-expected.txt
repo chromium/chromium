@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1402 tests; 1372 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1403 tests; 1373 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -904,6 +904,30 @@ PASS BarProp interface: existence and properties of interface prototype object
 PASS BarProp interface: existence and properties of interface prototype object's "constructor" property
 PASS BarProp interface: existence and properties of interface prototype object's @@unscopables property
 PASS BarProp interface: attribute visible
+PASS Location interface: existence and properties of interface object
+PASS Location interface object length
+PASS Location interface object name
+PASS Location interface: existence and properties of interface prototype object
+PASS Location interface: existence and properties of interface prototype object's "constructor" property
+PASS Location interface: existence and properties of interface prototype object's @@unscopables property
+FAIL Location interface: stringifier assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
+PASS Location must be primary interface of window.location
+PASS Stringification of window.location
+PASS Location interface: window.location must have own property "href"
+PASS Location interface: window.location must have own property "origin"
+PASS Location interface: window.location must have own property "protocol"
+PASS Location interface: window.location must have own property "host"
+PASS Location interface: window.location must have own property "hostname"
+PASS Location interface: window.location must have own property "port"
+PASS Location interface: window.location must have own property "pathname"
+PASS Location interface: window.location must have own property "search"
+PASS Location interface: window.location must have own property "hash"
+PASS Location interface: window.location must have own property "assign"
+PASS Location interface: calling assign(USVString) on window.location with too few arguments must throw TypeError
+PASS Location interface: window.location must have own property "replace"
+PASS Location interface: calling replace(USVString) on window.location with too few arguments must throw TypeError
+PASS Location interface: window.location must have own property "reload"
+PASS Location interface: window.location must have own property "ancestorOrigins"
 PASS History interface: existence and properties of interface object
 PASS History interface object length
 PASS History interface object name
@@ -931,30 +955,6 @@ PASS History interface: window.history must inherit property "pushState(any, DOM
 PASS History interface: calling pushState(any, DOMString, optional USVString?) on window.history with too few arguments must throw TypeError
 PASS History interface: window.history must inherit property "replaceState(any, DOMString, optional USVString?)" with the proper type
 PASS History interface: calling replaceState(any, DOMString, optional USVString?) on window.history with too few arguments must throw TypeError
-PASS Location interface: existence and properties of interface object
-PASS Location interface object length
-PASS Location interface object name
-PASS Location interface: existence and properties of interface prototype object
-PASS Location interface: existence and properties of interface prototype object's "constructor" property
-PASS Location interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Location interface: stringifier assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
-PASS Location must be primary interface of window.location
-PASS Stringification of window.location
-PASS Location interface: window.location must have own property "href"
-PASS Location interface: window.location must have own property "origin"
-PASS Location interface: window.location must have own property "protocol"
-PASS Location interface: window.location must have own property "host"
-PASS Location interface: window.location must have own property "hostname"
-PASS Location interface: window.location must have own property "port"
-PASS Location interface: window.location must have own property "pathname"
-PASS Location interface: window.location must have own property "search"
-PASS Location interface: window.location must have own property "hash"
-PASS Location interface: window.location must have own property "assign"
-PASS Location interface: calling assign(USVString) on window.location with too few arguments must throw TypeError
-PASS Location interface: window.location must have own property "replace"
-PASS Location interface: calling replace(USVString) on window.location with too few arguments must throw TypeError
-PASS Location interface: window.location must have own property "reload"
-PASS Location interface: window.location must have own property "ancestorOrigins"
 PASS PopStateEvent interface: existence and properties of interface object
 PASS PopStateEvent interface object length
 PASS PopStateEvent interface object name
@@ -1361,6 +1361,7 @@ PASS SVGElement interface: attribute onratechange
 PASS SVGElement interface: attribute onreset
 PASS SVGElement interface: attribute onresize
 PASS SVGElement interface: attribute onscroll
+PASS SVGElement interface: attribute onscrollend
 PASS SVGElement interface: attribute onsecuritypolicyviolation
 PASS SVGElement interface: attribute onseeked
 PASS SVGElement interface: attribute onseeking

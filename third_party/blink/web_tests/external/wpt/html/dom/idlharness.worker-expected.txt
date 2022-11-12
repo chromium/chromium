@@ -429,8 +429,8 @@ PASS DataTransferItem interface: existence and properties of interface object
 PASS DragEvent interface: existence and properties of interface object
 PASS Window interface: existence and properties of interface object
 PASS BarProp interface: existence and properties of interface object
-PASS History interface: existence and properties of interface object
 PASS Location interface: existence and properties of interface object
+PASS History interface: existence and properties of interface object
 PASS PopStateEvent interface: existence and properties of interface object
 PASS HashChangeEvent interface: existence and properties of interface object
 PASS PageTransitionEvent interface: existence and properties of interface object

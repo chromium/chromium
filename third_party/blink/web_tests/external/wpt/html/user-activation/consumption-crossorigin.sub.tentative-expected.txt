@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Consumption test
+PASS Child1 frame initial state
+PASS Child2 frame initial state
+PASS Grandchild frame initial state
+PASS Parent frame initial state
+PASS Child2 frame final state
+PASS Child1 frame final state
+FAIL Grand child frame final state assert_false: hasBeenActive expected false got true
+PASS Parent frame final state
+Harness: the test ran to completion.
+

@@ -64,16 +64,23 @@ enum AudioContextLatencyCategory {
     "playback"
 };
 
+enum AudioSinkType {
+  "none"
+};
+
 [Exposed=Window]
 interface AudioContext : BaseAudioContext {
   constructor (optional AudioContextOptions contextOptions = {});
   readonly attribute double baseLatency;
   readonly attribute double outputLatency;
+  [SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
   [SecureContext] readonly attribute AudioRenderCapacity renderCapacity;
+  attribute EventHandler onsinkchange;
   AudioTimestamp getOutputTimestamp ();
   Promise<undefined> resume ();
   Promise<undefined> suspend ();
   Promise<undefined> close ();
+  [SecureContext] Promise<undefined> setSinkId ((DOMString or AudioSinkOptions) sinkId);
   MediaElementAudioSourceNode createMediaElementSource (HTMLMediaElement mediaElement);
   MediaStreamAudioSourceNode createMediaStreamSource (MediaStream mediaStream);
   MediaStreamTrackAudioSourceNode createMediaStreamTrackSource (
@@ -84,6 +91,16 @@ interface AudioContext : BaseAudioContext {
 dictionary AudioContextOptions {
   (AudioContextLatencyCategory or double) latencyHint = "interactive";
   float sampleRate;
+  (DOMString or AudioSinkOptions) sinkId;
+};
+
+dictionary AudioSinkOptions {
+  required AudioSinkType type;
+};
+
+[Exposed=Window]
+interface AudioSinkInfo {
+  readonly attribute AudioSinkType type;
 };
 
 dictionary AudioTimestamp {

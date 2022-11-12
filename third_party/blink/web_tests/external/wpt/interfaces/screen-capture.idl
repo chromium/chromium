@@ -7,10 +7,15 @@ partial interface MediaDevices {
   Promise<MediaStream> getDisplayMedia(optional DisplayMediaStreamOptions options = {});
 };
 
+enum CaptureStartFocusBehavior {
+  "focus-captured-surface",
+  "no-focus-change"
+};
+
 [Exposed=Window, SecureContext]
 interface CaptureController {
   constructor();
-  // TODO: Add setFocusBehavior() in a separate PR.
+  undefined setFocusBehavior(CaptureStartFocusBehavior focusBehavior);
 };
 
 enum SelfCapturePreferenceEnum {

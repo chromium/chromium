@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1124 tests; 1115 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1148 tests; 1116 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
@@ -50,6 +50,7 @@ PASS AudioContext interface: existence and properties of interface prototype obj
 PASS AudioContext interface: existence and properties of interface prototype object's @@unscopables property
 PASS AudioContext interface: attribute baseLatency
 PASS AudioContext interface: attribute outputLatency
+FAIL AudioContext interface: attribute renderCapacity assert_true: The prototype object must have a property "renderCapacity" expected true got false
 PASS AudioContext interface: operation getOutputTimestamp()
 PASS AudioContext interface: operation resume()
 PASS AudioContext interface: operation suspend()
@@ -62,6 +63,7 @@ PASS AudioContext must be primary interface of context
 PASS Stringification of context
 PASS AudioContext interface: context must inherit property "baseLatency" with the proper type
 PASS AudioContext interface: context must inherit property "outputLatency" with the proper type
+FAIL AudioContext interface: context must inherit property "renderCapacity" with the proper type assert_inherits: property "renderCapacity" not found in prototype chain
 PASS AudioContext interface: context must inherit property "getOutputTimestamp()" with the proper type
 PASS AudioContext interface: context must inherit property "resume()" with the proper type
 PASS AudioContext interface: context must inherit property "suspend()" with the proper type
@@ -107,6 +109,25 @@ PASS BaseAudioContext interface: context must inherit property "createStereoPann
 PASS BaseAudioContext interface: context must inherit property "createWaveShaper()" with the proper type
 PASS BaseAudioContext interface: context must inherit property "decodeAudioData(ArrayBuffer, optional DecodeSuccessCallback?, optional DecodeErrorCallback?)" with the proper type
 PASS BaseAudioContext interface: calling decodeAudioData(ArrayBuffer, optional DecodeSuccessCallback?, optional DecodeErrorCallback?) on context with too few arguments must throw TypeError
+FAIL AudioRenderCapacity interface: existence and properties of interface object assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface object length assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface object name assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: operation start(optional AudioRenderCapacityOptions) assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: operation stop() assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacity interface: attribute onupdate assert_own_property: self does not have own property "AudioRenderCapacity" expected property "AudioRenderCapacity" missing
+FAIL AudioRenderCapacityEvent interface: existence and properties of interface object assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface object length assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface object name assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: attribute timestamp assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: attribute averageLoad assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: attribute peakLoad assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
+FAIL AudioRenderCapacityEvent interface: attribute underrunRatio assert_own_property: self does not have own property "AudioRenderCapacityEvent" expected property "AudioRenderCapacityEvent" missing
 PASS OfflineAudioContext interface: existence and properties of interface object
 PASS OfflineAudioContext interface object length
 PASS OfflineAudioContext interface object name
@@ -1085,8 +1106,10 @@ PASS AudioWorklet interface object name
 PASS AudioWorklet interface: existence and properties of interface prototype object
 PASS AudioWorklet interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioWorklet interface: existence and properties of interface prototype object's @@unscopables property
+FAIL AudioWorklet interface: attribute port assert_true: The prototype object must have a property "port" expected true got false
 PASS AudioWorklet must be primary interface of context.audioWorklet
 PASS Stringification of context.audioWorklet
+FAIL AudioWorklet interface: context.audioWorklet must inherit property "port" with the proper type assert_inherits: property "port" not found in prototype chain
 PASS AudioWorkletGlobalScope interface: existence and properties of interface object
 PASS AudioParamMap interface: existence and properties of interface object
 PASS AudioParamMap interface object length
@@ -1094,6 +1117,7 @@ PASS AudioParamMap interface object name
 PASS AudioParamMap interface: existence and properties of interface prototype object
 PASS AudioParamMap interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioParamMap interface: existence and properties of interface prototype object's @@unscopables property
+PASS AudioParamMap interface: maplike<DOMString, AudioParam>
 PASS AudioParamMap must be primary interface of worklet_node.parameters
 PASS Stringification of worklet_node.parameters
 PASS AudioWorkletNode interface: existence and properties of interface object

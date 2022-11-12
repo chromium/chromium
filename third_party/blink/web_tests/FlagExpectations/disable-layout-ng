@@ -11,6 +11,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/html/user-activation/consumption-crossorigin.sub.tentative.html [ Timeout Failure ]
 crbug.com/626703 external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash ]
 crbug.com/626703 external/wpt/dom/events/scrolling/scrollend-event-handler-content-attributes.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
