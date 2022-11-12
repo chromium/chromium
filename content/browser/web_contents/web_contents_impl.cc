@@ -174,7 +174,6 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_combiner.h"
-#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_manager.h"
@@ -2234,26 +2233,6 @@ void WebContentsImpl::OnVerticalScrollDirectionChanged(
                         "scroll_direction", static_cast<int>(scroll_direction));
   observers_.NotifyObservers(
       &WebContentsObserver::DidChangeVerticalScrollDirection, scroll_direction);
-}
-
-int WebContentsImpl::GetVirtualKeyboardResizeHeight() {
-  // Only consider a web contents to be insetted by the virtual keyboard if it
-  // is in the currently active tab.
-  if (GetVisibility() != Visibility::VISIBLE)
-    return 0;
-
-  // The only mode where the virtual keyboard causes the web contents to be
-  // resized is kResizesContent.
-  if (GetPrimaryPage().virtual_keyboard_mode() !=
-      ui::mojom::VirtualKeyboardMode::kResizesContent) {
-    return 0;
-  }
-
-  // The virtual keyboard never resizes content when fullscreened.
-  if (IsFullscreen())
-    return 0;
-
-  return GetDelegate() ? GetDelegate()->GetVirtualKeyboardHeight(this) : 0;
 }
 
 void WebContentsImpl::OnAudioStateChanged() {

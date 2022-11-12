@@ -116,7 +116,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   bool ShouldAnimateBrowserControlsHeightChanges() override;
   bool DoBrowserControlsShrinkRendererSize(
       content::WebContents* contents) override;
-  int GetVirtualKeyboardHeight(content::WebContents* contents) override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
 

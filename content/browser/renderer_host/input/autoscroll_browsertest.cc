@@ -4,7 +4,6 @@
 
 #include <tuple>
 
-#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -133,7 +132,7 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());
     for (int i = 0; i < num_repeat; i++) {
-      GetWidgetHost()->ForceRedrawAndWaitForPresentation(base::DoNothing());
+      GetWidgetHost()->RequestForceRedraw(i);
       observer.WaitForAnyFrameSubmission();
     }
   }

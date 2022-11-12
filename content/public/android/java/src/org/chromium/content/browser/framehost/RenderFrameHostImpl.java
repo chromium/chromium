@@ -228,12 +228,6 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
-    @Override
-    public void forceRedrawAndWaitForPresentation(Runnable callback) {
-        RenderFrameHostImplJni.get().forceRedrawAndWaitForPresentation(
-                mNativeRenderFrameHostAndroid, callback);
-    }
-
     @NativeMethods
     interface Natives {
         GURL getLastCommittedURL(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
@@ -264,7 +258,5 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);
         int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        void forceRedrawAndWaitForPresentation(
-                long nativeRenderFrameHostAndroid, Runnable callback);
     }
 }
