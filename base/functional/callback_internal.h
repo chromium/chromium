@@ -11,8 +11,21 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
+
+// TODO(https://crbug.com/1383397): Temporary workaround for clang-cl
+// ignoring TRIVIAL_ABI on `CallbackBaseCopyable`, `OnceCallback`, and
+// `RepeatingCallback` because, for some reason, it considers them to have
+// non-trivial abi base classes, despite all the base classes being annotated
+// with TRIVIAL_ABI...
+#if BUILDFLAG(IS_WIN)
+#define TRIVIAL_ABI_EXCEPT_WIN
+#else
+#define TRIVIAL_ABI_EXCEPT_WIN TRIVIAL_ABI
+#endif
 
 namespace base {
 
@@ -110,8 +123,10 @@ class BASE_EXPORT BindStateBase
 // template bloat.
 // CallbackBase<MoveOnly> is a direct base class of MoveOnly callbacks, and
 // CallbackBase<Copyable> uses CallbackBase<MoveOnly> for its implementation.
-class BASE_EXPORT CallbackBase {
+class BASE_EXPORT TRIVIAL_ABI_EXCEPT_WIN CallbackBase {
  public:
+  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
+  // the moved-from object in a trivially destructible state.
   inline CallbackBase(CallbackBase&& c) noexcept;
   CallbackBase& operator=(CallbackBase&& c) noexcept;
 
@@ -165,6 +180,9 @@ class BASE_EXPORT CallbackBase {
   // Force the destructor to be instantiated inside this translation unit so
   // that our subclasses will not get inlined versions.  Avoids more template
   // bloat.
+  //
+  // Since type is marked as TRIVIAL_ABI, the destructor must be a no-op when
+  // `this` is a moved-from object.
   ~CallbackBase();
 
   scoped_refptr<BindStateBase> bind_state_;
@@ -176,11 +194,15 @@ CallbackBase::CallbackBase(BindStateBase* bind_state)
     : bind_state_(AdoptRef(bind_state)) {}
 
 // CallbackBase<Copyable> is a direct base class of Copyable Callbacks.
-class BASE_EXPORT CallbackBaseCopyable : public CallbackBase {
+class BASE_EXPORT TRIVIAL_ABI_EXCEPT_WIN CallbackBaseCopyable
+    : public CallbackBase {
  public:
   CallbackBaseCopyable(const CallbackBaseCopyable& c);
-  CallbackBaseCopyable(CallbackBaseCopyable&& c) noexcept = default;
   CallbackBaseCopyable& operator=(const CallbackBaseCopyable& c);
+
+  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
+  // the moved-from object in a trivially destructible state.
+  CallbackBaseCopyable(CallbackBaseCopyable&& c) noexcept = default;
   CallbackBaseCopyable& operator=(CallbackBaseCopyable&& c) noexcept;
 
  protected:
@@ -246,5 +268,7 @@ struct ThenHelper<OriginalCallback<OriginalR(OriginalArgs...)>,
 
 }  // namespace internal
 }  // namespace base
+
+#undef TRIVIAL_ABI_EXCEPT_WIN
 
 #endif  // BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_

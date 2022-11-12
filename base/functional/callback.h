@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"  // IWYU pragma: export
 #include "base/functional/callback_internal.h"
@@ -20,6 +21,7 @@
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/types/always_false.h"
+#include "build/build_config.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -86,8 +88,20 @@ ToDoNothingCallback(DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t) {
 
 }  // namespace internal
 
+// TODO(https://crbug.com/1383397): Temporary workaround for clang-cl
+// ignoring TRIVIAL_ABI on `CallbackBaseCopyable`, `OnceCallback`, and
+// `RepeatingCallback` because, for some reason, it considers them to have
+// non-trivial abi base classes, despite all the base classes being annotated
+// with TRIVIAL_ABI...
+#if BUILDFLAG(IS_WIN)
+#define TRIVIAL_ABI_EXCEPT_WIN
+#else
+#define TRIVIAL_ABI_EXCEPT_WIN TRIVIAL_ABI
+#endif
+
 template <typename R, typename... Args>
-class OnceCallback<R(Args...)> : public internal::CallbackBase {
+class TRIVIAL_ABI_EXCEPT_WIN OnceCallback<R(Args...)>
+    : public internal::CallbackBase {
  public:
   using ResultType = R;
   using RunType = R(Args...);
@@ -96,6 +110,16 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 
   constexpr OnceCallback() = default;
   OnceCallback(std::nullptr_t) = delete;
+
+  OnceCallback(const OnceCallback&) = delete;
+  OnceCallback& operator=(const OnceCallback&) = delete;
+
+  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
+  // the moved-from object in a trivially destructible state.
+  OnceCallback(OnceCallback&&) noexcept = default;
+  OnceCallback& operator=(OnceCallback&&) noexcept = default;
+
+  ~OnceCallback() = default;
 
   constexpr OnceCallback(internal::NullCallbackTag) : OnceCallback() {}
   constexpr OnceCallback& operator=(internal::NullCallbackTag) {
@@ -141,12 +165,6 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 
   explicit OnceCallback(internal::BindStateBase* bind_state)
       : internal::CallbackBase(bind_state) {}
-
-  OnceCallback(const OnceCallback&) = delete;
-  OnceCallback& operator=(const OnceCallback&) = delete;
-
-  OnceCallback(OnceCallback&&) noexcept = default;
-  OnceCallback& operator=(OnceCallback&&) noexcept = default;
 
   OnceCallback(RepeatingCallback<RunType> other)
       : internal::CallbackBase(std::move(other)) {}
@@ -228,7 +246,8 @@ class OnceCallback<R(Args...)> : public internal::CallbackBase {
 };
 
 template <typename R, typename... Args>
-class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
+class TRIVIAL_ABI_EXCEPT_WIN RepeatingCallback<R(Args...)>
+    : public internal::CallbackBaseCopyable {
  public:
   using ResultType = R;
   using RunType = R(Args...);
@@ -237,6 +256,16 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
 
   constexpr RepeatingCallback() = default;
   RepeatingCallback(std::nullptr_t) = delete;
+
+  RepeatingCallback(const RepeatingCallback&) = default;
+  RepeatingCallback& operator=(const RepeatingCallback&) = default;
+
+  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
+  // the moved-from object in a trivially destructible state.
+  RepeatingCallback(RepeatingCallback&&) noexcept = default;
+  RepeatingCallback& operator=(RepeatingCallback&&) noexcept = default;
+
+  ~RepeatingCallback() = default;
 
   constexpr RepeatingCallback(internal::NullCallbackTag)
       : RepeatingCallback() {}
@@ -284,12 +313,6 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
 
   explicit RepeatingCallback(internal::BindStateBase* bind_state)
       : internal::CallbackBaseCopyable(bind_state) {}
-
-  // Copyable and movable.
-  RepeatingCallback(const RepeatingCallback&) = default;
-  RepeatingCallback& operator=(const RepeatingCallback&) = default;
-  RepeatingCallback(RepeatingCallback&&) noexcept = default;
-  RepeatingCallback& operator=(RepeatingCallback&&) noexcept = default;
 
   bool operator==(const RepeatingCallback& other) const {
     return EqualsInternal(other);
@@ -373,6 +396,8 @@ class RepeatingCallback<R(Args...)> : public internal::CallbackBaseCopyable {
         "bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
 };
+
+#undef TRIVIAL_ABI_EXCEPT_WIN
 
 }  // namespace base
 
