@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS share() is disabled by permissions policy cross-origin
+PASS canShare() returns false when not allowed by permissions policy cross-origin
+FAIL canShare() returns false when not allowed by permissions policy cross-origin with empty data assert_equals: Expected true, is it can now share. expected true but got false
+Harness: the test ran to completion.
+
