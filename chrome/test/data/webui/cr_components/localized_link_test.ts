@@ -54,23 +54,23 @@ suite('localized_link', function() {
 
   test('PopulatedLink', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `<a>populated link</a>`, `http://google.com`);
+        `<a>populated link</a>`, `https://google.com`);
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0" tabindex="0" ` +
-            `href="http://google.com" target="_blank">populated link</a>`);
+            `href="https://google.com" target="_blank">populated link</a>`);
   });
 
   test('PrepopulatedLink', function() {
     document.body.innerHTML = getLocalizedStringWithLinkElementHtml(
-        `<a href='http://google.com'>pre-populated link</a>`, ``);
+        `<a href='https://google.com'>pre-populated link</a>`, ``);
     localizedStringWithLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedStringWithLink);
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
-        `<a href="http://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
+        `<a href="https://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
             `pre-populated link</a>`);
   });
 
