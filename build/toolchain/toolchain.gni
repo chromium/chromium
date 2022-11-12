@@ -33,7 +33,7 @@ if (generate_linker_map) {
 }
 
 declare_args() {
-  clang_version = "16.0.0"
+  clang_version = "16"
 }
 
 # Extension for shared library files (including leading dot).

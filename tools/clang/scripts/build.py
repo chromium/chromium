@@ -414,7 +414,7 @@ def VerifyVersionOfBuiltClangMatchesVERSION():
     clang += '-cl.exe'
   version_out = subprocess.check_output([clang, '--version'],
                                         universal_newlines=True)
-  version_out = re.match(r'clang version ([0-9.]+)', version_out).group(1)
+  version_out = re.match(r'clang version ([0-9]+)', version_out).group(1)
   if version_out != RELEASE_VERSION:
     print(('unexpected clang version %s (not %s), '
            'update RELEASE_VERSION in update.py')
