@@ -14,6 +14,7 @@ template("ts_definitions") {
                              "deps",
                              "extra_deps",
                              "js_files",
+                             "visibility",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_definitions_base.json" ]

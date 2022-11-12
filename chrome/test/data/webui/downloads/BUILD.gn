@@ -24,8 +24,10 @@ ts_library("build_ts") {
     "test_support.ts",
     "toolbar_tests.ts",
   ]
-  deps = [ "//chrome/browser/resources/downloads:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/downloads:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

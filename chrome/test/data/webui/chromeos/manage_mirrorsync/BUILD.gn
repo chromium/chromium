@@ -18,8 +18,10 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [ "manage_mirrorsync_app_test.ts" ]
-  deps = [ "//chrome/browser/resources/chromeos/manage_mirrorsync:build_ts" ]
-  extra_deps = [ "../..:generate_definitions" ]
+  deps = [
+    "../..:build_ts",
+    "//chrome/browser/resources/chromeos/manage_mirrorsync:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

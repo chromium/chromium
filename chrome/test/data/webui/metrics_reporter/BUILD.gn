@@ -18,8 +18,10 @@ ts_library("build_ts") {
     "mocked_metrics_reporter.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
-  deps = [ "//ui/webui/resources/js/metrics_reporter:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//ui/webui/resources/js/metrics_reporter:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

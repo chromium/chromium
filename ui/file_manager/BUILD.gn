@@ -194,7 +194,10 @@ ts_library("test_build_ts") {
     definitions += [ "$preprocess_folder/$_file" ]
   }
 
-  deps = [ ":build_ts" ]
+  deps = [
+    ":build_ts",
+    "//chrome/test/data/webui:build_ts",
+  ]
   extra_deps = [
     ":copy_definitions_to_gen",
     ":copy_definitions_to_proprocess",

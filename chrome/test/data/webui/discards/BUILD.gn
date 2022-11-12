@@ -21,8 +21,10 @@ ts_library("build_ts") {
   ]
   in_files = [ "discards_test.ts" ]
 
-  deps = [ "//chrome/browser/resources/discards:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/discards:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

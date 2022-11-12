@@ -19,8 +19,10 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [ "privacy_sandbox_dialog_test.ts" ]
-  deps = [ "//chrome/browser/resources/privacy_sandbox:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/privacy_sandbox:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {

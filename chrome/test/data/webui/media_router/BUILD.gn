@@ -25,8 +25,10 @@ ts_library("build_ts") {
 
   definitions = [ "//tools/typescript/definitions/feedback_private.d.ts" ]
 
-  deps = [ "//chrome/browser/resources/media_router/cast_feedback:build_ts" ]
-  extra_deps = [ "..:generate_definitions" ]
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/media_router/cast_feedback:build_ts",
+  ]
 }
 
 generate_grd("build_grdp") {
