@@ -7,7 +7,6 @@
 # m/a/b/d in the tests.
 
 import json
-import types
 import unittest
 
 from blinkpy.common.system.filesystem_mock import FileSystemTestCase, MockFileSystem
@@ -15,7 +14,6 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import merge_results
 
 from collections import OrderedDict
-from six import StringIO
 from six import BytesIO
 
 

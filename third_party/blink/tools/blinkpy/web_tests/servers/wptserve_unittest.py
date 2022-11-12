@@ -5,7 +5,6 @@
 import json
 import logging
 import six
-import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase

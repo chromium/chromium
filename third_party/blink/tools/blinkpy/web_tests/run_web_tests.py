@@ -30,7 +30,6 @@
 
 import logging
 import optparse
-import sys
 import traceback
 
 from blinkpy.common import exit_codes

@@ -44,10 +44,8 @@ import random
 import signal
 import sys
 import time
-import traceback
 
 from blinkpy.common import exit_codes
-from blinkpy.common import path_finder
 from blinkpy.common.net.file_uploader import FileUploader
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool import grammar

@@ -242,9 +242,6 @@ class AbstractTestResultType(object):
         """Returns True if we should kill the driver before the next test."""
         return False
 
-    def message(self):
-        raise NotImplementedError
-
     def text_mismatch_category(self):
         raise NotImplementedError
 

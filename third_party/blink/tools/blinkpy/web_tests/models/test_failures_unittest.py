@@ -28,7 +28,7 @@
 
 import unittest
 from blinkpy.common.system.system_host_mock import MockSystemHost
-from blinkpy.web_tests.models.typ_types import ResultType, Artifacts
+from blinkpy.web_tests.models.typ_types import Artifacts
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import DriverOutput
 

@@ -3,17 +3,12 @@
 # found in the LICENSE file.
 
 import optparse
-import os
-import sys
 import unittest
 
-from blinkpy.common import path_finder
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.web_tests.controllers import web_test_finder
 from blinkpy.web_tests.models import test_expectations
-
-import mock
 
 
 class WebTestFinderTests(unittest.TestCase):

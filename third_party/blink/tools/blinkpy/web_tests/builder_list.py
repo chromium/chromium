@@ -112,7 +112,7 @@ class BuilderList(object):
         As of today, this should return:
         [("linux-blink-rel", "linux-rel"),
          ("mac12.0-blink-rel", "mac-rel"),
-         ("win10.20h2-blink-rel", "win10_chromium_x64_rel_ng")]
+         ("win10.20h2-blink-rel", "win-rel")]
         """
         rv = []
         all_blink_rel_trybots = sorted(

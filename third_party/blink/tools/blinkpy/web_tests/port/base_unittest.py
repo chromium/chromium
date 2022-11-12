@@ -1856,10 +1856,6 @@ class KeyCompareTest(unittest.TestCase):
     def setUp(self):
         self._port = TestPort(MockSystemHost())
 
-    def assert_cmp(self, x, y, result):
-        self.assertEqual(
-            cmp(self._port.test_key(x), self._port.test_key(y)), result)
-
     def assert_order(self, x, y, predicate):
         self.assertTrue(
             predicate(self._port.test_key(x), self._port.test_key(y)))

@@ -39,11 +39,8 @@ from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.web_tests.models.test_expectations import (TestExpectations,
                                                         ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.android import (ANDROID_DISABLED_TESTS,
-                                            ANDROID_WEBLAYER)
+from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
 from blinkpy.web_tests.port.factory import platform_options
-
-from functools import reduce
 
 _log = logging.getLogger(__name__)
 

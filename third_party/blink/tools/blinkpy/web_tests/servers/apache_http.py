@@ -233,7 +233,7 @@ class ApacheHTTP(server_base.ServerBase):
         retval = proc.returncode
         if retval or (err and len(err)):
             raise server_base.ServerError(
-                'Failed to stop %s: %s %s' % (self._name, err))
+                'Failed to stop %s: %s' % (self._name, err))
 
         # For some reason apache isn't guaranteed to have actually stopped after
         # the stop command returns, so we wait a little while longer for the

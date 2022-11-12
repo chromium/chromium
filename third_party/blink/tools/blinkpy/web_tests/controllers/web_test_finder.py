@@ -31,11 +31,9 @@ import fnmatch
 import hashlib
 import json
 import logging
-import math
 import re
 
 from blinkpy.web_tests.layout_package.json_results_generator import convert_times_trie_to_flat_paths
-from blinkpy.web_tests.models import test_expectations, typ_types
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
 from collections import OrderedDict

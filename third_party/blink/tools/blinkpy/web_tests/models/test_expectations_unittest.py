@@ -31,9 +31,6 @@ import optparse
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.system.output_capture import OutputCapture
-from blinkpy.web_tests.models.test_configuration import (
-    TestConfiguration, TestConfigurationConverter)
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations, SystemConfigurationRemover, ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation

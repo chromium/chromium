@@ -37,7 +37,6 @@ import re
 import shutil
 import sys
 import tempfile
-import types
 
 BLINK_TOOLS_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))

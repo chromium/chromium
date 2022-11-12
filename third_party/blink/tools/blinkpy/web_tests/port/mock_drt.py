@@ -51,7 +51,6 @@ if tools_dir not in sys.path:
 from blinkpy.common import exit_codes
 from blinkpy.common import read_checksum_from_png
 from blinkpy.common.system.system_host import SystemHost
-from blinkpy.web_tests.models import test_run_results
 from blinkpy.web_tests.port.driver import DriverInput, DriverOutput
 from blinkpy.web_tests.port.factory import PortFactory
 
@@ -131,7 +130,7 @@ class MockDRTPort(object):
 
     def _lookup_virtual_test_args(self, test_name):
         # MockDRTPort doesn't support virtual test suites.
-        raise NotImplmentedError()
+        raise NotImplementedError()
 
 
 def main(argv, host, stdin, stdout, stderr):

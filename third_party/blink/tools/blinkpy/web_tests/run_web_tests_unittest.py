@@ -29,15 +29,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
-import os
 import re
 import six
-import sys
 import unittest
 
 from blinkpy.common import exit_codes
-from blinkpy.common import path_finder
-from blinkpy.common.host import Host
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.system.path import abspath_to_uri
@@ -45,15 +41,12 @@ from blinkpy.common.system.system_host import SystemHost
 
 from blinkpy.w3c.wpt_manifest import MANIFEST_NAME
 from blinkpy.web_tests import run_web_tests
-from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port import test
 from blinkpy.web_tests.views.printing import Printer
 
 from six import StringIO
-
-import mock  # pylint: disable=wrong-import-position
 
 
 def parse_args(extra_args=None, tests_included=False):

@@ -34,7 +34,7 @@ import logging
 import webbrowser
 
 from blinkpy.tool.commands.flaky_tests import FlakyTests
-from blinkpy.web_tests.models.test_expectations import TestExpectations, SPECIAL_PREFIXES
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)

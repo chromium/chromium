@@ -39,10 +39,8 @@ try:
 except ImportError:
     _winreg = None  # pylint: disable=invalid-name
 
-from blinkpy.common import exit_codes
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.breakpad.dump_reader_win import DumpReaderWin
-from blinkpy.web_tests.models import test_run_results
 from blinkpy.web_tests.port import base
 
 _log = logging.getLogger(__name__)

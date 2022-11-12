@@ -222,7 +222,7 @@
         "is_try_builder": true,
         "is_cq_builder":true
     },
-    "win10_chromium_x64_rel_ng": {
+    "win-rel": {
         "main": "tryserver.chromium.win",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],

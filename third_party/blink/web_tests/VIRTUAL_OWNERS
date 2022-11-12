@@ -16,7 +16,7 @@
 #   - The percentage of time the virtual suite will take. The author can
 #     find this data in "layout_test_results" page ("Timing stats" in the
 #     top-right corner) linked from "archive results for blink_web_tests"
-#     step on try bots like linux-rel, mac-rel and win10_chromium_x64_rel_ng.
+#     step on try bots like linux-rel, mac-rel and win-rel.
 #     Normally the percentage should be less than 5%.
 #
 # - The prefix of the virtual test suites should not be too long. There is
