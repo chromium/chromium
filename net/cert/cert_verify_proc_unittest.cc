@@ -885,54 +885,6 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
   }
 }
 
-// A regression test for https://crbug.com/31497: If an intermediate has
-// requireExplicitPolicy in its policyConstraints extension, verification
-// should still succeed as long as some policy is valid for the chain, since
-// Chrome does not specify any required policy as an input to certificate
-// verification (allows anyPolicy).
-TEST_P(CertVerifyProcInternalTest, IntermediateCARequireExplicitPolicy) {
-  if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
-    // Disabled on Android, as the Android verification libraries require an
-    // explicit policy to be specified, even when anyPolicy is permitted.
-    LOG(INFO) << "Skipping test on Android";
-    return;
-  }
-
-  for (bool leaf_has_policy : {false, true}) {
-    SCOPED_TRACE(leaf_has_policy);
-
-    std::unique_ptr<CertBuilder> leaf, intermediate, root;
-    CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
-    ASSERT_TRUE(leaf && intermediate && root);
-
-    static const char kPolicy1[] = "1.2.3.4";
-    static const char kPolicy2[] = "1.2.3.4.5";
-    static const char kPolicy3[] = "1.2.3.5";
-    intermediate->SetCertificatePolicies({kPolicy1, kPolicy2, kPolicy3});
-    intermediate->SetPolicyConstraints(
-        /*require_explicit_policy=*/0,
-        /*inhibit_policy_mapping=*/absl::nullopt);
-
-    if (leaf_has_policy)
-      leaf->SetCertificatePolicies({kPolicy1});
-
-    scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
-    ScopedTestRoot scoped_root(root->GetX509Certificate().get());
-
-    int flags = 0;
-    CertVerifyResult verify_result;
-    int error = Verify(cert.get(), "www.example.com", flags,
-                       CRLSet::BuiltinCRLSet().get(), CertificateList(),
-                       &verify_result);
-    if (leaf_has_policy) {
-      EXPECT_THAT(error, IsOk());
-      EXPECT_EQ(0u, verify_result.cert_status);
-    } else {
-      EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-    }
-  }
-}
-
 TEST_P(CertVerifyProcInternalTest, RejectExpiredCert) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
@@ -4504,6 +4456,85 @@ TEST_P(CertVerifyProcConstraintsTest, ValidityNotYetValidIntermediate) {
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_DATE_INVALID));
   }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Root) {
+  for (bool leaf_has_policy : {false, true}) {
+    SCOPED_TRACE(leaf_has_policy);
+
+    static const char kPolicy1[] = "1.2.3.4";
+    static const char kPolicy2[] = "1.2.3.4.5";
+    static const char kPolicy3[] = "1.2.3.5";
+    chain_[3]->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
+    chain_[3]->SetCertificatePolicies({kPolicy1, kPolicy2});
+    chain_[2]->SetCertificatePolicies({kPolicy3, kPolicy1});
+    chain_[1]->SetCertificatePolicies({kPolicy1});
+
+    if (leaf_has_policy) {
+      chain_[0]->SetCertificatePolicies({kPolicy1});
+      EXPECT_THAT(Verify(), IsOk());
+    } else {
+      chain_[0]->SetCertificatePolicies({});
+      if (VerifyProcTypeIsBuiltin() ||
+          verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+          verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+          verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+        EXPECT_THAT(Verify(), IsOk());
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      }
+    }
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints4Root) {
+  // Explicit policy is required after 4 certs. Since the chain is 4 certs
+  // long, an explicit policy is never required.
+  chain_[3]->SetPolicyConstraints(
+      /*require_explicit_policy=*/4,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+// This is also a regression test for https://crbug.com/31497: If an
+// intermediate has requireExplicitPolicy in its policyConstraints extension,
+// verification should still succeed as long as some policy is valid for the
+// chain, since Chrome does not specify any required policy as an input to
+// certificate verification (allows anyPolicy).
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Intermediate) {
+  for (bool leaf_has_policy : {false, true}) {
+    SCOPED_TRACE(leaf_has_policy);
+
+    static const char kPolicy1[] = "1.2.3.4";
+    static const char kPolicy2[] = "1.2.3.4.5";
+    static const char kPolicy3[] = "1.2.3.5";
+    chain_[2]->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
+    chain_[2]->SetCertificatePolicies({kPolicy1, kPolicy2});
+    chain_[1]->SetCertificatePolicies({kPolicy3, kPolicy1});
+
+    if (leaf_has_policy) {
+      chain_[0]->SetCertificatePolicies({kPolicy1});
+      EXPECT_THAT(Verify(), IsOk());
+    } else {
+      chain_[0]->SetCertificatePolicies({});
+      EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
+    }
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints3Intermediate) {
+  // Explicit policy is required after 3 certs. Since the chain up to
+  // |chain_[2]| is 3 certs long, an explicit policy is never required.
+  chain_[2]->SetPolicyConstraints(
+      /*require_explicit_policy=*/3,
+      /*inhibit_policy_mapping=*/absl::nullopt);
+
+  EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
