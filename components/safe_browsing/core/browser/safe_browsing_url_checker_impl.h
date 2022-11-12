@@ -226,7 +226,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       const GURL& last_committed_url,
       bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // This function has to be static because it is called in UI thread.
@@ -239,7 +238,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       const GURL& last_committed_url,
       bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   // Called when the |request| from the real-time lookup service is sent.

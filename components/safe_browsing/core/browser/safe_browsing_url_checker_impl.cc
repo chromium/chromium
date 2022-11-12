@@ -605,7 +605,7 @@ void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
                        weak_factory_.GetWeakPtr(), url, last_committed_url_,
                        /*is_mainframe=*/request_destination_ ==
                            network::mojom::RequestDestination::kDocument,
-                       url_lookup_service_on_ui_, database_manager_,
+                       url_lookup_service_on_ui_,
                        base::SequencedTaskRunnerHandle::Get()));
     // If the URL matches the high-confidence allowlist, still do the hash based
     // checks.
@@ -619,7 +619,7 @@ void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
                      weak_factory_.GetWeakPtr(), url, last_committed_url_,
                      /*is_mainframe=*/request_destination_ ==
                          network::mojom::RequestDestination::kDocument,
-                     url_lookup_service_on_ui_, database_manager_,
+                     url_lookup_service_on_ui_,
                      base::SequencedTaskRunnerHandle::Get()));
 }
 
@@ -633,7 +633,6 @@ void SafeBrowsingUrlCheckerImpl::MaybeSendSampleRequest(
     const GURL& last_committed_url,
     bool is_mainframe,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   bool can_send_protego_sampled_ping =
       url_lookup_service_on_ui &&
@@ -660,7 +659,6 @@ void SafeBrowsingUrlCheckerImpl::StartLookupOnUIThread(
     const GURL& last_committed_url,
     bool is_mainframe,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   bool is_lookup_service_available =
       url_lookup_service_on_ui && !url_lookup_service_on_ui->IsInBackoffMode();
