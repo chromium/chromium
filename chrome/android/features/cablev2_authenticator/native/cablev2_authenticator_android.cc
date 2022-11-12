@@ -293,7 +293,6 @@ struct GlobalData {
   // completed.
   absl::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
       pending_get_assertion_callback;
-  absl::optional<base::TimeTicks> get_assertion_start_time;
 
   // usb_callback holds the callback that receives data from a USB connection.
   absl::optional<
@@ -320,7 +319,6 @@ void ResetGlobalData() {
   global_data.current_transaction.reset();
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
-  global_data.get_assertion_start_time.reset();
   global_data.usb_callback.reset();
   global_data.server_link_tunnel_id.reset();
 }
@@ -416,7 +414,6 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_get_assertion_callback);
     global_data.pending_get_assertion_callback = std::move(callback);
-    global_data.get_assertion_start_time = base::TimeTicks::Now();
 
     std::vector<uint8_t> params_bytes =
         blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&params);
@@ -907,20 +904,6 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
     const JavaParamRef<jbyteArray>& jresponse_bytes) {
   GlobalData& global_data = GetGlobalData();
   RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionComplete);
-
-  // TODO: |get_assertion_start_time| should always be present in this case.
-  // But, at the time of writing, we are seeing some odd numbers in UMA metrics
-  // and aren't sure what's going on. Thus there's an if to avoid introducing
-  // a crash. If the number of records for this histogram are comparible to
-  // the number of recorded starts, then this can be removed.
-  DCHECK(global_data.get_assertion_start_time);
-  if (global_data.get_assertion_start_time) {
-    const base::TimeDelta duration =
-        base::TimeTicks::Now() - global_data.get_assertion_start_time.value();
-    base::UmaHistogramMediumTimes("WebAuthentication.CableV2.GetAssertionTime",
-                                  duration);
-    global_data.get_assertion_start_time.reset();
-  }
 
   if (!global_data.pending_get_assertion_callback) {
     RecordEvent(&global_data, CableV2MobileEvent::kStrayGetAssertionResponse);
