@@ -16,6 +16,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,30 +41,32 @@ namespace {
 using ::testing::Eq;
 using ::testing::IsNull;
 
-class FakeClientSessionControl : public ClientSessionControl {
+class ClientSessionControlMock : public ClientSessionControl {
  public:
-  FakeClientSessionControl() = default;
-  FakeClientSessionControl(const FakeClientSessionControl&) = delete;
-  FakeClientSessionControl& operator=(const FakeClientSessionControl&) = delete;
-  ~FakeClientSessionControl() override = default;
+  ClientSessionControlMock() = default;
+  ClientSessionControlMock(const ClientSessionControlMock&) = delete;
+  ClientSessionControlMock& operator=(const ClientSessionControlMock&) = delete;
+  ~ClientSessionControlMock() override = default;
 
   // ClientSessionControl implementation:
   const std::string& client_jid() const override { return client_jid_; }
-  void DisconnectSession(protocol::ErrorCode error) override {}
-  void OnLocalPointerMoved(const webrtc::DesktopVector& position,
-                           ui::EventType type) override {}
-  void OnLocalKeyPressed(uint32_t usb_keycode) override {}
-  void SetDisableInputs(bool disable_inputs) override {}
-  void OnDesktopDisplayChanged(
-      std::unique_ptr<protocol::VideoLayout> layout) override {}
+  MOCK_METHOD(void, DisconnectSession, (protocol::ErrorCode error));
+  MOCK_METHOD(void,
+              OnLocalPointerMoved,
+              (const webrtc::DesktopVector& position, ui::EventType type));
+  MOCK_METHOD(void, OnLocalKeyPressed, (uint32_t usb_keycode));
+  MOCK_METHOD(void, SetDisableInputs, (bool disable_inputs));
+  MOCK_METHOD(void,
+              OnDesktopDisplayChanged,
+              (std::unique_ptr<protocol::VideoLayout> layout));
 
-  base::WeakPtr<FakeClientSessionControl> GetWeakPtr() {
+  base::WeakPtr<ClientSessionControlMock> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
   std::string client_jid_ = "<fake-client-jid>";
-  base::WeakPtrFactory<FakeClientSessionControl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ClientSessionControlMock> weak_ptr_factory_{this};
 };
 
 class FakeClientSessionEvents : public ClientSessionEvents {
@@ -150,8 +153,13 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
                         .Create(session_control_.GetWeakPtr(),
                                 session_events_.GetWeakPtr(), options);
     // Cast to It2MeDesktopEnvironment
-    return std::unique_ptr<It2MeDesktopEnvironment>(
+    auto desktop_environment = std::unique_ptr<It2MeDesktopEnvironment>(
         static_cast<It2MeDesktopEnvironment*>(base_ptr.release()));
+
+    // Give the code time to instantiate the curtain mode on the UI sequence (if
+    // needed).
+    FlushUiSequence();
+    return desktop_environment;
   }
 
   std::unique_ptr<It2MeDesktopEnvironment> CreateCurtainedSession() {
@@ -188,13 +196,15 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
     user_manager().RemoveUserFromList(account_id);
   }
 
+  ClientSessionControlMock& session_control() { return session_control_; }
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   base::test::ScopedFeatureList feature_list_;
-  FakeClientSessionControl session_control_;
+  testing::StrictMock<ClientSessionControlMock> session_control_;
   FakeClientSessionEvents session_events_;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -223,6 +233,8 @@ TEST_F(It2MeDesktopEnvironmentTest,
   options.set_enable_curtaining(true);
 
   auto desktop_environment = Create(options);
+  FlushUiSequence();
+
   EXPECT_THAT(desktop_environment->is_curtained(), Eq(true));
 }
 
@@ -235,6 +247,8 @@ TEST_F(It2MeDesktopEnvironmentTest,
   options.set_enable_curtaining(false);
 
   auto desktop_environment = Create(options);
+  FlushUiSequence();
+
   EXPECT_THAT(desktop_environment->is_curtained(), Eq(false));
 }
 
@@ -247,6 +261,8 @@ TEST_F(It2MeDesktopEnvironmentTest,
   options.set_enable_curtaining(true);
 
   auto desktop_environment = Create(options);
+  FlushUiSequence();
+
   EXPECT_THAT(desktop_environment->is_curtained(), Eq(false));
 }
 
@@ -328,19 +344,27 @@ TEST_F(It2MeDesktopEnvironmentTest,
   base::test::ScopedFeatureList feature_list{
       features::kEnableCrdAdminRemoteAccess};
 
+  EXPECT_CALL(session_control(),
+              DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR));
+
   LogInUser();
   auto desktop_environment = CreateCurtainedSession();
-
-  EXPECT_THAT(desktop_environment, IsNull());
+  FlushUiSequence();
 }
 
 TEST_F(It2MeDesktopEnvironmentTest,
        ShouldNotForceLogoutUserIfInitializeCurtainModeFails) {
   base::test::ScopedFeatureList feature_list{
       features::kEnableCrdAdminRemoteAccess};
+  EXPECT_CALL(session_control(),
+              DisconnectSession(protocol::ErrorCode::HOST_CONFIGURATION_ERROR));
 
   LogInUser();
   auto desktop_environment = CreateCurtainedSession();
+  desktop_environment = nullptr;
+
+  FlushUiSequence();
+  EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
 
   EXPECT_THAT(ash_proxy().request_sign_out_count(), Eq(0));
 }

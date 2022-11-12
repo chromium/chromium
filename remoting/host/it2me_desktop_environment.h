@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/basic_desktop_environment.h"
+#include "remoting/host/client_session_control.h"
 #include "remoting/host/curtain_mode.h"
 
 namespace remoting {
@@ -29,7 +30,8 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
 
   // Initializes the curtain mode if needed.
   // Returns `false` if the curtain mode failed to start for any reason.
-  bool InitializeCurtainMode();
+  void InitializeCurtainMode(
+      base::WeakPtr<ClientSessionControl> client_session_control);
 
   bool is_curtained() const { return curtain_mode_ != nullptr; }
 
@@ -44,6 +46,10 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
       const DesktopEnvironmentOptions& options);
 
  private:
+  void InitializeCurtainModeIfNoUserLoggedIn(
+      base::WeakPtr<ClientSessionControl> client_session_control,
+      bool is_user_logged_in);
+
   // Presents the continue window to the local user.
   std::unique_ptr<HostWindow> continue_window_;
 
@@ -55,6 +61,7 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
 
   std::unique_ptr<CurtainMode> curtain_mode_;
   std::unique_ptr<SessionTerminator> session_terminator_;
+  base::WeakPtrFactory<It2MeDesktopEnvironment> weak_ptr_factory_{this};
 };
 
 // Used to create |It2MeDesktopEnvironment| instances.
