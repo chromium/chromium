@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1620,9 +1621,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private ToolbarSnapshotState generateToolbarSnapshotState() {
+        UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
         return new ToolbarSnapshotState(getTint().getDefaultColor(),
                 mTabCountProvider.getTabCount(), mButtonData, mVisualState,
-                getToolbarDataProvider().getCurrentUrl(),
+                urlBarData.displayText.toString(),
                 mLocationBar.getOmniboxVisibleTextPrefixHint(),
                 getToolbarDataProvider().getSecurityIconResource(false),
                 ImageViewCompat.getImageTintList(mHomeButton),

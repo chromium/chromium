@@ -292,7 +292,6 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.READER_MODE_IN_CCT)
-    @DisabledTest(message = "https://crbug.com/1383554")
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.O,
             message =
                     "Failing on Lollipop Phone Tester (https://crbug.com/1120830) and test-n-phone (https://crbug.com/1160911)")
