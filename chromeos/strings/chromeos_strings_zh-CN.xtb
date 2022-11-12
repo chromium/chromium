@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">关机</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
+<translation id="2902312830803030883">更多操作</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
@@ -337,6 +338,7 @@
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">当前头像</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
@@ -351,6 +353,7 @@
 <translation id="4503223151711056411">向左</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
+<translation id="4522570452068850558">详情</translation>
 <translation id="4536864596629708641">IP 配置</translation>
 <translation id="4546131424594385779">创建循环播放的视频</translation>
 <translation id="4548483925627140043">找不到信号</translation>

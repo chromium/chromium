@@ -3758,6 +3758,7 @@
 <translation id="445099924538929605">ОС <ph name="DEVICE_OS" /> виявила активний модуль TPM, який дозволяє надійніше зберігати ваші дані.</translation>
 <translation id="4451479197788154834">Ваш пароль збережено на цьому пристрої та в обліковому записі Google</translation>
 <translation id="4451757071857432900">Заблоковано на сайтах, які показують нав’язливі чи оманливі оголошення (рекомендовано)</translation>
+<translation id="4452898361839215358">або виберіть файл PPD. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">Шукайте в <ph name="SEARCH_ENGINE_NAME" /> або введіть URL-адресу</translation>
 <translation id="4458535500699390320">Коли ця вкладка була неактивною, функція заощадження пам’яті звільнила оперативну пам’ять для інших завдань. Параметри функції можна будь-коли змінити в налаштуваннях.</translation>
 <translation id="4459169140545916303">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
@@ -8393,6 +8394,7 @@
 <translation id="8823514049557262177">Копіювати те&amp;кст посилання</translation>
 <translation id="8823559166155093873">Блокувати файли cookie</translation>
 <translation id="8823704566850948458">Запропонувати пароль…</translation>
+<translation id="8823963789776061136">Або виберіть файл PPD для принтера. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Додати стор&amp;інку...</translation>
 <translation id="8827125715368568315">Заблоковано: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Закріпити розширення</translation>
@@ -8649,6 +8651,7 @@
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> хоче отримати доступ до контенту нижче:</translation>
 <translation id="9057354806206861646">Оновити розклад</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{1 сповіщення на день}one{Приблизно {NUM_NOTIFICATION} сповіщення на день}few{Приблизно {NUM_NOTIFICATION} сповіщення на день}many{Приблизно {NUM_NOTIFICATION} сповіщень на день}other{Приблизно {NUM_NOTIFICATION} сповіщення на день}}</translation>
+<translation id="9058760336383947367">Переглянути файл PPD для принтера</translation>
 <translation id="9061383912634843744">Автоматично входити на сайти та в додатки за допомогою збережених облікових даних. Якщо цю функцію вимкнути, потрібно буде підтверджувати дані під час кожного входу.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Помилка в рядках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

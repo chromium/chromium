@@ -232,6 +232,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2815198996063984598">2. Tap default browser app</translation>
 <translation id="2820289420301699633">Your administrator has control over Chrome and can access its data</translation>
 <translation id="2830972654601096923">Manage Addresses…</translation>
+<translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Reset Translate settings</translation>
 <translation id="2848086008667475748">Make default in settings…</translation>
@@ -632,6 +633,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Options to translate the page</translation>
+<translation id="5933515656458364246">Sync your data on all devices.</translation>
 <translation id="5938160824633642847">Your device is almost full. Free up space and try again.</translation>
 <translation id="5948291296578561264">This lets you save photos to your photo library.</translation>
 <translation id="5951816930277761335">Share the link</translation>
@@ -713,6 +715,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 
 Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6429213933892582367">Open Password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
 <translation id="6435236283694032571">Add to reading list</translation>
 <translation id="6439338047467462846">Allow all</translation>
@@ -828,6 +831,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7203585745079012652">Speak Answers Back</translation>
 <translation id="7207023858769244910">Sync to get content based on your interests.</translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
+<translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
 <translation id="722454870747268814">New incognito tab</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
@@ -861,6 +865,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7514365320538308">Download</translation>
 <translation id="7531345132340165516">Current site</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
+<translation id="7553234618121028547">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Password options.</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
@@ -942,6 +947,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
+<translation id="81313319706244542">2. Tap Passwords</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">This will be used to create events in your Apple Calendar from Chrome and Google Lens.</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>
@@ -964,6 +970,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>
+<translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8386068868580335421">Reset</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>

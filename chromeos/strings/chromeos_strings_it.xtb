@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
+<translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2926057806159140518">Inserisci il tuo nome utente e la password o scansiona il codice QR</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Impossibile contattare il gateway</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="404928562651467259">AVVISO</translation>
+<translation id="4060260348856573701">Nuovo APN</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="409427325554347132">Salva dettagli del test</translation>
 <translation id="4110686435123617899">Seleziona l'album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Non eseguito</translation>
 <translation id="4378551569595875038">Connessione...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Disabilita</translation>
 <translation id="439429847087949098">Riavvio di <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="4415951057168511744">Avatar attuale</translation>
 <translation id="4425149324548788773">I miei file</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Freccia sinistra</translation>
 <translation id="4511264077854731334">Portale</translation>
 <translation id="4521826082652183069">Corrispondenza nome alternativo del soggetto</translation>
+<translation id="4522570452068850558">Dettagli</translation>
 <translation id="4536864596629708641">Configurazione IP</translation>
 <translation id="4546131424594385779">Crea un video in loop</translation>
 <translation id="4548483925627140043">segnale non trovato</translation>
@@ -606,6 +610,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
+<translation id="6793680441750437230">Premi un tasto qualsiasi della tastiera. Puoi premere fino a 4 tasti contemporaneamente. Premi Alt più Esc per chiudere la finestra di dialogo.</translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6853312040151791195">Velocità di riduzione della carica</translation>

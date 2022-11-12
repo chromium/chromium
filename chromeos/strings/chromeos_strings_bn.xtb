@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
+<translation id="2902312830803030883">আরও অ্যাকশন</translation>
 <translation id="2926057806159140518">আপনার ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন বা আপনার QR কোড স্ক্যান করুন</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="404928562651467259">সতর্কতা</translation>
+<translation id="4060260348856573701">নতুন APN</translation>
 <translation id="4093865285251893588">প্রোফাইল ছবি</translation>
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> অ্যালবাম বেছে নিন</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
+<translation id="4394049700291259645">বন্ধ</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> রিস্টার্ট করা হচ্ছে</translation>
 <translation id="4415951057168511744">বর্তমান অবতার</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">বাঁদিকে তীরচিহ্ন</translation>
 <translation id="4511264077854731334">পোর্টাল</translation>
 <translation id="4521826082652183069">সাবজেক্টের বিকল্প নামের সাথে মিল আছে</translation>
+<translation id="4522570452068850558">বিবরণগুলি</translation>
 <translation id="4536864596629708641">IP কনফিগারেশন</translation>
 <translation id="4546131424594385779">'ভিডিও লুপিং' তৈরি করুন</translation>
 <translation id="4548483925627140043">সিগন্যাল নেই</translation>
@@ -605,6 +609,7 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
+<translation id="6793680441750437230">আপনার কীবোর্ডের যেকোনও 'কী' প্রেস করুন। আপনি একেবারে সর্বাধিক ৪টি 'কী' প্রেস করতে পারবেন। ডায়ালগ বন্ধ করতে, Alt ও Esc 'কী' একসাথে প্রেস করুন।</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>

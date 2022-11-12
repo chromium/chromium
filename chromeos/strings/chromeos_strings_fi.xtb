@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
+<translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Yhdyskäytävään ei saada yhteyttä</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="404928562651467259">Varoitus</translation>
+<translation id="4060260348856573701">Uusi APN</translation>
 <translation id="4093865285251893588">Profiilikuva</translation>
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="4110686435123617899">Valitse albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Ei suoritettu</translation>
 <translation id="4378551569595875038">Yhdistetään…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Poista käytöstä</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> käynnistetään uudelleen</translation>
 <translation id="4415951057168511744">Nykyinen avatar</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Vasen nuoli</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
+<translation id="4522570452068850558">Tiedot</translation>
 <translation id="4536864596629708641">IP-määritykset</translation>
 <translation id="4546131424594385779">Luo jatkuvasti toistuva video</translation>
 <translation id="4548483925627140043">Ei signaalia</translation>
@@ -606,6 +610,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6791471867139427246">näppäimistön vaaleat värit</translation>
+<translation id="6793680441750437230">Kirjoita millä tahansa näppäimistön näppäimellä. Voit painaa enintään 4 näppäintä yhtä aikaa. Sulje valintaikkuna painamalla Alt + Esc.</translation>
 <translation id="680983167891198932">Avain</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6853312040151791195">Tyhjentymisnopeus</translation>

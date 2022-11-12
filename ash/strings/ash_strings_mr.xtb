@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">कॅप्चर मोड, <ph name="SOURCE" /> <ph name="TYPE" /> हा डीफॉल्ट आहे. कीबोर्ड नेव्हिगेशनसाठी टॅब दाबा.</translation>
 <translation id="2961963223658824723">काहीतरी चूक झाली. काही सेकंदांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">मायक्रोफोनचा अ‍ॅक्सेस सुरू करायचा आहे का?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत</translation>
 <translation id="2970920913501714344">ॲप्स, एक्स्टेंशन आणि थीम इंस्टॉल करा</translation>
 <translation id="2977598380246111477">पुढील नंबर</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">अतिरिक्त सेटिंग्ज</translation>
+<translation id="3405101454990027959">मायक्रोफोनचा अ‍ॅक्सेस सुरू करा</translation>
 <translation id="3410336247007142655">गडद थीम सेटिंग्ज दाखवा</translation>
 <translation id="3413817803639110246">आत्ताच पाहण्यासाठी काहीही नाही</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> मधून डिस्कनेक्ट करा</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">मागील</translation>
 <translation id="385300504083504382">सुरुवातीला</translation>
 <translation id="3861651314799684201">फुल स्क्रीन रेकॉर्ड करण्यासाठी एंटर दाबा</translation>
+<translation id="3885531177412808398">मायक्रोफोनच्या परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना मायक्रोफोनच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="3886872229787704059">आज उघडलेली</translation>
 <translation id="3891340733213178823">साइन आउट करण्यासाठी Ctrl+Shift+Q दोनदा दाबा.</translation>
 <translation id="3893630138897523026">ChromeVox (वाचिक अभिप्राय)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">तुमचे डिव्हाइस सेट करण्यासाठी <ph name="NAME" /> उघडा</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8683506306463609433">परफॉर्मंस ट्रेसिंग ॲक्टिव्ह आहे</translation>
+<translation id="8684405646663021166">मायक्रोफोनच्या परवानगीसह<ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना मायक्रोफोनच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="8685326675965865247">तुमच्या डिव्हाइस, अ‍ॅप्स आणि वेबवर शोधा. तुमची अ‍ॅप्स नेव्हिगेट करण्यासाठी ॲरो की वापरा.</translation>
 <translation id="8703634754197148428">रेकॉर्डिंग सुरू करा. रेकॉर्डिंग सुरू झाल्यानंतर शेल्फवर नेव्हिगेट करण्यासाठी Alt + Shift + L वापरा आणि रेकॉर्डिंग थांबवा बटण शोधा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>

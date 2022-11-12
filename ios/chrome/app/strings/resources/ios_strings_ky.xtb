@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">Бардык сайттардын cookie файлдарын башкаруу үчүн <ph name="BEGIN_LINK" />Cookie файлдардын жөндөөлөрүнө<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="5490005495580364134">Бардык cookie файлдарды бөгөттөө (Сунушталбайт)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> саат мурун</translation>
+<translation id="5520466080178053306">Сырсөздөрдү башкаргычты таптап, андан кийин Кошуу дегенди таптаңыз</translation>
 <translation id="5525095647255982834">Бул өтмөктү башка түзмөккө жөнөтүү үчүн ошол түзмөктөн Chrome'го кириңиз.</translation>
 <translation id="5525269841082836315">Купя сөз айкшын тзүү</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> табылды</translation>
@@ -878,6 +879,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7726702057919861819">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7738120385185846461">Маселе тууралуу кабарлоо…</translation>
 <translation id="7741325291586284254">Жаңы жашыруун өтмөк барагы</translation>
+<translation id="7744394900930577716">Башка колдонмолордогу сырсөздөр</translation>
 <translation id="7756478488453921771">Меню → Тууралоо → Төлөм ыкмалары</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
@@ -1054,6 +1056,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9081058212938299310"><ph name="USERNAME" /> үчүн сырсөз жаңыртылсынбы?</translation>
 <translation id="9083838294503912307">Бардык түзмөктөрүңүздө шайкештирүү жана жекечелештирүү үчүн шайкештирүүнү иштетиңиз.</translation>
 <translation id="9087108903408689779">Chrome сунуштаган сырсөз:</translation>
+<translation id="9093271241977565440">Экрандын жогору жагындагы Издөө сүрөтчөсүн таптаңыз</translation>
 <translation id="9094033019050270033">Сырсөздү жаңыртуу</translation>
 <translation id="9097506547406246598">Жазылуу токтотулган жок. Бир жерден ката кетти.</translation>
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>

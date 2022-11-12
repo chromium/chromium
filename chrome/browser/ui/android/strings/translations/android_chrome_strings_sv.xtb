@@ -399,6 +399,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3130863904455712965">Historik med mera</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
+<translation id="3157931365184549694">Återställ</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -552,6 +553,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4016425174436051808">Det gick inte att börja följa flödet på grund av ett fel.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# tim}other{# tim}}</translation>
 <translation id="4035877632587724847">Tillåt inte</translation>
+<translation id="4036177530563778041">Fortsätt enkelt där du slutade</translation>
 <translation id="4045764304651014138">Data om användning</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1123,6 +1125,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7029390216614421513">Passa in QR-koden eller streckkoden i den här rutan</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030304022046916278">Webbadresser skickas till Säker webbsökning för kontroll</translation>
+<translation id="7030585293819777123">Vill du återuppta den senaste sessionen?</translation>
 <translation id="7037830628447527439">Logga in i Chrome med ditt Google-konto</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>

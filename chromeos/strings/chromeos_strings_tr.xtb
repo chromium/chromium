@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2874939134665556319">Önceki parça</translation>
 <translation id="2878387241690264070">Şarj, <ph name="NUM_SECONDS" /> saniye içinde <ph name="RATE" /> boşaldı.</translation>
+<translation id="2902312830803030883">Diğer işlemler</translation>
 <translation id="2926057806159140518">Kullanıcı adınızı ve şifrenizi girin ya da QR kodunuzu tarayın</translation>
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="404928562651467259">UYARI</translation>
+<translation id="4060260348856573701">Yeni APN</translation>
 <translation id="4093865285251893588">Profil resmi</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yeniden başlatılıyor</translation>
 <translation id="4415951057168511744">Mevcut Avatar</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Sol ok</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternatif konu adı eşleşmesi</translation>
+<translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4536864596629708641">IP Yapılandırması</translation>
 <translation id="4546131424594385779">Döngülü video oluştur</translation>
 <translation id="4548483925627140043">Sinyal bulunamadı</translation>
@@ -606,6 +610,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6766275201586212568">Başarısız DNS çözümlemeleri</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
 <translation id="6791471867139427246">klavye ışığı rengi</translation>
+<translation id="6793680441750437230">Klavyenizdeki herhangi bir tuşa basın. Aynı anda en fazla 4 tuşa basabilirsiniz. İletişim kutusunu kapatmak için Alt ve Esc tuşlarına basın.</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>

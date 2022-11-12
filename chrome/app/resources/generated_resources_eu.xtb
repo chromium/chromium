@@ -928,6 +928,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="1834503245783133039">Ezin izan da deskargatu <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux bertsio-berritzen</translation>
+<translation id="1835612721186505600">Aktibatu kamera erabiltzeko baimena halakorik baduten aplikazio eta webguneetan</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="1839021455997460752">Zure helbide elektronikoa</translation>
 <translation id="1839540115464516994">Erakutsi hemen: <ph name="LOCATION" /></translation>
@@ -2494,6 +2495,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3279230909244266691">Baliteke prozesuak minutu batzuk behar izatea. Makina birtuala abiarazten.</translation>
 <translation id="3280237271814976245">Gorde &amp;honela…</translation>
 <translation id="3280243678470289153">Gelditu Chrome-n</translation>
+<translation id="328119399589609861">Kontrolatu gailuak mikrofonoa, kamera eta abar atzitzeko dituen baimenak</translation>
 <translation id="3281892622610078515">Berrogeialdian sartu beharreko fitxategiak eta programak:</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> aplikazioarekin fitxa bat partekatzen</translation>
 <translation id="3285322247471302225">&amp;Fitxa berria</translation>
@@ -4499,6 +4501,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5185500136143151980">Ez dago Interneteko konexiorik</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktibatu ataka</translation>
+<translation id="5190959794678983197">Ez dago mikrofonorik</translation>
 <translation id="5191094172448199359">Idatzi dituzun PINak ez datoz bat</translation>
 <translation id="5191251636205085390">Kontrolatu hirugarrenen cookieak ordezteko helburua duten teknologia berriak eta lortu haiei buruzko informazio gehiago</translation>
 <translation id="519185197579575131">Erabili QT</translation>
@@ -4858,6 +4861,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Hau al da espero zenuen orri nagusia?</translation>
 <translation id="5522156646677899028">Luzapen honek segurtasun-ahulgune larria du.</translation>
+<translation id="5522403133543437426">Helbide-barran egiten diren bilaketetarako erabiltzen den bilatzailea.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratzaileak luzapen bat instalatu du}other{Administratzaileak # luzapen instalatu ditu}}</translation>
 <translation id="5523558474028191231">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak, eta <ph name="MAX_CHARACTER_COUNT" /> karaktere edo gutxiagoko luzera izan behar du</translation>
 <translation id="5526701598901867718">Guztiak (ez da segurua)</translation>
@@ -7037,6 +7041,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7607002721634913082">Pausatuta</translation>
 <translation id="7608810328871051088">Android-eko hobespenak</translation>
 <translation id="7609148976235050828">Konektatu Internetera eta saiatu berriro.</translation>
+<translation id="7612401678989660900">Aktibatu mikrofonoa erabiltzeko baimena halakorik baduten aplikazio eta webguneetan</translation>
 <translation id="7612655942094160088">Gaitu konektatutako telefonoaren eginbideak.</translation>
 <translation id="7614260613810441905">Galdetu webgune batek gailuko fitxategiak edo karpetak editatu nahi dituenean (gomendatua)</translation>
 <translation id="761530003705945209">Egin babeskopiak Google Drive-n. Leheneratu gailuaren datuak edo aldatu gailua edonoiz. Aplikazioetako datuak sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira, eta Google-ko kontuko pasahitza erabilita enkriptatzen.</translation>
@@ -8420,6 +8425,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8872155268274985541">Kiosk kanpoko eguneratze-manifestuaren fitxategi baliogabea aurkitu da. Ezin izan da eguneratu kiosko-aplikazioa. Kendu USB memoria.</translation>
 <translation id="8872506776304248286">Ireki aplikazioan</translation>
 <translation id="8872777911145321141">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
+<translation id="887292602123626481">Lortu bilatzaile lehenetsiei buruzko informazio gehiago</translation>
 <translation id="8874341931345877644">Igorri gailu batera:</translation>
 <translation id="8875520811099717934">Linux-en bertsio-berritzea</translation>
 <translation id="8875736897340638404">Aukeratu ikusgaitasuna</translation>
@@ -8540,6 +8546,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8987927404178983737">Hilabetea</translation>
 <translation id="8989359959810288806">Freskatu konexioa partekatzeko aukeraren egoera</translation>
 <translation id="8991520179165052608">Webguneak mikrofonoa erabil dezake</translation>
+<translation id="8991694323904646277">Ez dago kamerarik</translation>
 <translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> gailuaren pasahitza ahazten baduzu ere, gailuko datuak lehenera ditzakezu. Horretarako, Google-ko kontuan saioa hasi beharko duzu, edo kontua berreskuratzeko eginbidea erabili.</translation>
 <translation id="899384117894244799">Kendu murriztapenak dituen erabiltzaile bat</translation>
 <translation id="899403249577094719">Netscape ziurtagiriaren oinarrizko URLa</translation>

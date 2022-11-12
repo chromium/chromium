@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2874939134665556319">Piste précédente</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
+<translation id="2902312830803030883">Autres actions</translation>
 <translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre code QR</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Impossible de contacter la passerelle</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
+<translation id="4060260348856573701">Nouvel APN</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les résultats du test</translation>
 <translation id="4110686435123617899">Sélectionner l'album "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Non exécuté</translation>
 <translation id="4378551569595875038">Connexion</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> : redémarrage…</translation>
 <translation id="4415951057168511744">Avatar actuel</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4511264077854731334">Portail</translation>
 <translation id="4521826082652183069">Correspondance de l'autre nom de l'objet</translation>
+<translation id="4522570452068850558">Détails</translation>
 <translation id="4536864596629708641">Configuration IP</translation>
 <translation id="4546131424594385779">Créer une vidéo en boucle</translation>
 <translation id="4548483925627140043">Signal introuvable</translation>
@@ -606,6 +610,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="6791471867139427246">couleur éclairage clavier</translation>
+<translation id="6793680441750437230">Appuyez sur une touche de votre clavier. Vous pouvez appuyer sur un maximum de quatre touches en même temps. Appuyez sur Alt+Échap pour fermer la boîte de dialogue.</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>

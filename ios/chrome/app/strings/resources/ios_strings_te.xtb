@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="BEGIN_LINK" />కుక్కీ సెట్టింగ్‌ల<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="5490005495580364134">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> గం. క్రితం</translation>
+<translation id="5520466080178053306">Password Manager ఆప్షన్‌ను ట్యాప్ చేసి, ఆపై జోడించండి ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="5525095647255982834">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, అక్కడ Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="5525269841082836315">రహస్య పదబంధాన్ని క్రియేట్ చేయండి</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> కనుగొనబడ్డాయి</translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">మెనూ → హిస్టరీ → బ్రౌజింగ్ డేటాను క్లియర్ చేయండి</translation>
 <translation id="7738120385185846461">ఒక సమస్యను రిపోర్ట్ చేయండి…</translation>
 <translation id="7741325291586284254">కొత్త అజ్ఞాత ట్యాబ్ పేజీ</translation>
+<translation id="7744394900930577716">ఇతర యాప్‌లలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="7756478488453921771">మెనూ → సెట్టింగ్‌లు → పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="7765158879357617694">తరలించు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> పాస్‌వర్డ్‌ని అప్‌డేట్ చేయాలా?</translation>
 <translation id="9083838294503912307">మీ అన్ని పరికరాలలోనూ సింక్‌ మరియు వ్యక్తిగతీకరణ చేయడం కోసం, సింక్‌ను ఆన్ చేయండి.</translation>
 <translation id="9087108903408689779">Chrome సూచిత పాస్‌వర్డ్:</translation>
+<translation id="9093271241977565440">స్క్రీన్ ఎగువున, సెర్చ్ చిహ్నాన్ని ట్యాప్ చేయండి</translation>
 <translation id="9094033019050270033">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయి</translation>
 <translation id="9097506547406246598">అన్-ఫాలో చేయడం సాధ్యం కాదు. ఏదో తప్పు జరిగింది.</translation>
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>

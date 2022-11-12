@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
+<translation id="2902312830803030883">વધુ ક્રિયાઓ</translation>
 <translation id="2926057806159140518">તમારું વપરાશકર્તા નામ અને પાસવર્ડ દાખલ કરો અથવા તમારો QR કોડ સ્કૅન કરો</translation>
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="404928562651467259">ચેતવણી</translation>
+<translation id="4060260348856573701">નવું APN</translation>
 <translation id="4093865285251893588">પ્રોફાઇલ ફોટો</translation>
 <translation id="409427325554347132">પરીક્ષણની વિગતો સાચવો</translation>
 <translation id="4110686435123617899">પસંદ કરો આલ્બમ <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">બંધ કરો</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ફરી શરૂ કરી રહ્યાં છીએ</translation>
 <translation id="4415951057168511744">હાલનો અવતાર</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">ડાબી ઍરો કી</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
+<translation id="4522570452068850558">વિગતો</translation>
 <translation id="4536864596629708641">IP કન્ફિગ્યુરેશન</translation>
 <translation id="4546131424594385779">લૂપ કરેલો વીડિયો બનાવો</translation>
 <translation id="4548483925627140043">નેટવર્કનું કોઈ સિગ્નલ મળી રહ્યું નથી</translation>
@@ -605,6 +609,7 @@
 <translation id="6766275201586212568">નિષ્ફળ રહેલા DNS રિઝોલ્યુશન</translation>
 <translation id="6768237774506518020">DNS રિઝોલ્યુશન નિષ્ફળતાનો ઉચ્ચ રેટ</translation>
 <translation id="6791471867139427246">કીબોર્ડની લાઇટનો રંગ</translation>
+<translation id="6793680441750437230">તમારા કીબોર્ડ પરની કોઈપણ કી દબાવીને કંઈક ટાઇપ કરો. તમે એક સાથે 4 જેટલી કી દબાવી શકો છો. સંવાદ બંધ કરવા માટે Alt પ્લસ Esc દબાવો.</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>

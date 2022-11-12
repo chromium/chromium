@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">종료</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
+<translation id="2902312830803030883">추가 작업</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
@@ -338,6 +339,7 @@
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">사용 중지</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> 다시 시작 중</translation>
 <translation id="4415951057168511744">현재 아바타</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
@@ -352,6 +354,7 @@
 <translation id="4503223151711056411">왼쪽 화살표</translation>
 <translation id="4511264077854731334">포털</translation>
 <translation id="4521826082652183069">제목 보조 이름 일치</translation>
+<translation id="4522570452068850558">세부정보</translation>
 <translation id="4536864596629708641">IP 구성</translation>
 <translation id="4546131424594385779">반복 재생 동영상 만들기</translation>
 <translation id="4548483925627140043">신호를 찾을 수 없습니다.</translation>

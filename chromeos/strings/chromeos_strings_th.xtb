@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
+<translation id="2902312830803030883">การทำงานเพิ่มเติม</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="404928562651467259">คำเตือน</translation>
+<translation id="4060260348856573701">APN ใหม่</translation>
 <translation id="4093865285251893588">รูปโปรไฟล์</translation>
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
 <translation id="4110686435123617899">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">ไม่ทำงาน</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">ปิดการใช้งาน</translation>
 <translation id="439429847087949098">กำลังรีสตาร์ท <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">รูปโปรไฟล์ปัจจุบัน</translation>
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">ลูกศรซ้าย</translation>
 <translation id="4511264077854731334">พอร์ทัล</translation>
 <translation id="4521826082652183069">การจับคู่ชื่อสำรองของหัวเรื่อง</translation>
+<translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4536864596629708641">การกำหนดค่า IP</translation>
 <translation id="4546131424594385779">สร้างวิดีโอวนซ้ำ</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
@@ -606,6 +610,7 @@
 <translation id="6766275201586212568">การแปลง DNS ที่ไม่สำเร็จ</translation>
 <translation id="6768237774506518020">อัตราการแปลง DNS ไม่สำเร็จสูง</translation>
 <translation id="6791471867139427246">สีไฟแป้นพิมพ์</translation>
+<translation id="6793680441750437230">ลองกดแป้นใดก็ได้บนแป้นพิมพ์ โดยกดได้ถึง 4 แป้นพร้อมกัน กดแป้น Alt + Esc เพื่อปิดกล่องโต้ตอบ</translation>
 <translation id="680983167891198932">คีย์</translation>
 <translation id="6816797338148849397">มีข้อมูลที่เกี่ยวข้องกับสิ่งที่คุณเลือก ใช้แป้นลูกศรขึ้นเพื่อดูข้อมูลนั้น</translation>
 <translation id="6853312040151791195">อัตราการคายประจุ</translation>

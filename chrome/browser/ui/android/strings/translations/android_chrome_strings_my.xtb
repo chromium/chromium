@@ -399,6 +399,7 @@
 <translation id="3130863904455712965">မှတ်တမ်းနှင့် အခြား</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
+<translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="316694332262407393">Chrome ဖွင့်ထားပြီးသားဖြစ်သည်။</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -551,6 +552,7 @@
 <translation id="4016425174436051808">လိုက်ကြည့်၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
 <translation id="4035877632587724847">ခွင့်မပြုပါ</translation>
+<translation id="4036177530563778041">သင်ထားခဲ့သည့်နေရာမှ လွယ်ကူစွာ ရှေ့ဆက်နိုင်သည်</translation>
 <translation id="4045764304651014138">သုံးစွဲမှုဒေတာ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1121,6 +1123,7 @@
 <translation id="7029390216614421513">QR ကုဒ်/ဘားကုဒ်ကို ဤဖရိမ်အတွင်း နေရာချပါ။</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7030304022046916278">URL များကို စစ်ဆေးရန် ‘လုံခြုံစွာကြည့်ရှုခြင်း’ သို့ ပို့ပေးသည်</translation>
+<translation id="7030585293819777123">နောက်ဆုံးလုပ်ဆောင်ချက်ကို ဆက်လုပ်မလား။</translation>
 <translation id="7037830628447527439">သင်၏ Google Account ဖြင့် Chrome တွင် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>

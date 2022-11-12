@@ -3755,6 +3755,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，能夠更安全地儲存您的資料。</translation>
 <translation id="4451479197788154834">您的密碼已儲存在此裝置和 Google 帳戶中</translation>
 <translation id="4451757071857432900">封鎖顯示滋擾性或誤導廣告網站上的廣告 (建議)</translation>
+<translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4453946976636652378">搜尋 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="4458535500699390320">當此分頁處於閒置狀態時，「節省記憶體」模式會釋出記憶體給其他工作。您可隨時在設定中變更此設定。</translation>
 <translation id="4459169140545916303">曾於 <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前在線</translation>
@@ -8382,6 +8383,7 @@
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
+<translation id="8823963789776061136">您也可以選取印表機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">新增網頁(&amp;G)…</translation>
 <translation id="8827125715368568315">已封鎖<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
@@ -8638,6 +8640,7 @@
 <translation id="9057007989365783744">「<ph name="SUPERVISED_USER_NAME" />」要求存取以下內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
+<translation id="9058760336383947367">查看印表機 PPD</translation>
 <translation id="9061383912634843744">使用已儲存的憑證自動登入網站和應用程式。如果關閉此功能，系統將會在每次登入網站或應用程式前要求您進行確認。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>

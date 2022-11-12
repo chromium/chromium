@@ -352,6 +352,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2960314608273155470">Modo de captura. A configuración predeterminada é <ph name="TYPE" /> <ph name="SOURCE" />. Premer o tabulador para navegar polo teclado.</translation>
 <translation id="2961963223658824723">Produciuse un erro. Téntao de novo nuns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Queres activar o acceso ao micrófono?</translation>
 <translation id="296762781903199866">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Instalar aplicacións, extensións e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
@@ -430,6 +431,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3386978599540877378">a lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Configuración adicional</translation>
+<translation id="3405101454990027959">Activar acceso ao micrófono</translation>
 <translation id="3410336247007142655">Mostrar configuración do tema escuro</translation>
 <translation id="3413817803639110246">Aínda non hai contido</translation>
 <translation id="3428447136709161042">Desconectarse de <ph name="NETWORK_NAME" /></translation>
@@ -517,6 +519,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Comezo</translation>
 <translation id="3861651314799684201">Premer Introducir para gravar a pantalla completa</translation>
+<translation id="3885531177412808398">Permite que todas as aplicacións e sitios web autorizados teñan acceso ao micrófono</translation>
 <translation id="3886872229787704059">Abriuse hoxe</translation>
 <translation id="3891340733213178823">Preme Ctrl + Maiús + Q dúas veces para pechar sesión.</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
@@ -1376,6 +1379,7 @@ Nova instalación</translation>
 <translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar o teu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8683506306463609433">O rastrexo do seguimento está activo</translation>
+<translation id="8684405646663021166">Permite que <ph name="APP_NAME" /> e todas as aplicacións e sitios web autorizados teñan acceso ao micrófono</translation>
 <translation id="8685326675965865247">Realiza buscas no teu dispositivo, nas aplicacións, nas opcións de configuración e na Web. Utiliza as teclas das frechas para navegar polas aplicacións.</translation>
 <translation id="8703634754197148428">Iniciar gravación. Unha vez iniciada a gravación, utilizar Alt + Maiúsculas + L para ir ao estante e buscar o botón Deter gravación</translation>
 <translation id="8721053961083920564">Activar ou desactivar o volume. <ph name="STATE_TEXT" /></translation>

@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">Режим съемки. По умолчанию: <ph name="SOURCE" />, <ph name="TYPE" />. Для навигации с помощью клавиатуры используйте клавишу Tab.</translation>
 <translation id="2961963223658824723">Произошла ошибка. Повторите попытку через несколько секунд.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Предоставить доступ к микрофону?</translation>
 <translation id="296762781903199866">Не удалось скачать файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Дополнительные настройки</translation>
+<translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
 <translation id="3413817803639110246">Уведомлений нет.</translation>
 <translation id="3428447136709161042">Отключиться от сети "<ph name="NETWORK_NAME" />"</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">В начало</translation>
 <translation id="3861651314799684201">Нажмите Ввод, чтобы записать видео со всего экрана</translation>
+<translation id="3885531177412808398">Доступ к микрофону получат все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="3886872229787704059">Открыто сегодня</translation>
 <translation id="3891340733213178823">Чтобы выйти, дважды нажмите Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">Откройте "<ph name="NAME" />", чтобы настроить устройство</translation>
 <translation id="8676770494376880701">Подключено маломощное зарядное устройство</translation>
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
+<translation id="8684405646663021166">Доступ к микрофону получит приложение "<ph name="APP_NAME" />", а также все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="8685326675965865247">Поиск на устройстве, в приложениях, настройках и Интернете. Чтобы переходить от одного приложения к другому, используйте клавиши со стрелками.</translation>
 <translation id="8703634754197148428">Начать запись. Чтобы найти кнопку остановки записи, перейдите к панели запуска, используя сочетание клавиш Alt + Shift + L.</translation>
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>

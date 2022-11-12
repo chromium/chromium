@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">പിന്തുടരുന്നത് ഒഴിവാക്കുക</translation>
 <translation id="3863769054730344136">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="387280738075653372">ഇവിടെ Chrome ഡൗൺലോഡ് ചെയ്യുക.</translation>
+<translation id="3888863481921783344">നിങ്ങളുടെ ഇവന്റിലേക്ക് ക്ഷണിക്കപ്പെടാൻ സാധ്യതയുള്ള ആളുകളെ കാണിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
 <translation id="3892144330757387737">നിങ്ങളുടെ ചരിത്രം ഇവിടെ കാണാം</translation>
 <translation id="3897092660631435901">മെനു</translation>
 <translation id="3904829425754749514">നിങ്ങളുടെ സ്ഥാപനം സമന്വയം ഓഫാക്കി. ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവും നിങ്ങൾക്ക് തുടർന്നും കാണാം. മാറ്റങ്ങൾ വരുത്തിയാൽ, അവ നിങ്ങളുടെ അക്കൗണ്ടിൽ സമന്വയിപ്പിക്കില്ല.</translation>
@@ -942,6 +943,7 @@
 <translation id="8105368624971345109">ഓഫാക്കുക</translation>
 <translation id="8114753159095730575">ഫയൽ ഡൗൺലോഡ് ചെയ്യൽ ലഭ്യമാണ്. സ്ക്രീനിന്റെ ചുവടെ ഓപ്ഷനുകളുണ്ട്.</translation>
 <translation id="8132598642024322408">ഇപ്പോൾ <ph name="PRICE" />, മുമ്പത്തെ വില <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Chrome, Google Lens എന്നിവയിൽ നിന്ന് Apple കലണ്ടറിൽ ഇവന്റുകൾ സൃഷ്ടിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

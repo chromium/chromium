@@ -399,6 +399,7 @@
 <translation id="3130863904455712965">Историја и друго</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
+<translation id="3157931365184549694">Обнови</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
 <translation id="316694332262407393">Chrome веќе работи тука.</translation>
 <translation id="3169472444629675720">Откриј</translation>
@@ -551,6 +552,7 @@
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="4035877632587724847">Не дозволувај</translation>
+<translation id="4036177530563778041">Лесно продолжете каде што сте застанале</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1122,6 +1124,7 @@
 <translation id="7029390216614421513">Ставете го QR-кодот/бар-кодот во оваа рамка.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7030304022046916278">Испраќа URL-адреси во „Безбедно прелистување“ за да се проверат</translation>
+<translation id="7030585293819777123">Сакате да продолжите со последната задача?</translation>
 <translation id="7037830628447527439">Најавете се на Chrome со вашата сметка на Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>

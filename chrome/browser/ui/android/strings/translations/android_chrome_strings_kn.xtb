@@ -399,6 +399,7 @@
 <translation id="3130863904455712965">ಇತಿಹಾಸ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome ನ ಮುಖಪುಟ</translation>
+<translation id="3157931365184549694">ಮರುಸ್ಥಾಪನೆ</translation>
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="316694332262407393">Chrome ಈಗಾಗಲೇ ರನ್ ಆಗುತ್ತಿದೆ.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -551,6 +552,7 @@
 <translation id="4016425174436051808">ಅನುಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
 <translation id="4035877632587724847">ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="4036177530563778041">ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿದ್ದಿರೋ, ಅಲ್ಲಿಂದಲೇ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4045764304651014138">ಬಳಕೆಯ ಡೇಟಾ</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
@@ -1121,6 +1123,7 @@
 <translation id="7029390216614421513">ಈ ಫ್ರೇಮ್‌ನಲ್ಲಿ QR ಕೋಡ್/ಬಾರ್‌ಕೋಡ್ ಅನ್ನು ಇರಿಸಿ.</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7030304022046916278">URL ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು, ಅವುಗಳನ್ನು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
+<translation id="7030585293819777123">ನಿಮ್ಮ ಕೊನೆಯ ಕಾರ್ಯವನ್ನು ಪುನರಾರಂಭಿಸಬೇಕೆ?</translation>
 <translation id="7037830628447527439">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>

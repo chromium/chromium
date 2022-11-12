@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">அனைத்துத் தளங்களுக்குமான குக்கீகளையும் நிர்வகிக்க, <ph name="BEGIN_LINK" />குக்கீ அமைப்புகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="5490005495580364134">அனைத்து குக்கீகளையும் தடு (பரிந்துரைக்கப்படவில்லை)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ம.நே. முன்பு</translation>
+<translation id="5520466080178053306">Passwords Managerரைத் தட்டிய பிறகு ‘சேர்’ என்பதைத் தட்டவும்</translation>
 <translation id="5525095647255982834">இந்தப் பக்கத்தை மற்றொரு சாதனத்திற்கு அனுப்ப, அந்தச் சாதனத்திலிருக்கும் Chromeமில் உள்நுழைய வேண்டும்.</translation>
 <translation id="5525269841082836315">கடவுச்சொற்றொடரை உருவாக்கவும்</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> உள்ளது</translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">மெனு → பதிவு → உலாவிய தரவை அழி</translation>
 <translation id="7738120385185846461">சிக்கலைப் புகார் செய்க…</translation>
 <translation id="7741325291586284254">புதிய மறைநிலைத் தாவல் பக்கம்</translation>
+<translation id="7744394900930577716">பிற ஆப்ஸில் உள்ள கடவுச்சொற்கள்</translation>
 <translation id="7756478488453921771">மெனு → அமைப்புகள் → பேமெண்ட் முறைகள்</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7772032839648071052">கடவுச்சொற்றொடரை உறுதி செய்க</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310"><ph name="USERNAME" /> இன் கடவுச்சொல்லை மாற்றவா?</translation>
 <translation id="9083838294503912307">அனைத்துச் சாதனங்களுக்கு இடையிலும் ஒத்திசைப்பதற்கும் தனிப்பயனாக்குவதற்கும், ஒத்திசைவை இயக்கவும்.</translation>
 <translation id="9087108903408689779">Chrome பரிந்துரைத்த கடவுச்சொல்:</translation>
+<translation id="9093271241977565440">திரையின் மேலே உள்ள Search ஐகானைத் தட்டவும்</translation>
 <translation id="9094033019050270033">கடவுச்சொல்லைப் புதுப்பி</translation>
 <translation id="9097506547406246598">பின்தொடர்வதை நிறுத்த முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="9100610230175265781">கடவுச்சொற்றொடர் தேவை</translation>

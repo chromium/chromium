@@ -399,6 +399,7 @@
 <translation id="3130863904455712965">記錄和其他</translation>
 <translation id="3134784203083076891">」</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
+<translation id="3157931365184549694">還原</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
 <translation id="316694332262407393">Chrome 已在此執行中。</translation>
 <translation id="3169472444629675720">探索</translation>
@@ -551,6 +552,7 @@
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4035877632587724847">不允許</translation>
+<translation id="4036177530563778041">輕鬆繼續未完成的操作</translation>
 <translation id="4045764304651014138">使用情況資料</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
@@ -680,6 +682,7 @@
 <translation id="4763480195061959176">影片</translation>
 <translation id="4766313118839197559">密碼會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4766678251456904326">將帳戶新增至裝置</translation>
+<translation id="4769095993849849966">新檔案名稱</translation>
 <translation id="4787736314074622408">係咪想刪除 <ph name="ITEM_TITLE" />？</translation>
 <translation id="4791358705705538979">協助您在網絡完成結帳等工作</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1122,6 +1125,7 @@
 <translation id="7029390216614421513">將 QR 碼/條碼放在此方框中。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">將網址傳送至「安全瀏覽」功能檢查</translation>
+<translation id="7030585293819777123">要繼續執行最後一項工作嗎？</translation>
 <translation id="7037830628447527439">使用 Google 帳戶登入 Chrome</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>

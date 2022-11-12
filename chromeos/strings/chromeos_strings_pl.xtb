@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
 <translation id="2878387241690264070">Rozładowano <ph name="RATE" /> w ciągu <ph name="NUM_SECONDS" /> sekund.</translation>
+<translation id="2902312830803030883">Więcej czynności</translation>
 <translation id="2926057806159140518">Wpisz nazwę użytkownika i hasło lub zeskanuj kod QR</translation>
 <translation id="3008341117444806826">ODŚWIEŻ</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Nie udało się połączyć z bramą</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="404928562651467259">OSTRZEŻENIE</translation>
+<translation id="4060260348856573701">Nowy APN</translation>
 <translation id="4093865285251893588">Zdjęcie profilowe</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4110686435123617899">Wybierz album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Nie wykonano</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Wyłącz</translation>
 <translation id="439429847087949098">Ponownie uruchamiam urządzenie: <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Bieżący awatar</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Strzałka w lewo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
+<translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4536864596629708641">Konfiguracja IP</translation>
 <translation id="4546131424594385779">Utwórz film w pętli</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
@@ -606,6 +610,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6766275201586212568">błędy rozpoznawania nazw DNS</translation>
 <translation id="6768237774506518020">dużo błędów rozpoznania nazwy DNS</translation>
 <translation id="6791471867139427246">kolor podświetlenia klawiatury</translation>
+<translation id="6793680441750437230">Naciśnij dowolny klawisz na klawiaturze. Możesz nacisnąć maksymalnie 4 klawisze jednocześnie. Aby zamknąć okno, naciśnij Alt + Esc.</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>

@@ -571,6 +571,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5489208564673669003">Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />Cookie-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blockera alla cookies (rekommenderas inte)</translation>
 <translation id="5513681519188741830">För <ph name="TIME" /> timmar sedan</translation>
+<translation id="5520466080178053306">Tryck på Lösenordshantering och sedan på Lägg till</translation>
 <translation id="5525095647255982834">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten.</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> hittades</translation>
@@ -878,6 +879,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7726702057919861819">Menyn → Historik → Rensa webbinformation</translation>
 <translation id="7738120385185846461">Rapportera ett problem …</translation>
 <translation id="7741325291586284254">Ny fliksida i inkognitoläge</translation>
+<translation id="7744394900930577716">Lösenord i andra appar</translation>
 <translation id="7756478488453921771">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
@@ -1054,6 +1056,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9081058212938299310">Vill du uppdatera lösenordet för <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter.</translation>
 <translation id="9087108903408689779">Föreslaget lösenord:</translation>
+<translation id="9093271241977565440">Tryck på sökikonen högst upp på skärmen.</translation>
 <translation id="9094033019050270033">Uppdatera lösenordet</translation>
 <translation id="9097506547406246598">Det gick inte att sluta följa detta. Något gick fel.</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>

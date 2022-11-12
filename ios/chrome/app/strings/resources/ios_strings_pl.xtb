@@ -571,6 +571,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5489208564673669003">Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> g temu</translation>
+<translation id="5520466080178053306">Kliknij kolejno: Menedżer haseł i Dodaj</translation>
 <translation id="5525095647255982834">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome.</translation>
 <translation id="5525269841082836315">Utwórz hasło</translation>
 <translation id="5542540507657872337">Znaleziono <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7726702057919861819">Menu → Historia → Wyczyść dane przeglądania</translation>
 <translation id="7738120385185846461">Zgłoś problem…</translation>
 <translation id="7741325291586284254">Nowa strona karty incognito</translation>
+<translation id="7744394900930577716">Hasła w innych aplikacjach</translation>
 <translation id="7756478488453921771">Menu → Ustawienia → Formy płatności</translation>
 <translation id="7765158879357617694">Przenieś</translation>
 <translation id="7772032839648071052">Potwierdź hasło</translation>
@@ -1054,6 +1056,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9081058212938299310">Zaktualizować hasło dla <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="9087108903408689779">Hasło proponowane przez Chrome:</translation>
+<translation id="9093271241977565440">U góry ekranu kliknij ikonę wyszukiwania</translation>
 <translation id="9094033019050270033">Aktualizuj hasło</translation>
 <translation id="9097506547406246598">Nie udało się zrezygnować z obserwowania. Coś poszło nie tak.</translation>
 <translation id="9100610230175265781">Wymagane jest hasło</translation>

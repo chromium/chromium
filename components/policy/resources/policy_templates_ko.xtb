@@ -226,7 +226,6 @@
 <translation id="1209096923317019235">앱을 지정된 파일 확장자에 대한 기본 핸들러로 할당합니다.</translation>
 <translation id="120937472976628837">팬 정보 보고</translation>
 <translation id="1212233008927724662">Lazy Login WebUI 로딩을 사용 중지합니다.</translation>
-<translation id="1214872329693851703">이 정책은 지원 중단되었으며 더 이상 지원되지 않습니다. 대신 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="1216919699175573511">서명된 HTTP 교환(SXG) 지원 사용 설정</translation>
 <translation id="1219027971768347970">오디오 샌드박스에 기본 구성 사용</translation>
 <translation id="1219695476179627719">기기가 이미 이후 버전을 실행하는 경우 기기를 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />에 설정된 버전으로 롤백할지 여부를 지정합니다.

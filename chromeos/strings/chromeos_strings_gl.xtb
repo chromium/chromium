@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Pechar</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2878387241690264070">Descargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="2902312830803030883">Máis accións</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Non se puido establecer contacto coa pasarela</translation>
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
+<translation id="4060260348856573701">Novo APN</translation>
 <translation id="4093865285251893588">Imaxe do perfil</translation>
 <translation id="409427325554347132">Gardar detalles da proba</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Non se executou</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">Reiniciando dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Frecha esquerda</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia do nome alternativo do asunto</translation>
+<translation id="4522570452068850558">Detalles</translation>
 <translation id="4536864596629708641">Configuración IP</translation>
 <translation id="4546131424594385779">Crear vídeo en bucle</translation>
 <translation id="4548483925627140043">Non se atopou o sinal</translation>
@@ -606,6 +610,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6766275201586212568">Produciuse un erro coas resolucións de DNS</translation>
 <translation id="6768237774506518020">Hai un alto índice de erros relacionados coas resolucións de DNS</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
+<translation id="6793680441750437230">Preme unha tecla calquera. Podes premer ata 4 á vez. Preme Alt + Escape para pechar o cadro de diálogo.</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hai dispoñible información sobre a túa selección. Utilizar frecha arriba para acceder.</translation>
 <translation id="6853312040151791195">Taxa de descarga</translation>

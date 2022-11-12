@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
+<translation id="2902312830803030883">Još radnji</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izaberite folder za čuvanje</translation>
@@ -338,6 +339,7 @@
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Restartuje se <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Aktuelni avatar</translation>
 <translation id="4425149324548788773">Moj disk</translation>
@@ -352,6 +354,7 @@
 <translation id="4503223151711056411">Strelica nalevo</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Podudaranje alternativnog naziva subjekta</translation>
+<translation id="4522570452068850558">Detalji</translation>
 <translation id="4536864596629708641">IP konfiguracija</translation>
 <translation id="4546131424594385779">Napravite video koji se ponavlja</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>

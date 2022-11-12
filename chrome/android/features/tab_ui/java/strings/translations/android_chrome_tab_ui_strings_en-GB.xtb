@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">You'll get an alert when there's a lower price in an open tab</translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Thumbnail for share sheet preview.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="3882834874697329510">To get an alert when there's a lower price in an open tab, turn on notifications in Settings.</translation>
 <translation id="3940195383040445971">Track prices on tabs</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
 <translation id="5558362125926932819">Close tab group with <ph name="NUMBER_OF_TABS" /> tabs</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabs grouped</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
 <translation id="575494663145460764">Get alerts for price drops?</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
 <translation id="5846292395804797011">Close <ph name="TITLE_OF_GROUP" /> group with <ph name="NUMBER_OF_TABS" /> tabs</translation>

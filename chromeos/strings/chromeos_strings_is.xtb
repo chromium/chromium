@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
+<translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Ekki er hægt að tengjast gátt</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
 <translation id="404928562651467259">VIÐVÖRUN</translation>
+<translation id="4060260348856573701">Nýr aðgangsstaður</translation>
 <translation id="4093865285251893588">Prófílmynd</translation>
 <translation id="409427325554347132">Vista niðurstöður prófunar</translation>
 <translation id="4110686435123617899">Velja albúm <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Ekki keyra</translation>
 <translation id="4378551569595875038">Tengist...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Slökkva</translation>
 <translation id="439429847087949098">Endurræsir <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Núverandi notandamynd</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4511264077854731334">Gátt</translation>
 <translation id="4521826082652183069">Samsvarandi auknefni viðfangs</translation>
+<translation id="4522570452068850558">Upplýsingar</translation>
 <translation id="4536864596629708641">IP-stilling</translation>
 <translation id="4546131424594385779">Búa til myndskeiðslúppu</translation>
 <translation id="4548483925627140043">Merki fannst ekki</translation>
@@ -606,6 +610,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
 <translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>
 <translation id="6791471867139427246">litur lyklaborðsljóss</translation>
+<translation id="6793680441750437230">Ýttu á hvaða lykil sem er á lyklaborðinu. Hægt er að ýta á allt að 4 lykla í einu. Ýttu samtímis á Alt og Esc til að loka glugganum.</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
 <translation id="6853312040151791195">Afhleðsluhraði</translation>

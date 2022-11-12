@@ -226,7 +226,6 @@
 <translation id="1209096923317019235">กําหนดแอปเป็นตัวแฮนเดิลเริ่มต้นสําหรับนามสกุลไฟล์ที่ระบุ</translation>
 <translation id="120937472976628837">รายงานข้อมูลพัดลม</translation>
 <translation id="1212233008927724662">ปิดใช้การโหลด Login WebUI แบบ Lazy Loading</translation>
-<translation id="1214872329693851703">เราเลิกใช้งานและไม่รองรับนโยบายนี้แล้ว โปรดใช้ <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> แทน</translation>
 <translation id="1216919699175573511">เปิดใช้การสนับสนุน Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">ใช้การกำหนดค่าเริ่มต้นกับแซนด์บ็อกซ์เสียง</translation>
 <translation id="1219695476179627719">ระบุว่าอุปกรณ์ควรย้อนกลับไปใช้เวอร์ชันที่ <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> ตั้งค่าไว้หรือไม่ หากใช้เวอร์ชันที่ใหม่กว่าอยู่

@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2878387241690264070">在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
+<translation id="2902312830803030883">更多動作</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">無法連線至閘道</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4060260348856573701">新增 APN</translation>
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重新啟動「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4415951057168511744">目前的顯示圖片</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">向左鍵</translation>
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4521826082652183069">主體替代名稱比對</translation>
+<translation id="4522570452068850558">詳細資料</translation>
 <translation id="4536864596629708641">IP 設定</translation>
 <translation id="4546131424594385779">建立循環播放的影片</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
@@ -606,6 +610,7 @@
 <translation id="6766275201586212568">DNS 解析失敗</translation>
 <translation id="6768237774506518020">高 DNS 解析失敗率</translation>
 <translation id="6791471867139427246">鍵盤背光顏色</translation>
+<translation id="6793680441750437230">在鍵盤上按下任意鍵，最多可同時按下 4 個按鍵。按下 Alt + Esc 鍵，即可關閉對話方塊。</translation>
 <translation id="680983167891198932">金鑰</translation>
 <translation id="6816797338148849397">提供所選內容的相關資訊。請使用向上鍵存取。</translation>
 <translation id="6853312040151791195">放電率</translation>

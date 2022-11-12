@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">ক্যাপচার মোড, <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে। কীবোর্ড ব্যবহার করে নেভিগেট করতে Tab কী প্রেস করুন।</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">মাইক্রোফোন অ্যাক্সেস চালু করতে চান?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা যায়নি</translation>
 <translation id="2970920913501714344">অ্যাপ, এক্সটেনশন এবং থিম ইনস্টল করুন</translation>
 <translation id="2977598380246111477">পরবর্তী নম্বর</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">আরও সেটিংস</translation>
+<translation id="3405101454990027959">মাইক্রোফোন অ্যাক্সেস চালু করুন</translation>
 <translation id="3410336247007142655">'ডার্ক থিম' সেটিংস দেখুন</translation>
 <translation id="3413817803639110246">এখনও পর্যন্ত কিছু দেখার নেই</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> নেটওয়ার্কের থেকে ডিসকানেক্ট করা হয়েছে</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="385300504083504382">শুরুর দিকে</translation>
 <translation id="3861651314799684201">ফুল স্ক্রিন রেকর্ড করার জন্য Enter প্রেস করুন</translation>
+<translation id="3885531177412808398">মাইক্রোফোন ব্যবহারের অনুমতি রয়েছে এমন সমস্ত অ্যাপ এবং ওয়েবসাইট মাইক্রোফোন অ্যাক্সেস করতে পারে</translation>
 <translation id="3886872229787704059">আজ খোলা হয়েছে</translation>
 <translation id="3891340733213178823">সাইন-আউট করার জন্য দু'বার Ctrl+Shift+Q টিপুন৷</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">আপনার ডিভাইস সেট-আপ করার জন্য <ph name="NAME" /> খুলুন</translation>
 <translation id="8676770494376880701">নিম্ন শক্তির চার্জার সংযুক্ত করা হয়েছে</translation>
 <translation id="8683506306463609433">পারফরম্যান্স ট্রেস করার বিকল্প চালু আছে</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> এবং সমস্ত অ্যাপ ও ওয়েবসাইট যাদের মাইক্রোফোন ব্যবহারের অনুমতি রয়েছে তারা মাইক্রোফোন অ্যাক্সেস করতে পারে</translation>
 <translation id="8685326675965865247">আপনার ডিভাইস, অ্যাপ, সেটিংস এবং ওয়েবে সার্চ করুন। আপনার অ্যাপগুলি নেভিগেট করতে তীরচিহ্ন কী ব্যবহার করুন।</translation>
 <translation id="8703634754197148428">রেকর্ডিং শুরু করুন। রেকর্ডিং শুরু হলে, Alt, Shift ও L কী একসাথে প্রেস করে শেল্ফে যান এবং রেকর্ডিং বন্ধ করার বোতাম খুঁজুন</translation>
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>

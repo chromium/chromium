@@ -399,6 +399,7 @@
 <translation id="3130863904455712965">Ιστορικό και άλλα</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Αρχική σελίδα του Chrome</translation>
+<translation id="3157931365184549694">Επαναφορά</translation>
 <translation id="3166827708714933426">Συντομεύσεις καρτέλας και παραθύρου</translation>
 <translation id="316694332262407393">Το Chrome εκτελείται ήδη εδώ.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -551,6 +552,7 @@
 <translation id="4016425174436051808">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4035877632587724847">Να μην επιτραπεί</translation>
+<translation id="4036177530563778041">Συνεχίστε εύκολα από εκεί που σταματήσατε</translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
@@ -1122,6 +1124,7 @@
 <translation id="7029390216614421513">Τοποθετήστε τον κωδικό QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7030304022046916278">Στέλνει URL στην Ασφαλή περιήγηση για να τα ελέγξει</translation>
+<translation id="7030585293819777123">Θέλετε να συνεχίσετε την τελευταία εργασία σας;</translation>
 <translation id="7037830628447527439">Συνδεθείτε στο Chrome μέσω του Λογαριασμού σας Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>

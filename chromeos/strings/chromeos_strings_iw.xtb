@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
+<translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
@@ -337,6 +338,7 @@
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4378551569595875038">התחברות...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">השבתה</translation>
 <translation id="439429847087949098">מתבצעת הפעלה מחדש של <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">הדמות הנוכחית</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
@@ -351,6 +353,7 @@
 <translation id="4503223151711056411">חץ שמאלה</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
+<translation id="4522570452068850558">פרטים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>
 <translation id="4546131424594385779">יצירה של סרטון שחוזר על עצמו</translation>
 <translation id="4548483925627140043">לא אותר אות</translation>

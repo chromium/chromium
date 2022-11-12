@@ -352,6 +352,7 @@
 <translation id="2960314608273155470">ග්‍රහණ ප්‍රකාරය, පෙරනිමි වන්නේ <ph name="SOURCE" /> <ph name="TYPE" />. යතුරු පුවරු සංචාලනය සඳහා ටැබය ඔබන්න.</translation>
 <translation id="2961963223658824723">යම් දෙයක් වැරදිණි. මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> කථන ගොනු බාගැනීමට නොහැකි විය</translation>
 <translation id="2970920913501714344">යෙදුම්, දිගු, සහ තේමා ස්ථාපනය කරන්න</translation>
 <translation id="2977598380246111477">මීළඟ අංකය</translation>
@@ -430,6 +431,7 @@
 <translation id="3386978599540877378">පූර්ණ තිර විශාලකය</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">අතිරේක සැකසීම්</translation>
+<translation id="3405101454990027959">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="3410336247007142655">අඳුරු තේමා සැකසීම් පෙන්වන්න</translation>
 <translation id="3413817803639110246">තවම දැකීමට කිසිවක් නැත</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> වෙතින් විසන්ධි කරන්න</translation>
@@ -516,6 +518,7 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="385300504083504382">ආරම්භය</translation>
 <translation id="3861651314799684201">සම්පූර්ණ තිරය පටිගත කිරීමට Enter ඔබන්න</translation>
+<translation id="3885531177412808398">මයික්‍රෆෝන අවසරය ඇතිව සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙන්න</translation>
 <translation id="3886872229787704059">අද විවෘත කරන ලදි</translation>
 <translation id="3891340733213178823">වැරිමට Ctrl+Shift+Q දෙසැරයක් ඔබන්න.</translation>
 <translation id="3893630138897523026">ChromeVox (කථා කළ අදහස්)</translation>
@@ -1375,6 +1378,7 @@
 <translation id="8666856788528804727">ඔබගේ උපාංගය පිහිටුවීමට <ph name="NAME" /> විවෘත කරන්න</translation>
 <translation id="8676770494376880701">අඩු-බල ආරෝපකය සමබන්ධ කර ඇත</translation>
 <translation id="8683506306463609433">කාර්ය සාධන අනුරේඛනය සක්‍රියයි</translation>
+<translation id="8684405646663021166"><ph name="APP_NAME" /> සඳහා මයික්‍රෆෝන ප්‍රවේශයට සහ මයික්‍රෆෝන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="8685326675965865247">ඔබගේ උපාංගය, යෙදුම්, සැකසීම් සහ වෙබය තුළ සොයන්න. ඔබගේ යෙදුම් සංචලන කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>
 <translation id="8703634754197148428">පටිගත කිරීම ආරම්භ කරන්න. පටිගත කිරීම ආරම්භ වූ පසුව රාක්කයට සංචාලනය කිරීම සහ පටිගත කිරීම නවත්වන්න බොත්තම සොයා ගැනීම සඳහා Alt + Shift + L භාවිත කරන්න</translation>
 <translation id="8721053961083920564">හඬ ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>

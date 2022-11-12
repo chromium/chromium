@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
+<translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">Tidak dapat terhubung ke gateway</translation>
 <translation id="4046123991198612571">Lagu berikutnya</translation>
 <translation id="404928562651467259">PERINGATAN</translation>
+<translation id="4060260348856573701">APN baru</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="439429847087949098">Memulai ulang <ph name="DEVICE_NAME" /></translation>
 <translation id="4415951057168511744">Avatar Saat Ini</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
+<translation id="4522570452068850558">Detail</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
 <translation id="4546131424594385779">Buat video berulang</translation>
 <translation id="4548483925627140043">Sinyal tidak ditemukan</translation>
@@ -606,6 +610,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
+<translation id="6793680441750437230">Tekan sembarang tombol di keyboard. Anda dapat menekan hingga 4 tombol sekaligus. Tekan Alt plus Esc untuk menutup dialog.</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>

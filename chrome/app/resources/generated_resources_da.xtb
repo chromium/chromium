@@ -940,6 +940,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1832848789136765277">Bekræft din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1834503245783133039">Downloaden blev ikke fuldført: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Opgraderer Linux</translation>
+<translation id="1835612721186505600">Brug kameratilladelsen til at give apps og websites adgang</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1839021455997460752">Din mailadresse</translation>
 <translation id="1839540115464516994">Vis i <ph name="LOCATION" /></translation>
@@ -2510,6 +2511,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3279230909244266691">Denne proces kan tage et par minutter. Den virtuelle maskine startes.</translation>
 <translation id="3280237271814976245">Gem &amp;som...</translation>
 <translation id="3280243678470289153">Bliv i Chrome</translation>
+<translation id="328119399589609861">Styr enhedens adgang til mikrofonen, kameraet m.m.</translation>
 <translation id="3281892622610078515">Filer og programmer, der skal i karantæne:</translation>
 <translation id="3282210178675490297">Deler en fane med <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Ny &amp;fane</translation>
@@ -4516,6 +4518,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5185500136143151980">Der er ingen internetforbindelse</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Aktivér port</translation>
+<translation id="5190959794678983197">Der er ingen mikrofon</translation>
 <translation id="5191094172448199359">De pinkoder, du har indtastet, stemmer ikke overens</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="519185197579575131">Brug QT</translation>
@@ -4875,6 +4878,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Var det den startside, du forventede?</translation>
 <translation id="5522156646677899028">Denne udvidelse indeholder en alvorlig sikkerhedsbrist.</translation>
+<translation id="5522403133543437426">Den søgemaskine, der bruges i adresselinjen.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{En udvidelse blev installeret af din administrator}one{# udvidelse blev installeret af din administrator}other{# udvidelser blev installeret af din administrator}}</translation>
 <translation id="5523558474028191231">Navne må indeholde bogstaver, tal og specialtegn og må maks. være på <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
 <translation id="5526701598901867718">Alle (ikke sikkert)</translation>
@@ -7059,6 +7063,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7608810328871051088">Android-præferencer</translation>
 <translation id="7609148976235050828">Opret forbindelse til internettet, og prøv igen.</translation>
+<translation id="7612401678989660900">Brug mikrofontilladelsen til at give apps og websites adgang</translation>
 <translation id="7612655942094160088">Aktivering af tilknyttede telefonfunktioner.</translation>
 <translation id="7614260613810441905">Spørg, når et website vil redigere filer eller mapper på din enhed (anbefales)</translation>
 <translation id="761530003705945209">Sikkerhedskopiér i Google Drev. Gendan nemt dine data, eller skift enhed når som helst. Din backup omfatter appdata. Dine backups uploades til Google og krypteres ved hjælp af adgangskoden til din Google-konto.</translation>
@@ -8444,6 +8449,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8872155268274985541">Den eksterne opdateringsmanifestfil for terminalen er ugyldig. Terminalappen kunne ikke opdateres. Fjern USB-stikket.</translation>
 <translation id="8872506776304248286">Åbn i app</translation>
 <translation id="8872777911145321141">Spørg, når et website gerne vil anvende dine virtual reality-enheder og dine VR-data (anbefales)</translation>
+<translation id="887292602123626481">Få flere oplysninger om standardsøgemaskiner</translation>
 <translation id="8874341931345877644">Cast til en enhed:</translation>
 <translation id="8875520811099717934">Linux-opgradering</translation>
 <translation id="8875736897340638404">Vælg din synlighed</translation>
@@ -8564,6 +8570,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8987927404178983737">Måned</translation>
 <translation id="8989359959810288806">Opdater status for netdeling</translation>
 <translation id="8991520179165052608">Websitet kan anvende din mikrofon</translation>
+<translation id="8991694323904646277">Der er intet kamera</translation>
 <translation id="8993059306046735527">Hvis du glemmer din adgangskode til <ph name="DEVICE_TYPE" />, kan du stadig gendanne dine lokale data. Du skal logge ind på din Google-konto eller gendanne din konto.</translation>
 <translation id="899384117894244799">Fjern begrænset bruger</translation>
 <translation id="899403249577094719">Webadresse for Netscape-certifikatbase</translation>

@@ -935,6 +935,7 @@
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1834503245783133039">Неуспешно изтегляне: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux се надстройва</translation>
+<translation id="1835612721186505600">Разрешаване на достъп за приложенията и уебсайтовете, които имат разрешение за камерата</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1839021455997460752">Вашият имейл адрес</translation>
 <translation id="1839540115464516994">Показване в(ъв) <ph name="LOCATION" /></translation>
@@ -2505,6 +2506,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3279230909244266691">Това може да отнеме няколко минути. Виртуалната машина стартира.</translation>
 <translation id="3280237271814976245">&amp;Запазване като...</translation>
 <translation id="3280243678470289153">Оставане в Chrome</translation>
+<translation id="328119399589609861">Контролиране на достъпа на устройството до микрофона, камерата и др.</translation>
 <translation id="3281892622610078515">Файлове и програми, които да бъдат поставени под карантина:</translation>
 <translation id="3282210178675490297">Споделя се раздел с(ъс) <ph name="APP_NAME" /></translation>
 <translation id="3285322247471302225">Нов &amp;раздел</translation>
@@ -4512,6 +4514,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5185500136143151980">Няма интернет</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190926251776387065">Активиране на порта</translation>
+<translation id="5190959794678983197">Няма микрофон</translation>
 <translation id="5191094172448199359">Въведените от вас ПИН кодове не съвпадат</translation>
 <translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
 <translation id="519185197579575131">Използване на QT</translation>
@@ -4871,6 +4874,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Това ли е очакваната от вас начална страница?</translation>
 <translation id="5522156646677899028">Това разширение съдържа сериозна уязвимост в сигурността.</translation>
+<translation id="5522403133543437426">Търсещата машина, която се използва в адресната лента.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Разширение бе инсталирано от администратора ви}other{# разширения бяха инсталирани от администратора ви}}</translation>
 <translation id="5523558474028191231">За името могат да се използват букви, цифри и специални знаци, като то не бива да е по-дълго от <ph name="MAX_CHARACTER_COUNT" /> знака</translation>
 <translation id="5526701598901867718">Всички (несигурни)</translation>
@@ -7054,6 +7058,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7607002721634913082">На пауза</translation>
 <translation id="7608810328871051088">Предпочитания за Android</translation>
 <translation id="7609148976235050828">Моля, свържете се с интернет и опитайте отново.</translation>
+<translation id="7612401678989660900">Разрешаване на достъп за приложенията и уебсайтовете, които имат разрешение за микрофона</translation>
 <translation id="7612655942094160088">Активиране на функциите за свързания телефон.</translation>
 <translation id="7614260613810441905">Извеждане на запитване, когато сайт иска да редактира файлове или папки на устройството ви (препоръчително)</translation>
 <translation id="761530003705945209">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервното ви копие включва данните от приложенията. Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
@@ -8438,6 +8443,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8872155268274985541">Намерен е невалиден файл на манифест за външно актуализиране на павилионното приложение. Актуализирането не бе успешно. Моля, извадете USB паметта.</translation>
 <translation id="8872506776304248286">Отваряне в прилож.</translation>
 <translation id="8872777911145321141">Извеждане на запитване, когато сайт иска да използва устройствата и данните ви за виртуална реалност (препоръчително)</translation>
+<translation id="887292602123626481">Научете повече за търсещите машини по подразбиране</translation>
 <translation id="8874341931345877644">Предаване към устройство:</translation>
 <translation id="8875520811099717934">Надстройване на Linux</translation>
 <translation id="8875736897340638404">Избиране на настройка за видимостта</translation>
@@ -8558,6 +8564,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8989359959810288806">Опресняване на състоянието на тетъринга</translation>
 <translation id="8991520179165052608">Сайтът може да използва микрофона ви</translation>
+<translation id="8991694323904646277">Няма камера</translation>
 <translation id="8993059306046735527">Дори да забравите паролата си за <ph name="DEVICE_TYPE" />, можете да възстановите локалните си данни. Ще се наложи да влезете в профила си в Google или да използвате функцията за възстановяването му.</translation>
 <translation id="899384117894244799">Премахване на потребител с ограничена функционалност</translation>
 <translation id="899403249577094719">Основен URL адрес на сертификат на Netscape</translation>

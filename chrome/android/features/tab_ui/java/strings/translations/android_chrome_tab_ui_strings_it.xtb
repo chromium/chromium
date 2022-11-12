@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Miniatura dell'anteprima del foglio di condivisione.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="3882834874697329510">Attiva le notifiche nelle Impostazioni per ricevere un avviso quando ci sarà un prezzo più basso in una scheda aperta.</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5558362125926932819">Chiudi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> schede raggruppate</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="575494663145460764">Vuoi ricevere avvisi sui cali di prezzo?</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
 <translation id="5846292395804797011">Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede</translation>

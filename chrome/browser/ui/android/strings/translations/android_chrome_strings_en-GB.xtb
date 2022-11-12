@@ -399,6 +399,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3130863904455712965">History and more</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
+<translation id="3157931365184549694">Restore</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -551,6 +552,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4035877632587724847">Don't allow</translation>
+<translation id="4036177530563778041">Easily continue where you left off</translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1122,6 +1124,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7029390216614421513">Position QR code/barcode in this frame.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
+<translation id="7030585293819777123">Resume your last task?</translation>
 <translation id="7037830628447527439">Sign in to Chrome with your Google Account</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>

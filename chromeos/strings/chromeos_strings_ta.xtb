@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2874939134665556319">முந்தைய டிராக்</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
+<translation id="2902312830803030883">மேலும் செயல்கள்</translation>
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">கேட்வேயைத் தொடர்புகொள்ள முடியவில்லை</translation>
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
 <translation id="404928562651467259">எச்சரிக்கை</translation>
+<translation id="4060260348856573701">புதிய APN</translation>
 <translation id="4093865285251893588">சுயவிவரப் படம்</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பத்தைத் தேர்வுசெய்யும்</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">முடக்கு</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ஐ மீண்டும் தொடங்குகிறது</translation>
 <translation id="4415951057168511744">தற்போதைய தோற்றப் படம்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
 <translation id="4511264077854731334">போர்ட்டல்</translation>
 <translation id="4521826082652183069">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம்</translation>
+<translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4536864596629708641">IP உள்ளமைவு</translation>
 <translation id="4546131424594385779">தொடர்ந்து இயங்கக்கூடிய வீடியோவை உருவாக்கு</translation>
 <translation id="4548483925627140043">சிக்னல் கிடைக்கவில்லை</translation>
@@ -606,6 +610,7 @@
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
 <translation id="6791471867139427246">கீபோர்டு லைட் கலர்</translation>
+<translation id="6793680441750437230">உங்கள் கீபோர்டில் ஏதாவது ஒரு பட்டனை அழுத்தவும். ஒரே நேரத்தில் 4 பட்டன்களை மட்டுமே அழுத்த முடியும். இந்த உரையாடலை மூட Alt + Esc அழுத்தவும்.</translation>
 <translation id="680983167891198932">குறியீடு</translation>
 <translation id="6816797338148849397">நீங்கள் தேர்ந்தெடுத்தவற்றுடன் தொடர்புடைய தகவல்கள். இவற்றை அணுக மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>

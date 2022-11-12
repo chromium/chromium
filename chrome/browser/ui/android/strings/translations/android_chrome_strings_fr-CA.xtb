@@ -399,6 +399,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="3130863904455712965">Historique et plus</translation>
 <translation id="3134784203083076891"> »</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
+<translation id="3157931365184549694">Restaurer</translation>
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome fonctionne déjà ici.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
@@ -551,6 +552,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Ne pas autoriser</translation>
+<translation id="4036177530563778041">Reprenez facilement là où vous en étiez</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="405399507749852140">Obtenez des alertes si le prix est réduit sur un site</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -1122,6 +1124,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7029390216614421513">Placer le code QR ou le code à barres dans ce cadre.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030304022046916278">Il envoie des URL à la navigation sécurisée pour les vérifier</translation>
+<translation id="7030585293819777123">Reprendre votre dernière tâche?</translation>
 <translation id="7037830628447527439">Connectez-vous à Chrome au moyen de votre compte Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images?</translation>

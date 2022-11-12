@@ -1431,6 +1431,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4646534391647090355">Aceder agora</translation>
 <translation id="4648262692072505866">O hash tem de ter o formato SHA-256.</translation>
 <translation id="4652266463001779298">Não permitida</translation>
+<translation id="4652440160515225514">A sua organização bloqueou este site porque viola uma política.</translation>
 <translation id="4653167719759882810">Fusões e aquisições</translation>
 <translation id="4658638640878098064">Agrafar parte superior esquerda</translation>
 <translation id="4660119392514473465">Agora, pode navegar em privado e as outras pessoas que utilizarem este dispositivo não veem a sua atividade. No entanto, as transferências, os marcadores e os itens da Lista de leitura são guardados.</translation>
@@ -2918,6 +2919,7 @@ Detalhes adicionais:
 <translation id="8437238597147034694">&amp;Anular movimentação</translation>
 <translation id="8438476240229491014">Memorizar esta definição</translation>
 <translation id="8438786541497918448">Pretende utilizar a câmara e o microfone?</translation>
+<translation id="8438923942245957911">Este site foi denunciado pela sua organização</translation>
 <translation id="8443613539889492016">Rap e hip-hop</translation>
 <translation id="8444543005280733648">Redes de computadores</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>

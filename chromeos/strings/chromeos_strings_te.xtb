@@ -201,6 +201,7 @@
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
+<translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
@@ -305,6 +306,7 @@
 <translation id="4044093238444069296">గేట్‌వేను సంప్రదించడం సాధ్యపడదు</translation>
 <translation id="4046123991198612571">తరువాత ట్రాక్</translation>
 <translation id="404928562651467259">హెచ్చరిక</translation>
+<translation id="4060260348856573701">కొత్త APN</translation>
 <translation id="4093865285251893588">ప్రొఫైల్ ఇమేజ్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
@@ -337,6 +339,7 @@
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> రీస్టార్ట్ అవుతోంది</translation>
 <translation id="4415951057168511744">ప్రస్తుత అవతార్</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
@@ -351,6 +354,7 @@
 <translation id="4503223151711056411">ఎడమ వైపు బాణం</translation>
 <translation id="4511264077854731334">పోర్టల్</translation>
 <translation id="4521826082652183069">సబ్జెక్ట్ ప్రత్యామ్నాయ పేరుకు సంబంధించిన మ్యాచ్</translation>
+<translation id="4522570452068850558">వివరాలు</translation>
 <translation id="4536864596629708641">IP కాన్ఫిగరేషన్</translation>
 <translation id="4546131424594385779">లూపింగ్ వీడియోను క్రియేట్ చేయండి</translation>
 <translation id="4548483925627140043">సిగ్నల్ కనుగొనబడలేదు</translation>
@@ -605,6 +609,7 @@
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6791471867139427246">కీబోర్డ్ లైట్ రంగు</translation>
+<translation id="6793680441750437230">మీ కీబోర్డ్‌లో ఏదైనా కీని టైప్ చేయండి. మీరు ఒకేసారి గరిష్ఠంగా 4 కీలను నొక్కవచ్చు. డైలాగ్‌ను మూసివేయడానికి Alt + Escను నొక్కండి.</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>

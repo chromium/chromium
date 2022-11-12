@@ -571,6 +571,7 @@
 <translation id="5489208564673669003">Щоб керувати файлами cookie для всіх сайтів, перегляньте <ph name="BEGIN_LINK" />Налаштування файлів cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокувати всі файли cookie (не рекомендовано)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> год тому</translation>
+<translation id="5520466080178053306">Натисніть "Менеджер паролів", а потім – "Додати"</translation>
 <translation id="5525095647255982834">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome.</translation>
 <translation id="5525269841082836315">Створити парол.фразу</translation>
 <translation id="5542540507657872337">Знайдено <ph name="COUNT" /></translation>
@@ -878,6 +879,7 @@
 <translation id="7726702057919861819">Меню → Історія → Очистити історію</translation>
 <translation id="7738120385185846461">Повідомити про проблему</translation>
 <translation id="7741325291586284254">Сторінка нової анонімної вкладки</translation>
+<translation id="7744394900930577716">Паролі в інших додатках</translation>
 <translation id="7756478488453921771">Меню → Налаштування → Способи оплати</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9081058212938299310">Оновити пароль для <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="9087108903408689779">Запропонований пароль від Chrome:</translation>
+<translation id="9093271241977565440">Угорі екрана натисніть значок пошуку</translation>
 <translation id="9094033019050270033">Оновити пароль</translation>
 <translation id="9097506547406246598">Не вдалося скасувати підписку.</translation>
 <translation id="9100610230175265781">Потрібно вказати парольну фразу</translation>

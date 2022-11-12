@@ -571,6 +571,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5489208564673669003">Pour gérer les témoins pour tous les sites, reportez-vous à <ph name="BEGIN_LINK" />Paramètres des témoins<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les témoins (non recommandé)</translation>
 <translation id="5513681519188741830">il y a <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Touchez Gestionnaire de mots de passe, puis Ajouter</translation>
 <translation id="5525095647255982834">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur ce dernier.</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> trouvés</translation>
@@ -878,6 +879,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7726702057919861819">Menu → Historique → Effacer les données de navigation</translation>
 <translation id="7738120385185846461">Signaler un problème…</translation>
 <translation id="7741325291586284254">Page du nouvel onglet de navigation privée</translation>
+<translation id="7744394900930577716">Mots de passe dans d'autres applications</translation>
 <translation id="7756478488453921771">Menu → Paramètres → Modes de paiement</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
@@ -1054,6 +1056,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9081058212938299310">Mettre à jour le mot de passe pour <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation.</translation>
 <translation id="9087108903408689779">Mot de passe suggéré par Chrome :</translation>
+<translation id="9093271241977565440">Dans la partie supérieure de l'écran, touchez l'icône de recherche</translation>
 <translation id="9094033019050270033">Mettre à jour le mot de passe</translation>
 <translation id="9097506547406246598">Le désabonnement a échoué. Un problème est survenu.</translation>
 <translation id="9100610230175265781">Une phrase de passe est requise</translation>

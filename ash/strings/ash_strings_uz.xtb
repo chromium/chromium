@@ -352,6 +352,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2960314608273155470">Tasvirga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />. Klaviaturada harakatlanish uchun tab tugmasini bosing.</translation>
 <translation id="2961963223658824723">Xatolik yuz berdi. Bir necha soniyadan keyin qayta urining.</translation>
 <translation id="2963773877003373896">mod3</translation>
+<translation id="2965227184985674128">Mikrofondan foydalanishga ruxsat berilsinmi?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi</translation>
 <translation id="2970920913501714344">Ilovalar, kengaytmalar va mavzularni oʻrnating</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
@@ -430,6 +431,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3386978599540877378">butun ekran rejimidagi lupa</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Kengaytirilgan sozlamalar</translation>
+<translation id="3405101454990027959">Mikrofonga ruxsat bering</translation>
 <translation id="3410336247007142655">Tungi mavzu sozlamalarini chiqarish</translation>
 <translation id="3413817803639110246">Hozircha hech narsa yo‘q</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> aloqasini uzish</translation>
@@ -516,6 +518,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="385300504083504382">Boshi</translation>
 <translation id="3861651314799684201">Butun ekranni yozib olish uchun Enter tugmasini bosing</translation>
+<translation id="3885531177412808398">Mikrofonga ruxsat bersangiz, barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3891340733213178823">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
@@ -1375,6 +1378,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8666856788528804727">Qurilmani sozlash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8683506306463609433">Unumdorlik kuzatilmoqda</translation>
+<translation id="8684405646663021166">Mikrofonga ruxsat bersangiz, <ph name="APP_NAME" />, barcha ilovalar va saytlar mikrofondan foydalana oladi</translation>
 <translation id="8685326675965865247">Qurilma, ilovalar, sozlamalar va internetdan qidiring. Ilovalaringiz boʻylab strelkalar yordamida kezing.</translation>
 <translation id="8703634754197148428">Yozib olish. Yozib olish jarayoni boshlansa, javonga oʻtish va yozib olishni toʻxtatish tugmasini topish uchun Alt + Shift + L tugmalaridan foydalaning</translation>
 <translation id="8721053961083920564">Tovushlar: <ph name="STATE_TEXT" /></translation>
