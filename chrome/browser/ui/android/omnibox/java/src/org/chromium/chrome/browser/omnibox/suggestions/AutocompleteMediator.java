@@ -101,6 +101,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mShouldCacheSuggestions;
     private boolean mClearFocusAfterNavigation;
     private boolean mClearFocusAfterNavigationAsynchronously;
+    private boolean mUrlHasFocus;
 
     // TODO(crbug.com/1373795): Remove interface SuggestionVisibilityState and
     // mSuggestionVisibilityState after feature OmniboxRemoveExcessiveRecycledViewClearCalls is
@@ -309,6 +310,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     /** @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean) */
     void onUrlFocusChange(boolean hasFocus) {
+        mUrlHasFocus = hasFocus;
         if (hasFocus) {
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
@@ -747,7 +749,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                     && !newSuggestions.isEmpty()) {
                 defaultMatchIsSearch = newSuggestions.get(0).isSearchSuggestion();
             }
-            mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
+            if (!OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls() || mUrlHasFocus) {
+                mDelegate.onSuggestionsChanged(inlineAutocompleteText, defaultMatchIsSearch);
+            }
             if (!OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
                 updateOmniboxSuggestionsVisibility();
             }
