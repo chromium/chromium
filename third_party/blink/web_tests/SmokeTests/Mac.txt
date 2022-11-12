@@ -1393,8 +1393,6 @@ transforms/bounding-rect-zoom.html
 transforms/shadows.html
 transforms/svg-vs-css.xhtml
 transforms/transformed-document-element.html
-virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html
-virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/toJSON.html
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html
 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html

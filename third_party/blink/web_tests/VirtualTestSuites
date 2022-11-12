@@ -1145,18 +1145,6 @@
     ]
   },
   {
-    "prefix": "initially-invisible-images-lcp",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],
-    "args": [ "--enable-features=IncludeInitiallyInvisibleImagesInLCP"]
-  },
-  {
-    "prefix": "background-svg-in-lcp",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/largest-contentful-paint/"],
-    "args": [ "--enable-features=IncludeBackgroundSVGInLCP"]
-  },
-  {
     "prefix": "css-highlight-inheritance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

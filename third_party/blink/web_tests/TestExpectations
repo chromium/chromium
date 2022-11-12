@@ -5990,8 +5990,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/scalefactor200/external/wpt/largest-co
 crbug.com/1249176 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 
@@ -6016,13 +6014,6 @@ crbug.com/1249176 [ Mac12-arm64 ] media/autoplay/webaudio-audio-context-init.htm
 crbug.com/1250457 [ Mac ] storage/websql/open-database-set-empty-version.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/portals/http/tests/devtools/portals/portals-console.js [ Failure Pass Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
-
-crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-images.html [ Failure ]
-crbug.com/1249622 virtual/initially-invisible-images-lcp/external/wpt/largest-contentful-paint/initially-invisible-images.html [ Pass ]
-crbug.com/959296 external/wpt/largest-contentful-paint/observe-svg-background-image.html [ Failure ]
-crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/observe-svg-background-image.html [ Pass ]
-crbug.com/959296 external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Failure ]
-crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Pass ]
 
 # FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]
