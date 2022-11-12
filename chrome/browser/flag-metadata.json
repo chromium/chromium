@@ -2091,7 +2091,7 @@
   },
   {
     "name": "enable-desks-templates",
-    "owners": [ "janetmac", "richui", "sammiequon" ],
+    "owners": [ "dandersson", "janetmac", "richui", "yongshun" ],
     "expiry_milestone": 120
   },
   {
