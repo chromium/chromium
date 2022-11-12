@@ -211,7 +211,6 @@ crbug.com/1302791 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-im
 crbug.com/1302791 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 
 # Slow canvas tests
-crbug.com/1170041 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/1205133 virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Slow ]
 crbug.com/1243943 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-gradient.html [ Slow ]
 crbug.com/1243943 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-transforms.html [ Slow ]
@@ -275,7 +274,6 @@ crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-i
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
-crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
@@ -290,7 +288,6 @@ crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-pa
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-shadow-source-in.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-shadow-source-in.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
-crbug.com/866850 [ Mac11 ] virtual/gpu/fast/canvas/getPutImageDataPairTest.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
@@ -301,7 +298,6 @@ crbug.com/869800 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker
 crbug.com/869800 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-synconworker.html [ Slow ]
 
 ### Slow only on Mac10.13
-crbug.com/869662 [ Mac10.13 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Slow ]
 
 # Tests with slowest_run >= 10s on flakiness dashboard for site_per_process_blink_web_tests
 
@@ -728,8 +724,6 @@ crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.htm
 crbug.com/984467 fast/canvas/canvas-composite-stroke-alpha.html [ Slow ]
 crbug.com/1078863 [ Mac ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Slow ]
 crbug.com/1091948 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm [ Slow ]
-crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Slow ]
-crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Slow ]
 crbug.com/1176802 [ Debug ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Slow ]
 crbug.com/1176802 [ Debug ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Slow ]
 crbug.com/1044825 http/tests/devtools/network/resource-priority.js [ Slow ]
@@ -755,26 +749,15 @@ crbug.com/1361889 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/
 
 # Mac11 IDB timeouts
 crbug.com/1195814 [ Mac11 ] external/wpt/clear-site-data/storage.https.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/file-system-access/sandboxed_FileSystemBaseHandle-IndexedDB.https.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/fire-error-event-exception.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/get-databases.any.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/get-databases.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.worker.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAll.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAllKeys.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex-query-exception-order.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_tombstones.any.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbtransaction_objectStoreNames.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keygenerator-explicit.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.serviceworker.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes.any.sharedworker.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes-cursors.any.sharedworker.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-indexes-cursors.any.worker.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/key-generators/reading-autoincrement-store.any.serviceworker.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keypath-special-identifiers.htm [ Slow ]
 crbug.com/1195814 [ Mac11 ] storage/indexeddb/key-generator.html [ Slow ]
 
@@ -794,9 +777,7 @@ crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-coo
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Slow ]
 
-crbug.com/1302664 [ Debug Mac ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-skew.html [ Slow ]
 
-crbug.com/1301971 [ Debug Mac12 ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-verify-reftests.html [ Slow ]
 crbug.com/1301971 [ Debug Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/transform-interpolation-verify-reftests.html [ Slow ]
 
 crbug.com/1300811 [ Debug Mac ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]

@@ -80,7 +80,6 @@ virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [
 # too long on Windows. Skip for now.
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
-crbug.com/1209233 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash ]
@@ -136,8 +135,6 @@ crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html 
 crbug.com/626703 external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
-crbug.com/626703 external/wpt/webrtc-stats/rtp-stats-creation.html [ Crash Failure ]
-crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
 crbug.com/626703 external/wpt/speculation-rules/prerender/restrictions.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
 crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
@@ -145,9 +142,6 @@ crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Ti
 crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
-crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-transform-new-image.html [ Failure ]
-crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/object-view-box-old-image.html [ Failure ]
-crbug.com/1339051 virtual/view-transition/external/wpt/css/css-view-transitions/web-animations-api.html [ Failure ]
 
 # reenable print ref tests
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]

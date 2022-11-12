@@ -85,4 +85,3 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
 # Most likely a forced style/layout update from accessibiity while we are
 # render blocking, which should not happen.
-crbug.com/1351811 external/wpt/css/css-transitions/no-transition-from-ua-to-blocking-stylesheet.html [ Failure Pass ]

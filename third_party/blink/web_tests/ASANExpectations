@@ -25,7 +25,6 @@ crbug.com/166932 [ Linux ] plugins/embed-attributes-setting.html [ Skip ]
 crbug.com/166932 [ Linux ] plugins/embed-attributes-style.html [ Skip ]
 
 # Stack use-after-return detection
-crbug.com/438499 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/unanimated-style.html [ Timeout ]
 
 # Flakily timeout on Linux ASAN bots.
 crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/* [ Skip ]

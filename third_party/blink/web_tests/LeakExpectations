@@ -42,7 +42,6 @@ crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_c
 crbug.com/1219915 [ Linux ] editing/selection/context-menu-text-selection.html [ Failure ]
 crbug.com/1219915 [ Linux ] editing/selection/readonly-disabled-hittest.html [ Failure ]
 crbug.com/1219915 [ Linux ] editing/selection/readonly-disabled-text-selection.html [ Failure ]
-crbug.com/1219915 [ Linux ] external/wpt/dom/events/document-level-touchmove-event-listener-passive-by-default.tentative.html [ Failure ]
 crbug.com/1219915 [ Linux ] fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure ]
 crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure ]
 crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined.html [ Failure ]

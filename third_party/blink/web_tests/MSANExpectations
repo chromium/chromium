@@ -36,7 +36,6 @@ crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 # them as "Slow" doesn't seem to help the problem (see discussion on bug), so
 # marking them as "Timeout" while crbug.com/729136 is worked out.
 crbug.com/729136 [ Linux ] fast/css/css-selector-deeply-nested.html [ Timeout ]
-crbug.com/729136 [ Linux ] webaudio/mixing.html [ Timeout ]
 
 # Tests timing out on WebKit Linux Trusty MSAN
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Pass Timeout ]
@@ -54,7 +53,6 @@ crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 # The following test is flaky and timing out on chromium.webkit/WebKit Linux Trusty MSAN.
 crbug.com/851497 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Pass Timeout ]
 
-crbug.com/813547 [ Linux ] webaudio/BiquadFilter/tail-time-lowpass.html [ Pass Failure Timeout ]
 
 crbug.com/856601 [ Linux ] fast/css/visited-link-hang.html [ Pass Timeout ]
 
@@ -69,7 +67,6 @@ crbug.com/856601 [ Linux ] webaudio/Analyser/realtimeanalyser-freq-data.html [ P
 
 # Sheriff 2019-11-11
 
-crbug.com/856601 [ Linux ] fast/forms/color/color-picker-manual-color-change-invalid-values.html [ Pass Timeout ]
 
 crbug.com/856601 [ Linux ] external/wpt/compression/compression-stream.tentative.any.serviceworker.html [ Pass Timeout ]
 
@@ -96,9 +93,6 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 
 # Sheriff 2022-08-29
-crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-1.html [ Timeout ]
-crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-2.html [ Timeout ]
-crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Timeout ]
 
 # Flaking on WebKit Linux MSAN
 crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
