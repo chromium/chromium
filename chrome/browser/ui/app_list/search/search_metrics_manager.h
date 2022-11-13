@@ -22,6 +22,29 @@ class SearchMetricsManager : ash::AppListNotifier::Observer {
   using Result = ash::AppListNotifier::Result;
   using Location = ash::AppListNotifier::Location;
 
+  // Represents the actions a user can take in the launcher. These values
+  // persist
+  // to logs. Entries should not be renumbered and numeric values should never
+  // be reused.
+  enum class Action {
+    kImpression = 0,
+    kLaunch = 1,
+    kAbandon = 2,
+    kIgnore = 3,
+    kMaxValue = kIgnore
+  };
+
+  // Represents possible error states of the metrics observer itself. These
+  // values persist to logs. Entries should not be renumbered and numeric values
+  // should never be reused.
+  enum class Error {
+    kMissingNotifier = 0,
+    kResultNotFound = 1,
+    kUntrackedLocation = 2,
+    kUntypedResult = 3,
+    kMaxValue = kUntypedResult
+  };
+
   SearchMetricsManager(Profile* profile, ash::AppListNotifier* notifier);
   ~SearchMetricsManager() override;
 
