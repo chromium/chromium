@@ -354,6 +354,7 @@
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، چند کنش دردسترس است، برای جابه‌جایی بین آن‌ها، کلید Tab را فشار دهید</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">جزئیات کارت مجازی</translation>
 <translation id="1803020234906945288">تغذیه سالم</translation>
 <translation id="1803264062614276815">نام صاحب کارت</translation>
 <translation id="1803351196216024260">می‌تواند برای استفاده از میکروفون درخواست دهد</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">۳۴ × ۲۲ اینچ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{۱ پیشنهاد}one{# پیشنهاد}other{# پیشنهاد}}</translation>
 <translation id="2066915425250589881">درخواست حذف ارائه کنید</translation>
+<translation id="2066969741541525119">سازمان شما سایت پیش‌رو را مسدود کرده است</translation>
 <translation id="2068528718802935086">نوزادان و کودکان نوپا</translation>
 <translation id="2071156619270205202">این کارت برای شماره کارت مجازی واجدشرایط نیست.</translation>
 <translation id="2071692954027939183">اعلان‌ها به‌طور خودکار مسدود شدند چون شما معمولاً اجازه نمی‌دهید نمایش داده شوند</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">چندین سوراخ در پایین</translation>
 <translation id="219906046732893612">نوسازی منزل</translation>
 <translation id="2202020181578195191">سال انقضای معتبری وارد کنید</translation>
+<translation id="2202627062836089804">پشت کارت درج شده است</translation>
 <translation id="22081806969704220">سینی ۳</translation>
 <translation id="2210794033760923560">بارگذاری گزارش</translation>
 <translation id="2212735316055980242">خط‌مشی یافت نشد</translation>
@@ -984,6 +987,7 @@
 <translation id="350069200438440499">نام فایل:</translation>
 <translation id="3507936815618196901">ایجاد نقشه سه‌بعدی از محیط و ردیابی موقعیت دوربین</translation>
 <translation id="3512163584740124171">این خط‌مشی، چون خط‌مشی دیگری از همین گروه خط‌مشی اولویت بالاتری دارد، لحاظ نمی‌شود.</translation>
+<translation id="3515972145999192222">سازمان شما <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> را به‌دلیل نقض خط‌مشی مسدود کرده است. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">‏دکمه مدیریت نشانی‌ها، کلید «ورود» را فشار دهید و نشانی‌ها را در تنظیمات Chrome اضافه و مدیریت کنید</translation>
 <translation id="3518941727116570328">کار با چند شیء</translation>
 <translation id="3525130752944427905">۱۴ × ۱۰ اینچ</translation>
@@ -1058,6 +1062,7 @@
 <translation id="3678342917559046352">‏پسوند نامعتبر است: انتظار می‌رود مقدار به‌صورت یکی از فرم‌های زیر باشد: &lt;extension_id&gt; یا &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">‏صفحه را در پنجره‌ «ناشناس» جدیدی باز کنید (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">اطلاعات گواهی</translation>
+<translation id="3693327506115126094">نحوه تأیید هویتتان را انتخاب کنید</translation>
 <translation id="3699374065820972102">‏TouchID برای پر کردن گذرواژه‌ها روشن است</translation>
 <translation id="3701427423622901115">بازنشانی تأیید شد.</translation>
 <translation id="3704162925118123524">شاید شبکه‌ای که استفاده می‌کنید، بازدید از صفحه ورود به سیستم خودش را برای شما ضروری کرده باشد.</translation>
@@ -1142,6 +1147,7 @@
 <translation id="3906954721959377182">رایانه لوحی</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> می‌خواهد محتوای محافظت‌شده پخش کند. هویت دستگاهتان توسط Google به‌تأیید می‌رسد و ممکن است این سایت به آن دسترسی داشته باشد.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">کد امنیتی را وارد کنید</translation>
 <translation id="3927932062596804919">ردکردن</translation>
 <translation id="393316646445601645">اینترنت و مخابرات</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
@@ -1388,6 +1394,7 @@
 <translation id="4524805452350978254">مدیریت کارت‌ها</translation>
 <translation id="4526465106919207193">مردم و جامعه</translation>
 <translation id="4530347922939905757">پیام نوشتاری</translation>
+<translation id="4531477351494678589">شماره کارت مجازی:</translation>
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4541810033354695636">واقعیت افزوده</translation>
 <translation id="4542971377163063093">سینی ۶</translation>
@@ -1397,6 +1404,7 @@
 <translation id="4567686777917670400">‏سرپرستتان می‌تواند تنظیمات مرورگرتان را ازراه‌دور تغییر دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه خارج از Chromium هم مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">ارسال</translation>
 <translation id="4582204425268416675">برداشتن کارت</translation>
+<translation id="4582595824823167856">دریافت پیام نوشتاری</translation>
 <translation id="4587425331216688090">‏آدرس از Chrome پاک شود؟</translation>
 <translation id="459089498662672729">خط‌مشی سرپرست جای‌گذاری از <ph name="ORIGIN_NAME" /> در این مکان را توصیه نمی‌کند</translation>
 <translation id="4592951414987517459">اتصال شما به <ph name="DOMAIN" /> با استفاده از یک مجموعه رمز مدرن، رمزگذاری شده است.</translation>
@@ -1408,6 +1416,7 @@
 <translation id="4606870351894164739">تأثیرگذار</translation>
 <translation id="4607603470419975064">‏دکمه نکته‌های Chrome؛ برای اطلاع از ویژگی‌های جدید Chrome، کلید «ورود» را فشار دهید</translation>
 <translation id="4607608436550361748">‏دیدن نکته‌های Chrome</translation>
+<translation id="460848736049414407">سرپرست آن را مسدود کرده است</translation>
 <translation id="4610279718074907952">این سایت در گروهی است که <ph name="SET_OWNER" /> تعریف کرده است و می‌تواند فعالیت شما را ببیند</translation>
 <translation id="4617273035598175554">نرم‌افزار گرافیک و انیمیشن</translation>
 <translation id="4622292761762557753">درهرصورت منتقل شود</translation>
@@ -1874,6 +1883,7 @@
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
 <translation id="5772086939108830423">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="5776313857861697733">اولویت</translation>
+<translation id="5776574724412881956">کارت مجازی تکمیل نشده است؟ روی جزئیات کارت مجازی کلیک کنید تا در بریده‌دان کپی شود. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
 <translation id="578305955206182703">کهربایی</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
@@ -2003,6 +2013,7 @@
 <translation id="6116338172782435947">به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
 <translation id="6118782133429281336">فهرست مبدأ خالی است.</translation>
 <translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
+<translation id="6122181661879998141">روی کارت درج شده است</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6126565365696310362">پاکت چینی شماره ۲</translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
@@ -2369,6 +2380,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> می‌خواهد از دوربین شما استفاده کند</translation>
 <translation id="7108819624672055576">توسط افزونه مجاز شده است</translation>
 <translation id="7111012039238467737">(معتبر)</translation>
+<translation id="7112327784801341716">اطلاعات کنونی‌تان را نمی‌بینید؟ برای به‌روزرسانی آن، با بانکتان تماس بگیرید.</translation>
 <translation id="7118618213916969306">جستجوی نشانی وب بریده‌دان، <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">برگه‌ها یا برنامه‌های دیگر را ببندید</translation>
 <translation id="7129355289156517987">‏وقتی همه برگه‌های ناشناس Chromium را ببندید، فعالیتتان در این برگه‌ها از دستگاهتان پاک می‌شود:
@@ -2672,6 +2684,7 @@
 <translation id="7798389633136518089">نادیده گرفته شد چون خط‌مشی توسط منبع ابری تنظیم نشده است.</translation>
 <translation id="7800304661137206267">اتصال با استفاده از <ph name="CIPHER" /> و با <ph name="MAC" /> برای راستی‌آزمایی پیام و <ph name="KX" /> به‌عنوان مکانیسم تبدیل کلید رمزگذاری می‌شود.</translation>
 <translation id="7802523362929240268">سایت مجاز است</translation>
+<translation id="7802989406998618639">کد امنیتی <ph name="NUMBER_OF_DIGITS" /> رقمی <ph name="SIDE_OF_CARD" /> را وارد کنید تا بانکتان بتواند هویت شما را تأیید کند</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7805571567667010077">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="7805768142964895445">وضعیت</translation>
@@ -2999,6 +3012,7 @@
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8726549941689275341">اندازه صفحه:</translation>
 <translation id="8730621377337864115">تمام</translation>
+<translation id="8731268612289859741">کد امنیتی</translation>
 <translation id="8731544501227493793">‏دکمه «مدیریت گذرواژه‌ها»، برای مشاهده و مدیریت گذرواژه‌ها در تنظیمات Chrome، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> شما توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="8736059027199600831">۳۰ × ۴۰ اینچ</translation>
@@ -3104,6 +3118,7 @@
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
 <translation id="9008178007718859630">دکوراسیون داخلی و خانه</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
+<translation id="9018120810758822233">کد امنیتی خود را برای <ph name="CREDIT_CARD" /> وارد کنید</translation>
 <translation id="901834265349196618">ایمیل</translation>
 <translation id="9020200922353704812">نشانی صورت‌حساب کارت لازم است</translation>
 <translation id="9020542370529661692">این صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>

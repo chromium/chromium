@@ -2374,6 +2374,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3143515551205905069">Sinxronizatsiyani bekor qilish</translation>
 <translation id="3143754809889689516">Boshidan ijro etish</translation>
 <translation id="3144647712221361880">Havolani quyidagicha ochish</translation>
+<translation id="3144896554017119333">Kengaytmalar va boshqalar</translation>
 <translation id="3149510190863420837">Chrome ilovalari</translation>
 <translation id="3150693969729403281">Xavfsizlik tekshiruvini ishga tushirish</translation>
 <translation id="3150927491400159470">Apparatni qayta yuklash</translation>
@@ -2482,6 +2483,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
 <translation id="3269093882174072735">Tasvirni yuklash</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> chiqarilmasin</translation>
+<translation id="3269175001434213183">Maʼlumotlaringizni zaxiralash va istalgan qurilmada ochish uchun sinxronizatsiyani yoqing</translation>
 <translation id="3269612321104318480">Och moviy va oq</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fayl}other{# ta fayl}}</translation>
 <translation id="326999365752735949">diff vositasi yuklab olinmoqda</translation>
@@ -4280,6 +4282,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4950993567860689081">Seansingiz tashkilotingiz tomonidan boshqariladi. Administratorlar profilingizni oʻchirishi va tarmoq trafigini kuzatishi mumkin.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# ta fayl}}</translation>
 <translation id="495170559598752135">Harakatlar</translation>
+<translation id="4951966678293618079">Bu sayt uchun parollar hech qachon saqlanmasin</translation>
 <translation id="4953808748584563296">Standart to‘q sariq avatar</translation>
 <translation id="4955710816792587366">PIN kod tanlang</translation>
 <translation id="4959262764292427323">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
@@ -4309,6 +4312,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4981449534399733132">Brauzer tarixini Google hisobingizga sinxronlangan barcha qurilmalardan tozalash uchun <ph name="BEGIN_LINK" />hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Qoldirgan joyingizdan boshqa qurilmada davom eting</translation>
 <translation id="4982236238228587209">Qurilmadagi dasturlar</translation>
+<translation id="4986706507552097681">Nimani sinxronlashni istalgan vaqtda sozlamalar orqali tanlash mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="4986728572522335985">Bunda elektron kalitdagi barcha maʼlumotlar, jumladan, PIN kodlar ham tozalab tashlanadi</translation>
 <translation id="4988526792673242964">Sahifalar</translation>
 <translation id="49896407730300355">Soat miliga teskari yo‘nalishda burish</translation>

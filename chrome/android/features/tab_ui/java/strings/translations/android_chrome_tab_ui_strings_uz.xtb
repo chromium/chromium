@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Ulashiladigan varaq eskizi</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
 <translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome brauzeridan <ph name="TABS_COUNT_ONE" /> ta havola}other{Chrome brauzeridan <ph name="TABS_COUNT_MANY" /> ta havola}}</translation>
 <translation id="575494663145460764">Narxlar tushganda xabar qilinsinmi?</translation>
 <translation id="58326064309361797">Varaqlarni guruhlash uchun bir-birining ustiga torting</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish</translation>
