@@ -47,14 +47,6 @@ bool IsScreenshot(const base::FilePath& path,
          path.BaseName().value().rfind("Screenshot", 0) == 0;
 }
 
-// TODO(crbug.com/1378869): This exists to reroute results depending on which
-// launcher is enabled, and should be removed after the new launcher launch.
-ash::SearchResultDisplayType GetDisplayType() {
-  return ash::features::IsProductivityLauncherEnabled()
-             ? ash::SearchResultDisplayType::kContinue
-             : ash::SearchResultDisplayType::kList;
-}
-
 bool IsDriveDisabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
@@ -115,9 +107,9 @@ void ZeroStateFileProvider::SetSearchResults(
       auto result = std::make_unique<FileResult>(
           /*id=*/kSchema + filepath.value(), filepath,
           results[i].prediction_reason,
-          ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(),
-          results[i].score.value(), std::u16string(), FileResult::Type::kFile,
-          profile_);
+          ash::AppListSearchResultType::kZeroStateFile,
+          ash::SearchResultDisplayType::kContinue, results[i].score.value(),
+          std::u16string(), FileResult::Type::kFile, profile_);
       new_results.push_back(std::move(result));
     }
   }
