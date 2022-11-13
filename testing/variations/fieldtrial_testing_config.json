@@ -838,14 +838,14 @@
             ]
         }
     ],
-    "AsyncDnsWin": [
+    "AsyncDnsLinux": [
         {
             "platforms": [
-                "windows"
+                "linux"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20221111",
                     "enable_features": [
                         "AsyncDns"
                     ]
