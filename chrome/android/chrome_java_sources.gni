@@ -33,6 +33,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/core/utils/TaskTabHelper.java",
   "java/src/com/ark/browser/core/utils/WebContextFetcher.java",
 
+  "java/src/com/ark/browser/settings/AppConfig.java",
+
   "java/src/com/ark/browser/tab/dao/ArkTabDao.java",
   "java/src/com/ark/browser/tab/dao/ArkTabStore.java",
 
@@ -79,6 +81,12 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/dialog/SmartSearchPopupWindow.java",
   "java/src/com/ark/browser/ui/dialog/TestWindow.java",
   "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
+
+  "java/src/com/ark/browser/ui/fragment/ArkMainFragment.java",
+  "java/src/com/ark/browser/ui/fragment/base/BaseFragment.java",
+  "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
+  "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
+
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",

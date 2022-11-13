@@ -102,20 +102,20 @@ public class TabListManager {
                     callback.onResult(null);
                 }
 
-                ThreadPool.postOnUIThread(() -> {
-
-                    int count = tabLists[0].getCount();
-                    ArkLogger.e(TAG, "restore count=" + count);
-
-                    if (count > 0) {
-                        ArkLogger.e(TAG, "restore selectTabAt " + tabLists[0].getIndex());
-                        tabLists[0].selectTabAt(tabLists[0].getIndex());
-                    } else {
-                        ArkLogger.e(TAG, "restore openNewTab");
-                        LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
-                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-                    }
-                });
+//                ThreadPool.postOnUIThread(() -> {
+//
+//                    int count = tabLists[0].getCount();
+//                    ArkLogger.e(TAG, "restore count=" + count);
+//
+//                    if (count > 0) {
+//                        ArkLogger.e(TAG, "restore selectTabAt " + tabLists[0].getIndex());
+//                        tabLists[0].selectTabAt(tabLists[0].getIndex());
+//                    } else {
+//                        ArkLogger.e(TAG, "restore openNewTab");
+//                        LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
+//                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
+//                    }
+//                });
 
             });
         });

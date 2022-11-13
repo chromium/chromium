@@ -19,6 +19,7 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.color.DynamicColors;
+import com.zpj.fragmentation.SupportActivity;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
@@ -39,7 +40,7 @@ import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPL
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
  */
-public class ChromeBaseAppCompatActivity extends AppCompatActivity
+public class ChromeBaseAppCompatActivity extends SupportActivity
         implements ModalDialogManagerHolder {
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();

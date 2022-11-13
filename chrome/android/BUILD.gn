@@ -192,6 +192,9 @@ android_resources("chrome_app_java_resources") {
 
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
+
+    "//chrome/android/java/res_app/layout/fragment_main.xml",
+
     "//chrome/android/java/res_app/layout/item_collection.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/item_menu.xml",
@@ -565,6 +568,7 @@ android_library("chrome_java") {
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_customview_customview_java",
@@ -584,6 +588,13 @@ android_library("chrome_java") {
     "//third_party/metrics_proto:metrics_proto_java",
     "//third_party/android_deps_zpj:com_zpj_utils_java",
     "//third_party/android_deps_zpj:com_zpj_checkbox_java",
+    "//third_party/android_deps_zpj:com_zpj_switcher_java",
+    "//third_party/android_deps_zpj:com_zpj_progressbar_java",
+    "//third_party/android_deps_zpj:com_zpj_settingitem_java",
+    "//third_party/android_deps_zpj:com_zpj_toolbar_java",
+    "//third_party/android_deps_zpj:com_zpj_toast_java",
+    "//third_party/android_deps_zpj:com_zpj_bus_java",
+    "//third_party/android_deps_zpj:com_zpj_skinswitcher_java",
     "//third_party/android_deps_zpj:com_zpj_statemanager_java",
     "//third_party/android_deps_zpj:com_zpj_recyclerview_java",
     "//third_party/android_deps_zpj:com_zpj_fragmentation_java",

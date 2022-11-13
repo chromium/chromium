@@ -1,6 +1,8 @@
 package com.ark.browser;
 
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -17,6 +19,7 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.dialog.MainMenuDialog;
+import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Callback;
@@ -51,9 +54,17 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     private static final String TAG = "BrowserActivity";
 
-    private ArkCompositorViewHolder mViewHolder;
-    private ProgressBar mProgressBar;
-    private EditText mUrlBar;
+    private ArkMainFragment mFragment;
+
+    @Override
+    protected void onPreCreate() {
+        super.onPreCreate();
+        mFragment = findFragment(ArkMainFragment.class);
+        if (mFragment == null) {
+            mFragment = new ArkMainFragment();
+        }
+        getLifecycleDispatcher().register(mFragment);
+    }
 
     @Override
     public boolean shouldStartGpuProcess() {
@@ -61,28 +72,8 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    public void onPauseWithNative() {
-        NavigationPredictorBridge.onPause();
-        super.onPauseWithNative();
-    }
-
-    @Override
-    public void onStartWithNative() {
-        super.onStartWithNative();
-        ChromeActivitySessionTracker.getInstance().onStartWithNative();
-        ChromeCachedFlags.getInstance().cacheNativeFlags();
-    }
-
-    @Override
     public void onResumeWithNative() {
         super.onResumeWithNative();
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            WebContents webContents = tab.getWebContents();
-
-            // For picture-in-picture mode / auto-darken web contents.
-            if (webContents != null) webContents.notifyRendererPreferenceUpdate();
-        }
 
         ChromeSessionState.setIsInMultiWindowMode(
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
@@ -97,76 +88,13 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        if (mViewHolder != null) {
-            mViewHolder.onStart();
-        }
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            if (tab.isHidden()) {
-                tab.show(TabSelectionType.FROM_USER);
-            } else {
-                // The visible Tab's renderer process may have died after the activity was
-                // paused. Ensure that it's restored appropriately.
-                tab.loadIfNeeded();
-            }
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mViewHolder != null) {
-            mViewHolder.onStop();
-        }
-        onActivityHidden();
-    }
-
-    private void onActivityHidden() {
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            tab.hide(TabHidingType.ACTIVITY_HIDDEN);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mViewHolder != null) {
-            mViewHolder.shutDown();
-            mViewHolder = null;
-        }
-        super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
-
-    @Override
     protected void performPreInflationStartup() {
         super.performPreInflationStartup();
         getWindow().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_background_color)));
     }
 
     @Override
-    protected void performPostInflationStartup() {
-        super.performPostInflationStartup();
-        getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
-
-
-    }
-
-    @Override
     protected void triggerLayoutInflation() {
-        TabListManager.getInstance().restore(getWindowAndroid(), new Callback<Void>() {
-            @Override
-            public void onResult(Void result) {
-
-            }
-        });
         try (TraceEvent te = TraceEvent.scoped("BrowserActivity.triggerLayoutInflation")) {
             SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
 
@@ -185,16 +113,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
 
-        mViewHolder = findViewById(R.id.compositor_view_holder);
-        mProgressBar = findViewById(R.id.progress_bar);
-        mProgressBar.setMax(100);
-
-        // If the UI was inflated on a background thread, then the CompositorView may not have been
-        // fully initialized yet as that may require the creation of a handler which is not allowed
-        // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
-        // been yet.
-        mViewHolder.setRootView(rootView);
-
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the
         // insets.
         rootView.setFitsSystemWindows(false);
@@ -210,66 +128,24 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
         try (TraceEvent e = TraceEvent.scoped("BrowserActivity.startNativeInitialization")) {
             // This is on the critical path so don't delay.
-            setupCompositorContentPostNative();
 
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::finishNativeInitialization);
-
         }
-
-        mViewHolder.onStart();
     }
 
     @Override
     public void initializeCompositor() {
-//        mTabContentManager.initWithNative();
-//        mViewHolder.onNativeLibraryReady(getWindowAndroid(), mTabContentManager);
+
     }
 
     @Override
     public void startNativeInitialization() {
-
+//        super.startNativeInitialization();
     }
 
     @Override
     protected ArkWindowAndroid createWindowAndroid() {
-        return new ArkWindowAndroid(this) {
-
-            @Override
-            public TabDelegateFactory getTabDelegateFactory() {
-                return getCompositorViewHolder().getTabDelegateFactory();
-            }
-
-            @Override
-            public ArkCompositorViewHolder getCompositorViewHolder() {
-                return mViewHolder;
-            }
-
-            @Override
-            public ArkNavigationHandler getNavigationHandler() {
-                return new ArkNavigationHandler() {
-                    @Override
-                    public boolean canGoForward() {
-                        return TabListManager.getInstance().getCurrentTabList().canGoForward();
-                    }
-
-                    @Override
-                    public boolean goForward() {
-                        return TabListManager.getInstance().getCurrentTabList().goForward();
-                    }
-
-                    @Override
-                    public boolean canGoBack() {
-                        return TabListManager.getInstance().getCurrentTabList().canGoBack();
-                    }
-
-                    @Override
-                    public boolean goBack() {
-                        return TabListManager.getInstance().getCurrentTabList().goBack();
-                    }
-                };
-            }
-
-        };
+        return mFragment.createWindowAndroid(this);
     }
 
     @Nullable
@@ -285,56 +161,10 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     protected void doLayoutInflation() {
         ArkLogger.e(TAG, "doLayoutInflation");
         try (TraceEvent te = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
-            // Allow disk access for the content view and toolbar container setup.
-            // On certain android devices this setup sequence results in disk writes outside
-            // of our control, so we have to disable StrictMode to work. See
-            // https://crbug.com/639352.
-            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                TraceEvent.begin("setContentView(R.layout.main)");
-                setContentView(R.layout.activity_browser);
+            setContentView(R.layout.activity_browser);
 
+            loadRootFragment(R.id.container_root, mFragment);
 
-                ImageView btnBack = findViewById(R.id.btn_back);
-                ImageView btnForward = findViewById(R.id.btn_forward);
-
-                btnBack.setOnClickListener(v -> {
-                    if (TabListManager.getInstance().getCurrentTabList().goBack()) {
-                        return;
-                    }
-                    Toast.makeText(this, "cant go back!", Toast.LENGTH_SHORT).show();
-                });
-
-                btnForward.setOnClickListener(v -> {
-                    if (TabListManager.getInstance().getCurrentTabList().goForward()) {
-                        return;
-                    }
-                    Toast.makeText(this, "cant go forward!", Toast.LENGTH_SHORT).show();
-                });
-
-                mUrlBar = findViewById(R.id.et_url);
-                mUrlBar.setOnEditorActionListener((v, actionId, event) -> {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        LoadUrlParams params = new LoadUrlParams(mUrlBar.getText().toString()
-                                , PageTransition.LINK);
-                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-                    }
-                    return false;
-                });
-
-                ImageView btnRefresh = findViewById(R.id.btn_refresh);
-                btnRefresh.setOnClickListener(v -> {
-                    Tab tab = getActivityTab();
-                    if (tab != null) {
-                        tab.reload();
-                    }
-                });
-
-                ImageView btnMenu = findViewById(R.id.btn_menu);
-                btnMenu.setOnClickListener(v -> MainMenuDialog.show(ArkBrowserActivity.this));
-
-                TraceEvent.end("setContentView(R.layout.main)");
-
-            }
             onInitialLayoutInflationComplete();
         }
     }
@@ -354,108 +184,12 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
 
-
-    private void setupCompositorContentPostNative() {
-        ArkLogger.e(TAG, "setupCompositorContentPostNative");
-        try (TraceEvent e = TraceEvent.scoped(
-                "BrowserActivity.setupCompositorContentPostNative")) {
-
-            TabListManager.getInstance().addObserver(() -> {
-                Tab tab = getActivityTab();
-                ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
-                if (tab != null) {
-                    mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
-                }
-                mViewHolder.setTab(tab);
-            });
-
-            mViewHolder.setFocusable(false);
-            mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
-
-                private final TabObserver observer = new EmptyTabObserver() {
-
-                    @Override
-                    public void onLoadProgressChanged(Tab tab, float progress) {
-                        super.onLoadProgressChanged(tab, progress);
-                        ArkLogger.d(TAG, "onLoadProgressChanged tab=" + tab.getId() + " progress=" + progress);
-                        if (progress >= 1f) {
-                            mProgressBar.setVisibility(View.GONE);
-                        } else {
-                            mProgressBar.setVisibility(View.VISIBLE);
-                            mProgressBar.setProgress((int) (progress * 100));
-                        }
-                    }
-
-                    @Override
-                    public void onUrlUpdated(Tab tab) {
-                        super.onUrlUpdated(tab);
-                        if (tab == null) {
-                            return;
-                        }
-                        mUrlBar.setText(tab.getUrl().getSpec());
-                    }
-
-                    @Override
-                    public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                        super.onLoadStarted(tab, toDifferentDocument);
-                        ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mProgressBar.setProgress(0);
-                    }
-
-                    @Override
-                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                        mProgressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onPageLoadStarted(Tab tab, GURL url) {
-                        super.onPageLoadStarted(tab, url);
-                        ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mProgressBar.setProgress(0);
-                    }
-
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        mProgressBar.setVisibility(View.GONE);
-                    }
-                };
-
-
-                @Override
-                public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
-                    return TabListManager.getInstance().openNewPage(current, type, url);
-                }
-
-                @Override
-                public ITabGroup getTabList(Tab current) {
-                    if (current == null) {
-                        return TabListManager.getInstance().getCurrentTabList();
-                    }
-                    return TabListManager.getInstance().getTabList(current.isIncognito());
-                }
-
-                @Override
-                public void onPageAttached(@NonNull Tab page) {
-                    page.addObserver(observer);
-                    if (!page.isLoading()) {
-                        mProgressBar.setVisibility(View.GONE);
-                    }
-                    mUrlBar.setText(page.getUrl().getSpec());
-                }
-
-                @Override
-                public void onPageDetached(@NonNull Tab page) {
-                    page.removeObserver(observer);
-                    mProgressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onShutDown() {
-                    TabListManager.getInstance().onDestroy();
-                }
-            });
+    @Override
+    public final void onBackPressedSupport() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            pop();
+        } else {
+            getOnBackPressedDispatcher().onBackPressed();
         }
     }
 

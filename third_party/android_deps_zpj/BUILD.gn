@@ -21,6 +21,67 @@ android_aar_prebuilt("com_zpj_checkbox_java") {
   deps = []
 }
 
+android_aar_prebuilt("com_zpj_switcher_java") {
+  aar_path = "libs/ZSwitcher-2.0.0.aar"
+  info_path = "libs/ZSwitcher.info"
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_progressbar_java") {
+  aar_path = "libs/ZProgressBar-2.0.0.aar"
+  info_path = "libs/ZProgressBar.info"
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_settingitem_java") {
+  aar_path = "libs/ZSettingItem-2.0.0.aar"
+  info_path = "libs/ZSettingItem.info"
+  deps = [
+    ":com_zpj_switcher_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_toolbar_java") {
+  aar_path = "libs/ZToolBar-2.0.0.aar"
+  info_path = "libs/ZToolBar.info"
+  deps = [
+    ":com_zpj_utils_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_toast_java") {
+  aar_path = "libs/ZToast-2.0.0.aar"
+  info_path = "libs/ZToast.info"
+  deps = [
+    ":com_zpj_utils_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_bus_java") {
+  aar_path = "libs/ZBus-2.0.0.aar"
+  info_path = "libs/ZBus.info"
+  deps = [
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_skinswitcher_java") {
+  aar_path = "libs/SkinSwitcher-2.0.0.aar"
+  info_path = "libs/SkinSwitcher.info"
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
+  ]
+}
+
 android_aar_prebuilt("com_zpj_statemanager_java") {
   aar_path = "libs/StateManager-2.0.0.aar"
   info_path = "libs/StateManager.info"
