@@ -6,10 +6,6 @@
 
 #include <stddef.h>
 
-#include "ash/constants/ash_features.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace app_list {
@@ -23,13 +19,8 @@ double Scoring::FinalScore() const {
 double Scoring::BestMatchScore() const {
   if (filter)
     return -1.0;
-
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "best_match_usage", true)) {
+  else
     return std::max(mrfu_result_score, normalized_relevance);
-  } else {
-    return normalized_relevance;
-  }
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& scoring) {

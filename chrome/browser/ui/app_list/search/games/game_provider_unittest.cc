@@ -71,7 +71,6 @@ class GameProviderTest : public testing::Test,
   GameProviderTest() {
     bool enabled_override = GetParam();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {ash::features::kProductivityLauncher, {}},
         {search_features::kLauncherGameSearch,
          {{"enabled_override", enabled_override ? "true" : "false"}}}};
     feature_list_.InitWithFeaturesAndParameters(

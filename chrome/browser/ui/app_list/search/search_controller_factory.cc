@@ -119,12 +119,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         os_settings_manager->hierarchy(), app_service_proxy));
   }
 
-  if (ash::features::IsProductivityLauncherEnabled() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "enable_shortcuts", true)) {
-    controller->AddProvider(
-        std::make_unique<KeyboardShortcutProvider>(profile));
-  }
+  controller->AddProvider(std::make_unique<KeyboardShortcutProvider>(profile));
 
   controller->AddProvider(std::make_unique<HelpAppProvider>(profile));
 

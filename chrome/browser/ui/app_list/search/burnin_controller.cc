@@ -4,19 +4,16 @@
 
 #include "chrome/browser/ui/app_list/search/burnin_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/flat_set.h"
-#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 
 namespace app_list {
 
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
+
 BurnInController::BurnInController(BurnInPeriodElapsedCallback callback)
     : burnin_period_elapsed_callback_(std::move(callback)),
-      burnin_period_(base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          ash::features::kProductivityLauncher,
-          "burnin_length_ms",
-          200))) {}
+      burnin_period_(kBurnInPeriod) {}
 
 bool BurnInController::is_post_burnin() {
   return base::Time::Now() - session_start_ > burnin_period_;

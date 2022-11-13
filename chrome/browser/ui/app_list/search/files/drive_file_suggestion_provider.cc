@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
@@ -26,6 +26,7 @@ namespace {
 // means that results are refreshed more often if there are enough high-quality
 // results returned.
 constexpr size_t kShortDelayQuota = 3u;
+constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(8);
 
 // Given an absolute path representing a file in the user's Drive, returns a
 // reparented version of the path within the user's drive fs mount.
@@ -81,11 +82,7 @@ DriveFileSuggestionProvider::DriveFileSuggestionProvider(
           profile,
           profile->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess())),
-      drive_file_max_last_modified_time_(
-          base::Days(base::GetFieldTrialParamByFeatureAsInt(
-              ash::features::kProductivityLauncher,
-              "max_last_modified_time",
-              8))),
+      drive_file_max_last_modified_time_(kMaxLastModifiedTime),
       result_filter_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {

@@ -9,29 +9,17 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/bind.h"
-#include "base/files/file.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "components/drive/file_errors.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
@@ -46,14 +34,6 @@ constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
 void LogLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
                           latency);
-}
-
-// TODO(crbug.com/1378869): This exists to reroute results depending on which
-// launcher is enabled, and should be removed after the new launcher launch.
-ash::SearchResultDisplayType GetDisplayType() {
-  return ash::features::IsProductivityLauncherEnabled()
-             ? ash::SearchResultDisplayType::kContinue
-             : ash::SearchResultDisplayType::kList;
 }
 
 }  // namespace
@@ -102,40 +82,25 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 
 void ZeroStateDriveProvider::OnFileSystemMounted() {
-  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
-      ash::features::kProductivityLauncher,
-      "itemsuggest_query_on_filesystem_mounted", true);
-
-  if (kUpdateCache) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
-                       update_cache_weak_factory_.GetWeakPtr()),
-        kFirstUpdateDelay);
-  }
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
+                     update_cache_weak_factory_.GetWeakPtr()),
+      kFirstUpdateDelay);
 }
 
 void ZeroStateDriveProvider::OnSessionStateChanged() {
-  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
-      ash::features::kProductivityLauncher,
-      "itemsuggest_query_on_session_state_changed", true);
-
   // Update cache if the user has logged in.
   if (session_manager_->session_state() ==
-          session_manager::SessionState::ACTIVE &&
-      kUpdateCache) {
+      session_manager::SessionState::ACTIVE) {
     MaybeUpdateCache();
   }
 }
 
 void ZeroStateDriveProvider::ScreenIdleStateChanged(
     const power_manager::ScreenIdleState& proto) {
-  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
-      ash::features::kProductivityLauncher,
-      "itemsuggest_query_on_screen_idle_state_changed", true);
-
   // Update cache if the screen changed from off to on.
-  if (screen_off_ && !proto.dimmed() && !proto.off() && kUpdateCache) {
+  if (screen_off_ && !proto.dimmed() && !proto.off()) {
     MaybeUpdateCache();
   }
   screen_off_ = proto.off();
@@ -143,17 +108,11 @@ void ZeroStateDriveProvider::ScreenIdleStateChanged(
 
 void ZeroStateDriveProvider::StopZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // Cancel any in-flight queries for this provider.
   suggestion_query_weak_factory_.InvalidateWeakPtrs();
 
   // Update the cache for when the zero state is next requested.
-  static const bool kUpdateCache = base::GetFieldTrialParamByFeatureAsBool(
-      ash::features::kProductivityLauncher, "itemsuggest_query_on_view_closing",
-      true);
-  if (kUpdateCache) {
-    MaybeUpdateCache();
-  }
+  MaybeUpdateCache();
 }
 
 ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
@@ -220,8 +179,9 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
 
   auto result = std::make_unique<FileResult>(
       result_id, filepath, details,
-      ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
-      relevance, std::u16string(), FileResult::Type::kFile, profile_);
+      ash::AppListSearchResultType::kZeroStateDrive,
+      ash::SearchResultDisplayType::kContinue, relevance, std::u16string(),
+      FileResult::Type::kFile, profile_);
   return result;
 }
 

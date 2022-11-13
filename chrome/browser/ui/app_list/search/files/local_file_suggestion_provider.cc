@@ -6,12 +6,10 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
@@ -79,10 +77,7 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
     base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback)
     : FileSuggestionProvider(notify_update_callback),
       profile_(profile),
-      max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          ash::features::kProductivityLauncher,
-          "max_last_modified_time",
-          kDefaultMaxLastModifiedTimeInDays))) {
+      max_last_modified_time_(base::Days(kDefaultMaxLastModifiedTimeInDays)) {
   DCHECK(profile_);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
