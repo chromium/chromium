@@ -631,9 +631,6 @@ void BrowserManager::PrelaunchAtLoginScreen() {
             session_manager::SessionState::LOGIN_PRIMARY);
   DCHECK(!user_manager::UserManager::Get()->IsUserLoggedIn());
 
-  // Ensure this isn't run multiple times.
-  session_manager::SessionManager::Get()->RemoveObserver(this);
-
   // Load and start Lacros.
   component_update_observation_.Observe(component_update_service_);
   SetState(State::MOUNTING);
