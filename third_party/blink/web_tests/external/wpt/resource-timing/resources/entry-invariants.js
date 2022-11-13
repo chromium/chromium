@@ -449,13 +449,14 @@ const invariants = {
 
 const attribute_test_internal = (loader, path, validator, run_test, test_label) => {
   promise_test(
-    async () => {
+    async (t) => {
       let loaded_entry = new Promise((resolve, reject) => {
-        new PerformanceObserver((entry_list, self) => {
+        const observer = new PerformanceObserver((entry_list, self) => {
           try {
-            const name_matches = entry_list.getEntries().forEach(entry => {
+            entry_list.getEntries().forEach(entry => {
               if (entry.name.includes(path)) {
                 resolve(entry);
+                observer.disconnect();
               }
             });
           } catch(e) {
@@ -463,11 +464,23 @@ const attribute_test_internal = (loader, path, validator, run_test, test_label) 
             // fail fast with a useful message instead of timing out.
             reject(e);
           }
-        }).observe({"type": "resource"});
+        });
+        observer.observe({"type": "resource"});
       });
 
+      const testTimeout = 5 * 1000;
+
+      let timeout = new Promise((resolve, reject) => {
+        t.step_timeout(
+          () => {
+            assert_unreached('No ResourceTiming entries found.');
+            resolve(new Error('No ResourceTiming entries found.'));
+          },
+          testTimeout);
+      })
+
       await loader(path, validator);
-      const entry = await(loaded_entry);
+      const entry = await (Promise.race([loaded_entry, timeout]));
       run_test(entry);
   }, test_label);
 };
