@@ -71,14 +71,14 @@ TEST(ComputedStyleUtilsTest, ValueForAnimationDelayWithNullptr) {
   expected->Append(*CSSNumericLiteralValue::Create(
       0, CSSPrimitiveValue::UnitType::kSeconds));
 
-  auto* start =
-      DynamicTo<CSSValueList>(ComputedStyleUtils::ValueForAnimationDelayStart(
+  auto* start = DynamicTo<CSSValueList>(
+      ComputedStyleUtils::ValueForAnimationDelayStartList(
           /* CSSTimingData */ nullptr));
   ASSERT_TRUE(start);
   EXPECT_EQ(*expected, *start);
 
   auto* end =
-      DynamicTo<CSSValueList>(ComputedStyleUtils::ValueForAnimationDelayEnd(
+      DynamicTo<CSSValueList>(ComputedStyleUtils::ValueForAnimationDelayEndList(
           /* CSSTimingData */ nullptr));
   ASSERT_TRUE(end);
   EXPECT_EQ(*expected, *end);

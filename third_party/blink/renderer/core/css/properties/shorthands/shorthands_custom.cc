@@ -110,15 +110,12 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
     CSSValueList* animations_list = CSSValueList::CreateCommaSeparated();
     for (wtf_size_t i = 0; i < animation_data->NameList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      list->Append(*CSSNumericLiteralValue::Create(
-          CSSTimingData::GetRepeated(animation_data->DurationList(), i),
-          CSSPrimitiveValue::UnitType::kSeconds));
-      list->Append(*ComputedStyleUtils::CreateTimingFunctionValue(
-          CSSTimingData::GetRepeated(animation_data->TimingFunctionList(), i)
-              .get()));
-      list->Append(*CSSNumericLiteralValue::Create(
-          CSSTimingData::GetRepeated(animation_data->DelayList(), i),
-          CSSPrimitiveValue::UnitType::kSeconds));
+      list->Append(*ComputedStyleUtils::ValueForAnimationDuration(
+          CSSTimingData::GetRepeated(animation_data->DurationList(), i)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
+          CSSTimingData::GetRepeated(animation_data->TimingFunctionList(), i)));
+      list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
+          CSSTimingData::GetRepeated(animation_data->DelayList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
           CSSTimingData::GetRepeated(animation_data->IterationCountList(), i)));
       list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
@@ -146,22 +143,20 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   // animation-name default value.
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  list->Append(
-      *CSSNumericLiteralValue::Create(CSSAnimationData::InitialDuration(),
-                                      CSSPrimitiveValue::UnitType::kSeconds));
-  list->Append(*ComputedStyleUtils::CreateTimingFunctionValue(
-      CSSAnimationData::InitialTimingFunction().get()));
-  list->Append(*CSSNumericLiteralValue::Create(
-      CSSAnimationData::InitialDelay(), CSSPrimitiveValue::UnitType::kSeconds));
-  list->Append(
-      *CSSNumericLiteralValue::Create(CSSAnimationData::InitialIterationCount(),
-                                      CSSPrimitiveValue::UnitType::kNumber));
+  list->Append(*ComputedStyleUtils::ValueForAnimationDuration(
+      CSSAnimationData::InitialDuration()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
+      CSSAnimationData::InitialTimingFunction()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
+      CSSAnimationData::InitialDelay()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
+      CSSAnimationData::InitialIterationCount()));
   list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
       CSSAnimationData::InitialDirection()));
   list->Append(*ComputedStyleUtils::ValueForAnimationFillMode(
       CSSAnimationData::InitialFillMode()));
-  // Initial animation-play-state.
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kRunning));
+  list->Append(*ComputedStyleUtils::ValueForAnimationPlayState(
+      CSSAnimationData::InitialPlayState()));
   return list;
 }
 
@@ -2845,9 +2840,9 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
       list->Append(*CSSNumericLiteralValue::Create(
           CSSTimingData::GetRepeated(transition_data->DurationList(), i),
           CSSPrimitiveValue::UnitType::kSeconds));
-      list->Append(*ComputedStyleUtils::CreateTimingFunctionValue(
-          CSSTimingData::GetRepeated(transition_data->TimingFunctionList(), i)
-              .get()));
+      list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
+          CSSTimingData::GetRepeated(transition_data->TimingFunctionList(),
+                                     i)));
       list->Append(*CSSNumericLiteralValue::Create(
           CSSTimingData::GetRepeated(transition_data->DelayList(), i),
           CSSPrimitiveValue::UnitType::kSeconds));
@@ -2862,8 +2857,8 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
   list->Append(
       *CSSNumericLiteralValue::Create(CSSTransitionData::InitialDuration(),
                                       CSSPrimitiveValue::UnitType::kSeconds));
-  list->Append(*ComputedStyleUtils::CreateTimingFunctionValue(
-      CSSTransitionData::InitialTimingFunction().get()));
+  list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
+      CSSTransitionData::InitialTimingFunction()));
   list->Append(
       *CSSNumericLiteralValue::Create(CSSTransitionData::InitialDelay(),
                                       CSSPrimitiveValue::UnitType::kSeconds));

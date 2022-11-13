@@ -200,7 +200,7 @@ const CSSValue* AnimationDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDelay(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDelayList(style.Animations());
 }
 
 const CSSValue* AnimationDelay::InitialValue() const {
@@ -224,7 +224,8 @@ const CSSValue* AnimationDelayStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDelayStart(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDelayStartList(
+      style.Animations());
 }
 
 const CSSValue* AnimationDelayEnd::ParseSingleValue(
@@ -240,7 +241,7 @@ const CSSValue* AnimationDelayEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDelayEnd(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDelayEndList(style.Animations());
 }
 
 const CSSValue* AnimationDirection::ParseSingleValue(
@@ -258,17 +259,7 @@ const CSSValue* AnimationDirection::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (wtf_size_t i = 0; i < animation_data->DirectionList().size(); ++i) {
-      list->Append(*ComputedStyleUtils::ValueForAnimationDirection(
-          animation_data->DirectionList()[i]));
-    }
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationDirectionList(style.Animations());
 }
 
 const CSSValue* AnimationDirection::InitialValue() const {
@@ -288,7 +279,7 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDuration(style.Animations());
+  return ComputedStyleUtils::ValueForAnimationDurationList(style.Animations());
 }
 
 const CSSValue* AnimationDuration::InitialValue() const {
@@ -314,17 +305,7 @@ const CSSValue* AnimationFillMode::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (wtf_size_t i = 0; i < animation_data->FillModeList().size(); ++i) {
-      list->Append(*ComputedStyleUtils::ValueForAnimationFillMode(
-          animation_data->FillModeList()[i]));
-    }
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationFillModeList(style.Animations());
 }
 
 const CSSValue* AnimationFillMode::InitialValue() const {
@@ -343,18 +324,8 @@ const CSSValue* AnimationIterationCount::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (wtf_size_t i = 0; i < animation_data->IterationCountList().size();
-         ++i) {
-      list->Append(*ComputedStyleUtils::ValueForAnimationIterationCount(
-          animation_data->IterationCountList()[i]));
-    }
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationIterationCountList(
+      style.Animations());
 }
 
 const CSSValue* AnimationIterationCount::InitialValue() const {
@@ -410,17 +381,7 @@ const CSSValue* AnimationPlayState::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (wtf_size_t i = 0; i < animation_data->PlayStateList().size(); ++i) {
-      list->Append(*ComputedStyleUtils::ValueForAnimationPlayState(
-          animation_data->PlayStateList()[i]));
-    }
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationPlayStateList(style.Animations());
 }
 
 const CSSValue* AnimationPlayState::InitialValue() const {
@@ -439,15 +400,7 @@ const CSSValue* AnimationTimeline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  const CSSAnimationData* animation_data = style.Animations();
-  if (animation_data) {
-    for (const auto& timeline : animation_data->TimelineList())
-      list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(timeline));
-  } else {
-    list->Append(*InitialValue());
-  }
-  return list;
+  return ComputedStyleUtils::ValueForAnimationTimelineList(style.Animations());
 }
 
 const CSSValue* AnimationTimeline::InitialValue() const {
@@ -466,7 +419,7 @@ const CSSValue* AnimationTimingFunction::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationTimingFunction(
+  return ComputedStyleUtils::ValueForAnimationTimingFunctionList(
       style.Animations());
 }
 
@@ -7638,7 +7591,7 @@ const CSSValue* TransitionDelay::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDelay(style.Transitions());
+  return ComputedStyleUtils::ValueForAnimationDelayList(style.Transitions());
 }
 
 const CSSValue* TransitionDelay::InitialValue() const {
@@ -7662,7 +7615,7 @@ const CSSValue* TransitionDuration::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationDuration(style.Transitions());
+  return ComputedStyleUtils::ValueForAnimationDurationList(style.Transitions());
 }
 
 const CSSValue* TransitionDuration::InitialValue() const {
@@ -7707,7 +7660,7 @@ const CSSValue* TransitionTimingFunction::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForAnimationTimingFunction(
+  return ComputedStyleUtils::ValueForAnimationTimingFunctionList(
       style.Transitions());
 }
 

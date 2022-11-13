@@ -1720,24 +1720,38 @@ CSSValue* ComputedStyleUtils::ValueForWillChange(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDelay(
-    const CSSTimingData* timing_data) {
+namespace {
+
+template <class U>
+using ItemFunc = CSSValue*(U);
+
+template <typename T, typename U>
+CSSValue* CreateAnimationValueList(const Vector<T>& values,
+                                   ItemFunc<U>* item_func) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  if (timing_data) {
-    for (wtf_size_t i = 0; i < timing_data->DelayList().size(); ++i) {
-      list->Append(*CSSNumericLiteralValue::Create(
-          timing_data->DelayList()[i], CSSPrimitiveValue::UnitType::kSeconds));
-    }
-  } else {
-    list->Append(*CSSNumericLiteralValue::Create(
-        CSSTimingData::InitialDelay(), CSSPrimitiveValue::UnitType::kSeconds));
+  for (const T& value : values) {
+    list->Append(*item_func(value));
   }
   return list;
 }
 
-namespace {
+}  // namespace
 
-CSSValue* ValueForTimingDelay(const Timing::Delay& delay) {
+CSSValue* ComputedStyleUtils::ValueForAnimationDelay(double delay) {
+  return CSSNumericLiteralValue::Create(delay,
+                                        CSSPrimitiveValue::UnitType::kSeconds);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayList(
+    const CSSTimingData* timing_data) {
+  return CreateAnimationValueList(
+      timing_data ? timing_data->DelayList()
+                  : Vector<double>{CSSTimingData::InitialDelay()},
+      &ValueForAnimationDelay);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
+    const Timing::Delay& delay) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (delay.IsTimelineOffset()) {
     list->Append(*MakeGarbageCollected<CSSIdentifierValue>(delay.phase));
@@ -1752,28 +1766,25 @@ CSSValue* ValueForTimingDelay(const Timing::Delay& delay) {
   return list;
 }
 
-CSSValue* ValueForTimingDelayList(const Vector<Timing::Delay>& delay_list) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (const Timing::Delay& delay : delay_list) {
-    list->Append(*ValueForTimingDelay(delay));
-  }
-  return list;
-}
-
-}  // namespace
-
-CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayStartList(
     const CSSTimingData* timing_data) {
-  if (!timing_data)
-    return ValueForTimingDelayList({CSSTimingData::InitialDelayStart()});
-  return ValueForTimingDelayList(timing_data->DelayStartList());
+  return CreateAnimationValueList(
+      timing_data ? timing_data->DelayStartList()
+                  : Vector<Timing::Delay>{CSSTimingData::InitialDelayStart()},
+      &ValueForAnimationDelayStart);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayEnd(
+    const Timing::Delay& delay) {
+  return ValueForAnimationDelayStart(delay);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDelayEndList(
     const CSSTimingData* timing_data) {
-  if (!timing_data)
-    return ValueForTimingDelayList({CSSTimingData::InitialDelayEnd()});
-  return ValueForTimingDelayList(timing_data->DelayEndList());
+  return CreateAnimationValueList(
+      timing_data ? timing_data->DelayEndList()
+                  : Vector<Timing::Delay>{CSSTimingData::InitialDelayEnd()},
+      &ValueForAnimationDelayEnd);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDirection(
@@ -1793,21 +1804,27 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirection(
   }
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDuration(
+CSSValue* ComputedStyleUtils::ValueForAnimationDirectionList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->DirectionList()
+          : Vector<Timing::PlaybackDirection>{CSSAnimationData::
+                                                  InitialDirection()},
+      &ValueForAnimationDirection);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDuration(double duration) {
+  return CSSNumericLiteralValue::Create(duration,
+                                        CSSPrimitiveValue::UnitType::kSeconds);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
     const CSSTimingData* timing_data) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  if (timing_data) {
-    for (wtf_size_t i = 0; i < timing_data->DurationList().size(); ++i) {
-      list->Append(*CSSNumericLiteralValue::Create(
-          timing_data->DurationList()[i],
-          CSSPrimitiveValue::UnitType::kSeconds));
-    }
-  } else {
-    list->Append(
-        *CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration(),
-                                        CSSPrimitiveValue::UnitType::kSeconds));
-  }
-  return list;
+  return CreateAnimationValueList(
+      timing_data ? timing_data->DurationList()
+                  : Vector<double>{CSSTimingData::InitialDuration()},
+      &ValueForAnimationDuration);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationFillMode(
@@ -1827,12 +1844,30 @@ CSSValue* ComputedStyleUtils::ValueForAnimationFillMode(
   }
 }
 
+CSSValue* ComputedStyleUtils::ValueForAnimationFillModeList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->FillModeList()
+          : Vector<Timing::FillMode>{CSSAnimationData::InitialFillMode()},
+      &ValueForAnimationFillMode);
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationIterationCount(
     double iteration_count) {
   if (iteration_count == std::numeric_limits<double>::infinity())
     return CSSIdentifierValue::Create(CSSValueID::kInfinite);
   return CSSNumericLiteralValue::Create(iteration_count,
                                         CSSPrimitiveValue::UnitType::kNumber);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationIterationCountList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->IterationCountList()
+          : Vector<double>{CSSAnimationData::InitialIterationCount()},
+      &ValueForAnimationIterationCount);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationPlayState(
@@ -1843,12 +1878,21 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayState(
   return CSSIdentifierValue::Create(CSSValueID::kPaused);
 }
 
-CSSValue* ComputedStyleUtils::CreateTimingFunctionValue(
-    const TimingFunction* timing_function) {
+CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->PlayStateList()
+          : Vector<EAnimPlayState>{CSSAnimationData::InitialPlayState()},
+      &ValueForAnimationPlayState);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
+    const scoped_refptr<TimingFunction>& timing_function) {
   switch (timing_function->GetType()) {
     case TimingFunction::Type::CUBIC_BEZIER: {
       const auto* bezier_timing_function =
-          To<CubicBezierTimingFunction>(timing_function);
+          To<CubicBezierTimingFunction>(timing_function.get());
       if (bezier_timing_function->GetEaseType() !=
           CubicBezierTimingFunction::EaseType::CUSTOM) {
         CSSValueID value_id = CSSValueID::kInvalid;
@@ -1878,7 +1922,7 @@ CSSValue* ComputedStyleUtils::CreateTimingFunctionValue(
 
     case TimingFunction::Type::STEPS: {
       const auto* steps_timing_function =
-          To<StepsTimingFunction>(timing_function);
+          To<StepsTimingFunction>(timing_function.get());
       StepsTimingFunction::StepPosition position =
           steps_timing_function->GetStepPosition();
       int steps = steps_timing_function->NumberOfSteps();
@@ -1894,19 +1938,14 @@ CSSValue* ComputedStyleUtils::CreateTimingFunctionValue(
   }
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
+CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunctionList(
     const CSSTimingData* timing_data) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  if (timing_data) {
-    for (wtf_size_t i = 0; i < timing_data->TimingFunctionList().size(); ++i) {
-      list->Append(*CreateTimingFunctionValue(
-          timing_data->TimingFunctionList()[i].get()));
-    }
-  } else {
-    list->Append(*CreateTimingFunctionValue(
-        CSSTimingData::InitialTimingFunction().get()));
-  }
-  return list;
+  return CreateAnimationValueList(
+      timing_data
+          ? timing_data->TimingFunctionList()
+          : Vector<scoped_refptr<TimingFunction>>{CSSAnimationData::
+                                                      InitialTimingFunction()},
+      &ValueForAnimationTimingFunction);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
@@ -1929,6 +1968,15 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
           : CSSIdentifierValue::Create(scroll_data.GetScroller());
 
   return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
+    const CSSAnimationData* animation_data) {
+  return CreateAnimationValueList(
+      animation_data
+          ? animation_data->TimelineList()
+          : Vector<StyleTimeline>{CSSAnimationData::InitialTimeline()},
+      &ValueForAnimationTimeline);
 }
 
 CSSValue* ComputedStyleUtils::SingleValueForViewTimelineShorthand(
