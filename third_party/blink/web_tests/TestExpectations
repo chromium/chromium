@@ -1741,7 +1741,6 @@ crbug.com/995106 external/wpt/css/css-lists/inline-block-list-marker.html [ Fail
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-with-table-child.html [ Failure ]
-crbug.com/1012289 [ Win10.20h2 ] external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
 
 # css-pseudo
 crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
@@ -3220,7 +3219,6 @@ crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.su
 crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/portals/external/wpt/portals/no-portal-in-sandboxed-popup.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/unload-a-document/005.html?wpt_flags=h2 [ Skip Timeout ]
@@ -3385,7 +3383,6 @@ crbug.com/626703 external/wpt/media-source/mediasource-correct-frames-after-reap
 crbug.com/626703 external/wpt/media-source/mediasource-correct-frames.html [ Failure Pass Timeout ]
 crbug.com/626703 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
 crbug.com/626703 external/wpt/payment-method-basic-card/apply_the_modifiers.html [ Timeout ]
-crbug.com/626703 external/wpt/screen-orientation/onchange-event.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-tracks.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout ]
@@ -4642,7 +4639,6 @@ crbug.com/1223883 external/wpt/html/webappapis/dynamic-markup-insertion/opening-
 crbug.com/1222729 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
 crbug.com/678633 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure ]
 crbug.com/1317071 [ Mac ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html [ Failure Timeout ]
-crbug.com/1323989 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/tentative/same-document-traversal-cross-document-traversal.html [ Pass Timeout ]
 crbug.com/1350975 external/wpt/html/dom/directionality/bdi-element-invalid-dir.html [ Failure ]
 
 
