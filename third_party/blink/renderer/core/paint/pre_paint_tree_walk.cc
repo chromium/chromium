@@ -286,7 +286,6 @@ bool PrePaintTreeWalk::ObjectRequiresPrePaint(const LayoutObject& object) {
          object.DescendantEffectiveAllowedTouchActionChanged() ||
          object.BlockingWheelEventHandlerChanged() ||
          object.DescendantBlockingWheelEventHandlerChanged();
-  ;
 }
 
 bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
