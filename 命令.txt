@@ -1,0 +1,16 @@
+
+
+
+
+export PATH="$PATH:/home/zpj/depot_tools"
+
+gn gen out/Default
+
+ninja -C out/Default chrome_public_apk
+
+build/android/gradle/generate_gradle.py --output-directory out/Default
+
+// src/out/Default/gradle/_all/build.gradle
+java.srcDirs添加
+"../../../..",
+可把src目录添加到gradle源目录中

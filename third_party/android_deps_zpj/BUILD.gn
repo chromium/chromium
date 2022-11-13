@@ -1,0 +1,63 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+assert(is_android)
+
+android_aar_prebuilt("com_zpj_utils_java") {
+  aar_path = "libs/ZUtils-2.0.0.aar"
+  info_path = "libs/ZUtils.info"
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_documentfile_documentfile_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_checkbox_java") {
+  aar_path = "libs/ZCheckBox-1.0.0.aar"
+  info_path = "libs/ZCheckBox.info"
+  deps = []
+}
+
+android_aar_prebuilt("com_zpj_statemanager_java") {
+  aar_path = "libs/StateManager-2.0.0.aar"
+  info_path = "libs/StateManager.info"
+  deps = []
+}
+
+android_aar_prebuilt("com_zpj_recyclerview_java") {
+  aar_path = "libs/ZRecyclerView-2.0.0.aar"
+  info_path = "libs/ZRecyclerView.info"
+  deps = [
+    ":com_zpj_checkbox_java",
+    ":com_zpj_statemanager_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_fragmentation_java") {
+  aar_path = "libs/ZFragmentation-2.0.0.aar"
+  info_path = "libs/ZFragmentation.info"
+  deps = [
+    ":com_zpj_utils_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_fragmentation_dialog_java") {
+  aar_path = "libs/ZFragmentation-Dialog-2.0.1.aar"
+  info_path = "libs/ZFragmentation-Dialog.info"
+  deps = [
+    ":com_zpj_utils_java",
+    ":com_zpj_checkbox_java",
+    ":com_zpj_fragmentation_java",
+    ":com_zpj_recyclerview_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_cardview_cardview_java",
+  ]
+}

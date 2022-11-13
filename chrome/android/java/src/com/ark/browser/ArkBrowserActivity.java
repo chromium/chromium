@@ -13,15 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.core.utils.NavigationPredictorBridge;
-import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.dialog.MainMenuDialog;
-import com.ark.browser.ui.widget.SmartSearchPanel;
 import com.ark.browser.utils.ArkLogger;
-import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
@@ -43,7 +39,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;

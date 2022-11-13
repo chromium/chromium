@@ -380,7 +380,7 @@ public abstract class AsyncInitializationActivity
             assert dispatchAction == LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK;
             finishAndRemoveTask();
         }
-        overridePendingTransition(0, R.anim.no_anim);
+        overridePendingTransition(0, R.anim.anim_no);
     }
 
     /**

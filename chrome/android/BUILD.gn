@@ -154,7 +154,7 @@ generate_ui_locale_resources("ui_locale_string_resources") {
 # module.
 android_resources("chrome_base_module_resources") {
   sources = [
-    "java/res_base/anim/no_anim.xml",
+    "java/res_base/anim/anim_no.xml",
     "java/res_base/drawable-v26/ic_launcher.xml",
     "java/res_base/drawable-v26/ic_launcher_round.xml",
     "java/res_base/font/chrome_google_sans.xml",
@@ -582,6 +582,12 @@ android_library("chrome_java") {
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/gif_player:gif_player_java",
     "//third_party/metrics_proto:metrics_proto_java",
+    "//third_party/android_deps_zpj:com_zpj_utils_java",
+    "//third_party/android_deps_zpj:com_zpj_checkbox_java",
+    "//third_party/android_deps_zpj:com_zpj_statemanager_java",
+    "//third_party/android_deps_zpj:com_zpj_recyclerview_java",
+    "//third_party/android_deps_zpj:com_zpj_fragmentation_java",
+    "//third_party/android_deps_zpj:com_zpj_fragmentation_dialog_java",
     "//ui/android:ui_java",
     "//ui/base/mojom:mojom_java",
     "//ui/gfx/geometry/mojom:mojom_java",
