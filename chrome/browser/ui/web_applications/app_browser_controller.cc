@@ -406,12 +406,10 @@ void AppBrowserController::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
     content::WebContentsObserver::Observe(selection.new_contents);
-    // Update themes when we switch tabs, or create the first tab, but not
-    // when we create 2nd or subsequent tabs. Don't update the theme if the
-    // tab has not finished loading to avoid using uninitialized colors,
-    // wait for |DOMContentLoaded| before updating.
-    if (change.type() != TabStripModelChange::kInserted ||
-        tab_strip_model->count() == 1 || !selection.new_contents->IsLoading()) {
+    // Update theme when tabs change unless there are no tabs, or if the tab has
+    // not finished loading, we will update later in DOMContentLoaded().
+    if (tab_strip_model->count() > 0 &&
+        selection.new_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
       UpdateThemePack();
     }
   }
