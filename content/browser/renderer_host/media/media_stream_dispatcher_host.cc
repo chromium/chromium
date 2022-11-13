@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
@@ -594,7 +595,8 @@ void MediaStreamDispatcherHost::SetCapturingLinkSecured(
 
 void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kStartMediaStreamCaptureIndicatorInBrowser));
   media_stream_manager_->OnStreamStarted(label);
 }
 

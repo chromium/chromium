@@ -47,6 +47,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -225,8 +226,11 @@ class MockMediaStreamDispatcherHost
     }
 
     OnStreamGenerationSuccess(request_id, *stream_devices_set);
-    // Simulate the stream started event back to host for UI testing.
-    OnStreamStarted(label);
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
+      // Simulate the stream started event back to host for UI testing.
+      OnStreamStarted(label);
+    }
 
     // Notify that the event have occurred.
     task_runner_->PostTask(FROM_HERE, std::move(quit_closures_.front()));

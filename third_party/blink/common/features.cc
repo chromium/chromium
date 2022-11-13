@@ -1728,5 +1728,9 @@ BASE_FEATURE(kTextCodecCJKEnabled,
              "TextCodecCJKEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
+             "StartMediaStreamCaptureIndicatorInBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

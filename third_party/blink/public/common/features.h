@@ -954,6 +954,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSplitUserMediaQueues);
 // If the flag is disabled TextCodecICU would be used instead.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTextCodecCJKEnabled);
 
+// Make the browser decide when to turn on the capture indicator (red button)
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kStartMediaStreamCaptureIndicatorInBrowser);
+
 }  // namespace features
 }  // namespace blink
 

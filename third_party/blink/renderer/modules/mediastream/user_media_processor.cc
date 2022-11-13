@@ -22,6 +22,7 @@
 #include "media/capture/video_capture_types.h"
 #include "media/webrtc/constants.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
@@ -1629,7 +1630,10 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
   if (result == MediaStreamRequestResult::OK) {
     GetUserMediaRequestSucceeded(request_info->descriptors(),
                                  request_info->request());
-    GetMediaStreamDispatcherHost()->OnStreamStarted(label);
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
+      GetMediaStreamDispatcherHost()->OnStreamStarted(label);
+    }
   } else {
     GetUserMediaRequestFailed(result, constraint_name);
 
