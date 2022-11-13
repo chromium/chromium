@@ -28,7 +28,7 @@ class BLINK_PLATFORM_EXPORT WebCodeCacheLoader {
 
   static std::unique_ptr<WebCodeCacheLoader> Create(
       CodeCacheHost* code_cache_host);
-  virtual void FetchFromCodeCache(blink::mojom::CodeCacheType cache_type,
+  virtual void FetchFromCodeCache(mojom::CodeCacheType cache_type,
                                   const WebURL& url,
                                   FetchCodeCacheCallback) = 0;
 

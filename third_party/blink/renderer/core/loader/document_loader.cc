@@ -3129,7 +3129,7 @@ CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
     // enabled by default CodeCacheHost interface will be sent along with
     // CommitNavigation message and the following code would not be required and
     // we should just return nullptr here.
-    mojo::Remote<mojom::CodeCacheHost> remote;
+    mojo::Remote<mojom::blink::CodeCacheHost> remote;
     GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
     code_cache_host_ = std::make_unique<CodeCacheHost>(std::move(remote));
@@ -3137,25 +3137,26 @@ CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
   return code_cache_host_.get();
 }
 
-mojo::PendingRemote<blink::mojom::CodeCacheHost>
+mojo::PendingRemote<mojom::blink::CodeCacheHost>
 DocumentLoader::CreateWorkerCodeCacheHost() {
   if (GetDisableCodeCacheForTesting())
     return mojo::NullRemote();
-  mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host;
+  mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_code_cache_host;
   GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
       pending_code_cache_host.InitWithNewPipeAndPassReceiver());
   return pending_code_cache_host;
 }
 
 void DocumentLoader::SetCodeCacheHost(
-    mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
+    CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
+        code_cache_host) {
   code_cache_host_.reset();
   // When NavigationThreadingOptimizations feature is disabled, code_cache_host
   // can be a nullptr. When this feature is turned off the CodeCacheHost
   // interface is requested via BrowserBrokerInterface when required.
   if (code_cache_host) {
     code_cache_host_ = std::make_unique<CodeCacheHost>(
-        mojo::Remote<mojom::CodeCacheHost>(std::move(code_cache_host)));
+        mojo::Remote<mojom::blink::CodeCacheHost>(std::move(code_cache_host)));
   }
 }
 

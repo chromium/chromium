@@ -8,7 +8,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -182,7 +182,7 @@ CachedMetadataHandler* WorkerMainScriptLoader::CreateCachedMetadataHandler() {
 
   std::unique_ptr<CachedMetadataSender> cached_metadata_sender =
       CachedMetadataSender::Create(
-          resource_response_, blink::mojom::CodeCacheType::kJavascript,
+          resource_response_, mojom::blink::CodeCacheType::kJavascript,
           SecurityOrigin::Create(initial_request_url_));
   return MakeGarbageCollected<ScriptCachedMetadataHandler>(
       script_encoding_, std::move(cached_metadata_sender));

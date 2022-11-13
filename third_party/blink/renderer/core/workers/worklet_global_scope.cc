@@ -137,8 +137,8 @@ WorkletGlobalScope::WorkletGlobalScope(
   DCHECK_EQ(creation_params->ukm_source_id, ukm::kInvalidSourceId);
 
   if (creation_params->code_cache_host_interface.is_valid()) {
-    code_cache_host_ =
-        std::make_unique<CodeCacheHost>(mojo::Remote<mojom::CodeCacheHost>(
+    code_cache_host_ = std::make_unique<CodeCacheHost>(
+        mojo::Remote<mojom::blink::CodeCacheHost>(
             std::move(creation_params->code_cache_host_interface)));
   }
 

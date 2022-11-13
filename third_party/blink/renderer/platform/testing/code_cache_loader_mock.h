@@ -43,10 +43,10 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
 
   // CodeCacheLoader methods:
   void FetchFromCodeCache(
-      blink::mojom::CodeCacheType cache_type,
+      mojom::CodeCacheType cache_type,
       const WebURL& url,
       WebCodeCacheLoader::FetchCodeCacheCallback callback) override;
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
+  void ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
                            const WebURL& url) override;
 
  private:

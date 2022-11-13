@@ -40,13 +40,13 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
 
   // WebCodeCacheLoader methods:
   void FetchFromCodeCache(
-      blink::mojom::CodeCacheType cache_type,
+      mojom::blink::CodeCacheType cache_type,
       const WebURL& url,
       WebCodeCacheLoader::FetchCodeCacheCallback callback) override {
     process_request_.Run(std::move(callback));
   }
 
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
+  void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
                            const WebURL& url) override {}
 
  private:

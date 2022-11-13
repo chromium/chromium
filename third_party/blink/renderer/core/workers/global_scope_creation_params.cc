@@ -37,7 +37,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     WorkletModuleResponsesMap* module_responses_map,
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
         browser_interface_broker,
-    mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_interface,
+    mojo::PendingRemote<mojom::blink::CodeCacheHost> code_cache_host_interface,
     mojo::PendingRemote<mojom::blink::BlobURLStore> blob_url_store,
     BeginFrameProviderParams begin_frame_provider_params,
     const PermissionsPolicy* parent_permissions_policy,

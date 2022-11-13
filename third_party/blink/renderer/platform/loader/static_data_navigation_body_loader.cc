@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
 namespace blink {
 

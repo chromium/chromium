@@ -948,7 +948,7 @@ void ResourceLoader::DidReceiveCachedMetadata(mojo_base::BigBuffer data) {
   resource_->SetSerializedCachedMetadata(std::move(data));
 }
 
-blink::mojom::CodeCacheType ResourceLoader::GetCodeCacheType() const {
+mojom::blink::CodeCacheType ResourceLoader::GetCodeCacheType() const {
   const auto& request = resource_->GetResourceRequest();
   if (request.GetRequestDestination() ==
       network::mojom::RequestDestination::kEmpty) {

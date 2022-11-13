@@ -193,7 +193,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return last_navigation_had_transient_user_activation_;
   }
   void SetCodeCacheHost(
-      mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) override;
+      CrossVariantMojoRemote<mojom::blink::CodeCacheHostInterfaceBase>
+          code_cache_host) override;
   WebString OriginCalculationDebugInfo() const override {
     return origin_calculation_debug_info_;
   }
@@ -381,7 +382,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   CodeCacheHost* GetCodeCacheHost();
   static void DisableCodeCacheForTesting();
 
-  mojo::PendingRemote<blink::mojom::CodeCacheHost> CreateWorkerCodeCacheHost();
+  mojo::PendingRemote<mojom::blink::CodeCacheHost> CreateWorkerCodeCacheHost();
 
   HashMap<KURL, EarlyHintsPreloadEntry> GetEarlyHintsPreloadedResources();
 

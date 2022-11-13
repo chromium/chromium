@@ -162,7 +162,7 @@ class PLATFORM_EXPORT ResourceLoader final
                int64_t encoded_body_length,
                int64_t decoded_body_length) override;
 
-  blink::mojom::CodeCacheType GetCodeCacheType() const;
+  mojom::blink::CodeCacheType GetCodeCacheType() const;
   void SendCachedCodeToResource(mojo_base::BigBuffer data);
 
   void HandleError(const ResourceError&);

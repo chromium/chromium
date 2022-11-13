@@ -36,7 +36,7 @@ class PLATFORM_EXPORT CachedMetadataSender {
  public:
   static std::unique_ptr<CachedMetadataSender> Create(
       const ResourceResponse&,
-      blink::mojom::CodeCacheType,
+      mojom::blink::CodeCacheType,
       scoped_refptr<const SecurityOrigin> requestor_origin);
 
   static void SendToCodeCacheHost(CodeCacheHost*,

@@ -7,7 +7,7 @@
 namespace blink {
 
 void CodeCacheLoaderMock::FetchFromCodeCache(
-    blink::mojom::CodeCacheType cache_type,
+    mojom::CodeCacheType cache_type,
     const WebURL& url,
     WebCodeCacheLoader::FetchCodeCacheCallback callback) {
   if (controller_ && controller_->delayed_) {
@@ -20,9 +20,8 @@ void CodeCacheLoaderMock::FetchFromCodeCache(
   }
 }
 
-void CodeCacheLoaderMock::ClearCodeCacheEntry(
-    blink::mojom::CodeCacheType cache_type,
-    const WebURL& url) {}
+void CodeCacheLoaderMock::ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
+                                              const WebURL& url) {}
 
 void CodeCacheLoaderMock::Controller::DelayResponse() {
   delayed_ = true;

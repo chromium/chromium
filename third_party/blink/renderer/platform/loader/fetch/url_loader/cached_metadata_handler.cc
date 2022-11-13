@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -19,7 +19,7 @@ namespace blink {
 class CachedMetadataSenderImpl : public CachedMetadataSender {
  public:
   CachedMetadataSenderImpl(const ResourceResponse&,
-                           blink::mojom::CodeCacheType);
+                           mojom::blink::CodeCacheType);
   ~CachedMetadataSenderImpl() override = default;
 
   void Send(CodeCacheHost*, const uint8_t*, size_t) override;
@@ -28,21 +28,21 @@ class CachedMetadataSenderImpl : public CachedMetadataSender {
  private:
   const KURL response_url_;
   const base::Time response_time_;
-  const blink::mojom::CodeCacheType code_cache_type_;
+  const mojom::blink::CodeCacheType code_cache_type_;
 };
 
 CachedMetadataSenderImpl::CachedMetadataSenderImpl(
     const ResourceResponse& response,
-    blink::mojom::CodeCacheType code_cache_type)
+    mojom::blink::CodeCacheType code_cache_type)
     : response_url_(response.CurrentRequestUrl()),
       response_time_(response.ResponseTime()),
       code_cache_type_(code_cache_type) {
   // WebAssembly always uses the site isolated code cache.
   DCHECK(response.CacheStorageCacheName().IsNull() ||
-         code_cache_type_ == blink::mojom::CodeCacheType::kWebAssembly);
+         code_cache_type_ == mojom::blink::CodeCacheType::kWebAssembly);
   DCHECK(!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough() ||
-         code_cache_type_ == blink::mojom::CodeCacheType::kWebAssembly);
+         code_cache_type_ == mojom::blink::CodeCacheType::kWebAssembly);
 }
 
 void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
@@ -53,7 +53,7 @@ void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
   // TODO(crbug.com/862940): This should use the Blink variant of the
   // interface.
   code_cache_host->get()->DidGenerateCacheableMetadata(
-      code_cache_type_, GURL(response_url_), response_time_,
+      code_cache_type_, response_url_, response_time_,
       mojo_base::BigBuffer(base::make_span(data, size)));
 }
 
@@ -101,9 +101,9 @@ void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost* code_cache_host,
   if (!code_cache_host)
     return;
   code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-      GURL(response_url_), response_time_,
+      response_url_, response_time_,
       mojo_base::BigBuffer(base::make_span(data, size)),
-      WebSecurityOrigin(security_origin_), cache_storage_cache_name_.Utf8());
+      WebSecurityOrigin(security_origin_), cache_storage_cache_name_);
 }
 
 // static
@@ -120,20 +120,20 @@ void CachedMetadataSender::SendToCodeCacheHost(
     return;
   if (cache_storage_name.IsNull()) {
     code_cache_host->get()->DidGenerateCacheableMetadata(
-        code_cache_type, GURL(url.Utf8()), response_time,
+        code_cache_type, KURL(url), response_time,
         mojo_base::BigBuffer(base::make_span(data, size)));
   } else {
     code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-        GURL(url.Utf8()), response_time,
+        KURL(url), response_time,
         mojo_base::BigBuffer(base::make_span(data, size)),
-        WebSecurityOrigin(origin), cache_storage_name.Utf8());
+        WebSecurityOrigin(origin), cache_storage_name);
   }
 }
 
 // static
 std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
     const ResourceResponse& response,
-    blink::mojom::CodeCacheType code_cache_type,
+    mojom::blink::CodeCacheType code_cache_type,
     scoped_refptr<const SecurityOrigin> requestor_origin) {
   // Non-ServiceWorker scripts and passthrough SW responses use the site
   // isolated code cache.

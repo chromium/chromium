@@ -17,7 +17,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -67,7 +67,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       WorkletModuleResponsesMap*,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           browser_interface_broker = mojo::NullRemote(),
-      mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cahe_host =
+      mojo::PendingRemote<mojom::blink::CodeCacheHost> code_cahe_host =
           mojo::NullRemote(),
       mojo::PendingRemote<mojom::blink::BlobURLStore> blob_url_store =
           mojo::NullRemote(),
@@ -176,7 +176,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
       browser_interface_broker;
 
-  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host_interface;
+  mojo::PendingRemote<mojom::blink::CodeCacheHost> code_cache_host_interface;
 
   mojo::PendingRemote<mojom::blink::BlobURLStore> blob_url_store;
 

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ namespace blink {
 // (and not poisoned) until the destructor is called.
 class BLINK_PLATFORM_EXPORT CodeCacheHost {
  public:
-  explicit CodeCacheHost(mojo::Remote<mojom::CodeCacheHost> remote)
+  explicit CodeCacheHost(mojo::Remote<mojom::blink::CodeCacheHost> remote)
       : remote_(std::move(remote)) {
     DCHECK(remote_.is_bound());
   }
@@ -33,12 +33,12 @@ class BLINK_PLATFORM_EXPORT CodeCacheHost {
     return weak_factory_.GetWeakPtr();
   }
 
-  mojom::CodeCacheHost* get() { return remote_.get(); }
-  mojom::CodeCacheHost& operator*() { return *remote_.get(); }
-  mojom::CodeCacheHost* operator->() { return remote_.get(); }
+  mojom::blink::CodeCacheHost* get() { return remote_.get(); }
+  mojom::blink::CodeCacheHost& operator*() { return *remote_.get(); }
+  mojom::blink::CodeCacheHost* operator->() { return remote_.get(); }
 
  private:
-  mojo::Remote<mojom::CodeCacheHost> remote_;
+  mojo::Remote<mojom::blink::CodeCacheHost> remote_;
   base::WeakPtrFactory<CodeCacheHost> weak_factory_{this};
 };
 

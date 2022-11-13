@@ -753,7 +753,7 @@ CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
     // don't rely on code caching so it's safe to return nullptr here.
     if (!GetBrowserInterfaceBroker().is_bound())
       return nullptr;
-    mojo::Remote<mojom::CodeCacheHost> remote;
+    mojo::Remote<mojom::blink::CodeCacheHost> remote;
     GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
     code_cache_host_ = std::make_unique<CodeCacheHost>(std::move(remote));
