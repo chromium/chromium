@@ -6,22 +6,23 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 
 namespace welcome {
 
-base::ListValue BookmarkItemsToListValue(const BookmarkItem items[],
-                                         size_t count) {
-  base::ListValue list_value;
-  for (size_t i = 0; i < count; ++i) {
+base::Value::List BookmarkItemsToListValue(
+    base::span<const BookmarkItem> items) {
+  base::Value::List list_value;
+  for (const auto& item : items) {
     base::Value::Dict element;
 
-    element.Set("id", items[i].id);
-    element.Set("name", items[i].name);
-    element.Set("icon", items[i].webui_icon);
-    element.Set("url", items[i].url);
+    element.Set("id", item.id);
+    element.Set("name", item.name);
+    element.Set("icon", item.webui_icon);
+    element.Set("url", item.url);
 
-    list_value.Append(base::Value(std::move(element)));
+    list_value.Append(std::move(element));
   }
   return list_value;
 }

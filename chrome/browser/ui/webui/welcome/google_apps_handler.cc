@@ -134,9 +134,8 @@ void GoogleAppsHandler::HandleGetGoogleAppsList(const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(
-      callback_id,
-      BookmarkItemsToListValue(google_apps_.data(), google_apps_.size()));
+  ResolveJavascriptCallback(callback_id,
+                            BookmarkItemsToListValue(google_apps_));
 }
 
 }  // namespace welcome

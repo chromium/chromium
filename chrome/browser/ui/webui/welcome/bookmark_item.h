@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_BOOKMARK_ITEM_H_
 
 #include <stddef.h>
-#include <string>
-#include <vector>
 
-namespace base {
-class ListValue;
-}  // namespace base
+#include <string>
+
+#include "base/containers/span.h"
+#include "base/values.h"
 
 namespace welcome {
 
@@ -23,8 +22,8 @@ struct BookmarkItem {
   const int icon;  // Corresponds with resource ID, used for bookmark cache.
 };
 
-base::ListValue BookmarkItemsToListValue(const BookmarkItem items[],
-                                         size_t count);
+base::Value::List BookmarkItemsToListValue(
+    base::span<const BookmarkItem> items);
 
 }  // namespace welcome
 
