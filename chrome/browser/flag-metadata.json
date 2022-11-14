@@ -2117,7 +2117,7 @@
   {
     "name": "enable-desktop-pwas-default-offline-page",
     "owners": [ "catherinecheng@google.com", "anosua@google.com", "ericwilligers@google.com", "alexbn@google.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-desktop-pwas-detailed-install-dialog",
@@ -2142,17 +2142,17 @@
   {
     "name": "enable-desktop-pwas-sub-apps",
     "owners": [ "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-desktop-pwas-tab-strip",
     "owners": [ "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-desktop-pwas-tab-strip-settings",
     "owners": [ "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "enable-desktop-pwas-web-bundles",
