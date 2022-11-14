@@ -1825,6 +1825,9 @@ base::Value::Dict SerializeRTThreatInfo(
     case RTLookupResponse::ThreatInfo::SAFE:
       verdict_type = "SAFE";
       break;
+    case RTLookupResponse::ThreatInfo::SUSPICIOUS:
+      verdict_type = "SUSPICIOUS";
+      break;  
     case RTLookupResponse::ThreatInfo::WARN:
       verdict_type = "WARN";
       break;

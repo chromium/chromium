@@ -238,7 +238,11 @@ message ClientPhishingRequest {
   // users.
   optional VisualFeatures visual_features = 26;
 
-  // next available tag number: 28.
+  // Carried over from realtime API response, this is used to identify cases
+  // where the scoring from protego requested this request.
+  optional ClientSideDetectionType client_side_detection_type = 28;
+
+  // next available tag number: 29.
 }
 
 message ClientPhishingResponse {
@@ -1106,6 +1110,12 @@ message ReferrerChainEntry {
 
   // next available tag number: 15.
 }  // End of ReferrerChainEntry
+
+enum ClientSideDetectionType {
+  CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED = 0;
+  // Send a CSD request regardless of the client side model's score values.
+  FORCE_REQUEST = 1;
+}
 
 message ClientDownloadResponse {
   enum Verdict {

@@ -128,6 +128,7 @@ message RTLookupResponse {
     enum VerdictType {
       VERDICT_TYPE_UNSPECIFIED = 0;
       SAFE = 1;
+      SUSPICIOUS = 50;
       WARN = 75;
       DANGEROUS = 100;
     }
@@ -169,6 +170,10 @@ message RTLookupResponse {
   // of severity so that the client could choose first applicable threat_info
   // as the most severe one.
   repeated ThreatInfo threat_info = 1;
+
+  // When set, represents the realtime API asking the client side detection
+  // module to send a ping regardless of the scoring found in CSD models.
+  optional ClientSideDetectionType client_side_detection_type = 2;
 }
 
 // Contains information about a matched URL Filtering rule defined by
