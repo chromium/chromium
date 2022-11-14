@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
@@ -28,10 +29,6 @@
 
 class ExtensionInstallPromptShowParams;
 class Profile;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -288,7 +285,7 @@ class ExtensionInstallPrompt {
   // Creates a dummy extension from the |manifest|, replacing the name and
   // description with the localizations if provided.
   static scoped_refptr<extensions::Extension> GetLocalizedExtensionForDisplay(
-      const base::DictionaryValue* manifest,
+      const base::DictAdapterForMigration manifest,
       int flags,  // Extension::InitFromValueFlags
       const std::string& id,
       const std::string& localized_name,

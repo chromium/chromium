@@ -111,7 +111,7 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
   std::string error;
   dummy_extension_ = ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-      parsed_manifest.get(), Extension::FROM_WEBSTORE, id, localized_name,
+      *parsed_manifest, Extension::FROM_WEBSTORE, id, localized_name,
       std::string(), &error);
 
   if (!dummy_extension_.get()) {

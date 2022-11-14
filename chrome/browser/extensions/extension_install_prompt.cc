@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -475,8 +476,8 @@ ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
 
 // static
 scoped_refptr<Extension>
-    ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-    const base::DictionaryValue* manifest,
+ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
+    const base::DictAdapterForMigration manifest,
     int flags,
     const std::string& id,
     const std::string& localized_name,
@@ -485,7 +486,7 @@ scoped_refptr<Extension>
   std::unique_ptr<base::DictionaryValue> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
     localized_manifest = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(manifest->Clone()));
+        base::Value::ToUniquePtrValue(base::Value(manifest.Clone())));
     if (!localized_name.empty()) {
       localized_manifest->SetStringKey(extensions::manifest_keys::kName,
                                        localized_name);
@@ -498,7 +499,7 @@ scoped_refptr<Extension>
 
   return Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
-      localized_manifest.get() ? *localized_manifest : *manifest, flags, id,
+      localized_manifest.get() ? *localized_manifest : manifest, flags, id,
       error);
 }
 

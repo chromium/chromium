@@ -522,12 +522,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
 
   std::string error;
   dummy_extension_ = ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-      parsed_manifest_.get(),
-      Extension::FROM_WEBSTORE,
-      id,
-      localized_name,
-      std::string(),
-      &error);
+      *parsed_manifest_, Extension::FROM_WEBSTORE, id, localized_name,
+      std::string(), &error);
 
   if (!dummy_extension_.get()) {
     OnWebstoreParseFailure(details().id,

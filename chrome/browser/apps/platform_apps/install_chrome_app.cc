@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/platform_apps/install_chrome_app.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/webstore_install_with_prompt.h"
@@ -61,7 +62,7 @@ class WebstoreInstallWithPromptAppsOnly
 };
 
 void WebstoreInstallWithPromptAppsOnly::OnManifestParsed() {
-  if (!manifest()->FindKey(extensions::manifest_keys::kApp)) {
+  if (!base::Contains(manifest(), extensions::manifest_keys::kApp)) {
     CompleteInstall(extensions::webstore_install::NOT_PERMITTED,
                     kInstallChromeAppErrorNotAnApp);
     return;
