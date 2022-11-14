@@ -30,6 +30,7 @@ constexpr const char* kStartupMetrics[] = {
 
 // Desktop specific metrics
 #if !BUILDFLAG(IS_ANDROID)
+    "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
     "Startup.BrowserWindow.FirstPaint",
     "Startup.BrowserWindowDisplay",
     "Startup.FirstWebContents.MainNavigationFinished",
@@ -39,6 +40,7 @@ constexpr const char* kStartupMetrics[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
+    "Startup.BrowserMessageLoopStartHardFaultCount",
     "Startup.Temperature",
 #endif
 };
