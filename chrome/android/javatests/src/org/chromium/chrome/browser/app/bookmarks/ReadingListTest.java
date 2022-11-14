@@ -13,6 +13,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
@@ -20,6 +21,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -35,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -610,6 +613,72 @@ public class ReadingListTest {
         Assert.assertTrue("Read later items should have delete option",
                 toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
         Assert.assertTrue("Read later items should have a mark as read option",
+                toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    public void testReadingListItemsInSelectionMode_MarkAsRead() throws Exception {
+        setFieldTrialParamForReadLater("allow_bookmark_type_swapping", "false");
+
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        openRootFolder();
+        openReadingList();
+
+        // Select a reading list item. Verify the toolbar menu buttons being shown.
+        BookmarkRow bookmarkRow =
+                (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        onView(withText(TEST_PAGE_TITLE_GOOGLE)).perform(longClick());
+
+        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        Assert.assertFalse("Read later items shouldn't have move option",
+                toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
+        Assert.assertFalse("Read later items shouldn't have edit option",
+                toolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
+        Assert.assertTrue("Read later items should have delete option",
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
+        Assert.assertTrue("Read later items should have mark as read",
+                toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id).isVisible());
+
+        MenuItem mockMenuItem = Mockito.mock(MenuItem.class);
+        doReturn(R.id.reading_list_mark_as_read_id).when(mockMenuItem).getItemId();
+        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.onMenuItemClick(mockMenuItem); });
+
+        Assert.assertFalse("Selection menu should be hidden after a click.",
+                toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
+        Assert.assertFalse("Selection menu should be hidden after a click.",
+                toolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
+        Assert.assertFalse("Selection menu should be hidden after a click.",
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
+        Assert.assertFalse("Selection menu should be hidden after a click.",
+                toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    public void testReadingListItemsInSelectionMode_SearchMode() throws Exception {
+        setFieldTrialParamForReadLater("allow_bookmark_type_swapping", "false");
+
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        openRootFolder();
+        openReadingList();
+
+        TestThreadUtils.runOnUiThreadBlocking(mManager::openSearchUI);
+
+        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        Assert.assertFalse("Menu items shouldn't be visible in search.",
+                toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
+        Assert.assertFalse("Menu items shouldn't be visible in search.",
+                toolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isVisible());
+        Assert.assertFalse("Menu items shouldn't be visible in search.",
+                toolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id).isVisible());
+        Assert.assertFalse("Menu items shouldn't be visible in search.",
                 toolbar.getMenu().findItem(R.id.reading_list_mark_as_read_id).isVisible());
     }
 }

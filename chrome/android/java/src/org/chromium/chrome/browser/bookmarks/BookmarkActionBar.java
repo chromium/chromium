@@ -58,10 +58,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         // Wait to enable the selection mode group until the BookmarkDelegate is set. The
         // SelectionDelegate is retrieved from the BookmarkDelegate.
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, false);
-
-        // Don't enable the reading list group until the user actually selects some reading list
-        // items.
-        getMenu().setGroupEnabled(R.id.reading_list_menu_group, false);
     }
 
     @Override
@@ -142,6 +138,7 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
                 mDelegate.getModel().setReadStatusForReadingList(bookmarkItem.getUrl(),
                         /*read=*/menuItem.getItemId() == R.id.reading_list_mark_as_read_id);
             }
+            selectionDelegate.clearSelection();
             return true;
         }
 
@@ -176,7 +173,6 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         if (!delegate.isDialogUi()) getMenu().removeItem(R.id.close_menu_id);
 
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
-        getMenu().setGroupEnabled(R.id.reading_list_menu_group, true);
     }
 
     // BookmarkUIObserver implementations.
@@ -295,13 +291,14 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
 
             // Only show the "mark as" options when all selections are reading list items and
             // have the same read state.
+            boolean onlyReadingListSelected =
+                    selectedBookmarks.size() > 0 && numReadingListItems == selectedBookmarks.size();
             getMenu()
                     .findItem(R.id.reading_list_mark_as_read_id)
-                    .setVisible(numReadingListItems == selectedBookmarks.size() && numRead == 0);
+                    .setVisible(onlyReadingListSelected && numRead == 0);
             getMenu()
                     .findItem(R.id.reading_list_mark_as_unread_id)
-                    .setVisible(numReadingListItems == selectedBookmarks.size()
-                            && numRead == selectedBookmarks.size());
+                    .setVisible(onlyReadingListSelected && numRead == selectedBookmarks.size());
         } else {
             mDelegate.notifyStateChange(this);
         }
