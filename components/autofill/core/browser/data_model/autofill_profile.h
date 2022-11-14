@@ -45,7 +45,7 @@ class AutofillProfile : public AutofillDataModel {
   enum class Source {
     // Not synced at all or synced through the `AutofillProfileSyncBridge`. This
     // corresponds to profiles that local to Autofill only.
-    kLocal = 0,
+    kLocalOrSyncable = 0,
     // Synced through the `ContactInfoSyncBridge`. This corresponds to profiles
     // that are shared beyond Autofill across different services.
     kAccount = 1,
@@ -54,7 +54,7 @@ class AutofillProfile : public AutofillDataModel {
 
   AutofillProfile(const std::string& guid,
                   const std::string& origin,
-                  Source source = Source::kLocal);
+                  Source source = Source::kLocalOrSyncable);
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
   // to differentiate this constructor). |server_id| can be empty. If empty,

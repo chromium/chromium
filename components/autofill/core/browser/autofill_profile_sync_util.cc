@@ -87,11 +87,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   // Validity of the guid is guaranteed by the database layer.
   DCHECK(base::IsValidGUID(entry.guid()));
 
-  // Profiles fall into two categories, kLocal and kAccount. kLocal profiles are
-  // synced through the AutofillProfileSyncBridge, while kAccount profiles are
-  // synced through the ContactInfoSyncBridge. Make sure that syncing a profile
-  // through the wrong sync bridge fails early.
-  if (entry.source() != AutofillProfile::Source::kLocal)
+  // Profiles fall into two categories, kLocalOrSyncable and kAccount.
+  // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
+  // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
+  // sure that syncing a profile through the wrong sync bridge fails early.
+  if (entry.source() != AutofillProfile::Source::kLocalOrSyncable)
     return nullptr;
 
   auto entity_data = std::make_unique<EntityData>();
@@ -257,7 +257,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
     return nullptr;
   }
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), specifics.origin(), AutofillProfile::Source::kLocal);
+      specifics.guid(), specifics.origin(),
+      AutofillProfile::Source::kLocalOrSyncable);
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).

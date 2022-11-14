@@ -167,7 +167,7 @@ void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          &entries, AutofillProfile::Source::kLocal)) {
+          &entries, AutofillProfile::Source::kLocalOrSyncable)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -190,7 +190,7 @@ void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          &entries, AutofillProfile::Source::kLocal)) {
+          &entries, AutofillProfile::Source::kLocalOrSyncable)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -209,7 +209,8 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
   DCHECK(change.data_model());
   if (!change_processor()->IsTrackingMetadata() ||
       change.data_model()->record_type() != AutofillProfile::LOCAL_PROFILE ||
-      change.data_model()->source() != AutofillProfile::Source::kLocal) {
+      change.data_model()->source() !=
+          AutofillProfile::Source::kLocalOrSyncable) {
     return;
   }
 

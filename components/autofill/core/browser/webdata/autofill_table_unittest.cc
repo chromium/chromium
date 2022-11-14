@@ -180,7 +180,7 @@ class AutofillTableProfileTest
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
   // different master table.
   base::StringPiece GetProfileTable() const {
-    return profile_source() == AutofillProfile::Source::kLocal
+    return profile_source() == AutofillProfile::Source::kLocalOrSyncable
                ? "autofill_profiles"
                : "contact_info";
   }
@@ -213,7 +213,7 @@ class AutofillTableProfileTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     AutofillTableProfileTest,
-    testing::ValuesIn({AutofillProfile::Source::kLocal,
+    testing::ValuesIn({AutofillProfile::Source::kLocalOrSyncable,
                        AutofillProfile::Source::kAccount}));
 
 TEST_F(AutofillTableTest, Autofill) {
@@ -959,7 +959,7 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
   home_profile.SetRawInfoAsInt(BIRTHDATE_4_DIGIT_YEAR, 1997);
   // `disallow_settings_visible_updates` is not supported for account profiles.
-  if (profile_source() == AutofillProfile::Source::kLocal)
+  if (profile_source() == AutofillProfile::Source::kLocalOrSyncable)
     home_profile.set_disallow_settings_visible_updates(true);
   home_profile.set_language_code("en");
   Time pre_creation_time = AutofillClock::Now();
@@ -995,15 +995,15 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 // from parameterization on the `profile_source()`.
 TEST_F(AutofillTableTest, GetAutofillProfiles) {
   AutofillProfile local_profile(base::GenerateGUID(), "",
-                                AutofillProfile::Source::kLocal);
+                                AutofillProfile::Source::kLocalOrSyncable);
   AutofillProfile account_profile(base::GenerateGUID(), "",
                                   AutofillProfile::Source::kAccount);
   EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(
-      table_->GetAutofillProfiles(&profiles, AutofillProfile::Source::kLocal));
+  EXPECT_TRUE(table_->GetAutofillProfiles(
+      &profiles, AutofillProfile::Source::kLocalOrSyncable));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(local_profile)));
   EXPECT_TRUE(table_->GetAutofillProfiles(&profiles,
                                           AutofillProfile::Source::kAccount));
@@ -1328,7 +1328,7 @@ TEST_P(AutofillTableProfileTest, UpdateProfileOriginOnly) {
   // The origin is not supported for account profiles. This test is kept as part
   // of AutofillTableProfileTest for the simplified modification of the
   // date_modified.
-  if (profile_source() != AutofillProfile::Source::kLocal)
+  if (profile_source() != AutofillProfile::Source::kLocalOrSyncable)
     return;
 
   // Add a profile to the db.

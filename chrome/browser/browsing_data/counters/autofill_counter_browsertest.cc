@@ -117,7 +117,8 @@ class AutofillCounterTest : public InProcessBrowserTest {
 
   void RemoveLastAddress() {
     web_data_service_->RemoveAutofillProfile(
-        address_ids_.back(), autofill::AutofillProfile::Source::kLocal);
+        address_ids_.back(),
+        autofill::AutofillProfile::Source::kLocalOrSyncable);
     address_ids_.pop_back();
   }
 

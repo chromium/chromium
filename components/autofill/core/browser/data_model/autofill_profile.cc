@@ -228,7 +228,7 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
       server_id_(server_id),
       record_type_(type),
       has_converted_(false),
-      source_(Source::kLocal) {
+      source_(Source::kLocalOrSyncable) {
   DCHECK(type == SERVER_PROFILE);
 }
 

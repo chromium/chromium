@@ -101,8 +101,8 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   std::vector<AutofillProfile> GetAllLocalData() {
     std::vector<std::unique_ptr<AutofillProfile>> vector_of_unique_ptrs;
     // Meant as an assertion but I cannot use ASSERT_TRUE in non-void function.
-    EXPECT_TRUE(table()->GetAutofillProfiles(&vector_of_unique_ptrs,
-                                             AutofillProfile::Source::kLocal));
+    EXPECT_TRUE(table()->GetAutofillProfiles(
+        &vector_of_unique_ptrs, AutofillProfile::Source::kLocalOrSyncable));
 
     // Copy all the elements by value so that we have a vector that is easier to
     // work with in the test.

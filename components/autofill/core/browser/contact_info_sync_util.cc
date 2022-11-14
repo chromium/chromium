@@ -113,10 +113,10 @@ class ProfileSetter {
 
 std::unique_ptr<syncer::EntityData>
 CreateContactInfoEntityDataFromAutofillProfile(const AutofillProfile& profile) {
-  // Profiles fall into two categories, kLocal and kAccount. kLocal profiles are
-  // synced through the AutofillProfileSyncBridge, while kAccount profiles are
-  // synced through the ContactInfoSyncBridge. Make sure that syncing a profile
-  // through the wrong sync bridge fails early.
+  // Profiles fall into two categories, kLocalOrSyncable and kAccount.
+  // kLocalOrSyncable profiles are synced through the AutofillProfileSyncBridge,
+  // while kAccount profiles are synced through the ContactInfoSyncBridge. Make
+  // sure that syncing a profile through the wrong sync bridge fails early.
   if (!base::IsValidGUID(profile.guid()) ||
       profile.source() != AutofillProfile::Source::kAccount) {
     return nullptr;

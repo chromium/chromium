@@ -23,7 +23,7 @@ class AutofillProfile;
 // Converts the given `entry` into a syncer EntityData with equivalent
 // autofill profile specifics. Returns nullptr if `entry` is invalid.
 // Shortens all string fields to AutofillTable::kMaxDataLength.
-// Only applicable for profiles with source `kLocal`.
+// Only applicable for profiles with source `kLocalOrSyncable`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromAutofillProfile(
     const AutofillProfile& entry);
 

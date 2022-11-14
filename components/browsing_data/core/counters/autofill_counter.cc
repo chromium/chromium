@@ -101,7 +101,7 @@ void AutofillCounter::Count() {
 
   // Count the addresses.
   addresses_query_ = web_data_service_->GetAutofillProfiles(
-      autofill::AutofillProfile::Source::kLocal, this);
+      autofill::AutofillProfile::Source::kLocalOrSyncable, this);
 }
 
 void AutofillCounter::OnWebDataServiceRequestDone(

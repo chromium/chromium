@@ -235,7 +235,7 @@ TEST(ContactInfoSyncUtilTest,
 TEST(ContactInfoSyncUtilTest,
      CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
   AutofillProfile profile(kGuid, /*origin=*/"",
-                          AutofillProfile::Source::kLocal);
+                          AutofillProfile::Source::kLocalOrSyncable);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(profile), nullptr);
 }
 

@@ -39,7 +39,7 @@ const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 // returned from ConstructCompleteSpecifics().
 AutofillProfile ConstructCompleteProfile() {
   AutofillProfile profile(kGuid, "https://www.example.com/",
-                          AutofillProfile::Source::kLocal);
+                          AutofillProfile::Source::kLocalOrSyncable);
 
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
