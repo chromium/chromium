@@ -787,7 +787,12 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     @Override
-    public void setHairlineVisibility(boolean isVisible) {
+    public void setBrowsingModeHairlineVisibility(boolean isVisible) {
         mToolbarLayout.setHairlineVisibility(isVisible);
+    }
+
+    @Override
+    public boolean isBrowsingModeToolbarVisible() {
+        return mToolbarLayout.getVisibility() == View.VISIBLE;
     }
 }
