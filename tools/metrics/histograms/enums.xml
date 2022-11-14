@@ -60149,6 +60149,7 @@ from previous Chrome versions.
   <int value="-763759697" label="enable-audio-support-for-desktop-share"/>
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
   <int value="-763640405" label="WebXRARModule:enabled"/>
+  <int value="-763219650" label="OmniboxDefaultBrowserPedal:enabled"/>
   <int value="-762785269"
       label="EnableBackForwardCacheForScreenReader:disabled"/>
   <int value="-762738927" label="LogJsConsoleMessages:enabled"/>
@@ -63005,6 +63006,7 @@ from previous Chrome versions.
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>
+  <int value="964801437" label="OmniboxDefaultBrowserPedal:disabled"/>
   <int value="964995928" label="LauncherHideContinueSection:enabled"/>
   <int value="965037619"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>

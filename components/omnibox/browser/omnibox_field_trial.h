@@ -316,6 +316,9 @@ extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsLowEndBypass;
 // Indicates whether to support transpose edit operations in fuzzy search.
 extern const base::FeatureParam<bool> kFuzzyUrlSuggestionsTranspose;
 
+// Returns true if the default browser pedal feature is enabled.
+bool IsDefaultBrowserPedalEnabled();
+
 // Simply a convenient wrapper for testing a flag. Used downstream for an
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();

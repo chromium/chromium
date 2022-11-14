@@ -5603,6 +5603,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
 
+    {"omnibox-default-browser-pedal",
+     flag_descriptions::kOmniboxDefaultBrowserPedalName,
+     flag_descriptions::kOmniboxDefaultBrowserPedalDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxDefaultBrowserPedal)},
+
     {"omnibox-report-assisted-query-stats",
      flag_descriptions::kOmniboxReportAssistedQueryStatsName,
      flag_descriptions::kOmniboxReportAssistedQueryStatsDescription, kOsAll,

@@ -399,6 +399,11 @@ BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
              "OmniboxFuzzyUrlSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature used to enable the default browser pedal.
+BASE_FEATURE(kOmniboxDefaultBrowserPedal,
+             "OmniboxDefaultBrowserPedal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature used to update the left and bottom padding of the omnibox suggestion
 // header.
 BASE_FEATURE(kOmniboxHeaderPaddingUpdate,

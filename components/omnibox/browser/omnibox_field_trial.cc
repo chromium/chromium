@@ -535,6 +535,10 @@ bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }
 
+bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
+}
+
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual(
         &omnibox::kOmniboxFuzzyUrlSuggestions,

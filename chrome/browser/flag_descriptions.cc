@@ -1943,6 +1943,10 @@ const char kOmniboxClosePopupWithEscapeDescription[] =
     "default suggestion is selected will close the omnibox without removing "
     "its focus or clearing user input.";
 
+const char kOmniboxDefaultBrowserPedalName[] = "Omnibox Default Browser Pedal";
+const char kOmniboxDefaultBrowserPedalDescription[] =
+    "Enables a pedal that helps the user 'set default browser'.";
+
 const char kOmniboxDisableCGIParamMatchingName[] =
     "Disable CGI Param Name Matching";
 const char kOmniboxDisableCGIParamMatchingDescription[] =

@@ -30,7 +30,7 @@ typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
 
 // This is a hard upper bound on the number of tokens that will be processed.
 // The current value is determined from the existing body of translation data.
-constexpr size_t kMaxTokens = 36;
+constexpr size_t kMaxTokens = 61;
 
 // All characters in this string get removed from text before processing.
 // U+200F is a RTL marker punctuation character that seems to throw
