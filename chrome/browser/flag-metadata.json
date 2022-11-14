@@ -2350,7 +2350,7 @@
   {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 117
   },
   {
     "name": "enable-filtering-scroll-events",
