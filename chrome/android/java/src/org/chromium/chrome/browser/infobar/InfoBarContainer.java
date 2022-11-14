@@ -190,6 +190,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
             new FullscreenManager.Observer() {
                 @Override
                 public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                    assert !isDestroyed() : "Full screen observer is not correctly removed";
                     setIsAllowedToAutoHide(false);
                     mInfoBarContainerView.setTranslationY(0);
                 }

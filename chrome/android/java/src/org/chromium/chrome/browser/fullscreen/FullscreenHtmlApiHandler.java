@@ -897,6 +897,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         setContentView(null);
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         if (mTabFullscreenObserver != null) mTabFullscreenObserver.destroy();
+        mObservers.clear();
     }
 
     void setTabForTesting(Tab tab) {
@@ -905,5 +906,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
     boolean isToastVisibleForTesting() {
         return mNotificationToast != null;
+    }
+
+    ObserverList<FullscreenManager.Observer> getObserversForTesting() {
+        return mObservers;
     }
 }
