@@ -8,8 +8,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -83,21 +81,9 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  base::TimeTicks paint_time =
-      expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks();
-
-  if (RuntimeEnabledFeatures::ExposeRenderTimeNonTaoDelayedImageEnabled()) {
-    base::TimeTicks fcp =
-        PaintTiming::From(*window_performance_->DomWindow()->document())
-            .FirstContentfulPaintPresentation();
-    if (!media_timing->TimingAllowPassed() &&
-        largest_image->paint_time <= fcp) {
-      paint_time = fcp;
-    }
-  }
-
   window_performance_->OnLargestContentfulPaintUpdated(
-      paint_time, largest_image->recorded_size, largest_image->load_time,
+      expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks(),
+      largest_image->recorded_size, largest_image->load_time,
       expose_paint_time_to_api ? largest_image->first_animated_frame_time
                                : base::TimeTicks(),
       image_id, image_url, image_element);
