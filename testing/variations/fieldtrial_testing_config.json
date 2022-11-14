@@ -10370,6 +10370,28 @@
             ]
         }
     ],
+    "SidePanelJourneys": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SidePanelJourneysOpensFromOmnibox": "true"
+                    },
+                    "enable_features": [
+                        "SidePanelJourneys"
+                    ]
+                }
+            ]
+        }
+    ],
     "SideSearchDesktop": [
         {
             "platforms": [
