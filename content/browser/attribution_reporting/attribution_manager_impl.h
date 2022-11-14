@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -57,6 +58,8 @@ class StoragePartitionImpl;
 class StoredSource;
 
 struct SendResult;
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
 
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
