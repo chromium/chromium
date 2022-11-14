@@ -121071,6 +121071,32 @@
        {}
       ]
      ],
+     "font-variant-position-02.html": [
+      "bf4f813fac793adffa4c9e4a678857b3d5f690e8",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-position-02-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-variant-position-03.html": [
+      "5c649104b3ddb80c5d32c73fcdf2fef69e186e67",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-variant-position-03-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-variant-position.html": [
       "857062407dbdac2fe8ad803a14f48f647461f323",
       [
@@ -282541,11 +282567,11 @@
       []
      ],
      "font-variant-position-02-ref.html": [
-      "8b34fcb24f731ce73bbe98a198e8526dae4092cc",
+      "b7b17c69e1d78d8bc8ce9089393d512f367ffbcc",
       []
      ],
      "font-variant-position-03-ref.html": [
-      "8b34fcb24f731ce73bbe98a198e8526dae4092cc",
+      "2b85be140e45d1513e45d807b20976c8f7c4478f",
       []
      ],
      "font-variant-position-ref.html": [
@@ -361484,10 +361510,6 @@
      []
     ],
     "css": {
-     "progress-based-animation-animation-longhand-properties.tentative-expected.txt": [
-      "4d8df9e04544df189228d845af60dbbcb1f0203a",
-      []
-     ],
      "progress-based-animation-animation-longhand-properties.tentative.html.ini": [
       "9222f8df457e16ec20aeb83671eef394d4f5a7c3",
       []
@@ -374726,7 +374748,7 @@
      []
     ],
     "supported-stats.https-expected.txt": [
-     "97e519b873bdfcd5391436b703aaec1902580699",
+     "f16996062400725e983d7034d007d6e5a929c395",
      []
     ]
    },
@@ -570623,7 +570645,7 @@
       ]
      ],
      "animation-timeline-named-scroll-progress-timeline.tentative.html": [
-      "c46e4ada8dacb9f1c7aea671c4095c4f83c11977",
+      "1f891caca3c2be871f16b112563115fbfbc2916e",
       [
        null,
        {}
@@ -570651,7 +570673,7 @@
       ]
      ],
      "progress-based-animation-animation-longhand-properties.tentative.html": [
-      "a956fe41f8644b6f306bff0403d114ff86573e78",
+      "f91be8d75346d5436198f59508766d0668209115",
       [
        null,
        {}
@@ -578800,7 +578822,7 @@
       ]
      ],
      "local-storage.html": [
-      "367d6ca23c2442e9392c9aa24a2a2dcf247d65dd",
+      "cd14685054f0cd007e53b68e2b72693b88afc5e6",
       [
        null,
        {
@@ -640108,20 +640130,6 @@
      ],
      "font-size-adjust-003.xht": [
       "1886ccc6bfdb027b797efe69f127f41bc6aa46f8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-variant-position-02.html": [
-      "842c726dbff4e2927c1ed49e4d94767a8a506ede",
-      [
-       null,
-       {}
-      ]
-     ],
-     "font-variant-position-03.html": [
-      "f0fc871f05b25036391a06ce4297ecfff8ac43d5",
       [
        null,
        {}
