@@ -11,8 +11,8 @@
     // component, it's a useful way to be able to launch the component from a
     // host tool and have it run somewhere it can get the capabilities it needs
     // to function correctly.
-    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
     "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
   ],
   program: {
     binary: "web_engine_shell_exec",
@@ -36,6 +36,7 @@
       storage: "tmp",
       path: "/tmp",
     },
+
     // Uses below this line are for web_instance.cmx
     {
       protocol: [
@@ -49,6 +50,7 @@
         "fuchsia.kernel.VmexResource",
         "fuchsia.media.Audio",
         "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.drm.Widevine",
         "fuchsia.media.ProfileProvider",
         "fuchsia.media.SessionAudioConsumerFactory",
         "fuchsia.mediacodec.CodecFactory",
