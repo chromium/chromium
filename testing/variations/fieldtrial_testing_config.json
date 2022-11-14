@@ -6826,6 +6826,9 @@
             "experiments": [
                 {
                     "name": "enabled_merchant_wide_promotion_20221102",
+                    "params": {
+                        "ready-to-fetch": "true"
+                    },
                     "enable_features": [
                         "MerchantWidePromotion"
                     ]
