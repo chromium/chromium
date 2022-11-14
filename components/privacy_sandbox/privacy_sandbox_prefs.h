@@ -9,6 +9,22 @@ class PrefRegistrySimple;
 
 namespace prefs {
 
+// Un-synced boolean pref indicating whether the consent decision was made.
+extern const char kPrivacySandboxM1ConsentDecisionMade[];
+// Un-synced boolean pref indicating whether the notice was acknowledged.
+extern const char kPrivacySandboxM1EEANoticeAcknowledged[];
+// Un-synced boolean pref indicating whether the notice shown in ROW was
+// acknowledged.
+extern const char kPrivacySandboxM1RowNoticeAcknowledged[];
+// Un-synced integer pref indicating any suppressed reason for the prompt.
+extern const char kPrivacySandboxM1PromptSuppressed[];
+// Un-synced boolean pref indicating if Topics API is enabled.
+extern const char kPrivacySandboxM1TopicsEnabled[];
+// Un-synced boolean pref indicating if Fledge API is enabled.
+extern const char kPrivacySandboxM1FledgeEnabled[];
+// Un-synced boolean pref indicating if Ad measurement API is enabled.
+extern const char kPrivacySandboxM1AdMeasurementEnabled[];
+
 // Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
 // enabled, but each API will respect its own enabling logic if this pref is
 // true. When this pref is false ALL Privacy Sandbox APIs are disabled.
