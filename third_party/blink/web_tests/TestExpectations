@@ -3395,8 +3395,6 @@ crbug.com/1369049 external/wpt/webrtc-stats/hardware-capability-stats.https.html
 crbug.com/1369049 external/wpt/webrtc-stats/supported-stats.https.html [ Failure Pass ]
 
 ### external/wpt/speculation-rules/prerender
-crbug.com/1126305 [ Mac10.15 ] external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
-crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
 crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
 
 ### See crbug.com/891427 comment near the top of this file:
@@ -5738,11 +5736,6 @@ crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html
 
 # Sheriff 2021-11-09
 crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass Timeout ]
-
-# This test is flaky on all platforms
-crbug.com/1191846 [ Mac11 ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
-crbug.com/1191846 [ Mac12 ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
-crbug.com/1191846 [ Win ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
 crbug.com/1268963 [ Linux ] external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
