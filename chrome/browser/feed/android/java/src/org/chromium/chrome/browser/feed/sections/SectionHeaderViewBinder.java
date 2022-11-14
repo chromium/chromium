@@ -54,6 +54,9 @@ public class SectionHeaderViewBinder
         } else if (key == SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY) {
             view.setStickyHeaderVisible(
                     model.get(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY));
+        } else if (key == SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY) {
+            view.updateStickyHeaderMargin(
+                    model.get(SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY));
         }
     }
 

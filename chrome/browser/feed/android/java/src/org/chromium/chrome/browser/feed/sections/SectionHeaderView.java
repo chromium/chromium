@@ -572,4 +572,9 @@ public class SectionHeaderView extends LinearLayout {
      * Does nothing otherwise.
      */
     void setStickyHeaderVisible(boolean isVisible) {}
+
+    /**
+     * Adjust the margin of the sticky header.
+     */
+    void updateStickyHeaderMargin(int marginValue) {}
 }

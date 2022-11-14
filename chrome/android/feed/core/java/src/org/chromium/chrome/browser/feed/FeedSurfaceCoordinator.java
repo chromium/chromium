@@ -148,6 +148,7 @@ public class FeedSurfaceCoordinator
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
     private @Nullable RefreshIphScrollListener mRefreshIphScrollListener;
+    private @Nullable StartSurfaceScrollListener mStartSurfaceScrollListener;
     private @Nullable BackToTopBubbleScrollListener mBackToTopBubbleScrollListener;
     private @Nullable FeedReliabilityLogger mReliabilityLogger;
     private final PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
@@ -216,6 +217,28 @@ public class FeedSurfaceCoordinator
             int[] pos = new int[2];
             ViewUtils.getRelativeLayoutPosition(mRootView, childView, pos);
             return pos[1];
+        }
+    }
+
+    // This listener is used to handle the sticky header on the start surface.
+    class StartSurfaceScrollListener implements ScrollListener {
+        @Override
+        public void onScrollStateChanged(@ScrollState int state) {}
+
+        @Override
+        public void onScrolled(int dx, int dy) {}
+
+        /**
+         * On the start surface, the header offset changes will trigger this third method in the
+         * listener, and we compare the toolbar height which is passed as a parameter in the
+         * constructor with the in-feed header current position. If the header position is smaller
+         * than the toolbar height, we make the sticky header visible.
+         */
+        @Override
+        public void onHeaderOffsetChanged(int verticalOffset) {
+            boolean isStickyHeaderVisibleOnStartSurface = mToolbarHeight >= getFeedHeaderPosition();
+            mSectionHeaderModel.set(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY,
+                    isStickyHeaderVisibleOnStartSurface);
         }
     }
 
@@ -362,6 +385,21 @@ public class FeedSurfaceCoordinator
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.STICKY_HEADER_EXPANDING_DRAWER_VIEW_KEY,
                     optionsCoordinator.getStickyHeaderOptionsView());
+
+            // TODO(b/258073469): update the margin to the correct number
+            // If we are on start surface, the sticky header's margin is temporarily set to be 1/2
+            // toolbar height; if we are on NTP, the sticky header's margin should be set to the
+            // toolbar height.
+            if (mSurfaceType == SurfaceType.START_SURFACE) {
+                mSectionHeaderModel.set(
+                        SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY,
+                        mToolbarHeight / 2);
+                createStartSurfaceScrollListener();
+            } else {
+                mSectionHeaderModel.set(
+                        SectionHeaderListProperties.STICKY_HEADER_MUTABLE_MARGIN_KEY,
+                        mToolbarHeight);
+            }
         }
 
         // Mediator should be created before any Stream changes.
@@ -388,10 +426,17 @@ public class FeedSurfaceCoordinator
         toolbar.setBrowsingModeHairlineVisibility(isVisible);
     }
 
-    /** @return the position of the in-feed header. */
-    public int getFeedHeaderPosition() {
-        return mScrollableContainerDelegate.getTopPositionRelativeToContainerView(
-                mSectionHeaderView);
+    /**
+     * @return the position of the in-feed header, or an error value Integer.MAX_VALUE when
+     * mScrollableContainerDelegate isn't initialized successfully, in this case, the sticky header
+     * will always be invisible.
+     */
+    int getFeedHeaderPosition() {
+        if (mScrollableContainerDelegate != null) {
+            return mScrollableContainerDelegate.getTopPositionRelativeToContainerView(
+                    mSectionHeaderView);
+        }
+        return Integer.MAX_VALUE;
     }
 
     @Override
@@ -864,6 +909,11 @@ public class FeedSurfaceCoordinator
         }
     }
 
+    private void createStartSurfaceScrollListener() {
+        mStartSurfaceScrollListener = new StartSurfaceScrollListener();
+        mScrollableContainerDelegate.addScrollListener(mStartSurfaceScrollListener);
+    }
+
     private void createHeaderIphScrollListener() {
         mHeaderIphScrollListener =
                 new HeaderIphScrollListener(this, mScrollableContainerDelegate, () -> {
@@ -1052,5 +1102,10 @@ public class FeedSurfaceCoordinator
     @VisibleForTesting
     public void setReliabilityLoggerForTesting(FeedReliabilityLogger logger) {
         mReliabilityLogger = logger;
+    }
+
+    @VisibleForTesting
+    public void clearScrollableContainerDelegateForTesting() {
+        mScrollableContainerDelegate = null;
     }
 }

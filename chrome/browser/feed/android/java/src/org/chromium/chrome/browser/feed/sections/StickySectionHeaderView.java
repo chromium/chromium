@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -40,15 +39,13 @@ public class StickySectionHeaderView extends SectionHeaderView {
     }
 
     /**
-     * When we set/update the toolbar height, the margin of the sticky header should be updated
-     * simultaneously.
+     * This method is to set/update sticky heaer's margin.
+     * @param marginValue the sticky header's margin
      */
     @Override
-    public void setToolbarHeight(@Px int toolbarHeight) {
-        super.setToolbarHeight(toolbarHeight);
+    void updateStickyHeaderMargin(int marginValue) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) this.getLayoutParams();
-        params.setMargins(
-                params.leftMargin, toolbarHeight, params.rightMargin, params.bottomMargin);
+        params.setMargins(params.leftMargin, marginValue, params.rightMargin, params.bottomMargin);
     }
 
     /**
