@@ -445,12 +445,16 @@ Shell* OpenPopup(const ToRenderFrameHost& opener,
 }
 
 FileChooserDelegate::FileChooserDelegate(std::vector<base::FilePath> files,
+                                         const base::FilePath& base_dir,
                                          base::OnceClosure callback)
-    : files_(std::move(files)), callback_(std::move(callback)) {}
+    : files_(std::move(files)),
+      base_dir_(base_dir),
+      callback_(std::move(callback)) {}
 
 FileChooserDelegate::FileChooserDelegate(const base::FilePath& file,
                                          base::OnceClosure callback)
     : FileChooserDelegate(std::vector<base::FilePath>(1, file),
+                          base::FilePath(),
                           std::move(callback)) {}
 
 FileChooserDelegate::~FileChooserDelegate() = default;
@@ -459,6 +463,9 @@ void FileChooserDelegate::RunFileChooser(
     RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
+  // |base_dir_| should be set for and only for |kUploadFolder| mode.
+  DCHECK(base_dir_.empty() ==
+         (params.mode != blink::mojom::FileChooserParams::Mode::kUploadFolder));
   // Send the selected files to the renderer process.
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   for (const auto& file : files_) {
@@ -466,7 +473,7 @@ void FileChooserDelegate::RunFileChooser(
         blink::mojom::NativeFileInfo::New(file, std::u16string()));
     files.push_back(std::move(file_info));
   }
-  listener->FileSelected(std::move(files), base::FilePath(), params.mode);
+  listener->FileSelected(std::move(files), base_dir_, params.mode);
 
   params_ = params.Clone();
   if (callback_)

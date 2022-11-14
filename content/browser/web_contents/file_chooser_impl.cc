@@ -23,10 +23,24 @@ namespace content {
 
 namespace {
 
+// Removes any file that is a symlink or is inside a directory symlink.
+// For |kUploadFolder| mode only. |base_dir| is the folder being uploaded.
 std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
-    std::vector<blink::mojom::FileChooserFileInfoPtr> files) {
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+    base::FilePath base_dir) {
+  DCHECK(!base_dir.empty());
   auto new_end = base::ranges::remove_if(
-      files, &base::IsLink,
+      files,
+      [&base_dir](const base::FilePath& file_path) {
+        if (base::IsLink(file_path))
+          return true;
+        for (base::FilePath path = file_path.DirName(); base_dir.IsParent(path);
+             path = path.DirName()) {
+          if (base::IsLink(path))
+            return true;
+        }
+        return false;
+      },
       [](const auto& file) { return file->get_native_file()->file_path; });
   files.erase(new_end, files.end());
   return files;
@@ -78,7 +92,7 @@ void FileChooserImpl::FileSelectListenerImpl::FileSelected(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&RemoveSymlinks, std::move(files)),
+      base::BindOnce(&RemoveSymlinks, std::move(files), base_dir),
       base::BindOnce(&FileChooserImpl::FileSelected, owner_->GetWeakPtr(),
                      base_dir, mode));
 }

@@ -179,7 +179,10 @@ class FileChooserDelegate : public WebContentsDelegate {
   // The mocked file dialog will always reply that the user selected |file| or
   // |files|. |callback| is invoked when RunFileChooser() is called.
   FileChooserDelegate(const base::FilePath& file, base::OnceClosure callback);
+  // |base_dir| must be set to the folder being uploaded in |kUploadFolder|
+  // mode, and must be empty in all other modes.
   FileChooserDelegate(std::vector<base::FilePath> files,
+                      const base::FilePath& base_dir,
                       base::OnceClosure callback);
   ~FileChooserDelegate() override;
 
@@ -193,6 +196,7 @@ class FileChooserDelegate : public WebContentsDelegate {
 
  private:
   std::vector<base::FilePath> files_;
+  const base::FilePath base_dir_;
   base::OnceClosure callback_;
   blink::mojom::FileChooserParamsPtr params_;
 };
