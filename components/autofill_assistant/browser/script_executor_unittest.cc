@@ -25,8 +25,6 @@
 
 namespace autofill_assistant {
 
-namespace {
-
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
@@ -86,6 +84,11 @@ class ScriptExecutorTest : public testing::Test,
  protected:
   ScriptExecutorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  std::vector<std::pair<std::unique_ptr<Script>, std::unique_ptr<Service>>>&
+  GetAdditionalInterruptScriptsForTest() {
+    return executor_->additional_interrupt_scripts;
+  }
 
   // Implements ScriptExecutor::Listener
   void OnServerPayloadChanged(const std::string& global_payload,
@@ -2598,5 +2601,88 @@ TEST_F(ScriptExecutorTest, GetCurrentRootAction) {
             actions_response.actions(0));
 }
 
-}  // namespace
+TEST_F(ScriptExecutorTest, AddInterruptFailsForNonInterruptScripts) {
+  auto interrupt_script = std::make_unique<Script>();
+  interrupt_script->handle.path.assign("interrupt");
+  interrupt_script->handle.interrupt = false;
+  EXPECT_THAT(GetAdditionalInterruptScriptsForTest(), IsEmpty());
+  executor_->AddInterruptScript(std::move(interrupt_script),
+                                /* optional_service = */ nullptr);
+  EXPECT_THAT(GetAdditionalInterruptScriptsForTest(), IsEmpty());
+}
+
+TEST_F(ScriptExecutorTest, AddInterruptScriptWithDefaultService) {
+  ActionsResponseProto main_script_proto;
+  // First prompt is just for a convenient break point to add the interrupt.
+  main_script_proto.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("continue");
+  auto* prompt_action = main_script_proto.add_actions()->mutable_prompt();
+  prompt_action->set_allow_interrupt(true);
+  prompt_action->add_choices()->mutable_chip()->set_text("main prompt");
+  EXPECT_CALL(mock_service_, GetActions(StrEq(kScriptPath), _, _, _, _, _))
+      .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK,
+                                         Serialize(main_script_proto),
+                                         ServiceRequestSender::ResponseInfo{}));
+  executor_->Run(&user_data_, executor_callback_.Get());
+
+  EXPECT_EQ(AutofillAssistantState::PROMPT, delegate_.GetState());
+  ASSERT_NE(nullptr, ui_delegate_.GetUserActions());
+  EXPECT_THAT(
+      *ui_delegate_.GetUserActions(),
+      ElementsAre(Property(&UserAction::chip, Field(&Chip::text, "continue"))));
+
+  // While the first prompt is pending, register a new interrupt script.
+  auto interrupt_script = std::make_unique<Script>();
+  ScriptPreconditionProto interrupt_precondition_proto;
+  *interrupt_precondition_proto.mutable_element_condition()->mutable_match() =
+      ToSelectorProto("interrupt_condition");
+  interrupt_script->precondition =
+      ScriptPrecondition::FromProto("interrupt", interrupt_precondition_proto);
+  interrupt_script->handle.path.assign("interrupt");
+  interrupt_script->handle.interrupt = true;
+
+  EXPECT_THAT(GetAdditionalInterruptScriptsForTest(), IsEmpty());
+  executor_->AddInterruptScript(std::move(interrupt_script),
+                                /* optional_service = */ nullptr);
+  EXPECT_THAT(GetAdditionalInterruptScriptsForTest(), SizeIs(1));
+
+  ActionsResponseProto interrupt_script_proto;
+  interrupt_script_proto.add_actions()
+      ->mutable_prompt()
+      ->add_choices()
+      ->mutable_chip()
+      ->set_text("finish interrupt");
+  EXPECT_CALL(mock_service_, GetActions(StrEq("interrupt"), _, _, _, _, _))
+      .WillRepeatedly(RunOnceCallback<5>(net::HTTP_OK,
+                                         Serialize(interrupt_script_proto),
+                                         ServiceRequestSender::ResponseInfo{}));
+  EXPECT_CALL(mock_service_, GetNextActions)
+      .WillRepeatedly(RunOnceCallback<6>(net::HTTP_OK, "",
+                                         ServiceRequestSender::ResponseInfo{}));
+  // Finishing the first prompt will start the second one, which allows
+  // interrupts and is supposed to immediately run the interrupt we just
+  // registered.
+  EXPECT_CALL(
+      mock_web_controller_,
+      FindElement(Selector(ToSelectorProto("interrupt_condition")), _, _))
+      .WillRepeatedly(RunOnceCallback<2>(
+          OkClientStatus(), std::make_unique<ElementFinderResult>()));
+  (*ui_delegate_.GetUserActions())[0].RunCallback();
+
+  // We should now be in the interrupt.
+  ASSERT_NE(nullptr, ui_delegate_.GetUserActions());
+  ASSERT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(Property(&UserAction::chip,
+                                   Field(&Chip::text, "finish interrupt"))));
+  (*ui_delegate_.GetUserActions())[0].RunCallback();
+
+  ASSERT_NE(nullptr, ui_delegate_.GetUserActions());
+  ASSERT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(Property(&UserAction::chip,
+                                   Field(&Chip::text, "main prompt"))));
+}
+
 }  // namespace autofill_assistant

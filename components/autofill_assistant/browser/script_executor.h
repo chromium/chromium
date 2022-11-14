@@ -313,6 +313,7 @@ class ScriptExecutor : public ActionDelegate,
  private:
   // TODO(b/220079189): remove this friend declaration.
   friend class WaitForDomOperation;
+  friend class ScriptExecutorTest;
 
   void OnGetActions(base::TimeTicks start_time,
                     int http_status,
