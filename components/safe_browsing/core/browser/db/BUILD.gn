@@ -213,6 +213,8 @@ source_set("v4_rice") {
 
 source_set("v4_store") {
   sources = [
+    "hash_prefix_map.cc",
+    "hash_prefix_map.h",
     "v4_store.cc",
     "v4_store.h",
   ]

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -26,19 +27,12 @@ class V4Store;
 using UpdatedStoreReadyCallback =
     base::OnceCallback<void(std::unique_ptr<V4Store> new_store)>;
 
-// The sorted list of hash prefixes.
-using HashPrefixes = std::string;
-
-// Stores the list of sorted hash prefixes, by size.
-// For instance: {4: ["abcd", "bcde", "cdef", "gggg"], 5: ["fffff"]}
-using HashPrefixMap = std::unordered_map<PrefixSize, HashPrefixes>;
-
 // Stores the iterator to the last element merged from the HashPrefixMap for a
 // given prefix size.
 // For instance: {4:iter(3), 5:iter(1)} means that we have already merged
 // 3 hash prefixes of length 4, and 1 hash prefix of length 5.
 using IteratorMap =
-    std::unordered_map<PrefixSize, HashPrefixes::const_iterator>;
+    std::unordered_map<PrefixSize, HashPrefixesView::const_iterator>;
 
 // Enumerate different failure events while parsing the file read from disk for
 // histogramming purposes.  DO NOT CHANGE THE ORDERING OF THESE VALUES.
@@ -227,7 +221,7 @@ class V4Store {
       const std::string& base_metric);
 
  protected:
-  HashPrefixMap hash_prefix_map_;
+  std::unique_ptr<HashPrefixMap> hash_prefix_map_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, TestReadFromEmptyFile);
@@ -328,7 +322,7 @@ class V4Store {
   // Returns true if |hash_prefix| with PrefixSize |size| exists in |prefixes|.
   // This small method is exposed in the header so it can be tested separately.
   static bool HashPrefixMatches(base::StringPiece prefix,
-                                const HashPrefixes& prefixes,
+                                HashPrefixesView prefixes,
                                 const PrefixSize& size);
 
   // For each key in |hash_prefix_map|, sets the iterator at that key
