@@ -2353,7 +2353,14 @@ config("win_pdbaltpath") {
 config("symbols") {
   if (is_win) {
     if (is_clang) {
-      cflags = [ "/Z7" ]  # Debug information in the .obj files.
+      cflags = [
+        # Debug information in the .obj files.
+        "/Z7",
+
+        # Disable putting the compiler command line into the debug info to
+        # prevent some types of non-determinism.
+        "-gno-codeview-command-line",
+      ]
     } else {
       cflags = [ "/Zi" ]  # Produce PDB file, no edit and continue.
     }
