@@ -65,6 +65,17 @@ ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
       session_manager::SessionManager::Get();
   if (session_manager)
     session_observation_.Observe(session_manager);
+
+  if (!base::FeatureList::IsEnabled(
+          ash::features::kOnDeviceSpeechRecognition)) {
+    controller_->OnSpeechRecognitionAvailabilityChanged(
+        ash::SpeechRecognitionAvailability::
+            kOnDeviceSpeechRecognitionNotSupported);
+    return;
+  }
+  soda_installation_controller_ =
+      std::make_unique<ProjectorSodaInstallationController>(
+          ash::ProjectorAppClient::Get(), controller_);
 }
 
 ProjectorClientImpl::ProjectorClientImpl()

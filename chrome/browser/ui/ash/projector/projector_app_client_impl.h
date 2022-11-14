@@ -12,7 +12,6 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
-#include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "chrome/browser/ui/ash/projector/screencast_manager.h"
 
 namespace network {
@@ -80,9 +79,6 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
       const ash::PendingScreencastSet& pending_screencast);
 
   base::ObserverList<Observer> observers_;
-
-  std::unique_ptr<ProjectorSodaInstallationController>
-      soda_installation_controller_;
 
   // TODO(b/239098953): This should be owned by `screencast_manager_`;
   PendingScreencastManager pending_screencast_manager_;

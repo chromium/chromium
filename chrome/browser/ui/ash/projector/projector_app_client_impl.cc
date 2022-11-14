@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -68,19 +68,7 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
 ProjectorAppClientImpl::ProjectorAppClientImpl()
     : pending_screencast_manager_(base::BindRepeating(
           &ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged,
-          base::Unretained(this))) {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kOnDeviceSpeechRecognition)) {
-    ash::ProjectorController::Get()->OnSpeechRecognitionAvailabilityChanged(
-        ash::SpeechRecognitionAvailability::
-            kOnDeviceSpeechRecognitionNotSupported);
-    return;
-  }
-
-  soda_installation_controller_ =
-      std::make_unique<ProjectorSodaInstallationController>(
-          this, ash::ProjectorController::Get());
-}
+          base::Unretained(this))) {}
 
 ProjectorAppClientImpl::~ProjectorAppClientImpl() = default;
 
@@ -123,15 +111,12 @@ void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
 }
 
 bool ProjectorAppClientImpl::ShouldDownloadSoda() const {
-  return soda_installation_controller_ &&
-         soda_installation_controller_->ShouldDownloadSoda(
-             GetLocaleLanguageCode());
+  return ProjectorSodaInstallationController::ShouldDownloadSoda(
+      GetLocaleLanguageCode());
 }
 
 void ProjectorAppClientImpl::InstallSoda() {
-  DCHECK(soda_installation_controller_);
-
-  soda_installation_controller_->InstallSoda(GetLocale());
+  return ProjectorSodaInstallationController::InstallSoda(GetLocale());
 }
 
 void ProjectorAppClientImpl::OnSodaInstallProgress(int combined_progress) {

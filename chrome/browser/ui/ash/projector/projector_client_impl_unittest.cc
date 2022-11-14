@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -27,7 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
 namespace ash {
 
 namespace {
@@ -55,6 +56,24 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MOCK_CONST_METHOD0(GetAvailableLanguages, std::vector<std::string>());
   MOCK_METHOD1(InstallSoda, void(PrefService*));
   MOCK_METHOD1(UninstallSoda, void(PrefService*));
+};
+
+class MockLocaleUpdateController : public ash::LocaleUpdateController {
+ public:
+  MockLocaleUpdateController() = default;
+  MockLocaleUpdateController(const MockLocaleUpdateController&) = delete;
+  MockLocaleUpdateController& operator=(const MockLocaleUpdateController&) =
+      delete;
+  ~MockLocaleUpdateController() override = default;
+
+  MOCK_METHOD0(OnLocaleChanged, void());
+  MOCK_METHOD4(ConfirmLocaleChange,
+               void(const std::string&,
+                    const std::string&,
+                    const std::string&,
+                    LocaleChangeConfirmationCallback));
+  MOCK_METHOD1(AddObserver, void(ash::LocaleChangeObserver*));
+  MOCK_METHOD1(RemoveObserver, void(ash::LocaleChangeObserver*));
 };
 
 }  // namespace
@@ -96,8 +115,18 @@ class ProjectorClientImplUnitTest : public testing::Test {
     soda_installer_ = std::make_unique<MockSodaInstaller>();
     soda_installer_->NotifySodaInstalledForTesting();
     soda_installer_->NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
+    mock_app_client_ = std::make_unique<MockAppClient>();
+    mock_locale_controller_ = std::make_unique<MockLocaleUpdateController>();
     projector_client_ =
         std::make_unique<ProjectorClientImpl>(&projector_controller_);
+  }
+
+  void TearDown() override {
+    projector_client_.reset();
+    mock_locale_controller_.reset();
+    mock_app_client_.reset();
+    soda_installer_.reset();
+    testing::Test::TearDown();
   }
 
   std::unique_ptr<KeyedService> CreateTestSpeechRecognitionService(
@@ -133,6 +162,8 @@ class ProjectorClientImplUnitTest : public testing::Test {
   MockProjectorController projector_controller_;
   std::unique_ptr<ProjectorClient> projector_client_;
   std::unique_ptr<MockSodaInstaller> soda_installer_;
+  std::unique_ptr<MockAppClient> mock_app_client_;
+  std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
   speech::FakeSpeechRecognitionService* fake_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
