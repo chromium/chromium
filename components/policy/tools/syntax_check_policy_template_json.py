@@ -440,7 +440,7 @@ class PolicyTemplateChecker(object):
     if offending_snippet is not None:
       if isinstance(offending_snippet, dict) or isinstance(
           offending_snippet, list):
-        yaml_str = pyyaml.dumps(offending_snippet, indent=2)
+        yaml_str = pyyaml.dump(offending_snippet, indent=2)
         formatted_error_message += f'\n  Offending: {yaml_str}'
       else:
         formatted_error_message += f'\n  {offending_snippet}'
