@@ -386,9 +386,9 @@ someone from the OWNERS file.
 
 Histogram expiry is specified by the `expires_after` attribute in histogram
 descriptions in histograms.xml. The attribute can be specified as date in
-**YYYY-MM-DD** format or as Chrome milestone in **M**\*(e.g. M68) format. In the
-latter case, the actual expiry date is about 12 weeks after that branch is cut,
-or basically when it is replaced on the "stable" channel by the following
+**YYYY-MM-DD** format or as Chrome milestone in **M**\*(e.g. M105) format. In
+the latter case, the actual expiry date is about 12 weeks after that branch is
+cut, or basically when it is replaced on the "stable" channel by the following
 release.
 
 After a histogram expires, it ceases to be displayed on the dashboard.
@@ -396,7 +396,9 @@ Follow [these directions](#extending) to extend it.
 
 Once a histogram has expired, the code that records it becomes dead code and
 should be removed from the codebase. You should also [clean up](#obsolete) the
-corresponding entry in histograms.xml.
+corresponding entry in histograms.xml. In _rare_ cases, a histogram may be
+expired intentionally while keeping the code around; such cases must be
+[annotated appropriately](#expired_intentionally) in histograms.xml.
 
 In **rare** cases, the expiry can be set to "never". This is used to denote
 metrics of critical importance that are, typically, used for other reports. For
@@ -477,11 +479,29 @@ crbugs accordingly.
 ### Expired histogram allowlist
 
 If a histogram expires but turns out to be useful, you can add the histogram's
-name to the allowlist until the updated expiration date reaches the stable
-channel. When doing so, update the histogram's summary to document the period
-during which the histogram's data is incomplete. To add a histogram to the
-allowlist, see the internal documentation:
+name to the allowlist to re-enable logging for it, until the updated expiration
+date reaches the Stable channel. When doing so, update the histogram's summary
+to document the period during which the histogram's data is incomplete. To add a
+histogram to the allowlist, see the internal documentation:
 [Histogram Expiry](https://goto.google.com/histogram-expiry-gdoc).
+
+### Intentionally expired histograms {#expired_intentionally}
+
+In **rare** cases, a histogram may be expired intentionally while keeping the
+code around. For example, this can be useful for diagnostic metrics that are
+occasionally needed to investigate specific bugs, but do not need to be reported
+otherwise.
+
+To avoid such histograms to be flagged for code clean up, they must be annotated
+in the histograms.xml with the `expired_intentionally` tag as follows:
+
+```xml
+<histogram name="Tab.Open" enum="TabType" expires_after="M100">
+ <expired_intentionally>Kept as a diagnostic metric.</expired_intentionally>
+ <owner>histogramowner@chromium.org</owner>
+ <summary>Histogram summary.</summary>
+</histogram>
+```
 
 ## Testing
 
