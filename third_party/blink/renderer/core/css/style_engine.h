@@ -513,6 +513,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkCounterStylesNeedUpdate();
   void UpdateCounterStyles();
 
+  // Set a flag to invalidate elements using position-fallback on next lifecycle
+  // update when @position-fallback rules are added or removed.
+  void MarkPositionFallbackStylesDirty();
+
+  // Mark elements affected by @position-fallback rules for style and layout
+  // update.
+  void InvalidatePositionFallbackStyles();
+
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
 
@@ -843,6 +851,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
   bool counter_styles_need_update_{false};
+  bool position_fallback_styles_dirty_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with

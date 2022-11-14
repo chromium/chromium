@@ -5085,6 +5085,41 @@ void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
   }
 }
 
+void LayoutObject::InvalidateSubtreePositionFallback(bool mark_style_dirty) {
+  NOT_DESTROYED();
+
+  // TODO(crbug.com/1381623): Currently invalidating the whole document. Could
+  // use a more targeted invalidation when tree-scoped @position-fallback rules
+  // are supported.
+
+  bool invalidate = !StyleRef().PositionFallback().IsNull();
+  if (invalidate) {
+    // Invalidate layout as @position-fallback styles are applied during layout.
+    SetNeedsLayout(layout_invalidation_reason::kStyleChange);
+  }
+
+  if (mark_style_dirty) {
+    if (Node* node = GetNode()) {
+      if (node->GetStyleChangeType() == kSubtreeStyleChange) {
+        // No need to further mark for style recalc inside this subtree.
+        mark_style_dirty = false;
+      }
+      if (invalidate && mark_style_dirty) {
+        // Need to invalidate style to avoid using stale cached position
+        // fallback styles.
+        node->SetNeedsStyleRecalc(kLocalStyleChange,
+                                  StyleChangeReasonForTracing::Create(
+                                      style_change_reason::kStyleSheetChange));
+      }
+    }
+  }
+
+  for (LayoutObject* child = SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    child->InvalidateSubtreePositionFallback(mark_style_dirty);
+  }
+}
+
 bool IsMenuList(const LayoutObject* object) {
   if (!object)
     return false;

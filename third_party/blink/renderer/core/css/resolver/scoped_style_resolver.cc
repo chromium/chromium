@@ -288,7 +288,7 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
 }
 
 void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
-  // TODO(crbug.com/1309178): Support @position-fallback rules in shadow DOM.
+  // TODO(crbug.com/1381623): Support @position-fallback rules in shadow DOM.
   if (!GetTreeScope().RootNode().IsDocumentNode())
     return;
   // TODO(crbug.com/1309178): Reorder @position-fallback rules according to

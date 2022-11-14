@@ -539,6 +539,20 @@ void StyleEngine::UpdateCounterStyles() {
   counter_styles_need_update_ = false;
 }
 
+void StyleEngine::MarkPositionFallbackStylesDirty() {
+  position_fallback_styles_dirty_ = true;
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+void StyleEngine::InvalidatePositionFallbackStyles() {
+  if (!position_fallback_styles_dirty_)
+    return;
+  position_fallback_styles_dirty_ = false;
+  const bool mark_style_dirty = true;
+  GetDocument().GetLayoutView()->InvalidateSubtreePositionFallback(
+      mark_style_dirty);
+}
+
 void StyleEngine::UpdateViewport() {
   if (viewport_resolver_)
     viewport_resolver_->UpdateViewport();
@@ -2070,6 +2084,7 @@ enum RuleSetFlags {
   kCounterStyleRules = 1 << 4,
   kLayerRules = 1 << 5,
   kFontPaletteValuesRules = 1 << 6,
+  kPositionFallbackRules = 1 << 7,
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -2092,6 +2107,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kCounterStyleRules;
     if (rule_set->HasCascadeLayers())
       flags |= kLayerRules;
+    if (!rule_set->PositionFallbackRules().empty())
+      flags |= kPositionFallbackRules;
   }
   return flags;
 }
@@ -2290,6 +2307,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
     }
   }
 
+  if (changed_rule_flags & kPositionFallbackRules) {
+    // TODO(crbug.com/1383907): @position-fallback rules are not yet collected
+    // from user stylesheets.
+    MarkPositionFallbackStylesDirty();
+  }
+
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 }
@@ -2385,8 +2408,8 @@ void StyleEngine::ApplyRuleSetChanges(
 
   if ((changed_rule_flags & kFontPaletteValuesRules) ||
       rebuild_at_font_palette_values_map) {
-    // TODO(https://crbug.com1296114): Support @font-palette-values in shadow
-    // trees and support scoping correctly.
+    // TODO(crbug.com/1296114): Support @font-palette-values in shadow trees and
+    // support scoping correctly.
     if (tree_scope.RootNode().IsDocumentNode()) {
       font_palette_values_rule_map_.clear();
       AddFontPaletteValuesRulesFromSheets(active_user_style_sheets_);
@@ -2408,8 +2431,11 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
-  // TODO(crbug.com/1309178): Invalidate style & layout for @position-fallback
-  // rule changes.
+  if (changed_rule_flags & kPositionFallbackRules) {
+    // TODO(crbug.com/1381623): Use more targeted invalidation when
+    // @position-fallback is supported in shadow DOM.
+    MarkPositionFallbackStylesDirty();
+  }
 
   if (!new_style_sheets.empty()) {
     tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
