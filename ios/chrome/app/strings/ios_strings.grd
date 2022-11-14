@@ -1270,6 +1270,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA" desc="Title of the keyboard shortcut to clear the browsing data." meaning="Used as a command title in the iPad command menu.">
         Clear Browsing Data…
       </message>
+      <message name="IDS_IOS_KEYBOARD_CLOSE_TAB" desc="Title of the keyboard shortcut to close the current tab." meaning="Used as a command title in the iPad command menu.">
+        Close Tab
+      </message>
+      <message name="IDS_IOS_KEYBOARD_FIND_IN_PAGE" desc="The title of the keyboard shortcut to search in the current page." meaning="Used as a command title in the iPad command menu.">
+        Find in Page…
+      </message>
       <message name="IDS_IOS_KEYBOARD_FIND_NEXT" desc="The title of the keyboard shortcut to find the next matching string." meaning="Used as a command title in the iPad command menu.">
         Find Next
       </message>
@@ -1294,8 +1300,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_NEXT_TAB" desc="Title of the keyboard shortcut to switch to the next tab in the tab strip." meaning="Used as a command title in the iPad command menu.">
         Go to Next Tab
       </message>
+      <message name="IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB" desc="The title of the keyboard shortcut to open a new Incognito tab." meaning="Used as a command title in the iPad command menu.">
+        New Incognito Tab
+      </message>
       <message name="IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW" desc="The title of the keyboard shortcut to open a new Incognito window." meaning="Used as a command title in the iPad command menu.">
         New Incognito Window
+      </message>
+      <message name="IDS_IOS_KEYBOARD_NEW_TAB" desc="The title of the keyboard shortcut to open a new tab." meaning="Used as a command title in the iPad command menu.">
+        New Tab
       </message>
       <message name="IDS_IOS_KEYBOARD_NEW_WINDOW" desc="The title of the keyboard shortcut to open a new window." meaning="Used as a command title in the iPad command menu.">
         New Window
@@ -1330,8 +1342,14 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_SHOW_SETTINGS" desc="The title of the keyboard shortcut to open the app's Settings." meaning="Used as a command title in the iPad command menu.">
         Show Settings
       </message>
-      <message name="IDS_IOS_KEYBOARD_STOP" desc="The title of the keyboard shortcut to stop the view." meaning="Used as a command title in the iPad command menu.">
+      <message name="IDS_IOS_KEYBOARD_RELOAD" desc="Title for the keyboard shortcut to reload the page." meaning="Used as a command title in the iPad command menu.">
+        Reload
+      </message>
+      <message name="IDS_IOS_KEYBOARD_STOP" desc="The title of the keyboard shortcut to stop loading the page." meaning="Used as a command title in the iPad command menu.">
         Stop
+      </message>
+      <message name="IDS_IOS_KEYBOARD_VOICE_SEARCH" desc="Title for the Voice Search keyboard shortcut in the discoverability." meaning="Used as a command title in the iPad command menu.">
+        Voice Search
       </message>
       <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the LongPress Toolbar Tip in-product help promotion, explaining that the user can long press on the toolbar's button to display more options. [iOS only]">
         Touch &amp; hold for more tab options
@@ -3497,15 +3515,15 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu">
         History
       </message>
-<message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
-Incognito Search
-</message>
+      <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
+        Incognito Search
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB" desc="The iOS menu item for opening a new Incognito tab [iOS only]" meaning="Tools menu entry to create a new Incognito tab. [Length: Unlimited]">
         New Incognito Tab
       </message>
-<message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
-New Search
-</message>
+      <message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
+        New Search
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_TAB" desc="The iOS menu item for opening a new tab [iOS only]" meaning="Tools menu entry to create a new tab. [Length: Unlimited]">
         New Tab
       </message>
@@ -3688,9 +3706,6 @@ New Search
       </message>
       <message name="IDS_IOS_VERSION_COPIED" desc="The message displayed when the version label is tapped (in About settings) [Length: 10em] [iOS only]">
         Copied
-      </message>
-      <message name="IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE" desc="Title for the Voice Search keyboard shortcut in the discoverability [Length:20em] [iOS only]">
-        Voice Search
       </message>
       <message name="IDS_IOS_VOICE_SEARCH_SETTINGS_DEFAULT_LOCALE" desc="The label for the default locale option in the voice search settings [iOS only]">
         Default - <ph name="DEFAULT_LOCALE">$1<ex>English (United States)</ex></ph>

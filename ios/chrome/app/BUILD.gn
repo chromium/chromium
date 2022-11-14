@@ -378,6 +378,20 @@ source_set("feed_app_agent") {
   ]
 }
 
+source_set("keyboard_shortcuts_menu_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "keyboard_shortcuts_menu_app_agent.h",
+    "keyboard_shortcuts_menu_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/ui/keyboard:features",
+  ]
+}
+
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -403,6 +417,7 @@ source_set("app_internal") {
     ":fast_app_terminate_buildflags",
     ":feed_app_agent",
     ":first_run_app_state_agent",
+    ":keyboard_shortcuts_menu_app_agent",
     ":mode",
     ":post_restore_app_agent",
     ":safe_mode_app_state_agent",

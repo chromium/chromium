@@ -33,11 +33,11 @@ BASE_FEATURE(kEnableGoodVisitsMetric,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Key for NSUserDefaults containing a bool indicating whether the next run
-// should enable feed backround refresh. This is used because registering for
+// should enable feed background refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
 // is not yet available. Changing the `kEnableFeedBackgroundRefresh` feature
 // will always take effect after two cold starts after the feature has been
-// changed on the server (once for the finch configuration, and another for
+// changed on the server (once for the Finch configuration, and another for
 // reading the stored value from NSUserDefaults).
 NSString* const kEnableFeedBackgroundRefreshForNextColdStart =
     @"EnableFeedBackgroundRefreshForNextColdStart";

@@ -4,11 +4,8 @@
 
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 
-#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,7 +40,7 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"t"
                      modifierFlags:Command
                             action:@selector(keyCommand_openNewTab)
-                           titleID:IDS_IOS_TOOLS_MENU_NEW_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_TAB"];
 }
 
 + (UIKeyCommand*)cr_openNewRegularTab {
@@ -56,63 +53,63 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"n"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_openNewIncognitoTab)
-                           titleID:IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB"];
 }
 
 + (UIKeyCommand*)cr_openNewWindow {
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_openNewWindow)
-                           titleID:IDS_IOS_KEYBOARD_NEW_WINDOW];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_WINDOW"];
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoWindow {
   return [self cr_commandWithInput:@"n"
                      modifierFlags:AltShiftCommand
                             action:@selector(keyCommand_openNewIncognitoWindow)
-                           titleID:IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW"];
 }
 
 + (UIKeyCommand*)cr_reopenLastClosedTab {
   return [self cr_commandWithInput:@"t"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reopenLastClosedTab)
-                           titleID:IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB"];
 }
 
 + (UIKeyCommand*)cr_find {
   return [self cr_commandWithInput:@"f"
                      modifierFlags:Command
                             action:@selector(keyCommand_find)
-                           titleID:IDS_IOS_TOOLS_MENU_FIND_IN_PAGE];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIND_IN_PAGE"];
 }
 
 + (UIKeyCommand*)cr_findNext {
   return [self cr_commandWithInput:@"g"
                      modifierFlags:Command
                             action:@selector(keyCommand_findNext)
-                           titleID:IDS_IOS_KEYBOARD_FIND_NEXT];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIND_NEXT"];
 }
 
 + (UIKeyCommand*)cr_findPrevious {
   return [self cr_commandWithInput:@"g"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_findPrevious)
-                           titleID:IDS_IOS_KEYBOARD_FIND_PREVIOUS];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIND_PREVIOUS"];
 }
 
 + (UIKeyCommand*)cr_openLocation {
   return [self cr_commandWithInput:@"l"
                      modifierFlags:Command
                             action:@selector(keyCommand_openLocation)
-                           titleID:IDS_IOS_KEYBOARD_OPEN_LOCATION];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_OPEN_LOCATION"];
 }
 
 + (UIKeyCommand*)cr_closeTab {
   return [self cr_commandWithInput:@"w"
                      modifierFlags:Command
                             action:@selector(keyCommand_closeTab)
-                           titleID:IDS_IOS_TOOLS_MENU_CLOSE_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_TAB"];
 }
 
 + (UIKeyCommand*)cr_showNextTab {
@@ -120,7 +117,7 @@ NSString* Delete(void) {
       [self cr_commandWithInput:@"\t"
                   modifierFlags:Control
                          action:@selector(keyCommand_showNextTab)
-                        titleID:IDS_IOS_KEYBOARD_NEXT_TAB];
+                titleIDAsString:@"IDS_IOS_KEYBOARD_NEXT_TAB"];
   if (@available(iOS 15.0, *)) {
     keyCommand.wantsPriorityOverSystemBehavior = YES;
   }
@@ -132,7 +129,7 @@ NSString* Delete(void) {
       [self cr_commandWithInput:@"\t"
                   modifierFlags:ControlShift
                          action:@selector(keyCommand_showPreviousTab)
-                        titleID:IDS_IOS_KEYBOARD_PREVIOUS_TAB];
+                titleIDAsString:@"IDS_IOS_KEYBOARD_PREVIOUS_TAB"];
   if (@available(iOS 15.0, *)) {
     keyCommand.wantsPriorityOverSystemBehavior = YES;
   }
@@ -215,21 +212,21 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"b"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showBookmarks)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_BOOKMARKS];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_BOOKMARKS"];
 }
 
 + (UIKeyCommand*)cr_addToBookmarks {
   return [self cr_commandWithInput:@"d"
                      modifierFlags:Command
                             action:@selector(keyCommand_addToBookmarks)
-                           titleID:IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS"];
 }
 
 + (UIKeyCommand*)cr_reload {
   return [self cr_commandWithInput:@"r"
                      modifierFlags:Command
                             action:@selector(keyCommand_reload)
-                           titleID:IDS_IOS_ACCNAME_RELOAD];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_RELOAD"];
 }
 
 + (UIKeyCommand*)cr_back {
@@ -248,7 +245,7 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:bracketBack
                      modifierFlags:Command
                             action:@selector(keyCommand_back)
-                           titleID:IDS_IOS_KEYBOARD_HISTORY_BACK];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_BACK"];
 }
 
 + (UIKeyCommand*)cr_forward {
@@ -267,7 +264,7 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:bracketForward
                      modifierFlags:Command
                             action:@selector(keyCommand_forward)
-                           titleID:IDS_IOS_KEYBOARD_HISTORY_FORWARD];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_HISTORY_FORWARD"];
 }
 
 + (UIKeyCommand*)cr_back_2 {
@@ -310,15 +307,14 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"y"
                      modifierFlags:Command
                             action:@selector(keyCommand_showHistory)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_HISTORY];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HISTORY"];
 }
 
 + (UIKeyCommand*)cr_voiceSearch {
-  return
-      [self cr_commandWithInput:@"."
-                  modifierFlags:ShiftCommand
-                         action:@selector(keyCommand_voiceSearch)
-                        titleID:IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE];
+  return [self cr_commandWithInput:@"."
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_voiceSearch)
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_VOICE_SEARCH"];
 }
 
 + (UIKeyCommand*)cr_close {
@@ -331,28 +327,28 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@","
                      modifierFlags:Command
                             action:@selector(keyCommand_showSettings)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_SETTINGS];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_SETTINGS"];
 }
 
 + (UIKeyCommand*)cr_stop {
   return [self cr_commandWithInput:@"."
                      modifierFlags:Command
                             action:@selector(keyCommand_stop)
-                           titleID:IDS_IOS_KEYBOARD_STOP];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_STOP"];
 }
 
 + (UIKeyCommand*)cr_showHelp {
   return [self cr_commandWithInput:@"?"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showHelp)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_HELP];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HELP"];
 }
 
 + (UIKeyCommand*)cr_showDownloads {
   return [self cr_commandWithInput:@"l"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showDownloads)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_DOWNLOADS];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_DOWNLOADS"];
 }
 
 + (UIKeyCommand*)cr_showDownloads_2 {
@@ -365,7 +361,7 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"1"
                      modifierFlags:Command
                             action:@selector(keyCommand_showFirstTab)
-                           titleID:IDS_IOS_KEYBOARD_FIRST_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_FIRST_TAB"];
 }
 
 + (UIKeyCommand*)cr_showTab2 {
@@ -414,14 +410,14 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"9"
                      modifierFlags:Command
                             action:@selector(keyCommand_showLastTab)
-                           titleID:IDS_IOS_KEYBOARD_LAST_TAB];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_LAST_TAB"];
 }
 
 + (UIKeyCommand*)cr_reportAnIssue {
   return [self cr_commandWithInput:@"i"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reportAnIssue)
-                           titleID:IDS_IOS_KEYBOARD_REPORT_AN_ISSUE];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_REPORT_AN_ISSUE"];
 }
 
 + (UIKeyCommand*)cr_reportAnIssue_2 {
@@ -434,28 +430,28 @@ NSString* Delete(void) {
   return [self cr_commandWithInput:@"d"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_addToReadingList)
-                           titleID:IDS_IOS_KEYBOARD_ADD_TO_READING_LIST];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_ADD_TO_READING_LIST"];
 }
 
 + (UIKeyCommand*)cr_showReadingList {
   return [self cr_commandWithInput:@"r"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showReadingList)
-                           titleID:IDS_IOS_KEYBOARD_SHOW_READING_LIST];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_READING_LIST"];
 }
 
 + (UIKeyCommand*)cr_goToTabGrid {
   return [self cr_commandWithInput:@"\\"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_goToTabGrid)
-                           titleID:IDS_IOS_KEYBOARD_GO_TO_TAB_GRID];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_GO_TO_TAB_GRID"];
 }
 
 + (UIKeyCommand*)cr_clearBrowsingData {
   return [self cr_commandWithInput:Delete()
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_clearBrowsingData)
-                           titleID:IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA"];
 }
 
 #pragma mark - Symbolic Description
@@ -501,12 +497,15 @@ NSString* Delete(void) {
 
 #pragma mark - Private
 
+// The title ID string is used as a key to NSLocalizedString because key
+// commands can be requested by the OS very early on, before the resource bundle
+// of the localized strings is loaded.
 + (instancetype)cr_commandWithInput:(NSString*)input
                       modifierFlags:(UIKeyModifierFlags)modifierFlags
                              action:(SEL)action
-                            titleID:(int)messageID {
+                    titleIDAsString:(NSString*)messageID {
   UIKeyCommand* keyCommand =
-      [self commandWithTitle:l10n_util::GetNSStringWithFixup(messageID)
+      [self commandWithTitle:NSLocalizedString(messageID, @"")
                        image:nil
                       action:action
                        input:input

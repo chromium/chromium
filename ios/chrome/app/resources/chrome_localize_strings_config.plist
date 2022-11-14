@@ -22,6 +22,36 @@
 				<string>IDS_IOS_SAFE_MODE_RELOAD_CHROME</string>
 				<string>IDS_IOS_SAFE_MODE_AW_SNAP</string>
 				<string>IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE</string>
+				<string>IDS_IOS_KEYBOARD_NEW_TAB</string>
+				<string>IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB</string>
+				<string>IDS_IOS_KEYBOARD_NEW_WINDOW</string>
+				<string>IDS_IOS_KEYBOARD_NEW_INCOGNITO_WINDOW</string>
+				<string>IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB</string>
+				<string>IDS_IOS_KEYBOARD_FIND_IN_PAGE</string>
+				<string>IDS_IOS_KEYBOARD_FIND_NEXT</string>
+				<string>IDS_IOS_KEYBOARD_FIND_PREVIOUS</string>
+				<string>IDS_IOS_KEYBOARD_OPEN_LOCATION</string>
+				<string>IDS_IOS_KEYBOARD_CLOSE_TAB</string>
+				<string>IDS_IOS_KEYBOARD_NEXT_TAB</string>
+				<string>IDS_IOS_KEYBOARD_PREVIOUS_TAB</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_BOOKMARKS</string>
+				<string>IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS</string>
+				<string>IDS_IOS_KEYBOARD_RELOAD</string>
+				<string>IDS_IOS_KEYBOARD_HISTORY_BACK</string>
+				<string>IDS_IOS_KEYBOARD_HISTORY_FORWARD</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_HISTORY</string>
+				<string>IDS_IOS_KEYBOARD_VOICE_SEARCH</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_SETTINGS</string>
+				<string>IDS_IOS_KEYBOARD_STOP</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_HELP</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_DOWNLOADS</string>
+				<string>IDS_IOS_KEYBOARD_FIRST_TAB</string>
+				<string>IDS_IOS_KEYBOARD_LAST_TAB</string>
+				<string>IDS_IOS_KEYBOARD_REPORT_AN_ISSUE</string>
+				<string>IDS_IOS_KEYBOARD_ADD_TO_READING_LIST</string>
+				<string>IDS_IOS_KEYBOARD_SHOW_READING_LIST</string>
+				<string>IDS_IOS_KEYBOARD_GO_TO_TAB_GRID</string>
+				<string>IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA</string>
 				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_DESCRIPTION</string>
 				<string>IDS_IOS_UI_BLOCKED_USE_OTHER_WINDOW_SWITCH_WINDOW_ACTION</string>
 			</array>
