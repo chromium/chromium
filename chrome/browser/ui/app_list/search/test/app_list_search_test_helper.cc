@@ -11,24 +11,36 @@
 
 namespace app_list {
 
-ResultsWaiter::ResultsWaiter(const std::u16string& query) : query_(query) {
-  observer_.Observe(::test::GetAppListClient()->search_controller());
-}
+namespace {
 
-ResultsWaiter::~ResultsWaiter() = default;
+// Waiter to ensure results for a query have been published by the search
+// controller.
+class ResultsWaiter : public SearchController::Observer {
+ public:
+  explicit ResultsWaiter(const std::u16string& query) : query_(query) {
+    observer_.Observe(::test::GetAppListClient()->search_controller());
+  }
+  ~ResultsWaiter() override = default;
 
-void ResultsWaiter::OnResultsAdded(
-    const std::u16string& query,
-    const std::vector<const ChromeSearchResult*>& results) {
-  if (query != query_)
-    return;
-  observer_.Reset();
-  run_loop_.Quit();
-}
+  void OnResultsAdded(
+      const std::u16string& query,
+      const std::vector<const ChromeSearchResult*>& results) override {
+    if (query != query_)
+      return;
+    observer_.Reset();
+    run_loop_.Quit();
+  }
 
-void ResultsWaiter::Wait() {
-  run_loop_.Run();
-}
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  const std::u16string query_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<SearchController, SearchController::Observer>
+      observer_{this};
+};
+
+}  // namespace
 
 AppListSearchBrowserTest::AppListSearchBrowserTest() {
   scoped_feature_list_.InitWithFeatures(

@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
@@ -61,6 +60,17 @@ namespace {
 // disabler exists at a time.
 class ScopedItemMoveAnimationDisabler;
 ScopedItemMoveAnimationDisabler* g_disabler_ptr = nullptr;
+
+AppListView* GetAppListView() {
+  return Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
+}
+
+// An app list should be either a bubble app list or a fullscreen app list.
+// Returns true if a bubble app list should be used under the current mode.
+bool ShouldUseBubbleAppList() {
+  // A bubble app list should be used only when it is in clamshell mode
+  return !Shell::Get()->IsInTabletMode();
+}
 
 // Creates a RunLoop that waits until the context menu of app list item is
 // shown.
@@ -197,6 +207,17 @@ PagedAppsGridView* GetPagedAppsGridView() {
   return AppListView::TestApi(GetAppListView()).GetRootAppsGridView();
 }
 
+AppListBubbleView* GetAppListBubbleView() {
+  AppListBubbleView* bubble_view = Shell::Get()
+                                       ->app_list_controller()
+                                       ->bubble_presenter_for_test()
+                                       ->bubble_view_for_test();
+  DCHECK(bubble_view) << "Bubble launcher view not yet created. Tests must "
+                         "show the launcher and may need to call "
+                         "WaitForBubbleWindow() if animations are enabled.";
+  return bubble_view;
+}
+
 AppsContainerView* GetAppsContainerView() {
   return GetAppListView()
       ->app_list_main_view()
@@ -229,6 +250,12 @@ RecentAppsView* GetRecentAppsView() {
     return GetAppListBubbleView()->apps_page_for_test()->recent_apps_for_test();
 
   return GetAppsContainerView()->GetRecentAppsView();
+}
+
+SearchBoxView* GetSearchBoxView() {
+  if (ShouldUseBubbleAppList())
+    return GetAppListBubbleView()->search_box_view_for_test();
+  return GetAppListView()->app_list_main_view()->search_box_view();
 }
 
 // AppListVisibilityChangedWaiter ----------------------------------------------

@@ -41,23 +41,6 @@
 
 namespace app_list {
 
-class ResultsWaiter : public SearchController::Observer {
- public:
-  explicit ResultsWaiter(const std::u16string& query);
-  ~ResultsWaiter() override;
-
-  void OnResultsAdded(
-      const std::u16string& query,
-      const std::vector<const ChromeSearchResult*>& results) override;
-  void Wait();
-
- private:
-  const std::u16string query_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<SearchController, SearchController::Observer>
-      observer_{this};
-};
-
 // This contains almost end-to-end tests for the launcher search backend. It is
 // set up to simulate user input by calls to the AppListClient, and observe the
 // results that would be displayed via the AppListModelUpdater.

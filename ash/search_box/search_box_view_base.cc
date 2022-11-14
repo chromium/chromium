@@ -13,7 +13,6 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/strings/strcat.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -542,16 +541,6 @@ void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
     category_ghost_text_->SetText(category);
     category_separator_label_->SetVisible(!category.empty());
   }
-}
-
-std::string SearchBoxViewBase::GetSearchBoxGhostTextForTest() {
-  if (!autocomplete_ghost_text_->GetText().empty()) {
-    return base::UTF16ToUTF8(base::StrCat(
-        {autocomplete_ghost_text_->GetText(),
-         l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR),
-         category_ghost_text_->GetText()}));
-  }
-  return base::UTF16ToUTF8(category_ghost_text_->GetText());
 }
 
 void SearchBoxViewBase::SetSearchBoxActive(bool active,

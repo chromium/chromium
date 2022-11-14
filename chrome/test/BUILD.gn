@@ -554,8 +554,6 @@ static_library("test_support") {
       "../browser/nearby_sharing/fake_nearby_connection.h",
       "../browser/nearby_sharing/fake_nearby_connections_manager.cc",
       "../browser/nearby_sharing/fake_nearby_connections_manager.h",
-      "../browser/ui/app_list/search/test/test_result.cc",
-      "../browser/ui/app_list/search/test/test_result.h",
       "../browser/ui/ash/accessibility/fake_accessibility_controller.cc",
       "../browser/ui/ash/accessibility/fake_accessibility_controller.h",
       "../browser/ui/ash/clipboard_history_test_util.cc",
