@@ -67,8 +67,8 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  const ScopedCSSValue& scoped_value) {
   const CSSProperty* physical = &property;
   if (property.IsSurrogate()) {
-    physical = property.SurrogateFor(state.Style()->Direction(),
-                                     state.Style()->GetWritingMode());
+    physical = property.SurrogateFor(state.StyleBuilder().Direction(),
+                                     state.StyleBuilder().GetWritingMode());
     DCHECK(physical);
   }
   ApplyPhysicalProperty(*physical, state, scoped_value);

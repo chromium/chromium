@@ -413,7 +413,7 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
   // pixel thick.  With this change that would instead be rounded up to 2
   // device pixels.  Consider clamping it to device pixels or zoom adjusted CSS
   // pixels instead of raw CSS pixels.
-  double zoomed_result = state.StyleRef().EffectiveZoom() * result;
+  double zoomed_result = state.StyleBuilder().EffectiveZoom() * result;
   if (zoomed_result > 0.0 && zoomed_result < 1.0)
     return 1.0;
   return ClampTo<T>(RoundForImpreciseConversion<T>(result),

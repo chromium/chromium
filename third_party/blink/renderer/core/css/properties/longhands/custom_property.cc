@@ -79,10 +79,11 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
   // StyleInitialData may also be missing. We just disable initial values in
   // this case, since we shouldn't really be returning a style for those
   // elements anyway.
-  if (state.StyleRef().IsEnsuredOutsideFlatTree())
+  if (state.StyleBuilder().IsEnsuredOutsideFlatTree())
     return;
 
-  const StyleInitialData* initial_data = state.StyleRef().InitialData().get();
+  const StyleInitialData* initial_data =
+      state.StyleBuilder().InitialData().get();
   DCHECK(initial_data);
   CSSVariableData* initial_variable_data = initial_data->GetVariableData(name_);
   const CSSValue* initial_value = initial_data->GetVariableValue(name_);

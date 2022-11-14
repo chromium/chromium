@@ -118,7 +118,7 @@ void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       Style(), ParentStyle(), RootElementStyle(), GetDocument().GetLayoutView(),
       CSSToLengthConversionData::ContainerSizes(container_unit_context_),
-      Style()->EffectiveZoom());
+      StyleBuilder().EffectiveZoom());
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }
@@ -135,7 +135,7 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
       container_unit_context_);
 
   return CSSToLengthConversionData(Style(), ParentStyle(),
-                                   Style()->GetWritingMode(), font_sizes,
+                                   StyleBuilder().GetWritingMode(), font_sizes,
                                    viewport_size, container_sizes, 1);
 }
 
@@ -163,13 +163,13 @@ void StyleResolverState::SetLayoutParentStyle(
 void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
-      (StyleRef().Display() == EDisplay::kNone &&
-       !GetElement().LayoutObjectIsNeeded(StyleRef())) ||
-      StyleRef().IsEnsuredOutsideFlatTree()) {
+      (StyleBuilder().Display() == EDisplay::kNone &&
+       !GetElement().LayoutObjectIsNeeded(*Style())) ||
+      StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
   }
 
-  if (StyleRef().StyleType() == kPseudoIdTargetText) {
+  if (StyleBuilder().StyleType() == kPseudoIdTargetText) {
     // Do not load any resources for ::target-text since that could leak text
     // content to external stylesheets.
     return;
@@ -247,7 +247,7 @@ void StyleResolverState::UpdateFont() {
   GetFontBuilder().CreateFont(StyleBuilder(), ParentStyle());
   SetConversionFontSizes(
       CSSToLengthConversionData::FontSizes(Style(), RootElementStyle()));
-  SetConversionZoom(Style()->EffectiveZoom());
+  SetConversionZoom(StyleBuilder().EffectiveZoom());
 }
 
 void StyleResolverState::UpdateLineHeight() {

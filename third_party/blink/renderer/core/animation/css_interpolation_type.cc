@@ -259,7 +259,8 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   // CSSCustomPropertyDeclaration. Expand those keywords into real CSSValues
   // if present.
   bool is_inherited = Registration().Inherits();
-  const StyleInitialData* initial_data = state.StyleRef().InitialData().get();
+  const StyleInitialData* initial_data =
+      state.StyleBuilder().InitialData().get();
   DCHECK(initial_data);
   const CSSValue* initial_value = initial_data->GetVariableValue(name);
 

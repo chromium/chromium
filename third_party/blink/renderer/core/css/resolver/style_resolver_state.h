@@ -91,14 +91,6 @@ class CORE_EXPORT StyleResolverState {
   void SetStyle(scoped_refptr<ComputedStyle>);
   const ComputedStyle* Style() const { return style_builder_.InternalStyle(); }
   ComputedStyle* Style() { return style_builder_.MutableInternalStyle(); }
-  ComputedStyle& StyleRef() {
-    DCHECK(Style());
-    return *Style();
-  }
-  const ComputedStyle& StyleRef() const {
-    DCHECK(Style());
-    return *Style();
-  }
   ComputedStyleBuilder& StyleBuilder() { return style_builder_; }
   const ComputedStyleBuilder& StyleBuilder() const { return style_builder_; }
   scoped_refptr<ComputedStyle> TakeStyle();

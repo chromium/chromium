@@ -781,7 +781,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                                         Element* element) {
   DCHECK(state.LayoutParentStyle());
   DCHECK(state.ParentStyle());
-  ComputedStyle& style = state.StyleRef();
+  ComputedStyle& style = *state.Style();
   ComputedStyleBuilder& builder = state.StyleBuilder();
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();

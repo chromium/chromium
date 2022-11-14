@@ -936,7 +936,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   if (Element* animating_element = state.GetAnimatingElement())
     SetAnimationUpdateIfNeeded(style_recalc_context, state, *animating_element);
 
-  GetDocument().AddViewportUnitFlags(state.StyleRef().ViewportUnitFlags());
+  GetDocument().AddViewportUnitFlags(state.Style()->ViewportUnitFlags());
 
   if (state.Style()->HasRemUnits())
     GetDocument().GetStyleEngine().SetUsesRemUnit(true);
@@ -1388,7 +1388,7 @@ void StyleResolver::ApplyBaseStyle(
     // AdjustComputedStyle() will set these flags if needed,
     // but will (generally) not unset them, so reset them before
     // computation.
-    state.StyleRef().SetIsStackingContextWithoutContainment(false);
+    state.Style()->SetIsStackingContextWithoutContainment(false);
     state.StyleBuilder()
         .SetInsideFragmentationContextWithNondeterministicEngine(
             state.ParentStyle()
@@ -1421,9 +1421,8 @@ void StyleResolver::ApplyBaseStyle(
     // Similarly, if a style went from using viewport units to not,
     // the flags can stick around in the incremental version. This can cause
     // invalidations when none are needed, but is otherwise harmless.
-    state.StyleRef().SetViewportUnitFlags(
-        state.StyleRef().ViewportUnitFlags() |
-        incremental_style->ViewportUnitFlags());
+    state.Style()->SetViewportUnitFlags(state.Style()->ViewportUnitFlags() |
+                                        incremental_style->ViewportUnitFlags());
 
     DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(incremental_style.get(),
                                                         *state.Style()));
@@ -1704,9 +1703,9 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
              &element);
 
   if (!IsAnimationStyleChange(*animating_element) ||
-      !state.StyleRef().BaseData()) {
+      !state.StyleBuilder().BaseData()) {
     state.StyleBuilder().SetBaseData(StyleBaseData::Create(
-        ComputedStyle::Clone(state.StyleRef()), cascade.GetImportantSet()));
+        ComputedStyle::Clone(*state.Style()), cascade.GetImportantSet()));
   }
 
   CSSAnimations::CalculateAnimationUpdate(
@@ -1747,11 +1746,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::CalculateCompositorAnimationUpdate(
       state.AnimationUpdate(), *animating_element, element,
-      *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle(),
+      *state.Style()->GetBaseComputedStyle(), state.ParentStyle(),
       WasViewportResized(), state.AffectsCompositorSnapshots());
   CSSAnimations::SnapshotCompositorKeyframes(
       *animating_element, state.AnimationUpdate(),
-      *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle());
+      *state.Style()->GetBaseComputedStyle(), state.ParentStyle());
   CSSAnimations::UpdateAnimationFlags(
       *animating_element, state.AnimationUpdate(), state.StyleBuilder());
 
@@ -2098,7 +2097,7 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
     if (cache_success.ShouldApplyInheritedOnly()) {
       cascade.Apply(filter.Add(CSSProperty::kInherited, false));
-      if (!cache_success.IsUsableAfterApplyInheritedOnly(state.StyleRef()))
+      if (!cache_success.IsUsableAfterApplyInheritedOnly(*state.Style()))
         cascade.Apply(filter.Add(CSSProperty::kInherited, true));
     } else {
       cascade.Apply(filter);
@@ -2114,11 +2113,10 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
 
   if (state.RejectedLegacyOverlapping()) {
     scoped_refptr<ComputedStyle> non_legacy_style =
-        ComputedStyle::Clone(state.StyleRef());
+        ComputedStyle::Clone(*state.Style());
     // Re-apply all overlapping properties (both legacy and non-legacy).
     apply(CascadeFilter(CSSProperty::kOverlapping, false));
-    UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
-                              state.StyleRef());
+    UseCountLegacyOverlapping(GetDocument(), *non_legacy_style, *state.Style());
   }
 
   // NOTE: This flag needs to be set before the entry is added to the

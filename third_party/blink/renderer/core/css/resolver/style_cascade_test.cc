@@ -3347,7 +3347,7 @@ TEST_F(StyleCascadeTest, MarkHasReferenceLonghand) {
   cascade.Apply();
 
   EXPECT_TRUE(cascade.State()
-                  .StyleRef()
+                  .StyleBuilder()
                   .HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3359,7 +3359,7 @@ TEST_F(StyleCascadeTest, MarkHasReferenceShorthand) {
   cascade.Apply();
 
   EXPECT_TRUE(cascade.State()
-                  .StyleRef()
+                  .StyleBuilder()
                   .HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3373,7 +3373,7 @@ TEST_F(StyleCascadeTest, NoMarkHasReferenceForInherited) {
   cascade.Apply();
 
   EXPECT_FALSE(cascade.State()
-                   .StyleRef()
+                   .StyleBuilder()
                    .HasVariableReferenceFromNonInheritedProperty());
 }
 

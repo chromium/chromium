@@ -74,7 +74,7 @@ bool CachedMatchedProperties::DependenciesEqual(
   if ((parent_computed_style->IsEnsuredInDisplayNone() ||
        computed_style->IsEnsuredOutsideFlatTree()) &&
       !state.ParentStyle()->IsEnsuredInDisplayNone() &&
-      !state.Style()->IsEnsuredOutsideFlatTree()) {
+      !state.StyleBuilder().IsEnsuredOutsideFlatTree()) {
     // If we cached a ComputedStyle in a display:none subtree, or outside the
     // flat tree,  we would not have triggered fetches for external resources
     // and have StylePendingImages in the ComputedStyle. Instead of having to
@@ -126,7 +126,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (*cache_item != key.result_.GetMatchedProperties())
     return nullptr;
   if (cache_item->computed_style->InsideLink() !=
-      style_resolver_state.Style()->InsideLink())
+      style_resolver_state.StyleBuilder().InsideLink())
     return nullptr;
   if (!cache_item->DependenciesEqual(style_resolver_state))
     return nullptr;
@@ -223,10 +223,9 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
 }
 
 bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
-  const ComputedStyle& style = *state.Style();
   const ComputedStyle& parent_style = *state.ParentStyle();
 
-  if (!IsStyleCacheable(style))
+  if (!IsStyleCacheable(*state.Style()))
     return false;
 
   // The cache assumes static knowledge about which properties are inherited.
@@ -243,7 +242,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // style stored for a shadow root child against a non shadow root child, we
   // would end up with an incorrect match.
   if (IsAtShadowBoundary(&state.GetElement()) &&
-      style.UserModify() != parent_style.UserModify()) {
+      state.Style()->UserModify() != parent_style.UserModify()) {
     return false;
   }
 
