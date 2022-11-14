@@ -156,12 +156,10 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
 
   // |total_positive_options| stores the count of the options that match the
   // regex.
-  int total_positive_options = 0;
-
-  for (const auto& option : field->options) {
-    if (MatchesRegexWithCache(option.content, kAugmentedPhoneCountryCodeRe))
-      total_positive_options++;
-  }
+  int total_positive_options =
+      base::ranges::count_if(field->options, [](const SelectOption& option) {
+        return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.content);
+      });
 
   // If the number of the options compared is less or equal to
   // |kHeuristicThresholdForCountryCode|, then either all the options or all
