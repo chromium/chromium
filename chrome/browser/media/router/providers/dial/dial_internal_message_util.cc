@@ -297,7 +297,7 @@ base::Value::Dict DialInternalMessageUtil::CreateReceiver(
 
   receiver.Set("friendlyName",
                base::Value(base::EscapeForHTML(sink.sink().name())));
-  receiver.Set("capabilities", base::ListValue());
+  receiver.Set("capabilities", base::Value::List());
 
   receiver.Set("volume", base::Value());
   receiver.Set("isActiveInput", base::Value());
@@ -326,11 +326,11 @@ base::Value::Dict DialInternalMessageUtil::CreateNewSessionBody(
   message_body.Set("appId", base::Value(""));
   message_body.Set("displayName", base::Value(app_name));
   message_body.Set("statusText", base::Value(""));
-  message_body.Set("appImages", base::ListValue());
+  message_body.Set("appImages", base::Value::List());
   message_body.Set("receiver", CreateReceiver(sink));
-  message_body.Set("senderApps", base::ListValue());
-  message_body.Set("namespaces", base::ListValue());
-  message_body.Set("media", base::ListValue());
+  message_body.Set("senderApps", base::Value::List());
+  message_body.Set("namespaces", base::Value::List());
+  message_body.Set("media", base::Value::List());
   message_body.Set("status", base::Value("connected"));
   message_body.Set("transportId", base::Value(""));
   return message_body;
