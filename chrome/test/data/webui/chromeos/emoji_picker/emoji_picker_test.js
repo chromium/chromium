@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EMOJI_PICKER_TOTAL_EMOJI_WIDTH} from 'chrome://emoji-picker/constants.js';
+import {V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH} from 'chrome://emoji-picker/constants.js';
 import {EmojiButton} from 'chrome://emoji-picker/emoji_button.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
@@ -38,6 +38,8 @@ suite('<emoji-picker>', () => {
           '/emoji_test_ordering_start.json',
           '/emoji_test_ordering_remaining.json',
         ],
+        'emoticon': ['/emoticon_test_ordering.json'],
+        'symbol': ['/symbol_test_ordering.json'],
       },
     });
 
@@ -81,7 +83,7 @@ suite('<emoji-picker>', () => {
   test('Highlight bar should under emotions on start', () => {
     const button = findInEmojiPicker('#bar');
     assertCloseTo(
-        EMOJI_PICKER_TOTAL_EMOJI_WIDTH, parseFloat(button.style.left));
+        V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH, parseFloat(button.style.left));
   });
 
   test('clicking second tab should activate it and scroll', async () => {

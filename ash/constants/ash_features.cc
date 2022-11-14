@@ -1198,7 +1198,7 @@ BASE_FEATURE(kImeSystemEmojiPickerClipboard,
 // Enable or disable system emoji picker extension
 BASE_FEATURE(kImeSystemEmojiPickerExtension,
              "SystemEmojiPickerExtension",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable system emoji picker search extension
 BASE_FEATURE(kImeSystemEmojiPickerSearchExtension,
