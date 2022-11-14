@@ -426,7 +426,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     ASSERT_TRUE(host->GetOobeWebContents());
 
     // Wait for the login UI to be ready.
-    chromeos::OobeUI* oobe_ui = host->GetOobeUI();
+    ash::OobeUI* oobe_ui = host->GetOobeUI();
     ASSERT_TRUE(oobe_ui);
     base::RunLoop run_loop;
     const bool oobe_ui_ready = oobe_ui->IsJSReady(run_loop.QuitClosure());

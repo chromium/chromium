@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 class RecoveryEligibilityView
     : public base::SupportsWeakPtr<RecoveryEligibilityView> {
@@ -22,12 +22,6 @@ class RecoveryEligibilityView
   RecoveryEligibilityView& operator=(const RecoveryEligibilityView&) = delete;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::RecoveryEligibilityView;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_RECOVERY_ELIGIBILITY_SCREEN_HANDLER_H_

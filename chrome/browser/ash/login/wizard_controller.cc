@@ -350,7 +350,7 @@ LoginDisplayHost* GetLoginDisplayHost() {
   return LoginDisplayHost::default_host();
 }
 
-chromeos::OobeUI* GetOobeUI() {
+OobeUI* GetOobeUI() {
   auto* host = LoginDisplayHost::default_host();
   return host ? host->GetOobeUI() : nullptr;
 }

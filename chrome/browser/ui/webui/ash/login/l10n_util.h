@@ -93,10 +93,4 @@ void GetKeyboardLayoutsForLocale(
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::GetAndActivateLoginKeyboardLayouts;
-using ::ash::GetMinimalUILanguageList;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_L10N_UTIL_H_

@@ -1090,7 +1090,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
-      ash::NetworkUI, chromeos::OobeUI>(map);
+      ash::NetworkUI, ash::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::guest_os_installer::mojom::PageHandlerFactory,
@@ -1105,7 +1105,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::CrostiniUpgraderUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,
+      ash::multidevice_setup::mojom::MultiDeviceSetup, ash::OobeUI,
       ash::multidevice::ProximityAuthUI,
       ash::multidevice_setup::MultiDeviceSetupDialogUI>(map);
 
@@ -1113,8 +1113,8 @@ void PopulateChromeWebUIFrameBinders(
       parent_access_ui::mojom::ParentAccessUIHandler, ash::ParentAccessUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter,
-      chromeos::OobeUI>(map);
+      ash::multidevice_setup::mojom::PrivilegedHostDeviceSetter, ash::OobeUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_config::mojom::CrosNetworkConfig,
@@ -1122,7 +1122,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::cfm::NetworkSettingsDialogUi,
 #endif  // BUILDFLAG(PLATFORM_CFM)
       ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::NetworkUI,
-      chromeos::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
+      ash::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
       ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

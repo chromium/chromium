@@ -177,9 +177,4 @@ class AssistantOptInFlowScreenHandler
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::AssistantOptInFlowScreenHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ASSISTANT_OPTIN_FLOW_SCREEN_HANDLER_H_

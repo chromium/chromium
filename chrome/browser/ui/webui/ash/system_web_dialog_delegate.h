@@ -126,9 +126,4 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::SystemWebDialogDelegate;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SYSTEM_WEB_DIALOG_DELEGATE_H_

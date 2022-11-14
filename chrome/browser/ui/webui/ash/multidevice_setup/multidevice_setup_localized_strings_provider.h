@@ -23,9 +23,4 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder);
 
 }  // namespace ash::multidevice_setup
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::multidevice_setup {
-using ::ash::multidevice_setup::AddLocalizedValuesToBuilder;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_LOCALIZED_STRINGS_PROVIDER_H_

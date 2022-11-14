@@ -48,9 +48,4 @@ class UserImageSource : public content::URLDataSource {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::UserImageSource;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_USER_IMAGE_SOURCE_H_

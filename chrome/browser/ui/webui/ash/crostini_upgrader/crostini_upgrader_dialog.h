@@ -61,9 +61,4 @@ class CrostiniUpgraderDialog : public SystemWebDialogDelegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::CrostiniUpgraderDialog;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_

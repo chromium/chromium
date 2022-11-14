@@ -116,9 +116,4 @@ class AddSupervisionUI : public ui::MojoWebUIController,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::AddSupervisionDialog;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_UI_H_

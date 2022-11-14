@@ -82,9 +82,4 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::InternetDetailDialog;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_

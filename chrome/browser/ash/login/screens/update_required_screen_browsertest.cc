@@ -100,7 +100,7 @@ constexpr char16_t kDomain16[] = u"example.com";
 constexpr char kManager[] = "user@example.com";
 constexpr char16_t kManager16[] = u"user@example.com";
 
-chromeos::OobeUI* GetOobeUI() {
+OobeUI* GetOobeUI() {
   auto* host = LoginDisplayHost::default_host();
   return host ? host->GetOobeUI() : nullptr;
 }

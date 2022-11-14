@@ -84,9 +84,4 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::ErrorScreenView;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ERROR_SCREEN_HANDLER_H_

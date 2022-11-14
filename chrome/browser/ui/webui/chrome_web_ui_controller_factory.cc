@@ -480,8 +480,8 @@ WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 template <>
-WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
-  return new chromeos::OobeUI(web_ui, url);
+WebUIController* NewWebUI<ash::OobeUI>(WebUI* web_ui, const GURL& url) {
+  return new ash::OobeUI(web_ui, url);
 }
 
 template <>
@@ -967,7 +967,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
     if (ash::ProfileHelper::IsSigninProfile(profile)) {
-      return &NewWebUI<chromeos::OobeUI>;
+      return &NewWebUI<ash::OobeUI>;
     }
     return nullptr;
   }

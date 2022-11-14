@@ -416,9 +416,4 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::GaiaView;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_GAIA_SCREEN_HANDLER_H_

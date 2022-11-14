@@ -31,12 +31,4 @@ void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict);
 
 }  // namespace ash::cellular_setup
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::cellular_setup {
-using ::ash::cellular_setup::AddLocalizedStrings;
-using ::ash::cellular_setup::AddLocalizedValuesToBuilder;
-using ::ash::cellular_setup::AddNonStringLoadTimeData;
-using ::ash::cellular_setup::AddNonStringLoadTimeDataToDict;
-}  // namespace chromeos::cellular_setup
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_

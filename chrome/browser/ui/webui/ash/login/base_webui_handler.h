@@ -123,9 +123,4 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-using ::ash::BaseWebUIHandler;
-}
-
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_BASE_WEBUI_HANDLER_H_
