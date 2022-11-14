@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
@@ -37,6 +39,8 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 
@@ -158,7 +162,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
               kBackgroundTabLoadingFromPerformanceManager)) {
     graph->PassToGraph(
         std::make_unique<
-            performance_manager::policies::BackgroundTabLoadingPolicy>());
+            performance_manager::policies::BackgroundTabLoadingPolicy>(
+            base::BindRepeating([]() {
+              content::GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      &SessionRestore::OnTabLoaderFinishedLoadingTabs));
+            })));
   }
 
   // The freezing policy isn't enabled on Android yet as it doesn't play well

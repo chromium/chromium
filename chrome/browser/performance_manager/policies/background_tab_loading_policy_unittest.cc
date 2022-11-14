@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
@@ -43,6 +44,10 @@ using MockPageLoader = ::testing::StrictMock<LenientMockPageLoader>;
 
 class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
  public:
+  explicit MockBackgroundTabLoadingPolicy(
+      base::RepeatingClosure all_tabs_loaded_callback)
+      : BackgroundTabLoadingPolicy(std::move(all_tabs_loaded_callback)) {}
+
   void SetSiteDataReaderForPageNode(const PageNode* page_node,
                                     SiteDataReader* site_data_reader) {
     site_data_readers_[page_node] = site_data_reader;
@@ -114,7 +119,10 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
         TestNodeWrapper<SystemNodeImpl>::Create(graph()));
 
     // Create the policy.
-    auto policy = std::make_unique<MockBackgroundTabLoadingPolicy>();
+    auto policy =
+        std::make_unique<MockBackgroundTabLoadingPolicy>(base::BindRepeating(
+            &BackgroundTabLoadingPolicyTest::AllTabsLoadedCallback,
+            base::Unretained(this)));
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
 
@@ -134,10 +142,13 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
     Super::TearDown();
   }
 
+  int num_all_tabs_loaded_calls() const { return num_all_tabs_loaded_calls_; }
+
+  void AllTabsLoadedCallback() { ++num_all_tabs_loaded_calls_; }
+
  protected:
   MockBackgroundTabLoadingPolicy* policy() { return policy_; }
   MockPageLoader* loader() { return mock_loader_; }
-
   SystemNodeImpl* system_node() { return system_node_.get()->get(); }
 
  private:
@@ -146,6 +157,7 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
       system_node_;
   raw_ptr<MockBackgroundTabLoadingPolicy> policy_;
   raw_ptr<MockPageLoader> mock_loader_;
+  int num_all_tabs_loaded_calls_ = 0;
 };
 
 TEST_F(BackgroundTabLoadingPolicyTest,
@@ -168,8 +180,15 @@ TEST_F(BackgroundTabLoadingPolicyTest,
     page_nodes.back()->SetType(PageType::kTab);
   }
 
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
   policy()->ScheduleLoadForRestoredTabs(to_load);
-  task_env().RunUntilIdle();
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+  for (auto& page_node : page_nodes) {
+    EXPECT_EQ(0, num_all_tabs_loaded_calls());
+    page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest,
@@ -192,8 +211,15 @@ TEST_F(BackgroundTabLoadingPolicyTest,
     page_nodes.back()->SetType(PageType::kTab);
   }
 
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
   policy()->ScheduleLoadForRestoredTabs(to_load);
-  task_env().RunUntilIdle();
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+  for (auto& page_node : page_nodes) {
+    EXPECT_EQ(0, num_all_tabs_loaded_calls());
+    page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
@@ -214,8 +240,6 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
     // ScheduleLoadForRestoredTabs().
     page_nodes.back()->SetType(PageType::kTab);
   }
-  PageNodeImpl* page_node_impl = page_nodes[0].get();
-
   EXPECT_CALL(*loader(), LoadPageNode(to_load[0].page_node.get()));
   EXPECT_CALL(*loader(), LoadPageNode(to_load[1].page_node.get()));
 
@@ -226,16 +250,29 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
   policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
   testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
-  // Simulate load start of a PageNode that initiated load.
-  page_node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
-
-  // The policy should allow one more PageNode to load after a PageNode finishes
-  // loading.
+  // The 3rd page should start loading when the 1st page finishes loading.
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
   EXPECT_CALL(*loader(), LoadPageNode(to_load[2].page_node.get()));
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
-  // Simulate load finish of a PageNode.
-  page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  // The 4th page should start loading when the 2nd page finishes loading.
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoading);
+  EXPECT_CALL(*loader(), LoadPageNode(to_load[3].page_node.get()));
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // The "all tabs loaded" callback should be loaded after the 3rd and 4th pages
+  // finish loading.
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
 // Regression test for crbug.com/1166745
