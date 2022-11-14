@@ -1448,7 +1448,7 @@
     "name": "disable-process-reuse",
     "owners": [
       "yangsharon@google.com", "alexmos@google.com", "creis@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "disable-quick-answers-v2-translation",
@@ -3041,7 +3041,7 @@
     // Note: while password-triggered site isolation launched in M77, it only
     // affected devices above a predefined memory threshold.  This flag is kept
     // around because it allows users of low-memory devices to opt in.
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "enable-site-per-process",
@@ -4330,7 +4330,7 @@
     // This is useful for isolating additional origins beyond the normal site
     // isolation policy, as well as for diagnosing problems when site isolation
     // only applies to some sites.
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "isolated-app-origins",
@@ -6368,7 +6368,7 @@
     "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "skip-service-worker-fetch-handler",
