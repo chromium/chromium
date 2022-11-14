@@ -266,10 +266,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // Native widget's handler to receive events before the event target.
   std::unique_ptr<FocusManagerEventHandler> focus_manager_event_handler_;
 
-  // The following factory is used for calls to close the NativeWidgetAura
-  // instance.
-  base::WeakPtrFactory<NativeWidgetAura> close_widget_factory_{this};
-
   // The following factory is used to provide references to the NativeWidgetAura
   // instance. We need a separate factory from the |close_widget_factory_|
   // because the close widget factory is currently used to ensure that the

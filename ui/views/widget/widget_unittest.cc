@@ -997,6 +997,25 @@ TEST_F(WidgetOwnsNativeWidgetTest, IdempotentCloseNow) {
   RunPendingMessages();
 }
 
+// Widget owns its NativeWidget, part 5: Widget::Close should be idempotent.
+TEST_F(WidgetOwnsNativeWidgetTest, IdempotentClose) {
+  auto widget = std::make_unique<OwnershipTestWidget>(state());
+  Widget::InitParams params = CreateParamsForTestWidget();
+  params.native_widget = CreatePlatformNativeWidgetImpl(
+      widget.get(), kStubCapture, &state()->native_widget_deleted);
+  widget->Init(std::move(params));
+
+  // Now close the Widget, which should delete the NativeWidget.
+  widget->Close();
+
+  RunPendingMessages();
+
+  // Close the widget again should not crash.
+  widget->Close();
+
+  RunPendingMessages();
+}
+
 // Test for CLIENT_OWNS_WIDGET. The client holds a unique_ptr<Widget>.
 // The NativeWidget will be destroyed when the platform window is closed.
 using ClientOwnsWidgetTest = WidgetOwnershipTest;

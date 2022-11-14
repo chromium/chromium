@@ -634,11 +634,9 @@ void NativeWidgetAura::Close() {
     window_->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
   }
 
-  if (!close_widget_factory_.HasWeakPtrs()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&NativeWidgetAura::CloseNow,
-                                  close_widget_factory_.GetWeakPtr()));
-  }
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeWidgetAura::CloseNow, weak_factory.GetWeakPtr()));
 }
 
 void NativeWidgetAura::CloseNow() {
