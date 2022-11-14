@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 246 tests; 228 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 246 tests; 230 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -261,3 +261,4 @@ PASS certificate's timestamp
 PASS certificate's type
 PASS certificate's id
 Harness: the test ran to completion.
+
