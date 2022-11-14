@@ -16,8 +16,7 @@ namespace wm {
 class WMTestHelper;
 }
 
-namespace views {
-namespace examples {
+namespace views::examples {
 
 class ExamplesViewsDelegateChromeOS : public DesktopTestViewsDelegate,
                                       public aura::WindowTreeHostObserver {
@@ -38,7 +37,6 @@ class ExamplesViewsDelegateChromeOS : public DesktopTestViewsDelegate,
   std::unique_ptr<wm::WMTestHelper> wm_helper_;
 };
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 
 #endif  // UI_VIEWS_EXAMPLES_EXAMPLES_VIEWS_DELEGATE_CHROMEOS_H_
