@@ -133,6 +133,7 @@ android_library("java") {
     ":client_version",
     ":webengine_interfaces_java",
     ":weblayer_client_manifest",
+    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
