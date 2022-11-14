@@ -86,9 +86,6 @@ struct DidCommitProvisionalLoadParams {
   // Whether this commit created a new entry.
   bool did_create_new_entry;
 
-  // Whether this commit should replace the current entry.
-  bool should_replace_current_entry;
-
   // The HTTP method used by the navigation.
   string method;
 
@@ -185,6 +182,9 @@ struct DidCommitSameDocumentNavigationParams {
   // TODO(mustaq): Figure out if we can drop this and use the user activation
   // state tracked in the browser instead.
   bool started_with_transient_activation = false;
+
+  // Whether this commit should replace the current entry.
+  bool should_replace_current_entry;
 };
 
 struct CookieManagerInfo {

@@ -6894,8 +6894,6 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   }
   DCHECK_EQ(params->url_is_unreachable, false);
 
-  params->should_replace_current_entry =
-      common_params().should_replace_current_entry;
   DCHECK_EQ(params->post_id, -1);
   params->navigation_token = commit_params().navigation_token;
   DCHECK_EQ(params->url, common_params().url);

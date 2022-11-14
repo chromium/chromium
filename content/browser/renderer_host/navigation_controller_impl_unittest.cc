@@ -2280,7 +2280,6 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   const GURL url2("http://foo#a");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->did_create_new_entry = false;
-  params->should_replace_current_entry = true;
   params->url = url2;
   params->origin = url::Origin::Create(url2);
   params->referrer = blink::mojom::Referrer::New();
@@ -2292,8 +2291,9 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
 
   // This should NOT generate a new entry, nor prune the list.
   LoadCommittedDetailsObserver observer(contents());
-  main_test_rfh()->SendNavigateWithParams(std::move(params),
-                                          true /* was_within_same_document */);
+  main_test_rfh()->SendDidCommitSameDocumentNavigation(
+      std::move(params), blink::mojom::SameDocumentNavigationType::kFragment,
+      /*should_replace_current_entry=*/true);
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
   EXPECT_TRUE(observer.is_same_document());

@@ -1497,12 +1497,10 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
 
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
-  params->should_replace_current_entry =
+  params->did_create_new_entry = DidCreateNewEntry(
+      same_document,
       should_replace_current_entry_ ||
-      (request_ && request_->common_params().should_replace_current_entry);
-
-  params->did_create_new_entry =
-      DidCreateNewEntry(same_document, params->should_replace_current_entry);
+          (request_ && request_->common_params().should_replace_current_entry));
 
   // See CalculateTransition() in render_frame_host_impl.cc.
   if (frame_tree_node_->IsMainFrame() && request_) {

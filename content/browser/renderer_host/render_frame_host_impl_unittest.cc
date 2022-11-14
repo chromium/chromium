@@ -535,7 +535,6 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   const GURL url2("http://foo#a");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->did_create_new_entry = false;
-  params->should_replace_current_entry = true;
   params->url = url2;
   params->origin = url::Origin::Create(url2);
   params->referrer = blink::mojom::Referrer::New();
@@ -546,7 +545,8 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   params->post_id = -1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
-      blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept);
+      blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept,
+      /*should_replace_current_entry=*/false);
 
   // navigateEvent.intercept() should leave WebContents in the loading
   // state and showing loading UI, unlike other same-document navigations.

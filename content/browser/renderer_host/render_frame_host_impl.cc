@@ -962,11 +962,6 @@ GURL GetLastDocumentURL(
     // DidCommitProvisionalLoadParams' `url` if the loading URL for the document
     // is set to the data: URL. In this case, just return the last document URL,
     // since at least it will have the correct origin.
-    // This case doesn't matter for `should_replace_current_entry` calculation
-    // because we always use the renderer's value for renderer-initiated
-    // same-document navigations (instead of trying to calculate it in in the
-    // browser). If other use cases of the document URL care about this case, it
-    // might be worth it to send the document URL on same-document navigations.
     return renderer_url_info.last_document_url;
   }
   // For all other navigations, the document URL should be the same as the URL
@@ -11532,11 +11527,20 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         (is_same_document_navigation &&
          same_document_params->started_with_transient_activation);
 
+    // If this is a (renderer-initiated) same-document navigation, the renderer
+    // will tell us whether the navigation should replace the current entry or
+    // not. Otherwise, this must be a synchronously committed about:blank, which
+    // should always do replacement.
+    bool should_replace_current_entry =
+        is_same_document_navigation
+            ? same_document_params->should_replace_current_entry
+            : true;
+
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForSynchronousRendererCommit(
         params->url, params->origin, params->referrer.Clone(),
-        params->transition, params->should_replace_current_entry,
+        params->transition, should_replace_current_entry,
         started_with_transient_activation, redirects, params->url,
         is_same_document_navigation,
         same_document_params &&
@@ -12706,33 +12710,6 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   return request_response_code;
 }
 
-bool CalculateShouldReplaceCurrentEntry(
-    NavigationRequest* request,
-    const mojom::DidCommitProvisionalLoadParams& params) {
-  // A Renderer-initiated same-document navigation is not known to the browser
-  // before it committed and whether it does replacement or not is not
-  // predictable, so we need to use the renderer-supplied value, and in the
-  // future move |should_replace_current_entry| from
-  // DidCommitProvisionalLoadParams to DidCommitSameDocumentNavigationParams.
-  // For other navigations, the CommonNavigationParams' value supplied by the
-  // browser to the renderer at commit time can be used, as the renderer will
-  // always follow it. An exception is when on the initial NavigationEntry,
-  // CommonParams' should_replace_current_entry will always be true on the
-  // browser side but the renderer might not know about it so DidCommitParams'
-  // should_replace_current_entry might differ, which is why we "skip" comparing
-  // for browser vs renderer values in that case, by comparing the renderer
-  // value against itself (through returning DidCommitParams'
-  // should_replace_current_entry here).
-  NavigationEntryImpl* last_entry = request->frame_tree_node()
-                                        ->navigator()
-                                        .controller()
-                                        .GetLastCommittedEntry();
-  return (request->IsSameDocument() ||
-          (last_entry && last_entry->IsInitialEntry()))
-             ? params.should_replace_current_entry
-             : request->common_params().should_replace_current_entry;
-}
-
 // Tries to simulate WebFrameLoadType in NavigationTypeToLoadType() in
 // render_frame_impl.cc and RenderFrameImpl::CommitFailedNavigation().
 // TODO(https://crbug.com/1131832): This should only be here temporarily.
@@ -12960,7 +12937,6 @@ void RenderFrameHostImpl::
   // - is_overriding_user_agent
   // - http_status_code
   // - should_update_history
-  // - should_replace_current_entry
   // - url
   // - did_create_new_entry
   // - transition
@@ -13007,21 +12983,20 @@ void RenderFrameHostImpl::
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
 
-  const bool browser_should_replace_current_entry =
-      CalculateShouldReplaceCurrentEntry(request, params);
+  const bool should_replace_current_entry =
+      request->common_params().should_replace_current_entry;
 
   const GURL browser_url = CalculateLoadingURL(
       request, params, renderer_url_info_, is_error_page_, last_committed_url_);
 
   const RendererLoadType renderer_load_type =
-      CalculateRendererLoadType(request, browser_should_replace_current_entry,
+      CalculateRendererLoadType(request, should_replace_current_entry,
                                 renderer_url_info_.last_document_url);
 
   const bool browser_did_create_new_entry =
       request->is_synchronous_renderer_commit()
           ? params.did_create_new_entry
-          : CalculateDidCreateNewEntry(request,
-                                       browser_should_replace_current_entry,
+          : CalculateDidCreateNewEntry(request, should_replace_current_entry,
                                        renderer_load_type);
 
   const ui::PageTransition browser_transition = CalculateTransition(
@@ -13041,9 +13016,6 @@ void RenderFrameHostImpl::
         browser_http_status_code == params.http_status_code) &&
        (!ShouldVerify("should_update_history") ||
         browser_should_update_history == params.should_update_history) &&
-       (!ShouldVerify("should_replace_current_entry") ||
-        browser_should_replace_current_entry ==
-            params.should_replace_current_entry) &&
        (!ShouldVerify("url") || browser_url == params.url) &&
        (!ShouldVerify("did_create_new_entry") ||
         browser_did_create_new_entry == params.did_create_new_entry) &&
@@ -13127,10 +13099,8 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture",
                         request->common_params().has_user_gesture);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_browser",
-                        browser_should_replace_current_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_renderer",
-                        params.should_replace_current_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace",
+                        should_replace_current_entry);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "create_browser",
                         browser_did_create_new_entry);
@@ -13250,8 +13220,6 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
-  DCHECK_EQ(browser_should_replace_current_entry,
-            params.should_replace_current_entry);
   DCHECK_EQ(browser_url, params.url);
   DCHECK_EQ(browser_did_create_new_entry, params.did_create_new_entry);
   DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
@@ -13283,11 +13251,6 @@ void RenderFrameHostImpl::
   if (browser_should_update_history != params.should_update_history) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kShouldUpdateHistory);
-  }
-  if (browser_should_replace_current_entry !=
-      params.should_replace_current_entry) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kShouldReplaceCurrentEntry);
   }
   if (browser_url != params.url) {
     LogVerifyDidCommitParamsDifference(VerifyDidCommitParamsDifference::kURL);

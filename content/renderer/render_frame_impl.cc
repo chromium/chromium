@@ -3956,6 +3956,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   same_document_params->is_client_redirect = is_client_redirect;
   same_document_params->started_with_transient_activation =
       document_loader->LastNavigationHadTransientUserActivation();
+  same_document_params->should_replace_current_entry =
+      document_loader->ReplacesCurrentHistoryItem();
   DidCommitNavigationInternal(
       commit_type, transition,
       blink::ParsedPermissionsPolicy(),     // permissions_policy_header
@@ -4545,8 +4547,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->http_status_code = response.HttpStatusCode();
   params->url_is_unreachable = document_loader->HasUnreachableURL();
   params->method = "GET";
-  params->should_replace_current_entry =
-      document_loader->ReplacesCurrentHistoryItem();
   params->post_id = -1;
   params->embedding_token = embedding_token;
   params->origin_calculation_debug_info =
@@ -4571,7 +4571,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->did_create_new_entry =
       (commit_type == blink::kWebStandardCommit) ||
       (commit_type == blink::kWebHistoryInertCommit && !frame_->Parent() &&
-       params->should_replace_current_entry &&
+       document_loader->ReplacesCurrentHistoryItem() &&
        !navigation_state->WasWithinSameDocument());
 
   WebDocument frame_document = frame_->GetDocument();

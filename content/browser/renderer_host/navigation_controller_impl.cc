@@ -1396,9 +1396,11 @@ bool NavigationControllerImpl::RendererDidNavigate(
     }
   }
 
-  // The renderer tells us whether the navigation replaces the current entry.
+  // Use CommonNavigationParam's `should_replace_current_entry` to determine
+  // whether the current NavigationEntry should be replaced.
   // (See below for a case where we might override that.)
-  details->did_replace_entry = params.should_replace_current_entry;
+  details->did_replace_entry =
+      navigation_request->common_params().should_replace_current_entry;
 
   // If there is a pending entry at this point, it should have a SiteInstance,
   // except for restored entries. This should be true even if the current commit
@@ -1425,11 +1427,9 @@ bool NavigationControllerImpl::RendererDidNavigate(
     if (!rfh->GetParent() && pending_entry_->site_instance() &&
         pending_entry_->site_instance() != rfh->GetSiteInstance()) {
       DCHECK_NE(-1, pending_entry_index_);
-      // TODO(nasko,creis): Instead of setting this value here, set
-      // should_replace_current_entry on the parameters we send to the
-      // renderer process as part of CommitNavigation. The renderer should
-      // in turn send it back here as part of |params| and it can be just
-      // enforced and renderer process terminated on mismatch.
+      // TODO(nasko,creis,rakina): Move this to happen before committing the
+      // navigation. This is a bit complicated because we don't currently
+      // set `should_replace_current_entry` for reload/history navigations.
       details->did_replace_entry = true;
     }
   }
@@ -1449,7 +1449,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // exclude that case by checking NAVIGATION_TYPE_AUTO_SUBFRAME.
     // TODO(crbug.com/1319919): Consider adjusting the dcheck for more cases as
     // pointed out in the issue.
-    DCHECK(params.should_replace_current_entry ||
+    DCHECK(navigation_request->common_params().should_replace_current_entry ||
            navigation_request->GetReloadType() != ReloadType::NONE ||
            details->type == NAVIGATION_TYPE_AUTO_SUBFRAME);
   }
@@ -1475,8 +1475,8 @@ bool NavigationControllerImpl::RendererDidNavigate(
       // retain its "initial NavigationEntry" status in this case.
       details->should_stay_as_initial_entry = true;
     } else if (navigation_request->is_synchronous_renderer_commit() &&
-               !navigation_request->IsSameDocument() && !rfh->GetParent() &&
-               params.should_replace_current_entry) {
+               !navigation_request->IsSameDocument() && !rfh->GetParent()) {
+      DCHECK(navigation_request->common_params().should_replace_current_entry);
       // This is a synchronous about:blank navigation on the main frame, which
       // used to not create a NavigationEntry when we have no NavigationEntry on
       // FrameTree creation. We now have the initial NavigationEntry and are on
@@ -1913,7 +1913,6 @@ void NavigationControllerImpl::CreateInitialEntry() {
   params->http_status_code = 0;
   params->url_is_unreachable = false;
   params->method = "GET";
-  params->should_replace_current_entry = false;
   params->post_id = -1;
   params->embedding_token = base::UnguessableToken::Create();
   params->navigation_token = base::UnguessableToken::Create();
