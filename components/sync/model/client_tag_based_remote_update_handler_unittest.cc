@@ -333,6 +333,19 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   EXPECT_EQ(0u, ProcessorEntityCount());
 }
 
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldNotProcessInvalidRemoteCreationWithInvalidStorageKey) {
+  ASSERT_EQ(0U, ProcessorEntityCount());
+  UpdateResponseData update = GenerateUpdate("", "");
+  ASSERT_TRUE(bridge()->SupportsGetStorageKey());
+  // Bridge will generate an empty storage key.
+  ProcessSingleUpdate(std::move(update));
+  // Update should be filtered out.
+  EXPECT_EQ(0U, db()->data_count());
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
 }  // namespace
 
 }  // namespace syncer

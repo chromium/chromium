@@ -57,6 +57,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
       // 2. Reflection, thus should be ignored.
       // 3. Update without a client tag hash (including permanent nodes, which
       // have server tags instead).
+      // 4. Remote creation containing invalid data according to the bridge.
       continue;
     }
 
@@ -162,6 +163,13 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     // Remote creation.
     DCHECK(!data.is_deleted());
     entity = CreateEntity(update);
+    // |entity| is null in case remote creation is invalid.
+    if (!entity) {
+      DLOG(WARNING) << "Received invalid remote creation."
+                    << " client_tag_hash: " << client_tag_hash << " for "
+                    << ModelTypeToDebugString(type_);
+      return nullptr;
+    }
     entity_changes->push_back(EntityChange::CreateAdd(
         entity->storage_key(), std::move(update.entity)));
   } else if (entity->IsUnsynced()) {
@@ -300,7 +308,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey()) {
     storage_key = bridge_->GetStorageKey(update.entity);
-    DCHECK(!storage_key.empty());
+    if (storage_key.empty()) {
+      return nullptr;
+    }
   }
   return entity_tracker_->AddRemote(
       storage_key, update,
