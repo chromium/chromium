@@ -915,10 +915,6 @@ const char kDesktopPWAsAppHomePageDescription[] =
 
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
-const char kDesktopPWAsRemoveStatusBarDescription[] =
-    "Hides the status bar popup in Desktop PWA app windows.";
-
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";
 const char kDesktopPWAsElidedExtensionsMenuDescription[] =

@@ -2046,17 +2046,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed,
   EXPECT_EQ(true, provider->registrar().IsTabbedWindowModeEnabled(app_id));
 }
 
-class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_RemoveStatusBar() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kRemoveStatusBarInWebApps};
-};
-
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar,
-                       DISABLE_POSIX(RemoveStatusBar)) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_POSIX(RemoveStatusBar)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   const AppId app_id = test::InstallPwaForCurrentUrl(browser());
   Browser* const app_browser = LaunchWebAppBrowser(app_id);

@@ -523,9 +523,6 @@ extern const char kDesktopPWAsAppHomePageName[];
 extern const char kDesktopPWAsAppHomePageDescription[];
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-extern const char kDesktopPWAsRemoveStatusBarName[];
-extern const char kDesktopPWAsRemoveStatusBarDescription[];
-
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 
