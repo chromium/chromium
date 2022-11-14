@@ -86,7 +86,7 @@ namespace network {
 
 P2PSocketUdp::PendingPacket::PendingPacket(
     const net::IPEndPoint& to,
-    const std::vector<int8_t>& content,
+    base::span<const uint8_t> content,
     const rtc::PacketOptions& options,
     uint64_t id,
     const net::NetworkTrafficAnnotationTag traffic_annotation)
@@ -96,7 +96,7 @@ P2PSocketUdp::PendingPacket::PendingPacket(
       packet_options(options),
       id(id),
       traffic_annotation(traffic_annotation) {
-  memcpy(data->data(), &content[0], size);
+  memcpy(data->data(), content.data(), content.size());
 }
 
 P2PSocketUdp::PendingPacket::PendingPacket(const PendingPacket& other) =
@@ -210,13 +210,12 @@ void P2PSocketUdp::OnRecv(int result) {
 
 bool P2PSocketUdp::HandleReadResult(int result) {
   if (result > 0) {
-    std::vector<int8_t> data(recv_buffer_->data(),
-                             recv_buffer_->data() + result);
+    base::span<const uint8_t> data = base::make_span(
+        reinterpret_cast<const uint8_t*>(recv_buffer_->data()), result);
 
     if (!base::Contains(connected_peers_, recv_address_)) {
       P2PSocket::StunMessageType type;
-      bool stun = GetStunPacketType(reinterpret_cast<uint8_t*>(&*data.begin()),
-                                    data.size(), &type);
+      bool stun = GetStunPacketType(data, &type);
       if ((stun && IsRequestOrResponse(type))) {
         connected_peers_.insert(recv_address_);
       } else if (!stun || type == STUN_DATA_INDICATION) {
@@ -231,9 +230,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
         recv_address_, data,
         base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
-    delegate_->DumpPacket(
-        base::make_span(reinterpret_cast<uint8_t*>(&data[0]), data.size()),
-        true);
+    delegate_->DumpPacket(data, true);
   } else if (result < 0 && !IsTransientError(result)) {
     LOG(ERROR) << "Error when reading from UDP socket: " << result;
     OnError();
@@ -253,9 +250,10 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
   // messages are sent in correct order.
   if (!base::Contains(connected_peers_, packet.to)) {
     P2PSocket::StunMessageType type = P2PSocket::StunMessageType();
-    bool stun =
-        GetStunPacketType(reinterpret_cast<const uint8_t*>(packet.data->data()),
-                          packet.size, &type);
+    bool stun = GetStunPacketType(
+        base::make_span(reinterpret_cast<const uint8_t*>(packet.data->data()),
+                        packet.size),
+        &type);
     if (!stun || type == STUN_DATA_INDICATION) {
       LOG(ERROR) << "Page tried to send a data packet to "
                  << packet.to.ToString() << " before STUN binding is finished.";
@@ -388,7 +386,7 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
 }
 
 void P2PSocketUdp::Send(
-    const std::vector<int8_t>& data,
+    base::span<const uint8_t> data,
     const P2PPacketInfo& packet_info,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (data.size() > kMaximumPacketSize) {

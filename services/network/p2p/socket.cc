@@ -97,27 +97,26 @@ P2PSocket::~P2PSocket() {
 
 // Verifies that the packet |data| has a valid STUN header.
 // static
-bool P2PSocket::GetStunPacketType(const uint8_t* data,
-                                  int data_size,
+bool P2PSocket::GetStunPacketType(base::span<const uint8_t> data,
                                   StunMessageType* type) {
-  if (data_size < kStunHeaderSize) {
+  if (data.size() < kStunHeaderSize) {
     return false;
   }
 
   uint32_t cookie =
-      base::NetToHost32(*reinterpret_cast<const uint32_t*>(data + 4));
+      base::NetToHost32(*reinterpret_cast<const uint32_t*>(data.data() + 4));
   if (cookie != kStunMagicCookie) {
     return false;
   }
 
   uint16_t length =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data + 2));
-  if (length != data_size - kStunHeaderSize) {
+      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data.data() + 2));
+  if (length != data.size() - kStunHeaderSize) {
     return false;
   }
 
   int message_type =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data));
+      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data.data()));
 
   // Verify that the type is known:
   switch (message_type) {

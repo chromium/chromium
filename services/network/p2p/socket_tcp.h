@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
   // mojom::P2PSocket implementation:
-  void Send(const std::vector<int8_t>& data,
+  void Send(base::span<const uint8_t> data,
             const P2PPacketInfo& packet_info,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
@@ -77,17 +77,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   };
 
   // Derived classes will provide the implementation.
-  virtual bool ProcessInput(char* input,
-                            int input_len,
+  virtual bool ProcessInput(base::span<const uint8_t> input,
                             size_t* bytes_consumed) = 0;
   virtual void DoSend(
       const net::IPEndPoint& to,
-      const std::vector<int8_t>& data,
+      base::span<const uint8_t> data,
       const rtc::PacketOptions& options,
       const net::NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
   void WriteOrQueue(SendBuffer& send_buffer);
-  [[nodiscard]] bool OnPacket(std::vector<int8_t> data);
+  [[nodiscard]] bool OnPacket(base::span<const uint8_t> data);
 
  private:
   friend class P2PSocketTcpTestBase;
@@ -139,12 +138,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
   ~P2PSocketTcp() override;
 
  protected:
-  bool ProcessInput(char* input,
-                    int input_len,
+  bool ProcessInput(base::span<const uint8_t> input,
                     size_t* bytes_consumed) override;
   void DoSend(
       const net::IPEndPoint& to,
-      const std::vector<int8_t>& data,
+      base::span<const uint8_t> data,
       const rtc::PacketOptions& options,
       const net::NetworkTrafficAnnotationTag traffic_annotation) override;
 };
@@ -169,17 +167,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
   ~P2PSocketStunTcp() override;
 
  protected:
-  bool ProcessInput(char* input,
-                    int input_len,
+  bool ProcessInput(base::span<const uint8_t> input,
                     size_t* bytes_consumed) override;
   void DoSend(
       const net::IPEndPoint& to,
-      const std::vector<int8_t>& data,
+      base::span<const uint8_t> data,
       const rtc::PacketOptions& options,
       const net::NetworkTrafficAnnotationTag traffic_annotation) override;
 
  private:
-  int GetExpectedPacketSize(const uint8_t* data, int len, int* pad_bytes);
+  int GetExpectedPacketSize(base::span<const uint8_t> data, int* pad_bytes);
 };
 
 }  // namespace network

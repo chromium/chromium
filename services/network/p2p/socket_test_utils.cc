@@ -218,7 +218,7 @@ FakeSocketClient::FakeSocketClient(
 
 FakeSocketClient::~FakeSocketClient() {}
 
-void CreateRandomPacket(std::vector<int8_t>* packet) {
+void CreateRandomPacket(std::vector<uint8_t>* packet) {
   size_t size = kStunHeaderSize + rand() % 1000;
   packet->resize(size);
   for (size_t i = 0; i < size; i++) {
@@ -229,7 +229,7 @@ void CreateRandomPacket(std::vector<int8_t>* packet) {
   (*packet)[0] = (*packet)[0] | 0x80;
 }
 
-static void CreateStunPacket(std::vector<int8_t>* packet, uint16_t type) {
+static void CreateStunPacket(std::vector<uint8_t>* packet, uint16_t type) {
   CreateRandomPacket(packet);
   *reinterpret_cast<uint16_t*>(&*packet->begin()) = base::HostToNet16(type);
   *reinterpret_cast<uint16_t*>(&*packet->begin() + 2) =
@@ -238,15 +238,15 @@ static void CreateStunPacket(std::vector<int8_t>* packet, uint16_t type) {
       base::HostToNet32(kStunMagicCookie);
 }
 
-void CreateStunRequest(std::vector<int8_t>* packet) {
+void CreateStunRequest(std::vector<uint8_t>* packet) {
   CreateStunPacket(packet, kStunBindingRequest);
 }
 
-void CreateStunResponse(std::vector<int8_t>* packet) {
+void CreateStunResponse(std::vector<uint8_t>* packet) {
   CreateStunPacket(packet, kStunBindingResponse);
 }
 
-void CreateStunError(std::vector<int8_t>* packet) {
+void CreateStunError(std::vector<uint8_t>* packet) {
   CreateStunPacket(packet, kStunBindingError);
 }
 

@@ -67,7 +67,7 @@ void P2PSocketClientImpl::Init(
 }
 
 uint64_t P2PSocketClientImpl::Send(const net::IPEndPoint& address,
-                                   const Vector<int8_t>& data,
+                                   base::span<const uint8_t> data,
                                    const rtc::PacketOptions& options) {
   uint64_t unique_id = GetUniqueId(random_socket_id_, ++next_packet_id_);
 
@@ -81,7 +81,7 @@ uint64_t P2PSocketClientImpl::Send(const net::IPEndPoint& address,
 }
 
 void P2PSocketClientImpl::SendWithPacketId(const net::IPEndPoint& address,
-                                           const Vector<int8_t>& data,
+                                           base::span<const uint8_t> data,
                                            const rtc::PacketOptions& options,
                                            uint64_t packet_id) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("p2p", "Send", packet_id);
@@ -133,7 +133,7 @@ void P2PSocketClientImpl::SendComplete(
 }
 
 void P2PSocketClientImpl::DataReceived(const net::IPEndPoint& socket_address,
-                                       const Vector<int8_t>& data,
+                                       base::span<const uint8_t> data,
                                        base::TimeTicks timestamp) {
   DCHECK_EQ(kStateOpen, state_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

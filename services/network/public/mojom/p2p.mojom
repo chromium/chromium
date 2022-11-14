@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -57,8 +58,7 @@ interface P2PSocketManager {
 };
 
 interface P2PSocket {
-  // TODO(sergeyu): Use shared memory to pass the data.
-  Send(array<int8> data,
+  Send(mojo_base.mojom.ReadOnlyBuffer data,
        P2PPacketInfo packet_info,
        network.mojom.MutableNetworkTrafficAnnotationTag traffic_annotation);
   SetOption(P2PSocketOption option, int32 value);
@@ -68,6 +68,6 @@ interface P2PSocketClient {
   SocketCreated(IPEndPoint local_address, IPEndPoint remote_address);
   SendComplete(P2PSendPacketMetrics send_metrics);
   DataReceived(IPEndPoint socket_address,
-               array<int8> data,
+               mojo_base.mojom.ReadOnlyBuffer data,
                mojo_base.mojom.TimeTicks timestamp);
 };

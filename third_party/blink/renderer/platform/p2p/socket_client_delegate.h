@@ -31,7 +31,7 @@ class P2PSocketClientDelegate {
 
   // Called when data is received on the socket.
   virtual void OnDataReceived(const net::IPEndPoint& address,
-                              const Vector<int8_t>& data,
+                              base::span<const uint8_t> data,
                               const base::TimeTicks& timestamp) = 0;
 };
 

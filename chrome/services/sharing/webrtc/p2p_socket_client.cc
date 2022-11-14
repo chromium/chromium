@@ -64,7 +64,7 @@ void P2PSocketClient::Init(network::P2PSocketType type,
 }
 
 uint64_t P2PSocketClient::Send(const net::IPEndPoint& address,
-                               const std::vector<int8_t>& data,
+                               base::span<const uint8_t> data,
                                const rtc::PacketOptions& options) {
   uint64_t unique_id = GetUniqueId(random_socket_id_, ++next_packet_id_);
 
@@ -78,7 +78,7 @@ uint64_t P2PSocketClient::Send(const net::IPEndPoint& address,
 }
 
 void P2PSocketClient::SendWithPacketId(const net::IPEndPoint& address,
-                                       const std::vector<int8_t>& data,
+                                       base::span<const uint8_t> data,
                                        const rtc::PacketOptions& options,
                                        uint64_t packet_id) {
   socket_->Send(data, network::P2PPacketInfo(address, options, packet_id),
@@ -126,7 +126,7 @@ void P2PSocketClient::SendComplete(
 }
 
 void P2PSocketClient::DataReceived(const net::IPEndPoint& socket_address,
-                                   const std::vector<int8_t>& data,
+                                   base::span<const uint8_t> data,
                                    base::TimeTicks timestamp) {
   DCHECK_EQ(STATE_OPEN, state_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

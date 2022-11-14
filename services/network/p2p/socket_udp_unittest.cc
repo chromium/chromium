@@ -38,6 +38,12 @@ using ::testing::Return;
 
 namespace {
 
+// Creates a GMock matcher that matches `base::span` to `std::vector`.
+MATCHER_P(SpanEq, expected, "") {
+  std::vector<uint8_t> result(arg.data(), arg.data() + arg.size());
+  return result == expected;
+}
+
 // TODO(nisse): We can't currently use rtc::ScopedFakeClock, because
 // we don't link with webrtc rtc_base_tests_utils. So roll our own.
 
@@ -58,7 +64,7 @@ class ScopedFakeClock : public rtc::ClockInterface {
 
 class FakeDatagramServerSocket : public net::DatagramServerSocket {
  public:
-  typedef std::pair<net::IPEndPoint, std::vector<int8_t>> UDPPacket;
+  typedef std::pair<net::IPEndPoint, std::vector<uint8_t>> UDPPacket;
 
   // P2PSocketUdp destroys a socket on errors so sent packets
   // need to be stored outside of this object.
@@ -123,7 +129,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
              const net::IPEndPoint& address,
              net::CompletionOnceCallback callback) override {
     scoped_refptr<net::IOBuffer> buffer(buf);
-    std::vector<int8_t> data_vector(buffer->data(), buffer->data() + buf_len);
+    std::vector<uint8_t> data_vector(buffer->data(), buffer->data() + buf_len);
     sent_packets_->push_back(UDPPacket(address, data_vector));
     return buf_len;
   }
@@ -136,7 +142,8 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   void SetMsgConfirm(bool confirm) override {}
 
-  void ReceivePacket(const net::IPEndPoint& address, std::vector<int8_t> data) {
+  void ReceivePacket(const net::IPEndPoint& address,
+                     std::vector<uint8_t> data) {
     if (!recv_callback_.is_null()) {
       int size = std::min(recv_size_, static_cast<int>(data.size()));
       memcpy(recv_buffer_->data(), &*data.begin(), size);
@@ -269,19 +276,19 @@ TEST_F(P2PSocketUdpTest, SendStunNoAuth) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(3);
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet1;
+  std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   socket_impl_->Send(
       packet1, P2PPacketInfo(dest1_, options, 0),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::vector<int8_t> packet2;
+  std::vector<uint8_t> packet2;
   CreateStunResponse(&packet2);
   socket_impl_->Send(
       packet2, P2PPacketInfo(dest1_, options, 0),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::vector<int8_t> packet3;
+  std::vector<uint8_t> packet3;
   CreateStunError(&packet3);
   socket_impl_->Send(
       packet3, P2PPacketInfo(dest1_, options, 0),
@@ -299,7 +306,7 @@ TEST_F(P2PSocketUdpTest, SendStunNoAuth) {
 // finished.
 TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
   rtc::PacketOptions options;
-  std::vector<int8_t> packet;
+  std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
   auto* socket_impl_ptr = socket_impl_.get();
@@ -319,17 +326,17 @@ TEST_F(P2PSocketUdpTest, SendDataNoAuth) {
 // from the other side.
 TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
   // Receive packet from |dest1_|.
-  std::vector<int8_t> request_packet;
+  std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, request_packet, _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet;
+  std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   socket_impl_->Send(
       packet, P2PPacketInfo(dest1_, options, 0),
@@ -345,17 +352,17 @@ TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
 // from the other side.
 TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
   // Receive packet from |dest1_|.
-  std::vector<int8_t> request_packet;
+  std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, request_packet, _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Now we should be able to send any data to |dest1_|.
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet;
+  std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
   socket_impl_->Send(
       packet, P2PPacketInfo(dest1_, options, 0),
@@ -371,15 +378,15 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
 // successful binding with different host.
 TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   // Receive packet from |dest1_|.
-  std::vector<int8_t> request_packet;
+  std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, request_packet, _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Should fail when trying to send the same packet to |dest2_|.
   rtc::PacketOptions options;
-  std::vector<int8_t> packet;
+  std::vector<uint8_t> packet;
   CreateRandomPacket(&packet);
 
   auto* socket_impl_ptr = socket_impl_.get();
@@ -399,7 +406,7 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimit) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(3);
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet1;
+  std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   throttler_.SetSendIceBandwidth(packet1.size() * 2);
   socket_impl_->Send(
@@ -423,16 +430,17 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimit) {
 // active.
 TEST_F(P2PSocketUdpTest, ThrottleAfterLimitAfterReceive) {
   // Receive packet from |dest1_|.
-  std::vector<int8_t> request_packet;
+  std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, request_packet, _)).Times(1);
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _))
+      .Times(1);
   socket_->ReceivePacket(dest1_, request_packet);
 
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(6);
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet1;
+  std::vector<uint8_t> packet1;
   CreateStunRequest(&packet1);
   throttler_.SetSendIceBandwidth(packet1.size());
   // |dest1_| is known address, throttling will not be applied.
@@ -482,7 +490,7 @@ TEST_F(P2PSocketUdpTest, MAYBE_ThrottlingStopsAtExpectedTimes) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(12);
 
   rtc::PacketOptions options;
-  std::vector<int8_t> packet;
+  std::vector<uint8_t> packet;
   CreateStunRequest(&packet);
   // Limit of 2 packets per second.
   throttler_.SetSendIceBandwidth(packet.size() * 2);

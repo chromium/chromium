@@ -51,7 +51,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   // Send the |data| to the |address| using Differentiated Services Code Point
   // |dscp|. Return value is the unique packet_id for this packet.
   uint64_t Send(const net::IPEndPoint& address,
-                const std::vector<int8_t>& data,
+                base::span<const uint8_t> data,
                 const rtc::PacketOptions& options);
 
   // Setting socket options.
@@ -77,7 +77,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   // Helper function to be called by Send to handle different threading
   // condition.
   void SendWithPacketId(const net::IPEndPoint& address,
-                        const std::vector<int8_t>& data,
+                        base::span<const uint8_t> data,
                         const rtc::PacketOptions& options,
                         uint64_t packet_id);
 
@@ -86,7 +86,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
   void DataReceived(const net::IPEndPoint& socket_address,
-                    const std::vector<int8_t>& data,
+                    base::span<const uint8_t> data,
                     base::TimeTicks timestamp) override;
 
   void OnConnectionError();

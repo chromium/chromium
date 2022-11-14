@@ -221,11 +221,10 @@ void P2PSocketTcpBase::OnRead(int result) {
     DoRead();
 }
 
-bool P2PSocketTcpBase::OnPacket(std::vector<int8_t> data) {
+bool P2PSocketTcpBase::OnPacket(base::span<const uint8_t> data) {
   if (!connected_) {
     P2PSocket::StunMessageType type;
-    bool stun = GetStunPacketType(reinterpret_cast<uint8_t*>(&*data.begin()),
-                                  data.size(), &type);
+    bool stun = GetStunPacketType(data, &type);
     if (stun && IsRequestOrResponse(type)) {
       connected_ = true;
     } else if (!stun || type == STUN_DATA_INDICATION) {
@@ -249,10 +248,7 @@ bool P2PSocketTcpBase::OnPacket(std::vector<int8_t> data) {
       remote_address_.ip_address, data,
       base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
-  delegate_->DumpPacket(
-      base::make_span(reinterpret_cast<const uint8_t*>(&data[0]), data.size()),
-      true);
-
+  delegate_->DumpPacket(data, true);
   return true;
 }
 
@@ -339,8 +335,10 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
   int pos = 0;
   while (pos <= read_buffer_->offset()) {
     size_t bytes_consumed = 0;
-    if (!ProcessInput(head + pos, read_buffer_->offset() - pos,
-                      &bytes_consumed)) {
+    if (!ProcessInput(
+            base::make_span(reinterpret_cast<const uint8_t*>(head + pos),
+                            read_buffer_->offset() - pos),
+            &bytes_consumed)) {
       return false;
     }
     if (!bytes_consumed)
@@ -358,7 +356,7 @@ bool P2PSocketTcpBase::HandleReadResult(int result) {
 }
 
 void P2PSocketTcpBase::Send(
-    const std::vector<int8_t>& data,
+    base::span<const uint8_t> data,
     const P2PPacketInfo& packet_info,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Renderer should use this socket only to send data to |remote_address_|.
@@ -371,8 +369,7 @@ void P2PSocketTcpBase::Send(
 
   if (!connected_) {
     P2PSocket::StunMessageType type = P2PSocket::StunMessageType();
-    bool stun = GetStunPacketType(
-        reinterpret_cast<const uint8_t*>(&*data.begin()), data.size(), &type);
+    bool stun = GetStunPacketType(data, &type);
     if (!stun || type == STUN_DATA_INDICATION) {
       LOG(ERROR) << "Page tried to send a data packet to "
                  << packet_info.destination.ToString()
@@ -419,36 +416,37 @@ P2PSocketTcp::P2PSocketTcp(
 
 P2PSocketTcp::~P2PSocketTcp() {}
 
-bool P2PSocketTcp::ProcessInput(char* input,
-                                int input_len,
+bool P2PSocketTcp::ProcessInput(base::span<const uint8_t> input,
                                 size_t* bytes_consumed) {
   *bytes_consumed = 0;
-  if (input_len < kPacketHeaderSize)
+  if (input.size() < kPacketHeaderSize)
     return true;
 
-  int packet_size = base::NetToHost16(*reinterpret_cast<uint16_t*>(input));
-  if (input_len < packet_size + kPacketHeaderSize)
+  uint32_t packet_size =
+      base::NetToHost16(*reinterpret_cast<const uint16_t*>(input.data()));
+  if (input.size() < packet_size + kPacketHeaderSize)
     return true;
 
-  char* cur = input + kPacketHeaderSize;
   *bytes_consumed = kPacketHeaderSize + packet_size;
 
-  return OnPacket(std::vector<int8_t>(cur, cur + packet_size));
+  return OnPacket(input.subspan(kPacketHeaderSize, packet_size));
 }
 
 void P2PSocketTcp::DoSend(
     const net::IPEndPoint& to,
-    const std::vector<int8_t>& data,
+    base::span<const uint8_t> data,
     const rtc::PacketOptions& options,
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
-  int size = kPacketHeaderSize + data.size();
-  SendBuffer send_buffer(options.packet_id,
-                         base::MakeRefCounted<net::DrainableIOBuffer>(
-                             base::MakeRefCounted<net::IOBuffer>(size), size),
-                         traffic_annotation);
+  int buffer_size = kPacketHeaderSize + data.size();
+  SendBuffer send_buffer(
+      options.packet_id,
+      base::MakeRefCounted<net::DrainableIOBuffer>(
+          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size),
+      traffic_annotation);
   *reinterpret_cast<uint16_t*>(send_buffer.buffer->data()) =
       base::HostToNet16(data.size());
-  memcpy(send_buffer.buffer->data() + kPacketHeaderSize, &data[0], data.size());
+  memcpy(send_buffer.buffer->data() + kPacketHeaderSize, data.data(),
+         data.size());
 
   cricket::ApplyPacketOptions(
       reinterpret_cast<uint8_t*>(send_buffer.buffer->data()) +
@@ -478,29 +476,26 @@ P2PSocketStunTcp::P2PSocketStunTcp(
 
 P2PSocketStunTcp::~P2PSocketStunTcp() {}
 
-bool P2PSocketStunTcp::ProcessInput(char* input,
-                                    int input_len,
+bool P2PSocketStunTcp::ProcessInput(base::span<const uint8_t> input,
                                     size_t* bytes_consumed) {
   *bytes_consumed = 0;
-  if (input_len < kPacketHeaderSize + kPacketLengthOffset)
+  if (input.size() < kPacketHeaderSize + kPacketLengthOffset)
     return true;
 
   int pad_bytes;
-  int packet_size = GetExpectedPacketSize(
-      reinterpret_cast<const uint8_t*>(input), input_len, &pad_bytes);
+  size_t packet_size = GetExpectedPacketSize(input, &pad_bytes);
 
-  if (input_len < packet_size + pad_bytes)
+  if (input.size() < packet_size + pad_bytes)
     return true;
 
   // We have a complete packet. Read through it.
-  char* cur = input;
   *bytes_consumed = packet_size + pad_bytes;
-  return OnPacket(std::vector<int8_t>(cur, cur + packet_size));
+  return OnPacket(input.subspan(0, packet_size));
 }
 
 void P2PSocketStunTcp::DoSend(
     const net::IPEndPoint& to,
-    const std::vector<int8_t>& data,
+    base::span<const uint8_t> data,
     const rtc::PacketOptions& options,
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
   // Each packet is expected to have header (STUN/TURN ChannelData), where
@@ -512,8 +507,7 @@ void P2PSocketStunTcp::DoSend(
   }
 
   int pad_bytes;
-  size_t expected_len = GetExpectedPacketSize(
-      reinterpret_cast<const uint8_t*>(&data[0]), data.size(), &pad_bytes);
+  size_t expected_len = GetExpectedPacketSize(data, &pad_bytes);
 
   // Accepts only complete STUN/TURN packets.
   if (data.size() != expected_len) {
@@ -523,13 +517,14 @@ void P2PSocketStunTcp::DoSend(
   }
 
   // Add any pad bytes to the total size.
-  int size = data.size() + pad_bytes;
+  int buffer_size = data.size() + pad_bytes;
 
-  SendBuffer send_buffer(options.packet_id,
-                         base::MakeRefCounted<net::DrainableIOBuffer>(
-                             base::MakeRefCounted<net::IOBuffer>(size), size),
-                         traffic_annotation);
-  memcpy(send_buffer.buffer->data(), &data[0], data.size());
+  SendBuffer send_buffer(
+      options.packet_id,
+      base::MakeRefCounted<net::DrainableIOBuffer>(
+          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size),
+      traffic_annotation);
+  memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
   cricket::ApplyPacketOptions(
       reinterpret_cast<uint8_t*>(send_buffer.buffer->data()), data.size(),
@@ -542,25 +537,24 @@ void P2PSocketStunTcp::DoSend(
   }
 
   // WriteOrQueue may free the memory, so dump it first.
-  delegate_->DumpPacket(
-      base::make_span(reinterpret_cast<uint8_t*>(send_buffer.buffer->data()),
-                      data.size()),
-      false);
+  delegate_->DumpPacket(base::make_span(reinterpret_cast<const uint8_t*>(
+                                            send_buffer.buffer->data()),
+                                        data.size()),
+                        false);
 
   WriteOrQueue(send_buffer);
 }
 
-int P2PSocketStunTcp::GetExpectedPacketSize(const uint8_t* data,
-                                            int len,
+int P2PSocketStunTcp::GetExpectedPacketSize(base::span<const uint8_t> data,
                                             int* pad_bytes) {
-  DCHECK_LE(kTurnChannelDataHeaderSize, len);
+  DCHECK_LE(static_cast<size_t>(kTurnChannelDataHeaderSize), data.size());
   // Both stun and turn had length at offset 2.
   int packet_size = base::NetToHost16(
-      *reinterpret_cast<const uint16_t*>(data + kPacketLengthOffset));
+      *reinterpret_cast<const uint16_t*>(data.data() + kPacketLengthOffset));
 
   // Get packet type (STUN or TURN).
   uint16_t msg_type =
-      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data));
+      base::NetToHost16(*reinterpret_cast<const uint16_t*>(data.data()));
 
   *pad_bytes = 0;
   // Add heder length to packet length.

@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
   // mojom::P2PSocket implementation:
-  void Send(const std::vector<int8_t>& data,
+  void Send(base::span<const uint8_t> data,
             const P2PPacketInfo& packet_info,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   struct PendingPacket {
     PendingPacket(const net::IPEndPoint& to,
-                  const std::vector<int8_t>& content,
+                  base::span<const uint8_t> content,
                   const rtc::PacketOptions& options,
                   uint64_t id,
                   const net::NetworkTrafficAnnotationTag traffic_annotation);

@@ -128,7 +128,7 @@ class FakeSocketClient : public mojom::P2PSocketClient {
   MOCK_METHOD1(SendComplete, void(const P2PSendPacketMetrics&));
   MOCK_METHOD3(DataReceived,
                void(const net::IPEndPoint&,
-                    const std::vector<int8_t>&,
+                    base::span<const uint8_t>,
                     base::TimeTicks));
 
   bool connection_error() { return disconnect_error_; }
@@ -139,10 +139,10 @@ class FakeSocketClient : public mojom::P2PSocketClient {
   bool disconnect_error_ = false;
 };
 
-void CreateRandomPacket(std::vector<int8_t>* packet);
-void CreateStunRequest(std::vector<int8_t>* packet);
-void CreateStunResponse(std::vector<int8_t>* packet);
-void CreateStunError(std::vector<int8_t>* packet);
+void CreateRandomPacket(std::vector<uint8_t>* packet);
+void CreateStunRequest(std::vector<uint8_t>* packet);
+void CreateStunResponse(std::vector<uint8_t>* packet);
+void CreateStunError(std::vector<uint8_t>* packet);
 
 net::IPEndPoint ParseAddress(const std::string& ip_str, uint16_t port);
 

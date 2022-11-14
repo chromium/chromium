@@ -23,8 +23,6 @@ class P2PSocketClientDelegate;
 //
 // TODO(crbug.com/787254): Verify whether this class is still needed
 // now that all its clients are in Blink.
-//
-// Also, move it away from std::vector.
 class P2PSocketClient {
  public:
   virtual ~P2PSocketClient() {}
@@ -32,7 +30,7 @@ class P2PSocketClient {
   // Send the |data| to the |address| using Differentiated Services Code Point
   // |dscp|. Return value is the unique packet_id for this packet.
   virtual uint64_t Send(const net::IPEndPoint& address,
-                        const Vector<int8_t>& data,
+                        base::span<const uint8_t> data,
                         const rtc::PacketOptions& options) = 0;
 
   virtual void SetOption(network::P2PSocketOption option, int value) = 0;

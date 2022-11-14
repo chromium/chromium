@@ -139,8 +139,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
 
   // Verifies that the packet |data| has a valid STUN header. In case
   // of success stores type of the message in |type|.
-  static bool GetStunPacketType(const uint8_t* data,
-                                int data_size,
+  static bool GetStunPacketType(base::span<const uint8_t> data,
                                 StunMessageType* type);
   static bool IsRequestOrResponse(StunMessageType type);
 
