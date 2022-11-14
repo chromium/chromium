@@ -18,6 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
@@ -44,7 +46,9 @@ class EncryptionModuleTest : public ::testing::Test {
   EncryptionModuleTest() = default;
 
   void SetUp() override {
-    encryption_module_ = EncryptionModule::Create();
+    encryption_module_ =
+        EncryptionModule::Create(/*renew_encryption_key_period=*/base::Days(1),
+                                 base::DefaultTickClock::GetInstance());
 
     auto decryptor_result = test::Decryptor::Create();
     ASSERT_OK(decryptor_result.status()) << decryptor_result.status();

@@ -467,8 +467,14 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // All accesses take place on sequenced_task_runner_.
   int32_t active_read_operations_ = 0;
 
-  // Upload timer (active only if options_.upload_period() is not 0).
+  // Upload timer (active only if options_.upload_period() is not 0 and not
+  // infinity).
   base::RepeatingTimer upload_timer_;
+
+  // Check back after upload timer (activated after upload has been started
+  // and options_.upload_retry_delay() is not 0). If already started, it will
+  // be reset to the new delay.
+  base::RetainingOneShotTimer check_back_timer_;
 
   // Upload provider callback.
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
