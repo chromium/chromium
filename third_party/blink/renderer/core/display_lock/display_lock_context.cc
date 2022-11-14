@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_changed_event.h"
+#include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_change_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
@@ -315,7 +315,7 @@ void DisplayLockContext::Lock() {
   // layout objects, since otherwise they would be hoisted out of our subtree.
   DetachDescendantTopLayerElements();
 
-  // Schedule ContentVisibilityAutoStateChanged event if needed.
+  // Schedule ContentVisibilityAutoStateChange event if needed.
   // TODO(https://crbug.com/1250716): We shouldn't fire this if it was the
   // result of toggle state changing.
   ScheduleStateChangeEventIfNeeded();
@@ -556,10 +556,10 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
   if (state_ == EContentVisibility::kAuto &&
-      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangedEventEnabled()) {
+      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangeEventEnabled()) {
     element_->EnqueueEvent(
-        *ContentVisibilityAutoStateChangedEvent::Create(
-            event_type_names::kContentvisibilityautostatechanged, is_locked_),
+        *ContentVisibilityAutoStateChangeEvent::Create(
+            event_type_names::kContentvisibilityautostatechange, is_locked_),
         TaskType::kMiscPlatformAPI);
   }
 }
@@ -610,7 +610,7 @@ void DisplayLockContext::Unlock() {
   if (AXObjectCache* cache = element_->GetDocument().ExistingAXObjectCache())
     cache->ChildrenChanged(element_);
 
-  // Schedule ContentVisibilityAutoStateChanged event if needed.
+  // Schedule ContentVisibilityAutoStateChange event if needed.
   // TODO(https://crbug.com/1250716): We shouldn't fire this if it was the
   // result of toggle state changing.
   ScheduleStateChangeEventIfNeeded();

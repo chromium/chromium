@@ -589,7 +589,7 @@
       status:  {"Android": "stable", "default": "experimental"},
     },
     {
-      name: "ContentVisibilityAutoStateChangedEvent",
+      name: "ContentVisibilityAutoStateChangeEvent",
       status: "stable",
     },
     {
