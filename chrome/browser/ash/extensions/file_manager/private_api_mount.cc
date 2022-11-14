@@ -202,8 +202,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   if (!volume) {
     LOG(ERROR) << "Cannot find volume " << Redact(volume_id);
     return RespondNow(Error(file_manager_private::ToString(
-        api::file_manager_private::
-            MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED)));
+        api::file_manager_private::MOUNT_ERROR_ERROR_PATH_NOT_MOUNTED)));
   }
 
   switch (volume->type()) {
@@ -264,7 +263,7 @@ void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
     Respond(WithArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
-        api::file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN)));
+        api::file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN)));
   }
 }
 

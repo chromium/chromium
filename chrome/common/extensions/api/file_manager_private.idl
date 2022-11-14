@@ -75,7 +75,7 @@ enum MountCompletedEventType { mount, unmount };
 
 // Event type that tells listeners if mount was successful or an error
 // occurred. It also specifies the error.
-enum MountCompletedStatus {
+enum MountError {
   success,
   in_progress,
   error_unknown,
@@ -653,7 +653,7 @@ dictionary MountCompletedEvent {
 
   // Event type that tells listeners if mount was successful or an error
   // occurred. It also specifies the error.
-  MountCompletedStatus status;
+  MountError status;
 
   // Metadata of the mounted volume.
   VolumeMetadata volumeMetadata;

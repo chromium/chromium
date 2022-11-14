@@ -309,7 +309,7 @@ class EventRouter
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
 };
 
-file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
+file_manager_private::MountError MountErrorToMountCompletedStatus(
     ash::MountError error);
 
 }  // namespace file_manager

@@ -667,8 +667,7 @@ SystemNotificationManager::MakeMountErrorNotification(
       case MOUNT_STATUS_ONLY_PARENT_ERROR:
       case MOUNT_STATUS_CHILD_ERROR:
         if (event.status ==
-            file_manager_private::
-                MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM) {
+            file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM) {
           if (volume.drive_label().empty()) {
             message = l10n_util::GetStringUTF16(
                 IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
@@ -758,8 +757,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
       }
       [[fallthrough]];
     case MOUNT_STATUS_NO_RESULT:
-      if (event.status ==
-          file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+      if (event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
         status = MOUNT_STATUS_SUCCESS;
       } else if (event.volume_metadata.is_parent_device) {
         status = MOUNT_STATUS_ONLY_PARENT_ERROR;
@@ -770,8 +768,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
     case MOUNT_STATUS_SUCCESS:
     case MOUNT_STATUS_CHILD_ERROR:
       if (status == MOUNT_STATUS_SUCCESS &&
-          event.status ==
-              file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+          event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
         status = MOUNT_STATUS_SUCCESS;
       } else {
         // Multi partition device with at least one partition in error.
@@ -789,7 +786,7 @@ SystemNotificationManager::MakeRemovableNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
   std::unique_ptr<message_center::Notification> notification;
-  if (event.status == file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {
+  if (event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
     bool show_settings_button = false;
     std::u16string title =
         l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);

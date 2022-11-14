@@ -445,61 +445,50 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 
 }  // namespace
 
-file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
+file_manager_private::MountError MountErrorToMountCompletedStatus(
     ash::MountError error) {
   switch (error) {
     case ash::MountError::kSuccess:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+      return file_manager_private::MOUNT_ERROR_SUCCESS;
     case ash::MountError::kUnknownError:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
+      return file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN;
     case ash::MountError::kInternalError:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INTERNAL;
+      return file_manager_private::MOUNT_ERROR_ERROR_INTERNAL;
     case ash::MountError::kInvalidArgument:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARGUMENT;
+      return file_manager_private::MOUNT_ERROR_ERROR_INVALID_ARGUMENT;
     case ash::MountError::kInvalidPath:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_PATH;
+      return file_manager_private::MOUNT_ERROR_ERROR_INVALID_PATH;
     case ash::MountError::kPathAlreadyMounted:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_PATH_ALREADY_MOUNTED;
+      return file_manager_private::MOUNT_ERROR_ERROR_PATH_ALREADY_MOUNTED;
     case ash::MountError::kPathNotMounted:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
+      return file_manager_private::MOUNT_ERROR_ERROR_PATH_NOT_MOUNTED;
     case ash::MountError::kDirectoryCreationFailed:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
+      return file_manager_private::MOUNT_ERROR_ERROR_DIRECTORY_CREATION_FAILED;
     case ash::MountError::kInvalidMountOptions:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
+      return file_manager_private::MOUNT_ERROR_ERROR_INVALID_MOUNT_OPTIONS;
     case ash::MountError::kInsufficientPermissions:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
+      return file_manager_private::MOUNT_ERROR_ERROR_INSUFFICIENT_PERMISSIONS;
     case ash::MountError::kMountProgramNotFound:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_NOT_FOUND;
+      return file_manager_private::MOUNT_ERROR_ERROR_MOUNT_PROGRAM_NOT_FOUND;
     case ash::MountError::kMountProgramFailed:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_FAILED;
+      return file_manager_private::MOUNT_ERROR_ERROR_MOUNT_PROGRAM_FAILED;
     case ash::MountError::kInvalidDevicePath:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_INVALID_DEVICE_PATH;
+      return file_manager_private::MOUNT_ERROR_ERROR_INVALID_DEVICE_PATH;
     case ash::MountError::kUnknownFilesystem:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN_FILESYSTEM;
+      return file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
     case ash::MountError::kUnsupportedFilesystem:
-      return file_manager_private::
-          MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
+      return file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
     case ash::MountError::kNeedPassword:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
+      return file_manager_private::MOUNT_ERROR_ERROR_NEED_PASSWORD;
     case ash::MountError::kInProgress:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_IN_PROGRESS;
+      return file_manager_private::MOUNT_ERROR_IN_PROGRESS;
     case ash::MountError::kCancelled:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
+      return file_manager_private::MOUNT_ERROR_ERROR_CANCELLED;
     case ash::MountError::kBusy:
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_BUSY;
+      return file_manager_private::MOUNT_ERROR_ERROR_BUSY;
     default:
       LOG(ERROR) << "Unexpected mount error: " << error;
-      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
+      return file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN;
   }
 }
 

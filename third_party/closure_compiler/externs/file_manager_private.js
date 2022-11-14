@@ -74,7 +74,7 @@ chrome.fileManagerPrivate.MountCompletedEventType = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.MountCompletedStatus = {
+chrome.fileManagerPrivate.MountError = {
   SUCCESS: 'success',
   IN_PROGRESS: 'in_progress',
   ERROR_UNKNOWN: 'error_unknown',
@@ -478,7 +478,7 @@ chrome.fileManagerPrivate.VolumeMetadata;
 /**
  * @typedef {{
  *   eventType: !chrome.fileManagerPrivate.MountCompletedEventType,
- *   status: !chrome.fileManagerPrivate.MountCompletedStatus,
+ *   status: !chrome.fileManagerPrivate.MountError,
  *   volumeMetadata: !chrome.fileManagerPrivate.VolumeMetadata,
  *   shouldNotify: boolean
  * }}
