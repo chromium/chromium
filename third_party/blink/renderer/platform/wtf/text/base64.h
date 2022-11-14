@@ -43,28 +43,8 @@ WTF_EXPORT bool Base64Decode(
     Vector<char>&,
     CharacterMatchFunctionPtr should_ignore_character = nullptr,
     Base64DecodePolicy = kBase64DoNotValidatePadding);
-WTF_EXPORT bool Base64Decode(
-    const Vector<char>&,
-    Vector<char>&,
-    CharacterMatchFunctionPtr should_ignore_character = nullptr,
-    Base64DecodePolicy = kBase64DoNotValidatePadding);
-WTF_EXPORT bool Base64Decode(
-    const char*,
-    unsigned,
-    Vector<char>&,
-    CharacterMatchFunctionPtr should_ignore_character = nullptr,
-    Base64DecodePolicy = kBase64DoNotValidatePadding);
-WTF_EXPORT bool Base64Decode(
-    const UChar*,
-    unsigned,
-    Vector<char>&,
-    CharacterMatchFunctionPtr should_ignore_character = nullptr,
-    Base64DecodePolicy = kBase64DoNotValidatePadding);
-WTF_EXPORT bool Base64UnpaddedURLDecode(
-    const String& in,
-    Vector<char>&,
-    CharacterMatchFunctionPtr should_ignore_character = nullptr,
-    Base64DecodePolicy = kBase64DoNotValidatePadding);
+WTF_EXPORT bool Base64Decode(const char*, unsigned, Vector<char>&);
+WTF_EXPORT bool Base64UnpaddedURLDecode(const String& in, Vector<char>&);
 
 // Given an encoding in either base64 or base64url, returns a normalized
 // encoding in plain base64.

@@ -148,20 +148,6 @@ void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
   encoder.Encode(data, out);
 }
 
-bool Base64Decode(const Vector<char>& in,
-                  Vector<char>& out,
-                  CharacterMatchFunctionPtr should_ignore_character,
-                  Base64DecodePolicy policy) {
-  out.clear();
-
-  // If the input string is pathologically large, just return nothing.
-  if (in.size() > UINT_MAX)
-    return false;
-
-  return Base64Decode(in.data(), in.size(), out, should_ignore_character,
-                      policy);
-}
-
 template <typename T>
 static inline bool Base64DecodeInternal(
     const T* data,
@@ -250,23 +236,10 @@ static inline bool Base64DecodeInternal(
   return true;
 }
 
-bool Base64Decode(const char* data,
-                  unsigned length,
-                  Vector<char>& out,
-                  CharacterMatchFunctionPtr should_ignore_character,
-                  Base64DecodePolicy policy) {
-  return Base64DecodeInternal<LChar>(reinterpret_cast<const LChar*>(data),
-                                     length, out, should_ignore_character,
-                                     policy);
-}
-
-bool Base64Decode(const UChar* data,
-                  unsigned length,
-                  Vector<char>& out,
-                  CharacterMatchFunctionPtr should_ignore_character,
-                  Base64DecodePolicy policy) {
-  return Base64DecodeInternal<UChar>(data, length, out, should_ignore_character,
-                                     policy);
+bool Base64Decode(const char* data, unsigned length, Vector<char>& out) {
+  return Base64DecodeInternal<LChar>(
+      reinterpret_cast<const LChar*>(data), length, out,
+      /*should_ignore_character=*/nullptr, kBase64DoNotValidatePadding);
 }
 
 bool Base64Decode(const String& in,
@@ -283,15 +256,13 @@ bool Base64Decode(const String& in,
                                      should_ignore_character, policy);
 }
 
-bool Base64UnpaddedURLDecode(const String& in,
-                             Vector<char>& out,
-                             CharacterMatchFunctionPtr should_ignore_character,
-                             Base64DecodePolicy policy) {
+bool Base64UnpaddedURLDecode(const String& in, Vector<char>& out) {
   if (in.Contains('+') || in.Contains('/') || in.Contains('='))
     return false;
 
-  return Base64Decode(NormalizeToBase64(in), out, should_ignore_character,
-                      policy);
+  return Base64Decode(NormalizeToBase64(in), out,
+                      /*should_ignore_character=*/nullptr,
+                      kBase64DoNotValidatePadding);
 }
 
 String Base64URLEncode(const char* data, unsigned length) {
