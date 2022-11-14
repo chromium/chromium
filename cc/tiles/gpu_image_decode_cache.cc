@@ -2243,6 +2243,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   if (target_color_space) {
     target_color_params = draw_image.target_color_params();
     target_color_params->color_space = gfx::ColorSpace(*target_color_space);
+    if (const auto* image_metadata =
+            draw_image.paint_image().GetImageHeaderMetadata()) {
+      target_color_params->hdr_metadata = image_metadata->hdr_metadata;
+    }
   }
 
   if (image_data->mode == DecodedDataMode::kTransferCache) {

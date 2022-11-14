@@ -628,6 +628,94 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
   EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
+TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
+  constexpr gfx::Size size(100, 100);
+  constexpr gfx::Rect rect(size);
+  float sdr_luminance = 250.f;
+  const float kPQMaxLuminance = 10000.f;
+
+  const skcms_TransferFunction pq = SkNamedTransferFn::kPQ;
+  skcms_TransferFunction pq_inv;
+  skcms_TransferFunction_invert(&pq, &pq_inv);
+
+  const float image_luminance = 1000.f;
+  const float image_pq_pixel =
+      skcms_TransferFunction_eval(&pq_inv, image_luminance / kPQMaxLuminance);
+
+  // Create `image` with pixel value `image_pq_pixel` and PQ color space.
+  sk_sp<SkImage> image;
+  {
+    SkBitmap bitmap;
+    bitmap.allocPixelsFlags(
+        SkImageInfo::MakeN32Premul(size.width(), size.height(),
+                                   SkColorSpace::MakeSRGB()),
+        SkBitmap::kZeroPixels_AllocFlag);
+
+    SkCanvas canvas(bitmap, SkSurfaceProps{});
+    SkColor4f color{image_pq_pixel, image_pq_pixel, image_pq_pixel, 1.f};
+    canvas.drawColor(color);
+
+    image = SkImage::MakeFromBitmap(bitmap);
+    image = image->reinterpretColorSpace(
+        SkColorSpace::MakeRGB(pq, SkNamedGamut::kSRGB));
+  }
+
+  // Create a DisplayItemList drawing `image`.
+  const PaintImage::Id kSomeId = 32;
+  auto builder =
+      PaintImageBuilder::WithDefault().set_image(image, 0).set_id(kSomeId);
+  auto paint_image = builder.TakePaintImage();
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  SkSamplingOptions sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(kDefaultFilterQuality));
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
+  display_item_list->EndPaintOfUnpaired(rect);
+  display_item_list->Finalize();
+  RasterOptions options(rect.size());
+  {
+    options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
+    options.target_color_params.enable_tone_mapping = true;
+    options.target_color_params.sdr_max_luminance_nits = sdr_luminance;
+    options.target_color_params.hdr_metadata = gfx::HDRMetadata();
+  }
+
+  // The exact value that `image_luminance` is mapped to may change as tone
+  // mapping is tweaked. When
+  constexpr float kCutoff = 0.95f;
+
+  // Draw using image HDR metadata indicating that `image_luminance` is the
+  // maximum luminance. The result should map the image to solid white (up
+  // to rounding error).
+  {
+    options.target_color_params.hdr_metadata->color_volume_metadata =
+        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, image_luminance,
+                                 0.f);
+
+    auto actual = Raster(display_item_list, options);
+    auto color = actual.getColor4f(0, 0);
+    EXPECT_GT(color.fR, kCutoff);
+    EXPECT_GT(color.fG, kCutoff);
+    EXPECT_GT(color.fB, kCutoff);
+  }
+
+  // Draw using image HDR metadata indicating that 10,000 nits is the maximum
+  // luminance. The result should map the image to something darker than solid
+  // white.
+  {
+    options.target_color_params.hdr_metadata->color_volume_metadata =
+        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, kPQMaxLuminance,
+                                 0.f);
+
+    auto actual = Raster(display_item_list, options);
+    auto color = actual.getColor4f(0, 0);
+    EXPECT_LT(color.fR, kCutoff);
+    EXPECT_LT(color.fG, kCutoff);
+    EXPECT_LT(color.fB, kCutoff);
+  }
+}
+
 TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
   constexpr gfx::Rect rect(100, 100);
 

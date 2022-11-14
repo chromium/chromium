@@ -8,7 +8,9 @@
 #include <string>
 
 #include "cc/paint/paint_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
 
@@ -36,19 +38,18 @@ struct CC_PAINT_EXPORT TargetColorParams {
   // Whether or not tone mapping should be applied.
   bool enable_tone_mapping = true;
 
+  // The HDR metadata to use in tone mapping.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
+
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
            sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
-           hdr_max_luminance_relative == other.hdr_max_luminance_relative;
+           hdr_max_luminance_relative == other.hdr_max_luminance_relative &&
+           enable_tone_mapping == other.enable_tone_mapping &&
+           hdr_metadata == other.hdr_metadata;
   }
   bool operator!=(const TargetColorParams& other) const {
     return !(*this == other);
-  }
-  bool operator<(const TargetColorParams& other) const {
-    return std::tie(color_space, sdr_max_luminance_nits,
-                    hdr_max_luminance_relative) <
-           std::tie(other.color_space, other.sdr_max_luminance_nits,
-                    other.hdr_max_luminance_relative);
   }
   size_t GetHash() const;
   std::string ToString() const;

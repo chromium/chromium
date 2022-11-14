@@ -22,6 +22,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class SkBitmap;
 class SkColorSpace;
@@ -70,6 +71,9 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
 
   // The subsampling format used for the chroma planes, e.g., YUV 4:2:0.
   YUVSubsampling yuv_subsampling = YUVSubsampling::kUnknown;
+
+  // The HDR metadata included with the image, if present.
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
 
   // The visible size of the image (i.e., the area that contains meaningful
   // pixels).

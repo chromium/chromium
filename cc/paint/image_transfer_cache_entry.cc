@@ -23,6 +23,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
 namespace {
@@ -211,6 +212,16 @@ size_t TargetColorParamsSize(
     target_color_params_size += sizeof(float);
     // uint32_t for tone mapping enabled or disabled.
     target_color_params_size += sizeof(uint32_t);
+    // uint32_t for whether or not there is HDR metadata.
+    target_color_params_size += sizeof(uint32_t);
+    if (target_color_params->hdr_metadata) {
+      // The x and y coordinates for primaries and white point.
+      target_color_params_size += 4 * 2 * sizeof(float);
+      // The minimum and maximum luminance.
+      target_color_params_size += 2 * sizeof(float);
+      // The CLL and FALL
+      target_color_params_size += 2 * sizeof(unsigned);
+    }
   }
   return target_color_params_size;
 }
@@ -225,6 +236,26 @@ void WriteTargetColorParams(
     writer.Write(target_color_params->sdr_max_luminance_nits);
     writer.Write(target_color_params->hdr_max_luminance_relative);
     writer.Write(target_color_params->enable_tone_mapping);
+
+    const uint32_t has_hdr_metadata = !!target_color_params->hdr_metadata;
+    writer.Write(has_hdr_metadata);
+    if (target_color_params->hdr_metadata) {
+      const auto& hdr_metadata = target_color_params->hdr_metadata;
+      writer.Write(hdr_metadata->max_content_light_level);
+      writer.Write(hdr_metadata->max_frame_average_light_level);
+
+      const auto& color_volume = hdr_metadata->color_volume_metadata;
+      writer.Write(color_volume.primaries.fRX);
+      writer.Write(color_volume.primaries.fRY);
+      writer.Write(color_volume.primaries.fGX);
+      writer.Write(color_volume.primaries.fGY);
+      writer.Write(color_volume.primaries.fBX);
+      writer.Write(color_volume.primaries.fBY);
+      writer.Write(color_volume.primaries.fWX);
+      writer.Write(color_volume.primaries.fWY);
+      writer.Write(color_volume.luminance_max);
+      writer.Write(color_volume.luminance_min);
+    }
   }
 }
 
@@ -248,6 +279,34 @@ bool ReadTargetColorParams(
   reader.Read(&target_color_params->sdr_max_luminance_nits);
   reader.Read(&target_color_params->hdr_max_luminance_relative);
   reader.Read(&target_color_params->enable_tone_mapping);
+
+  uint32_t has_hdr_metadata;
+  reader.Read(&has_hdr_metadata);
+  if (has_hdr_metadata) {
+    gfx::HDRMetadata hdr_metadata;
+    unsigned max_content_light_level = 0;
+    unsigned max_frame_average_light_level = 0;
+    reader.Read(&max_content_light_level);
+    reader.Read(&max_frame_average_light_level);
+
+    SkColorSpacePrimaries primaries;
+    float luminance_max = 0;
+    float luminance_min = 0;
+    reader.Read(&primaries.fRX);
+    reader.Read(&primaries.fRY);
+    reader.Read(&primaries.fGX);
+    reader.Read(&primaries.fGY);
+    reader.Read(&primaries.fBX);
+    reader.Read(&primaries.fBY);
+    reader.Read(&primaries.fWX);
+    reader.Read(&primaries.fWY);
+    reader.Read(&luminance_max);
+    reader.Read(&luminance_min);
+
+    target_color_params->hdr_metadata = gfx::HDRMetadata(
+        gfx::ColorVolumeMetadata(primaries, luminance_max, luminance_min),
+        max_content_light_level, max_frame_average_light_level);
+  }
   return true;
 }
 
@@ -588,6 +647,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     gfx::ColorConversionSkFilterCache cache;
     image_ = cache.ConvertImage(
         image_, target_color_params->color_space.ToSkColorSpace(),
+        target_color_params->hdr_metadata,
         target_color_params->sdr_max_luminance_nits,
         target_color_params->hdr_max_luminance_relative,
         target_color_params->enable_tone_mapping,

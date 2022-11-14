@@ -356,6 +356,10 @@ uint8_t AVIFImageDecoder::GetYUVBitDepth() const {
   return bit_depth_;
 }
 
+absl::optional<gfx::HDRMetadata> AVIFImageDecoder::GetHDRMetadata() const {
+  return hdr_metadata_;
+}
+
 void AVIFImageDecoder::DecodeToYUV() {
   DCHECK(image_planes_);
   DCHECK(CanDecodeToYUV());
@@ -832,6 +836,12 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   avifGetPixelFormatInfo(container->yuvFormat, &format_info);
   chroma_shift_x_ = format_info.chromaShiftX;
   chroma_shift_y_ = format_info.chromaShiftY;
+
+  if (container->clli.maxCLL || container->clli.maxPALL) {
+    hdr_metadata_ = gfx::HDRMetadata();
+    hdr_metadata_->max_content_light_level = container->clli.maxCLL;
+    hdr_metadata_->max_frame_average_light_level = container->clli.maxPALL;
+  }
 
   // SetEmbeddedColorProfile() must be called before IsSizeAvailable() becomes
   // true. So call SetEmbeddedColorProfile() before calling SetSize(). The color

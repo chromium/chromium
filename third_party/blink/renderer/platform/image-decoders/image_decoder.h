@@ -48,6 +48,10 @@
 
 class SkColorSpace;
 
+namespace gfx {
+struct HDRMetadata;
+}  // namespace gfx
+
 namespace blink {
 
 struct DecodedImageMetaData;
@@ -292,6 +296,11 @@ class PLATFORM_EXPORT ImageDecoder {
   // Note: If an implementation advertises a bit depth > 8 it must support both
   // kA16_unorm_SkColorType and kA16_float_SkColorType ImagePlanes.
   virtual uint8_t GetYUVBitDepth() const { return 8; }
+
+  // Image decoders that support HDR metadata can override this.
+  virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const {
+    return absl::nullopt;
+  }
 
   // Returns the information required to decide whether or not hardware
   // acceleration can be used to decode this image. Callers of this function

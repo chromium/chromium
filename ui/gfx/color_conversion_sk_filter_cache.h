@@ -53,6 +53,7 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   // and no tone mapping is performed.
   sk_sp<SkImage> ConvertImage(sk_sp<SkImage> image,
                               sk_sp<SkColorSpace> target_color_space,
+                              absl::optional<gfx::HDRMetadata> src_hdr_metadata,
                               float sdr_max_luminance_nits,
                               float dst_max_luminance_relative,
                               bool enable_tone_mapping,
