@@ -518,6 +518,18 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void MockCertVerifierSetDefaultResult(
       int32_t default_result,
       MockCertVerifierSetDefaultResultCallback callback) override {
+    // TODO(crbug.com/1377734): Since testing/variations/
+    // fieldtrial_testing_config.json changes the command line flags after
+    // ContentBrowserTest::SetUpCommandLine() and NetworkServiceTest
+    // instantiation, MockCertVerifierSetDefaultResult can be called without
+    // `mock_cert_verifier_` initialization.
+    // Actually since all mock cert verification tests call this function first,
+    // we should remove the set up using the command line flags.
+    if (!mock_cert_verifier_) {
+      mock_cert_verifier_ = std::make_unique<net::MockCertVerifier>();
+      network::NetworkContext::SetCertVerifierForTesting(
+          mock_cert_verifier_.get());
+    }
     mock_cert_verifier_->set_default_result(default_result);
     std::move(callback).Run();
   }
