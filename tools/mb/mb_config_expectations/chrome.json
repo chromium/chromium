@@ -10,7 +10,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 2,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -25,7 +25,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 2,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -39,8 +39,8 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
@@ -55,7 +55,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -69,8 +69,8 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
     }
   },
   "chromeos-eve-arc-r-chrome": {
@@ -95,7 +95,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-jacuzzi-chrome": {
@@ -108,7 +108,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-kevin-chrome": {
@@ -121,7 +121,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-octopus-chrome": {
@@ -134,7 +134,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-reven-chrome": {
@@ -147,7 +147,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-trogdor64-chrome-skylab": {
@@ -175,7 +175,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -192,7 +192,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -208,7 +208,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -225,7 +225,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -241,7 +241,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -258,7 +258,7 @@
       "ozone_platform_headless": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -266,7 +266,7 @@
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-chrome": {
@@ -276,7 +276,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-chrome": {
@@ -284,7 +284,7 @@
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-chrome": {
@@ -292,7 +292,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win64-chrome": {
@@ -300,7 +300,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "target_cpu": "x64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }
