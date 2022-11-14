@@ -394,6 +394,14 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   return extension_access;
 }
 
+bool PermissionsManager::HasBroadGrantedHostPermissions(
+    const Extension& extension) {
+  // Don't consider API permissions in this case.
+  constexpr bool kIncludeApiPermissions = false;
+  return GetRuntimePermissionsFromPrefs(extension)->ShouldWarnAllHosts(
+      kIncludeApiPermissions);
+}
+
 bool PermissionsManager::HasWithheldHostPermissions(
     const ExtensionId& extension_id) const {
   return extension_prefs_->GetWithholdingPermissions(extension_id);

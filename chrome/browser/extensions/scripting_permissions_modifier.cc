@@ -109,13 +109,6 @@ bool ScriptingPermissionsModifier::HasGrantedHostPermission(
       .MatchesSecurityOrigin(url);
 }
 
-bool ScriptingPermissionsModifier::HasBroadGrantedHostPermissions() {
-  // Don't consider API permissions in this case.
-  constexpr bool kIncludeApiPermissions = false;
-  return permissions_manager_->GetRuntimePermissionsFromPrefs(*extension_)
-      ->ShouldWarnAllHosts(kIncludeApiPermissions);
-}
-
 void ScriptingPermissionsModifier::RemoveGrantedHostPermission(
     const GURL& url) {
   DCHECK(CanAffectExtension());

@@ -707,11 +707,14 @@ TEST_F(ScriptingPermissionsModifierUnitTest, HasBroadGrantedHostPermissions) {
         ExtensionBuilder("test: " + test_case_name)
             .AddPermission("<all_urls>")
             .Build();
-    ScriptingPermissionsModifier modifier(profile(), extension.get());
 
+    ScriptingPermissionsModifier modifier(profile(), extension.get());
     modifier.SetWithholdHostPermissions(true);
 
-    EXPECT_FALSE(modifier.HasBroadGrantedHostPermissions());
+    PermissionsManager* permissions_manager =
+        PermissionsManager::Get(profile());
+    EXPECT_FALSE(
+        permissions_manager->HasBroadGrantedHostPermissions(*extension));
 
     std::string error;
     bool allow_file_access = false;
@@ -724,7 +727,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest, HasBroadGrantedHostPermissions) {
                       std::move(patterns), URLPatternSet()));
 
     EXPECT_EQ(test_case.expected_broad_permissions,
-              modifier.HasBroadGrantedHostPermissions());
+              permissions_manager->HasBroadGrantedHostPermissions(*extension));
   }
 }
 
@@ -768,7 +771,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
     modifier.RemoveBroadGrantedHostPermissions();
     EXPECT_TRUE(modifier.HasGrantedHostPermission(google_com));
     EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
-    EXPECT_FALSE(modifier.HasBroadGrantedHostPermissions());
+    EXPECT_FALSE(
+        PermissionsManager::Get(profile())->HasBroadGrantedHostPermissions(
+            *extension));
   }
 }
 

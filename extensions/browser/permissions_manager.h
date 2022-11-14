@@ -150,6 +150,11 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
+  // Returns true if the `extension` has runtime granted permission patterns
+  // that are sufficiently broad enough to be functionally similar to all sites
+  // access.
+  bool HasBroadGrantedHostPermissions(const Extension& extension);
+
   // Returns whether Chrome has withheld host permissions from the extension.
   // TODO(crbug.com/1289441): Add DCHECK to verify this is only be called for
   // extensions that can be affected (i.e., for which
