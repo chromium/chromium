@@ -3268,7 +3268,7 @@
   {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers", "chromeos-gfx-compositor@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "enable-vbr-encode-acceleration",
