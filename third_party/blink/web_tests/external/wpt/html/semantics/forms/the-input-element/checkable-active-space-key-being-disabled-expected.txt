@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Space key shouldn't active the checkbox when it's disabled by a keydown event listener promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Space key shouldn't active the radio when it's disabled by a keydown event listener promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+Harness: the test ran to completion.
+

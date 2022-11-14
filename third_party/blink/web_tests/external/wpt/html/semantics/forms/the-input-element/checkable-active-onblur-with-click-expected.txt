@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Wait for load
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing it with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Radios should clear :active when the user tabs away from them while pressing it with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing the parent label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Radios should clear :active when the user tabs away from them while pressing the parent label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Checkboxes should clear :active when the user tabs away from them while pressing the following label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Radios should clear :active when the user tabs away from them while pressing the following label with a pointing device promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+Harness: the test ran to completion.
+

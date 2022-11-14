@@ -344308,6 +344308,18 @@
        }
       },
       "the-input-element": {
+       "checkable-active-onblur-with-click-expected.txt": [
+        "b669a995f420fd1371b7cf05bd4ce910d82ed1c4",
+        []
+       ],
+       "checkable-active-space-key-being-disabled-expected.txt": [
+        "e912e19b797701717883fe7aa86130b536f30b6e",
+        []
+       ],
+       "checkable-active-space-key-prevented-default-expected.txt": [
+        "f9767a2ec58bdd1b0caad08e867007b5d03d71b8",
+        []
+       ],
        "hidden-charset-case-sensitive-child.html": [
         "92c9981a1123454af8462cea7840a099721109a0",
         []
@@ -450896,6 +450908,13 @@
        }
       ]
      ],
+     "Range-intersectsNode-shadow.html": [
+      "8219ba8285a0085355beaa4646e40fb8b9f081b7",
+      [
+       null,
+       {}
+      ]
+     ],
      "Range-intersectsNode.html": [
       "97e10f6f0d893fb8ded1067c83c2b0b4262f796a",
       [
@@ -522649,13 +522668,47 @@
          {}
         ]
        ],
-       "checkable-active-onblur.html": [
-        "d4090172812ed8b02e8379a80ea0178298d67ef9",
+       "checkable-active-onblur-with-click.html": [
+        "2d5d0086221517719d75c8bff32d019ca9398d58",
         [
          null,
          {
           "testdriver": true
          }
+        ]
+       ],
+       "checkable-active-onblur.html": [
+        "cc88996fe75b82868425a124910f6584c6ca03bb",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "checkable-active-space-key-being-disabled.html": [
+        "5f725b85f4bf87018826c57905e29227071b701e",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "checkable-active-space-key-prevented-default.html": [
+        "877cd70e29d90f93d66a314c4af866484c3a0063",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "checkable-active-space-key-untrusted-event.html": [
+        "190757d8d38f971b60debab4cb44b47debd816a7",
+        [
+         null,
+         {}
         ]
        ],
        "checkbox-click-events.html": [
