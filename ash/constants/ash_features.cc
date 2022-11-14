@@ -1948,6 +1948,9 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
              "SystemJapanesePhysicalTyping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the ability to play sounds for system services.
+BASE_FEATURE(kSystemSounds, "SystemSounds", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables using the system input engine for physical typing in
 // transliteration input methods.
 BASE_FEATURE(kSystemTransliterationPhysicalTyping,
@@ -2232,6 +2235,10 @@ bool AreDesksTemplatesEnabled() {
 
 bool AreDesksTrackpadSwipeImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kEnableDesksTrackpadSwipeImprovements);
+}
+
+bool AreSystemSoundsEnabled() {
+  return base::FeatureList::IsEnabled(kSystemSounds);
 }
 
 bool IsAutocompleteExtendedSuggestionsEnabled() {
