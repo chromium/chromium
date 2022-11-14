@@ -269,9 +269,18 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // `scoped_feature_list_` needs to be initialized as early as possible, to
   // avoid data races caused by tasks on other threads accessing it.
   scoped_feature_list_.Reset();
+  // Even though these are enabled by default on desktop, they aren't enabled by
+  // default on mobile. To avoid having 2 sets of tests around, explicitly
+  // enable them for all platforms for tests.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{omnibox::kRichAutocompletion,
+        {{"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
+         {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+         {"RichAutocompletionAutocompleteShortcutText", "true"},
+         {"RichAutocompletionAutocompleteShortcutTextMinChar", "3"}}},
+       {omnibox::kShortcutExpanding, {}}},
+      {});
   RichAutocompletionParams::ClearParamsForTesting();
-  scoped_feature_list_.InitWithFeatures({omnibox::kShortcutExpanding},
-                                        {omnibox::kRichAutocompletion});
 }
 
 void ShortcutsProviderTest::SetUp() {
@@ -314,7 +323,7 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatch) {
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           u"ogle.com");
+                           u"ogle");
 
   // Same test with prevent inline autocomplete.
   expected_urls.clear();
@@ -429,37 +438,31 @@ TEST_F(ShortcutsProviderTest, TrickySingleMatch) {
   RunShortcutsProviderTest(provider_, text, true, expected_urls, expected_url,
                            std::u16string());
 
-  // A foursome of tests to verify that trailing spaces prevent the shortcut
-  // from being allowed to be the default match.  For each of two tests, we
-  // first verify that the match is allowed to be default without the trailing
-  // space but is not allowed to be default with the trailing space.  In both
-  // of these with-trailing-space cases, we actually get an
-  // inline_autocompletion, though it's never used because the match is
-  // prohibited from being default.
+  // A foursome of tests to verify that trailing spaces does not prevent the
+  // shortcut from being allowed to be the default match. For each of two tests,
+  // we try the input with and without the trailing whitespace.
   text = u"trailing1";
   expected_url = "http://trailing1.com/";
   expected_urls.clear();
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           u".com");
+                           u" - Space in Shortcut");
   text = u"trailing1 ";
   expected_urls.clear();
-  expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault(expected_url, false));
+  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           u".com");
+                           u"- Space in Shortcut");
   text = u"about:trailing2";
   expected_url = "chrome://trailing2blah/";
   expected_urls.clear();
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           u"blah");
+                           u" ");
   text = u"about:trailing2 ";
   expected_urls.clear();
-  expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault(expected_url, false));
+  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           u"blah");
+                           u"");
 }
 
 TEST_F(ShortcutsProviderTest, SimpleSingleMatchKeyword) {
@@ -560,14 +563,14 @@ TEST_F(ShortcutsProviderTest, MultiMatch) {
   ExpectedURLs expected_urls;
   // Scores high because of completion length.
   expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://slashdot.org/", false));
+      ExpectedURLAndAllowedToBeDefault("http://slashdot.org/", true));
   // Scores high because of visit count.
   expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://sports.yahoo.com/", false));
+      ExpectedURLAndAllowedToBeDefault("http://sports.yahoo.com/", true));
   // Scores high because of visit count but less match span,
   // which is more important.
   expected_urls.push_back(
-      ExpectedURLAndAllowedToBeDefault("http://www.cnn.com/index.html", false));
+      ExpectedURLAndAllowedToBeDefault("http://www.cnn.com/index.html", true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
                            "http://slashdot.org/", std::u16string());
 }
@@ -579,18 +582,18 @@ TEST_F(ShortcutsProviderTest, RemoveDuplicates) {
       ExpectedURLAndAllowedToBeDefault("http://duplicate.com/", true));
   // Make sure the URL only appears once in the output list.
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
-                           "http://duplicate.com/", u"icate.com");
+                           "http://duplicate.com/", u"icate");
 }
 
 TEST_F(ShortcutsProviderTest, TypedCountMatches) {
   std::u16string text(u"just");
   ExpectedURLs expected_urls;
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/b.html", false));
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/a.html", false));
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/c.html", false));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/b.html", true));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/a.html", true));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/c.html", true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
                            "http://www.testsite.com/b.html", std::u16string());
 }
@@ -598,12 +601,12 @@ TEST_F(ShortcutsProviderTest, TypedCountMatches) {
 TEST_F(ShortcutsProviderTest, FragmentLengthMatches) {
   std::u16string text(u"just a");
   ExpectedURLs expected_urls;
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/d.html", false));
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/e.html", false));
-  expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.testsite.com/f.html", false));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/d.html", true));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/e.html", true));
+  expected_urls.push_back(
+      ExpectedURLAndAllowedToBeDefault("http://www.testsite.com/f.html", true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
                            "http://www.testsite.com/d.html", std::u16string());
 }
@@ -612,11 +615,11 @@ TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
   std::u16string text(u"ago");
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.daysagotest.com/a.html", false));
+      "http://www.daysagotest.com/a.html", true));
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.daysagotest.com/b.html", false));
+      "http://www.daysagotest.com/b.html", true));
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
-      "http://www.daysagotest.com/c.html", false));
+      "http://www.daysagotest.com/c.html", true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
                            "http://www.daysagotest.com/a.html",
                            std::u16string());

@@ -41,7 +41,7 @@ struct TestShortcutData shortcut_test_db[] = {
     {"BD85DBA2-8C29-49F9-84AE-48E1E90880F1", "echo echo", "echo echo",
      "chrome-extension://cedabbhfglmiikkmdgcpjdkocfcmbkee/?q=echo",
      AutocompleteMatch::DocumentType::NONE, "Run Echo command: echo", "0,0",
-     "Echo", "0,4", ui::PAGE_TRANSITION_TYPED,
+     "Echo echo", "0,4", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::EXTENSION_APP_DEPRECATED, "", 1, 1},
 };
 

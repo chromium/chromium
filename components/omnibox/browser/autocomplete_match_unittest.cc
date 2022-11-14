@@ -545,7 +545,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         {
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
-            {"", "true"},
+            {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+            {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
 
@@ -642,6 +643,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
 
   // Don't autocomplete if IsRichAutocompletionEnabled is disabled
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kRichAutocompletion);
     RichAutocompletionParams::ClearParamsForTesting();
     SCOPED_TRACE("feature disabled");
     test("x", false, "x_mixd_x_primary", "x_mixd_x_secondary", false, false,
@@ -718,6 +721,8 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
         {
             {"RichAutocompletionAutocompleteTitlesShortcutProvider", "true"},
             {"RichAutocompletionAutocompleteNonPrefixShortcutProvider", "true"},
+            {"RichAutocompletionAutocompleteTitlesMinChar", "0"},
+            {"RichAutocompletionAutocompleteNonPrefixMinChar", "0"},
         });
     RichAutocompletionParams::ClearParamsForTesting();
     // Trigger if the suggestion is from the shortcut provider.
