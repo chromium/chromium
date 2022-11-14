@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export function makePasswordCheckStatus(
-    state?: chrome.passwordsPrivate.PasswordCheckState, checked?: number,
-    remaining?: number,
-    lastCheck?: string): chrome.passwordsPrivate.PasswordCheckStatus {
+export interface PasswordCheckParams {
+  state?: chrome.passwordsPrivate.PasswordCheckState;
+  totalNumber?: number;
+  checked?: number;
+  remaining?: number;
+  lastCheck?: string;
+}
+
+export function makePasswordCheckStatus(params: PasswordCheckParams):
+    chrome.passwordsPrivate.PasswordCheckStatus {
   return {
-    state: state || chrome.passwordsPrivate.PasswordCheckState.IDLE,
-    alreadyProcessed: checked,
-    remainingInQueue: remaining,
-    elapsedTimeSinceLastCheck: lastCheck,
+    state: params.state || chrome.passwordsPrivate.PasswordCheckState.IDLE,
+    totalNumberOfPasswords: params.totalNumber,
+    alreadyProcessed: params.checked,
+    remainingInQueue: params.remaining,
+    elapsedTimeSinceLastCheck: params.lastCheck,
   };
 }
 

@@ -74,11 +74,10 @@
 <div id="checkupContent" class="card">
   <div id="illustartion" role="presentation">
     <picture>
-      <source class="banner"
-          srcset="./images/[[getBannerImageFileName_(status_)]]_dark.svg"
+      <source class="banner" srcset="./images/[[bannerImage_]]_dark.svg"
           media="(prefers-color-scheme: dark)">
       <img id="bannerImage" class="banner" alt=""
-          src="./images/[[getBannerImageFileName_(status_)]].svg">
+          src="./images/[[bannerImage_]].svg">
     </picture>
   </div>
   <div class="hr" id="checkupStatus" check-successful$="[[isCheckSuccessful_]]">
@@ -88,7 +87,7 @@
       <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
       <div id="lastCheckupTime" class="cr-secondary-text label"
           hidden="[[!isCheckSuccessful_]]">
-        <span id="sub-label-text">$i18n{justNow}</span>
+        [[status_.elapsedTimeSinceLastCheck]]
       </div>
     </div>
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">

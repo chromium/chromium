@@ -183,6 +183,7 @@ chrome.passwordsPrivate.PasswordExportProgress;
 /**
  * @typedef {{
  *   state: !chrome.passwordsPrivate.PasswordCheckState,
+ *   totalNumberOfPasswords: (number|undefined),
  *   alreadyProcessed: (number|undefined),
  *   remainingInQueue: (number|undefined),
  *   elapsedTimeSinceLastCheck: (string|undefined)

@@ -130,6 +130,7 @@ declare global {
 
       export interface PasswordCheckStatus {
         state: PasswordCheckState;
+        totalNumberOfPasswords?: number;
         alreadyProcessed?: number;
         remainingInQueue?: number;
         elapsedTimeSinceLastCheck?: string;

@@ -45,7 +45,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       passwords: [],
       groups: [],
       blockedSites: [],
-      checkStatus: makePasswordCheckStatus(),
+      checkStatus: makePasswordCheckStatus({}),
       insecureCredentials: [],
     };
 

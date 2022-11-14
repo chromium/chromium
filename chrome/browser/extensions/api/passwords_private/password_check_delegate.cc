@@ -460,6 +460,10 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
 
   State state = bulk_leak_check_service_adapter_.GetBulkLeakCheckState();
 
+  result.total_number_of_passwords = base::ranges::count_if(
+      saved_passwords_presenter_->GetSavedCredentials(),
+      [](const auto& credential) { return !credential.blocked_by_user; });
+
   // Handle the currently running case first, only then consider errors.
   if (state == State::kRunning) {
     result.state = api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
@@ -476,7 +480,7 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
     return result;
   }
 
-  if (saved_passwords_presenter_->GetSavedCredentials().empty()) {
+  if (result.total_number_of_passwords == 0) {
     result.state = api::passwords_private::PASSWORD_CHECK_STATE_NO_PASSWORDS;
     return result;
   }
