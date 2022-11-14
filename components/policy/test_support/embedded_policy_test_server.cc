@@ -17,6 +17,7 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/request_handler_for_api_authorization.h"
 #include "components/policy/test_support/request_handler_for_auto_enrollment.h"
+#include "components/policy/test_support/request_handler_for_cert_upload.h"
 #include "components/policy/test_support/request_handler_for_check_android_management.h"
 #include "components/policy/test_support/request_handler_for_chrome_desktop_report.h"
 #include "components/policy/test_support/request_handler_for_client_cert_provisioning.h"
@@ -98,6 +99,7 @@ EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
   ResetServerState();
   RegisterHandler(std::make_unique<RequestHandlerForApiAuthorization>(this));
   RegisterHandler(std::make_unique<RequestHandlerForAutoEnrollment>(this));
+  RegisterHandler(std::make_unique<RequestHandlerForCertUpload>(this));
   RegisterHandler(
       std::make_unique<RequestHandlerForCheckAndroidManagement>(this));
   RegisterHandler(std::make_unique<RequestHandlerForChromeDesktopReport>(this));
