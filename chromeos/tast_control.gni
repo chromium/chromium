@@ -26,13 +26,6 @@ tast_disabled_tests_from_chrome_all = [
   "graphics.KmsvncConnect",
   "graphics.Smoke.chrome",
 
-  # crbug.com/1364560
-  "inputs.InputMethodShelfInputs",
-
-  # b/246226666
-  "inputs.VirtualKeyboardAccessibility",
-  "inputs.VirtualKeyboardDeadKeys.french",
-
   # crbug.com/1364495
   "inputs.PhysicalKeyboardAutocorrectAccentKey",
   "inputs.PhysicalKeyboardKoreanTyping",
@@ -252,13 +245,12 @@ tast_disabled_tests_from_chrome_all = [
   "dlp.DataLeakPreventionRulesListScreenshot.ash_blocked",
 
   # https://crbug.com/1364721
+  "inputs.InputMethodShelfInputs",
   "inputs.InputMethodShelfInputs.lacros",
-  "inputs.VirtualKeyboardTypingIME",
   "inputs.VirtualKeyboardHandwriting.docked",
   "inputs.VirtualKeyboardHandwriting.floating",
   "inputs.VirtualKeyboardLoginScreen.clamshell",
   "inputs.VirtualKeyboardLoginScreen.tablet",
-  "inputs.VirtualKeyboardTypingUserMode.incognito",
 
   # https://crbug.com/1365284
   "crostini.RestartApp.clamshell_stable",
@@ -266,10 +258,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1366112
   "crostini.ResizeInstallation.stable",
 
-  # https://crbug.com/1365978
-  "inputs.VirtualKeyboardMultipaste",
-  "inputs.VirtualKeyboardOverscroll.clamshell",
-  "inputs.VirtualKeyboardOverscroll.tablet",
 
   # https://crbug.com/1368586
   "u2fd.WebauthnUsingPassword.tpm1",
@@ -286,23 +274,16 @@ tast_disabled_tests_from_chrome_all = [
   "example.ChromeExtension",
   "hwsec.Login",
   "hwsec.LoginGuest",
-  "inputs.PhysicalKeyboardPinyinTyping.simplified",
   "lockscreen.KeyboardShortcut",
   "security.UserFilesGuest",
   "session.LogoutCleanup",
   "session.OwnershipTaken",
   "shelf.AutoHideSmoke.clamshell_mode_rtl",
-  "inputs.VirtualKeyboardMultipasteSuggestion",
   "peripherals.LaunchAppFromSettings.diagnostics",
   "peripherals.LaunchAppFromSettings.print_management",
 
   # b/249879125
   "launcher.SearchBuiltInApps.tablet_mode",
-
-  # https://crbug.com/1356506
-  "inputs.PhysicalKeyboardCantoneseTyping",
-  "inputs.PhysicalKeyboardCantoneseTyping.lacros",
-  "inputs.VirtualKeyboardChangeInput.a11y",
 
   # https://crbug.com/1373329
   "peripherals.LaunchAppFromSettings.scan",
@@ -314,13 +295,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1375191
   "login.ChangePassword.auth_factor_experiment_on",
   "login.ChangePassword.auth_factor_experiment_off",
-
-  # https://crbug.com/1379756
-  "inputs.PhysicalKeyboardGrammarCheck",
-  "inputs.PhysicalKeyboardGrammarCheck.lacros",
-  "inputs.VirtualKeyboardTypingUserMode.guest",
-  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_docked_lacros",
-  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating_lacros",
 
   # https://crbug.com/1361163
   "lacros.AudioPinnedStream.play",
