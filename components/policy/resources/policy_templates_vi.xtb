@@ -4115,7 +4115,6 @@ Chúng tôi dự định loại bỏ chính sách này khỏi <ph name="PRODUCT_
 <translation id="5034504101537897433">Bật tính năng báo cáo thông tin trong báo cáo sự cố của thiết bị</translation>
 <translation id="5039110755072335605">hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS</translation>
 <translation id="504116558738617678">Chỉ hiển thị các cảnh báo dung lượng ổ đĩa thấp nếu thiết bị không được quản lý hoặc chỉ có 1 người dùng</translation>
-<translation id="5053779531788741830">Dùng ứng dụng DNS tích hợp sẵn trên macOS, Android và ChromeOS</translation>
 <translation id="5055474681190962362">Ngày trong tháng [1-31] nên khởi động lại thiết bị (diễn giải theo múi giờ địa phương trên thiết bị). Chỉ được dùng khi "tần suất" là "MONTHLY". Nếu con số này lớn hơn số ngày tối đa trong một tháng cụ thể, thì ngày cuối cùng trong tháng đó sẽ được chọn.</translation>
 <translation id="5056708224511062314">Đã tắt kính lúp màn hình</translation>
 <translation id="5058573563327660283">Lựa chọn chiến lược dùng để giải phóng dung lượng đĩa trong khi dọn sạch tự động (không dùng nữa)</translation>
@@ -4143,13 +4142,6 @@ Chúng tôi dự định loại bỏ chính sách này khỏi <ph name="PRODUCT_
 
       Nếu bạn tắt hoặc không đặt chính sách này, thì webkitRequestFileSystem thuộc loại cố định sẽ hoạt động với hạn mức tạm thời.
       </translation>
-<translation id="5103112931744164177">Chính sách này kiểm soát ngăn phần mềm nào được dùng để giao tiếp với máy chủ DNS: ứng dụng DNS của hệ điều hành hay ứng dụng DNS tích hợp sẵn của <ph name="PRODUCT_NAME" />. Chính sách này không ảnh hưởng đến việc máy chủ DNS nào được sử dụng: chẳng hạn như nếu hệ điều hành được định cấu hình để sử dụng một máy chủ DNS của doanh nghiệp, thì ứng dụng DNS tích hợp sẵn sẽ sử dụng chính máy chủ đó. Chính sách này cũng không kiểm soát việc DNS qua HTTPS có được sử dụng hay không. <ph name="PRODUCT_NAME" /> sẽ luôn sử dụng trình phân giải tích hợp sẵn cho các yêu cầu DNS qua HTTPS. Vui lòng xem chính sách <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> để biết thông tin về cách kiểm soát DNS qua HTTPS.
-
-      Nếu bạn đặt chính sách này thành Bật, ứng dụng DNS tích hợp sẽ được sử dụng (nếu có).
-
-      Nếu bạn đặt chính sách này thành Tắt, ứng dụng DNS tích hợp sẵn sẽ chỉ được sử dụng khi DNS qua HTTPS đang được sử dụng.
-
-      Nếu bạn không đặt chính sách này, ứng dụng DNS tích hợp sẵn sẽ được bật theo mặc định trên <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (khi cả DNS riêng và VPN đều không được bật) và <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Độ trễ khóa màn hình khi chạy trên nguồn pin</translation>
 <translation id="5108031557082757679">Đã tắt máy in kết nối với thiết bị dành cho doanh nghiệp</translation>
 <translation id="5109383437323376357">Xác định tình trạng có sẵn của biến</translation>

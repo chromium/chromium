@@ -552,6 +552,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="4016425174436051808">Non se puido seguir o feed. Produciuse un erro.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Non permitir</translation>
+<translation id="4036177530563778041">Continúa facilmente onde o deixaches</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1123,6 +1124,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7029390216614421513">Coloca o código QR ou o código de barras neste marco.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7030304022046916278">Envía enderezos URL á función Navegación segura para comprobalos</translation>
+<translation id="7030585293819777123">Queres retomar a última tarefa?</translation>
 <translation id="7037830628447527439">Inicia sesión en Chrome coa túa Conta de Google</translation>
 <translation id="7038956721828960940">chrome_imaxe_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>

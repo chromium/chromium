@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">フォローできません。エラーが発生しました。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
 <translation id="4035877632587724847">許可しない</translation>
+<translation id="4036177530563778041">中断したところから続きの作業を簡単に行うことができます</translation>
 <translation id="4045764304651014138">使用状況データ</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
@@ -1123,6 +1124,7 @@
 <translation id="7029390216614421513">QR コードまたはバーコードをこの枠に合わせてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
+<translation id="7030585293819777123">最後に行ったタスクを再開しますか？</translation>
 <translation id="7037830628447527439">Google アカウントで Chrome にログインします</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">画像の説明文を取得しますか？</translation>

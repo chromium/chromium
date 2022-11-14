@@ -354,6 +354,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info, privasi, dan keamanan di Akun Google Anda</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, beberapa tindakan tersedia, tekan Tab untuk melihat semua tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Detail kartu virtual</translation>
 <translation id="1803020234906945288">Makanan sehat</translation>
 <translation id="1803264062614276815">Nama Pemegang Kartu</translation>
 <translation id="1803351196216024260">Dapat meminta untuk menggunakan mikrofon Anda</translation>
@@ -447,6 +448,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2059202684901022309">22 x 34 inci (55 x 86 cm)</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
 <translation id="2066915425250589881">minta untuk dihapus</translation>
+<translation id="2066969741541525119">Situs yang akan dibuka diblokir oleh organisasi Anda</translation>
 <translation id="2068528718802935086">Bayi &amp; balita</translation>
 <translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
 <translation id="2071692954027939183">Notifikasi otomatis diblokir karena Anda biasanya tidak mengizinkannya</translation>
@@ -501,6 +503,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="219906046732893612">Renovasi rumah</translation>
 <translation id="2202020181578195191">Masukkan tahun habis masa berlaku yang valid</translation>
+<translation id="2202627062836089804">bagian belakang kartu Anda</translation>
 <translation id="22081806969704220">Baki 3</translation>
 <translation id="2210794033760923560">Upload Laporan</translation>
 <translation id="2212735316055980242">Kebijakan tidak ditemukan</translation>
@@ -829,6 +832,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Konektivitas<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Buka <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Tidak ada}=1{data login untuk 1 akun}other{data login untuk # akun}}</translation>
+<translation id="3141093262818886744">Tetap buka</translation>
 <translation id="3145945101586104090">Gagal mendekodekan tanggapan</translation>
 <translation id="3150653042067488994">Kesalahan server sementara</translation>
 <translation id="3154506275960390542">Halaman ini berisi formulir yang mungkin tidak dikirim dengan aman. Data yang Anda kirim dapat dilihat oleh orang lain saat transit atau dapat diubah oleh penyerang untuk mengubah data yang akan diterima server.</translation>
@@ -983,6 +987,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="350069200438440499">Nama file:</translation>
 <translation id="3507936815618196901">Membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="3512163584740124171">Kebijakan ini diabaikan karena kebijakan lain dari grup kebijakan yang sama memiliki prioritas lebih tinggi.</translation>
+<translation id="3515972145999192222">Organisasi Anda telah memblokir <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> karena melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Tombol Kelola alamat, tekan Enter untuk menambahkan dan mengelola alamat di setelan Chrome</translation>
 <translation id="3518941727116570328">Penanganan beberapa objek</translation>
 <translation id="3525130752944427905">10 x 14 inci (25 x 35 cm)</translation>
@@ -1057,6 +1062,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3678342917559046352">Ekstensi Tidak Valid: Nilai yang diharapkan harus dalam salah satu format berikut: &lt;extension_id&gt; atau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Buka halaman dalam jendela Samaran baru (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informasi sertifikat</translation>
+<translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
 <translation id="3699374065820972102">TouchID aktif untuk mengisi sandi</translation>
 <translation id="3701427423622901115">Reset dikonfirmasi.</translation>
 <translation id="3704162925118123524">Jaringan yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
@@ -1141,6 +1147,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google dan akan dapat diakses oleh situs ini.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Masukkan kode keamanan</translation>
 <translation id="3927932062596804919">Tolak</translation>
 <translation id="393316646445601645">Internet &amp; telekomunikasi</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
@@ -1387,6 +1394,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4524805452350978254">Kelola kartu</translation>
 <translation id="4526465106919207193">Tokoh &amp; masyarakat</translation>
 <translation id="4530347922939905757">SMS</translation>
+<translation id="4531477351494678589">Nomor kartu virtual:</translation>
 <translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4541810033354695636">augmented reality</translation>
 <translation id="4542971377163063093">Baki 6</translation>
@@ -1396,6 +1404,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4567686777917670400">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini mungkin juga dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Pengiriman</translation>
 <translation id="4582204425268416675">Hapus kartu</translation>
+<translation id="4582595824823167856">Terima SMS</translation>
 <translation id="4587425331216688090">Hapus alamat dari Chrome?</translation>
 <translation id="459089498662672729">Penempelan dari <ph name="ORIGIN_NAME" /> ke lokasi ini tidak direkomendasikan oleh kebijakan administrator</translation>
 <translation id="4592951414987517459">Sambungan Anda ke <ph name="DOMAIN" /> dienkripsi menggunakan cipher suite modern.</translation>
@@ -1407,6 +1416,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4606870351894164739">Berpengaruh</translation>
 <translation id="4607603470419975064">Tombol Lihat tips Chrome, tekan Enter untuk mempelajari fitur-fitur Chrome</translation>
 <translation id="4607608436550361748">Lihat tips Chrome</translation>
+<translation id="460848736049414407">Diblokir oleh Admin</translation>
 <translation id="4610279718074907952">Situs ini berada dalam grup, yang ditentukan oleh <ph name="SET_OWNER" />, yang dapat melihat aktivitas Anda</translation>
 <translation id="4617273035598175554">Software grafis &amp; animasi</translation>
 <translation id="4622292761762557753">Tetap transfer</translation>
@@ -1873,6 +1883,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5772086939108830423">Gunakan Passkey di Perangkat Lain</translation>
 <translation id="5776313857861697733">Prioritas</translation>
+<translation id="5776574724412881956">Kartu virtual tidak terisi? Klik detail kartu virtual untuk menyalinnya ke papan klip. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperimen diaktifkan</translation>
 <translation id="578305955206182703">Oranye kekuningan</translation>
 <translation id="57838592816432529">Bisukan</translation>
@@ -2002,6 +2013,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6116338172782435947">Melihat teks dan gambar yang disalin ke papan klip</translation>
 <translation id="6118782133429281336">Daftar asal kosong.</translation>
 <translation id="6120179357481664955">Ingat ID UPI Anda?</translation>
+<translation id="6122181661879998141">bagian depan kartu Anda</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">Item dihapus</translation>
@@ -2368,6 +2380,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7108634116785509031"><ph name="HOST" /> ingin menggunakan kamera Anda</translation>
 <translation id="7108819624672055576">Diizinkan oleh ekstensi</translation>
 <translation id="7111012039238467737">(Valid)</translation>
+<translation id="7112327784801341716">Info Anda yang ditampilkan bukan yang terbaru? Hubungi bank untuk memperbaruinya.</translation>
 <translation id="7118618213916969306">Telusuri URL papan klip, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Tutup tab atau program lain</translation>
 <translation id="7129355289156517987">Jika Anda menutup semua tab Samaran Chromium, aktivitas Anda di tab tersebut akan dihapus dari perangkat ini:
@@ -2669,6 +2682,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7798389633136518089">Diabaikan karena kebijakan ini tidak ditetapkan oleh sumber cloud.</translation>
 <translation id="7800304661137206267">Sambungan dienkripsi menggunakan <ph name="CIPHER" />, dengan <ph name="MAC" /> untuk autentikasi pesan dan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="7802523362929240268">Situs ini sah</translation>
+<translation id="7802989406998618639">Masukkan kode keamanan <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /> agar bank dapat memverifikasi diri Anda</translation>
 <translation id="780301667611848630">Lain kali</translation>
 <translation id="7805571567667010077">Dikelola oleh organisasi Anda</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -2994,6 +3008,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8726549941689275341">Ukuran halaman:</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8731268612289859741">Kode keamanan</translation>
 <translation id="8731544501227493793">Tombol Kelola sandi, tekan Enter untuk melihat dan mengelola sandi di setelan Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> Anda dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 inci (76 x 101 cm)</translation>
@@ -3099,6 +3114,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9005998258318286617">Gagal memuat dokumen PDF.</translation>
 <translation id="9008178007718859630">Dekorasi rumah &amp; interior</translation>
 <translation id="9008201768610948239">Abaikan</translation>
+<translation id="9018120810758822233">Masukkan kode keamanan untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9020200922353704812">Perlu alamat penagihan kartu</translation>
 <translation id="9020542370529661692">Halaman ini telah diterjemahkan ke <ph name="TARGET_LANGUAGE" /></translation>

@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">ఫాలో చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# గం}other{# గం}}</translation>
 <translation id="4035877632587724847">అనుమతించవద్దు</translation>
+<translation id="4036177530563778041">మీరు ఎక్కడ ఆపారో అక్కడి నుండి సులభంగా కొనసాగించండి</translation>
 <translation id="4045764304651014138">డేటా వినియోగం</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
@@ -1123,6 +1124,7 @@
 <translation id="7029390216614421513">QR కోడ్/బార్‌కోడ్‌ను ఈ ఫ్రేమ్‌లో ఉంచండి.</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
 <translation id="7030304022046916278">URLలను చెక్ చేయడానికి వాటిని సురక్షిత బ్రౌజింగ్‌కు పంపుతుంది</translation>
+<translation id="7030585293819777123">మీ గత టాస్క్‌ను కొనసాగించాలా?</translation>
 <translation id="7037830628447527439">మీ Google ఖాతాతో Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>

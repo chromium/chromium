@@ -3920,7 +3920,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="5034504101537897433">デバイスの障害レポート情報の報告を有効にする</translation>
 <translation id="5039110755072335605">CORS 非ワイルドカード リクエスト ヘッダーのサポート</translation>
 <translation id="504116558738617678">デバイスが管理対象外またはユーザーが 1 人のみの場合に限り、ディスクの空き容量不足を通知する</translation>
-<translation id="5053779531788741830">macOS、Android、ChromeOS で組み込みの DNS クライアントを使用する</translation>
 <translation id="5055474681190962362">再起動する日付 [1-31]（デバイスのローカル タイムゾーン）です。frequency が「MONTHLY」に指定されている場合にのみ使用されます。値が対象月の最大日数を上回った場合は、その月末日が使用されます。</translation>
 <translation id="5056708224511062314">画面拡大鏡を無効にする</translation>
 <translation id="5058573563327660283">自動クリーンアップ時にディスクの空き容量を増やす方法を選択する（サポート終了）</translation>
@@ -3948,13 +3947,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       このポリシーを未設定または無効にした場合、永続タイプの webkitRequestFileSystem は一時的な割り当てで動作します。
       </translation>
-<translation id="5103112931744164177">このポリシーでは、DNS サーバーとの通信にオペレーティング システムの DNS クライアントと <ph name="PRODUCT_NAME" /> の組み込みの DNS クライアントのどちらのソフトウェア スタックを使用するかを管理できます。このポリシーは、使用する DNS サーバーの選択には影響しません。たとえば、オペレーティング システムで企業の DNS サーバーを使用するよう設定されている場合、組み込みの DNS クライアントでも同じサーバーが使用されます。また、DNS-over-HTTPS が使用されている場合は、このポリシーの対象となりません。<ph name="PRODUCT_NAME" /> では DNS-over-HTTPS リクエストに対して、常に組み込みのリゾルバを使用します。DNS-over-HTTPS の管理については、<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> ポリシーをご覧ください。
-
-      このポリシーを有効に設定した場合、可能なときは組み込みの DNS クライアントが使用されます。
-
-      このポリシーを無効に設定した場合、DNS-over-HTTPS の使用時のみ、組み込みの DNS クライアントが使用されます。
-
-      このポリシーを未設定のままにした場合、<ph name="MAC_OS_NAME" />、<ph name="ANDROID_NAME" />（プライベート DNS も VPN も有効でない場合）、<ph name="PRODUCT_OS_NAME" /> では組み込みの DNS クライアントがデフォルトで有効になります。</translation>
 <translation id="5105313908130842249">画面がロックされるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="5108031557082757679">無効な企業デバイス プリンタ</translation>
 <translation id="5109383437323376357">適用できるバリエーションを指定します</translation>

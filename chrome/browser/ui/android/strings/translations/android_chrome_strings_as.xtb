@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4035877632587724847">অনুমতি নিদিব</translation>
+<translation id="4036177530563778041">আপুনি য’ত এৰিছিল তাৰ পৰা সহজে আৰম্ভ কৰক</translation>
 <translation id="4045764304651014138">ব্যৱহাৰৰ ডেটা</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
@@ -1123,6 +1124,7 @@
 <translation id="7029390216614421513">কিউআৰ ক’ড/বাৰক’ডটো এই ফ্ৰেমটোলৈ আনক।</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="7030304022046916278">URLসমূহ পৰীক্ষা কৰিবলৈ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়ায়</translation>
+<translation id="7030585293819777123">আপোনাৰ অন্তিম কাৰ্যটো পুনৰ আৰম্ভ কৰিবনে?</translation>
 <translation id="7037830628447527439">আপোনাৰ Google একাউণ্টৰ জৰিয়তে Chromeত ছাইন ইন কৰক</translation>
 <translation id="7038956721828960940">chrome_প্ৰতিচ্ছবি_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">প্ৰতিচ্ছবিৰ বিৱৰণ লাভ কৰিবনে?</translation>

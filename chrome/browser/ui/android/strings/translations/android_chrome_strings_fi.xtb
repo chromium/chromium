@@ -552,6 +552,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="4016425174436051808">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Älä salli</translation>
+<translation id="4036177530563778041">Jatka helposti siitä, mihin jäit</translation>
 <translation id="4045764304651014138">Käyttödata</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
@@ -681,6 +682,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Salasanat tallennetaan Google Salasanoihin tällä laitteella</translation>
 <translation id="4766678251456904326">Lisää tili laitteelle</translation>
+<translation id="4769095993849849966">Uusi tiedostonimi</translation>
 <translation id="4787736314074622408">Poistetaanko <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Auttaa hoitamaan asioita verkossa, esim. maksamaan</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1123,6 +1125,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="7029390216614421513">Aseta QR- tai viivakoodi tämän kehyksen sisälle.</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7030304022046916278">Lähettää URL-osoitteita Selaussuojan tarkistettavaksi</translation>
+<translation id="7030585293819777123">Jatketaanko edellistä tehtävää?</translation>
 <translation id="7037830628447527439">Kirjaudu Chromeen Google-tililläsi</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>

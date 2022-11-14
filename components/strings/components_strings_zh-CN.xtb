@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可执行多种操作，按 Tab 键可循环浏览这些操作</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">虚拟卡详细信息</translation>
 <translation id="1803020234906945288">健康饮食</translation>
 <translation id="1803264062614276815">持卡人姓名</translation>
 <translation id="1803351196216024260">可以询问能否使用您的麦克风</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 英寸</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
 <translation id="2066915425250589881">请求删除</translation>
+<translation id="2066969741541525119">您要访问的网站已被贵组织屏蔽</translation>
 <translation id="2068528718802935086">婴幼儿</translation>
 <translation id="2071156619270205202">这张卡的卡号无法用作虚拟卡号。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="219906046732893612">家居改善</translation>
 <translation id="2202020181578195191">请输入有效的失效年份</translation>
+<translation id="2202627062836089804">卡背面</translation>
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2210794033760923560">上传报告</translation>
 <translation id="2212735316055980242">找不到策略</translation>
@@ -829,6 +832,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />尝试运行网络连接诊断<ph name="END_LINK" />。</translation>
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{无}=1{1 个帐号的登录数据}other{# 个帐号的登录数据}}</translation>
+<translation id="3141093262818886744">仍然打开</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
 <translation id="3150653042067488994">服务器临时错误</translation>
 <translation id="3154506275960390542">此页包含一个可能无法安全提交的表单。他人可能会在传输过程中查看您所发送的数据；攻击者也可能会修改这些数据，从而改变服务器收到的内容。</translation>
@@ -981,6 +985,7 @@
 <translation id="350069200438440499">文件名：</translation>
 <translation id="3507936815618196901">为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="3512163584740124171">此政策会被忽略，因为同一政策组中的另一个政策具有更高的优先级。</translation>
+<translation id="3515972145999192222">贵组织已屏蔽 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />，因为该网址违反了相关政策。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">“管理地址”按钮，按 Enter 键即可在 Chrome 设置中添加和管理地址</translation>
 <translation id="3518941727116570328">多对象处理</translation>
 <translation id="3525130752944427905">10 x 14 英寸</translation>
@@ -1054,6 +1059,7 @@
 <translation id="3678342917559046352">扩展程序无效：值的格式本应为 &lt;extension_id&gt; 或 &lt;extension_id&gt;;&lt;update_url&gt;。</translation>
 <translation id="3678529606614285348">在新的无痕式窗口中打开网页 (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">证书信息</translation>
+<translation id="3693327506115126094">选择您要使用的身份验证方式</translation>
 <translation id="3699374065820972102">已开启触控 ID 作为填充密码时的验证机制</translation>
 <translation id="3701427423622901115">已确认要重置。</translation>
 <translation id="3704162925118123524">您正在使用的网络可能会要求您访问其登录页面。</translation>
@@ -1138,6 +1144,7 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想播放受保护内容。Google 将会验证您的设备身份，而且此网站可能会查看您的设备身份。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">输入您的安全码</translation>
 <translation id="3927932062596804919">拒绝</translation>
 <translation id="393316646445601645">互联网与电信</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
@@ -1384,6 +1391,7 @@
 <translation id="4524805452350978254">管理卡片</translation>
 <translation id="4526465106919207193">人与社会</translation>
 <translation id="4530347922939905757">短信</translation>
+<translation id="4531477351494678589">虚拟卡号：</translation>
 <translation id="4540780316273593836">出了点问题</translation>
 <translation id="4541810033354695636">增强现实</translation>
 <translation id="4542971377163063093">纸匣 6</translation>
@@ -1393,6 +1401,7 @@
 <translation id="4567686777917670400">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">递送</translation>
 <translation id="4582204425268416675">移除卡</translation>
+<translation id="4582595824823167856">接收短信</translation>
 <translation id="4587425331216688090">从 Chrome 中移除地址？</translation>
 <translation id="459089498662672729">管理员政策不建议将 <ph name="ORIGIN_NAME" /> 上的内容粘贴到此位置</translation>
 <translation id="4592951414987517459">您与 <ph name="DOMAIN" /> 之间的连接采用新型加密套件进行了加密。</translation>
@@ -1404,6 +1413,7 @@
 <translation id="4606870351894164739">富有影响力</translation>
 <translation id="4607603470419975064">“查看 Chrome 提示”按钮，按 Enter 键即可了解各项 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
+<translation id="460848736049414407">已被管理员屏蔽</translation>
 <translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="4617273035598175554">图形与动画软件</translation>
 <translation id="4622292761762557753">仍然转移</translation>
@@ -1870,6 +1880,7 @@
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
 <translation id="5772086939108830423">使用另一部设备上的通行密钥</translation>
 <translation id="5776313857861697733">优先级</translation>
+<translation id="5776574724412881956">系统未自动填入虚拟卡信息？点击“虚拟卡详细信息”即可复制到剪贴板。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">已启用实验</translation>
 <translation id="578305955206182703">琥珀色</translation>
 <translation id="57838592816432529">静音</translation>
@@ -1999,6 +2010,7 @@
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6118782133429281336">源列表为空。</translation>
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
+<translation id="6122181661879998141">卡正面</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6126565365696310362">中式 #2 信封</translation>
 <translation id="6127379762771434464">该项已移除</translation>
@@ -2364,6 +2376,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> 想使用您的摄像头</translation>
 <translation id="7108819624672055576">某款扩展程序允许</translation>
 <translation id="7111012039238467737">（有效）</translation>
+<translation id="7112327784801341716">看到的不是您的最新信息？请让银行更新您的信息。</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
 <translation id="7129355289156517987">当您关闭 Chromium 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
@@ -2667,6 +2680,7 @@
 <translation id="7798389633136518089">此政策不是由云端来源设置，因此已被忽略。</translation>
 <translation id="7800304661137206267">该连接是使用 <ph name="CIPHER" /> 进行加密的，同时使用 <ph name="MAC" /> 进行讯息身份验证并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="7802523362929240268">网站是合规的</translation>
+<translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805571567667010077">由贵单位管理</translation>
 <translation id="7805768142964895445">状态</translation>
@@ -2995,6 +3009,7 @@
 <translation id="8725066075913043281">重试</translation>
 <translation id="8726549941689275341">页面尺寸：</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8731268612289859741">安全码</translation>
 <translation id="8731544501227493793">“管理密码”按钮，按 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="8736059027199600831">30 x 40 英寸</translation>
@@ -3100,6 +3115,7 @@
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
 <translation id="9008178007718859630">家居与室内装潢</translation>
 <translation id="9008201768610948239">忽略</translation>
+<translation id="9018120810758822233">输入“<ph name="CREDIT_CARD" />”的安全码</translation>
 <translation id="901834265349196618">电子邮件</translation>
 <translation id="9020200922353704812">必须输入信用卡帐单邮寄地址</translation>
 <translation id="9020542370529661692">已将此网页内容翻译成<ph name="TARGET_LANGUAGE" /></translation>

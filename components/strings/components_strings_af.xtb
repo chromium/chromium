@@ -832,6 +832,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Probeer konnektiwiteitdiagnostiek uitvoer<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Gaan na <ph name="DOMAIN" /> toe</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{aanmelddata vir 1 rekening}other{aanmelddata vir # rekeninge}}</translation>
+<translation id="3141093262818886744">Maak nogtans oop</translation>
 <translation id="3145945101586104090">Kon nie antwoord dekodeer nie</translation>
 <translation id="3150653042067488994">Tydelike bedienerfout</translation>
 <translation id="3154506275960390542">Hierdie bladsy bevat 'n vorm wat dalk nie veilig is om in te dien nie. Data wat jy stuur, kan deur ander bekyk word terwyl dit op pad is of kan dalk deur 'n aanvaller gewysig word om die data te verander wat deur die bediener ontvang word.</translation>

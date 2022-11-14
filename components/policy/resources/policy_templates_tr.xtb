@@ -4103,7 +4103,6 @@ Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma 
 <translation id="5034504101537897433">Cihaz kilitlenme raporu bilgi raporlamasını etkinleştir</translation>
 <translation id="5039110755072335605">CORS joker karakter olmayan istek başlıkları desteği</translation>
 <translation id="504116558738617678">Düşük disk alanı uyarılarını, yalnızca cihaz yönetilmiyorsa veya yalnızca 1 kullanıcı varsa göster</translation>
-<translation id="5053779531788741830">macOS, Android ve Chrome OS'te yerleşik DNS istemcisini kullan</translation>
 <translation id="5055474681190962362">Cihazın ayın hangi gününde [1-31] yeniden başlatılması gerektiği (cihazın yerel saat dilimine göre). Yalnızca "sıklık", "AYLIK" olarak ayarlandığında kullanılır. Bu sayı, belirli bir aydaki maksimum gün sayısından fazlaysa ayın son günü seçilir.</translation>
 <translation id="5056708224511062314">Ekran büyüteci devre dışı</translation>
 <translation id="5058573563327660283">Otomatik temizlik sırasında disk alanı boşaltmak için kullanılan stratejiyi seç (kullanımdan kaldırıldı)</translation>
@@ -4131,13 +4130,6 @@ Platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma 
 
       Bu politika ayarlanmaz veya devre dışı değerine ayarlanırsa kalıcı türe sahip webkitRequestFileSystem, geçici kotayla çalışır.
       </translation>
-<translation id="5103112931744164177">Bu politika, DNS sunucusuyla iletişim kurmak için hangi yazılım yığınının kullanıldığını kontrol eder: İşletim Sistemi DNS istemcisi veya <ph name="PRODUCT_NAME" /> ürününün yerleşik DNS istemcisi. Bu politika hangi DNS sunucularının kullanıldığını etkilemez: Örneğin, işletim sistemi kurumsal DNS sunucusu kullanacak şekilde yapılandırılmışsa aynı sunucu, yerleşik DNS istemcisi tarafından da kullanılır. Ayrıca DNS-over-HTTPS kullanılıp kullanılmadığını da kontrol etmez; <ph name="PRODUCT_NAME" />, DNS-over-HTTPS istekleri için her zaman yerleşik çözümleyici kullanır. DNS-over-HTTPS'nin kontrolüyle ilgili bilgi için <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> politikasına bakın.
-
-      Bu politika, Etkin değerine ayarlanırsa yerleşik DNS istemcisi (mevcutsa) kullanılır.
-
-      Bu politika, Devre Dışı değerine ayarlanırsa yerleşik DNS istemcisi yalnızca DNS-over-HTTPS kullanımdayken kullanılır.
-
-      Bu politika ayarlanmadan bırakılırsa yerleşik DNS istemcisi; <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (Gizli DNS veya VPN etkinleştirilmediğinde) ve <ph name="PRODUCT_OS_NAME" /> işletim sisteminde varsayılan olarak etkinleştirilir.</translation>
 <translation id="5105313908130842249">Pil gücüyle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="5108031557082757679">Devre dışı bırakılmış kurumsal cihaz yazıcıları</translation>
 <translation id="5109383437323376357">Varyasyonların kullanılabilirliğini belirleme</translation>

@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4035877632587724847">Забраняване</translation>
+<translation id="4036177530563778041">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -681,6 +682,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="4766313118839197559">Паролите се запазват в Мениджър на пароли на това устройство</translation>
 <translation id="4766678251456904326">Добавяне на профил към устройството</translation>
+<translation id="4769095993849849966">Ново име на файла</translation>
 <translation id="4787736314074622408">Искате ли да изтриете <ph name="ITEM_TITLE" />?</translation>
 <translation id="4791358705705538979">Помага ви да изпълнявате задачи в мрежата, като например плащане</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -1123,6 +1125,7 @@
 <translation id="7029390216614421513">Разположете QR кода или баркода в тази рамка</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030304022046916278">URL адресите се изпращат до Безопасно сърфиране за проверка</translation>
+<translation id="7030585293819777123">Да се възобнови ли последната ви задача?</translation>
 <translation id="7037830628447527439">Влезте в Chrome с профила си в Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Искате ли да получавате описания на изображенията?</translation>

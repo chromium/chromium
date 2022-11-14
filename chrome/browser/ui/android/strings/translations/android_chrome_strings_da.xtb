@@ -552,6 +552,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
 <translation id="4035877632587724847">Tillad ikke</translation>
+<translation id="4036177530563778041">Det er nemt at fortsætte, hvor du slap</translation>
 <translation id="4045764304651014138">Brugsdata</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -1123,6 +1124,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="7029390216614421513">Placer QR-koden eller stregkoden i denne ramme.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
+<translation id="7030585293819777123">Vil du genoptage din seneste opgave?</translation>
 <translation id="7037830628447527439">Log ind på Chrome med din Google-konto</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>

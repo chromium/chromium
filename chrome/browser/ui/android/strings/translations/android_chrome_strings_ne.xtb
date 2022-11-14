@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4035877632587724847">अनुमति नदिनुहोस्</translation>
+<translation id="4036177530563778041">आफूले छाडेकै ठाउँबाट सजिलैसँग जारी राख्नुहोस्</translation>
 <translation id="4045764304651014138">प्रयोगसम्बन्धी डेटा</translation>
 <translation id="405399507749852140">कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -1122,6 +1123,7 @@
 <translation id="7029390216614421513">QR कोड/बारकोडलाई यस फ्रेमभित्र पार्नुहोस्।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030304022046916278">यो सुविधाले URL सुरक्षित छ कि छैन भनी जाँच गर्नका निम्ति URL हरू Safe Browsing मा पठाउँछ</translation>
+<translation id="7030585293819777123">तपाईंको पछिल्लो कार्य सुचारु गर्ने हो?</translation>
 <translation id="7037830628447527439">आफ्नो Google खाता प्रयोग गरी Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>

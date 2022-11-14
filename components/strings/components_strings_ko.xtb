@@ -829,6 +829,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />연결 진단 프로그램을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" />(으)로 이동</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{없음}=1{계정 1개의 로그인 데이터}other{계정 #개의 로그인 데이터}}</translation>
+<translation id="3141093262818886744">무시하고 열기</translation>
 <translation id="3145945101586104090">응답 디코딩 실패</translation>
 <translation id="3150653042067488994">일시적인 서버 오류</translation>
 <translation id="3154506275960390542">이 페이지에 포함된 양식은 안전하게 제출되지 않을 수 있습니다. 전송되는 데이터는 전송 중에 다른 사람이 볼 수 있으며 서버에서 수신하는 데이터를 변경하기 위해 공격자가 수정할 수 있습니다.</translation>

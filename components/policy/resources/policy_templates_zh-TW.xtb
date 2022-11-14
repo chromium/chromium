@@ -4035,7 +4035,6 @@
 <translation id="5034504101537897433">啟用裝置當機報告資訊回報功能</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
-<translation id="5053779531788741830">在 macOS、Android 和 ChromeOS 中使用內建 DNS 用戶端</translation>
 <translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>
@@ -4064,13 +4063,6 @@
 
       如果不設定或停用這項政策，永久類型的 webkitRequestFileSystem 將採用暫時配額運作。
       </translation>
-<translation id="5103112931744164177">你可以透過這項政策指定要使用哪一個軟體堆疊與 DNS 伺服器進行通訊，選項包括作業系統 DNS 用戶端，以及 <ph name="PRODUCT_NAME" /> 的內建 DNS 用戶端。這項政策不會影響所用的 DNS 伺服器；比方說，如果作業系統設定使用企業的 DNS 伺服器，內建 DNS 用戶端同樣會使用該伺服器。這項政策也不會限制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 一律會使用內建的解析器來處理 DNS-over-HTTPS 要求。想瞭解如何控管 DNS-over-HTTPS，請參閱 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為啟用，系統將使用內建的 DNS 用戶端 (如果有的話)。
-
-      如果將這項政策設為停用，只有在採用 DNS-over-HTTPS 的情況下，系統才會使用內建的 DNS 用戶端。
-
-      如果不設定這項政策，在 <ph name="MAC_OS_NAME" />、<ph name="ANDROID_NAME" /> (適用於私人 DNS 和 VPN 皆未啟用的情形) 和 <ph name="PRODUCT_OS_NAME" />上，系統預設會啟用內建的 DNS 用戶端。</translation>
 <translation id="5105313908130842249">在電池供電環境下執行時的螢幕鎖定延遲時間</translation>
 <translation id="5108031557082757679">已停用企業裝置印表機</translation>
 <translation id="5109383437323376357">指定變化版本的可用性</translation>

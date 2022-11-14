@@ -4085,7 +4085,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
-<translation id="5053779531788741830">Utilizza il client DNS integrato su macOS, Android e ChromeOS</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
@@ -4113,13 +4112,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Se questo criterio non viene configurato o se viene impostato su Disattivato, webkitRequestFileSystem con tipo permanente funzionerà con la quota temporanea.
       </translation>
-<translation id="5103112931744164177">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
-
-      Se il criterio viene impostato su Attivato, viene utilizzato il client DNS integrato, se disponibile.
-
-      Se viene impostato su Disattivato, il client DNS integrato viene utilizzato soltanto quando viene usato il protocollo DNS-over-HTTPS.
-
-      Se il criterio non viene configurato, il client DNS integrato viene attivato per impostazione predefinita su <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (nel caso in cui non siano attivi né il DNS privato né la VPN) e <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Ritardo blocco schermo in caso di utilizzo della batteria</translation>
 <translation id="5108031557082757679">Stampanti aziendali associate ai dispositivi disattivate</translation>
 <translation id="5109383437323376357">Determina la disponibilità delle varianti</translation>
@@ -7244,6 +7236,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 <translation id="8250048892729838843">Questo criterio è stato ritirato. Se il criterio viene attivato o se non viene configurato, il dispositivo potrà ricevere i controlli di reporting granulare.
       Se viene disattivato, i dispositivi registrati non riceveranno i controlli di reporting granulare.</translation>
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
+<translation id="8256006033157034334">Questo criterio è deprecato e non è supportato. Utilizza il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 
       Se il criterio è impostato, la schermata di accesso utilizzerà la stringa specificata nel selettore di accesso basato su immagine per il corrispondente account del dispositivo.

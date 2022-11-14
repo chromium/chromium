@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">განახლება და გასვლა</translation>
 <translation id="1864454756846565995">USB-C მოწყობილობა (უკანა პორტი)</translation>
 <translation id="1869497990620230175">სწრაფი ფაილები</translation>
+<translation id="1871703283152909317">ორივე ტიპის წვდომის ჩართვა</translation>
 <translation id="1879018240766558464">ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="1882814835921407042">მობილური ქსელი არ არის</translation>
 <translation id="1882897271359938046">გამოსახვა <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@
 <translation id="6095008505822982596">მეტყველების ტემპი</translation>
 <translation id="6099678161144790572">თვის განმავლობაში რედაქტირებული</translation>
 <translation id="6103838137565245112">სისტემა</translation>
+<translation id="6107292179555508368">მიკროფონსა და კამერაზე წვდომა გამორთულია ამ მოწყობილობაზე</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="6116825164611323644">კამერაზე წვდომა გამორთულია ამ მოწყობილობაზე</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@
 <translation id="6259254695169772643">ასარჩევად ისარგებლეთ სტილუსით</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: გააქტიურება…</translation>
 <translation id="6274202259872570803">სკრინკასტი</translation>
+<translation id="6282694724099204652">ჩართეთ წვდომა, რათა აპებსა და ვებსაიტებს, რომლებსაც შესაბამისი ნებართვა აქვს, შეეძლოს ამ მოწყობილობასთან დაკავშირებული მიკროფონ(ებ)ისა და კამერ(ებ)ის გამოყენება.</translation>
 <translation id="6283712521836204486">„არ შემაწუხოთ“ გამორთულია.</translation>
 <translation id="6284232397434400372">გარჩევადობა შეიცვალა</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> მოგვიანებით მშობლის ნებართვით შეგიძლიათ დაამატოთ.</translation>

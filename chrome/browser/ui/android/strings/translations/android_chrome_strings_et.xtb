@@ -552,6 +552,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="4016425174436051808">Ei saanud jälgida. Midagi läks valesti.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4035877632587724847">Ära luba</translation>
+<translation id="4036177530563778041">Jätkake hõlpsalt sealt, kus pooleli jäite</translation>
 <translation id="4045764304651014138">Kasutusandmed</translation>
 <translation id="405399507749852140">Teile saadetakse märguanne, kui hind mõnel saidil langeb</translation>
 <translation id="4056223980640387499">Seepia</translation>
@@ -1123,6 +1124,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="7029390216614421513">Paigutage QR-kood või ribakood sellesse kaadrisse</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7030304022046916278">Saadab URL-id kontrollimiseks teenusele Google'i ohutu sirvimine.</translation>
+<translation id="7030585293819777123">Kas jätkata viimast ülesannet?</translation>
 <translation id="7037830628447527439">Logige Chrome’i oma Google’i kontoga sisse</translation>
 <translation id="7038956721828960940">Chrome'i_pilt_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>

@@ -552,6 +552,7 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="4016425174436051808">Takip edilemiyor. Bir sorun oldu.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# sa.}other{# sa.}}</translation>
 <translation id="4035877632587724847">İzin verme</translation>
+<translation id="4036177530563778041">Kaldığınız yerden kolayca devam edin</translation>
 <translation id="4045764304651014138">Kullanım verileri</translation>
 <translation id="405399507749852140">Herhangi bir sitedeki fiyat düşüşüyle ilgili uyarıları alın</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
@@ -1123,6 +1124,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="7029390216614421513">QR Kodunu veya barkodu bu çerçeveye yerleştirin</translation>
 <translation id="7029809446516969842">Şifreler</translation>
 <translation id="7030304022046916278">URL'leri kontrol etmek için Güvenli Tarama'ya gönderir</translation>
+<translation id="7030585293819777123">Son göreviniz devam ettirilsin mi?</translation>
 <translation id="7037830628447527439">Chrome'da Google Hesabınızla oturum açın</translation>
 <translation id="7038956721828960940">chrome_resim_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Resim açıklaması almak istiyor musunuz?</translation>

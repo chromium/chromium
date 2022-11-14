@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць параметрамі даных, прыватнасці і бяспекі ва Уліковым запісе Google, націсніце Tab, затым Enter</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, даступна некалькі дзеянняў. Для іх прагляду націскайце Tab</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Рэквізіты віртуальнай карткі</translation>
 <translation id="1803020234906945288">Здаровае харчаванне</translation>
 <translation id="1803264062614276815">Імя ўладальніка карткі</translation>
 <translation id="1803351196216024260">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 цалі</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 прапанова}one{# прапанова}few{# прапановы}many{# прапаноў}other{# прапановы}}</translation>
 <translation id="2066915425250589881">запытаць яе выдаленне</translation>
+<translation id="2066969741541525119">Ваша арганізацыя заблакіравала сайт, які вы збіраліся адкрыць</translation>
 <translation id="2068528718802935086">Немаўляты і малыя дзеці</translation>
 <translation id="2071156619270205202">Гэтай картцы нельга прысвоіць нумар віртуальнай карткі.</translation>
 <translation id="2071692954027939183">Апавяшчэнні былі заблакіраваны аўтаматычна, бо звычайна вы не даяце дазволу на іх паказ</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Некалькі дзірак знізу</translation>
 <translation id="219906046732893612">Добраўпарадкаванне дома</translation>
 <translation id="2202020181578195191">Увядзіце сапраўдны год заканчэння тэрміну дзеяння</translation>
+<translation id="2202627062836089804">адваротным баку карткі</translation>
 <translation id="22081806969704220">Латок 3</translation>
 <translation id="2210794033760923560">Запампаваць справаздачу</translation>
 <translation id="2212735316055980242">Палітыка не знойдзена</translation>
@@ -829,6 +832,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Перайсці на <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Няма}=1{даныя ўваходу для 1 уліковага запісу}one{даныя ўваходу для # уліковага запісу}few{даныя ўваходу для # уліковых запісаў}many{даныя ўваходу для # уліковых запісаў}other{даныя ўваходу для # уліковага запісу}}</translation>
+<translation id="3141093262818886744">Усё роўна адкрыць</translation>
 <translation id="3145945101586104090">Не ўдалося дэкадаваць адказ</translation>
 <translation id="3150653042067488994">Часовая памылка сервера</translation>
 <translation id="3154506275960390542">На гэтай старонцы ёсць форма, адпраўка звестак праз якую можа быць небяспечнай. Даныя, якія вы адпраўляеце, могуць быць прагледжаны падчас перадачы або могуць быць мадыфікаваны зламыснікам з мэтай унесці змены ў даныя, якія атрымае сервер.</translation>
@@ -983,6 +987,7 @@
 <translation id="350069200438440499">Назва файла:</translation>
 <translation id="3507936815618196901">стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="3512163584740124171">Гэта палітыка ігнаруецца, бо іншая палітыка з той жа групы палітык мае вышэйшы прыярытэт.</translation>
+<translation id="3515972145999192222">Ваша арганізацыя заблакіравала сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> за парушэнне палітыкі. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Кнопка "Кіраваць адрасамі". Каб дадаваць адрасы і кіраваць імі праз налады Chrome, націсніце Enter</translation>
 <translation id="3518941727116570328">Апрацоўка некалькіх аб'ектаў</translation>
 <translation id="3525130752944427905">10 x 14 цаляў</translation>
@@ -1057,6 +1062,7 @@
 <translation id="3678342917559046352">Няправільнае пашырэнне: дапускаецца адно з наступных значэнняў: &lt;extension_id&gt; або &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Адкрыйце старонку ва ўкладцы інкогніта (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Інфармацыя аб сертыфікаце</translation>
+<translation id="3693327506115126094">Выберыце спосаб спраўджання асобы</translation>
 <translation id="3699374065820972102">TouchID выкарыстоўваецца для ўводу пароляў</translation>
 <translation id="3701427423622901115">Скідванне пацверджана.</translation>
 <translation id="3704162925118123524">Сетка, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць яе старонку ўваходу.</translation>
@@ -1141,6 +1147,7 @@
 <translation id="3906954721959377182">Планшэт</translation>
 <translation id="3909477809443608991"><ph name="URL" /> запытвае дазвол на прайграванне абароненага змесціва. Google спраўдзіць ідэнтыфікатар вашай прылады; сайт можа атрымаць да яго доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Увядзіце код бяспекі</translation>
 <translation id="3927932062596804919">Адмовіць</translation>
 <translation id="393316646445601645">Інтэрнэт і тэлекамунікацыі</translation>
 <translation id="3939773374150895049">Выкарыстоўваць WebAuthn замест CVC?</translation>
@@ -1387,6 +1394,7 @@
 <translation id="4524805452350978254">Кіраваць карткамі</translation>
 <translation id="4526465106919207193">Людзі і грамадства</translation>
 <translation id="4530347922939905757">Тэкставае паведамленне</translation>
+<translation id="4531477351494678589">Нумар віртуальнай карткі:</translation>
 <translation id="4540780316273593836">Нешта пайшло не так</translation>
 <translation id="4541810033354695636">дапоўненая рэальнасць</translation>
 <translation id="4542971377163063093">Латок 6</translation>
@@ -1396,6 +1404,7 @@
 <translation id="4567686777917670400">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Дастаўка</translation>
 <translation id="4582204425268416675">Выдаліць картку</translation>
+<translation id="4582595824823167856">Атрымаць тэкставае паведамленне</translation>
 <translation id="4587425331216688090">Выдаліць адрас з Chrome?</translation>
 <translation id="459089498662672729">Адміністратар не рэкамендуе ўстаўляць сюды элементы з сайта <ph name="ORIGIN_NAME" /></translation>
 <translation id="4592951414987517459">Падключэнне да дамена <ph name="DOMAIN" /> зашыфравана з дапамогай сучаснага алгарытму шыфравання.</translation>
@@ -1407,6 +1416,7 @@
 <translation id="4606870351894164739">Уражальны</translation>
 <translation id="4607603470419975064">Кнопка "Паказаць парады адносна Chrome". Каб азнаёміцца з функцыямі браўзера Chrome, націсніце Enter</translation>
 <translation id="4607608436550361748">Паказаць парады адносна Chrome</translation>
+<translation id="460848736049414407">Заблакіравана адміністратарам</translation>
 <translation id="4610279718074907952">Гэты сайт належыць да вызначанай даменам <ph name="SET_OWNER" /> групы сайтаў, якія маюць доступ да звестак пра вашы дзеянні</translation>
 <translation id="4617273035598175554">Праграмнае забеспячэнне для графікі і анімацыі</translation>
 <translation id="4622292761762557753">Усё роўна перанесці</translation>
@@ -1873,6 +1883,7 @@
 <translation id="57689295674415555">Не ўказаны нумар віртуальнай карткі?</translation>
 <translation id="5772086939108830423">Выкарыстаць ключ доступу на іншай прыладзе</translation>
 <translation id="5776313857861697733">Прыярытэт</translation>
+<translation id="5776574724412881956">Даныя віртуальнай карткі не ўнесены? Націсніце на рэквізіты віртуальнай карткі і скапіруйце іх у буфер абмену. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Эксперымент уключаны</translation>
 <translation id="578305955206182703">Янтарны</translation>
 <translation id="57838592816432529">Выключыць</translation>
@@ -2002,6 +2013,7 @@
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="6118782133429281336">Спіс крыніц пусты.</translation>
 <translation id="6120179357481664955">Запомніць ідэнтыфікатар UPI?</translation>
+<translation id="6122181661879998141">пярэднім баку карты</translation>
 <translation id="6124432979022149706">Злучальнікі Chrome Enterprise</translation>
 <translation id="6126565365696310362">Канверт Chinese № 2</translation>
 <translation id="6127379762771434464">Элемент выдалены</translation>
@@ -2368,6 +2380,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> запытвае доступ да камеры</translation>
 <translation id="7108819624672055576">Дазволена пашырэннем</translation>
 <translation id="7111012039238467737">(Сапраўдны)</translation>
+<translation id="7112327784801341716">Не бачыце сваю бягучую інфармацыю? Звярніцеся ў банк, каб абнавіць яе.</translation>
 <translation id="7118618213916969306">Пошук URL-адраса з буфера абмену: <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрыйце іншыя ўкладкі або праграмы</translation>
 <translation id="7129355289156517987">Пры закрыцці ўсіх укладак, адкрытых у рэжыме інкогніта ў браўзеры Chromium, з гэтай прылады выдаляюцца даныя пра ўсе вашы дзеянні ў гэтых укладках:
@@ -2672,6 +2685,7 @@
 <translation id="7798389633136518089">Не прымяняецца, паколькі палітыка не вызначана з воблака.</translation>
 <translation id="7800304661137206267">Падключэнне зашыфравана з дапамогай <ph name="CIPHER" />, для аўтэнтыфікацыі паведамленняў выкарыстоўваецца <ph name="MAC" />, механізм абмену ключамі – <ph name="KX" />.</translation>
 <translation id="7802523362929240268">Сайт надзейны</translation>
+<translation id="7802989406998618639">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код бяспекі на <ph name="SIDE_OF_CARD" />, каб банк мог спраўдзіць вашу асобу</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7805571567667010077">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="7805768142964895445">Стан</translation>
@@ -2999,6 +3013,7 @@
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8726549941689275341">Памер старонкі:</translation>
 <translation id="8730621377337864115">Гатова</translation>
+<translation id="8731268612289859741">Код бяспекі</translation>
 <translation id="8731544501227493793">Кнопка "Кіраваць паролямі". Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Enter</translation>
 <translation id="8734529307927223492">Вашай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />.</translation>
 <translation id="8736059027199600831">30 x 40 цаляў</translation>
@@ -3104,6 +3119,7 @@
 <translation id="9005998258318286617">Не ўдалося загрузіць дакумент PDF.</translation>
 <translation id="9008178007718859630">Унутранае афармленне дома</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>
+<translation id="9018120810758822233">Увядзіце код бяспекі для карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">электронная пошта</translation>
 <translation id="9020200922353704812">Патрабуецца адрас для выстаўлення рахункаў па крэдытнай картцы</translation>
 <translation id="9020542370529661692">Гэта старонка была перакладзена на наступную мову: <ph name="TARGET_LANGUAGE" /></translation>

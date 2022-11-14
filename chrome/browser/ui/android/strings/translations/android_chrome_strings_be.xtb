@@ -552,6 +552,7 @@
 <translation id="4016425174436051808">Падпісацца не ўдалося. Нешта пайшло не так.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# гадз}one{# гадз}few{# гадз}many{# гадз}other{# гадз}}</translation>
 <translation id="4035877632587724847">Не дазваляць</translation>
+<translation id="4036177530563778041">Працягвайце з таго месца, дзе спыніліся</translation>
 <translation id="4045764304651014138">Даныя пра выкарыстанне</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -1123,6 +1124,7 @@
 <translation id="7029390216614421513">Змясціце QR-код або штрыхкод у гэтай рамцы.</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7030304022046916278">Адпраўляе URL-адрасы на праверку ў Бяспечны прагляд</translation>
+<translation id="7030585293819777123">Узнавіць выкананне вашай апошняй задачы?</translation>
 <translation id="7037830628447527439">Увайдзіце ў Chrome праз свой Уліковы запіс Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>

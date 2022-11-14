@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">ফলো করা বন্ধ করুন</translation>
 <translation id="3863769054730344136">আপনার ডিভাইসে পাঠান</translation>
 <translation id="387280738075653372">এখান থেকে Chrome ডাউনলোড করুন।</translation>
+<translation id="3888863481921783344">এটি আপনার ইভেন্টে সম্ভাব্য আমন্ত্রিতদের দেখানোর জন্য ব্যবহার করা হবে।</translation>
 <translation id="3892144330757387737">আপনি এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3904829425754749514">আপনার প্রতিষ্ঠান সিঙ্ক করার সুবিধা বন্ধ করে দিয়েছে। এখনও এই ডিভাইসে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্য সেটিংস দেখতে পাবেন। আপনি কোনও পরিবর্তন করলে, তা আপনার অ্যাকাউন্টে সিঙ্ক হবে না।</translation>
@@ -943,6 +944,7 @@
 <translation id="8105368624971345109">বন্ধ করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
 <translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>
+<translation id="8136856065410661948">এটি Chrome এবং Google Lens থেকে আপনার Apple ক্যালেন্ডারে ইভেন্ট তৈরি করতে ব্যবহার করা হবে।</translation>
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" />টি অ্যাকাউন্ট</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

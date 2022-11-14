@@ -554,6 +554,7 @@
 <translation id="4016425174436051808">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
 <translation id="4035877632587724847">অনুমতি দেবেন না</translation>
+<translation id="4036177530563778041">যেখানে শেষ করেছেন সেখান থেকে সহজেই শুরু করুন</translation>
 <translation id="4045764304651014138">ব্যবহারের ডেটা</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
@@ -1125,6 +1126,7 @@
 <translation id="7029390216614421513">এই ফ্রেমের মধ্যে QR কোড/বারকোড রাখুন।</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7030304022046916278">URL চেক করতে Safe Browsing-এ পাঠায়</translation>
+<translation id="7030585293819777123">আপনার শেষ টাস্কটি আবার শুরু করবেন?</translation>
 <translation id="7037830628447527439">আপনার Google অ্যাকাউন্ট ব্যবহার করে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ছবির বিবরণ পেতে চান?</translation>

@@ -4087,7 +4087,6 @@ Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME
 <translation id="5034504101537897433">Melden von Informationen zu Absturzberichten auf Geräten aktivieren</translation>
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
-<translation id="5053779531788741830">Integrierten DNS-Client für macOS, Android und ChromeOS verwenden</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>
@@ -4115,13 +4114,6 @@ Diese Richtlinie wird voraussichtlich in Version 113 von <ph name="PRODUCT_NAME
 
       Wenn diese Richtlinie nicht konfiguriert oder deaktiviert ist, hat „webkitRequestFileSystem“ mit persistentem Typ ein temporäres Kontingent.
       </translation>
-<translation id="5103112931744164177">Mit dieser Richtlinie wird festgelegt, welcher Software-Stack zur Kommunikation mit dem DNS-Server verwendet wird: der DNS-Client des Betriebssystems oder der integrierte DNS-Client von <ph name="PRODUCT_NAME" />. Sie beeinflusst nicht, welche DNS-Server verwendet werden. Wenn beispielsweise das Betriebssystem für die Verwendung eines Unternehmens-DNS-Servers konfiguriert ist, verwendet der integrierte DNS-Client genau diesen Server. Mit der Richtlinie wird auch nicht gesteuert, ob DoH (DNS over HTTPS) verwendet wird. <ph name="PRODUCT_NAME" /> nutzt immer den integrierten Resolver für DoH-Anfragen. Weitere Informationen zum Steuern von DoH findest du in der Richtlinie „<ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />“.
-
-      Wenn diese Richtlinie aktiviert ist, wird, falls verfügbar, der integrierte DNS-Client verwendet.
-
-      Wenn die Richtlinie deaktiviert ist, wird der integrierte DNS-Client nur bei Nutzung von DoH verwendet.
-
-      Wird die Richtlinie nicht konfiguriert, ist der integrierte DNS-Client unter <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> – sofern weder ein privates DNS noch ein VPN aktiviert ist – und <ph name="PRODUCT_OS_NAME" /> standardmäßig aktiviert.</translation>
 <translation id="5105313908130842249">Verzögerung für die Bildschirmsperre im Akkubetrieb</translation>
 <translation id="5108031557082757679">Deaktivierte, an Geräte gebundene Unternehmensdrucker</translation>
 <translation id="5109383437323376357">Die Verfügbarkeit von Variationen bestimmen</translation>

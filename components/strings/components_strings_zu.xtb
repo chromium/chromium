@@ -832,6 +832,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Zama ukuqalisa ukuxilongwa kokuxhumeka<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897">Hamba ku-<ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Lutho}=1{idatha yokungena ngemvume ye-akhawunti engu-1}one{idatha yokungena ngemvume yama-akhawunti angu-#}other{idatha yokungena ngemvume yama-akhawunti angu-#}}</translation>
+<translation id="3141093262818886744">Vula noma kunjalo</translation>
 <translation id="3145945101586104090">Yehlulekile ukukhipha ikhodi impendulo</translation>
 <translation id="3150653042067488994">Iphutha lesikhashana leseva</translation>
 <translation id="3154506275960390542">Leli khasi lifaka ifomu okungenzeka lingathumeli ngokuphephile. Idatha oyithumelayo ingabukwa abanye ngenkathi isendleleni noma ingashintshwa umhlaseli ukuze ishintshe ukuthi iseva ithola ini.</translation>
@@ -1428,6 +1429,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4646534391647090355">Ngimikise lapho manje</translation>
 <translation id="4648262692072505866">I-hash kufanele ibe yifomethi ethi SHA-256.</translation>
 <translation id="4652266463001779298">Akuvunyelwe</translation>
+<translation id="4652440160515225514">Inhlangano yakho ivimbele leli sayithi ngoba lephula inqubomgomo.</translation>
 <translation id="4653167719759882810">Ukuhlangana nokuthola</translation>
 <translation id="4658638640878098064">Ukunamathisela phansi kwesokunxele</translation>
 <translation id="4660119392514473465">Manje usungakwazi ukuphequlula ngokuyimfihlo futhi abanye abantu abasebenzisa le divayisi ngeke bakwazi ukubona umsebenzi wakho. Nokho, okulandiwe, amabhukhimakhi nezinto zohlu lokufunda kuzolondolozwa.</translation>
@@ -2916,6 +2918,7 @@ Imininingwane engeziwe:
 <translation id="8437238597147034694">&amp;Hlehlisa ukuhambisa</translation>
 <translation id="8438476240229491014">Khumbula le sethingi</translation>
 <translation id="8438786541497918448">Sebenzisa ikhamera nemakrofoni?</translation>
+<translation id="8438923942245957911">Leli sayithi limakwe inhlangano yakho</translation>
 <translation id="8443613539889492016">Awomculo we-Rap ne-Hip-Hop</translation>
 <translation id="8444543005280733648">Awamanethiwekhi ekhompyutha</translation>
 <translation id="8446884382197647889">Funda kabanzi</translation>

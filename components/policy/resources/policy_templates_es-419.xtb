@@ -4138,7 +4138,6 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
-<translation id="5053779531788741830">Usar el cliente DNS integrado en macOS, Android y ChromeOS</translation>
 <translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>
@@ -4166,13 +4165,6 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 
       Si no la estableces o la inhabilitas, webkitRequestFileSystem con tipo persistente funcionará con cuota temporal.
       </translation>
-<translation id="5103112931744164177">Esta política controla la pila de software que se utiliza para establecer la comunicación con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no cambia los servidores DNS que se utilizan: si, por ejemplo, el sistema operativo está configurado para usar un servidor DNS empresarial, el cliente DNS integrado utilizará ese mismo servidor. Tampoco controla si se utiliza el protocolo DNS por HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará el agente de resolución integrado para las solicitudes del protocolo DNS por HTTPS. Para obtener información sobre el control de este protocolo, consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
-
-      Si habilitas esta política, se usará el cliente DNS integrado cuando esté disponible.
-
-      Si la inhabilitas, el cliente DNS integrado solo se utilizará cuando esté en uso el protocolo DNS por HTTPS.
-
-      Si no la estableces, el cliente DNS integrado estará habilitado de forma predeterminada en <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (cuando no estén habilitados el DNS privado ni la VPN) y <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Demora de bloqueo de pantalla con batería</translation>
 <translation id="5108031557082757679">Impresoras empresariales inhabilitadas asociadas a dispositivos</translation>
 <translation id="5109383437323376357">Determina la disponibilidad de las variantes</translation>

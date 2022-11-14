@@ -4127,7 +4127,6 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
 <translation id="5034504101537897433">Habilitar los datos de informes sobre fallos del dispositivo</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
-<translation id="5053779531788741830">Usar el cliente DNS integrado en macOS, Android y ChromeOS</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
@@ -4155,13 +4154,6 @@ Se prevé que esta política se quite en la versión 113 de <ph name="PRODUCT_NA
 
       Si no se establece esta política o se inhabilita, webkitRequestFileSystem de tipo persistente funcionará con una cuota temporal.
       </translation>
-<translation id="5103112931744164177">Esta política controla qué pila de software se utiliza para comunicarse con el servidor DNS: el cliente DNS del sistema operativo o el cliente DNS integrado de <ph name="PRODUCT_NAME" />. Esta política no afecta a qué servidores DNS se utilizan. Por ejemplo, si el sistema operativo está configurado para utilizar un servidor DNS de empresa, el cliente DNS integrado usará ese mismo servidor. Tampoco controla si se usará DNS‑over‑HTTPS; <ph name="PRODUCT_NAME" /> siempre utilizará la resolución integrada para solicitudes DNS‑over‑HTTPS. Consulta la política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para obtener información sobre los controles de DNS‑over‑HTTPS.
-
-      Si se habilita esta política, se utilizará el cliente DNS integrado si está disponible.
-
-      Si se inhabilita esta política, solo se utilizará el cliente DNS integrado cuando se esté utilizando DNS‑over‑HTTPS.
-
-      Si no se asigna ningún valor a esta política, el cliente DNS integrado se habilitará de forma predeterminada en <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (si no se ha habilitado un DNS privado ni una VPN) y <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Retraso de bloqueo de pantalla cuando el dispositivo funciona con la batería</translation>
 <translation id="5108031557082757679">Impresoras de dispositivos de empresa inhabilitadas</translation>
 <translation id="5109383437323376357">Determinar la disponibilidad de variaciones</translation>

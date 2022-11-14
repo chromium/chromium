@@ -4153,7 +4153,6 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
 <translation id="5034504101537897433">Aktifkan pelaporan informasi laporan kerusakan perangkat</translation>
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>
-<translation id="5053779531788741830">Gunakan klien DNS standar di macOS, Android, dan Chrome OS</translation>
 <translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>
@@ -4181,13 +4180,6 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
 
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, webkitRequestFileSystem dengan jenis persisten akan beroperasi dengan kuota sementara.
       </translation>
-<translation id="5103112931744164177">Kebijakan ini mengontrol stack software yang digunakan untuk berkomunikasi dengan server DNS: klien DNS Sistem Operasi, atau klien DNS bawaan dari <ph name="PRODUCT_NAME" />. Kebijakan ini tidak memengaruhi server DNS mana yang digunakan: misalnya, jika sistem operasi dikonfigurasi untuk menggunakan server DNS perusahaan, server yang sama tersebut akan digunakan oleh klien DNS bawaan. Kebijakan ini juga tidak akan mengontrol jika DNS-over-HTTPS digunakan; <ph name="PRODUCT_NAME" /> akan selalu menggunakan resolver bawaan untuk permintaan DNS-over-HTTPS. Silakan lihat kebijakan <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> untuk mengetahui informasi mengenai pengontrolan DNS-over-HTTPS.
-
-      Jika kebijakan ini disetel ke Aktif, klien DNS bawaan akan digunakan, jika tersedia.
-
-      Jika kebijakan ini disetel ke Nonaktif, klien DNS bawaan hanya akan digunakan jika DNS-over-HTTPS sedang digunakan.
-
-      Jika kebijakan ini tidak disetel, klien DNS bawaan akan diaktifkan secara default di <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (jika DNS Pribadi atau VPN tidak diaktifkan) dan <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5105313908130842249">Penundaan penguncian layar saat menggunakan daya baterai</translation>
 <translation id="5108031557082757679">Menonaktifkan printer yang merupakan perangkat perusahaan</translation>
 <translation id="5109383437323376357">Menentukan ketersediaan variasi</translation>

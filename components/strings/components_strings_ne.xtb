@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">भर्चुअल कार्डसम्बन्धी विवरणहरू</translation>
 <translation id="1803020234906945288">स्वस्थ खानपान</translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
 <translation id="1803351196216024260">तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">२२ x ३४ इन्च</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{१ सुझाव}other{# सुझावहरू}}</translation>
 <translation id="2066915425250589881">मेटाइदिने अनुरोध</translation>
+<translation id="2066969741541525119">तपाईंको सङ्गठनले तपाईंले खोल्न लाग्नुभएको साइट ब्लक गरेको छ</translation>
 <translation id="2068528718802935086">शिशु तथा भर्खरै हिँड्न थालेका बच्चाहरू</translation>
 <translation id="2071156619270205202">यो कार्डलाई भर्चुअल कार्ड नम्बर प्रदान गर्न मिल्दैन।</translation>
 <translation id="2071692954027939183">तपाईं सामान्यतया सूचनाहरू देखाउने अनुमति दिनुहुन्न। त्यसैले सूचनाहरू स्वतः ब्लक गरिएका छन्</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">फेदमा एकभन्दा बढी प्वाल</translation>
 <translation id="219906046732893612">घरको स्तरोन्नति</translation>
 <translation id="2202020181578195191">म्याद सकिने मान्य वर्ष प्रविष्टि गर्नुहोस्</translation>
+<translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड गर्नुहोस्</translation>
 <translation id="2212735316055980242">नीति फेला परेन</translation>
@@ -829,6 +832,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />जडान सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> मा जानुहोस्</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{कुनै पनि होइन}=1{१ खाताको साइन इनसम्बन्धी डेटा}other{# खाताहरूको साइन इनसम्बन्धी डेटा}}</translation>
+<translation id="3141093262818886744">जे भए पनि खोल्नुहोस्</translation>
 <translation id="3145945101586104090">प्रतिक्रिया डिकोड गर्न असफल भयो</translation>
 <translation id="3150653042067488994">अस्थायी सर्भर त्रुटि</translation>
 <translation id="3154506275960390542">यो पृष्ठमा सुरक्षित रूपमा पेस गर्न नसकिने फारम समावेश छ। तपाईंले पठाउनुभएको डेटा ट्रान्जिटमा भएको बेला अरूले हेर्न सक्छन् वा सर्भरले प्राप्त गर्ने कुरालाई परिवर्तन गर्न कुनै आक्रमणकारीले यस डेटालाई परिमार्जन गर्न सक्छ।</translation>
@@ -981,6 +985,7 @@
 <translation id="350069200438440499">फाइलको नाम:</translation>
 <translation id="3507936815618196901">तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन</translation>
 <translation id="3512163584740124171">यसै नीति समूहको अर्को नीतिको प्राथमिकता यो नीतिको भन्दा उच्च भएका कारण यस नीतिको बेवास्ता गरिन्छ।</translation>
+<translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ले कुनै नीतिको उल्लङ्घन गरेको हुनाले तपाईंको सङ्गठनले सो डोमेन ब्लक गरेको छ। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">'ठेगानाहरू व्यवस्थापन गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई ठेगानाहरू थप्न तथा व्यवस्थापन गर्न Enter थिच्नुहोस्</translation>
 <translation id="3518941727116570328">एकभन्दा बढी वस्तुहरूको व्यवस्थापन</translation>
 <translation id="3525130752944427905">१० x १४ इन्च</translation>
@@ -1055,6 +1060,7 @@
 <translation id="3678342917559046352">एक्सटेन्सन अवैध छ: यसको मान निम्नमध्ये कुनै फर्म्याटमा राखिनु पर्छ: &lt;extension_id&gt; वा &lt;extension_id&gt;;&lt;update_url&gt;।</translation>
 <translation id="3678529606614285348">पृष्ठलाई नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस् (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
+<translation id="3693327506115126094">यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने तरिका छनौट गर्नुहोस्</translation>
 <translation id="3699374065820972102">पासवर्डहरू हाल्नका निम्ति TouchID अन छ</translation>
 <translation id="3701427423622901115">रिसेट स्वीकार गरियो।</translation>
 <translation id="3704162925118123524">तपाईंले प्रयोग गरिरहनु भएको सञ्जाललाई यसको लगइन पृष्ठ भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
@@ -1139,6 +1145,7 @@
 <translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> संरक्षित सामग्री प्ले गर्न चाहन्छ। Google ले तपाईंको डिभाइसको पहिचान पुष्टि गर्ने छ र यो साइटले उक्त जानकारीमाथि पहुँच राख्न सक्ने छ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">सुरक्षा कोड हाल्नुहोस्</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="393316646445601645">इन्टरनेट तथा टेलिकम</translation>
 <translation id="3939773374150895049">CVC को सट्टामा WebAuthn प्रयोग गर्ने हो?</translation>
@@ -1385,6 +1392,7 @@
 <translation id="4524805452350978254">कार्डहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4526465106919207193">जनता तथा समाज</translation>
 <translation id="4530347922939905757">टेक्स्ट म्यासेज</translation>
+<translation id="4531477351494678589">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="4540780316273593836">केही चिज गडबड भयो</translation>
 <translation id="4541810033354695636">अग्मेन्टेड रियालिटी</translation>
 <translation id="4542971377163063093">ट्रे ६</translation>
@@ -1394,6 +1402,7 @@
 <translation id="4567686777917670400">तपाईंका एड्मिन टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्छन्। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट पनि व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">डेलिभरी</translation>
 <translation id="4582204425268416675">कार्ड हटाउनुहोस्</translation>
+<translation id="4582595824823167856">टेक्स्ट म्यासेज प्राप्त गर्नुहोस्</translation>
 <translation id="4587425331216688090">Chrome बाट ठेगाना हटाउने हो?</translation>
 <translation id="459089498662672729">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="ORIGIN_NAME" /> बाट पाठ कपी गरी यो स्थानमा पेस्ट गर्नु हुँदैन</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" />मा तपाईँको जडान आधुनिक साइफर प्रयोग गरेर इन्क्रिप्ट गरिएको छ।</translation>
@@ -1405,6 +1414,7 @@
 <translation id="4606870351894164739">प्रभावशाली</translation>
 <translation id="4607603470419975064">"Chrome का सुझावहरू हेर्नुहोस्" बटन, Chrome का सुविधाहरूका बारेमा जान्न Enter थिच्नुहोस्</translation>
 <translation id="4607608436550361748">Chrome का सुझावहरू हेर्नुहोस्</translation>
+<translation id="460848736049414407">एड्मिनले ब्लक गर्नुभएको छ</translation>
 <translation id="4610279718074907952">यो साइट <ph name="SET_OWNER" /> ले बनाएको त्यस्तो समूहमा छ जुन समूहले तपाईंको गतिविधि हेर्न सक्छ</translation>
 <translation id="4617273035598175554">ग्राफिक्स र एनिमेसन सफ्टवेयर</translation>
 <translation id="4622292761762557753">जे भए पनि ट्रान्स्फर गर्नुहोस्</translation>
@@ -1871,6 +1881,7 @@
 <translation id="57689295674415555">भर्चुअल कार्ड नम्बर भरिएको छैन?</translation>
 <translation id="5772086939108830423">अर्कै डिभाइसको पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="5776313857861697733">प्राथमिकता</translation>
+<translation id="5776574724412881956">भर्चुअल कार्डसम्बन्धी विवरणहरू भरिएको छैन? तपाईं भर्चुअल कार्डसम्बन्धी जुन जुन विवरण क्लिपबोर्डमा कपी गर्न चाहनुहुन्छ ती विवरणहरू क्लिक गर्नुहोस्। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">परीक्षण सक्षम पारियो</translation>
 <translation id="578305955206182703">एम्बर</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
@@ -2000,6 +2011,7 @@
 <translation id="6116338172782435947">क्लिपबोर्डमा प्रतिलिपि गरिएका पाठ र फोटो हेर्नुहोस्</translation>
 <translation id="6118782133429281336">मूल सूची खाली छ।</translation>
 <translation id="6120179357481664955">आफ्नो UPI ID सम्झने हो?</translation>
+<translation id="6122181661879998141">आफ्नो कार्डको अगाडिको भाग</translation>
 <translation id="6124432979022149706">Chrome Enterprise का कनेक्टरहरू</translation>
 <translation id="6126565365696310362">Envelope Chinese #2</translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
@@ -2366,6 +2378,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> तपाईंको क्यामेरा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7108819624672055576">कुनै विस्तारले अनुमति दिएको</translation>
 <translation id="7111012039238467737">(मान्य)</translation>
+<translation id="7112327784801341716">आफ्नो हालको जानकारी देखिरहनुभएको छैन? बैंकमा सम्पर्क गरी आफ्नो अद्यावधिक जानकारी प्रदान गर्नुहोस्।</translation>
 <translation id="7118618213916969306">क्लिपबोर्डको URL <ph name="SHORT_URL" /> खोज्नुहोस्</translation>
 <translation id="7119414471315195487">अन्य ट्याब वा कार्यक्रमहरू बन्द गर्नुहोस्</translation>
 <translation id="7129355289156517987">तपाईंले Chromium का सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुभयो भने तपाईंले ती ट्याबमा गरेका निम्न क्रियाकलाप यो डिभाइसबाट मेटाइन्छ:
@@ -2669,6 +2682,7 @@
 <translation id="7798389633136518089">यो नीति क्लाउडको स्रोतले सेट नगरेको हुनाले बेवास्ता गरियो।</translation>
 <translation id="7800304661137206267">जडानलाई <ph name="CIPHER" /> प्रयोग गरेर गुप्तलेखन गरिएको छ, र साथमा सन्देश प्रमाणीकरणको लागि <ph name="MAC" /> प्रयोग गरिन्छ र कुञ्जी आदान प्रदान संयन्त्रको रूपमा <ph name="KX" /> लाई प्रयोग गरिन्छ।</translation>
 <translation id="7802523362929240268">साइट वैध छ</translation>
+<translation id="7802989406998618639">तपाईंको बैंकले यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न सकोस् भन्नाका लागि <ph name="SIDE_OF_CARD" />मा रहेको <ph name="NUMBER_OF_DIGITS" /> अङ्कको सुरक्षा कोड हाल्नुहोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7805571567667010077">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="7805768142964895445">स्थिति</translation>
@@ -2996,6 +3010,7 @@
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8726549941689275341">पेजको आकार:</translation>
 <translation id="8730621377337864115">गरियो</translation>
+<translation id="8731268612289859741">सुरक्षा कोड</translation>
 <translation id="8731544501227493793">'पासवर्डहरू व्यवस्थित गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई आफ्ना पासवर्डहरू हेर्न तथा व्यवस्थित गर्न Enter थिच्नुहोस्</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> ले तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="8736059027199600831">३० x ४० इन्च</translation>
@@ -3101,6 +3116,7 @@
 <translation id="9005998258318286617">PDF कागजात लोड गर्न सकिएन।</translation>
 <translation id="9008178007718859630">गृह तथा आन्तरिक सज्जा</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
+<translation id="9018120810758822233">आफ्नो <ph name="CREDIT_CARD" /> को सुरक्षा कोड हाल्नुहोस्</translation>
 <translation id="901834265349196618">इमेल</translation>
 <translation id="9020200922353704812">कार्डको बिलिङ ठेगाना आवश्यक हुन्छ</translation>
 <translation id="9020542370529661692">यो पृष्ठलाई <ph name="TARGET_LANGUAGE" /> मा अनुवाद गरिएको छ</translation>
