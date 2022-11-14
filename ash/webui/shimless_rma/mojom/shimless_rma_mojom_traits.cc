@@ -217,6 +217,10 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kCannotWrite;
     case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_SAVE_LOG:
       return MojomRmadErrorCode::kCannotSaveLog;
+    case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_RECORD_BROWSER_ACTION:
+      return MojomRmadErrorCode::kCannotRecordBrowserAction;
+    case ProtoRmadErrorCode::RMAD_ERROR_USB_NOT_FOUND:
+      return MojomRmadErrorCode::kUsbNotFound;
 
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
@@ -367,6 +371,12 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kCannotSaveLog:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_SAVE_LOG;
+      return true;
+    case MojomRmadErrorCode::kCannotRecordBrowserAction:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_RECORD_BROWSER_ACTION;
+      return true;
+    case MojomRmadErrorCode::kUsbNotFound:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_USB_NOT_FOUND;
       return true;
 
     case MojomRmadErrorCode::kNotSet:

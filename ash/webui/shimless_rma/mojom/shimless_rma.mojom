@@ -185,6 +185,12 @@ enum RmadErrorCode {
 
   // Failed to save logs.
   kCannotSaveLog = 43,
+
+  // Failed to record browser actions.
+  kCannotRecordBrowserAction = 44,
+
+  // No USB found when performing a task that requires a USB.
+  kUsbNotFound = 45,
 };
 
 // Return type from state progression methods.
