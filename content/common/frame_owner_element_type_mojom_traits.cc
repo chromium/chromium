@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/common/frame_owner_element_type_mojom_traits.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace mojo {
 
