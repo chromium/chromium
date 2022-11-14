@@ -119,6 +119,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
+#include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -975,6 +976,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::MessagePumpLibevent::InitializeFeatures();
 #elif BUILDFLAG(IS_MAC)
   base::PlatformThread::InitFeaturesPostFieldTrial();
+  base::MessagePumpDefault::InitFeaturesPostFieldTrial();
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
 #endif
 }
