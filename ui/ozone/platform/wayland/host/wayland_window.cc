@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
+#include <aura-shell-client-protocol.h>
 #include <stdint.h>
 #include <wayland-cursor.h>
 
@@ -45,6 +46,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
@@ -290,6 +292,17 @@ void WaylandWindow::OnChannelDestroyed() {
   frame_manager_->RecordFrame(
       std::make_unique<WaylandFrame>(root_surface(), wl::WaylandOverlayConfig(),
                                      std::move(subsurfaces_to_overlays)));
+}
+
+void WaylandWindow::SetAuraSurface(zaura_surface* aura_surface) {
+  DCHECK(connection()->zaura_shell());
+  DCHECK_NE(aura_surface_.get(), aura_surface);
+  aura_surface_.reset(aura_surface);
+}
+
+bool WaylandWindow::IsSupportedOnAuraSurface(uint32_t version) const {
+  return aura_surface_ &&
+         zaura_surface_get_version(aura_surface_.get()) >= version;
 }
 
 void WaylandWindow::Close() {

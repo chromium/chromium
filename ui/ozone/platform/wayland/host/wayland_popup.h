@@ -62,10 +62,6 @@ class WaylandPopup : public WaylandWindow {
   // extension to xdg_popup.
   bool decorated_via_aura_popup_ = false;
 
-  // Exists only if the frame is decorated via aura_surface. This is the
-  // deprecated path and can be removed once Ash is >= M105.
-  wl::Object<zaura_surface> aura_surface_;
-
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 
   // Helps to avoid reposition itself if HandlePopupConfigure was called, which

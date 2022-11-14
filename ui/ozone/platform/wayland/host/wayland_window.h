@@ -360,6 +360,17 @@ class WaylandWindow : public PlatformWindow,
   WaylandConnection* connection() { return connection_; }
   const WaylandConnection* connection() const { return connection_; }
   PlatformWindowDelegate* delegate() { return delegate_; }
+  zaura_surface* aura_surface() {
+    return aura_surface_ ? aura_surface_.get() : nullptr;
+  }
+  zaura_surface* aura_surface() const {
+    return aura_surface_ ? aura_surface_.get() : nullptr;
+  }
+
+  void SetAuraSurface(zaura_surface* aura_surface);
+
+  // Returns true if `aura_surface_` version is equal or newer than `version`.
+  bool IsSupportedOnAuraSurface(uint32_t version) const;
 
   // Update the bounds of the window in DIP. Unlike SetBoundInDIP, it will not
   // send a request to the compositor even if the screen coordinate is enabled.
@@ -455,6 +466,8 @@ class WaylandWindow : public PlatformWindow,
   // The stack of sub-surfaces currently committed. This list is altered when
   // the subsurface arrangement are played back by WaylandFrameManager.
   base::LinkedList<WaylandSubsurface> subsurface_stack_committed_;
+
+  wl::Object<zaura_surface> aura_surface_;
 
   // The current cursor bitmap (immutable).
   scoped_refptr<BitmapCursor> cursor_;

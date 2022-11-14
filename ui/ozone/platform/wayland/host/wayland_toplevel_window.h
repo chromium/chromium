@@ -249,7 +249,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Title of the ShellToplevel.
   std::u16string window_title_;
 
-  wl::Object<zaura_surface> aura_surface_;
   // |gtk_surface1_| is the optional GTK surface that provides better
   // integration with the desktop shell.
   std::unique_ptr<GtkSurface1> gtk_surface1_;

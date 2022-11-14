@@ -105,11 +105,9 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   SetUpShellIntegration();
   OnDecorationModeChanged();
 
-  if (system_modal_ && aura_surface_ &&
-      zaura_surface_get_version(aura_surface_.get()) >=
-          ZAURA_SURFACE_SET_FRAME_SINCE_VERSION) {
-    zaura_surface_set_frame(aura_surface_.get(),
-                            ZAURA_SURFACE_FRAME_TYPE_SHADOW);
+  if (system_modal_ &&
+      IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_FRAME_SINCE_VERSION)) {
+    zaura_surface_set_frame(aura_surface(), ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
   if (screen_coordinates_enabled_)
     SetBoundsInDIP(GetBoundsInDIP());
@@ -173,10 +171,9 @@ void WaylandToplevelWindow::Hide() {
   }
   WaylandWindow::Hide();
 
-  if (aura_surface_ && wl::get_version_of_object(aura_surface_.get()) >=
-                           ZAURA_SURFACE_RELEASE_SINCE_VERSION) {
-    aura_surface_.reset();
-  }
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_RELEASE_SINCE_VERSION))
+    SetAuraSurface(nullptr);
+
   if (gtk_surface1_)
     gtk_surface1_.reset();
 
@@ -260,9 +257,8 @@ void WaylandToplevelWindow::Activate() {
   // Exo provides activation through aura-shell, Mutter--through gtk-shell.
   if (shell_toplevel_ && shell_toplevel_->SupportsActivation()) {
     shell_toplevel_->Activate();
-  } else if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                                  ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
-    zaura_surface_activate(aura_surface_.get());
+  } else if (IsSupportedOnAuraSurface(ZAURA_SURFACE_ACTIVATE_SINCE_VERSION)) {
+    zaura_surface_activate(aura_surface());
   } else if (connection()->xdg_activation()) {
     // xdg-activation implementation in some compositors is still buggy and
     // Mutter crashes were observed when windows are activated during window
@@ -364,9 +360,8 @@ void WaylandToplevelWindow::NotifyStartupComplete(
 }
 
 void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_ASPECT_RATIO_SINCE_VERSION) {
-    zaura_surface_set_aspect_ratio(aura_surface_.get(), aspect_ratio.width(),
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_ASPECT_RATIO_SINCE_VERSION)) {
+    zaura_surface_set_aspect_ratio(aura_surface(), aspect_ratio.width(),
                                    aspect_ratio.height());
   }
 }
@@ -693,11 +688,11 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
 }
 
 void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(
+          ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION)) {
     auto mode = status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
                        : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN;
-    zaura_surface_set_fullscreen_mode(aura_surface_.get(), mode);
+    zaura_surface_set_fullscreen_mode(aura_surface(), mode);
   } else {
     // TODO(https://crbug.com/1113900): Implement AuraShell support for
     // non-browser windows and replace this if-else clause by a DCHECK.
@@ -709,8 +704,7 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_INTENT_TO_SNAP_SINCE_VERSION)) {
     uint32_t zaura_shell_snap_direction = ZAURA_SURFACE_SNAP_DIRECTION_NONE;
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kPrimary:
@@ -722,8 +716,7 @@ void WaylandToplevelWindow::ShowSnapPreview(
       case WaylandWindowSnapDirection::kNone:
         break;
     }
-    zaura_surface_intent_to_snap(aura_surface_.get(),
-                                 zaura_shell_snap_direction);
+    zaura_surface_intent_to_snap(aura_surface(), zaura_shell_snap_direction);
     return;
   }
 
@@ -733,17 +726,16 @@ void WaylandToplevelWindow::ShowSnapPreview(
 
 void WaylandToplevelWindow::CommitSnap(
     WaylandWindowSnapDirection snap_direction) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION)) {
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kPrimary:
-        zaura_surface_set_snap_left(aura_surface_.get());
+        zaura_surface_set_snap_left(aura_surface());
         return;
       case WaylandWindowSnapDirection::kSecondary:
-        zaura_surface_set_snap_right(aura_surface_.get());
+        zaura_surface_set_snap_right(aura_surface());
         return;
       case WaylandWindowSnapDirection::kNone:
-        zaura_surface_unset_snap(aura_surface_.get());
+        zaura_surface_unset_snap(aura_surface());
         return;
     }
   }
@@ -753,20 +745,17 @@ void WaylandToplevelWindow::CommitSnap(
 }
 
 void WaylandToplevelWindow::SetCanGoBack(bool value) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_CAN_GO_BACK_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_CAN_GO_BACK_SINCE_VERSION)) {
     if (value)
-      zaura_surface_set_can_go_back(aura_surface_.get());
+      zaura_surface_set_can_go_back(aura_surface());
     else
-      zaura_surface_unset_can_go_back(aura_surface_.get());
+      zaura_surface_unset_can_go_back(aura_surface());
   }
 }
 
 void WaylandToplevelWindow::SetPip() {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_PIP_SINCE_VERSION) {
-    zaura_surface_set_pip(aura_surface_.get());
-  }
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_PIP_SINCE_VERSION))
+    zaura_surface_set_pip(aura_surface());
 }
 
 void WaylandToplevelWindow::Lock(WaylandOrientationLockType lock_type) {
@@ -807,24 +796,18 @@ std::u16string WaylandToplevelWindow::GetDeskName(int index) const {
 }
 
 void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
-    zaura_surface_move_to_desk(aura_surface_.get(), index);
-  }
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION))
+    zaura_surface_move_to_desk(aura_surface(), index);
 }
 
 void WaylandToplevelWindow::Pin(bool trusted) const {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_PIN_SINCE_VERSION) {
-    zaura_surface_set_pin(aura_surface_.get(), trusted);
-  }
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_PIN_SINCE_VERSION))
+    zaura_surface_set_pin(aura_surface(), trusted);
 }
 
 void WaylandToplevelWindow::Unpin() const {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_UNSET_PIN_SINCE_VERSION) {
-    zaura_surface_unset_pin(aura_surface_.get());
-  }
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_UNSET_PIN_SINCE_VERSION))
+    zaura_surface_unset_pin(aura_surface());
 }
 
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
@@ -844,8 +827,7 @@ std::string WaylandToplevelWindow::GetWorkspace() const {
 }
 
 void WaylandToplevelWindow::SetVisibleOnAllWorkspaces(bool always_visible) {
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION)) {
     SendToDeskAtIndex(always_visible ? kVisibleOnAllWorkspaces
                                      : GetActiveDeskIndex());
   }
@@ -935,18 +917,17 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
   if (connection()->zaura_shell()) {
-    if (!aura_surface_) {
+    if (!aura_surface()) {
+      SetAuraSurface(zaura_shell_get_aura_surface(
+          connection()->zaura_shell()->wl_object(), root_surface()->surface()));
       static constexpr zaura_surface_listener zaura_surface_listener = {
           &OcclusionChanged,      &LockFrame,   &UnlockFrame,
           &OcclusionStateChanged, &DeskChanged, &StartThrottle,
           &EndThrottle,
       };
-      aura_surface_.reset(zaura_shell_get_aura_surface(
-          connection()->zaura_shell()->wl_object(), root_surface()->surface()));
-      zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
-                                 this);
+      zaura_surface_add_listener(aura_surface(), &zaura_surface_listener, this);
     }
-    zaura_surface_set_occlusion_tracking(aura_surface_.get());
+    zaura_surface_set_occlusion_tracking(aura_surface());
     SetImmersiveFullscreenStatus(false);
 
     // We pass the value of `z_order_` to the `shell_toplevel_` here in order to
@@ -979,12 +960,11 @@ void WaylandToplevelWindow::OnDecorationModeChanged() {
     // e.g. taskmanager
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kServerSide);
-  } else if (aura_surface_ &&
-             zaura_surface_get_version(aura_surface_.get()) >=
-                 ZAURA_SURFACE_SET_SERVER_START_RESIZE_SINCE_VERSION) {
+  } else if (IsSupportedOnAuraSurface(
+                 ZAURA_SURFACE_SET_SERVER_START_RESIZE_SINCE_VERSION)) {
     // Sets custom-decoration mode for window that supports aura_shell.
     // e.g. lacros-browser.
-    zaura_surface_set_server_start_resize(aura_surface_.get());
+    zaura_surface_set_server_start_resize(aura_surface());
   } else {
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kClientSide);
@@ -1012,10 +992,10 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
   if (!workspace_.has_value())
     return;
 
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_SET_INITIAL_WORKSPACE_SINCE_VERSION) {
+  if (IsSupportedOnAuraSurface(
+          ZAURA_SURFACE_SET_INITIAL_WORKSPACE_SINCE_VERSION)) {
     zaura_surface_set_initial_workspace(
-        aura_surface_.get(), base::NumberToString(workspace_.value()).c_str());
+        aura_surface(), base::NumberToString(workspace_.value()).c_str());
   }
 }
 
