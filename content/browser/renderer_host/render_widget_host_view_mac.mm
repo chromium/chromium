@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
 #import <Carbon/Carbon.h>
-#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 #include <limits>
 #include <memory>
@@ -67,6 +66,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_util.h"
 #include "ui/display/screen.h"
+#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/events/keycodes/dom/dom_code.h"

@@ -4,7 +4,6 @@
 
 module content.mojom;
 
-import "content/common/native_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "mojo/public/mojom/base/time.mojom";

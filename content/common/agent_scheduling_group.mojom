@@ -6,7 +6,6 @@ module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
 import "content/common/frame.mojom";
-import "content/common/native_types.mojom";
 import "content/common/shared_storage_worklet_service.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";

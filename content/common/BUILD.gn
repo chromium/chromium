@@ -503,10 +503,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::FrameOwnerElementType"
         },
         {
-          mojom = "content.mojom.ContentSecurityPolicy"
-          cpp = "::content::ContentSecurityPolicy"
-        },
-        {
           mojom = "content.mojom.NavigationGesture"
           cpp = "::content::NavigationGesture"
         },
@@ -550,14 +546,9 @@ mojom("mojo_bindings") {
           mojom = "content.mojom.VisualProperties"
           cpp = "::blink::VisualProperties"
         },
-        {
-          mojom = "content.mojom.WebPopupType"
-          cpp = "::blink::WebPopupType"
-        },
       ]
 
       traits_headers = [
-        "//cc/input/touch_action.h",
         "//content/common/frame_owner_element_type_mojom_traits.h",
         "//content/common/input/input_injector_mojom_traits.h",
         "//content/common/input/synthetic_pinch_gesture_params.h",
@@ -567,16 +558,9 @@ mojom("mojo_bindings") {
         "//content/common/input/synthetic_tap_gesture_params.h",
         "//content/common/navigation_gesture.h",
         "//net/base/network_change_notifier.h",
-        "//third_party/blink/public/common/input/web_coalesced_input_event_mojom_traits.h",
-        "//third_party/blink/public/common/input/web_input_event.h",
-        "//third_party/blink/public/common/input/web_mouse_wheel_event.h",
-        "//third_party/blink/public/common/input/web_pointer_properties.h",
-        "//third_party/blink/public/common/input/web_touch_point.h",
-        "//third_party/blink/public/common/web_preferences/web_preferences.h",
+        "//third_party/blink/public/common/navigation/impression.h",
         "//third_party/blink/public/common/widget/visual_properties.h",
-        "//ui/events/blink/did_overscroll_params.h",
-        "//ui/events/blink/web_input_event_traits.h",
-        "//ui/latency/ipc/latency_info_param_traits.h",
+        "//ui/events/types/scroll_types.h",
         "//ui/native_theme/native_theme.h",
       ]
 
@@ -599,20 +583,8 @@ mojom("mojo_bindings") {
         # transitive allowance, so those targets' own public_deps aren't included in
         # the set of implied dependencies.
         "//content/common:buildflags",
-        "//media",
-        "//media/base/ipc",
-        "//net",
         "//ppapi/buildflags",
-        "//services/network/public/cpp",
-        "//third_party/blink/public/common",
-        "//ui/accessibility",
-        "//ui/base/ime:text_input_types",
         "//ui/events/blink",
-        "//ui/gfx/ipc",
-        "//ui/gfx/ipc/color",
-        "//ui/gfx/ipc/skia",
-        "//ui/surface",
-        "//url/ipc:url_ipc",
       ]
     },
     {

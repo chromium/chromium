@@ -6,7 +6,6 @@ module content.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
 import "content/common/frame_messages.mojom";
-import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
 import "content/common/web_ui.mojom";
 import "content/public/common/extra_mojo_js_features.mojom";
