@@ -6,44 +6,24 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './strings.m.js';
 import './shared_style.css.js';
+import './privacy_sandbox_dialog_learn_more.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogNoticeMixin} from './privacy_sandbox_dialog_notice_mixin.js';
 import {getTemplate} from './privacy_sandbox_dialog_notice_step.html.js';
 
-export class PrivacySandboxDialogNoticeStepElement extends PolymerElement {
+const PrivacySandboxDialogNoticeStepElementBase =
+    PrivacySandboxDialogNoticeMixin(PolymerElement);
+
+export class PrivacySandboxDialogNoticeStepElement extends
+    PrivacySandboxDialogNoticeStepElementBase {
   static get is() {
     return 'privacy-sandbox-dialog-notice-step';
   }
 
   static get template() {
     return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      expanded_: {
-        type: Boolean,
-        observer: 'onLearnMoreExpandedChanged_',
-      },
-    };
-  }
-
-  private onLearnMoreExpandedChanged_() {
-    // TODO(crbug.com/1378703): Report learn more actions.
-  }
-
-  private onNoticeOpenSettings_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
-  }
-
-  private onNoticeAcknowledge_() {
-    this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_ACKNOWLEDGE);
-  }
-
-  private promptActionOccurred(action: PrivacySandboxPromptAction) {
-    PrivacySandboxDialogBrowserProxy.getInstance().promptActionOccurred(action);
   }
 }
 

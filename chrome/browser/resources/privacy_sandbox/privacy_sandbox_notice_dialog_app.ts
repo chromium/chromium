@@ -2,11 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './strings.m.js';
+import './shared_style.css.js';
+import './privacy_sandbox_dialog_learn_more.js';
+
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrivacySandboxDialogNoticeMixin} from './privacy_sandbox_dialog_notice_mixin.js';
+import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 import {getTemplate} from './privacy_sandbox_notice_dialog_app.html.js';
 
-export class PrivacySandboxNoticeDialogAppElement extends PolymerElement {
+const PrivacySandboxNoticeDialogAppElementBase =
+    PrivacySandboxDialogNoticeMixin(
+        PrivacySandboxDialogResizeMixin(PolymerElement));
+
+export class PrivacySandboxNoticeDialogAppElement extends
+    PrivacySandboxNoticeDialogAppElementBase {
   static get is() {
     return 'privacy-sandbox-notice-dialog-app';
   }
@@ -15,8 +28,10 @@ export class PrivacySandboxNoticeDialogAppElement extends PolymerElement {
     return getTemplate();
   }
 
-  static get properties() {
-    return {};
+  override ready() {
+    super.ready();
+
+    this.resizeNativeDialog();
   }
 }
 

@@ -1,1 +1,56 @@
-Notice dialog placeholder
+<style include="cr-shared-style shared-style"></style>
+
+<div fill-content>
+  <div class="content-area custom-scrollbar">
+    <div class="header">
+      <h2>Lorem ipsum Standalone Notice</h2>
+    </div>
+    <div class="section cr-secondary-text">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium
+      pulvinar metus non mollis. Quisque placerat eget nisl sit amet
+      facilisis.
+    </div>
+    <div class="section cr-secondary-text">
+      Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius
+      non purus vitae, imperdiet porttitor elit. Integer et libero id metus
+      egestas consequat non a ipsum.
+    </div>
+    <div class="section cr-secondary-text">
+      Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+      elementum ut venenatis ornare, consequat ac turpis.
+    </div>
+    <div class="section cr-secondary-text">
+      Proin sed purus vestibulum velit convallis suscipit. Aenean aliquam
+      ut velit eget dapibus. Vestibulum orci risus, consectetur non odio
+      vulputate, mattis dignissim purus. Cras id tempor mi.
+    </div>
+    <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
+      title="Vestibulum orci risus, consectetur">
+      <div><b>Esed purus vestibulum velit convalli</b></div>
+        <ul class="cr-secondary-text">
+          <li><b>Nulla in tortor:</b> a ligula scelerisque laoreet. Sed sem
+            velit, varius non purus vitae, imperdiet porttitor elit. </li>
+          <li><b>Consectetur adipiscing elit:</b> Duis pretium
+            pulvinar metus non mollis</li>
+          <li><b>Sed purus vestibulum:</b> velit convallis suscipit. Aenean
+            aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur
+            non odio vulputate, mattis dignissim purus. Cras id tempor mi.</li>
+        </ul>
+        <div class="cr-secondary-text">
+          Esed purus vestibulum velit convalli
+        </div>
+    </privacy-sandbox-dialog-learn-more>
+    <div class="section cr-secondary-text">
+      Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
+      elementum ut venenatis ornare, consequat ac turpis.
+    </div>
+  </div>
+  <div class="buttons-container">
+    <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+      Settings
+    </cr-button>
+    <cr-button id="ackButton" on-click="onNoticeAcknowledge">
+      Ok
+    </cr-button>
+  </div>
+</div>

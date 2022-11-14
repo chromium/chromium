@@ -30,6 +30,7 @@ build_webui("build") {
   non_web_component_files = [
     "privacy_sandbox_dialog_browser_proxy.ts",
     "privacy_sandbox_dialog_resize_mixin.ts",
+    "privacy_sandbox_dialog_notice_mixin.ts",
   ]
 
   css_files = [
