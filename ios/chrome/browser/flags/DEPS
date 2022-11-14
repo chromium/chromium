@@ -5,6 +5,7 @@ specific_include_rules = {
   ],
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/ui/first_run",
+    "+ios/chrome/browser/ui/ntp",
   ],
   "^system_flags.mm": [
     "+ios/chrome/browser/ui/ui_feature_flags.h",

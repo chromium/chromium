@@ -62,10 +62,39 @@ const char kPopularSitesDefaultCountryCode[] = "DEFAULT";
 const char kPopularSitesDefaultVersion[] = "5";
 const int kSitesExplorationStartVersion = 6;
 const int kPopularSitesRedownloadIntervalHours = 24;
+const char kIOSDefaultPopularSitesExperimentIncludeApps[] =
+    "https://www.gstatic.com/chrome/ntp/ios/"
+    "suggested_sites_US_2023q1_mvt_experiment_with_popular_sites.json";
+const char kIOSDefaultPopularSitesExperimentExcludeApps[] =
+    "https://www.gstatic.com/chrome/ntp/ios/"
+    "suggested_sites_US_2023q1_mvt_experiment_without_popular_sites.json";
 
 GURL GetPopularSitesURL(const std::string& directory,
                         const std::string& country,
                         const std::string& version) {
+  // A Chrome iOS-only experiment is being run for M109 which overrides the
+  // popular sites URL.
+  IOSDefaultPopularSitesExperimentBehavior experiment_type =
+      GetDefaultPopularSitesExperimentType();
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // include sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
+  if (country == "US" &&
+      experiment_type ==
+          IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+    return GURL(kIOSDefaultPopularSitesExperimentIncludeApps);
+  }
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // exclude sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
+  if (country == "US" &&
+      experiment_type ==
+          IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+    return GURL(kIOSDefaultPopularSitesExperimentExcludeApps);
+  }
+
   return GURL(base::StringPrintf(kPopularSitesURLFormat, directory.c_str(),
                                  country.c_str(), version.c_str()));
 }
@@ -225,19 +254,75 @@ base::Value DefaultPopularSites() {
   if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature))
     return base::Value(base::Value::Type::LIST);
 
+  int popular_sites_json = IDR_DEFAULT_POPULAR_SITES_JSON;
+
+  // A Chrome iOS-only experiment is being run which overrides the popular sites
+  // URL.
+  IOSDefaultPopularSitesExperimentBehavior experiment_type =
+      GetDefaultPopularSitesExperimentType();
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // include sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
+  if (experiment_type ==
+      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+    popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_JSON;
+  }
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // exclude sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
+  if (experiment_type ==
+      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+    popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_JSON;
+  }
+
   absl::optional<base::Value> sites = base::JSONReader::Read(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_DEFAULT_POPULAR_SITES_JSON));
+          popular_sites_json));
   for (base::Value& site : sites->GetList())
     site.GetDict().Set("baked_in", true);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto popular_sites_icons = {
+      IDR_DEFAULT_POPULAR_SITES_ICON0, IDR_DEFAULT_POPULAR_SITES_ICON1,
+      IDR_DEFAULT_POPULAR_SITES_ICON2, IDR_DEFAULT_POPULAR_SITES_ICON3,
+      IDR_DEFAULT_POPULAR_SITES_ICON4, IDR_DEFAULT_POPULAR_SITES_ICON5,
+      IDR_DEFAULT_POPULAR_SITES_ICON6, IDR_DEFAULT_POPULAR_SITES_ICON7};
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // include sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
+  if (experiment_type ==
+      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+    popular_sites_icons = {IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON2,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON3,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON4,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON5,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON6,
+                           IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON7};
+  }
+
+  // If the experiment is enabled, and the popular sites suggestions should
+  // exclude sites with native iOS apps,
+  // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
+  if (experiment_type ==
+      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+    popular_sites_icons = {
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON2,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON3,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON4,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON5,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON6,
+        IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON7};
+  }
+
   size_t index = 0;
-  for (int icon_resource :
-       {IDR_DEFAULT_POPULAR_SITES_ICON0, IDR_DEFAULT_POPULAR_SITES_ICON1,
-        IDR_DEFAULT_POPULAR_SITES_ICON2, IDR_DEFAULT_POPULAR_SITES_ICON3,
-        IDR_DEFAULT_POPULAR_SITES_ICON4, IDR_DEFAULT_POPULAR_SITES_ICON5,
-        IDR_DEFAULT_POPULAR_SITES_ICON6, IDR_DEFAULT_POPULAR_SITES_ICON7}) {
+  for (int icon_resource : popular_sites_icons) {
     SetDefaultResourceForSite(index++, icon_resource, sites->GetList());
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

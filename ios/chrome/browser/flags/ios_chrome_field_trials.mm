@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
+#import "ios/chrome/browser/ui/ntp/ios_popular_sites_field_trial.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,6 +42,9 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
   fre_field_trial::Create(entropy_providers.low_entropy(), feature_list,
                           GetApplicationContext()->GetLocalState());
   trending_queries_field_trial::Create(
+      entropy_providers.low_entropy(), feature_list,
+      GetApplicationContext()->GetLocalState());
+  ios_popular_sites_field_trial::Create(
       entropy_providers.low_entropy(), feature_list,
       GetApplicationContext()->GetLocalState());
 }

@@ -122,6 +122,28 @@ source_set("util") {
   ]
 }
 
+source_set("field_trial") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "field_trial_constants.cc",
+    "field_trial_constants.h",
+    "ios_popular_sites_field_trial.cc",
+    "ios_popular_sites_field_trial.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/variations",
+  ]
+  deps = [
+    "//components/ntp_tiles",
+    "//components/prefs",
+    "//components/version_info:version_info",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/common",
+  ]
+}
+
 source_set("ntp_internal") {
   configs += [
     ":disable_deprecated_declarations",
@@ -240,12 +262,14 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "ios_popular_sites_field_trial_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "ntp_tile_saver_unittest.mm",
   ]
   deps = [
     ":coordinator",
     ":feature_flags",
+    ":field_trial",
     ":ntp",
     ":ntp_internal",
     "//base",
@@ -274,6 +298,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/common/app_group",

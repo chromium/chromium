@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/ntp/ios_popular_sites_field_trial.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -141,6 +142,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   variations::VariationsService::RegisterPrefs(registry);
   fre_field_trial::RegisterLocalStatePrefs(registry);
   trending_queries_field_trial::RegisterLocalStatePrefs(registry);
+  ios_popular_sites_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);

@@ -39,6 +39,7 @@
 #import "components/flags_ui/flags_storage.h"
 #import "components/flags_ui/flags_ui_switches.h"
 #import "components/invalidation/impl/invalidation_switches.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/switches.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -85,6 +86,7 @@
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
+#import "ios/chrome/browser/ui/ntp/field_trial_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
@@ -575,6 +577,13 @@ const FeatureEntry::FeatureParam kIOSNewPostRestoreExperienceMinimal[] = {
 const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
     {{"minimal", kIOSNewPostRestoreExperienceMinimal,
       std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
+
+const FeatureEntry::FeatureParam kIOSPopularSitesExcludePopularApps[] = {
+    {ntp_tiles::kIOSPopularSitesExcludePopularAppsParam, "true"}};
+const FeatureEntry::FeatureVariation
+    kIOSPopularSitesImprovedSuggestionsVariations[] = {
+        {"(Exclude popular apps)", kIOSPopularSitesExcludePopularApps,
+         std::size(kIOSPopularSitesExcludePopularApps), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableExperienceKitMapsWithSrp[] = {
     {kExperienceKitMapsVariationName, kEnableExperienceKitMapsVariationSrp}};
@@ -1145,6 +1154,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordManagerCrossOriginIframeSupport)},
+    {"ios-popular-sites-improved-suggestions",
+     flag_descriptions::kIOSPopularSitesImprovedSuggestionsName,
+     flag_descriptions::kIOSPopularSitesImprovedSuggestionsDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ntp_tiles::kIOSPopularSitesImprovedSuggestions,
+         kIOSPopularSitesImprovedSuggestionsVariations,
+         field_trial_constants::
+             kIOSPopularSitesImprovedSuggestionsFieldTrialName)},
     {"omnibox-adaptive-suggestions-count",
      flag_descriptions::kAdaptiveSuggestionsCountName,
      flag_descriptions::kAdaptiveSuggestionsCountDescription, flags_ui::kOsIos,

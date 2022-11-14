@@ -1,0 +1,49 @@
+[
+  {
+    "title": "Wordle",
+    "url": "https://www.nytimes.com/games/wordle/index.html",
+    "large_icon_url": "https://www.nytimes.com/games-assets/v2/metadata/wordle-apple-touch-icon.png?v=v2210311705",
+    "title_source": 4
+  },
+  {
+    "title": "Amazon.com",
+    "url": "https://www.amazon.com/",
+    "large_icon_url": "https://images-na.ssl-images-amazon.com/images/G/01/anywhere/a_smile_196x196._CB368246573_.png",
+    "title_source": 4
+  },
+  {
+    "title": "Facebook",
+    "url": "https://m.facebook.com/",
+    "large_icon_url": "https://static.xx.fbcdn.net/rsrc.php/v3/yj/r/gB76kJXPYJV.png",
+    "title_source": 4
+  },
+  {
+    "title": "YouTube",
+    "url": "https://m.youtube.com/",
+    "large_icon_url": "https://m.youtube.com/yts/mobile/img/apple-touch-icon-144x144-precomposed-vflopw1IA.png",
+    "title_source": 4
+  },
+  {
+    "title": "CNN",
+    "url": "https://edition.cnn.com/",
+    "large_icon_url": "https://i.cdn.cnn.com/cnn/.e/img/3.0/global/misc/apple-touch-icon.png"
+  },
+  {
+    "title": "Yahoo",
+    "url": "https://www.yahoo.com/",
+    "large_icon_url": "https://s.yimg.com/dh/ap/default/130909/y_200_a.png",
+    "title_source": 4
+  },
+  {
+    "title": "ESPN.com",
+    "url": "http://www.espn.com/",
+    "large_icon_url": "http://a.espncdn.com/wireless/mw5/r1/images/bookmark-icons/espn_icon-152x152.min.png",
+    "title_source": 4
+  },
+  {
+    "title": "Instagram",
+    "url": "https://www.instagram.com/",
+    "large_icon_url": "https://www.instagram.com/static/images/ico/favicon-192.png/b407fa101800.png",
+    "title_source": 4
+  }
+]

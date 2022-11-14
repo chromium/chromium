@@ -391,6 +391,11 @@ extern const char kIOSPasswordUISplitDescription[];
 extern const char kIOSPasswordManagerCrossOriginIframeSupportName[];
 extern const char kIOSPasswordManagerCrossOriginIframeSupportDescription[];
 
+// Title and description of the flag to enable improved default suggestions of
+// popular sites.
+extern const char kIOSPopularSitesImprovedSuggestionsName[];
+extern const char kIOSPopularSitesImprovedSuggestionsDescription[];
+
 // Title and description for the flag to enable Shared Highlighting color
 // change in iOS.
 extern const char kIOSSharedHighlightingColorChangeName[];
