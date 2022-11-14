@@ -2096,13 +2096,16 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
     )");
     activated_observer.WaitForActivate();
     // Forces an AXTree update to be sent while portal is orphaned.
-    AccessibilityNotificationWaiter waiter(web_contents_impl,
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kLayoutComplete);
-    ASSERT_TRUE(waiter.WaitForNotification());
+    AccessibilityNotificationWaiter load_waiter(
+        web_contents_impl, ui::kAXModeComplete,
+        ax::mojom::Event::kLoadComplete);
+    ASSERT_TRUE(load_waiter.WaitForNotification());
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
-    ASSERT_TRUE(waiter.WaitForNotification());
+    AccessibilityNotificationWaiter end_of_test_waiter(
+        web_contents_impl, ui::kAXModeComplete, ax::mojom::Event::kEndOfTest);
+    main_frame->browser_accessibility_manager()->SignalEndOfTest();
+    ASSERT_TRUE(end_of_test_waiter.WaitForNotification());
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
 }
