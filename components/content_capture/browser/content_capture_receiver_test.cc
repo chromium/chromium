@@ -174,8 +174,8 @@ TEST_P(ContentCaptureReceiverTest, MultipleConsumers) {
   EXPECT_EQ(consumer(), provider()->GetConsumersForTesting()[0]);
 }
 
-// TODO(https://crbug.com/1010179): Fix flakes on win10_chromium_x64_rel_ng and
-// re-enable this test.
+// TODO(https://crbug.com/1010179): Fix flakes on win-rel and re-enable this
+// test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DidCaptureContentWithUpdate DISABLED_DidCaptureContentWithUpdate
 #else
@@ -202,8 +202,8 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_DidCaptureContentWithUpdate) {
             consumer()->captured_data());
 }
 
-// TODO(https://crbug.com/1011204): Fix flakes on win10_chromium_x64_rel_ng and
-// re-enable this test.
+// TODO(https://crbug.com/1011204): Fix flakes on win-rel and re-enable this
+// test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DidUpdateContent DISABLED_DidUpdateContent
 #else
@@ -362,8 +362,8 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   EXPECT_EQ(title2, consumer()->updated_title());
 }
 
-// TODO(https://crbug.com/1010416): Fix flakes on win10_chromium_x64_rel_ng and
-// re-enable this test.
+// TODO(https://crbug.com/1010416): Fix flakes on win-rel and re-enable this
+// test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ChildFrameCaptureContentFirst \
   DISABLED_ChildFrameCaptureContentFirst
@@ -562,8 +562,8 @@ class ContentCaptureReceiverMultipleFrameTest
   ContentCaptureTestHelper helper_;
 };
 
-// TODO(https://crbug.com/1010417): Fix flakes on win10_chromium_x64_rel_ng and
-// re-enable this test.
+// TODO(https://crbug.com/1010417): Fix flakes on win-rel and re-enable this
+// test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ReceiverCreatedForExistingFrame \
   DISABLED_ReceiverCreatedForExistingFrame

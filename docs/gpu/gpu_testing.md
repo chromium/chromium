@@ -112,11 +112,11 @@ of the following tryservers' jobs:
 
 *   [linux-rel], formerly on the `tryserver.chromium.linux` waterfall
 *   [mac-rel], formerly on the `tryserver.chromium.mac` waterfall
-*   [win10_chromium_x64_rel_ng], formerly on the `tryserver.chromium.win` waterfall
+*   [win-rel], formerly on the `tryserver.chromium.win` waterfall
 
-[linux-rel]:                 https://ci.chromium.org/p/chromium/builders/luci.chromium.try/linux-rel?limit=100
-[mac-rel]:                   https://ci.chromium.org/p/chromium/builders/luci.chromium.try/mac-rel?limit=100
-[win10_chromium_x64_rel_ng]: https://ci.chromium.org/p/chromium/builders/luci.chromium.try/win10_chromium_x64_rel_ng?limit=100
+[linux-rel]: https://ci.chromium.org/p/chromium/builders/luci.chromium.try/linux-rel?limit=100
+[mac-rel]:   https://ci.chromium.org/p/chromium/builders/luci.chromium.try/mac-rel?limit=100
+[win-rel]:   https://ci.chromium.org/p/chromium/builders/luci.chromium.try/win-rel?limit=100
 
 Scan down through the steps looking for the text "GPU"; that identifies those
 tests run on the GPU bots. For each test the "trigger" step can be ignored; the

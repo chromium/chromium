@@ -55,15 +55,15 @@ queries of the bots and see, for example, which GPUs are available.
 The waterfall bots run tests on a single GPU type in order to make it easier to
 see regressions or flakiness that affect only a certain type of GPU.
 
-The tryservers like `win10_chromium_x64_rel_ng` which include GPU tests, on the
-other hand, run tests on more than one GPU type. As of this writing, the Windows
-tryservers ran tests on NVIDIA and Intel GPUs; the Mac tryservers ran tests on
-Intel and AMD GPUs. The way these tryservers' tests are specified is simply
-by *mirroring* how one or more waterfall bots work. This is an inherent
-property of the [`chromium_trybot` recipe][chromium_trybot.py], which was
-designed to eliminate differences in behavior between the tryservers and
-waterfall bots. Since the tryservers mirror waterfall bots, if the waterfall bot
-is working, the tryserver must almost inherently be working as well.
+The tryservers like `win-rel` which include GPU tests, on the other hand, run
+tests on more than one GPU type. As of this writing, the Windows tryservers ran
+tests on NVIDIA and Intel GPUs; the Mac tryservers ran tests on Intel and AMD
+GPUs. The way these tryservers' tests are specified is simply by *mirroring*
+how one or more waterfall bots work. This is an inherent property of the
+[`chromium_trybot` recipe][chromium_trybot.py], which was designed to eliminate
+differences in behavior between the tryservers and waterfall bots. Since the
+tryservers mirror waterfall bots, if the waterfall bot is working, the
+tryserver must almost inherently be working as well.
 
 [chromium_trybot.py]: https://chromium.googlesource.com/chromium/tools/build/+/main/recipes/recipes/chromium_trybot.py
 
@@ -431,9 +431,9 @@ https://luci-scheduler.appspot.com/.
 
 ### How to start running tests on a new GPU type on an existing try bot
 
-Let's say that you want to cause the `win10_chromium_x64_rel_ng` try bot to run
-tests on CoolNewGPUType in addition to the types it currently runs (as of this
-writing only NVIDIA). To do this:
+Let's say that you want to cause the `win-rel` try bot to run tests on
+CoolNewGPUType in addition to the types it currently runs (as of this writing
+only NVIDIA). To do this:
 
 1.  Make sure there is enough hardware capacity using the available tools to
     report utilization of the Swarming pool.
@@ -442,7 +442,7 @@ writing only NVIDIA). To do this:
     the flakiness on the new bots is comparable to existing `chromium.gpu` bots
     before proceeding.
 1.  Create a CL in the [`chromium/src`][chromium/src] workspace that adds the
-    new Release tester to `win10_chromium_x64_rel_ng`'s `mirrors` list. Rerun
+    new Release tester to `win-rel`'s `mirrors` list. Rerun
     `infra/config/main.star`.
 1.  Once the above CL lands, the commit queue will **immediately** start
     running tests on the CoolNewGPUType configuration. Be vigilant and make
