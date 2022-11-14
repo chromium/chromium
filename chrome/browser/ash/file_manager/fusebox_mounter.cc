@@ -20,27 +20,15 @@
 
 namespace file_manager {
 
-// static
-FuseBoxMounter* FuseBoxMounter::Create(std::string uri) {
-  if (!ash::features::IsFileManagerFuseBoxEnabled())
-    return nullptr;
-  return new FuseBoxMounter(std::move(uri));
-}
+namespace {
+// The first "fusebox" is the URI scheme that is matched by cros-disks'
+// "fusebox_helper.cc". The second "fusebox" is the "foo" in "/media/fuse/foo".
+const char kFuseBoxMounterURI[] = "fusebox://fusebox";
+}  // namespace
 
-FuseBoxMounter::FuseBoxMounter(std::string uri) : uri_(uri) {}
+FuseBoxMounter::FuseBoxMounter() = default;
 
 FuseBoxMounter::~FuseBoxMounter() = default;
-
-void FuseBoxMounter::Mount(FuseBoxDiskMountManager* disk_mount_manager) {
-  DCHECK(disk_mount_manager);
-
-  constexpr auto type = ash::MountType::kNetworkStorage;
-  constexpr auto mode = ash::MountAccessMode::kReadWrite;
-
-  disk_mount_manager->MountPath(
-      uri_, /*source_format*/ {}, /*mount_label*/ {}, /*options*/ {}, type,
-      mode, base::BindOnce(&FuseBoxMounter::MountResponse, GetWeakPtr()));
-}
 
 void FuseBoxMounter::AttachStorage(const std::string& subdir,
                                    const std::string& url,
@@ -64,6 +52,19 @@ void FuseBoxMounter::DetachStorage(const std::string& subdir) {
   }
 }
 
+void FuseBoxMounter::Mount(FuseBoxDiskMountManager* disk_mount_manager) {
+  DCHECK(disk_mount_manager);
+
+  constexpr auto type = ash::MountType::kNetworkStorage;
+  constexpr auto mode = ash::MountAccessMode::kReadWrite;
+
+  disk_mount_manager->MountPath(kFuseBoxMounterURI, /*source_format*/ {},
+                                /*mount_label*/ {},
+                                /*options*/ {}, type, mode,
+                                base::BindOnce(&FuseBoxMounter::MountResponse,
+                                               weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FuseBoxMounter::Unmount(FuseBoxDiskMountManager* disk_mount_manager) {
   DCHECK(disk_mount_manager);
 
@@ -73,17 +74,14 @@ void FuseBoxMounter::Unmount(FuseBoxDiskMountManager* disk_mount_manager) {
   }
 
   disk_mount_manager->UnmountPath(
-      uri_, base::BindOnce(&FuseBoxMounter::UnmountResponse, GetWeakPtr()));
-}
-
-base::WeakPtr<FuseBoxMounter> FuseBoxMounter::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+      kFuseBoxMounterURI, base::BindOnce(&FuseBoxMounter::UnmountResponse,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FuseBoxMounter::MountResponse(ash::MountError error,
                                    const FuseBoxMountInfo& info) {
   if (error != ash::MountError::kSuccess) {
-    LOG(ERROR) << uri_ << " mount error " << error;
+    LOG(ERROR) << kFuseBoxMounterURI << " mount error " << error;
   } else {
     mounted_ = true;
   }
@@ -91,7 +89,7 @@ void FuseBoxMounter::MountResponse(ash::MountError error,
 
 void FuseBoxMounter::UnmountResponse(ash::MountError error) {
   if (error != ash::MountError::kSuccess) {
-    LOG(ERROR) << uri_ << " unmount error " << error;
+    LOG(ERROR) << kFuseBoxMounterURI << " unmount error " << error;
   } else {
     mounted_ = false;
   }

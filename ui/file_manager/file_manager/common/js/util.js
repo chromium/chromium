@@ -1115,14 +1115,6 @@ util.isFuseBoxDebugEnabled = () => {
 };
 
 /**
- * Returns true if FuseBox flag is enabled.
- * @return {boolean}
- */
-util.isFuseBoxEnabled = () => {
-  return loadTimeData.getBoolean('FUSEBOX');
-};
-
-/**
  * Returns true if GuestOsFiles flag is enabled.
  * @return {boolean}
  */

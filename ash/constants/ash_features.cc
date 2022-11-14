@@ -1003,9 +1003,6 @@ BASE_FEATURE(kFullscreenAlertBubble,
              "EnableFullscreenBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable ChromeOS FuseBox service.
-BASE_FEATURE(kFuseBox, "FuseBox", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Debugging UI for ChromeOS FuseBox service.
 BASE_FEATURE(kFuseBoxDebug, "FuseBoxDebug", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2303,8 +2300,7 @@ bool IsAppNotificationsPageEnabled() {
 }
 
 bool IsArcFuseBoxFileSharingEnabled() {
-  return IsFileManagerFuseBoxEnabled() &&
-         base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
+  return base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
 }
 
 bool IsArcInputOverlayEnabled() {
@@ -2552,10 +2548,6 @@ bool IsFederatedServiceEnabled() {
 bool IsFederatedServiceScheduleTasksEnabled() {
   return IsFederatedServiceEnabled() &&
          base::FeatureList::IsEnabled(kFederatedServiceScheduleTasks);
-}
-
-bool IsFileManagerFuseBoxEnabled() {
-  return base::FeatureList::IsEnabled(kFuseBox);
 }
 
 bool IsFileManagerFuseBoxDebugEnabled() {

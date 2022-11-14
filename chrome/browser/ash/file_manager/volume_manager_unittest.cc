@@ -1219,9 +1219,12 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
       FILE_PATH_LITERAL("/dummy/device/location2"), u"label2", u"vendor2",
       u"model2", 12345 /* size */);
 
-  // Attach
+  // Attach.
+  //
+  // There should be two events: one each for the Fusebox and non-Fusebox MTP
+  // volumes.
   volume_manager()->OnRemovableStorageAttached(info);
-  ASSERT_EQ(1u, observer.events().size());
+  ASSERT_EQ(2u, observer.events().size());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[0].type);
 
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("mtp:model");
@@ -1230,13 +1233,15 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
 
   // Non MTP events from storage monitor are ignored.
   volume_manager()->OnRemovableStorageAttached(non_mtp_info);
-  EXPECT_EQ(1u, observer.events().size());
+  EXPECT_EQ(2u, observer.events().size());
 
-  // Detach
+  // Detach.
+  //
+  // There should be two more events, bringing the total to four.
   volume_manager()->OnRemovableStorageDetached(info);
-  ASSERT_EQ(2u, observer.events().size());
+  ASSERT_EQ(4u, observer.events().size());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
-            observer.events()[1].type);
+            observer.events()[2].type);
 
   EXPECT_FALSE(volume);
 

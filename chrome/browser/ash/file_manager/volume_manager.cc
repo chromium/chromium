@@ -688,6 +688,7 @@ VolumeManager::VolumeManager(
       disk_mount_manager_(disk_mount_manager),
       file_system_provider_service_(file_system_provider_service),
       get_mtp_storage_info_callback_(get_mtp_storage_info_callback),
+      fusebox_mounter_(new FuseBoxMounter()),
       snapshot_manager_(new SnapshotManager(profile_)),
       documents_provider_root_manager_(
           std::make_unique<DocumentsProviderRootManager>(
@@ -723,13 +724,7 @@ void VolumeManager::Initialize() {
     return;
   }
 
-  if (!fusebox_mounter_)
-    fusebox_mounter_.reset(FuseBoxMounter::Create());
-
-  // The fusebox_mounter_ is enabled by a chrome flag: Create() will return
-  // nullptr if the flag is disabled. Check it before attempting to Mount.
-  if (fusebox_mounter_)
-    fusebox_mounter_->Mount(disk_mount_manager_);
+  fusebox_mounter_->Mount(disk_mount_manager_);
 
   const base::FilePath localVolume =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
@@ -815,6 +810,7 @@ void VolumeManager::Shutdown() {
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  fusebox_mounter_->Unmount(disk_mount_manager_);
   snapshot_manager_.reset();
   pref_change_registrar_.RemoveAll();
   disk_mount_manager_->RemoveObserver(this);
@@ -840,10 +836,6 @@ void VolumeManager::Shutdown() {
             arc::ArcSessionManager::Get())
       session_manager->RemoveObserver(this);
   }
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (fusebox_mounter_)
-    fusebox_mounter_->Unmount(disk_mount_manager_);
 }
 
 void VolumeManager::AddObserver(VolumeManagerObserver* observer) {
@@ -1335,10 +1327,6 @@ void VolumeManager::OnProvidedFileSystemMount(
 
   DoMountEvent(std::move(volume_sans_fusebox), mount_error);
 
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
-
   // The FSP is not added to chrome::storage if mounting failed.
   if (error != base::File::FILE_OK)
     return;
@@ -1399,10 +1387,6 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   std::unique_ptr<Volume> volume = Volume::CreateForProvidedFileSystem(
       file_system_info, MOUNT_CONTEXT_UNKNOWN);
   DoUnmountEvent(*volume, mount_error);
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
 
   // Get FSP chrome::storage |fsid| and fusebox daemon |subdir|.
   const std::string fsid =
@@ -1587,10 +1571,6 @@ void VolumeManager::DoAttachMtpStorage(
       Volume::CreateForMTP(path, label, read_only);
   DoMountEvent(std::move(volume_sans_fusebox));
 
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
-
   // Get the FileSystemURL of the MTP storage device.
   auto mtp_file_system_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey(util::GetFilesAppOrigin()), fsid, {});
@@ -1649,10 +1629,6 @@ void VolumeManager::OnRemovableStorageDetached(
                      base::Unretained(MTPDeviceMapService::GetInstance()),
                      fsid));
 
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
-
   // Unmount the fusebox MTP storage device in files app.
   if (base::WeakPtr<Volume> volume = FindVolumeById(util::kFuseBox + volume_id))
     DoUnmountEvent(*volume);
@@ -1680,10 +1656,6 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   DoMountEvent(Volume::CreateForDocumentsProvider(
       authority, root_id, document_id, title, summary, icon_url, read_only,
       /*optional_fusebox_subdir=*/std::string()));
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
 
   // Get the FileSystemURL of the ADP storage device.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
@@ -1722,10 +1694,6 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
       false, /*optional_fusebox_subdir=*/std::string()));
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->UnregisterRoot(
       authority, document_id);
-
-  // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_)
-    return;
 
   // Unmount the fusebox ADP storage device in files app.
   std::string volume_id = arc::GetDocumentsProviderVolumeId(authority, root_id);

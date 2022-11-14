@@ -162,11 +162,6 @@ FuseBoxServiceProvider::FuseBoxServiceProvider() : server_(this) {}
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
 void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
-  if (!ash::features::IsFileManagerFuseBoxEnabled()) {
-    LOG(ERROR) << "Not enabled";
-    return;
-  }
-
   exported_object_ = object;
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kCloseMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::Close,

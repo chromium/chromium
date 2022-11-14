@@ -20,16 +20,10 @@ using FuseBoxMountInfo = ::ash::disks::DiskMountManager::MountPoint;
 
 class FuseBoxMounter {
  public:
-  // Creates mounter for fusebox mountpoint |uri|.
-  static FuseBoxMounter* Create(std::string uri = "fusebox://fusebox");
-
+  FuseBoxMounter();
   FuseBoxMounter(const FuseBoxMounter&) = delete;
   FuseBoxMounter& operator=(const FuseBoxMounter&) = delete;
-
   ~FuseBoxMounter();
-
-  // Mount fusebox daemon.
-  void Mount(FuseBoxDiskMountManager* disk_mount_manager);
 
   // Attach fusebox storage: adds fusebox daemon <mount-point>/subdir used to
   // serve the content of the Chrome storage::FileSystemURL |url| via FUSE to
@@ -42,16 +36,13 @@ class FuseBoxMounter {
   // Detach fusebox storage: removes fusebox <mountpoint>/subdir.
   void DetachStorage(const std::string& subdir);
 
+  // Mount fusebox daemon.
+  void Mount(FuseBoxDiskMountManager* disk_mount_manager);
+
   // Unmount fusebox daemon.
   void Unmount(FuseBoxDiskMountManager* disk_mount_manager);
 
  private:
-  // Use Create().
-  explicit FuseBoxMounter(std::string uri);
-
-  // Returns base::WeakPtr{this}.
-  base::WeakPtr<FuseBoxMounter> GetWeakPtr();
-
   // Mount response.
   void MountResponse(ash::MountError error, const FuseBoxMountInfo& info);
 
@@ -59,10 +50,7 @@ class FuseBoxMounter {
   void UnmountResponse(ash::MountError error);
 
  private:
-  // Cros-disks fusebox mountpoint URI.
-  std::string const uri_;
-
-  // True if |uri_| is mounted.
+  // True if this fusebox instance is mounted.
   bool mounted_ = false;
 
   // base::WeakPtr{this} factory.

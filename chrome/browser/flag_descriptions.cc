@@ -5536,9 +5536,6 @@ const char kFullRestoreForLacrosName[] = "Full restore lacros support";
 const char kFullRestoreForLacrosDescription[] =
     "ChromeOS full restore lacros support";
 
-const char kFuseBoxName[] = "Enable ChromeOS FuseBox service";
-const char kFuseBoxDescription[] = "ChromeOS FuseBox service.";
-
 const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
