@@ -20,6 +20,26 @@ static_library("hotspot_config") {
   ]
 }
 
+component("in_process_hotspot_config") {
+  sources = [
+    "in_process_instance.cc",
+    "in_process_instance.h",
+  ]
+
+  defines = [ "IS_IN_PROCESS_HOTSPOT_CONFIG_IMPL" ]
+
+  public_deps = [
+    "//chromeos/ash/services/hotspot_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    ":hotspot_config",
+    "//ash/constants",
+    "//components/device_event_log",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
