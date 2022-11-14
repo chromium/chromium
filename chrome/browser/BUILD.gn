@@ -4738,6 +4738,8 @@ static_library("browser") {
       "apps/app_preload_service/preload_app_definition.h",
       "apps/app_provisioning_service/app_provisioning_data_manager.cc",
       "apps/app_provisioning_service/app_provisioning_data_manager.h",
+      "apps/app_service/app_icon/app_icon_decoder.cc",
+      "apps/app_service/app_icon/app_icon_decoder.h",
       "apps/app_service/app_icon/app_icon_reader.cc",
       "apps/app_service/app_icon/app_icon_reader.h",
       "apps/app_service/app_icon/app_icon_writer.cc",
