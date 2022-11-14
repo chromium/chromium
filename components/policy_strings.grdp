@@ -419,6 +419,9 @@ Additional details:
   <message name="IDS_POLICY_LABEL_CLIENT_ID" desc="Label for the client IDs in the policy status boxes.">
     Client ID:
   </message>
+  <message name="IDS_POLICY_LABEL_PROFILE_ID" desc="Label for the user profile ID in the user policy status box.">
+    Profile ID:
+  </message>
   <message name="IDS_POLICY_LABEL_ASSET_ID" desc="Label for the asset ID in the device policy status box.">
     Asset ID:
   </message>
