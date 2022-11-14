@@ -121,7 +121,7 @@ void TurnOffResizeLock(views::Widget* target_widget,
   ash::ToastData toast(
       kTurnOffResizeLockToastId, ash::ToastCatalogName::kAppResizable,
       l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST));
-  toast_manager->Show(toast);
+  toast_manager->Show(std::move(toast));
 }
 
 void TurnOffResizeLockWithConfirmationIfNeeded(

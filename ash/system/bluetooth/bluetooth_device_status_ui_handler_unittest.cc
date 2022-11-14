@@ -4,6 +4,7 @@
 
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -24,7 +25,7 @@ using ::testing::NiceMock;
 class MockBluetoothDeviceStatusUiHandler
     : public BluetoothDeviceStatusUiHandler {
  public:
-  MOCK_METHOD(void, ShowToast, (const ash::ToastData& toast_data), (override));
+  MOCK_METHOD(void, ShowToast, (ash::ToastData toast_data), (override));
 };
 
 }  // namespace

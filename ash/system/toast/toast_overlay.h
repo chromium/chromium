@@ -53,11 +53,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Creates the Toast overlay UI. `text` is the message to be shown, and
   // `dismiss_text` is the message for the button to dismiss the toast message.
   // The dismiss button will only be displayed if `dismiss_text` is not empty.
-  // `dismiss_callback` will be called when the button is pressed.
-  // `expired_callback` will be called when the toast overlay is destroyed,
-  // regardless of whether the button was pressed. In other words,
-  // `expired_callback` is called whenever the toast disappears. If `is_managed`
-  // is true, a managed icon will be added to the toast.
+  // `dismiss_callback` will be called when the button is pressed. If
+  // `is_managed` is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
                const std::u16string& text,
                const std::u16string& dismiss_text,
@@ -66,8 +63,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                bool is_managed,
                bool persist_on_hover,
                aura::Window* root_window,
-               base::RepeatingClosure dismiss_callback,
-               base::RepeatingClosure expired_callback);
+               base::RepeatingClosure dismiss_callback);
 
   ToastOverlay(const ToastOverlay&) = delete;
   ToastOverlay& operator=(const ToastOverlay&) = delete;
@@ -89,10 +85,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Activates the dismiss button in `overlay_view_` if it is highlighted.
   // Returns false if `is_dismiss_button_highlighted_` is false.
   bool MaybeActivateHighlightedDismissButton();
-
-  // Prevents the `expired_callback_` on this toast from running on this toast's
-  // destruction.
-  void ResetExpiredCallback();
 
  private:
   friend class ToastManagerImplTest;
@@ -129,7 +121,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   aura::Window* root_window_;
   base::RepeatingClosure dismiss_callback_;
-  base::RepeatingClosure expired_callback_;
 
   gfx::Size widget_size_;
 

@@ -811,8 +811,8 @@ TEST_F(ToastManagerImplTest, UserJourneyTimeMetric) {
   histogram_tester.ExpectBucketCount(kToastDismissedAfter7s, catalog_name, 1);
 }
 
-// Table-driven test that checks that a toast's expired callback is run when a
-// toast is closed when the toast manager cancels the toast, when the toast
+// Table-driven test that checks whether a toast's expired callback is run when
+// a toast is closed when the toast manager cancels the toast, when the toast
 // duration cancels the toast, and when the dismiss button is pressed.
 TEST_F(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
   // Covers possible ways that a toast can be cancelled.
@@ -859,7 +859,7 @@ TEST_F(ToastManagerImplTest, ExpiredCallbackRunsWhenToastOverlayClosed) {
     bool expired_callback_ran = false;
     toast_data.expired_callback = base::BindLambdaForTesting(
         [&expired_callback_ran]() { expired_callback_ran = true; });
-    toast_manager->Show(toast_data);
+    toast_manager->Show(std::move(toast_data));
 
     switch (test_case.source) {
       case CancellationSource::kToastManager: {
@@ -890,7 +890,7 @@ TEST_F(ToastManagerImplTest, ToastsCanPersistOnHover) {
   toast_data.persist_on_hover = true;
 
   auto* toast_manager = manager();
-  toast_manager->Show(toast_data);
+  toast_manager->Show(std::move(toast_data));
   EXPECT_TRUE(toast_manager->IsRunning(toast_id));
 
   // Wait for half of the toast duration to elapse.
@@ -966,7 +966,7 @@ TEST_F(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
 
     // Indicate that the toast will show on all root windows.
     toast_data.show_on_all_root_windows = true;
-    toast_manager->Show(toast_data);
+    toast_manager->Show(std::move(toast_data));
 
     for (auto* root_window : root_windows)
       EXPECT_TRUE(GetCurrentOverlay(root_window));
@@ -1011,7 +1011,7 @@ TEST_F(ToastManagerImplTest, ToastsThatPersistOnHoverOnAllRootWindows) {
   // Indicate that the toast will show on all root windows and persist on hover.
   toast_data.show_on_all_root_windows = true;
   toast_data.persist_on_hover = true;
-  toast_manager->Show(toast_data);
+  toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
 
   for (auto* root_window : root_windows)
@@ -1071,7 +1071,7 @@ TEST_F(ToastManagerImplTest, ExpiredCallbackNotCalledOnRootWindowRemoved) {
   bool expired_callback_ran = false;
   toast_data.expired_callback = base::BindLambdaForTesting(
       [&expired_callback_ran]() { expired_callback_ran = true; });
-  toast_manager->Show(toast_data);
+  toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
 
   for (auto* root_window : Shell::GetAllRootWindows())
@@ -1111,7 +1111,7 @@ TEST_F(ToastManagerImplTest,
   // Indicate that the toast will show on all root windows and persist on hover.
   toast_data.show_on_all_root_windows = true;
   toast_data.persist_on_hover = true;
-  toast_manager->Show(toast_data);
+  toast_manager->Show(std::move(toast_data));
   ASSERT_TRUE(toast_manager->IsRunning(toast_id));
 
   // Wait for half of the toast duration to elapse.

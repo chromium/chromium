@@ -332,7 +332,7 @@ void ShowToast(const std::string& id,
                const std::u16string& text) {
   ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
                   /*visible_on_lock_screen=*/true);
-  Shell::Get()->toast_manager()->Show(toast);
+  Shell::Get()->toast_manager()->Show(std::move(toast));
 }
 
 void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {

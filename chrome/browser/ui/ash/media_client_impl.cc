@@ -615,7 +615,7 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
                                      device_name_u16),
           ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
-      ash::ToastManager::Get()->Show(toast);
+      ash::ToastManager::Get()->Show(std::move(toast));
       break;
     }
     case cros::mojom::CameraPrivacySwitchState::OFF: {
@@ -650,7 +650,7 @@ void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(
                                      device_name_u16),
           ash::ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/true);
-      ash::ToastManager::Get()->Show(toast);
+      ash::ToastManager::Get()->Show(std::move(toast));
       break;
     }
   }

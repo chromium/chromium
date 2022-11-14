@@ -162,7 +162,7 @@ void ShowUnavailableAppToast(
   ash::ToastData toast_data = {/*id=*/kAppNotAvailableTemplateToastName,
                                ash::ToastCatalogName::kAppNotAvailable,
                                /*text=*/toast_string};
-  ash::ToastManager::Get()->Show(toast_data);
+  ash::ToastManager::Get()->Show(std::move(toast_data));
 }
 
 // Creates a callback for when a favicon image is retrieved which creates a

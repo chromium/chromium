@@ -42,7 +42,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   ~ToastManagerImpl() override;
 
   // ToastManager overrides:
-  void Show(const ToastData& data) override;
+  void Show(ToastData data) override;
   void Cancel(const std::string& id) override;
   bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
       const std::string& id) override;

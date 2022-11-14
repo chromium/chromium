@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sharesheet/copy_to_clipboard_share_action.h"
 
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
@@ -32,7 +33,7 @@ class MockCopyToClipboardShareAction : public CopyToClipboardShareAction {
   explicit MockCopyToClipboardShareAction(Profile* profile)
       : CopyToClipboardShareAction(profile) {}
 
-  MOCK_METHOD(void, ShowToast, (const ash::ToastData& toast_data), (override));
+  MOCK_METHOD(void, ShowToast, (ash::ToastData toast_data), (override));
 };
 
 }  // namespace

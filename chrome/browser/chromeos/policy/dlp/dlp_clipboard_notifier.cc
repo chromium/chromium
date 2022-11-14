@@ -283,7 +283,7 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_TOAST_BUTTON));
   toast.is_managed = true;
   toast.dismiss_callback = base::BindRepeating(&OnToastClicked);
-  ash::ToastManager::Get()->Show(toast);
+  ash::ToastManager::Get()->Show(std::move(toast));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

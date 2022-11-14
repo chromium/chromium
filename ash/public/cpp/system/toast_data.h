@@ -42,8 +42,8 @@ struct ASH_PUBLIC_EXPORT ToastData {
             bool visible_on_lock_screen = false,
             bool has_dismiss_button = false,
             const std::u16string& custom_dismiss_text = std::u16string());
-
-  ToastData(const ToastData& other);
+  ToastData(ToastData&& other);
+  ToastData& operator=(ToastData&& other);
   ~ToastData();
 
   std::string id;
@@ -55,8 +55,9 @@ struct ASH_PUBLIC_EXPORT ToastData {
   bool is_managed = false;
   bool persist_on_hover = false;
   bool show_on_all_root_windows = false;
+  // TODO(b/259100049): We should turn this into a `OnceClosure`.
   base::RepeatingClosure dismiss_callback;
-  base::RepeatingClosure expired_callback;
+  base::OnceClosure expired_callback;
   base::TimeTicks time_created;
   base::TimeTicks time_start_showing;
 };

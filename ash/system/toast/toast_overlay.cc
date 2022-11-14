@@ -149,8 +149,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            bool is_managed,
                            bool persist_on_hover,
                            aura::Window* root_window,
-                           base::RepeatingClosure dismiss_callback,
-                           base::RepeatingClosure expired_callback)
+                           base::RepeatingClosure dismiss_callback)
     : delegate_(delegate),
       text_(text),
       dismiss_text_(dismiss_text),
@@ -164,7 +163,6 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       root_window_(root_window),
       dismiss_callback_(std::move(dismiss_callback)),
-      expired_callback_(std::move(expired_callback)),
       widget_size_(overlay_view_->GetPreferredSize()) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
@@ -204,8 +202,6 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
 ToastOverlay::~ToastOverlay() {
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
   overlay_widget_->Close();
-  if (expired_callback_)
-    expired_callback_.Run();
 }
 
 void ToastOverlay::Show(bool visible) {
@@ -251,10 +247,6 @@ bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
 
   OnButtonClicked();
   return true;
-}
-
-void ToastOverlay::ResetExpiredCallback() {
-  expired_callback_.Reset();
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {

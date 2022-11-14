@@ -26,7 +26,7 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
   MOCK_METHOD(bool, IsInTabletMode, (), (override));
   MOCK_METHOD(bool, IsFocusedWindowCrostini, (), (override));
   MOCK_METHOD(bool, IsVirtualKeyboardVisible, (), (override));
-  MOCK_METHOD(void, ShowToast, (const ash::ToastData& toast_data), (override));
+  MOCK_METHOD(void, ShowToast, (ash::ToastData toast_data), (override));
   MOCK_METHOD(std::string,
               GetLocalizedDisplayName,
               (const InputMethodDescriptor& descriptor),

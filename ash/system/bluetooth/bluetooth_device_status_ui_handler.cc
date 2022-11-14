@@ -48,7 +48,7 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
           GetPairedDeviceName(device)));
 
-  ShowToast(toast_data);
+  ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(device::BluetoothUiSurface::kPairedToast);
 }
 
@@ -61,7 +61,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST,
           GetPairedDeviceName(device)));
-  ShowToast(toast_data);
+  ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kDisconnectedToast);
 }
@@ -75,14 +75,13 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
           GetPairedDeviceName(device)));
-  ShowToast(toast_data);
+  ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
 }
 
-void BluetoothDeviceStatusUiHandler::ShowToast(
-    const ash::ToastData& toast_data) {
-  ash::ToastManager::Get()->Show(toast_data);
+void BluetoothDeviceStatusUiHandler::ShowToast(ash::ToastData toast_data) {
+  ash::ToastManager::Get()->Show(std::move(toast_data));
 }
 
 std::string BluetoothDeviceStatusUiHandler::GetToastId(

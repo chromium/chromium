@@ -36,7 +36,7 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
 
  private:
   // Virtual so that it can be overridden in testing.
-  virtual void ShowToast(const ash::ToastData& toast_data);
+  virtual void ShowToast(ash::ToastData toast_data);
 
   Profile* profile_;
 };

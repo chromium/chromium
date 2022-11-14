@@ -243,7 +243,7 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
 
 void ShowDeskRemovalUndoToast(const std::string& toast_id,
                               base::RepeatingClosure dismiss_callback,
-                              base::RepeatingClosure expired_callback,
+                              base::OnceClosure expired_callback,
                               bool use_persistent_toast) {
   // If ChromeVox is enabled, then we want the toast to be infinite duration.
   ToastData undo_toast_data(
@@ -258,7 +258,7 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
   undo_toast_data.show_on_all_root_windows = true;
   undo_toast_data.dismiss_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
-  ToastManager::Get()->Show(undo_toast_data);
+  ToastManager::Get()->Show(std::move(undo_toast_data));
 }
 
 }  // namespace
@@ -287,8 +287,11 @@ class DesksController::RemovedDeskData {
   RemovedDeskData& operator=(const RemovedDeskData&) = delete;
 
   ~RemovedDeskData() {
-    if (desk_) {
-      ToastManager::Get()->Cancel(toast_id_);
+    // `toast_manager` gets destroyed before `DesksController` so we want to
+    // make sure it still exists before we try to call `Cancel` on it.
+    auto* toast_manager = ToastManager::Get();
+    if (toast_manager && desk_) {
+      toast_manager->Cancel(toast_id_);
       DesksController::Get()->FinalizeDeskRemoval(this);
     }
   }
@@ -523,13 +526,10 @@ bool DesksController::CanRemoveDesks() const {
 }
 
 void DesksController::NewDesk(DesksCreationRemovalSource source) {
-  // We do not want this function to run here when there is no
-  // `temporary_removed_desk_` because that will incorrectly record metrics.
-  // We also want to destroy the `temporary_removed_desk_` first in this
+  // We want to destroy the `temporary_removed_desk_` first in this
   // function because we want to ensure that the removing desk's container is
   // available for use if we need it for the new desk.
-  if (temporary_removed_desk_)
-    MaybeCommitPendingDeskRemoval();
+  MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanCreateDesks());
   DCHECK(!available_container_ids_.empty());
@@ -1548,10 +1548,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 void DesksController::RemoveDeskInternal(const Desk* desk,
                                          DesksCreationRemovalSource source,
                                          DeskCloseType close_type) {
-  // We do not want this function to run here when there is no
-  // `temporary_removed_desk_` because that will incorrectly record metrics.
-  if (temporary_removed_desk_)
-    MaybeCommitPendingDeskRemoval();
+  MaybeCommitPendingDeskRemoval();
 
   DCHECK(CanRemoveDesks());
 
@@ -1734,10 +1731,13 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         base::BindRepeating(&DesksController::UndoDeskRemoval,
                             base::Unretained(this)),
         /*expired_callback=*/
-        base::BindRepeating(&DesksController::MaybeCommitPendingDeskRemoval,
-                            base::Unretained(this),
-                            temporary_removed_desk_->toast_id()),
+        base::BindOnce(&DesksController::MaybeCommitPendingDeskRemoval,
+                       base::Unretained(this),
+                       temporary_removed_desk_->toast_id()),
         temporary_removed_desk_->is_toast_persistent());
+
+    // This method will be invoked on both undo and expired toast.
+    base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);
   }
 }
 
@@ -1869,18 +1869,16 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
 
 void DesksController::MaybeCommitPendingDeskRemoval(
     const std::string& toast_id) {
-  // This method will be invoked on both undo and expired toast.
-  base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);
-
-  if (toast_id.empty() || (temporary_removed_desk_ &&
-                           temporary_removed_desk_->toast_id() == toast_id)) {
-    DCHECK(temporary_removed_desk_ && temporary_removed_desk_->desk());
+  if (temporary_removed_desk_ && temporary_removed_desk_->desk()) {
     // We need to tell any browser windows that are still in
     // `temporary_removed_desk_->desk()` to suppress warning the user before
     // closing.
     Shell::Get()->shell_delegate()->ForceSkipWarningUserOnClose(
         temporary_removed_desk_->desk()->GetAllAppWindows());
+  }
 
+  if (toast_id.empty() || (temporary_removed_desk_ &&
+                           temporary_removed_desk_->toast_id() == toast_id)) {
     temporary_removed_desk_.reset();
   }
 }

@@ -406,7 +406,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
         l10n_util::GetStringFUTF16(
             IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST,
             base::FormatNumber(desks_util::GetMaxNumberOfDesks()))};
-    ToastManager::Get()->Show(toast_data);
+    ToastManager::Get()->Show(std::move(toast_data));
     return;
   }
 
@@ -619,7 +619,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     ToastData toast_data(kTemplateTooLargeToastName,
                          ToastCatalogName::kDeskTemplateTooLarge,
                          l10n_util::GetStringUTF16(toast_text_id));
-    ToastManager::Get()->Show(toast_data);
+    ToastManager::Get()->Show(std::move(toast_data));
     return;
   }
 

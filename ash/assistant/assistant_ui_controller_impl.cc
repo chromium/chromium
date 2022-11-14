@@ -53,7 +53,7 @@ void ShowToast(const std::string& id,
                ToastCatalogName catalog_name,
                int message_id) {
   ToastData toast(id, catalog_name, l10n_util::GetStringUTF16(message_id));
-  Shell::Get()->toast_manager()->Show(toast);
+  Shell::Get()->toast_manager()->Show(std::move(toast));
 }
 
 }  // namespace

@@ -38,7 +38,7 @@ class ASH_EXPORT BluetoothDeviceStatusUiHandler
       bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr device)
       override;
 
-  virtual void ShowToast(const ash::ToastData& toast_data);
+  virtual void ShowToast(ash::ToastData toast_data);
 
   // Returns a string which represents a toast id. Id is created from a
   // constant string prefix concatenated to |paired_device_properties| id.

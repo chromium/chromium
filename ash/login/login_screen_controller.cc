@@ -302,7 +302,7 @@ void LoginScreenController::ShowKioskAppError(const std::string& message) {
                        base::UTF8ToUTF16(message), ToastData::kInfiniteDuration,
                        /*visible_on_lock_screen=*/true,
                        /*has_dismiss_button=*/true);
-  Shell::Get()->toast_manager()->Show(toast_data);
+  Shell::Get()->toast_manager()->Show(std::move(toast_data));
 }
 
 void LoginScreenController::FocusLoginShelf(bool reverse) {

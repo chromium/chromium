@@ -117,7 +117,7 @@ void CrostiniUnsupportedActionNotifier::
         /*text=*/
         l10n_util::GetStringUTF16(IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD),
         delegate_->ToastTimeout()};
-    delegate_->ShowToast(data);
+    delegate_->ShowToast(std::move(data));
     virtual_keyboard_unsupported_message_shown_ = true;
     EmitMetricReasonShown(reason);
   }
@@ -140,7 +140,7 @@ void CrostiniUnsupportedActionNotifier::
         /*text=*/
         l10n_util::GetStringFUTF16(IDS_CROSTINI_UNSUPPORTED_IME, ime_name),
         delegate_->ToastTimeout()};
-    delegate_->ShowToast(data);
+    delegate_->ShowToast(std::move(data));
     ime_unsupported_message_shown_ = true;
     EmitMetricReasonShown(NotificationReason::kUnsupportedIME);
   }
@@ -176,8 +176,8 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsVirtualKeyboardVisible() {
 }
 
 void CrostiniUnsupportedActionNotifier::Delegate::ShowToast(
-    const ash::ToastData& toast_data) {
-  ash::ToastManager::Get()->Show(toast_data);
+    ash::ToastData toast_data) {
+  ash::ToastManager::Get()->Show(std::move(toast_data));
 }
 
 std::string

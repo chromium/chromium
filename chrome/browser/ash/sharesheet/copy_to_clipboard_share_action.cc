@@ -116,7 +116,7 @@ void CopyToClipboardShareAction::LaunchAction(
   ToastData toast(kToastId, ToastCatalogName::kCopyToClipboardShareAction,
                   l10n_util::GetStringUTF16(
                       IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL));
-  ShowToast(toast);
+  ShowToast(std::move(toast));
 }
 
 void CopyToClipboardShareAction::OnClosing(
@@ -143,8 +143,8 @@ bool CopyToClipboardShareAction::ShouldShowAction(
          ShareAction::ShouldShowAction(intent, contains_hosted_document);
 }
 
-void CopyToClipboardShareAction::ShowToast(const ash::ToastData& toast_data) {
-  ToastManager::Get()->Show(toast_data);
+void CopyToClipboardShareAction::ShowToast(ash::ToastData toast_data) {
+  ToastManager::Get()->Show(std::move(toast_data));
 }
 
 }  // namespace sharesheet

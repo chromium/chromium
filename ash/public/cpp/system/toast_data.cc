@@ -41,8 +41,14 @@ ToastData::ToastData(std::string id,
       dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)),
       time_created(base::TimeTicks::Now()) {}
 
-ToastData::ToastData(const ToastData& other) = default;
+ToastData::ToastData(ToastData&& other) = default;
+ToastData& ToastData::operator=(ToastData&& other) = default;
 
-ToastData::~ToastData() = default;
+ToastData::~ToastData() {
+  // The toast can get cancelled before it shows, so we only want to run
+  // `expired_callback` if the toast actually did show.
+  if (!time_start_showing.is_null() && expired_callback)
+    std::move(expired_callback).Run();
+}
 
 }  // namespace ash

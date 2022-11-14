@@ -110,7 +110,7 @@ ToastManagerImpl::~ToastManagerImpl() {
   Shell::Get()->RemoveShellObserver(this);
 }
 
-void ToastManagerImpl::Show(const ToastData& data) {
+void ToastManagerImpl::Show(ToastData data) {
   const std::string& id = data.id;
   DCHECK(!id.empty());
 
@@ -120,21 +120,21 @@ void ToastManagerImpl::Show(const ToastData& data) {
     // Assigns given `data` to existing queued toast, but keeps the existing
     // toast's `time_created` value.
     const base::TimeTicks old_time_created = existing_toast->time_created;
-    *existing_toast = data;
+    *existing_toast = std::move(data);
     existing_toast->time_created = old_time_created;
   } else {
     if (IsRunning(id)) {
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
-      queue_.emplace_front(data);
+      queue_.emplace_front(std::move(data));
 
       CloseAllToastsWithAnimation();
 
       return;
     }
 
-    queue_.emplace_back(data);
+    queue_.emplace_back(std::move(data));
   }
 
   if (queue_.size() == 1 && !HasActiveToasts())
@@ -216,7 +216,7 @@ void ToastManagerImpl::OnSessionStateChanged(
 
   if ((locked != locked_) && current_toast_data_) {
     // Re-queue the currently visible toast which is not for lock screen.
-    queue_.push_front(*current_toast_data_);
+    queue_.push_front(std::move(*current_toast_data_));
     current_toast_data_.reset();
     // Hide the currently visible toast instances without any animation.
     CloseAllToastsWithoutAnimation();
@@ -239,7 +239,7 @@ void ToastManagerImpl::ShowLatest() {
   if (it == queue_.end())
     return;
 
-  current_toast_data_ = *it;
+  current_toast_data_ = std::move(*it);
   queue_.erase(it);
 
   serial_++;
@@ -276,8 +276,7 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
       current_toast_data_->duration,
       current_toast_data_->visible_on_lock_screen && locked_,
       current_toast_data_->is_managed, current_toast_data_->persist_on_hover,
-      root_window, current_toast_data_->dismiss_callback,
-      current_toast_data_->expired_callback);
+      root_window, current_toast_data_->dismiss_callback);
   new_overlay->Show(true);
 
   // We only want to record this value when the first instance of the toast is
@@ -329,16 +328,7 @@ void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
   if (current_toast_data_ && !current_toast_data_->show_on_all_root_windows)
     return;
 
-  // If the toast is displaying on multiple monitors and one of the root windows
-  // shuts down, then we do not want for that toast to run the
-  // `expired_callback_` when it is being destroyed.
-  auto& toast_overlay = root_window_to_overlay_[root_window];
-
-  if (!toast_overlay)
-    return;
-
-  toast_overlay->ResetExpiredCallback();
-  toast_overlay.reset();
+  root_window_to_overlay_.erase(root_window);
 }
 
 }  // namespace ash
