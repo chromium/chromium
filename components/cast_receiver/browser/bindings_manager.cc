@@ -2,55 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
+#include "components/cast_receiver/browser/bindings_manager.h"
 
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromecast/cast_core/runtime/browser/message_port_handler.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
-BindingsManagerWebRuntime::Client::~Client() = default;
+BindingsManager::Client::~Client() = default;
 
-BindingsManagerWebRuntime::BindingsManagerWebRuntime(
-    Client& client,
-    MessagePortService& message_port_service)
+BindingsManager::BindingsManager(Client& client,
+                                 MessagePortService& message_port_service)
     : message_port_service_(message_port_service), client_(client) {}
 
-BindingsManagerWebRuntime::~BindingsManagerWebRuntime() = default;
+BindingsManager::~BindingsManager() = default;
 
-void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_script) {
+void BindingsManager::AddBinding(base::StringPiece binding_script) {
   int id = next_script_id_++;
   bindings_[base::NumberToString(id)] = std::string(binding_script);
 }
 
-void BindingsManagerWebRuntime::ConfigureWebContents(
-    content::WebContents* web_contents) {
+void BindingsManager::ConfigureWebContents(content::WebContents* web_contents) {
   DCHECK(!message_port_connector_);
 
   message_port_connector_ =
-      std::make_unique<cast_receiver::BindingsMessagePortConnector>(
-          web_contents, *this);
+      std::make_unique<BindingsMessagePortConnector>(web_contents, *this);
   message_port_connector_->ConnectToBindingsService();
 }
 
-void BindingsManagerWebRuntime::OnError() {
+void BindingsManager::OnError() {
   message_port_connector_.reset();
   client_->OnError();
 }
 
-void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_name,
-                                           base::StringPiece binding_script) {
+void BindingsManager::AddBinding(base::StringPiece binding_name,
+                                 base::StringPiece binding_script) {
   bindings_[std::string(binding_name)] = std::string(binding_script);
 }
 
 std::vector<cast_receiver::BindingsMessagePortConnector::Client::ApiBinding>
-BindingsManagerWebRuntime::GetAllBindings() {
+BindingsManager::GetAllBindings() {
   std::vector<ApiBinding> bindings_vector;
   for (auto& [name, script] : bindings_) {
     ApiBinding api_binding{script};
@@ -59,12 +55,12 @@ BindingsManagerWebRuntime::GetAllBindings() {
   return bindings_vector;
 }
 
-void BindingsManagerWebRuntime::Connect(const std::string& port_name,
-                                        blink::MessagePortDescriptor port) {
+void BindingsManager::Connect(const std::string& port_name,
+                              blink::MessagePortDescriptor port) {
   message_port_service_->ConnectToPortAsync(
       port_name,
       cast_api_bindings::BlinkMessagePortAdapter::ToClientPlatformMessagePort(
           blink::WebMessagePort::Create(std::move(port))));
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

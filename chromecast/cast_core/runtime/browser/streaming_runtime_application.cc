@@ -4,9 +4,9 @@
 
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

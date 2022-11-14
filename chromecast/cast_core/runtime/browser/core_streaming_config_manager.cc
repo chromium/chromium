@@ -11,9 +11,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
@@ -181,7 +181,7 @@ cast_streaming::ReceiverConfig CreateConfig(
 }  // namespace
 
 CoreStreamingConfigManager::CoreStreamingConfigManager(
-    MessagePortService& message_port_service,
+    cast_receiver::MessagePortService& message_port_service,
     cast_receiver::RuntimeApplication::StatusCallback error_cb)
     : CoreStreamingConfigManager(std::move(error_cb)) {
   std::unique_ptr<cast_api_bindings::MessagePort> server;

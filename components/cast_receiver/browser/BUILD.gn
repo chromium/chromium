@@ -31,6 +31,35 @@ source_set("browser") {
   friend = [ ":unit_tests" ]
 }
 
+# TODO(crbug.com/1359579): Limit visibility to just this component.
+if (enable_cast_receiver || is_fuchsia) {
+  source_set("runtime") {
+    public_deps = [ "//third_party/blink/public/common" ]
+    deps = [
+      ":browser",
+      ":page_state_observer",
+      "//base",
+      "//components/cast/api_bindings:manager",
+      "//components/cast/message_port",
+      "//components/cast/message_port:blink_message_port_adapter",
+      "//components/cast/message_port:message_port_cast",
+      "//components/cast/named_message_port_connector",
+      "//components/cast_receiver/common",
+      "//components/media_control/browser",
+      "//components/on_load_script_injector/browser",
+      "//content",
+      "//ui/base",
+    ]
+    sources = [
+      "bindings_manager.cc",
+      "bindings_manager.h",
+      "bindings_message_port_connector.cc",
+      "bindings_message_port_connector.h",
+      "public/message_port_service.h",
+    ]
+  }
+}
+
 source_set("permissions_manager") {
   public_deps = [
     "//third_party/blink/public/common:headers",
@@ -61,26 +90,6 @@ source_set("page_state_observer") {
     "page_state_observer.cc",
     "page_state_observer.h",
   ]
-}
-
-# TODO(crbug.com/1359579): Limit visibility to just this component.
-if (enable_cast_receiver || is_fuchsia) {
-  source_set("runtime") {
-    public_deps = [ "//third_party/blink/public/common" ]
-    deps = [
-      ":page_state_observer",
-      "//base",
-      "//components/cast/message_port:message_port_cast",
-      "//components/cast/named_message_port_connector",
-      "//components/on_load_script_injector/browser",
-      "//content",
-      "//ui/base",
-    ]
-    sources = [
-      "bindings_message_port_connector.cc",
-      "bindings_message_port_connector.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {

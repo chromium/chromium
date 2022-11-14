@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_BINDINGS_MANAGER_WEB_RUNTIME_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_BINDINGS_MANAGER_WEB_RUNTIME_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_BINDINGS_MANAGER_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_BINDINGS_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -16,7 +16,7 @@
 #include "components/cast_receiver/common/public/status.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 class MessagePortService;
 
@@ -25,9 +25,8 @@ class MessagePortService;
 // loads. It then handles connecting PortConnector requests from those bindings
 // by making requests to a MessagePort instance. There should be one instance of
 // this class for a single WebContents.
-class BindingsManagerWebRuntime final
-    : public cast_api_bindings::Manager,
-      public cast_receiver::BindingsMessagePortConnector::Client {
+class BindingsManager final : public cast_api_bindings::Manager,
+                              public BindingsMessagePortConnector::Client {
  public:
   // Handles callbacks for state changes in this object.
   class Client {
@@ -40,15 +39,13 @@ class BindingsManagerWebRuntime final
 
   // |client| and |message_port_service| are expected to persist for the
   // duration of this instance's lifetime.
-  BindingsManagerWebRuntime(Client& client,
-                            MessagePortService& message_port_service);
-  ~BindingsManagerWebRuntime() override;
+  BindingsManager(Client& client, MessagePortService& message_port_service);
+  ~BindingsManager() override;
 
-  BindingsManagerWebRuntime(const BindingsManagerWebRuntime&) = delete;
-  BindingsManagerWebRuntime(BindingsManagerWebRuntime&&) = delete;
-  BindingsManagerWebRuntime& operator=(const BindingsManagerWebRuntime&) =
-      delete;
-  BindingsManagerWebRuntime& operator=(BindingsManagerWebRuntime&&) = delete;
+  BindingsManager(const BindingsManager&) = delete;
+  BindingsManager(BindingsManager&&) = delete;
+  BindingsManager& operator=(const BindingsManager&) = delete;
+  BindingsManager& operator=(BindingsManager&&) = delete;
 
   void AddBinding(base::StringPiece binding_script);
 
@@ -74,14 +71,13 @@ class BindingsManagerWebRuntime final
   std::map<std::string, std::string> bindings_;
 
   // Used to open a MessageChannel for connecting API bindings.
-  std::unique_ptr<cast_receiver::BindingsMessagePortConnector>
-      message_port_connector_;
+  std::unique_ptr<BindingsMessagePortConnector> message_port_connector_;
 
   base::raw_ref<MessagePortService> message_port_service_;
 
   base::raw_ref<Client> client_;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_BINDINGS_MANAGER_WEB_RUNTIME_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_BINDINGS_MANAGER_H_

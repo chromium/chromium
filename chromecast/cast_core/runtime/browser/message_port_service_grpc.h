@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/message_port.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
@@ -24,7 +24,7 @@ class MessagePortHandler;
 
 // This class defines a gRPC-based implementation of the MessagePortService
 // interface, for use with Cast Core.
-class MessagePortServiceGrpc : public MessagePortService {
+class MessagePortServiceGrpc : public cast_receiver::MessagePortService {
  public:
   // |core_app_stub| must outlive |this|.
   MessagePortServiceGrpc(

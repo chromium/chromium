@@ -6,9 +6,8 @@
 
 #include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -111,8 +110,8 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   cast_receiver::PageStateObserver::Observe(delegate().GetWebContents());
   auto* message_port_sevice = delegate().GetMessagePortService();
   DCHECK(message_port_sevice);
-  bindings_manager_ =
-      std::make_unique<BindingsManagerWebRuntime>(*this, *message_port_sevice);
+  bindings_manager_ = std::make_unique<cast_receiver::BindingsManager>(
+      *this, *message_port_sevice);
   for (auto& binding : bindings) {
     bindings_manager_->AddBinding(std::move(binding));
   }

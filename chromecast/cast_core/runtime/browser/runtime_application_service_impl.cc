@@ -508,7 +508,8 @@ RuntimeApplicationServiceImpl::GetMessagePortServiceGrpc() {
   return message_port_service_.get();
 }
 
-MessagePortService* RuntimeApplicationServiceImpl::GetMessagePortService() {
+cast_receiver::MessagePortService*
+RuntimeApplicationServiceImpl::GetMessagePortService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMessagePortServiceGrpc();
 }

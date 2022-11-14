@@ -20,6 +20,7 @@
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 
 namespace cast_receiver {
+class MessagePortService;
 class StreamingConfigManager;
 }  // namespace cast_receiver
 
@@ -31,7 +32,6 @@ class WebUIControllerFactory;
 namespace chromecast {
 
 class CastWebContents;
-class MessagePortService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
 // implementations, including Load and Launch behavior.
@@ -73,7 +73,7 @@ class RuntimeApplicationBase
 
     // Gets the platform-specific MessagePortService instance for this
     // application, if such an instance exists.
-    virtual MessagePortService* GetMessagePortService() = 0;
+    virtual cast_receiver::MessagePortService* GetMessagePortService() = 0;
 
     // Creates a new platform-specific WebUIControllerFactory.
     virtual std::unique_ptr<content::WebUIControllerFactory>

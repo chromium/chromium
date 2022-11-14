@@ -12,11 +12,10 @@
 
 namespace cast_receiver {
 class ApplicationClient;
+class MessagePortService;
 }
 
 namespace chromecast {
-
-class MessagePortService;
 
 class StreamingRuntimeApplication final
     : public RuntimeApplicationBase,
@@ -51,7 +50,7 @@ class StreamingRuntimeApplication final
   const cast_streaming::NetworkContextGetter network_context_getter_;
 
   // Handles communication with cast core over gRPC.
-  std::unique_ptr<MessagePortService> message_port_service_;
+  std::unique_ptr<cast_receiver::MessagePortService> message_port_service_;
 
   // Object responsible for maintaining the lifetime of the streaming session.
   std::unique_ptr<StreamingReceiverSessionClient> receiver_session_client_;

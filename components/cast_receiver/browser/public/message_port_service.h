@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_MESSAGE_PORT_SERVICE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_MESSAGE_PORT_SERVICE_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_MESSAGE_PORT_SERVICE_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_MESSAGE_PORT_SERVICE_H_
 
 #include <memory>
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "components/cast_receiver/common/public/status.h"
 
 namespace cast_api_bindings {
 class MessagePort;
 }  // namespace cast_api_bindings
 
-namespace chromecast {
+namespace cast_receiver {
 
 // This class defines a wrapper around MessagePort functionality to handle
 // communicating with message ports, as well as their registration.
@@ -49,6 +48,6 @@ class MessagePortService {
   virtual void Remove(uint32_t channel_id) = 0;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_MESSAGE_PORT_SERVICE_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_MESSAGE_PORT_SERVICE_H_

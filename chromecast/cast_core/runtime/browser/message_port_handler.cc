@@ -9,8 +9,8 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/platform_message_port.h"
+#include "components/cast_receiver/browser/public/message_port_service.h"
 
 namespace chromecast {
 namespace {
@@ -28,7 +28,7 @@ constexpr base::TimeDelta kMessageTimeout = base::Seconds(10);
 MessagePortHandler::MessagePortHandler(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     uint32_t channel_id,
-    MessagePortService* message_port_service,
+    cast_receiver::MessagePortService* message_port_service,
     cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),

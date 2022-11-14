@@ -25,6 +25,7 @@
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace cast_receiver {
+class MessagePortService;
 class StreamingConfigManager;
 }  // namespace cast_receiver
 
@@ -36,7 +37,6 @@ class WebUIControllerFactory;
 namespace chromecast {
 
 class CastContentWindow;
-class MessagePortService;
 class MessagePortServiceGrpc;
 class RuntimeApplicationBase;
 
@@ -67,7 +67,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate,
                                 int32_t net_error_code) override;
   void NotifyMediaPlaybackChanged(bool playing) override;
   void GetAllBindings(GetAllBindingsCallback callback) override;
-  MessagePortService* GetMessagePortService() override;
+  cast_receiver::MessagePortService* GetMessagePortService() override;
   std::unique_ptr<content::WebUIControllerFactory> CreateWebUIControllerFactory(
       std::vector<std::string> hosts) override;
   content::WebContents* GetWebContents() override;

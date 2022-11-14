@@ -7,20 +7,19 @@
 
 #include <vector>
 
-#include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "components/cast_receiver/browser/bindings_manager.h"
 #include "components/cast_receiver/browser/page_state_observer.h"
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
 
-class BindingsManagerWebRuntime;
-
-class WebRuntimeApplication final : public RuntimeApplicationBase,
-                                    public content::WebContentsObserver,
-                                    public BindingsManagerWebRuntime::Client,
-                                    public cast_receiver::PageStateObserver {
+class WebRuntimeApplication final
+    : public RuntimeApplicationBase,
+      public content::WebContentsObserver,
+      public cast_receiver::BindingsManager::Client,
+      public cast_receiver::PageStateObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
@@ -58,7 +57,7 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   // BindingsManagerWebRuntime::Client implementation:
   void OnError() override;
 
-  std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;
+  std::unique_ptr<cast_receiver::BindingsManager> bindings_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WebRuntimeApplication> weak_factory_{this};

@@ -13,9 +13,11 @@
 #include "components/cast_receiver/browser/public/runtime_application.h"
 #include "components/cast_receiver/browser/public/streaming_config_manager.h"
 
-namespace chromecast {
-
+namespace cast_receiver {
 class MessagePortService;
+}  // namespace cast_receiver
+
+namespace chromecast {
 
 // This class implements retrieving of a cast_streaming::RuntimeConfig from an
 // AV Settings MessagePort query.
@@ -26,7 +28,7 @@ class CoreStreamingConfigManager
   // Creates a new instance of this class. |message_port_service| must persist
   // for the lifetime of this instance.
   CoreStreamingConfigManager(
-      MessagePortService& message_port_service,
+      cast_receiver::MessagePortService& message_port_service,
       cast_receiver::RuntimeApplication::StatusCallback error_cb);
   ~CoreStreamingConfigManager() override;
 
