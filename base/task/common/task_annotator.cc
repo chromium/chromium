@@ -63,14 +63,16 @@ const PendingTask* TaskAnnotator::CurrentTaskForThread() {
 }
 
 void TaskAnnotator::OnIPCReceived(const char* interface_name,
-                                  uint32_t (*method_info)()) {
+                                  uint32_t (*method_info)(),
+                                  bool is_response) {
   base::TaskAnnotator::LongTaskTracker* current_long_task_tracker =
       GetTLSForCurrentLongTaskTracker()->Get();
 
   if (!current_long_task_tracker)
     return;
 
-  current_long_task_tracker->SetIpcDetails(interface_name, method_info);
+  current_long_task_tracker->SetIpcDetails(interface_name, method_info,
+                                           is_response);
 }
 
 TaskAnnotator::TaskAnnotator() = default;
@@ -280,6 +282,7 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
 
   if (!is_tracing_)
     return;
+
   TimeTicks task_end_time = tick_clock_->NowTicks();
   if ((task_end_time - task_start_time_) >= kMaxTaskDurationTimeDelta) {
     TRACE_EVENT_BEGIN("scheduler.long_tasks", "LongTaskTracker",
@@ -301,8 +304,10 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
 }
 
 void TaskAnnotator::LongTaskTracker::SetIpcDetails(const char* interface_name,
-                                                   uint32_t (*method_info)()) {
+                                                   uint32_t (*method_info)(),
+                                                   bool is_response) {
   ipc_interface_name_ = interface_name;
+  is_response_ = is_response;
 
   if (!method_info)
     return;
@@ -321,6 +326,7 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
   auto* info = ctx.event()->set_chrome_mojo_event_info();
   info->set_mojo_interface_tag(ipc_interface_name_);
   info->set_ipc_hash(ipc_hash_);
+  info->set_is_reply(is_response_);
 
   // The Native client will not build as the relevant implementation of
   // base::ModuleCache::CreateModuleForAddress is not implemented for it.

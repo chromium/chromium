@@ -927,7 +927,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
   // should not associate them with the top-level scheduler task.
   if (!message->has_flag(Message::kFlagIsSync)) {
     const auto method_info = method_info_callback_(*message);
-    base::TaskAnnotator::OnIPCReceived(interface_name_, method_info);
+    base::TaskAnnotator::OnIPCReceived(
+        interface_name_, method_info,
+        message->has_flag(Message::kFlagIsResponse));
   }
 
   if (encountered_error_) {

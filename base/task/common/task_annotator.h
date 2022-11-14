@@ -43,7 +43,8 @@ class BASE_EXPORT TaskAnnotator {
   static const PendingTask* CurrentTaskForThread();
 
   static void OnIPCReceived(const char* interface_name,
-                            uint32_t (*method_info)());
+                            uint32_t (*method_info)(),
+                            bool is_response);
 
   TaskAnnotator();
 
@@ -147,7 +148,9 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
 
   ~LongTaskTracker();
 
-  void SetIpcDetails(const char* interface_name, uint32_t (*method_info)());
+  void SetIpcDetails(const char* interface_name,
+                     uint32_t (*method_info)(),
+                     bool is_response);
 
  private:
   void EmitReceivedIPCDetails(perfetto::EventContext& ctx);
@@ -168,6 +171,7 @@ class BASE_EXPORT TaskAnnotator::LongTaskTracker {
   // IPC method info to retrieve IPC hash and method address from trace, if
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
+  bool is_response_ = false;
   PendingTask& pending_task_;
   TaskAnnotator* task_annotator_;
 };
