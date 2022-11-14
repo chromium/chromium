@@ -532,4 +532,4 @@ set `cwd` to the output dir. otherwise, set `cwd` to `${workspaceFolder}`.
 ### More
 
 More tips and tricks can be found
-[here](https://github.com/Microsoft/vscode-tips-and-tricks/blob/master/README.md).
+[here](https://code.visualstudio.com/docs/getstarted/tips-and-tricks).
