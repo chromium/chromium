@@ -172,7 +172,6 @@ void SubAppsServiceImpl::Add(std::vector<SubAppsServiceAddInfoPtr> sub_apps,
       *parent_app_id, AddOptionsFromMojo(std::move(sub_apps)),
       base::BindOnce(&OnAdd, std::move(result_callback)),
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext()),
-      &provider->registrar(), &provider->install_finalizer(),
       std::make_unique<WebAppUrlLoader>(),
       std::make_unique<WebAppDataRetriever>());
 

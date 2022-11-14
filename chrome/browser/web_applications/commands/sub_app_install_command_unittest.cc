@@ -51,7 +51,6 @@ class SubAppInstallCommandTest : public WebAppTest {
       std::unique_ptr<WebAppDataRetriever> data_retriever) {
     return std::make_unique<SubAppInstallCommand>(
         parent_app_id, sub_app_data, std::move(callback), profile(),
-        &provider()->registrar(), &provider()->install_finalizer(),
         std::move(url_loader), std::move(data_retriever));
   }
 

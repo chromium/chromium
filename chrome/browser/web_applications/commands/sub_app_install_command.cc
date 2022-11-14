@@ -112,8 +112,6 @@ SubAppInstallCommand::SubAppInstallCommand(
     std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
     SubAppInstallResultCallback install_callback,
     Profile* profile,
-    const WebAppRegistrar* registrar,
-    WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : lock_description_(
@@ -123,8 +121,6 @@ SubAppInstallCommand::SubAppInstallCommand(
       requested_installs_{std::move(sub_apps)},
       install_callback_{std::move(install_callback)},
       profile_(profile),
-      registrar_{registrar},
-      install_finalizer_{install_finalizer},
       url_loader_(std::move(url_loader)),
       data_retriever_{std::move(data_retriever)},
       log_entry_(/*background_installation=*/false,
@@ -157,10 +153,13 @@ void SubAppInstallCommand::SetDialogNotAcceptedForTesting() {
   dialog_not_accepted_for_testing_ = true;
 }
 
-void SubAppInstallCommand::Start() {
+void SubAppInstallCommand::StartWithLock(
+    std::unique_ptr<SharedWebContentsWithAppLock> lock) {
+  lock_ = std::move(lock);
+
   DCHECK(state_ == State::kNotStarted);
 
-  if (!registrar_->IsInstalled(parent_app_id_)) {
+  if (!lock_->registrar().IsInstalled(parent_app_id_)) {
     base::ranges::transform(
         requested_installs_, std::inserter(results_, results_.begin()),
         [](auto const& pair) {
@@ -316,7 +315,7 @@ void SubAppInstallCommand::OnDidPerformInstallableCheck(
     return;
   }
 
-  if (registrar_->WasInstalledBySubApp(app_id)) {
+  if (lock_->registrar().WasInstalledBySubApp(app_id)) {
     MaybeFinishInstall(unhashed_app_id,
                        webapps::InstallResultCode::kSuccessAlreadyInstalled);
     return;
@@ -367,7 +366,7 @@ void SubAppInstallCommand::OnDialogCompleted(
 
   web_app_info->user_display_mode = UserDisplayMode::kStandalone;
 
-  install_finalizer_->FinalizeInstall(
+  lock_->install_finalizer().FinalizeInstall(
       *web_app_info, GetFinalizerOptionsForSubApps(parent_app_id_),
       base::BindOnce(&SubAppInstallCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,

@@ -40,7 +40,8 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
   ~SharedWebContentsWithAppLockDescription();
 };
 
-class SharedWebContentsWithAppLock : public SharedWebContentsLock, AppLock {
+class SharedWebContentsWithAppLock : public SharedWebContentsLock,
+                                     public AppLock {
  public:
   SharedWebContentsWithAppLock(content::WebContents& shared_web_contents,
                                WebAppRegistrar& registrar,
