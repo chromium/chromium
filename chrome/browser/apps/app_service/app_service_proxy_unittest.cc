@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -379,6 +380,12 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   void SetUp() override {
     proxy_ = AppServiceProxyFactory::GetForProfile(&profile_);
 
+    // Wait for the PreferredAppsList to be initialized from disk before tests
+    // start modifying it.
+    base::RunLoop file_read_run_loop;
+    proxy_->ReinitializeForTesting(&profile_, file_read_run_loop.QuitClosure());
+    file_read_run_loop.Run();
+
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
   }
 
@@ -404,8 +411,7 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   raw_ptr<AppServiceProxy> proxy_;
 };
 
-// Disabled due to flake: https://crbug.com/1382487
-TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_UpdatedOnUninstall) {
+TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
   constexpr char kTestAppId[] = "foo";
   const GURL kTestUrl = GURL("https://www.example.com/");
 
@@ -455,8 +461,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_UpdatedOnUninstall) {
   }
 }
 
-// Disabled due to flake: https://crbug.com/1382487
-TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_SetPreferredApp) {
+TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   constexpr char kTestAppId1[] = "abc";
   constexpr char kTestAppId2[] = "def";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
@@ -516,8 +521,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_SetPreferredApp) {
 
 // Using AddPreferredApp to set a supported link should enable all supported
 // links for that app.
-// Disabled due to flake: https://crbug.com/1382487
-TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_AddPreferredAppForLink) {
+TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
   constexpr char kTestAppId[] = "aaa";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
   const GURL kTestUrl2 = GURL("https://www.bar.com/");
@@ -540,8 +544,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_AddPreferredAppForLink) {
             proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 }
 
-// Disabled due to flake: https://crbug.com/1382487
-TEST_F(AppServiceProxyPreferredAppsTest, DISABLED_AddPreferredAppBrowser) {
+TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
   constexpr char kTestAppId1[] = "aaa";
   constexpr char kTestAppId2[] = "bbb";
   const GURL kTestUrl1 = GURL("https://www.foo.com/");
