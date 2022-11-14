@@ -19,8 +19,7 @@ class ImeKeyboard;
 
 // The mock InputMethodManager for testing.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
-    : public InputMethodManager,
-      public ui::VirtualKeyboardController {
+    : public InputMethodManager {
  public:
  public:
   class State : public InputMethodManager::State {
@@ -96,10 +95,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
 
   ~MockInputMethodManager() override;
 
-  void SetVirtualKeyboardEnabled(bool enabled) {
-    virtual_keyboard_enabled_ = enabled;
-  }
-
   // InputMethodManager:
   void AddObserver(InputMethodManager::Observer* observer) override;
   void AddCandidateWindowObserver(
@@ -140,19 +135,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
   void NotifyInputMethodExtensionRemoved(
       const std::string& extension_id) override;
 
-  // ui::VirtualKeyboardController overrides.
-  bool DisplayVirtualKeyboard() override;
-  void DismissVirtualKeyboard() override;
-  void AddObserver(ui::VirtualKeyboardControllerObserver* observer) override;
-  void RemoveObserver(ui::VirtualKeyboardControllerObserver* observer) override;
-  bool IsKeyboardVisible() override;
-
  private:
   scoped_refptr<State> state_;
   uint32_t features_enabled_state_;
-  bool virtual_keyboard_enabled_ = true;
-  base::ObserverList<ui::VirtualKeyboardControllerObserver>::Unchecked
-      observer_list_;
 };
 
 }  // namespace input_method

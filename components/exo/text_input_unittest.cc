@@ -378,13 +378,6 @@ TEST_F(TextInputTest, VirtualKeyboardObserver) {
   text_input()->Activate(seat(), surface());
   testing::Mock::VerifyAndClearExpectations(delegate());
 
-  // Disable virtual keyboard so that GetVirtualKeyboardController() starts
-  // to return nullptr.
-  auto* input_method_manager =
-      static_cast<ash::input_method::MockInputMethodManager*>(
-          ash::input_method::InputMethodManager::Get());
-  input_method_manager->SetVirtualKeyboardEnabled(false);
-
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_TEXT, text_input()->GetTextInputMode());
   EXPECT_EQ(0, text_input()->GetTextInputFlags());
@@ -397,11 +390,7 @@ TEST_F(TextInputTest, VirtualKeyboardObserver) {
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 
   // Destroy the text_input.
-  // Because text_input used not to be removed from VirtualKeyboardController
-  // as its observer, this used to cause a dangling pointer problem, so
-  // caused the crash in the following DismissVirtualKeyboard.
   DestroyTextInput();
-  input_method_manager->DismissVirtualKeyboard();
 }
 
 TEST_F(TextInputTest, SetTypeModeFlag) {
