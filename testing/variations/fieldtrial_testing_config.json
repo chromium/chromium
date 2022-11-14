@@ -11398,6 +11398,21 @@
             ]
         }
     ],
+    "UnicornAccountSupport": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableUnicornAccountSupport"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
