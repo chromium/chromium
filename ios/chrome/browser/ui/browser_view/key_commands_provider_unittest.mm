@@ -741,4 +741,25 @@ TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_SomeTabs) {
   EXPECT_EQ(web_state_list_->active_index(), 10);
 }
 
+// Verifies that KeyCommandsProvider performs the correct back/forward
+// navigation actions.
+TEST_F(KeyCommandsProviderTest, BackForward) {
+  web::FakeWebState* web_state = InsertNewWebPageWithMultipleEntries(0);
+  web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  int initial_index = navigation_manager->GetLastCommittedItemIndex();
+
+  [provider_ keyCommand_back];
+  EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
+
+  [provider_ keyCommand_back];
+  EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 2);
+
+  [provider_ keyCommand_forward];
+  EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index - 1);
+
+  [provider_ keyCommand_forward];
+  EXPECT_EQ(navigation_manager->GetLastCommittedItemIndex(), initial_index);
+}
+
 }  // namespace
