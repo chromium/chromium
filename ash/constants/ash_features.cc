@@ -1482,6 +1482,9 @@ BASE_FEATURE(kOnDeviceSpeechRecognition,
              "OnDeviceSpeechRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
+BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, EULA and ARC Terms of Service screens are skipped and merged
 // into Consolidated Consent Screen.
 BASE_FEATURE(kOobeConsolidatedConsent,
@@ -2840,6 +2843,10 @@ bool IsOobeMaterialNextEnabled() {
 
 bool IsOobeNetworkScreenSkipEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeNetworkScreenSkip);
+}
+
+bool IsOobeChoobeEnabled() {
+  return base::FeatureList::IsEnabled(kOobeChoobe);
 }
 
 bool IsOobeConsolidatedConsentEnabled() {
