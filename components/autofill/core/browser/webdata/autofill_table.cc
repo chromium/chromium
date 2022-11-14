@@ -1644,6 +1644,14 @@ bool AutofillTable::RemoveAutofillProfile(
          RemoveAutofillProfilePieces(guid, db_);
 }
 
+bool AutofillTable::RemoveAllAutofillProfiles(
+    AutofillProfile::Source profile_source) {
+  DCHECK(profile_source == AutofillProfile::Source::kAccount);
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && Delete(db_, kContactInfoTable) &&
+         Delete(db_, kContactInfoTypeTokensTable) && transaction.Commit();
+}
+
 std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) {

@@ -1010,6 +1010,20 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
 }
 
+// Tests that `RemoveAllAutofillProfiles()` cleares all kAccount profiles.
+TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
+  EXPECT_TRUE(table_->AddAutofillProfile(AutofillProfile(
+      base::GenerateGUID(), "", AutofillProfile::Source::kAccount)));
+
+  EXPECT_TRUE(
+      table_->RemoveAllAutofillProfiles(AutofillProfile::Source::kAccount));
+
+  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  EXPECT_TRUE(table_->GetAutofillProfiles(&profiles,
+                                          AutofillProfile::Source::kAccount));
+  EXPECT_TRUE(profiles.empty());
+}
+
 TEST_F(AutofillTableTest, IBAN) {
   // Add a valid IBAN.
   IBAN iban;

@@ -105,16 +105,18 @@ class ContactInfoSyncBridgeTest : public testing::Test {
     }
   }
 
-  // Synchronously gets all data from the `bridge()`.
-  std::vector<AutofillProfile> GetAllDataFromBridge() {
+  // Reads all kAccount profiles from `table_`. We should not rely on the
+  // `bridge()` (and `GetAllDataForDebugging()`) here, since we want to simulate
+  // how the PersonalDataManager will access the profiles.
+  std::vector<AutofillProfile> GetAllDataFromTable() {
+    std::vector<std::unique_ptr<AutofillProfile>> profile_ptrs;
+    EXPECT_TRUE(table_.GetAutofillProfiles(&profile_ptrs,
+                                           AutofillProfile::Source::kAccount));
+    // In tests, it's more convenient to work without `std::unique_ptr`.
     std::vector<AutofillProfile> profiles;
-    base::RunLoop loop;
-    bridge().GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&](std::unique_ptr<syncer::DataBatch> batch) {
-          profiles = ExtractAutofillProfilesFromDataBatch(std::move(batch));
-          loop.Quit();
-        }));
-    loop.Run();
+    for (const std::unique_ptr<AutofillProfile>& profile_ptr : profile_ptrs) {
+      profiles.push_back(std::move(*profile_ptr));
+    }
     return profiles;
   }
 
@@ -164,7 +166,7 @@ TEST_F(ContactInfoSyncBridgeTest, MergeSyncData) {
 
   EXPECT_TRUE(StartSyncing({remote1, remote2}));
 
-  EXPECT_THAT(GetAllDataFromBridge(), UnorderedElementsAre(remote1, remote2));
+  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1, remote2));
 }
 
 // Tests that when sync changes are applied, `ApplySyncChanges()` merges remotes
@@ -195,7 +197,7 @@ TEST_F(ContactInfoSyncBridgeTest, ApplySyncChanges) {
                                          std::move(entity_change_list)));
 
   // Expect that the local profiles have changed.
-  EXPECT_THAT(GetAllDataFromBridge(), ElementsAre(remote));
+  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote));
 }
 
 // Tests that `GetData()` returns all local profiles of matching GUID.
@@ -222,7 +224,17 @@ TEST_F(ContactInfoSyncBridgeTest, GetAllDataForDebugging) {
   const AutofillProfile profile1 = TestProfile(kGUID1);
   const AutofillProfile profile2 = TestProfile(kGUID2);
   AddAutofillProfilesToTable({profile1, profile2});
-  EXPECT_THAT(GetAllDataFromBridge(), UnorderedElementsAre(profile1, profile2));
+
+  // Synchronously gets all data from the `bridge()`.
+  std::vector<AutofillProfile> profiles;
+  base::RunLoop loop;
+  bridge().GetAllDataForDebugging(
+      base::BindLambdaForTesting([&](std::unique_ptr<syncer::DataBatch> batch) {
+        profiles = ExtractAutofillProfilesFromDataBatch(std::move(batch));
+        loop.Quit();
+      }));
+  loop.Run();
+  EXPECT_THAT(profiles, UnorderedElementsAre(profile1, profile2));
 }
 
 // Tests that new local profiles are pushed to Sync.
@@ -266,6 +278,37 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
 
   bridge().AutofillProfileChanged(change);
+}
+
+// Tests that `ApplyStopSyncChanges()` clears all data in AutofillTable when the
+// data type gets disabled. This is indicated by passing a non-null metadata
+// change list to `ApplyStopSyncChanges()`.
+TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_DisableContactInfo) {
+  const AutofillProfile remote = TestProfile(kGUID1);
+  ASSERT_TRUE(StartSyncing({remote}));
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
+
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges);
+
+  bridge().ApplyStopSyncChanges(bridge().CreateMetadataChangeList());
+
+  EXPECT_TRUE(GetAllDataFromTable().empty());
+}
+
+// Tests that `ApplyStopSyncChanges()` leaves the local data as-is when sync is
+// stopping.
+TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_SyncStopping) {
+  const AutofillProfile remote = TestProfile(kGUID1);
+  ASSERT_TRUE(StartSyncing({remote}));
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
+
+  EXPECT_CALL(backend(), CommitChanges()).Times(0);
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges).Times(0);
+
+  bridge().ApplyStopSyncChanges(/*delete_metadata_change_list=*/nullptr);
+
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
 }
 
 }  // namespace autofill

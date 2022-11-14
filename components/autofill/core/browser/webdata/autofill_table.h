@@ -571,6 +571,11 @@ class AutofillTable : public WebDatabaseTable,
   virtual bool RemoveAutofillProfile(const std::string& guid,
                                      AutofillProfile::Source profile_source);
 
+  // Removes all profiles from the given `profile_source`. Currently this is
+  // only supported for kAccount profiles, since they are cleared when the Sync
+  // data types gets disabled.
+  bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
+
   // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
   // `kContactInfoTable`.
   std::unique_ptr<AutofillProfile> GetAutofillProfile(

@@ -70,10 +70,9 @@ ContactInfoSyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // Since the local storage is cleared when Sync is disabled, `MergeSyncData()`
-  // simply becomes an `ApplySyncChanges()` call.
-  // TODO(crbug.com/1348294): Actually clear the local storage in
-  // `ApplyStopSyncChanges()`.
+  // Since the local storage is cleared when the data type is disabled in
+  // `ApplyStopSyncChanges()`, `MergeSyncData()` simply becomes an
+  // `ApplySyncChanges()` call.
   if (auto error = ApplySyncChanges(std::move(metadata_change_list),
                                     std::move(entity_data))) {
     return error;
@@ -206,6 +205,24 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
   // need to be committed, because the open WebDatabase transaction is committed
   // by the AutofillWebDataService when the original local write operation (that
   // triggered this notification to the bridge) finishes.
+}
+
+void ContactInfoSyncBridge::ApplyStopSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  if (!delete_metadata_change_list) {
+    // A null `delete_metadata_change_list` indicates that Sync is stopping.
+    return;
+  }
+  // A non-null `delete_metadata_change_list` indicates that the data type was
+  // disabled.
+  if (!GetAutofillTable()->RemoveAllAutofillProfiles(
+          AutofillProfile::Source::kAccount)) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to delete profiles from table."});
+  }
+  web_data_backend_->CommitChanges();
+  // False positives can occur here if there were no profiles to begin with.
+  web_data_backend_->NotifyOfMultipleAutofillChanges();
 }
 
 AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
