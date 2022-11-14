@@ -83,24 +83,24 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
 
   std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
       signature_verifier = signature_verifier_factory_.Run();
-  std::unique_ptr<SignedWebBundleReader> reader =
-      SignedWebBundleReader::CreateAndStartReading(
-          web_bundle_path,
-          base::BindOnce(
-              &IsolatedWebAppReaderRegistry::OnIntegrityBlockRead,
-              // `base::Unretained` can be used here since `this` owns `reader`.
-              base::Unretained(this), web_bundle_path, web_bundle_id),
-          base::BindOnce(
-              &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
-              // `base::Unretained` can be used here since `this` owns `reader`.
-              base::Unretained(this), web_bundle_path, web_bundle_id),
-          std::move(signature_verifier));
+  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
+      web_bundle_path, std::move(signature_verifier));
 
   auto [cache_entry_it, was_insertion] =
       reader_cache_.Emplace(web_bundle_path, Cache::Entry(std::move(reader)));
   DCHECK(was_insertion);
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
+
+  cache_entry_it->second.GetReader().StartReading(
+      base::BindOnce(
+          &IsolatedWebAppReaderRegistry::OnIntegrityBlockRead,
+          // `base::Unretained` can be used here since `this` owns `reader`.
+          base::Unretained(this), web_bundle_path, web_bundle_id),
+      base::BindOnce(
+          &IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead,
+          // `base::Unretained` can be used here since `this` owns `reader`.
+          base::Unretained(this), web_bundle_path, web_bundle_id));
 }
 
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(

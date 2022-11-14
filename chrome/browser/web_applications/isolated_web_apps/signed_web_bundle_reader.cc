@@ -39,23 +39,6 @@ SignedWebBundleReader::~SignedWebBundleReader() {
 }
 
 // static
-std::unique_ptr<SignedWebBundleReader>
-SignedWebBundleReader::CreateAndStartReading(
-    const base::FilePath& web_bundle_path,
-    IntegrityBlockReadResultCallback integrity_block_result_callback,
-    ReadErrorCallback read_error_callback,
-    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
-        signature_verifier) {
-  // Using `new` to access a non-public constructor.
-  auto reader = base::WrapUnique(new SignedWebBundleReader(
-      web_bundle_path, std::move(signature_verifier)));
-  reader->StartReading(std::move(integrity_block_result_callback),
-                       std::move(read_error_callback));
-
-  return reader;
-}
-
-// static
 std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
     const base::FilePath& web_bundle_path,
     std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>

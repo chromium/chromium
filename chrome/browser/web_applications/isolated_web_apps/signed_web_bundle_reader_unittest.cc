@@ -126,8 +126,12 @@ class SignedWebBundleReaderTest : public testing::Test {
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
 
-    return SignedWebBundleReader::CreateAndStartReading(
-        temp_file_path,
+    std::unique_ptr<SignedWebBundleReader> reader =
+        SignedWebBundleReader::Create(
+            temp_file_path,
+            std::make_unique<FakeSignatureVerifier>(signature_verifier_error));
+
+    reader->StartReading(
         base::BindLambdaForTesting(
             [verification_action](
                 const std::vector<web_package::Ed25519PublicKey>&
@@ -139,8 +143,9 @@ class SignedWebBundleReaderTest : public testing::Test {
 
               std::move(callback).Run(verification_action);
             }),
-        std::move(callback),
-        std::make_unique<FakeSignatureVerifier>(signature_verifier_error));
+        std::move(callback));
+
+    return reader;
   }
 
   base::expected<web_package::mojom::BundleResponsePtr,

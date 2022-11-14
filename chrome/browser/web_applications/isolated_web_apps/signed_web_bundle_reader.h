@@ -38,18 +38,13 @@ namespace web_app {
 // block and metadata, as well as to verify that the signatures contained in the
 // integrity block sign the bundle correctly.
 //
-// Calling `CreateAndStartReading` creates a new instance of this class and
-// starts the process to read the Signed Web Bundle's integrity block and
-// metadata, as well as to verify that the signatures contained in the integrity
-// block sign the bundle correctly.
-
-// If everything is parsed successfully, then the caller can make requests to
-// responses contained in the Signed Web Bundle using `ReadResponse` and
-// `ReadResponseBody`. The caller can then also access the metadata contained in
-// the Signed Web Bundle. Potential errors occurring during initialization are
-// irrecoverable. Whether initialization has completed can be determined by
-// either waiting for the callback passed to `CreateAndStartReading` or
-// `StartReading` to run or by querying `GetState`.
+// If everything is parsed successfully, then
+// the caller can make requests to responses contained in the Signed Web Bundle
+// using `ReadResponse` and `ReadResponseBody`. The caller can then also access
+// the metadata contained in the Signed Web Bundle. Potential errors occurring
+// during initialization are irrecoverable. Whether initialization has completed
+// can be determined by either waiting for the callback passed to `StartReading`
+// to run or by querying `GetState`.
 //
 // URLs passed to `ReadResponse` will be simplified to remove username,
 // password, and fragment before looking up the corresponding response inside
@@ -121,21 +116,6 @@ class SignedWebBundleReader {
   using ReadErrorCallback = base::OnceCallback<void(
       absl::optional<ReadIntegrityBlockAndMetadataError> error)>;
 
-  // Create a new instance of this class and start reading the Signed Web
-  // Bundle. This will invoke `integrity_block_result_callback` after reading
-  // the integrity block, which must then, based on the public keys contained in
-  // the integrity block, determine whether this class should continue with
-  // signature verification and metadata reading, or abort altogether.
-  // In any case, `read_error_callback` will be called once reading integrity
-  // block and metadata has either succeeded, was aborted, or failed.
-  static std::unique_ptr<SignedWebBundleReader> CreateAndStartReading(
-      const base::FilePath& web_bundle_path,
-      IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback,
-      std::unique_ptr<
-          web_package::SignedWebBundleSignatureVerifier> signature_verifier =
-          std::make_unique<web_package::SignedWebBundleSignatureVerifier>());
-
   // Creates a new instance of this class.
   static std::unique_ptr<SignedWebBundleReader> Create(
       const base::FilePath& web_bundle_path,
@@ -161,9 +141,9 @@ class SignedWebBundleReader {
   //                         |
   //                         `--------> kError
   //
-  // If initialization fails, the callback passed to `CreateAndStartReading` or
-  // `StartReading` is called with the corresponding error, and the state
-  // changes to `kError`. Recovery from an initialization error is not possible.
+  // If initialization fails, the callback passed to `StartReading`
+  // is called with the corresponding error, and the state changes to `kError`.
+  // Recovery from an initialization error is not possible.
   enum class State {
     kUninitialized,
     kInitializing,
