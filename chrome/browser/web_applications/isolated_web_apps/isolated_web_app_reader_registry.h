@@ -136,7 +136,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   void OnIntegrityBlockAndMetadataRead(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      absl::optional<SignedWebBundleReader::ReadError> read_error);
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
+          read_error);
 
   void DoReadResponse(SignedWebBundleReader& reader,
                       network::ResourceRequest resource_request,

@@ -98,7 +98,7 @@ class SignedWebBundleReader {
     std::string message;
   };
 
-  using ReadError = absl::variant<
+  using ReadIntegrityBlockAndMetadataError = absl::variant<
       // Triggered when the integrity block of the Signed Web Bundle does not
       // exist or parsing it fails.
       web_package::mojom::BundleIntegrityBlockParseErrorPtr,
@@ -109,8 +109,8 @@ class SignedWebBundleReader {
       web_package::SignedWebBundleSignatureVerifier::Error,
       // Triggered when metadata parsing fails.
       web_package::mojom::BundleMetadataParseErrorPtr>;
-  using ReadErrorCallback =
-      base::OnceCallback<void(absl::optional<ReadError> result)>;
+  using ReadErrorCallback = base::OnceCallback<void(
+      absl::optional<ReadIntegrityBlockAndMetadataError> error)>;
 
   // Create a new instance of this class and start reading the Signed Web
   // Bundle. This will invoke `integrity_block_result_callback` after reading
@@ -253,7 +253,8 @@ class SignedWebBundleReader {
                         web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
 
-  void FulfillWithError(ReadErrorCallback callback, ReadError error);
+  void FulfillWithError(ReadErrorCallback callback,
+                        ReadIntegrityBlockAndMetadataError error);
 
   void ReadResponseInternal(
       web_package::mojom::BundleResponseLocationPtr location,

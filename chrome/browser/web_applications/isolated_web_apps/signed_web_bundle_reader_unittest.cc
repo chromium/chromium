@@ -183,7 +183,8 @@ class SignedWebBundleReaderTest : public testing::Test {
 };
 
 TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -201,7 +202,8 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockError) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -217,7 +219,8 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockError) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadInvalidIntegrityBlockSize) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -236,7 +239,8 @@ TEST_F(SignedWebBundleReaderTest, ReadInvalidIntegrityBlockSize) {
 
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockWithParserCrash) {
   parser_factory_->SimulateParseIntegrityBlockCrash();
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -253,7 +257,8 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockWithParserCrash) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockAndAbort) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader =
       CreateReaderAndInitialize(parse_error_future.GetCallback(),
@@ -278,7 +283,8 @@ class SignedWebBundleReaderSignatureVerificationErrorTest
 
 TEST_P(SignedWebBundleReaderSignatureVerificationErrorTest,
        SignatureVerificationError) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(
       parse_error_future.GetCallback(),
@@ -315,7 +321,8 @@ INSTANTIATE_TEST_SUITE_P(
 // never triggered.
 TEST_F(SignedWebBundleReaderTest,
        ReadIntegrityBlockAndSkipSignatureVerification) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(
       parse_error_future.GetCallback(),
@@ -335,7 +342,8 @@ TEST_F(SignedWebBundleReaderTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -354,7 +362,8 @@ TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataWithParserCrash) {
   parser_factory_->SimulateParseMetadataCrash();
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -373,7 +382,8 @@ TEST_F(SignedWebBundleReaderTest, ReadMetadataWithParserCrash) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponse) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -398,7 +408,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -425,7 +436,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -458,7 +470,8 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -491,7 +504,8 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -518,7 +532,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -566,7 +581,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
 
 TEST_F(SignedWebBundleReaderTest,
        SimulateParserDisconnectWithFileErrorWhenReconnecting) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -602,7 +618,8 @@ TEST_F(SignedWebBundleReaderTest,
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
   parser_factory_->SimulateParseResponseCrash();
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
@@ -631,7 +648,8 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
-  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+  base::test::TestFuture<
+      absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 

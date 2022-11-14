@@ -249,8 +249,9 @@ void SignedWebBundleReader::OnMetadataParsed(
   std::move(callback).Run(absl::nullopt);
 }
 
-void SignedWebBundleReader::FulfillWithError(ReadErrorCallback callback,
-                                             ReadError error) {
+void SignedWebBundleReader::FulfillWithError(
+    ReadErrorCallback callback,
+    ReadIntegrityBlockAndMetadataError error) {
   state_ = State::kError;
 
   // This is an irrecoverable error state, thus we can safely delete `parser_`

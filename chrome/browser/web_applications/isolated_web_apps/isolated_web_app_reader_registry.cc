@@ -156,7 +156,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated(
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    absl::optional<SignedWebBundleReader::ReadError> read_error) {
+    absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
+        read_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto cache_entry_it = reader_cache_.Find(web_bundle_path);
