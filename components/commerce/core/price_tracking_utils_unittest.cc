@@ -138,6 +138,33 @@ TEST_F(PriceTrackingUtilsTest,
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product2));
 }
 
+TEST_F(PriceTrackingUtilsTest, SetPriceTrackingForClusterId) {
+  const uint64_t cluster_id = 12345L;
+
+  const bookmarks::BookmarkNode* product =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), cluster_id, true);
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForClusterId(
+      shopping_service_.get(), bookmark_model_.get(), cluster_id, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            EXPECT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+  EXPECT_EQ(GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id)[0],
+            product);
+}
+
 TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId) {
   const uint64_t cluster_id = 12345L;
   AddProductBookmark(bookmark_model_.get(), u"product 1",
@@ -150,6 +177,21 @@ TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId) {
   ASSERT_EQ(3U, bookmark_model_->other_node()->children().size());
   ASSERT_EQ(
       2U, GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id).size());
+}
+
+TEST_F(PriceTrackingUtilsTest, GetBookmarksWithClusterId_CountRestricted) {
+  const uint64_t cluster_id = 12345L;
+  AddProductBookmark(bookmark_model_.get(), u"product 1",
+                     GURL("http://example.com/1"), cluster_id, true);
+  AddProductBookmark(bookmark_model_.get(), u"product 2",
+                     GURL("http://example.com/2"), cluster_id, true);
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"non-product",
+                          GURL("http://www.example.com"));
+
+  ASSERT_EQ(3U, bookmark_model_->other_node()->children().size());
+  ASSERT_EQ(
+      1U,
+      GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id, 1).size());
 }
 
 TEST_F(PriceTrackingUtilsTest, GetAllPriceTrackedBookmarks) {

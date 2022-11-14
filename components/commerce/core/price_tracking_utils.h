@@ -35,6 +35,17 @@ bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
 bool IsProductBookmark(bookmarks::BookmarkModel* model,
                        const bookmarks::BookmarkNode* node);
 
+// Set the price tracking state for a particular cluster ID. This function
+// assumes that a bookmark with the specified cluster ID already exists and
+// will search for that bookmark (or the first instance of it). The logic
+// performed after that point will be the same as
+// SetPriceTrackingStateForBookmark.
+void SetPriceTrackingStateForClusterId(ShoppingService* service,
+                                       bookmarks::BookmarkModel* model,
+                                       const uint64_t cluster_id,
+                                       bool enabled,
+                                       base::OnceCallback<void(bool)> callback);
+
 // Set the state of price tracking for all bookmarks with the cluster ID of the
 // provided bookmark. A subscription update will attempted on the backend and,
 // if successful, all bookmarks with the same cluster ID will be updated.
@@ -47,10 +58,13 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
                                       bool enabled,
                                       base::OnceCallback<void(bool)> callback);
 
-// Get all bookmarks with the specified product cluster ID.
+// Get all bookmarks with the specified product cluster ID. If |max_count| is
+// specified, this function will return that number of bookmarks at most,
+// otherwise all bookmarks with the specified cluster ID will be returned.
 std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
     bookmarks::BookmarkModel* model,
-    uint64_t cluster_id);
+    uint64_t cluster_id,
+    size_t max_count = 0);
 
 // Get all bookmarks that are price tracked. This only checks the bit in the
 // bookmark metadata and does not make a call to the backend. The returned
