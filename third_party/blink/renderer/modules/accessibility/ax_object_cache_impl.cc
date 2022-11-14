@@ -2056,6 +2056,9 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
   if (settings && settings->GetAriaModalPrunesAXTree())
     UpdateActiveAriaModalDialog(node);
 
+  // Firing the document selection changed event triggers the immediate
+  // serialization that is desired for user input events -- see
+  // IsImmediateProcessingRequiredForEvent().
   DeferTreeUpdate(&AXObjectCacheImpl::PostNotification, &GetDocument(),
                   ax::mojom::blink::Event::kDocumentSelectionChanged);
 

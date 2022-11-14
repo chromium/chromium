@@ -1920,16 +1920,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
-// TODO(crbug.com/1179057): Test is flaky on multiple platforms.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_DocumentSelectionChangesAreNotBatched \
-  DISABLED_DocumentSelectionChangesAreNotBatched
-#else
-#define MAYBE_DocumentSelectionChangesAreNotBatched \
-  DocumentSelectionChangesAreNotBatched
-#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       MAYBE_DocumentSelectionChangesAreNotBatched) {
+                       DocumentSelectionChangesAreNotBatched) {
   // Ensure that document selection changes are not batched, and occur faster
   // than once per kDelayForDeferredUpdatesAfterPageLoad.
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -1976,15 +1968,8 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 #endif  // IS_FAST_BUILD
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ActiveDescendantChangesAreNotBatched \
-  DISABLED_ActiveDescendantChangesAreNotBatched
-#else
-#define MAYBE_ActiveDescendantChangesAreNotBatched \
-  ActiveDescendantChangesAreNotBatched
-#endif
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       MAYBE_ActiveDescendantChangesAreNotBatched) {
+                       ActiveDescendantChangesAreNotBatched) {
   // Ensure that active descendant changes are not batched, and occur faster
   // than once per kDelayForDeferredUpdatesAfterPageLoad.
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
