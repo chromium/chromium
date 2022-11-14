@@ -2593,4 +2593,6 @@ STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kNone,
                    EOverscrollBehavior::kNone);
 
+CORE_EXPORT ComputedStyle* ComputedStyle::freelist_ = nullptr;
+
 }  // namespace blink
