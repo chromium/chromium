@@ -14,14 +14,21 @@ source_set("price_notifications") {
   deps = [
     ":price_notifications_ui",
     "//base",
+    "//components/bookmarks/browser",
     "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/payments/core",
+    "//components/url_formatter",
+    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/web_state_list",
   ]
 }
 
@@ -37,6 +44,7 @@ source_set("price_notifications_ui") {
     ":constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",

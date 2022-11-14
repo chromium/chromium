@@ -5,15 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_
 
-// Consumer for the PriceNotifications UI.
-@protocol PriceNotificationsConsumer
-// TODO(crbug.com/1373071) The consumer functions will be defined as they are
-// implemented.
-@end
+#import <UIKit/UIKit.h>
 
-@protocol PriceNotificationsDataSource
-// TODO(crbug.com/1373071) The data source functions will be defined as they are
-// implemented.
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_consumer.h"
+
+@class PriceNotificationsTableViewItem;
+
+// Consumer for the PriceNotifications UI.
+@protocol PriceNotificationsConsumer <ChromeTableViewConsumer>
+
+// Displays the item that is available to be tracked on the current site.
+- (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
+       currentlyTracking:(BOOL)currentlyTracking;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_

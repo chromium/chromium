@@ -40,6 +40,7 @@ const CGFloat kCellContentSpacing = 14;
 
   tableCell.titleLabel.text = self.title;
   tableCell.URLLabel.text = self.entryURL;
+  [tableCell setImage:self.productImage];
   [tableCell.priceNotificationsChip setPriceDrop:self.currentPrice
                                    previousPrice:self.previousPrice];
   tableCell.tracking = self.tracking;
@@ -51,6 +52,11 @@ const CGFloat kCellContentSpacing = 14;
 #pragma mark - PriceNotificationsTableViewCell
 
 @interface PriceNotificationsTableViewCell ()
+
+// The imageview that is displayed on the leading edge of the cell.
+@property(nonatomic, strong)
+    PriceNotificationsImageContainerView* priceNotificationsImageContainerView;
+
 @end
 
 @implementation PriceNotificationsTableViewCell
@@ -132,6 +138,10 @@ const CGFloat kCellContentSpacing = 14;
     ]];
   }
   return self;
+}
+
+- (void)setImage:(UIImage*)productImage {
+  [self.priceNotificationsImageContainerView setImage:productImage];
 }
 
 - (void)setTracking:(BOOL)tracking {

@@ -6,16 +6,36 @@
 #define IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_PRIMARY_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <memory>
 
-#import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 
-@interface PriceNotificationsPrimaryMediator
-    : NSObject <PriceNotificationsDataSource>
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
-// The designated initializer. `ShoppingService` must not be nil.
-- (instancetype)initWithShoppingService:(commerce::ShoppingService*)service
-    NS_DESIGNATED_INITIALIZER;
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
+
+namespace image_fetcher {
+class ImageDataFetcher;
+}  // namespace image_fetcher
+
+namespace web {
+class WebState;
+}  // namespace web
+
+@interface PriceNotificationsPrimaryMediator : NSObject
+
+// The designated initializer. `ShoppingService`, `BookmarkModel`,
+// `ImageDataFetcher` and `WebState` must not be nil.
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)service
+              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+               imageFetcher:(std::unique_ptr<image_fetcher::ImageDataFetcher>)
+                                imageFetcher
+                   webState:(web::WebState*)webState NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

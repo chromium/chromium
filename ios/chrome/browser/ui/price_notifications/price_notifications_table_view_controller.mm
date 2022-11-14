@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -24,14 +26,16 @@
 #error "This file requires ARC support."
 #endif
 
+using PriceNotificationItems = NSArray<PriceNotificationsTableViewItem*>*;
+
 namespace {
+
 const CGFloat kVerticalTableViewSectionSpacing = 30;
 const CGFloat kDescriptionPadding = 16;
 const CGFloat kDescriptionLabelHeight = 18;
 const CGFloat kDescriptionTopSpacing = 10;
 const CGFloat kDescriptionBottomSpacing = 26;
 const CGFloat kSectionHeaderHeight = 22;
-}  // namespace
 
 // Types of ListItems used by the price notifications UI.
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -46,10 +50,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierTrackedItems,
 };
 
-@interface PriceNotificationsTableViewController () {
-  // The header for the TableView.
-  TableViewLinkHeaderFooterItem* _descriptionText;
-}
+}  // namespace
+
+@interface PriceNotificationsTableViewController ()
+// The boolean indicates whether there exists an item on the current site is
+// already tracked or the item is already being price tracked.
+@property(nonatomic, assign) BOOL itemOnCurrentSiteIsTracked;
+// The array of trackable items offered on the current site.
+@property(nonatomic, strong) PriceNotificationItems trackableItems;
+// The array of items that the user is tracking.
+@property(nonatomic, strong) PriceNotificationItems trackedItems;
 
 @end
 
@@ -60,10 +70,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  // TODO(crbug.com/1362349) This array will be dynamically populated in a
+  // future CL.
+  _trackedItems = [NSArray array];
+
   self.title =
       l10n_util::GetNSString(IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE);
   [self createTableViewHeader];
-  [self loadModel];
 
   self.tableView.accessibilityIdentifier =
       kPriceNotificationsTableViewIdentifier;
@@ -75,7 +88,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)loadModel {
   [super loadModel];
-  [self loadItems];
+  [self loadItemsFromArray:self.trackableItems
+                 toSection:SectionIdentifierTrackableItemsOnCurrentSite];
+  [self loadItemsFromArray:self.trackedItems
+                 toSection:SectionIdentifierTrackedItems];
 }
 
 #pragma mark - UITableViewDelegate
@@ -85,39 +101,36 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   return kVerticalTableViewSectionSpacing;
 }
 
-#pragma mark - Item Loading Helpers
+#pragma mark - PriceNotificationsConsumer
 
-// Loads the TableViewItems into self.tableViewModel.
-- (void)loadItems {
-  NSMutableArray<PriceNotificationsTableViewItem*>* trackableArray =
-      [NSMutableArray array];
-  NSMutableArray<PriceNotificationsTableViewItem*>* trackedArray =
-      [NSMutableArray array];
-  // TODO(crbug.com/1373071) Once the PriceNotificationsMediator has been
-  // created, the mediator will be called to populate the `trackableArray` and
-  // `trackedArray` objects.
-  [self loadItemsFromArray:trackableArray
-                 toSection:SectionIdentifierTrackableItemsOnCurrentSite];
-  [self loadItemsFromArray:trackedArray
-                 toSection:SectionIdentifierTrackedItems];
+- (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
+       currentlyTracking:(BOOL)currentlyTracking {
+  self.trackableItems = trackableItem ? @[ trackableItem ] : @[];
+  self.itemOnCurrentSiteIsTracked = currentlyTracking;
+
+  [self loadModel];
+  [self.tableView reloadData];
 }
+
+#pragma mark - Item Loading Helpers
 
 // Adds `items` to self.tableViewModel for the section designated by
 // `sectionID`.
-- (void)loadItemsFromArray:(NSArray<PriceNotificationsTableViewItem*>*)items
+- (void)loadItemsFromArray:(PriceNotificationItems)items
                  toSection:(SectionIdentifier)sectionID {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:sectionID];
 
-  if (!items.count) {
-    [model setHeader:[self createHeaderForSectionIndex:sectionID isEmpty:YES]
-        forSectionWithIdentifier:sectionID];
+  BOOL isItemsEmpty = !items.count;
+  [model setHeader:[self createHeaderForSectionIndex:sectionID
+                                             isEmpty:isItemsEmpty]
+      forSectionWithIdentifier:sectionID];
+  if (isItemsEmpty) {
     return;
   }
 
-  [model setHeader:[self createHeaderForSectionIndex:sectionID isEmpty:NO]
-      forSectionWithIdentifier:sectionID];
   for (PriceNotificationsTableViewItem* item in items) {
+    item.type = ItemTypeListItem;
     [model addItem:item toSectionWithIdentifier:sectionID];
   }
 }
@@ -134,7 +147,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     case SectionIdentifierTrackableItemsOnCurrentSite:
       header.text = l10n_util::GetNSString(
           IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_SECTION_HEADER);
-      if (isEmpty) {
+      if (self.itemOnCurrentSiteIsTracked) {
+        header.subtitleText = l10n_util::GetNSString(
+            IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED);
+      } else if (isEmpty) {
         header.subtitleText = l10n_util::GetNSString(
             IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACKABLE_EMPTY_LIST);
       }

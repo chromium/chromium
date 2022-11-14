@@ -12,11 +12,20 @@
 #endif
 
 namespace {
+
 // The width and height of the Price Notifications ImageView.
 const CGFloat kPriceNotificationsImageLength = 64;
 // Corner radius of the Price Notifications ImageView.
 const CGFloat kPriceNotificationsCornerRadius = 13.0;
+
 }  // namespace
+
+@interface PriceNotificationsImageContainerView ()
+
+// The imageview containing the product's image.
+@property(nonatomic, strong) UIImageView* priceNotificationsImageView;
+
+@end
 
 @implementation PriceNotificationsImageContainerView
 
@@ -39,6 +48,10 @@ const CGFloat kPriceNotificationsCornerRadius = 13.0;
     ]];
   }
   return self;
+}
+
+- (void)setImage:(UIImage*)productImage {
+  _priceNotificationsImageView.image = productImage;
 }
 
 @end

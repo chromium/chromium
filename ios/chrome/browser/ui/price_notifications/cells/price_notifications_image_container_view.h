@@ -15,7 +15,7 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
-@property(nonatomic, strong) UIImageView* priceNotificationsImageView;
+- (void)setImage:(UIImage*)productImage;
 
 @end
 

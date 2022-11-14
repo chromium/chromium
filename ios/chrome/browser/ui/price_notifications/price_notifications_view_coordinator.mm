@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_view_coordinator.h"
 
 #import "base/check.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -15,6 +17,8 @@
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,11 +44,23 @@
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
+      std::make_unique<image_fetcher::ImageDataFetcher>(
+          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPrimaryMediator alloc]
-      initWithShoppingService:shoppingService];
+      initWithShoppingService:shoppingService
+                bookmarkModel:bookmarkModel
+                 imageFetcher:std::move(imageFetcher)
+                     webState:webState];
   self.mediator.consumer = self.tableViewController;
 
   // Add the "Done" button and hook it up to stop.
