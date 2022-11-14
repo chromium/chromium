@@ -896,6 +896,7 @@ static_library("ui") {
         "webui/feed_internals/feedv2_internals_page_handler.cc",
         "webui/feed_internals/feedv2_internals_page_handler.h",
       ]
+      deps += [ "//chrome/browser/resources/feed_internals:resources" ]
     }
 
     deps += [

@@ -143,7 +143,6 @@ if (enable_js_type_check) {
     if (is_android) {
       deps += [
         "explore_sites_internals:closure_compile",
-        "feed_internals:closure_compile",
         "internals/lens:closure_compile",
         "internals/notifications:closure_compile",
         "internals/query_tiles:closure_compile",
@@ -309,7 +308,13 @@ repack("dev_ui_paks") {
   ]
 
   if (is_android) {
-    sources += [ "$root_gen_dir/chrome/webapks_resources.pak" ]
-    deps += [ "//chrome/browser/resources/webapks:resources" ]
+    sources += [
+      "$root_gen_dir/chrome/feed_internals_resources.pak",
+      "$root_gen_dir/chrome/webapks_resources.pak",
+    ]
+    deps += [
+      "//chrome/browser/resources/feed_internals:resources",
+      "//chrome/browser/resources/webapks:resources",
+    ]
   }
 }

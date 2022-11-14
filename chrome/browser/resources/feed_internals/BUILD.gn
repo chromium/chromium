@@ -2,23 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
 assert(is_android)
 
-js_type_check("closure_compile") {
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed_internals",
-                            root_build_dir),
-                  ]
-  deps = [ ":feed_internals" ]
-}
+build_webui("build") {
+  grd_prefix = "feed_internals"
 
-js_library("feed_internals") {
-  deps = [
-    "//chrome/browser/ui/webui/feed_internals:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:util",
+  static_files = [
+    "feed_internals.css",
+    "feed_internals.html",
+  ]
+
+  non_web_component_files = [ "feed_internals.ts" ]
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_webui_js" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/feed_internals/feed_internals.mojom-webui.js" ]
+
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo/:library",
   ]
 }
