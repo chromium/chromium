@@ -20,7 +20,19 @@ PRIMITIVE_TYPES = [
     'LineClampValue'
 ]
 
-def validate_property(prop, longhands):
+
+def validate_property(prop, props_by_name):
+    """Perform sanity-checks on a property entry.
+
+    prop: The property (or extra field) to perform checks on.
+    props_by_name: A dict which maps properties by name. This is useful for
+                   cases where 'prop' refer to other properties by name.
+
+    Many combinations of values that are possible to specify in
+    css_properties.json5 do not make sense, and/or would produce invalid
+    generated code. For example, it does not make sense for longhands to
+    implement the ParseShorthand function.
+    """
     name = prop.name
     has_method = lambda x: x in prop.property_methods
     assert prop.is_property or prop.is_descriptor, \
@@ -56,31 +68,20 @@ def validate_property(prop, longhands):
             'Incrementally applied properties must be idempotent [%s]' % name
         if prop.is_shorthand:
             for subprop_name in prop.longhands:
-                subprop = [
-                    p for p in longhands if str(p.name) == subprop_name
-                ][0]
+                subprop = props_by_name[subprop_name]
                 assert subprop.supports_incremental_style, \
                     '%s must be incrementally applicable when its shorthand %s is' % (subprop_name, name)
     assert not prop.valid_for_formatted_text or prop.is_longhand, \
         'Only longhands can be valid_for_formatted_text [%s]' % name
     assert not prop.valid_for_formatted_text_run or prop.is_longhand, \
         'Only longhands can be valid_for_formatted_text_run [%s]' % name
-
-
-def validate_alias(alias):
-    name = alias.name
-    is_internal = lambda x: x.name.original.startswith('-internal-')
-    assert not alias.runtime_flag, \
-        'Runtime flags are not supported for aliases [%s]' % name
-    assert not is_internal(alias), \
-        'Internal aliases not supported [%s]' % name
-
-
-def validate_field(field):
-    name = field.name
-    assert not field.mutable or field.field_template == 'monotonic_flag',\
+    if prop.alias_for:
+        assert not prop.runtime_flag, \
+            'Runtime flags are not supported for aliases [%s]' % name
+        assert not prop.is_internal, \
+            'Internal aliases not supported [%s]' % name
+    assert not prop.mutable or prop.field_template == 'monotonic_flag',\
         'mutable requires field_template:monotonic_flag [%s]' % name
-
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -174,7 +175,6 @@ class CSSProperties(object):
         self._last_high_priority_property = None
 
         self._properties_by_id = {}
-        self._properties_by_name = {}
         self._aliases = []
         self._longhands = []
         self._shorthands = []
@@ -200,6 +200,8 @@ class CSSProperties(object):
             Property(**x) for x in css_properties_file.name_dictionaries
         ]
 
+        self._properties_by_name = {p.name.original: p for p in properties}
+
         self.add_properties(properties, origin_trial_features)
 
         self._last_unresolved_property_id = max(property_.enum_value
@@ -216,12 +218,9 @@ class CSSProperties(object):
             ]
         for field in self._extra_fields:
             self.set_derived_attributes(field)
-            validate_field(field)
+            validate_property(field, self._properties_by_name)
 
     def add_properties(self, properties, origin_trial_features):
-        for property_ in properties:
-            self._properties_by_name[property_.name.original] = property_
-
         for property_ in properties:
             self.set_derived_attributes(property_)
             self.set_derived_visited_attributes(property_)
@@ -229,6 +228,7 @@ class CSSProperties(object):
             self.set_derived_origin_trials_attributes(property_,
                                                       origin_trial_features)
             self.set_derived_surrogate_attributes(property_)
+            validate_property(property_, self._properties_by_name)
 
         self._aliases = [
             property_ for property_ in properties if property_.alias_for
@@ -245,7 +245,6 @@ class CSSProperties(object):
         # the resulting order is deterministic.
         # Sort properties by priority, then alphabetically.
         for property_ in self._longhands + self._shorthands:
-            validate_property(property_, self._longhands)
             priority_numbers = {'High': 0, 'Low': 1}
             priority = priority_numbers[property_.priority]
             name_without_leading_dash = property_.name.original
@@ -313,7 +312,6 @@ class CSSProperties(object):
 
     def expand_aliases(self):
         for i, alias in enumerate(self._aliases):
-            validate_alias(alias)
             aliased_property = self._properties_by_id[id_for_css_property(
                 alias.alias_for)]
             aliased_property.aliases.append(alias.name.original)
