@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
@@ -224,7 +224,7 @@ class FeedNetworkImpl::NetworkFetch {
                        base::TimeTicks::Now()),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
         GetConsentLevelNeededForPersonalizedFeed());
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NetworkFetch::AccessTokenTimeout, GetWeakPtr()),
         kAccessTokenFetchTimeout);

@@ -19,12 +19,12 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
@@ -121,7 +121,7 @@ void CrxCache::EndRequest(
     base::OnceCallback<void(const Result& result)> callback,
     CrxCache::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 

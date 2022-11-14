@@ -9,6 +9,7 @@
 #define DEVICE_GAMEPAD_GAMEPAD_PLATFORM_DATA_FETCHER_H_
 
 #include "base/compiler_specific.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_data_fetcher_manager.h"
@@ -62,7 +63,7 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 
   manager->AddFactory(new GamepadPlatformDataFetcherLinux::Factory(
-      base::SequencedTaskRunnerHandle::Get()));
+      base::SequencedTaskRunner::GetCurrentDefault()));
   manager->AddFactory(new NintendoDataFetcher::Factory());
 
 #endif

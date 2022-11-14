@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/update_client/buildflags.h"
 #include "components/update_client/component_patcher_operation.h"  // nogncheck
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,7 +78,7 @@ void Patch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
 
   if (!input_file.IsValid() || !patch_file.IsValid() ||
       !output_file.IsValid()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*result=*/-1));
     return;
   }

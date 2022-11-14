@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -156,7 +157,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       CredentialsCallback callback) override {
     EXPECT_FALSE(local_forms.empty());
     const PasswordForm* form = local_forms[0].get();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::Owned(new PasswordForm(*form))));
     std::vector<PasswordForm*> raw_forms(local_forms.size());

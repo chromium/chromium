@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -129,7 +129,7 @@ void FileChooserWindows::Show() {
   FileTransferResult<absl::monostate> result = LaunchChooserProcess();
 
   if (!result) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::move(result.error())));
   }

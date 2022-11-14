@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -44,7 +44,7 @@ void PriceTrackingActionModel::InitAndFetchModel(
   writer.AddBooleanSegmentDiscreteMapping(kContextualPageActionsKey);
 
   constexpr int kModelVersion = 1;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindRepeating(model_updated_callback, kPriceTrackingSegmentId,
                           std::move(metadata), kModelVersion));
@@ -55,7 +55,7 @@ void PriceTrackingActionModel::ExecuteModelWithInput(
     ExecutionCallback callback) {
   // Invalid inputs.
   if (inputs.size() != 1) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }
@@ -63,7 +63,7 @@ void PriceTrackingActionModel::ExecuteModelWithInput(
   // Input[0] is price tracking enabled, which is also the result.
   float result = inputs[0];
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));
 }

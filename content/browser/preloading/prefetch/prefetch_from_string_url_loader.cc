@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -121,7 +122,7 @@ void PrefetchFromStringURLLoader::BindAndStart(
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   handle_watcher_->Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,

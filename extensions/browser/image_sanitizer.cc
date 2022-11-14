@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/extension_resource_path_normalizer.h"
@@ -84,7 +85,7 @@ ImageSanitizer::Client::~Client() = default;
 
 void ImageSanitizer::Start() {
   if (image_paths_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ImageSanitizer::ReportSuccess,
                                   weak_factory_.GetWeakPtr()));
     return;
@@ -99,7 +100,7 @@ void ImageSanitizer::Start() {
         !NormalizeExtensionResourcePath(path, &normalized_path)) {
       // Report the error asynchronously so the caller stack has chance to
       // unwind.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ImageSanitizer::ReportError,
                                     weak_factory_.GetWeakPtr(),
                                     Status::kImagePathError, path));

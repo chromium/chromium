@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/mock_signal_strategy.h"
@@ -110,8 +110,8 @@ TEST_F(FtlHostChangeNotificationListenerTest,
   ASSERT_TRUE(is_handled);
   ftl_host_change_notification_listener_.reset();
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -125,8 +125,8 @@ TEST_F(FtlHostChangeNotificationListenerTest,
               ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -139,8 +139,8 @@ TEST_F(FtlHostChangeNotificationListenerTest,
           /* chromoting_message */ {});
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -154,8 +154,8 @@ TEST_F(FtlHostChangeNotificationListenerTest,
               ftl::HostStatusChangeMessage_DirectoryState_NOT_SET));
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

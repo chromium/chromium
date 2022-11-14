@@ -26,6 +26,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -474,10 +475,11 @@ URLLoader::URLLoader(
                          std::move(sync_url_loader_client)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunnerHandle::Get()),
-      peer_closed_handle_watcher_(FROM_HERE,
-                                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                                  base::SequencedTaskRunnerHandle::Get()),
+                               base::SequencedTaskRunner::GetCurrentDefault()),
+      peer_closed_handle_watcher_(
+          FROM_HERE,
+          mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+          base::SequencedTaskRunner::GetCurrentDefault()),
       per_factory_corb_state_(context.GetMutableCorbState()),
       devtools_request_id_(request.devtools_request_id),
       request_mode_(request.mode),
@@ -815,7 +817,7 @@ void URLLoader::OpenFilesForUpload(const ResourceRequest& request) {
                    "NetworkContextClient is set.";
     // Defer calling NotifyCompleted to make sure the URLLoader finishes
     // initializing before getting deleted.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&URLLoader::NotifyCompleted,
                        weak_ptr_factory_.GetWeakPtr(), net::ERR_ACCESS_DENIED));
@@ -835,7 +837,7 @@ void URLLoader::SetUpUpload(const ResourceRequest& request,
     DCHECK(opened_files.empty());
     // Defer calling NotifyCompleted to make sure the URLLoader finishes
     // initializing before getting deleted.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
                                   weak_ptr_factory_.GetWeakPtr(), error_code));
     return;
@@ -895,7 +897,7 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
 
     // Defer calling NotifyCompleted to make sure the URLLoader
     // finishes initializing before getting deleted.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   net::ERR_TRUST_TOKEN_OPERATION_FAILED));
@@ -948,13 +950,13 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     //
     // Here and below, defer calling NotifyCompleted to make sure the URLLoader
     // finishes initializing before getting deleted.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &URLLoader::NotifyCompleted, weak_ptr_factory_.GetWeakPtr(),
             net::ERR_TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST));
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   net::ERR_TRUST_TOKEN_OPERATION_FAILED));
@@ -2360,7 +2362,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
     if (result != MOJO_RESULT_OK) {
       // Defer calling NotifyCompleted to make sure the caller can still access
       // |this|.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     net::ERR_INSUFFICIENT_RESOURCES));

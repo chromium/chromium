@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -76,7 +77,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
     if (!db_)
       return;
     if (async) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&IndexedDBDatabaseTest::RunTasksForDatabase,
                                     weak_factory_.GetWeakPtr(), false));
       return;
@@ -517,7 +518,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
     if (!db_)
       return;
     if (async) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&IndexedDBDatabaseOperationTest::RunTasksForDatabase,
                          base::Unretained(this), false));

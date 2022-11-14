@@ -35,8 +35,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -419,7 +419,7 @@ v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
     scriptable_receiver_.Reset(
         isolate, PostMessageReceiver::Create(
                      isolate, client_->GetWeakPtr(), weak_factory_.GetWeakPtr(),
-                     base::SequencedTaskRunnerHandle::Get()));
+                     base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
   return scriptable_receiver_.Get(isolate);

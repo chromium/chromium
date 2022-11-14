@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
@@ -114,7 +114,7 @@ void PuffinComponentUnpacker::EndUnpacking(UnpackerError error,
     result.public_key = public_key_;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), result));
 }
 

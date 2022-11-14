@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -48,14 +48,14 @@ void MockOptGuideDecider::CanApplyOptimization(
   bool url_matches = response_url_.has_value() && url == response_url_.value();
 
   if (!type_matches || !url_matches) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), OptimizationGuideDecision::kUnknown,
                        OptimizationMetadata()));
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), optimization_decision_.value(),
                      optimization_data_.value()));
@@ -87,7 +87,7 @@ void MockOptGuideDecider::CanApplyOptimizationOnDemand(
           decision_map;
       decision_map[OptimizationType::PRICE_TRACKING] =
           on_demand_shopping_responses_[url.spec()];
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(callback, url, std::move(decision_map)));
     }
   }
@@ -189,12 +189,12 @@ void MockWebWrapper::RunJavascript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value)> callback) {
   if (!mock_js_result_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), base::Value()));
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), mock_js_result_->Clone()));
 }
 

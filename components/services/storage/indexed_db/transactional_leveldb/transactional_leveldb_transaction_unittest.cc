@@ -16,8 +16,8 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -65,7 +65,7 @@ class TransactionalLevelDBTransactionTest : public LevelDBScopesTestBase {
     ASSERT_TRUE(s.ok()) << s.ToString();
     leveldb_database_ = transactional_leveldb_factory_.CreateLevelDBDatabase(
         leveldb_, std::move(scopes_system),
-        base::SequencedTaskRunnerHandle::Get(), kTestingMaxOpenCursors);
+        base::SequencedTaskRunner::GetCurrentDefault(), kTestingMaxOpenCursors);
   }
 
   std::vector<PartitionedLock> AcquireLocksSync(

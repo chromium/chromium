@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/metrics/reporting_settings.h"
 
 namespace reporting {
@@ -35,13 +35,14 @@ MetricReportingController::~MetricReportingController() {
 }
 
 void MetricReportingController::UpdateSetting() {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::OnceClosure update_setting_cb = base::BindOnce(
       &MetricReportingController::UpdateSetting, weak_factory_.GetWeakPtr());
-  bool trusted = reporting_settings_->PrepareTrustedValues(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(update_setting_cb)));
+  bool trusted = reporting_settings_->PrepareTrustedValues(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(update_setting_cb)));
   if (!trusted) {
     return;
   }

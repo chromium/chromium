@@ -6,6 +6,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -132,8 +133,8 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryUniqueService) {
   // Give the service a chance to process disconnection and clean up.
   c.reset();
   base::RunLoop cleanup_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   cleanup_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, cleanup_loop.QuitClosure());
   cleanup_loop.Run();
 }
 
@@ -163,8 +164,8 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
 
   // Give the services a chance to process disconnection and clean up.
   base::RunLoop cleanup_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   cleanup_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, cleanup_loop.QuitClosure());
   cleanup_loop.Run();
 }
 

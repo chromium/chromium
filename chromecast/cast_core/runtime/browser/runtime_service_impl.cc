@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/cast_core_switches.h"
@@ -34,7 +34,7 @@ RuntimeServiceImpl::RuntimeServiceImpl(
     : Base(application_client),
       runtime_id_(std::move(runtime_id)),
       runtime_service_endpoint_(std::move(runtime_service_endpoint)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       web_service_(web_service),
       metrics_recorder_(this) {
   heartbeat_timer_.SetTaskRunner(task_runner_);

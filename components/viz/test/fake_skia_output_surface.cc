@@ -278,7 +278,7 @@ void FakeSkiaOutputSurface::CopyOutput(
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
     release_callbacks.push_back(base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&FakeSkiaOutputSurface::DestroyCopyOutputTexture,
                        weak_ptr_factory_.GetWeakPtr(), local_mailbox)));
 

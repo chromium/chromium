@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/vsync_provider.h"
@@ -16,7 +16,7 @@
 namespace viz {
 
 SoftwareOutputDevice::SoftwareOutputDevice()
-    : SoftwareOutputDevice(base::SequencedTaskRunnerHandle::Get()) {}
+    : SoftwareOutputDevice(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 SoftwareOutputDevice::SoftwareOutputDevice(
     scoped_refptr<base::SequencedTaskRunner> task_runner)

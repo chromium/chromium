@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/system_clock/fake_system_clock_client.h"
 
 namespace ash {
@@ -54,7 +54,7 @@ bool FakeSystemClockClient::CanSetTime() {
 }
 
 void FakeSystemClockClient::GetLastSyncInfo(GetLastSyncInfoCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), network_synchronized_));
 }
 
@@ -66,7 +66,7 @@ void FakeSystemClockClient::WaitForServiceToBeAvailable(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 

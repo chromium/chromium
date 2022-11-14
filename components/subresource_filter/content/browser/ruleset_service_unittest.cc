@@ -24,11 +24,11 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_publisher.h"
@@ -147,7 +147,8 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
         new base::File(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
                                       base::File::FLAG_WIN_SHARE_DELETE),
-        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+        base::OnTaskRunnerDeleter(
+            base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
   std::vector<RulesetFilePtr> published_rulesets_;

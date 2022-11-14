@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 
@@ -109,7 +109,7 @@ class ScopedInterfaceEndpointHandle::State
       return;
     }
 
-    runner_ = base::SequencedTaskRunnerHandle::Get();
+    runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     if (!pending_association_) {
       runner_->PostTask(
           FROM_HERE,

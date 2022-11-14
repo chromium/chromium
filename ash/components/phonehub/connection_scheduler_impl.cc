@@ -6,7 +6,7 @@
 
 #include "ash/components/phonehub/feature_status.h"
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
@@ -97,7 +97,7 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
                     << " seconds.";
 
     retry_backoff_.InformOfRequest(/*succeeded=*/false);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ConnectionSchedulerImpl::ScheduleConnectionNow,
                        weak_ptr_factory_.GetWeakPtr()),

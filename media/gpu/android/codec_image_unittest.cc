@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
@@ -47,7 +47,7 @@ class CodecImageTest : public testing::Test {
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
-        base::DoNothing(), base::SequencedTaskRunnerHandle::Get(),
+        base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
         gfx::Size(640, 480));
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));

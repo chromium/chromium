@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace mojo {
 
@@ -18,7 +19,7 @@ DataPipeDrainer::DataPipeDrainer(Client* client,
       source_(std::move(source)),
       handle_watcher_(FROM_HERE,
                       SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                      base::SequencedTaskRunnerHandle::Get()) {
+                      base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(client_);
   handle_watcher_.Watch(source_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                         base::BindRepeating(&DataPipeDrainer::WaitComplete,

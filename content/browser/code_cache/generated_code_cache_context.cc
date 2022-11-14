@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,7 +34,7 @@ scoped_refptr<base::SequencedTaskRunner>
 GeneratedCodeCacheContext::GetTaskRunner(
     scoped_refptr<GeneratedCodeCacheContext> context) {
   if (!context)
-    return base::SequencedTaskRunnerHandle::Get();
+    return base::SequencedTaskRunner::GetCurrentDefault();
   return context->task_runner_;
 }
 

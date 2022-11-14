@@ -28,6 +28,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1097,7 +1098,7 @@ class URLLoaderTest : public testing::Test {
       if (rv == MOJO_RESULT_SHOULD_WAIT) {
         mojo::SimpleWatcher watcher(
             FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-            base::SequencedTaskRunnerHandle::Get());
+            base::SequencedTaskRunner::GetCurrentDefault());
         base::RunLoop run_loop;
 
         watcher.Watch(

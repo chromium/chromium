@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_util.h"
@@ -55,7 +55,7 @@ MemBackendImpl::~MemBackendImpl() {
     entries_.begin()->second->Doom();
 
   if (!post_cleanup_callback_.is_null())
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(post_cleanup_callback_));
 }
 

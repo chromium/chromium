@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -53,7 +52,7 @@ class HasTypedURLsTask : public history::HistoryDBTask {
 SigninConfirmationHelper::SigninConfirmationHelper(
     history::HistoryService* history_service,
     base::OnceCallback<void(bool)> return_result)
-    : origin_sequence_(base::SequencedTaskRunnerHandle::Get()),
+    : origin_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
       history_service_(history_service),
       pending_requests_(0),
       return_result_(std::move(return_result)) {}

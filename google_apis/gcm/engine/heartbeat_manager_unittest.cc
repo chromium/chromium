@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -75,9 +75,9 @@ class HeartbeatManagerTest : public testing::Test {
 };
 
 HeartbeatManagerTest::HeartbeatManagerTest()
-    : manager_(
-          new TestHeartbeatManager(base::SequencedTaskRunnerHandle::Get(),
-                                   base::SequencedTaskRunnerHandle::Get())),
+    : manager_(new TestHeartbeatManager(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::SequencedTaskRunner::GetCurrentDefault())),
       heartbeats_sent_(0),
       reconnects_triggered_(0) {}
 

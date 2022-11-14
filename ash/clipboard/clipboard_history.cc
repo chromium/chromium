@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/token.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -106,7 +106,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
   // address bar in the browser. First a short form of the URL is copied,
   // followed immediately by the long-form URL.
   commit_data_weak_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::MaybeCommitData,
                      commit_data_weak_factory_.GetWeakPtr(), *clipboard_data,
@@ -123,7 +123,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
     // debounce multiple operations through the async web clipboard API. See
     // https://crbug.com/1167403.
     clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClipboardHistory::OnClipboardOperation,
                        clipboard_histogram_weak_factory_.GetWeakPtr(),
@@ -142,7 +142,7 @@ void ClipboardHistory::OnClipboardDataRead() {
   // debounce multiple operations through the async web clipboard API. See
   // https://crbug.com/1167403.
   clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::OnClipboardOperation,
                      clipboard_histogram_weak_factory_.GetWeakPtr(),

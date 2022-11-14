@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/thread_test_helper.h"
@@ -1053,7 +1054,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
       ->proxy()
       ->UpdateOrCreateBucket(
           storage::BucketInitParams::ForDefaultBucket(storage_key),
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindLambdaForTesting(
               [&](storage::QuotaErrorOr<storage::BucketInfo> result) {
                 ASSERT_TRUE(result.ok());
@@ -1062,7 +1063,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
               }));
   loop.Run();
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &CorruptDBRequestHandler, base::SequencedTaskRunnerHandle::Get(),
+      &CorruptDBRequestHandler, base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_locator, s_corrupt_db_test_prefix, this));
   embedded_test_server()->StartAcceptingConnections();
 

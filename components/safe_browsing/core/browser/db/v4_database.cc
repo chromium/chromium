@@ -14,8 +14,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
@@ -80,7 +80,7 @@ void V4Database::Create(
   DCHECK(!list_infos.empty());
 
   const scoped_refptr<base::SequencedTaskRunner> callback_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   db_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&V4Database::CreateOnTaskRunner, db_task_runner,
                                 base_path, list_infos, callback_task_runner,
@@ -185,7 +185,7 @@ void V4Database::ApplyUpdate(
   // Post the V4Store update task on the DB sequence but get the callback on the
   // current sequence.
   const scoped_refptr<base::SequencedTaskRunner> current_task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   for (std::unique_ptr<ListUpdateResponse>& response :
        *parsed_server_response) {
     ListIdentifier identifier(*response);

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -109,7 +110,7 @@ class OpenURLObserver : public WebContentsObserver {
     DCHECK(callback_);
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::SequencedTaskRunnerHandle::Get();
+        base::SequencedTaskRunner::GetCurrentDefault();
     // TODO(falken): Does this need to be asynchronous?
     task_runner->PostTask(FROM_HERE,
                           base::BindOnce(std::move(callback_), rfh_id));

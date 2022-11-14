@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_parameters.h"
@@ -297,7 +298,7 @@ void InputStream::OnStreamError(
   }
 
   // Defer callback so we're not destructed while in the constructor.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&InputStream::CallDeleter, weak_factory_.GetWeakPtr()));
   receiver_.reset();

@@ -13,12 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
@@ -252,7 +252,7 @@ TEST_F(NamedMojoIpcServerTest,
        RemoteDisconnectedBeforeBound_NewInvitationIsSent) {
   mojo::IsolatedConnection client_connection;
   auto handle = client_connection.Connect(ConnectToTestServer());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { handle.reset(); }));
   WaitForInvitationSent();
 }

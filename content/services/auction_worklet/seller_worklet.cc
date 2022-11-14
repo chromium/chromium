@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -488,7 +489,7 @@ SellerWorklet::V8State::V8State(
     : v8_helper_(std::move(v8_helper)),
       debug_id_(debug_id),
       parent_(std::move(parent)),
-      user_thread_(base::SequencedTaskRunnerHandle::Get()),
+      user_thread_(base::SequencedTaskRunner::GetCurrentDefault()),
       decision_logic_url_(decision_logic_url),
       trusted_scoring_signals_url_(trusted_scoring_signals_url),
       top_window_origin_(top_window_origin),
@@ -1112,7 +1113,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   // is passed to ask for `task` to get cleaned up in case the V8State::ScoreAd
   // closure gets destroyed without running.
   base::OnceClosure cleanup_score_ad_task = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&SellerWorklet::CleanUpScoreAdTaskOnUserThread,
                      weak_ptr_factory_.GetWeakPtr(), task));
 

@@ -14,11 +14,11 @@
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -364,7 +364,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         bucket_future;
     quota_manager_proxy_->CreateBucketForTesting(
         kTestStorageKey, "custom_bucket", blink::mojom::StorageType::kTemporary,
-        base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        bucket_future.GetCallback());
     auto bucket = bucket_future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();
@@ -459,7 +460,8 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
       bucket_future;
   quota_manager_proxy_->CreateBucketForTesting(
       kTestStorageKey, "custom_bucket", blink::mojom::StorageType::kTemporary,
-      base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_future.GetCallback());
   auto bucket = bucket_future.Take();
   EXPECT_TRUE(bucket.ok());
 

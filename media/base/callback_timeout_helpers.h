@@ -13,7 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 // This file provides callback wrappers to help handle the case where a
@@ -121,7 +121,7 @@ class CallbackWithTimeoutHelper<void(Args...)> {
 
   void ScheduleTimeoutCallback(base::TimeDelta timeout_delay) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CallbackWithTimeoutHelper::OnTimeout,
                        weak_factory_.GetWeakPtr()),

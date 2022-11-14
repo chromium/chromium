@@ -11,10 +11,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/image_fetcher/core/cache/image_data_store_disk.h"
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
 #include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
@@ -63,13 +63,13 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
     metadata_store_ = metadata_store.get();
 
     auto data_store = std::make_unique<ImageDataStoreDisk>(
-        temp_dir_.GetPath(), base::SequencedTaskRunnerHandle::Get());
+        temp_dir_.GetPath(), base::SequencedTaskRunner::GetCurrentDefault());
     data_store_ = data_store.get();
 
     ImageCache::RegisterProfilePrefs(test_prefs_.registry());
     image_cache_ = base::MakeRefCounted<ImageCache>(
         std::move(data_store), std::move(metadata_store), &test_prefs_, &clock_,
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void InitializeImageCache() {

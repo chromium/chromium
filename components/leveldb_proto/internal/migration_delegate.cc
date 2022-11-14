@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace leveldb_proto {
 
@@ -30,8 +29,8 @@ void MigrationDelegate::OnLoadKeysAndEntries(
     bool success,
     std::unique_ptr<KeyValueMap> keys_entries) {
   if (!success) {
-    DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-    auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+    DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+    auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
     current_task_runner->PostTask(FROM_HERE,
                                   base::BindOnce(std::move(callback), false));
     return;
@@ -52,8 +51,8 @@ void MigrationDelegate::OnLoadKeysAndEntries(
 
 void MigrationDelegate::OnUpdateEntries(MigrationCallback callback,
                                         bool success) {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   current_task_runner->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), success));
   // TODO (thildebr): For additional insurance, verify the entries match,

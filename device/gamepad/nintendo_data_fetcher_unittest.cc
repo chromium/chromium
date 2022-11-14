@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_service.h"
@@ -66,7 +67,7 @@ class NintendoDataFetcherTest : public DeviceServiceTestBase {
     DeviceServiceTestBase::SetUp();
     GamepadService::GetInstance()->StartUp(
         base::BindRepeating(&BindHidManager, device_service(),
-                            base::SequencedTaskRunnerHandle::Get()));
+                            base::SequencedTaskRunner::GetCurrentDefault()));
 
     // Create the data fetcher and polling thread.
     auto fetcher = std::make_unique<NintendoDataFetcher>();

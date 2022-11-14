@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_renderer_mixer.h"
 #include "media/base/audio_renderer_mixer_pool.h"
@@ -142,7 +142,7 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
   // If we have device information for a current sink or mixer, just return it
   // immediately. Per the AudioRendererSink API contract, this must be posted.
   if (device_info_.has_value() && (sink_ || mixer_)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(info_cb), *device_info_));
     return;
   }

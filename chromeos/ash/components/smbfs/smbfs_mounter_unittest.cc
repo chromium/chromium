@@ -14,11 +14,11 @@
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
@@ -108,7 +108,7 @@ class TestSmbFsMounter : public SmbFsMounter {
             [mount_error, mount_path](
                 const std::string& source_path,
                 ash::disks::DiskMountManager::MountPathCallback callback) {
-              base::SequencedTaskRunnerHandle::Get()->PostTask(
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(
                       std::move(callback), mount_error,
@@ -134,7 +134,7 @@ class SmbFsMounterTest : public testing::Test {
       const std::string& mount_path,
       ash::MountError mount_error,
       ash::disks::DiskMountManager::MountPathCallback callback) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), mount_error,
                                   MakeMountPointInfo(source_path, mount_path)));
   }
@@ -562,7 +562,7 @@ class SmbFsMounterE2eTest : public testing::Test {
       const std::string& source_path,
       const std::string& mount_path,
       ash::disks::DiskMountManager::MountPathCallback callback) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), ash::MountError::kSuccess,
                        MakeMountPointInfo(source_path, mount_path)));
@@ -681,7 +681,7 @@ TEST_F(SmbFsMounterE2eTest, MountSuccess) {
         // providing a Mojo connection endpoint.
         const std::string token =
             source_path.substr(sizeof(kMountUrlPrefix) - 1);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindLambdaForTesting([token, &channel]() {
               mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
                   token,

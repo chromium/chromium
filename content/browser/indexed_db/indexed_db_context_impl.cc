@@ -1094,8 +1094,8 @@ void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
     bucket_size_map_[bucket_locator] = current_disk_usage;
     quota_manager_proxy()->NotifyBucketModified(
         storage::QuotaClientType::kIndexedDatabase, bucket_locator.id,
-        difference, base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
-        base::DoNothing());
+        difference, base::Time::Now(),
+        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
     NotifyIndexedDBListChanged(bucket_locator);
   }
 }

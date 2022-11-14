@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/display_connection.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
@@ -53,7 +53,7 @@ DisplayController::DisplayController(
           std::make_unique<DisplayConnection>(event_observer_.get(),
                                               /*feedback_ui_enabled=*/true)),
       speech_recognition_observers_(*speech_recognition_observers),
-      mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      mojom_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(speech_recognition_observers);
 }
 

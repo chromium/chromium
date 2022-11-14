@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -485,7 +486,7 @@ void InterestGroupManagerImpl::OnOneReportSent(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   DCHECK_GT(num_active_, 0);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InterestGroupManagerImpl::TrySendingOneReport,
                      weak_factory_.GetWeakPtr()),

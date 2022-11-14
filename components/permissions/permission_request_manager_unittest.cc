@@ -10,9 +10,9 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -741,7 +741,7 @@ class MockNotificationPermissionUiSelector : public PermissionUiSelector {
                      DecisionMadeCallback callback) override {
     Decision decision(quiet_ui_reason_, Decision::ShowNoWarning());
     if (async_delay_) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(std::move(callback), decision),
           async_delay_.value());
     } else {

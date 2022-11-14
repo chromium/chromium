@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
@@ -578,7 +578,7 @@ void InstallableManager::WorkOnTask() {
   if ((!check_passed && !params.is_debug_mode) || IsComplete(params)) {
     // Yield the UI thread before processing the next task. If this object is
     // deleted in the meantime, the next task naturally won't run.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&InstallableManager::CleanupAndStartNextTask,
                                   weak_factory_.GetWeakPtr()));
 

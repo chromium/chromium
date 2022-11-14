@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/load_flags.h"
@@ -97,7 +97,7 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
     if (finding != cache_.end()) {
       const Entry& entry = finding->second;
       if (entry.time_of_fetch + expiration > clock_->Now()) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(cb), FetchResult::Success(
                                                          key, entry.contents,
                                                          entry.time_of_fetch)));
@@ -180,13 +180,13 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
       // (if extant) or retain no entry at all (if not).
       const Entry newly_inserted = Entry(*contents, clock_->Now());
       cache_.insert_or_assign(context->key, newly_inserted);
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(context->cb),
                                     FetchResult::Success(
                                         context->key, newly_inserted.contents,
                                         newly_inserted.time_of_fetch)));
     } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(context->cb),
                                     FetchResult::Failure(context->key)));
     }

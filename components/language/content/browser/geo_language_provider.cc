@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -38,7 +39,7 @@ const char GeoLanguageProvider::kTimeOfLastGeoLanguagesUpdatePref[] =
     "language.geo_language_provider.time_of_last_geo_languages_update";
 
 GeoLanguageProvider::GeoLanguageProvider()
-    : creation_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : creation_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
@@ -49,7 +50,7 @@ GeoLanguageProvider::GeoLanguageProvider()
 
 GeoLanguageProvider::GeoLanguageProvider(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : creation_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : creation_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(background_task_runner),
       prefs_(nullptr) {
   // Constructor is not required to run on |background_task_runner_|:

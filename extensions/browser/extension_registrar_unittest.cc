@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -54,8 +54,8 @@ class TestExtensionSystem : public MockExtensionSystem {
   void RegisterExtensionWithRequestContexts(
       const Extension* extension,
       base::OnceClosure callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 };
 

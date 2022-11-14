@@ -10,10 +10,10 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
 
@@ -114,7 +114,7 @@ void PersistentProto<T>::QueueWrite() {
     return;
   write_is_queued_ = true;
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PersistentProto<T>::OnQueueWrite,
                      weak_factory_.GetWeakPtr()),

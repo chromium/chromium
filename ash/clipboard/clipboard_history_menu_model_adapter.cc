@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -233,7 +234,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   // The current selected menu item may be accessed after item deletion. So
   // postpone the menu item deletion.
   ++item_deletion_in_progress_count_;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistoryMenuModelAdapter::RemoveItemView,
                      weak_ptr_factory_.GetWeakPtr(), command_id));

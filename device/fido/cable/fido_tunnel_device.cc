@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -227,7 +228,7 @@ FidoDevice::CancelToken FidoTunnelDevice::DeviceTransact(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state_ == State::kError) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
   } else if (state_ != State::kReady) {
     DCHECK(!pending_callback_);
@@ -488,7 +489,7 @@ void FidoTunnelDevice::DeviceTransactReady(std::vector<uint8_t> command,
   reply.push_back(static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess));
   reply.insert(reply.end(), getinfo_response_bytes_.begin(),
                getinfo_response_bytes_.end());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
 }
 
@@ -540,7 +541,7 @@ void FidoTunnelDevice::EstablishedConnection::Transact(
   }
 
   if (state_ == State::kRemoteShutdown || !crypter_->Encrypt(&message)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
   }

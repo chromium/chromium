@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -357,7 +358,7 @@ void CastDemoBindings::ReconnectMojo() {
 void CastDemoBindings::OnMojoConnectionError() {
   LOG(WARNING) << "Disconnected from Demo Mojo. Will retry every "
                << kDelayBetweenReconnectionInMillis << " milliseconds.";
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CastDemoBindings::ReconnectMojo,
                      weak_factory_.GetWeakPtr()),

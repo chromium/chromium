@@ -10,8 +10,8 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/simple_thread.h"
 #include "media/base/audio_hash.h"
 
@@ -145,7 +145,7 @@ OutputDeviceInfo ClocklessAudioSink::GetOutputDeviceInfo() {
 }
 
 void ClocklessAudioSink::GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(info_cb), device_info_));
 }
 

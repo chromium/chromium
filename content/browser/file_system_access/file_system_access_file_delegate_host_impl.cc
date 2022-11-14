@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -113,7 +114,7 @@ void FileSystemAccessFileDelegateHostImpl::Read(int64_t offset,
       FROM_HERE,
       base::BindOnce(
           &ReadOnIOThread, base::WrapRefCounted(file_system_context()), url(),
-          offset, buffer, base::SequencedTaskRunnerHandle::Get(),
+          offset, buffer, base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&FileSystemAccessFileDelegateHostImpl::DidRead,
                          weak_factory_.GetWeakPtr(), buffer,
                          std::move(callback))));

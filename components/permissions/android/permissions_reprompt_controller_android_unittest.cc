@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/test_renderer_host.h"
 
@@ -97,7 +97,7 @@ class PermissionsRepromptControllerAndroidTest
         PermissionsUpdatedCallback callback) override {
       ++reprompt_count_;
 
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &RepromptTestPermissionsClient::OnRepromptPermissionDone,

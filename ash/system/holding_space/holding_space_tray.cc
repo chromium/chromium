@@ -37,6 +37,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -668,7 +669,7 @@ void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
   // items so as not to obstruct drop targets. Post the task to close the bubble
   // so that we don't attempt to destroy the bubble widget before the associated
   // drag event has been fully initialized.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&HoldingSpaceTray::CloseBubble,
                                 weak_factory_.GetWeakPtr()));
 }

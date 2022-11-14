@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -288,7 +288,7 @@ void TestAssistantService::StartInteraction(
   }
 
   // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&TestAssistantService::InteractionStarted,
                      weak_factory_.GetWeakPtr(), type, source, query));

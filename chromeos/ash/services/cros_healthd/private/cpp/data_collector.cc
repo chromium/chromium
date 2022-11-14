@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -148,7 +148,7 @@ void DataCollector::GetTouchscreenDevices(
     GetTouchscreenDevicesCallback callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetTouchscreenDevicesOnUIThread,
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 std::move(callback)));
 }
 

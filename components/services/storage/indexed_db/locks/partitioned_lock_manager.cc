@@ -10,7 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace content {
 
@@ -42,7 +42,7 @@ PartitionedLockManager::Lock& PartitionedLockManager::Lock::operator=(
     PartitionedLockManager::Lock&&) noexcept = default;
 
 PartitionedLockManager::PartitionedLockManager()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 PartitionedLockManager::~PartitionedLockManager() = default;
 

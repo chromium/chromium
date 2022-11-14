@@ -34,7 +34,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/skottie_color_map.h"
@@ -324,7 +324,7 @@ void AmbientAnimationView::AnimationCycleEnded(
     // in progress. Changing translation properties of the UI while a paint
     // operation is in progress results in a fatal error deep in the UI stack.
     // Thus, post a task to apply jitter rather than invoking it synchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AmbientAnimationView::ApplyJitter,
                                   weak_factory_.GetWeakPtr()));
     last_jitter_timestamp_ = now;

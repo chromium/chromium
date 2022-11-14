@@ -18,9 +18,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -143,7 +143,8 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   RulesetFilePtr file(
       new base::File(scoped_temp_file(),
                      base::File::FLAG_OPEN | base::File::FLAG_READ),
-      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
 
   NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockClosureTarget publish_callback_target;

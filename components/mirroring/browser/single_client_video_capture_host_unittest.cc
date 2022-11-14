@@ -10,6 +10,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
@@ -84,7 +85,7 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
               kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
       return;
     }
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FakeDeviceLauncher::OnDeviceLaunched,
                                   weak_factory_.GetWeakPtr(), receiver,
                                   callbacks, std::move(done_cb)));

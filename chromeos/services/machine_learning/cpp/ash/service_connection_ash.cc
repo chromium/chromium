@@ -98,7 +98,7 @@ void ServiceConnectionAsh::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!task_runner_) << "Initialize must be called only once.";
 
-  task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 void ServiceConnectionAsh::BindPrimordialMachineLearningServiceIfNeeded() {

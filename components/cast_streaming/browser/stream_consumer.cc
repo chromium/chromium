@@ -5,6 +5,7 @@
 #include "components/cast_streaming/browser/stream_consumer.h"
 
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_util.h"
 
 namespace cast_streaming {
@@ -19,7 +20,7 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
       frame_received_cb_(std::move(frame_received_cb)),
       pipe_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                    base::SequencedTaskRunnerHandle::Get()),
+                    base::SequencedTaskRunner::GetCurrentDefault()),
       frame_duration_(frame_duration),
       on_new_frame_(std::move(on_new_frame)) {
   DCHECK(receiver_);

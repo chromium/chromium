@@ -87,7 +87,7 @@ void AssociateWithDisconnectedPipe(ScopedInterfaceEndpointHandle handle) {
   scoped_refptr<internal::MultiplexRouter> router =
       internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
-          false, base::SequencedTaskRunnerHandle::Get());
+          false, base::SequencedTaskRunner::GetCurrentDefault());
   router->AssociateInterface(std::move(handle));
 }
 

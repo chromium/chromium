@@ -85,7 +85,7 @@ void CacheStorageContextImpl::Init(
   DCHECK(!cache_manager_);
   cache_manager_ = CacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
-      base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy_,
+      base::SequencedTaskRunner::GetCurrentDefault(), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(
           std::move(blob_storage_context)),
       dispatcher_host_->AsWeakPtr());
@@ -113,7 +113,7 @@ void CacheStorageContextImpl::AddReceiver(
     DCHECK_EQ(storage::BucketId(), bucket_locator.id);
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
                        weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
                        std::move(coep_reporter), bucket_locator.storage_key,

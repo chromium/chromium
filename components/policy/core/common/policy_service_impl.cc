@@ -18,7 +18,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -237,7 +237,7 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
     // Refresh is immediately complete if there are no providers. See the note
     // on OnUpdatePolicy() about why this is a posted task.
     update_task_ptr_factory_.InvalidateWeakPtrs();
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                   update_task_ptr_factory_.GetWeakPtr()));
 
@@ -287,7 +287,7 @@ void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
   // MergeAndTriggerUpdates. Also, cancel a pending update if there is any,
   // since both will produce the same PolicyBundle.
   update_task_ptr_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                 update_task_ptr_factory_.GetWeakPtr()));
 }

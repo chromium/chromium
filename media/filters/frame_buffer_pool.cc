@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -53,7 +52,8 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
   if (!registered_dump_provider_) {
     base::trace_event::MemoryDumpManager::GetInstance()
         ->RegisterDumpProviderWithSequencedTaskRunner(
-            this, "FrameBufferPool", base::SequencedTaskRunnerHandle::Get(),
+            this, "FrameBufferPool",
+            base::SequencedTaskRunner::GetCurrentDefault(),
             MemoryDumpProvider::Options());
     registered_dump_provider_ = true;
   }
@@ -133,7 +133,8 @@ base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
   ++frame_buffer->held_by_frame;
 
   return base::BindOnce(&FrameBufferPool::OnVideoFrameDestroyed, this,
-                        base::SequencedTaskRunnerHandle::Get(), frame_buffer);
+                        base::SequencedTaskRunner::GetCurrentDefault(),
+                        frame_buffer);
 }
 
 bool FrameBufferPool::OnMemoryDump(

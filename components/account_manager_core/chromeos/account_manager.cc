@@ -23,7 +23,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/tokens.pb.h"
@@ -150,7 +149,7 @@ class AccountManager::GaiaTokenRevocationRequest : public GaiaAuthConsumer {
     // We cannot call |AccountManager::DeletePendingTokenRevocationRequest|
     // directly because it will immediately start deleting |this|, before the
     // method has had a chance to return.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AccountManager::DeletePendingTokenRevocationRequest,
                        account_manager_, this));

@@ -4,7 +4,7 @@
 
 #include "components/image_fetcher/core/fake_image_decoder.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -34,11 +34,11 @@ void FakeImageDecoder::DecodeImage(
   }
 
   if (before_image_decoded_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     before_image_decoded_);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, before_image_decoded_);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), decoded_image_));
 }
 

@@ -146,7 +146,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
    public:
     explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder)
         : responder_(std::move(responder)),
-          caller_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+          caller_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
     ~ForwardToCallingThread() override {
       caller_task_runner_->DeleteSoon(FROM_HERE, std::move(responder_));

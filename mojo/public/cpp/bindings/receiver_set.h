@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -210,8 +211,8 @@ class ReceiverSetBase {
   // will be dispatched to |impl| on that |task_runner|. |task_runner| must run
   // messages on the same sequence that owns this ReceiverSetBase. If
   // |task_runner| is null, the value of
-  // |base::SequencedTaskRunnerHandle::Get()| at the time of the |Add()| call
-  // will be used to run scheduled tasks for the receiver.
+  // |base::SequencedTaskRunner::GetCurrentDefault()| at the time of the |Add()|
+  // call will be used to run scheduled tasks for the receiver.
   ReceiverId Add(
       ImplPointerType impl,
       PendingType receiver,

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/cast/net/transport_util.h"
 #include "media/cast/net/udp_packet_pipe.h"
@@ -372,7 +373,7 @@ void UdpTransportImpl::OnPacketReadFromDataPipe(
     return;  // Waiting for the packet to be sent out.
   }
   // Force a post task to prevent the stack from growing too deep.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&UdpTransportImpl::ReadNextPacketToSend,
                                 base::Unretained(this)));
 }

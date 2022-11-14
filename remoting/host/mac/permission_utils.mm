@@ -16,8 +16,8 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/cocoa/permissions_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,7 +167,7 @@ bool CanCaptureAudio() {
 
 void RequestAudioCapturePermission(base::OnceCallback<void(bool)> callback) {
   if (@available(macOS 10.14, *)) {
-    auto task_runner = base::SequencedTaskRunnerHandle::Get();
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
     __block auto block_callback = std::move(callback);
     [AVCaptureDevice
         requestAccessForMediaType:AVMediaTypeAudio

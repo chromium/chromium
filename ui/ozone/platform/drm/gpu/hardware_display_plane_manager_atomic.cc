@@ -15,7 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -377,7 +377,7 @@ bool HardwareDisplayPlaneManagerAtomic::ValidatePrimarySize(
 void HardwareDisplayPlaneManagerAtomic::RequestPlanesReadyCallback(
     DrmOverlayPlaneList planes,
     base::OnceCallback<void(DrmOverlayPlaneList planes)> callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(planes)));
 }
 

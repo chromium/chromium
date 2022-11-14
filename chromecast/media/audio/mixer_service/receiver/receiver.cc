@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/media/audio/mixer_service/constants.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
@@ -127,7 +126,7 @@ class Receiver::InitialSocket : public MixerSocket::Delegate {
 };
 
 Receiver::Receiver()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       socket_service_(
           GetEndpoint(),
           GetSwitchValueNonNegativeInt(switches::kMixerServicePort,
@@ -147,8 +146,9 @@ std::unique_ptr<MixerSocket> Receiver::LocalConnect() {
   auto receiver_socket = std::make_unique<MixerSocket>();
   auto caller_socket = std::make_unique<MixerSocket>();
 
-  receiver_socket->SetLocalCounterpart(caller_socket->GetWeakPtr(),
-                                       base::SequencedTaskRunnerHandle::Get());
+  receiver_socket->SetLocalCounterpart(
+      caller_socket->GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
   caller_socket->SetLocalCounterpart(receiver_socket->GetWeakPtr(),
                                      task_runner_);
 

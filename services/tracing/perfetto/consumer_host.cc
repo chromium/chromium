@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
@@ -385,7 +386,7 @@ void ConsumerHost::TracingSession::ReadBuffers(
       StreamWriter::CreateTaskRunner(), std::move(stream), std::move(callback),
       base::BindOnce(&TracingSession::OnConsumerClientDisconnected,
                      weak_factory_.GetWeakPtr()),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   host_->consumer_endpoint()->ReadBuffers();
 }
@@ -412,7 +413,7 @@ void ConsumerHost::TracingSession::DisableTracingAndEmitJson(
       StreamWriter::CreateTaskRunner(), std::move(stream), std::move(callback),
       base::BindOnce(&TracingSession::OnConsumerClientDisconnected,
                      weak_factory_.GetWeakPtr()),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   if (privacy_filtering_enabled) {
     // For filtering/allowlisting to be possible at JSON export time,

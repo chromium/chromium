@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "net/base/test_completion_callback.h"
@@ -111,7 +111,7 @@ class FakeCertVerifyProc : public CertVerifyProc {
   FakeCertVerifyProc(const int result_error, const CertVerifyResult& result)
       : result_error_(result_error),
         result_(result),
-        main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   FakeCertVerifyProc(const FakeCertVerifyProc&) = delete;
   FakeCertVerifyProc& operator=(const FakeCertVerifyProc&) = delete;

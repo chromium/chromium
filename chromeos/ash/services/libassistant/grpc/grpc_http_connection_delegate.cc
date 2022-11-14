@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_delegate.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash::libassistant {
 
@@ -13,7 +14,7 @@ GrpcHttpConnectionDelegate::GrpcHttpConnectionDelegate(
     GrpcHttpConnectionClient* client)
     : id_(id),
       grpc_http_connection_client_(client),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 GrpcHttpConnectionDelegate::~GrpcHttpConnectionDelegate() = default;
 

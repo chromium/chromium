@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/data_exchange_delegate.h"
@@ -133,7 +133,8 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
             viz::CopyOutputRequest::ResultDestination::kSystemMemory,
             base::BindOnce(&IconSurface::OnCaptured,
                            weak_ptr_factory_.GetWeakPtr()));
-    request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
+    request->set_result_task_runner(
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     host_window()->layer()->RequestCopyOfOutput(std::move(request));
   }
@@ -366,7 +367,7 @@ void DragDropOperation::ScheduleStartDragDropOperation() {
       shell_surface->set_in_extended_drag(true);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DragDropOperation::StartDragDropOperation,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

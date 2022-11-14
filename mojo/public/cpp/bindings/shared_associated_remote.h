@@ -8,7 +8,7 @@
 #include <tuple>
 
 #include "base/memory/ref_counted.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -46,7 +46,7 @@ class SharedAssociatedRemote {
   explicit SharedAssociatedRemote(
       PendingAssociatedRemote<Interface> pending_remote,
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-          base::SequencedTaskRunnerHandle::Get()) {
+          base::SequencedTaskRunner::GetCurrentDefault()) {
     if (pending_remote.is_valid())
       Bind(std::move(pending_remote), std::move(bind_task_runner));
   }
@@ -82,7 +82,7 @@ class SharedAssociatedRemote {
   // one of them, on `task_runner`. The other is returned as a receiver.
   mojo::PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-          base::SequencedTaskRunnerHandle::Get()) {
+          base::SequencedTaskRunner::GetCurrentDefault()) {
     mojo::PendingAssociatedRemote<Interface> remote;
     auto receiver = remote.InitWithNewEndpointAndPassReceiver();
     Bind(std::move(remote), std::move(bind_task_runner));
@@ -92,7 +92,7 @@ class SharedAssociatedRemote {
   // Binds to `pending_remote` on `bind_task_runner`.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
-                base::SequencedTaskRunnerHandle::Get()) {
+                base::SequencedTaskRunner::GetCurrentDefault()) {
     DCHECK(!remote_);
     DCHECK(pending_remote.is_valid());
     remote_ = SharedRemoteBase<AssociatedRemote<Interface>>::Create(

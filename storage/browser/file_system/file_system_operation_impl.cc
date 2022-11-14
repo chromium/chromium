@@ -15,8 +15,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/strings/escape.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -428,7 +428,7 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
   quota_manager_proxy->GetUsageAndQuota(
       blink::StorageKey(url.origin()),
       FileSystemTypeToQuotaStorageType(url.type()),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask,
                      weak_ptr_, std::move(task), std::move(error_callback)));
 }

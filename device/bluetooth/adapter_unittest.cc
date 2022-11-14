@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -295,15 +296,16 @@ TEST_F(
   // a notification that services are now resolved.
   EXPECT_CALL(*mock_unknown_bluetooth_device_,
               IsGattServicesDiscoveryComplete())
-      .WillOnce(DoAll(InvokeWithoutArgs([this]() {
-                        base::SequencedTaskRunnerHandle::Get()->PostTask(
-                            FROM_HERE, base::BindLambdaForTesting([&]() {
-                              adapter_->GattServicesDiscovered(
-                                  mock_bluetooth_adapter_.get(),
-                                  mock_unknown_bluetooth_device_.get());
-                            }));
-                      }),
-                      Return(false)))
+      .WillOnce(
+          DoAll(InvokeWithoutArgs([this]() {
+                  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                      FROM_HERE, base::BindLambdaForTesting([&]() {
+                        adapter_->GattServicesDiscovered(
+                            mock_bluetooth_adapter_.get(),
+                            mock_unknown_bluetooth_device_.get());
+                      }));
+                }),
+                Return(false)))
       .WillRepeatedly(Return(true));
 
   adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));

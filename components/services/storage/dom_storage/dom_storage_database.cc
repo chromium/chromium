@@ -11,8 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -187,7 +187,7 @@ DomStorageDatabase::DomStorageDatabase(
                     std::move(callback))) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "MojoLevelDB", base::SequencedTaskRunnerHandle::Get(),
+          this, "MojoLevelDB", base::SequencedTaskRunner::GetCurrentDefault(),
           MemoryDumpProvider::Options());
 }
 
@@ -221,7 +221,7 @@ void DomStorageDatabase::CreateSequenceBoundDomStorageDatabase(
   ANNOTATE_LEAKING_OBJECT_PTR(database_ptr);
   *database_ptr = base::SequenceBound<DomStorageDatabase>(
       blocking_task_runner, PassKey(), args...,
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](base::SequenceBound<DomStorageDatabase>* database_ptr,
              DomStorageDatabase::OpenCallback callback,
@@ -289,7 +289,7 @@ void DomStorageDatabase::Destroy(
                                leveldb::DestroyDB(db_name, options)));
           },
           MakeFullPersistentDBName(directory, name),
-          base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
+          base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
 }
 
 DomStorageDatabase::Status DomStorageDatabase::Get(KeyView key,

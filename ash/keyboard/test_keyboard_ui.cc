@@ -7,7 +7,7 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/mock_input_method.h"
@@ -29,8 +29,8 @@ aura::Window* TestKeyboardUI::LoadKeyboardWindow(LoadCallback callback) {
       screen->GetPrimaryDisplay().bounds()));
 
   // Simulate an asynchronous load.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 
   return keyboard_window_.get();
 }

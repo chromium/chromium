@@ -13,6 +13,7 @@
 
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -97,16 +98,14 @@ void AsyncDomStorageDatabase::DeletePrefixed(
 
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   DCHECK(database_);
-  database_.PostTaskWithThisObject(
-      base::BindOnce(
-          [](StatusCallback callback,
-             scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-             DomStorageDatabase* db) {
-            callback_task_runner->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback), db->RewriteDB()));
-          },
-          std::move(callback), base::SequencedTaskRunnerHandle::Get()));
+  database_.PostTaskWithThisObject(base::BindOnce(
+      [](StatusCallback callback,
+         scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+         DomStorageDatabase* db) {
+        callback_task_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
+      },
+      std::move(callback), base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void AsyncDomStorageDatabase::Get(const std::vector<uint8_t>& key,

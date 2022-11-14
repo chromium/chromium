@@ -15,7 +15,6 @@
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/backoff_delay_provider.h"
@@ -644,7 +643,7 @@ void SyncSchedulerImpl::TryCanaryJob() {
 void SyncSchedulerImpl::TrySyncCycleJob() {
   // Post call to TrySyncCycleJobImpl on current sequence. Later request for
   // access token will be here.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SyncSchedulerImpl::TrySyncCycleJobImpl,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

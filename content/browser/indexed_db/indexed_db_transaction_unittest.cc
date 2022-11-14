@@ -13,6 +13,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
@@ -85,7 +86,7 @@ class IndexedDBTransactionTest : public testing::Test {
     if (!db_)
       return;
     if (async) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&IndexedDBTransactionTest::RunTasksForDatabase,
                          base::Unretained(this), false));

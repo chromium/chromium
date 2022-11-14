@@ -7,10 +7,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,8 +31,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
       : TestSafeBrowsingDatabaseManager(
-            base::SequencedTaskRunnerHandle::Get(),
-            base::SequencedTaskRunnerHandle::Get()) {}
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
       delete;

@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
@@ -154,7 +154,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
       stop_notified_(false),
       notifying_(false),
       last_error_(net::OK),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {
   DCHECK(web_contents_);
   DCHECK(web_contents_->GetController().IsInitialNavigation());

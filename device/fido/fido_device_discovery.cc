@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_authenticator.h"
@@ -27,7 +27,7 @@ void FidoDeviceDiscovery::Start() {
 
   // To ensure that that NotifyStarted() is never invoked synchronously,
   // post task asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FidoDeviceDiscovery::StartInternal,
                                 weak_factory_.GetWeakPtr()));
 }

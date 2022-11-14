@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -40,7 +40,7 @@ void FakeFidoDiscovery::StartInternal() {
   wait_for_start_loop_.Quit();
 
   if (mode_ == StartMode::kAutomatic) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&FakeFidoDiscovery::SimulateStarted,
                                   AsWeakPtr(), true /* success */));
   }

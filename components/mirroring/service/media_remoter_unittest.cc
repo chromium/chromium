@@ -5,6 +5,7 @@
 #include "components/mirroring/service/media_remoter.h"
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -57,7 +58,7 @@ constexpr auto kDefaultPlayoutDelay = std::chrono::milliseconds(400);
 // initialize for tests.
 struct OpenscreenTestSenders {
   OpenscreenTestSenders()
-      : task_runner(base::SequencedTaskRunnerHandle::Get()),
+      : task_runner(base::SequencedTaskRunner::GetCurrentDefault()),
         environment(openscreen::Clock::now,
                     &task_runner,
                     openscreen::IPEndpoint::kAnyV4()),

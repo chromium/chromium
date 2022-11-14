@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/upload_progress.h"
@@ -38,7 +37,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UploadProgressTracker {
                         UploadProgressReportCallback report_progress,
                         net::URLRequest* request,
                         scoped_refptr<base::SequencedTaskRunner> task_runner =
-                            base::SequencedTaskRunnerHandle::Get());
+                            base::SequencedTaskRunner::GetCurrentDefault());
 
   UploadProgressTracker(const UploadProgressTracker&) = delete;
   UploadProgressTracker& operator=(const UploadProgressTracker&) = delete;

@@ -17,9 +17,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
@@ -114,13 +114,13 @@ GetAdvertisementMonitorApplicationManger() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void ScheduleAsynchronousCancelPairing(BluetoothDevice* device) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothDevice::CancelPairing,
                                 base::Unretained(device)));
 }
 
 void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothDevice::RejectPairing,
                                 base::Unretained(device)));
 }

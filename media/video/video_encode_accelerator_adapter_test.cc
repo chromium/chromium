@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -73,7 +72,7 @@ class VideoEncodeAcceleratorAdapterTest
         .WillRepeatedly(Return(vea_runner_));
 
     auto media_log = std::make_unique<NullMediaLog>();
-    callback_runner_ = base::SequencedTaskRunnerHandle::Get();
+    callback_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     vae_adapter_ = std::make_unique<VideoEncodeAcceleratorAdapter>(
         gpu_factories_.get(), media_log->Clone(), callback_runner_);
   }

@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,7 +74,7 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
     if (!res) {
       // If we did not receive a response, it's likely that debugd is not up
       // yet. Let's try again in 30 seconds.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&ZramWritebackBackendImpl::EnableWriteback,
                          weak_factory_.GetWeakPtr(), size_mb, std::move(cb)),

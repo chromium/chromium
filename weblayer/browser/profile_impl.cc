@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -246,7 +247,7 @@ void ProfileImpl::RemoveProfileObserver(ProfileObserver* observer) {
 void ProfileImpl::DeleteWebContentsSoon(
     std::unique_ptr<content::WebContents> web_contents) {
   if (web_contents_to_delete_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ProfileImpl::DeleteScheduleWebContents,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

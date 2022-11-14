@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/system_export.h"
@@ -88,7 +88,7 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
   SimpleWatcher(const base::Location& from_here,
                 ArmingPolicy arming_policy,
                 scoped_refptr<base::SequencedTaskRunner> runner =
-                    base::SequencedTaskRunnerHandle::Get(),
+                    base::SequencedTaskRunner::GetCurrentDefault(),
                 const char* handler_tag = nullptr);
 
   SimpleWatcher(const SimpleWatcher&) = delete;
@@ -206,7 +206,7 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Whether |task_runner_| is the same as
-  // base::SequencedTaskRunnerHandle::Get() for the thread.
+  // base::SequencedTaskRunner::GetCurrentDefault() for the thread.
   const bool is_default_task_runner_;
 
   ScopedTrapHandle trap_handle_;

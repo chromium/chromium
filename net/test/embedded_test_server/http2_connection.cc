@@ -15,7 +15,7 @@
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/socket/stream_socket.h"
@@ -350,7 +350,7 @@ void Http2Connection::OnSendInternalDone(int rv) {
       adapter_->ResumeStream(stream_id);
 
     if (adapter_->want_write()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Http2Connection::SendIfNotProcessing,
                                     weak_factory_.GetWeakPtr()));
     }

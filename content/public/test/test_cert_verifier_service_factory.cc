@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -90,7 +91,7 @@ void TestCertVerifierServiceFactoryImpl::InitDelegate() {
       // CertDbInitializerIOImpl.
       content::GetIOThreadTaskRunner({})
 #else
-      base::SequencedTaskRunnerHandle::Get()
+      base::SequencedTaskRunner::GetCurrentDefault()
 #endif
   );
   delegate_->Init(content::GetContentClientForTesting()

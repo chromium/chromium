@@ -404,8 +404,9 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
 
 void ChromeCameraAppUIDelegate::StartStorageMonitor(
     base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) {
-  auto monitor_callback_on_current_thread = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), monitor_callback, FROM_HERE);
+  auto monitor_callback_on_current_thread =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         monitor_callback, FROM_HERE);
   auto monitor_path = GetMyFilesFolder();
   storage_task_runner_->PostTask(
       FROM_HERE,

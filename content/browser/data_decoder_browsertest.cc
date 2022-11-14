@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
@@ -263,8 +264,8 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,
 
   // Android's in-process parser can complete synchronously, so queue the
   // delete task first unlike in the other tests.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(decoder));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(decoder));
 
   bool got_callback = false;
   raw_decoder->ParseJson(
@@ -300,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, NoCallbackAfterDestruction_Xml) {
           // is quit if the callback is destroyed un-run or after it runs.
           &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));
 
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(decoder));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(decoder));
   run_loop.Run();
 
   EXPECT_FALSE(got_callback);
@@ -324,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,
           // is quit if the callback is destroyed un-run or after it runs.
           &got_callback, base::ScopedClosureRunner(run_loop.QuitClosure())));
 
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(decoder));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(decoder));
   run_loop.Run();
 
   EXPECT_FALSE(got_callback);

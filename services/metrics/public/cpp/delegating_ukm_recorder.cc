@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ukm {
 
@@ -29,7 +30,7 @@ void DelegatingUkmRecorder::AddDelegate(base::WeakPtr<UkmRecorder> delegate) {
   base::AutoLock auto_lock(lock_);
   delegates_.insert(
       {delegate.get(),
-       Delegate(base::SequencedTaskRunnerHandle::Get(), delegate)});
+       Delegate(base::SequencedTaskRunner::GetCurrentDefault(), delegate)});
 }
 
 void DelegatingUkmRecorder::RemoveDelegate(UkmRecorder* delegate) {

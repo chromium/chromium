@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -302,7 +303,7 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   // cached when the beacon request comes in.
   deleted_frame_data_map_.insert(
       {key, KeyToValue(rfh, false /* require_live_frame */)});
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](ExtensionApiFrameIdMap* self,
                         content::GlobalRenderFrameHostId key) {

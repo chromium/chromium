@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -21,7 +22,7 @@ DataPipeElementReader::DataPipeElementReader(
       data_pipe_getter_(std::move(data_pipe_getter)),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunnerHandle::Get()) {}
+                      base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 DataPipeElementReader::~DataPipeElementReader() {}
 

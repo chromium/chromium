@@ -11,7 +11,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/input_trace.h"
@@ -887,7 +887,8 @@ void Pointer::CaptureCursor(const gfx::Point& hotspot) {
           base::BindOnce(&Pointer::OnCursorCaptured,
                          cursor_capture_weak_ptr_factory_.GetWeakPtr(),
                          hotspot));
-  request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
+  request->set_result_task_runner(
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   request->set_source(cursor_capture_source_id_);
   host_window()->layer()->RequestCopyOfOutput(std::move(request));

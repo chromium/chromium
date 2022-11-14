@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_encryption_handler.h"
@@ -632,7 +631,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
     // Do this asynchronously so the ModelLoadManager has a chance to
     // finish stopping this type, otherwise Disconnect() and Stop()
     // end up getting called twice on the controller.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

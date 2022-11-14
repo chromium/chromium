@@ -5,6 +5,7 @@
 #include "services/network/network_service_memory_cache_url_loader.h"
 
 #include "base/bit_cast.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "net/http/http_log_util.h"
@@ -91,7 +92,7 @@ void NetworkServiceMemoryCacheURLLoader::Start(
   // Set up data pipe producer.
   producer_handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   producer_handle_watcher_->Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,

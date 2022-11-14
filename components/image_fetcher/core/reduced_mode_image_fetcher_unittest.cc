@@ -13,11 +13,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/image_fetcher/core/cache/image_data_store_disk.h"
 #include "components/image_fetcher/core/cache/image_metadata_store_leveldb.h"
@@ -80,11 +80,11 @@ class ReducedModeImageFetcherTest : public testing::Test {
     auto metadata_store =
         std::make_unique<ImageMetadataStoreLevelDB>(std::move(db), &clock_);
     auto data_store = std::make_unique<ImageDataStoreDisk>(
-        data_dir_.GetPath(), base::SequencedTaskRunnerHandle::Get());
+        data_dir_.GetPath(), base::SequencedTaskRunner::GetCurrentDefault());
 
     image_cache_ = base::MakeRefCounted<ImageCache>(
         std::move(data_store), std::move(metadata_store), &test_prefs_, &clock_,
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     // Use an initial request to start the cache up.
     image_cache_->SaveImage(kImageUrl.spec(), kImageData,

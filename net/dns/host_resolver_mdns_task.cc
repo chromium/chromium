@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/dns/dns_util.h"
@@ -257,7 +257,7 @@ void HostResolverMdnsTask::Complete(bool post_needed) {
   }
 
   if (post_needed) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](base::WeakPtr<HostResolverMdnsTask> task) {
                          if (task)

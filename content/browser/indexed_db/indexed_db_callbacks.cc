@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/indexed_db/cursor_impl.h"
 #include "content/browser/indexed_db/database_impl.h"
@@ -42,7 +41,7 @@ class SafeConnectionWrapper {
   explicit SafeConnectionWrapper(
       std::unique_ptr<IndexedDBConnection> connection)
       : connection_(std::move(connection)),
-        idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        idb_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   SafeConnectionWrapper(const SafeConnectionWrapper&) = delete;
   SafeConnectionWrapper& operator=(const SafeConnectionWrapper&) = delete;
@@ -67,7 +66,7 @@ class SafeCursorWrapper {
  public:
   explicit SafeCursorWrapper(std::unique_ptr<IndexedDBCursor> cursor)
       : cursor_(std::move(cursor)),
-        idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        idb_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   SafeCursorWrapper(const SafeCursorWrapper&) = delete;
   SafeCursorWrapper& operator=(const SafeCursorWrapper&) = delete;

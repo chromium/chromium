@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
 #include "chromeos/ash/services/libassistant/util.h"
@@ -270,7 +271,7 @@ class BrightnessSetting : public Setting {
 }  // namespace
 
 DeviceSettingsController::DeviceSettingsController()
-    : mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : mojom_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 DeviceSettingsController::~DeviceSettingsController() = default;
 
 void DeviceSettingsController::Bind(

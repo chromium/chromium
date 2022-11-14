@@ -16,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
@@ -98,7 +97,7 @@ class ActivationStateComputingNavigationThrottleTest
     // Make the blocking task runner run on the current task runner for the
     // tests, to ensure that the NavigationSimulator properly runs all necessary
     // tasks while waiting for throttle checks to finish.
-    InitializeRulesetHandles(base::SequencedTaskRunnerHandle::Get());
+    InitializeRulesetHandles(base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void NavigateAndCommitMainFrameWithPageActivationState(

@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
@@ -62,7 +62,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
         execution_service_(execution_service),
         clock_(clock),
         force_refresh_results_(force_refresh_results),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   void GetSegmentResult(std::unique_ptr<GetResultOptions> options) override;
 

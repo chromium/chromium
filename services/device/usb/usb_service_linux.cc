@@ -20,8 +20,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
@@ -227,7 +227,7 @@ void UsbServiceLinux::BlockingTaskRunnerHelper::OnDeviceChanged(
 UsbServiceLinux::UsbServiceLinux() {
   helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
       CreateBlockingTaskRunner(), weak_factory_.GetWeakPtr(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 UsbServiceLinux::~UsbServiceLinux() {

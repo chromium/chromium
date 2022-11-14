@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -184,14 +184,14 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
   activation_response->type_processor =
       std::make_unique<ModelTypeProcessorProxy>(
           weak_ptr_factory_for_worker_.GetWeakPtr(),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
 
   // Defer invoking of |start_callback_| to avoid synchronous call from the
   // |bridge_|. It might cause a situation when inside the ModelReadyToSync()
   // another methods of the bridge eventually were called. This behavior would
   // be complicated and be unexpected in some bridges.
   // See crbug.com/1055584 for more details.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(start_callback_),
                                 std::move(activation_response)));
 }

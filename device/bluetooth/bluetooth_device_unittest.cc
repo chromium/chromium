@@ -11,9 +11,9 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
@@ -56,13 +56,13 @@ int8_t ToInt8(BluetoothTest::TestTxPower tx_power) {
 
 #if BUILDFLAG(IS_WIN)
 void ScheduleAsynchronousCancelPairing(BluetoothDevice* device) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothDevice::CancelPairing,
                                 base::Unretained(device)));
 }
 
 void ScheduleAsynchronousRejectPairing(BluetoothDevice* device) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothDevice::RejectPairing,
                                 base::Unretained(device)));
 }

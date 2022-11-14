@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "components/prefs/pref_filter.h"
@@ -430,7 +429,7 @@ void JsonPrefStore::RegisterOnNextSuccessfulWriteReply(
             base::BindOnce(
                 &JsonPrefStore::RunOrScheduleNextSuccessfulWriteCallback,
                 AsWeakPtr()),
-            base::SequencedTaskRunnerHandle::Get()));
+            base::SequencedTaskRunner::GetCurrentDefault()));
   }
 }
 
@@ -447,7 +446,7 @@ void JsonPrefStore::RegisterOnNextWriteSynchronousCallbacks(
           base::BindOnce(
               &JsonPrefStore::RunOrScheduleNextSuccessfulWriteCallback,
               AsWeakPtr()),
-          base::SequencedTaskRunnerHandle::Get()));
+          base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void JsonPrefStore::OnStoreDeletionFromDisk() {

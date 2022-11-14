@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -551,7 +552,7 @@ void IdpNetworkRequestManager::FetchManifestList(
     // Pass net::HTTP_OK as the |response_code| so we do not add a console error
     // message about a fetch we didn't even attempt.
     FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, net::HTTP_OK};
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&OnManifestListParsed, std::move(callback),
                                   /*manifest_list_url=*/GURL(), fetch_status,
                                   data_decoder::DataDecoder::ValueOrError()));

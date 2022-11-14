@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -53,7 +52,7 @@ class CloneCheckingURLLoaderFactory : public TestURLLoaderFactory {
 class CrossThreadPendingSharedURLLoaderFactoryTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    main_thread_ = base::SequencedTaskRunnerHandle::Get();
+    main_thread_ = base::SequencedTaskRunner::GetCurrentDefault();
     loader_thread_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::WithBaseSyncPrimitives()});
 

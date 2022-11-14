@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -43,7 +43,7 @@ class MockRequest : public WindowsSystemProxyResolver::Request {
               const ProxyList& proxy_list,
               WinHttpStatus winhttp_status,
               int windows_error) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockRequest::DoCallback, weak_ptr_factory_.GetWeakPtr(),
                        callback_target, proxy_list, winhttp_status,

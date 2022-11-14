@@ -24,6 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -923,7 +924,7 @@ void ArcMetricsService::OnArcStarted() {
 
   // Post tasks to record load average.
   for (size_t index = 0; index < std::size(kLoadAverageHistograms); ++index) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ArcMetricsService::MeasureLoadAverage,
                        weak_ptr_factory_.GetWeakPtr(), index),

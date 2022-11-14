@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
@@ -29,7 +30,7 @@ class GmbVideoFramePoolContext
       : gpu_service_(gpu_service),
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
         on_context_lost_(
-            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                                std::move(on_context_lost))) {
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 

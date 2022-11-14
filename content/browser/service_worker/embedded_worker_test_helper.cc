@@ -9,8 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -64,7 +64,7 @@ EmbeddedWorkerTestHelper::EmbeddedWorkerTestHelper(
           special_storage_policy)),
       quota_manager_proxy_(base::MakeRefCounted<storage::MockQuotaManagerProxy>(
           quota_manager_.get(),
-          base::SequencedTaskRunnerHandle::Get())),
+          base::SequencedTaskRunner::GetCurrentDefault())),
       wrapper_(base::MakeRefCounted<ServiceWorkerContextWrapper>(
           browser_context_.get())),
       fake_loader_factory_("HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n",

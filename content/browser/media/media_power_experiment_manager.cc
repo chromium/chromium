@@ -10,13 +10,13 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_switches.h"
 
 namespace content {
 
 MediaPowerExperimentManager::MediaPowerExperimentManager()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 MediaPowerExperimentManager::~MediaPowerExperimentManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

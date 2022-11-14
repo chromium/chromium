@@ -22,7 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "crypto/secure_hash.h"
 #include "net/base/hash_value.h"
@@ -195,7 +195,7 @@ class SimpleSynchronousEntry::ScopedFileOperationsBinding final {
                               BackendFileOperations** file_operations)
       : owner_(owner),
         file_operations_(owner->unbound_file_operations_->Bind(
-            base::SequencedTaskRunnerHandle::Get())) {
+            base::SequencedTaskRunner::GetCurrentDefault())) {
     *file_operations = file_operations_.get();
   }
   ~ScopedFileOperationsBinding() {
@@ -488,8 +488,8 @@ int SimpleSynchronousEntry::DeleteEntryFiles(
     net::CacheType cache_type,
     uint64_t entry_hash,
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
-  auto file_operations =
-      unbound_file_operations->Bind(base::SequencedTaskRunnerHandle::Get());
+  auto file_operations = unbound_file_operations->Bind(
+      base::SequencedTaskRunner::GetCurrentDefault());
   return DeleteEntryFilesInternal(path, cache_type, entry_hash,
                                   file_operations.get());
 }
@@ -564,8 +564,8 @@ int SimpleSynchronousEntry::TruncateEntryFiles(
     const base::FilePath& path,
     uint64_t entry_hash,
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
-  auto file_operations =
-      unbound_file_operations->Bind(base::SequencedTaskRunnerHandle::Get());
+  auto file_operations = unbound_file_operations->Bind(
+      base::SequencedTaskRunner::GetCurrentDefault());
   const bool deleted_well =
       TruncateFilesForEntryHash(path, entry_hash, file_operations.get());
   return deleted_well ? net::OK : net::ERR_FAILED;
@@ -576,8 +576,8 @@ int SimpleSynchronousEntry::DeleteEntrySetFiles(
     const std::vector<uint64_t>* key_hashes,
     const FilePath& path,
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations) {
-  auto file_operations =
-      unbound_file_operations->Bind(base::SequencedTaskRunnerHandle::Get());
+  auto file_operations = unbound_file_operations->Bind(
+      base::SequencedTaskRunner::GetCurrentDefault());
   const size_t did_delete_count = base::ranges::count_if(
       *key_hashes, [&path, &file_operations](const uint64_t& key_hash) {
         return SimpleSynchronousEntry::DeleteFilesForEntryHash(
@@ -1062,7 +1062,8 @@ void SimpleSynchronousEntry::Close(
     SimpleEntryCloseResults* out_results) {
   // As we delete `this`, we cannot use ScopedFileOperationsBinding here.
   std::unique_ptr<BackendFileOperations> file_operations =
-      unbound_file_operations_->Bind(base::SequencedTaskRunnerHandle::Get());
+      unbound_file_operations_->Bind(
+          base::SequencedTaskRunner::GetCurrentDefault());
   unbound_file_operations_ = nullptr;
   base::ElapsedTimer close_time;
   DCHECK(stream_0_data);

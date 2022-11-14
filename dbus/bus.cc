@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -177,8 +177,8 @@ Bus::Bus(const Options& options)
   dbus_threads_init_default();
   // The origin message loop is unnecessary if the client uses synchronous
   // functions only.
-  if (base::SequencedTaskRunnerHandle::IsSet())
-    origin_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  if (base::SequencedTaskRunner::HasCurrentDefault())
+    origin_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 Bus::~Bus() {

@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/message_serialization.h"
@@ -33,7 +33,7 @@ WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
 
     // Destroy |channel_| asynchronously as it may be on stack.
     // TODO(dcheng): This could probably be ReleaseSoon.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce([](rtc::scoped_refptr<webrtc::DataChannelInterface>) {},
                        std::move(channel_)));
@@ -80,7 +80,7 @@ void WebrtcDataStreamAdapter::SendMessagesIfReady() {
 
     if (message.done_callback) {
       // Invoke callback asynchronously to avoid nested calls to Send.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(message.done_callback));
     }
   }
@@ -91,7 +91,7 @@ void WebrtcDataStreamAdapter::OnStateChange() {
     case webrtc::DataChannelInterface::kOpen:
       DCHECK(state_ == State::CONNECTING);
       state_ = State::OPEN;
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::InvokeOpenEvent,
                                     weak_ptr_factory_.GetWeakPtr()));
       break;
@@ -99,7 +99,7 @@ void WebrtcDataStreamAdapter::OnStateChange() {
     case webrtc::DataChannelInterface::kClosing:
       if (state_ != State::CLOSED) {
         state_ = State::CLOSED;
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&WebrtcDataStreamAdapter::InvokeClosedEvent,
                            weak_ptr_factory_.GetWeakPtr()));
@@ -122,7 +122,7 @@ void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
   buffer->AppendCopyOf(reinterpret_cast<const char*>(rtc_buffer.data.data()),
                        rtc_buffer.data.size());
   buffer->Lock();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebrtcDataStreamAdapter::InvokeMessageEvent,
                      weak_ptr_factory_.GetWeakPtr(), std::move(buffer)));
@@ -131,7 +131,7 @@ void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
 void WebrtcDataStreamAdapter::OnBufferedAmountChange(uint64_t previous_amount) {
   // WebRTC explicitly doesn't support sending from observer callbacks, so post
   // a task to let the stack unwind.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::SendMessagesIfReady,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

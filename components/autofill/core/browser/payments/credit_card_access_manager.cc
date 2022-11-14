@@ -15,6 +15,7 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -224,7 +225,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
   // Use the weak_ptr here so that the delayed task won't be executed if the
   // |credit_card_access_manager| is reset.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CreditCardAccessManager::SignalCanFetchUnmaskDetails,
                      weak_ptr_factory_.GetWeakPtr()),

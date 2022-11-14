@@ -21,6 +21,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -334,7 +335,7 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
       frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
       bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
-      main_client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      main_client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_thread_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
           {},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),

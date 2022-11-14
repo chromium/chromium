@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace chromecast {
@@ -150,7 +150,7 @@ void ScreenPowerControllerAura::SetScreenPowerOn() {
 }
 
 void ScreenPowerControllerAura::SetScreenPowerOff() {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScreenPowerControllerAura::OnDisplayOffTimeoutCompleted,
                      weak_factory_.GetWeakPtr()),
@@ -172,7 +172,7 @@ void ScreenPowerControllerAura::OnScreenPoweredOn(bool succeeded) {
     case PendingTask::kBrightnessOff:
       // TODO(b/161268188): This can be simplified and the delays removed if
       // backlight timing is handled by the kernel
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &ScreenPowerControllerAura::OnDisplayOnTimeoutCompleted,

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace media {
 namespace learning {
@@ -19,7 +19,7 @@ LearningTaskControllerHelper::LearningTaskControllerHelper(
     SequenceBoundFeatureProvider feature_provider)
     : task_(task),
       feature_provider_(std::move(feature_provider)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       add_example_cb_(std::move(add_example_cb)) {}
 
 LearningTaskControllerHelper::~LearningTaskControllerHelper() = default;

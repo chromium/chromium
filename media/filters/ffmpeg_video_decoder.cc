@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -326,8 +325,8 @@ void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
   avcodec_flush_buffers(codec_context_.get());
   state_ = DecoderState::kNormal;
   // PostTask() to avoid calling |closure| immediately.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(closure));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(closure));
 }
 
 FFmpegVideoDecoder::~FFmpegVideoDecoder() {

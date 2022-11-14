@@ -30,7 +30,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/win_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -465,7 +464,7 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
 }
 
 HidServiceWin::HidServiceWin()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits)) {
   DeviceMonitorWin* device_monitor =

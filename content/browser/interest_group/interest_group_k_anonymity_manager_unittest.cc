@@ -5,9 +5,9 @@
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -34,7 +34,7 @@ class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
 
   void JoinSet(std::string id,
                base::OnceCallback<void(bool)> callback) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), has_error_));
   }
 
@@ -43,10 +43,10 @@ class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
       base::OnceCallback<void(std::vector<bool>)> callback) override {
     if (has_error_) {
       // An error is indicated by an empty status.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::vector<bool>()));
     } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     std::vector<bool>(ids.size(), true)));
     }

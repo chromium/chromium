@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -151,7 +151,7 @@ class CastMetricsHelper {
   // |tick_clock| just provided for unit test to construct; normally it should
   // be nullptr when accessed through GetInstance.
   CastMetricsHelper(scoped_refptr<base::SequencedTaskRunner> task_runner =
-                        base::SequencedTaskRunnerHandle::Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault(),
                     const base::TickClock* tick_clock = nullptr);
   virtual ~CastMetricsHelper();
 

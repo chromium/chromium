@@ -50,6 +50,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -859,7 +860,7 @@ class HostResolverManager::ProbeRequestImpl
   void OnDohServerUnavailable(bool network_change) override {
     // Start the runner asynchronously, as this may trigger reentrant calls into
     // HostResolverManager, which are not allowed during notification handling.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProbeRequestImpl::StartRunner,
                        weak_ptr_factory_.GetWeakPtr(), network_change));
@@ -1955,7 +1956,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // Otherwise the job will be destroyed with requests silently cancelled
     // before completion runs.
     DCHECK(self_iterator_);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&Job::CompleteRequestsWithError,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   ERR_HOST_RESOLVER_QUEUE_TOO_LARGE,
@@ -2449,7 +2450,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     } else {
       // Could not create an mDNS client. Since we cannot complete synchronously
       // from here, post a failure without starting the task.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Job::OnMdnsImmediateFailure,
                                     weak_ptr_factory_.GetWeakPtr(), rv));
     }

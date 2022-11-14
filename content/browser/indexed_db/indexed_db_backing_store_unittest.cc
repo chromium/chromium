@@ -216,7 +216,7 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
       filesystem_proxy->WriteFileAtomically(path, "fake contents");
     }
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        storage::mojom::WriteBlobToFileResult::kSuccess));
@@ -265,7 +265,7 @@ class MockFileSystemAccessContext
           pending_token,
       SerializeHandleCallback callback) override {
     writes_.emplace_back(std::move(pending_token));
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             std::move(callback),
@@ -317,8 +317,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     // Needed to get the QuotaClient bound.
     {
@@ -404,7 +404,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
             &leveldb_close_event,
             base::BindLambdaForTesting(
                 [&](base::WaitableEvent*) { loop.Quit(); }),
-            base::SequencedTaskRunnerHandle::Get());
+            base::SequencedTaskRunner::GetCurrentDefault());
 
         idb_context_->ForceClose(
             bucket_id,

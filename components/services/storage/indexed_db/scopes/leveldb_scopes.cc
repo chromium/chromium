@@ -15,10 +15,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
@@ -210,7 +210,7 @@ leveldb::Status LevelDBScopes::StartRecoveryAndCleanupTasks(
       break;
     case TaskRunnerMode::kUseCurrentSequence:
       revert_runner_ = nullptr;
-      cleanup_runner_ = base::SequencedTaskRunnerHandle::Get();
+      cleanup_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
       break;
   }
 

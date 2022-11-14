@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
@@ -168,7 +169,7 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
   }
 
   observer_ = GetSequenceBoundSettingsChangedCallback(
-      base::SequencedTaskRunnerHandle::Get(), frontend->GetObserver());
+      base::SequencedTaskRunner::GetCurrentDefault(), frontend->GetObserver());
 
   frontend->RunWithStorage(
       extension(), settings_namespace_,
@@ -217,7 +218,7 @@ void SettingsFunction::OnSessionSettingsChanged(
     // This used to dispatch asynchronously as a result of a
     // ObserverListThreadSafe. Ideally, we'd just run this synchronously, but it
     // appears at least some tests rely on the asynchronous behavior.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(observer, extension_id(), storage_area_,
                                   ValueChangeToValue(std::move(changes))));
   }

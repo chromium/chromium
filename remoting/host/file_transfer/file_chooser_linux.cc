@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -156,7 +156,7 @@ FileChooserLinux::FileChooserLinux(
     : callback_(std::move(callback)) {
   gtk_file_chooser_on_ui_thread_ =
       base::SequenceBound<GtkFileChooserOnUiThread>(
-          ui_task_runner, base::SequencedTaskRunnerHandle::Get(),
+          ui_task_runner, base::SequencedTaskRunner::GetCurrentDefault(),
           weak_ptr_factory_.GetWeakPtr());
 }
 

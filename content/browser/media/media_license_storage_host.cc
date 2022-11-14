@@ -13,7 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/media/cdm_file_impl.h"
@@ -117,7 +117,7 @@ void MediaLicenseStorageHost::DidOpenFile(const std::string& file_name,
   manager_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(callback), Status::kSuccess,
                      std::move(cdm_file)));
 }
@@ -163,7 +163,7 @@ void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
   manager_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kMediaLicense, bucket_locator_.id, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(std::move(callback), success));
 }
 

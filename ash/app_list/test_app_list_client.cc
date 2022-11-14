@@ -10,7 +10,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -31,7 +31,7 @@ void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
     // Simulate production behavior, which collects the results asynchronously.
     // Bounce through OnZeroStateSearchDone() to count calls, so that tests can
     // assert that the callback happened.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TestAppListClient::OnZeroStateSearchDone,
                        weak_factory_.GetWeakPtr(), std::move(on_done)),

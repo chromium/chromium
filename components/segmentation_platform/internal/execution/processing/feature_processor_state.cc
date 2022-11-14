@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
@@ -92,7 +93,7 @@ void FeatureProcessorState::OnFinishProcessing() {
     input = MergeTensors(std::move(input_tensor_));
     output = MergeTensors(std::move(output_tensor_));
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), error_, std::move(input),
                                 std::move(output)));
 }

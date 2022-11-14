@@ -31,7 +31,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -72,7 +71,7 @@ std::string HexedHash(const std::string& value) {
 
 void SizeRetrievedFromAllCaches(std::unique_ptr<int64_t> accumulator,
                                 CacheStorage::SizeCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), *accumulator));
 }
 
@@ -883,7 +882,7 @@ void CacheStorage::ScheduleWriteIndex() {
   index_write_task_.Reset(base::BindOnce(&CacheStorage::WriteIndex,
                                          weak_factory_.GetWeakPtr(),
                                          base::DoNothing()));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, index_write_task_.callback(), base::Milliseconds(delay_ms));
 }
 
@@ -1127,7 +1126,7 @@ void CacheStorage::DoomCacheImpl(const std::string& cache_name,
                          "cache_name", cache_name);
   CacheStorageCacheHandle cache_handle = GetLoadedCache(cache_name);
   if (!cache_handle.value()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), CacheStorageError::kErrorNotFound));
     return;
@@ -1195,7 +1194,7 @@ void CacheStorage::DeleteCacheDidGetSize(CacheStorageCache* doomed_cache,
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_),
       bucket_locator_.id, -cache_size, base::Time::Now(),
-      base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 
   cache_loader_->CleanUpDeletedCache(doomed_cache);
   auto doomed_caches_iter = doomed_caches_.find(doomed_cache);
@@ -1425,7 +1424,7 @@ void CacheStorage::SizeImpl(SizeCallback callback) {
   DCHECK(initialized_);
 
   if (cache_index_->GetPaddedStorageSize() != kSizeUnknown) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   cache_index_->GetPaddedStorageSize()));
     return;

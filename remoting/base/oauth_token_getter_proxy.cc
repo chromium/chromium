@@ -5,8 +5,8 @@
 #include "remoting/base/oauth_token_getter_proxy.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 
 namespace remoting {
@@ -39,14 +39,14 @@ OAuthTokenGetterProxy::OAuthTokenGetterProxy(
 OAuthTokenGetterProxy::OAuthTokenGetterProxy(
     base::WeakPtr<OAuthTokenGetter> token_getter)
     : OAuthTokenGetterProxy(token_getter,
-                            base::SequencedTaskRunnerHandle::Get()) {}
+                            base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 OAuthTokenGetterProxy::~OAuthTokenGetterProxy() = default;
 
 void OAuthTokenGetterProxy::CallWithToken(
     OAuthTokenGetter::TokenCallback on_access_token) {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
-    auto task_runner_to_reply = base::SequencedTaskRunnerHandle::Get();
+    auto task_runner_to_reply = base::SequencedTaskRunner::GetCurrentDefault();
 
     auto reply_callback = base::BindOnce(
         &ResolveCallback, std::move(on_access_token), task_runner_to_reply);

@@ -8,6 +8,7 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -157,11 +158,11 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
   std::unique_ptr<
       mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener>,
       base::OnTaskRunnerDeleter>
-      listener(
-          new mojo::Remote<
-              blink::mojom::FileSystemAccessDirectoryEntriesListener>(
-              std::move(pending_listener)),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+      listener(new mojo::Remote<
+                   blink::mojom::FileSystemAccessDirectoryEntriesListener>(
+                   std::move(pending_listener)),
+               base::OnTaskRunnerDeleter(
+                   base::SequencedTaskRunner::GetCurrentDefault()));
   listener->reset_on_disconnect();
 
   if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {

@@ -109,7 +109,7 @@ class RandomMojoDelays {
       // resumption task in the future.
       // TODO(mpdenton) similar problem as below: can freeze shutdown if we
       // forget to unpause bindings.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &RandomMojoDelays::ResumeFrozenBindingStateBasesOnTaskRunner,
@@ -120,10 +120,11 @@ class RandomMojoDelays {
     }
     // Re-attach the bindings to the global map for future pausing.
     runner_for_pauses_->PostTask(
-        FROM_HERE, base::BindOnce(&RandomMojoDelays::AddBindingStateBaseList,
-                                  base::Unretained(this),
-                                  base::SequencedTaskRunnerHandle::Get(),
-                                  std::move(binding_state_bases)));
+        FROM_HERE,
+        base::BindOnce(&RandomMojoDelays::AddBindingStateBaseList,
+                       base::Unretained(this),
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(binding_state_bases)));
   }
 
   // Pause a random selection of bindings in the list |binding_state_bases|,
@@ -151,7 +152,7 @@ class RandomMojoDelays {
     // TODO(mpdenton) may cause deadlock on shutdown if this doesn't run. But
     // there is no PostDelayedTask for a SequencedTaskRunner.
     if (paused_binding_state_bases.size() > 0) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &RandomMojoDelays::ResumeFrozenBindingStateBasesOnTaskRunner,
@@ -163,10 +164,11 @@ class RandomMojoDelays {
       // map for future pausing, if there are any left after deleting all the
       // invalidated weak ptrs.
       runner_for_pauses_->PostTask(
-          FROM_HERE, base::BindOnce(&RandomMojoDelays::AddBindingStateBaseList,
-                                    base::Unretained(this),
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(binding_state_bases)));
+          FROM_HERE,
+          base::BindOnce(&RandomMojoDelays::AddBindingStateBaseList,
+                         base::Unretained(this),
+                         base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(binding_state_bases)));
     }
   }
 
@@ -190,7 +192,7 @@ class RandomMojoDelays {
     }
     // Post delayed task, instead of using a RepeatingTimer, to avoid
     // overwhelming the task scheduling.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&RandomMojoDelays::PauseRandomBindingStateBases,
                        base::Unretained(this)),

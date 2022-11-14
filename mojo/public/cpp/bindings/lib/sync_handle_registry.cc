@@ -13,8 +13,8 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/c/system/core.h"
 
@@ -40,7 +40,7 @@ scoped_refptr<SyncHandleRegistry> SyncHandleRegistry::current() {
 
   // SyncMessageFilter can be used on threads without sequence-local storage
   // being available. Those receive a unique, standalone SyncHandleRegistry.
-  if (!base::SequencedTaskRunnerHandle::IsSet()) {
+  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
     return base::MakeRefCounted<SyncHandleRegistry>(
         base::PassKey<SyncHandleRegistry>());
   }

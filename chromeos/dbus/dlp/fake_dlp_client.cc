@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 
 namespace chromeos {
@@ -34,7 +34,7 @@ void FakeDlpClient::SetDlpFilesPolicy(
     SetDlpFilesPolicyCallback callback) {
   ++set_dlp_files_policy_count_;
   dlp::SetDlpFilesPolicyResponse response;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 

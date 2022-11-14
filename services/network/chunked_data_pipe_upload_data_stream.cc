@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 
@@ -24,7 +25,7 @@ ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
       chunked_data_pipe_getter_(std::move(chunked_data_pipe_getter)),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunnerHandle::Get()) {
+                      base::SequencedTaskRunner::GetCurrentDefault()) {
   // TODO(yhirano): Turn this to a DCHECK once we find the root cause of
   // https://crbug.com/1156550.
   CHECK(chunked_data_pipe_getter_.is_bound());

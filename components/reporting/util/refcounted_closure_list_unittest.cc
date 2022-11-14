@@ -55,7 +55,7 @@ TEST_F(RefCountedClosureListTest, BasicUsageTest) {
     {
       test::TestCallbackAutoWaiter waiter;
       const auto closure_list = base::MakeRefCounted<RefCountedClosureList>(
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
       closure_list->RegisterCompletionCallback(base::BindOnce(
           &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
       for (size_t t = 0; t < num_tasks; ++t) {

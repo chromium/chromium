@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/time.h"
@@ -300,7 +299,7 @@ SessionSyncBridge::CreateLocalSessionWriteBatch() {
     syncing_->local_data_out_of_sync = false;
     // We use PostTask() to avoid interferring with the ongoing handling of
     // local changes that triggered this function.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SessionSyncBridge::ResubmitLocalSession,
                                   weak_ptr_factory_.GetWeakPtr()));
   }

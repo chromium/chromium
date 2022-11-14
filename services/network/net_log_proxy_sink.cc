@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "services/network/net_log_proxy_sink.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace network {
 
 NetLogProxySink::NetLogProxySink()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // Initialize a WeakPtr instance that can be safely referred to from other
   // threads when binding tasks posted back to this thread.
   weak_this_ = weak_factory_.GetWeakPtr();

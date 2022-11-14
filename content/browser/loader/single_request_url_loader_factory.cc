@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -22,7 +21,7 @@ class SingleRequestURLLoaderFactory::HandlerState
  public:
   explicit HandlerState(RequestHandler handler)
       : handler_(std::move(handler)),
-        handler_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        handler_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   HandlerState(const HandlerState&) = delete;
   HandlerState& operator=(const HandlerState&) = delete;

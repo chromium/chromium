@@ -5,8 +5,8 @@
 #include "components/browsing_topics/test_util.h"
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -214,7 +214,7 @@ uint64_t TesterBrowsingTopicsCalculator::GenerateRandUint64() {
 
 void TesterBrowsingTopicsCalculator::CheckCanCalculate() {
   if (use_mock_result_) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TesterBrowsingTopicsCalculator::MockDelayReached,
                        weak_ptr_factory_.GetWeakPtr()),

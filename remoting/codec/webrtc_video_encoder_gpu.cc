@@ -17,9 +17,9 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -200,10 +200,11 @@ void WebrtcVideoEncoderGpu::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   hw_encode_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebrtcVideoEncoderGpu::Core::Encode,
-                     base::Unretained(core_.get()), std::move(frame), params,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(done))));
+      base::BindOnce(
+          &WebrtcVideoEncoderGpu::Core::Encode, base::Unretained(core_.get()),
+          std::move(frame), params,
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(done))));
 }
 
 WebrtcVideoEncoderGpu::Core::Core(media::VideoCodecProfile codec_profile)

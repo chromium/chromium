@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -405,7 +406,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
           WithArg<1>(testing::Invoke([](LoginsOrErrorReply reply) -> void {
             LoginsResult logins;
             logins.emplace_back(std::make_unique<PasswordForm>());
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(reply), std::move(logins)));
           })));
 

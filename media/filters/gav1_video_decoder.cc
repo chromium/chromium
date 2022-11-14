@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -415,8 +415,8 @@ void Gav1VideoDecoder::Reset(base::OnceClosure reset_cb) {
   }
 
   if (bind_callbacks_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(reset_cb));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(reset_cb));
   } else {
     std::move(reset_cb).Run();
   }

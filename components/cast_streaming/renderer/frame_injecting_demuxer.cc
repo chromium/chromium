@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/demuxer_stream_traits.h"
 #include "components/cast_streaming/renderer/buffer_requester.h"
@@ -267,7 +268,7 @@ FrameInjectingDemuxer::FrameInjectingDemuxer(
     DemuxerConnector* demuxer_connector,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : media_task_runner_(std::move(media_task_runner)),
-      original_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      original_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       demuxer_connector_(demuxer_connector),
       weak_factory_(this) {
   DVLOG(1) << __func__;

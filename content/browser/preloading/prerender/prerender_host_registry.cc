@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
@@ -769,7 +769,7 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
 
   // Asynchronously delete the prerender host.
   to_be_deleted_hosts_.push_back(std::move(prerender_host));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PrerenderHostRegistry::DeleteAbandonedHosts,
                                 weak_factory_.GetWeakPtr()));
 }

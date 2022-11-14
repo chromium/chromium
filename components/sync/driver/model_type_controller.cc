@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -93,7 +93,7 @@ void ModelTypeController::LoadModels(
 
   DataTypeActivationRequest request;
   request.error_handler = base::BindRepeating(
-      &ReportErrorOnModelThread, base::SequencedTaskRunnerHandle::Get(),
+      &ReportErrorOnModelThread, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&ModelTypeController::ReportModelError,
                           base::AsWeakPtr(this), SyncError::DATATYPE_ERROR));
   request.authenticated_account_id = configure_context.authenticated_account_id;

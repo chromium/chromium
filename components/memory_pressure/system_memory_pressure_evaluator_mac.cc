@@ -16,7 +16,7 @@
 #include "base/check_op.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/memory_pressure_monitor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace memory_pressure::mac {
 
@@ -49,7 +49,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
   base::WeakPtr<SystemMemoryPressureEvaluator> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   scoped_refptr<base::TaskRunner> task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   // Attach an event handler to the memory pressure event source.
   if (memory_level_event_source_.get()) {

@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace arc {
 
@@ -30,7 +30,7 @@ void FakePolicyInstance::OnPolicyUpdated() {}
 void FakePolicyInstance::OnCommandReceived(const std::string& command,
                                            OnCommandReceivedCallback callback) {
   command_payload_ = command;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), mojom::CommandResultType::SUCCESS));
 }

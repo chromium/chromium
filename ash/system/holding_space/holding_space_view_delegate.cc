@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -788,7 +789,7 @@ void HoldingSpaceViewDelegate::OpenItemsAndScheduleClose(
   DCHECK_GE(views.size(), 1u);
   // This `PostTask()` will result in the destruction of the view delegate if it
   // has not already been destroyed.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const base::WeakPtr<HoldingSpaceViewDelegate>& weak_ptr) {

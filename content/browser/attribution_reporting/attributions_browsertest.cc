@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -753,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                                                register_trigger_url)));
 
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());
@@ -1560,7 +1559,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
   // impressions were never passed to the conversion URL, as the page was only
   // pre-rendered.
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());

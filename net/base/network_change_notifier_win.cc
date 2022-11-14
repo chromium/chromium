@@ -122,7 +122,7 @@ NetworkChangeNotifierWin::NetworkChangeNotifierWin()
       last_announced_offline_(last_computed_connection_type_ ==
                               CONNECTION_NONE),
       sequence_runner_for_registration_(
-          base::SequencedTaskRunnerHandle::Get()) {
+          base::SequencedTaskRunner::GetCurrentDefault()) {
   memset(&addr_overlapped_, 0, sizeof addr_overlapped_);
   addr_overlapped_.hEvent = WSACreateEvent();
 }

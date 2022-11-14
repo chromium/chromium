@@ -29,11 +29,11 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
@@ -82,7 +82,7 @@ class AmbientUiVisibilityBarrier : public AmbientUiModelObserver {
     if (visibility == target_visibility_ && run_loop_quit_closure_) {
       // Post task so that any existing tasks get run before WaitWithTimeout()
       // completes.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(run_loop_quit_closure_));
     }
   }

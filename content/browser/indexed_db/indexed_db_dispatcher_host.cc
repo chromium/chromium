@@ -130,7 +130,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
     auto* raw_adapter = adapter.get();
 
     // Have the adapter (owning the reader) be owned by the result callback.
-    auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+    auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
     auto result_callback = base::BindOnce(
         [](std::unique_ptr<FileStreamReaderToDataPipe> reader,
            scoped_refptr<base::SequencedTaskRunner> task_runner,

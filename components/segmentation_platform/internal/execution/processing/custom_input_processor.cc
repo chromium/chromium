@@ -5,7 +5,7 @@
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
@@ -118,7 +118,7 @@ void CustomInputProcessor::ProcessIndexType(
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kCustomInputError);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(feature_processor_state),
                      std::move(*result)));

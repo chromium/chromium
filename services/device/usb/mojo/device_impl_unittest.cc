@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -290,7 +291,7 @@ class USBDeviceImplTest : public testing::Test {
     EXPECT_FALSE(is_device_open_);
     is_device_open_ = true;
     // Simulate the asynchronous device opening process.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), mock_handle_),
         base::Milliseconds(1));
   }

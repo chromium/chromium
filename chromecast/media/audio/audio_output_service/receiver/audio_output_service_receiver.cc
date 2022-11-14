@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -71,7 +72,8 @@ class AudioOutputServiceReceiver::Stream
 
       pushed_eos_ = false;
       cma_audio_.reset(new audio_output_service::CmaBackendShim(
-          weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get(),
+          weak_factory_.GetWeakPtr(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           receiver_->media_task_runner(), message.backend_params(),
           receiver_->cma_backend_factory(), receiver_->connector()));
     }
@@ -195,7 +197,7 @@ class AudioOutputServiceReceiver::Stream
 
   void ResetConnection() {
     // Reset will cause the deletion of |this|, so it is better to post a task.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&Stream::OnAudioPlaybackError,
                                   weak_factory_.GetWeakPtr()));
   }

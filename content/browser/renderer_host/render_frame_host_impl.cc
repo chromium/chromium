@@ -36,6 +36,7 @@
 #include "base/strings/string_piece.h"
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -10266,7 +10267,7 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
         base::FeatureList::IsEnabled(
             features::kRenderAccessibilityHostDeserializationOffMainThread)
             ? base::ThreadPool::CreateSequencedTaskRunner({})
-            : base::SequencedTaskRunnerHandle::Get(),
+            : base::SequencedTaskRunner::GetCurrentDefault(),
         render_frame_scoped_weak_ptr_factory_.GetWeakPtr(), ax_tree_id);
   }
   render_accessibility_host_ax_tree_id_ = ax_tree_id;

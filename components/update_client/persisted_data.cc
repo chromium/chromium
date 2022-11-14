@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -135,8 +135,8 @@ void PersistedData::SetDateLastData(const std::vector<std::string>& ids,
                                     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_ || datenum < 0) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
   if (!activity_data_service_) {
@@ -179,7 +179,7 @@ void PersistedData::GetActiveBits(
     base::OnceCallback<void(const std::set<std::string>&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!activity_data_service_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::set<std::string>{}));
     return;

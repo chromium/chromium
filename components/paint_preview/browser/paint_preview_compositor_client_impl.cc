@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 
@@ -17,7 +18,7 @@ PaintPreviewCompositorClientImpl::PaintPreviewCompositorClientImpl(
     scoped_refptr<base::SequencedTaskRunner> compositor_task_runner,
     base::WeakPtr<PaintPreviewCompositorServiceImpl> service)
     : compositor_task_runner_(compositor_task_runner),
-      default_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      default_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       service_(service),
       compositor_(new mojo::Remote<mojom::PaintPreviewCompositor>(),
                   base::OnTaskRunnerDeleter(compositor_task_runner_)) {}

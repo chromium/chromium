@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
 #include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
@@ -304,7 +303,7 @@ AudioOutputRedirector::AudioOutputRedirector(
       output_channel_layout_(
           GetMediaChannelLayout(config_.output_channel_layout,
                                 config_.num_output_channels)),
-      io_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      io_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       buffer_pool_(
           base::MakeRefCounted<IOBufferPool>(kDefaultBufferSize,
                                              std::numeric_limits<size_t>::max(),

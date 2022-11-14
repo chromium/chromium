@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -368,7 +369,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
         &test_server::HandlePrefixedRequest, path,
         base::BindRepeating(FailRequestAndFailTest,
                             "additional request made after deadline exceeded",
-                            base::SequencedTaskRunnerHandle::Get())));
+                            base::SequencedTaskRunner::GetCurrentDefault())));
   }
   leaf->SetCrlDistributionPointUrls(crl_urls);
 
@@ -441,7 +442,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineOCSP) {
         &test_server::HandlePrefixedRequest, path,
         base::BindRepeating(FailRequestAndFailTest,
                             "additional request made after deadline exceeded",
-                            base::SequencedTaskRunnerHandle::Get())));
+                            base::SequencedTaskRunner::GetCurrentDefault())));
   }
   leaf->SetCaIssuersAndOCSPUrls({}, ocsp_urls);
 
@@ -500,7 +501,7 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
       &test_server::HandlePrefixedRequest, path,
       base::BindRepeating(FailRequestAndFailTest,
                           "no OCSP requests should be sent",
-                          base::SequencedTaskRunnerHandle::Get())));
+                          base::SequencedTaskRunner::GetCurrentDefault())));
   intermediate->SetCaIssuersAndOCSPUrls({}, ocsp_urls);
   test_server.StartAcceptingConnections();
 

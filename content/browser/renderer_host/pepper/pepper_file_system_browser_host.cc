@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/pepper/pepper_file_io_host.h"
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
@@ -286,7 +286,7 @@ void PepperFileSystemBrowserHost::IOThreadState::ShouldCreateQuotaReservation(
   quota_manager_proxy->IsStorageUnlimited(
       blink::StorageKey(url::Origin::Create(root_url_)),
       storage::FileSystemTypeToQuotaStorageType(file_system_type),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              bool is_storage_unlimited) {

@@ -8,7 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -49,7 +49,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
                                 base::FilePath()),
                             BlobFilesCleanedCallback(),
                             ReportOutstandingBlobsCallback(),
-                            base::SequencedTaskRunnerHandle::Get()) {}
+                            base::SequencedTaskRunner::GetCurrentDefault()) {}
 IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,

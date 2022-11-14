@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -265,7 +266,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> default_future;
     quota_manager_->proxy()->UpdateOrCreateBucket(
         BucketInitParams::ForDefaultBucket(storage_key()),
-        base::SequencedTaskRunnerHandle::Get(), default_future.GetCallback());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        default_future.GetCallback());
     QuotaErrorOr<BucketInfo> default_bucket = default_future.Take();
     CHECK(default_bucket.ok());
     default_bucket_ = default_bucket.value().ToBucketLocator();
@@ -276,7 +278,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
     BucketInitParams params = BucketInitParams::ForDefaultBucket(storage_key());
     params.name = "non-default bucket";
     quota_manager_->proxy()->UpdateOrCreateBucket(
-        params, base::SequencedTaskRunnerHandle::Get(),
+        params, base::SequencedTaskRunner::GetCurrentDefault(),
         custom_future.GetCallback());
     QuotaErrorOr<BucketInfo> custom_bucket = custom_future.Take();
     CHECK(custom_bucket.ok());
@@ -287,7 +289,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> alternate_future;
     params.name = "alternate non-default bucket";
     quota_manager_->proxy()->UpdateOrCreateBucket(
-        params, base::SequencedTaskRunnerHandle::Get(),
+        params, base::SequencedTaskRunner::GetCurrentDefault(),
         alternate_future.GetCallback());
     QuotaErrorOr<BucketInfo> alternate_bucket = alternate_future.Take();
     CHECK(alternate_bucket.ok());

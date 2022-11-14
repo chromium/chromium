@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_device_handle_win.h"
 #include "services/device/usb/webusb_descriptors.h"
@@ -47,7 +46,7 @@ void UsbDeviceWin::Open(OpenCallback callback) {
     handles().push_back(device_handle.get());
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(device_handle)));
 }
 

@@ -19,7 +19,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -328,7 +328,7 @@ void AmbientTopicQueue::RunPendingWaitCallbacks(WaitResult wait_result) {
   for (WaitCallback& wait_cb : pending_wait_cbs_) {
     // Run the callbacks asynchronously in case the callback's implementation
     // invokes WaitForTopicsAvailable() again.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(wait_cb), wait_result));
   }
   pending_wait_cbs_.clear();

@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/cast_core/runtime/browser/message_port_handler.h"
 
 namespace chromecast {
@@ -16,7 +16,7 @@ namespace chromecast {
 MessagePortServiceGrpc::MessagePortServiceGrpc(
     cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub)
     : core_app_stub_(core_app_stub),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(core_app_stub_);
 }
 

@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -341,7 +341,7 @@ class TunnelTransport : public Transport {
     // Delay the WebSocket creation by 250ms. This to measure whether DNS
     // errors are reduced in UMA stats. If so, then the network errors that we
     // see are probably due to a start-up race.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&TunnelTransport::StartWebSocket,
                        weak_factory_.GetWeakPtr()),

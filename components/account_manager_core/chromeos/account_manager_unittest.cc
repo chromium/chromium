@@ -15,9 +15,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -227,7 +227,7 @@ class AccountManagerTest : public testing::Test {
         base::BindRepeating([](base::OnceClosure closure) -> void {
           std::move(closure).Run();
         }),
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(initialization_callback));
     account_manager->SetPrefService(&pref_service_);
   }

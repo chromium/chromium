@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/data_url_loader_factory.h"
@@ -294,7 +295,7 @@ void SignedExchangeCertFetcher::OnReceiveResponse(
   body_ = std::move(body);
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   handle_watcher_->Watch(
       body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&SignedExchangeCertFetcher::OnHandleReady,

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -1309,7 +1310,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MessagePipeStatusChangeInTransitClient,
   {
     base::RunLoop run_loop;
     SimpleWatcher watcher(FROM_HERE, SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                          base::SequencedTaskRunnerHandle::Get());
+                          base::SequencedTaskRunner::GetCurrentDefault());
     watcher.Watch(Handle(handles[1]), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
                   base::BindRepeating(
                       [](base::RunLoop* loop, MojoResult result) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
@@ -33,9 +34,10 @@ class RequestMonitoringTest : public FrameImplTestBase {
   void SetUpOnMainThread() override {
     // Accumulate all http requests made to |embedded_test_server| into
     // |accumulated_requests_| container.
-    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
-        &RequestMonitoringTest::MonitorRequestOnIoThread,
-        base::Unretained(this), base::SequencedTaskRunnerHandle::Get()));
+    embedded_test_server()->RegisterRequestMonitor(
+        base::BindRepeating(&RequestMonitoringTest::MonitorRequestOnIoThread,
+                            base::Unretained(this),
+                            base::SequencedTaskRunner::GetCurrentDefault()));
 
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());

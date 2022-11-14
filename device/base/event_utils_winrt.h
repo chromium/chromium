@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/windows_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +48,7 @@ absl::optional<EventRegistrationToken> AddEventHandler(
   EventRegistrationToken token;
   HRESULT hr = ((*interface_called).*function)(
       Microsoft::WRL::Callback<ABI::Windows::Foundation::IEventHandler<Args*>>(
-          [task_runner = base::SequencedTaskRunnerHandle::Get(),
+          [task_runner = base::SequencedTaskRunner::GetCurrentDefault(),
            callback = std::move(callback)](SenderAbi* sender, ArgsAbi* args) {
             task_runner->PostTask(
                 FROM_HERE,

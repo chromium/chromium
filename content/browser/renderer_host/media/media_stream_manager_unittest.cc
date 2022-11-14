@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -1066,7 +1067,7 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
 
   MediaStreamManager::GetMediaDeviceIDForHMAC(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
-      kExistingHmacDeviceId, base::SequencedTaskRunnerHandle::Get(),
+      kExistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](const std::string& expected_raw_device_id,
              const absl::optional<std::string>& raw_device_id) {
@@ -1079,7 +1080,7 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
   const std::string kNonexistingHmacDeviceId = "does not exist";
   MediaStreamManager::GetMediaDeviceIDForHMAC(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, kSalt, kOrigin,
-      kNonexistingHmacDeviceId, base::SequencedTaskRunnerHandle::Get(),
+      kNonexistingHmacDeviceId, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce([](const absl::optional<std::string>& raw_device_id) {
         EXPECT_FALSE(raw_device_id.has_value());
       }));

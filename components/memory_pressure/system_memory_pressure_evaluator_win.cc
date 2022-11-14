@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/object_watcher.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -191,7 +191,7 @@ SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
 void SystemMemoryPressureEvaluator::CheckMemoryPressureSoon() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, BindOnce(&SystemMemoryPressureEvaluator::CheckMemoryPressure,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -400,7 +400,7 @@ void SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator::
     StartLowMemoryNotificationWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   memory_notification_watcher_ =
       std::make_unique<MemoryPressureWatcherDelegate>(
           base::win::ScopedHandle(::CreateMemoryResourceNotification(

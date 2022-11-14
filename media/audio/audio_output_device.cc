@@ -15,9 +15,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -174,7 +174,7 @@ void AudioOutputDevice::GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) {
   // on a powerful desktop, we haven't received device authorization by this
   // point when AOD construction and GetOutputDeviceInfoAsync() happen back to
   // back (which is the most common use case).
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(info_cb), GetOutputDeviceInfo_Signaled()));
 }

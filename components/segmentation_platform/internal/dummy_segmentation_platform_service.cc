@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
@@ -19,7 +19,7 @@ DummySegmentationPlatformService::~DummySegmentationPlatformService() = default;
 void DummySegmentationPlatformService::GetSelectedSegment(
     const std::string& segmentation_key,
     SegmentSelectionCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 
@@ -32,7 +32,7 @@ void DummySegmentationPlatformService::GetSelectedSegmentOnDemand(
     const std::string& segmentation_key,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 

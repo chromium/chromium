@@ -4,13 +4,14 @@
 
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
 
 CdmFactoryDaemonProxy::CdmFactoryDaemonProxy()
-    : mojo_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 CdmFactoryDaemonProxy::~CdmFactoryDaemonProxy() = default;
 

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -786,7 +787,7 @@ int ServiceWorkerCacheWriter::ReadDataHelper(
     int buf_len) {
   if (!data_pipe_reader) {
     data_pipe_reader = std::make_unique<DataPipeReader>(
-        reader, this, base::SequencedTaskRunnerHandle::Get());
+        reader, this, base::SequencedTaskRunner::GetCurrentDefault());
   }
   data_pipe_reader->Read(buf, buf_len,
                          base::BindOnce(&ServiceWorkerCacheWriter::AsyncDoLoop,

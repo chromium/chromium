@@ -8,7 +8,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace memory_pressure {
@@ -110,7 +110,7 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
 
 void MemoryPressureLevelReporter::StartPeriodicTimer() {
   // Don't try to start the timer in tests that don't support it.
-  if (!base::SequencedTaskRunnerHandle::IsSet())
+  if (!base::SequencedTaskRunner::HasCurrentDefault())
     return;
   periodic_reporting_timer_.Start(
       FROM_HERE, base::Minutes(5),

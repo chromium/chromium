@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
@@ -199,7 +199,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
       base::Contains(transport_availability_info_.available_transports,
                      FidoTransportProtocol::kHybrid)) {
     transport_availability_callback_readiness_->ble_information_pending = true;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FidoRequestHandlerBase::ConstructBleAdapterPowerManager,
                        weak_factory_.GetWeakPtr()));
@@ -366,7 +366,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     // request callback.
     VLOG(2)
         << "Request handler dispatching request to authenticator immediately.";
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest,

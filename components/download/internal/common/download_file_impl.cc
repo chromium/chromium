@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -193,7 +193,7 @@ void DownloadFileImpl::Initialize(
   cancel_request_callback_ = cancel_request_callback;
   received_slices_ = received_slices;
   if (!task_runner_)
-    task_runner_ = base::SequencedTaskRunnerHandle::Get();
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   // If the last slice is finished, then we know the actual content size.
   if (!received_slices_.empty() && received_slices_.back().finished) {

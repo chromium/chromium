@@ -18,6 +18,7 @@
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -3361,7 +3362,7 @@ class FakeSystemTracingDevToolsProtocolTest
 
   void PreRunTestOnMainThread() override {
     deferred_task_runner_->StartWithTaskRunner(
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     PosixSystemTracingDevToolsProtocolTest::PreRunTestOnMainThread();
   }

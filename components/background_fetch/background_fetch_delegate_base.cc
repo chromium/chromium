@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/background_fetch/job_details.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -467,7 +468,7 @@ void BackgroundFetchDelegateBase::GetUploadData(
   // TODO(crbug.com/779012): When DownloadService fixes cancelled jobs calling
   // client methods, then this can be a DCHECK.
   if (job_it == download_job_id_map_.end()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /* request_body= */ nullptr));
     return;
@@ -477,7 +478,7 @@ void BackgroundFetchDelegateBase::GetUploadData(
   JobDetails* job_details = GetJobDetails(job_id);
   if (job_details->current_fetch_guids.at(download_guid).status ==
       JobDetails::RequestData::Status::kAbsent) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /* request_body= */ nullptr));
     return;

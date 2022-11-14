@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/host/linux/keyboard_layout_monitor_utils.h"
 #include "remoting/proto/control.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -305,7 +305,8 @@ KeyboardLayoutMonitorLinux::~KeyboardLayoutMonitorLinux() = default;
 void KeyboardLayoutMonitorLinux::Start() {
   DCHECK(!gdk_layout_monitor_);
   gdk_layout_monitor_.reset(new GdkLayoutMonitorOnGtkThread(
-      base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory_.GetWeakPtr()));
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      weak_ptr_factory_.GetWeakPtr()));
   g_idle_add(StartLayoutMonitorOnGtkThread, gdk_layout_monitor_.get());
 }
 

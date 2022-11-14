@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue.h"
@@ -155,7 +155,7 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
       FROM_HERE,
       base::BindOnce(&CreateQueuePostData, kTestMessage, FAST_BATCH,
                      std::move(config_result.ValueOrDie()),
-                     base::SequencedTaskRunnerHandle::Get(), e.cb()));
+                     base::SequencedTaskRunner::GetCurrentDefault(), e.cb()));
   const auto res = e.result();
   EXPECT_OK(res) << res;
 }
@@ -198,11 +198,12 @@ TEST_F(ReportQueueProviderTest, CreateMultipleQueues) {
         },
         &waiter);
     base::ThreadPool::PostTask(
-        FROM_HERE, base::BindOnce(&CreateQueuePostData, std::move(message),
-                                  /*priority=*/s.first,
-                                  std::move(config_result.ValueOrDie()),
-                                  base::SequencedTaskRunnerHandle::Get(),
-                                  std::move(done_cb)));
+        FROM_HERE,
+        base::BindOnce(&CreateQueuePostData, std::move(message),
+                       /*priority=*/s.first,
+                       std::move(config_result.ValueOrDie()),
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(done_cb)));
   }
   waiter.Signal();  // Release the waiter
 }
@@ -248,7 +249,7 @@ TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
     CreateSpeculativeQueuePostData(
         std::move(message),
         /*priority=*/s.first, std::move(config_result.ValueOrDie()),
-        base::SequencedTaskRunnerHandle::Get(), std::move(done_cb));
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(done_cb));
   }
   waiter.Signal();  // Release the waiter
 }

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -19,11 +18,12 @@
 namespace reporting::test {
 
 FakeMetricReportQueue::FakeMetricReportQueue(Priority priority)
-    : MetricReportQueue(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
-                            nullptr,
-                            base::OnTaskRunnerDeleter(
-                                base::SequencedTaskRunnerHandle::Get())),
-                        priority) {}
+    : MetricReportQueue(
+          std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
+              nullptr,
+              base::OnTaskRunnerDeleter(
+                  base::SequencedTaskRunner::GetCurrentDefault())),
+          priority) {}
 
 FakeMetricReportQueue::FakeMetricReportQueue(
     Priority priority,
@@ -31,15 +31,16 @@ FakeMetricReportQueue::FakeMetricReportQueue(
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms)
-    : MetricReportQueue(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
-                            nullptr,
-                            base::OnTaskRunnerDeleter(
-                                base::SequencedTaskRunnerHandle::Get())),
-                        priority,
-                        reporting_settings,
-                        rate_setting_path,
-                        default_rate,
-                        rate_unit_to_ms) {}
+    : MetricReportQueue(
+          std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
+              nullptr,
+              base::OnTaskRunnerDeleter(
+                  base::SequencedTaskRunner::GetCurrentDefault())),
+          priority,
+          reporting_settings,
+          rate_setting_path,
+          default_rate,
+          rate_unit_to_ms) {}
 
 void FakeMetricReportQueue::Enqueue(MetricData metric_data,
                                     ReportQueue::EnqueueCallback callback) {

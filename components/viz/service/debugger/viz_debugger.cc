@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_id_name_manager.h"
 
 namespace viz {
@@ -74,7 +74,7 @@ VizDebugger::StaticSource::StaticSource(const char* anno_name,
 }
 
 VizDebugger::VizDebugger()
-    : gpu_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : gpu_thread_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   enabled_.store(false);
 }
 

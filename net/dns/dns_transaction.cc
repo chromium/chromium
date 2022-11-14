@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -459,7 +460,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     callback_ = std::move(callback);
     // Start the request asynchronously to avoid reentrancy in
     // the network stack.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&DnsHTTPAttempt::StartAsync,
                                   weak_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;
@@ -554,7 +555,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
       } else {
         // Else, trigger OnReadCompleted asynchronously to avoid starving the IO
         // thread in case the URLRequest can provide data synchronously.
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(&DnsHTTPAttempt::OnReadCompleted,
                                       weak_factory_.GetWeakPtr(),
                                       request_.get(), read_result));
@@ -1001,7 +1002,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
     DCHECK(probe_stats);
     DCHECK(probe_stats->backoff_entry);
     probe_stats->backoff_entry->InformOfRequest(false /* success */);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DnsOverHttpsProbeRunner::ContinueProbe,
                        weak_ptr_factory_.GetWeakPtr(), doh_server_index,

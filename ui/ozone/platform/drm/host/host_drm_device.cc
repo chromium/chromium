@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/display/types/display_snapshot.h"
@@ -139,7 +139,7 @@ void HostDrmDevice::GpuConfigureNativeDisplays(
     // Post this task to protect the callstack from accumulating too many
     // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU
     // process crashes repeatedly.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 }

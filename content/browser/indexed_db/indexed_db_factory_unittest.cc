@@ -14,12 +14,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/fake_leveldb_factory.h"
@@ -116,8 +116,8 @@ class IndexedDBFactoryTest : public testing::Test {
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void SetupInMemoryContext() {
@@ -126,8 +126,8 @@ class IndexedDBFactoryTest : public testing::Test {
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void SetupContextWithFactories(LevelDBFactory* factory, base::Clock* clock) {
@@ -135,8 +135,8 @@ class IndexedDBFactoryTest : public testing::Test {
         temp_dir_.GetPath(), quota_manager_proxy_.get(), clock,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
     if (factory)
       IndexedDBClassFactory::Get()->SetLevelDBFactoryForTesting(factory);
   }
@@ -189,8 +189,8 @@ class IndexedDBFactoryTest : public testing::Test {
 
   void RunPostedTasks() {
     base::RunLoop loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
 
@@ -1054,7 +1054,7 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
       : IndexedDBCallbacks(nullptr,
                            storage::BucketLocator(),
                            mojo::NullAssociatedRemote(),
-                           base::SequencedTaskRunnerHandle::Get()) {}
+                           base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   LookingForQuotaErrorMockCallbacks(const LookingForQuotaErrorMockCallbacks&) =
       delete;

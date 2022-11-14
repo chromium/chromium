@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -498,7 +499,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
 
   // Registry keeps alive through this test, so it is safe to use
   // base::Unretained.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&PrerenderHostRegistry::CancelHost),
                      base::Unretained(registry), prerender_frame_tree_node_id,
@@ -506,7 +507,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
 
   // For some reasons triggers want to set the failure reason by themselves,
   // this would happen together with cancelling prerender.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PreloadingAttempt::SetFailureReason,
@@ -517,7 +518,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
                                    kPreloadingFailureReasonCommonEnd))));
 
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         CommitPrerenderNavigation(*prerender_host,
                                   ExpectedReadyForActivationState(false));

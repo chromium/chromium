@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -310,7 +310,7 @@ void ShoppingService::GetProductInfoForUrl(const GURL& url,
     absl::optional<ProductInfo> info;
     // Make a copy based on the cached value.
     info.emplace(*cached_info);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), url, info));
     return;
   }
@@ -703,7 +703,7 @@ void ShoppingService::IsClusterIdTrackedByUser(
     uint64_t cluster_id,
     base::OnceCallback<void(bool)> callback) {
   if (!subscriptions_manager_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }

@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/async_operation.h"
 #include "device/bluetooth/test/fake_device_pairing_requested_event_args_winrt.h"
 #include "device/bluetooth/test/fake_device_pairing_result_winrt.h"
@@ -74,7 +74,7 @@ HRESULT FakeDeviceInformationCustomPairingWinrt::PairAsync(
 
   auto async_op = Make<base::win::AsyncOperation<DevicePairingResult*>>();
   pair_callback_ = async_op->callback();
-  pair_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  pair_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   *result = async_op.Detach();
 
   pair_task_runner_->PostTask(

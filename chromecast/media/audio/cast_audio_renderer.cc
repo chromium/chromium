@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_io_thread.h"
 #include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
@@ -89,7 +89,7 @@ void CastAudioRenderer::Initialize(::media::DemuxerStream* stream,
   DCHECK(!init_cb_);
   DCHECK(!application_media_info_manager_remote_);
 
-  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   init_cb_ = std::move(init_cb);
 
   demuxer_stream_ = stream;

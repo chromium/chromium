@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/metrics/sampler.h"
 
 namespace reporting {
@@ -22,13 +22,14 @@ CollectorBase::~CollectorBase() {
 }
 
 void CollectorBase::Collect() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   CheckOnSequence();
 
   auto on_collected_cb = base::BindOnce(&CollectorBase::OnMetricDataCollected,
                                         weak_ptr_factory_.GetWeakPtr());
-  sampler_->MaybeCollect(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
+  sampler_->MaybeCollect(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(on_collected_cb)));
 }
 
 void CollectorBase::CheckOnSequence() const {

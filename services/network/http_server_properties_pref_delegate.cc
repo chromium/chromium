@@ -5,7 +5,7 @@
 #include "services/network/http_server_properties_pref_delegate.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -53,8 +53,8 @@ void HttpServerPropertiesPrefDelegate::WaitForPrefLoad(
 
   // If prefs have already loaded (currently doesn't happen), invoke the pref
   // observer asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 }  // namespace network

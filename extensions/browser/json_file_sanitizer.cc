@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -60,7 +61,7 @@ JsonFileSanitizer::~JsonFileSanitizer() = default;
 
 void JsonFileSanitizer::Start(data_decoder::DataDecoder* decoder) {
   if (file_paths_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&JsonFileSanitizer::ReportSuccess,
                                   weak_factory_.GetWeakPtr()));
     return;

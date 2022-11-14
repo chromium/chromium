@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace ash::assistant {
@@ -17,7 +17,7 @@ namespace ash::assistant {
 IPCDataSource::IPCDataSource(
     mojo::PendingRemote<mojom::AssistantMediaDataSource> media_data_source)
     : media_data_source_(std::move(media_data_source)),
-      utility_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      utility_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DETACH_FROM_THREAD(data_source_thread_checker_);
 }
 

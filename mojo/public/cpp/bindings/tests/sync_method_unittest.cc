@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -426,7 +425,7 @@ class SequencedTaskRunnerTestBase {
       std::unique_ptr<SequencedTaskRunnerTestBase> test);
 
   void Init(base::OnceClosure quit_closure) {
-    task_runner_ = base::SequencedTaskRunnerHandle::Get();
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     quit_closure_ = std::move(quit_closure);
   }
 
@@ -1842,8 +1841,8 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
 
   void FlushPostedTasks() {
     base::RunLoop run_loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 

@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -49,7 +50,7 @@ void LoginPerformer::OnAuthFailure(const AuthFailure& failure) {
              << ", error.state=" << failure.error().state();
 
   last_login_failure_ = failure;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthFailure,
                                 weak_factory_.GetWeakPtr(), failure));
 }
@@ -68,7 +69,7 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   metrics_recorder_->OnIsLoginOffline(is_login_offline);
 
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAuthSuccess,
                                 weak_factory_.GetWeakPtr(), user_context));
 }
@@ -77,7 +78,7 @@ void LoginPerformer::OnOffTheRecordAuthSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics_recorder_->OnGuestLoignSuccess();
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyOffTheRecordAuthSuccess,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -87,7 +88,7 @@ void LoginPerformer::OnPasswordChangeDetected(const UserContext& user_context) {
   password_changed_ = true;
   password_changed_callback_count_++;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyPasswordChangeDetected,
                                 weak_factory_.GetWeakPtr(), user_context));
 }
@@ -96,7 +97,7 @@ void LoginPerformer::OnOldEncryptionDetected(const UserContext& user_context,
                                              bool has_incomplete_migration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LoginPerformer::NotifyOldEncryptionDetected,
                                 weak_factory_.GetWeakPtr(), user_context,
                                 has_incomplete_migration));
@@ -127,7 +128,7 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
   const AccountId& account_id = user_context.GetAccountId();
   if (!IsUserAllowlisted(account_id, &wildcard_match,
                          user_context.GetUserType())) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LoginPerformer::NotifyAllowlistCheckFailure,
                                   weak_factory_.GetWeakPtr()));
     return;
@@ -224,7 +225,7 @@ void LoginPerformer::NotifyAuthSuccess(const UserContext& user_context) {
   DCHECK(delegate_);
   // After delegate_->OnAuthSuccess(...) is called, delegate_ releases
   // LoginPerformer ownership. LP now manages it's lifetime on its own.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
   delegate_->OnAuthSuccess(user_context);
 }
 

@@ -12,8 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/external_mojo/broker_service/broker_service.h"
 #include "chromecast/external_mojo/external_service_support/external_service.h"
@@ -48,7 +48,7 @@ class ExternalConnectorImpl::BrokerConnection
  public:
   explicit BrokerConnection(std::string broker_path)
       : broker_path_(std::move(broker_path)),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
     Connect();
   }
 
@@ -251,7 +251,7 @@ void ExternalConnectorImpl::BindInterface(
                              std::move(interface_pipe));
     return;
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ExternalConnectorImpl::BindInterfaceImmediately,
                      weak_factory_.GetWeakPtr(), service_name, interface_name,

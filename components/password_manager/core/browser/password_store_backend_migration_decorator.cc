@@ -150,7 +150,7 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
     prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
                        reenrollment_attempts + 1);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary,
@@ -174,7 +174,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   base::RepeatingClosure handle_sync_status_change_on_main_thread =
       base::BindRepeating(
           base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
-          base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+          base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
           std::move(handle_sync_status_change));
 
   // Inject nested callback to listen for sync status changes.
@@ -197,7 +197,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
   // Schedule a migration if the user wasn't evicted from UPM.
   if (!prefs_->GetBoolean(
           prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit,

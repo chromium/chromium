@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -308,7 +309,7 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
   auto_close_closure_.Reset(base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                            weak_ptr_factory_.GetWeakPtr()));
   constexpr auto kAutoCloseDelay = base::Seconds(2);
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, auto_close_closure_.callback(), kAutoCloseDelay);
 }
 

@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/quarantine/quarantine.h"
@@ -188,7 +187,7 @@ void FileSystemAccessSafeMoveHelper::ComputeHashForSourceFile(
   }
 
   auto wrapped_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
   manager_->operation_runner().PostTaskWithThisObject(
       base::BindOnce(&HashCalculator::CreateAndStart,
                      base::WrapRefCounted(manager_->context()),

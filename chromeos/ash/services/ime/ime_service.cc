@@ -55,7 +55,7 @@ ImeService::ImeService(
     ImeDecoder* ime_decoder,
     std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever)
     : receiver_(this, std::move(receiver)),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       ime_decoder_(ime_decoder),
       field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
 

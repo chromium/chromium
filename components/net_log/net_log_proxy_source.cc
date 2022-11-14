@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/net_log/net_log_proxy_source.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace net_log {
 
@@ -12,7 +13,7 @@ NetLogProxySource::NetLogProxySource(
     mojo::Remote<network::mojom::NetLogProxySink> proxy_sink_remote)
     : proxy_source_receiver_(this, std::move(proxy_source_receiver)),
       proxy_sink_remote_(std::move(proxy_sink_remote)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   // Initialize a WeakPtr instance that can be safely referred to from other
   // threads when binding tasks posted back to this thread.
   weak_this_ = weak_factory_.GetWeakPtr();

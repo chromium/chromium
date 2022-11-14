@@ -10,7 +10,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -464,8 +463,8 @@ StoreMetricsReporter::StoreMetricsReporter(
     // StoreMetricReporterHelper. Therefore, `done_callback_` must be called
     // asynchronously to avoid moving the StoreMetricsReporter pointer to a
     // destroyed unique_ptr.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(done_callback_));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_callback_));
     return;
   }
 
@@ -508,8 +507,8 @@ StoreMetricsReporter::StoreMetricsReporter(
 
   if (!profile_store_ && !account_store_) {
     // There is nothing else to report.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(done_callback_));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_callback_));
   }
 }
 

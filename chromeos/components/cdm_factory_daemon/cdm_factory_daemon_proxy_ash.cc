@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
@@ -35,7 +36,7 @@ constexpr char kCdmFactoryDaemonPipeName[] = "cdm-factory-daemon-pipe";
 class BrowserCdmFactoryProxy : public cdm::mojom::BrowserCdmFactory {
  public:
   BrowserCdmFactoryProxy()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
   BrowserCdmFactoryProxy(const BrowserCdmFactoryProxy&) = delete;
   BrowserCdmFactoryProxy& operator=(const BrowserCdmFactoryProxy&) = delete;
   ~BrowserCdmFactoryProxy() override = default;

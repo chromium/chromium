@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace network {
 
@@ -24,7 +24,7 @@ using NetworkConnectionTrackerCallback =
     base::OnceCallback<void(NetworkConnectionTracker*)>;
 
 void GetInstanceAsync(NetworkConnectionTrackerCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](NetworkConnectionTrackerCallback callback) {
@@ -97,7 +97,7 @@ bool TestNetworkConnectionTracker::GetConnectionType(
     return true;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), current_type));
   return false;
 }

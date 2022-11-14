@@ -5,7 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -89,7 +89,7 @@ void FileSystemAccessCapacityAllocationHostImpl::RequestCapacityChange(
 
   quota_manager_proxy()->GetUsageAndQuota(
       url_.storage_key(), blink::mojom::StorageType::kTemporary,
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota,
           weak_factory_.GetWeakPtr(), capacity_delta, std::move(callback)));
@@ -115,7 +115,7 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
   granted_capacity_ += capacity_delta;
   quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kFileSystem, url_.bucket()->id, capacity_delta,
-      base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+      base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
       base::DoNothing());
   std::move(callback).Run(capacity_delta);
 }

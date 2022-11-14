@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
@@ -133,7 +133,7 @@ void ClipboardRecentContentIOS::HasRecentContentFromClipboard(
   // techniques, make sure this method calls its callback on the same thread
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   [implementation_
       hasContentMatchingTypes:ios_types
             completionHandler:^(NSSet<ContentType>* results) {
@@ -178,7 +178,7 @@ void ClipboardRecentContentIOS::GetRecentURLFromClipboard(
   // techniques, make sure this method calls its callback on the same thread
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   [implementation_ recentURLFromClipboardAsync:^(NSURL* url) {
     GURL converted_url = net::GURLWithNSURL(url);
     if (!converted_url.is_valid()) {
@@ -201,7 +201,7 @@ void ClipboardRecentContentIOS::GetRecentTextFromClipboard(
   // techniques, make sure this method calls its callback on the same thread
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   [implementation_ recentTextFromClipboardAsync:^(NSString* text) {
     if (!text) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{
@@ -224,7 +224,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
   // techniques, make sure this method calls its callback on the same thread
   // that it was called on.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   [implementation_ recentImageFromClipboardAsync:^(UIImage* image) {
     if (!image) {
       task_runner->PostTask(FROM_HERE, base::BindOnce(^{

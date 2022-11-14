@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -44,7 +45,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
       // controller is not dispatching delayed tasks uuntil the power resume
       // signal is received.
       constexpr auto kMinimalPostTaskDelay = base::Milliseconds(1);
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&TimeZoneMonitorWin::OnWmTimechangeReceived,
                          weak_ptr_factory_.GetWeakPtr()),

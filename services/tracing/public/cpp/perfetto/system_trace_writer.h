@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/trace_time.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
@@ -46,14 +46,14 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTraceWriter {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   SystemTraceWriter(uint32_t target_buffer, TraceType trace_type)
       : trace_type_(trace_type),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 #else
   SystemTraceWriter(PerfettoProducer* producer,
                     uint32_t target_buffer,
                     TraceType trace_type)
       : trace_writer_(producer->CreateTraceWriter(target_buffer)),
         trace_type_(trace_type),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 #endif
 
   SystemTraceWriter(const SystemTraceWriter&) = delete;

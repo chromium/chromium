@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -95,7 +95,7 @@ void DeltaUpdateOp::Run(const base::Value::Dict& command_args,
 void DeltaUpdateOp::DoneRunning(UnpackerError error, int extended_error) {
   if (error == UnpackerError::kNone)
     error = CheckHash();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), error, extended_error));
 }
 

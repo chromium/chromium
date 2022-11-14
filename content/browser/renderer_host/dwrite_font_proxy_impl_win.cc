@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -515,7 +516,7 @@ void DWriteFontProxyImpl::GetUniqueNameLookupTable(
     GetUniqueNameLookupTableCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
   DWriteFontLookupTableBuilder::GetInstance()->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
 }
 
 void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(

@@ -22,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -81,7 +81,7 @@ class CommitQueueProxy : public CommitQueue {
  private:
   const base::WeakPtr<CommitQueue> commit_queue_;
   const scoped_refptr<base::SequencedTaskRunner> commit_queue_thread_ =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 };
 
 void AdaptClientTagForFullUpdateData(ModelType model_type,

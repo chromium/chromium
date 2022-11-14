@@ -19,7 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -243,8 +243,8 @@ class RulesMonitorService::ApiCallQueue {
     // side-effects from the last run api call are "committed" by the time the
     // next api call executes.
     auto post_async = [](base::OnceClosure async_task) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       std::move(async_task));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(async_task));
     };
     base::OnceClosure async_task = base::BindOnce(
         &ApiCallQueue::OnApiCallCompleted, weak_factory_.GetWeakPtr());

@@ -140,8 +140,8 @@
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -320,7 +320,7 @@ void MetricsService::StartRecordingForTests() {
 }
 
 void MetricsService::StartUpdatingLastLiveTimestamp() {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsService::UpdateLastLiveTimestampTask,
                      self_ptr_factory_.GetWeakPtr()),
@@ -755,13 +755,13 @@ void MetricsService::OpenNewLog() {
     base::TimeDelta initialization_delay = base::Seconds(
         client_->ShouldStartUpFastForTesting() ? 0
                                                : kInitializationDelaySeconds);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MetricsService::StartInitTask,
                        self_ptr_factory_.GetWeakPtr()),
         initialization_delay);
 
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MetricsService::PrepareProviderMetricsTask,
                        self_ptr_factory_.GetWeakPtr()),
@@ -1140,7 +1140,7 @@ void MetricsService::PrepareProviderMetricsTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool found = PrepareProviderMetricsLog();
   base::TimeDelta next_check = found ? base::Seconds(5) : base::Minutes(15);
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&MetricsService::PrepareProviderMetricsTask,
                      self_ptr_factory_.GetWeakPtr()),

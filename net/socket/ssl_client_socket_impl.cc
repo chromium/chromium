@@ -28,7 +28,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1103,7 +1103,7 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   //
   // TODO(https://crbug.com/958638): It is also a step in making TLS 1.3 client
   // certificate alerts less unreliable.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SSLClientSocketImpl::DoPeek, weak_factory_.GetWeakPtr()));
 

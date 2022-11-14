@@ -14,7 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -256,8 +256,8 @@ void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {
   dav1d_flush(dav1d_decoder_);
 
   if (bind_callbacks_)
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(reset_cb));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(reset_cb));
   else
     std::move(reset_cb).Run();
 }

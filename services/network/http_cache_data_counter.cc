@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/url_request/url_request_context.h"
@@ -108,7 +108,7 @@ void HttpCacheDataCounter::GotBackend(
 
 void HttpCacheDataCounter::PostResult(bool is_upper_limit,
                                       int64_t result_or_error) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), this, is_upper_limit,
                                 result_or_error));
 }

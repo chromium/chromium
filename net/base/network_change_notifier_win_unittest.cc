@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
@@ -32,7 +33,8 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
     last_computed_connection_type_ = NetworkChangeNotifier::CONNECTION_UNKNOWN;
     last_announced_offline_ = false;
     last_computed_connection_cost_ = ConnectionCost::CONNECTION_COST_UNKNOWN;
-    sequence_runner_for_registration_ = base::SequencedTaskRunnerHandle::Get();
+    sequence_runner_for_registration_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
   }
 
   TestNetworkChangeNotifierWin(const TestNetworkChangeNotifierWin&) = delete;

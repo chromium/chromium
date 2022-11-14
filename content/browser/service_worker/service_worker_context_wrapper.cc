@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -88,7 +89,7 @@ void DidFindRegistrationForStartActiveWorker(
 
   if (status != blink::ServiceWorkerStatusCode::kOk ||
       !registration->active_version()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        blink::ServiceWorkerStatusCode::kErrorNotFound));
@@ -100,7 +101,7 @@ void DidFindRegistrationForStartActiveWorker(
       base::BindOnce(
           [](ServiceWorkerContextWrapper::StatusCallback callback,
              blink::ServiceWorkerStatusCode status) {
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), status));
           },
           std::move(callback)));
@@ -1084,7 +1085,7 @@ void ServiceWorkerContextWrapper::GetRegistrationUserData(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::vector<std::string>(),
                        blink::ServiceWorkerStatusCode::kErrorAbort));
@@ -1101,7 +1102,7 @@ void ServiceWorkerContextWrapper::GetRegistrationUserDataByKeyPrefix(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::vector<std::string>(),
                        blink::ServiceWorkerStatusCode::kErrorAbort));
@@ -1118,7 +1119,7 @@ void ServiceWorkerContextWrapper::GetRegistrationUserKeysAndDataByKeyPrefix(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort,
                                   base::flat_map<std::string, std::string>()));
@@ -1136,7 +1137,7 @@ void ServiceWorkerContextWrapper::StoreRegistrationUserData(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
@@ -1153,7 +1154,7 @@ void ServiceWorkerContextWrapper::ClearRegistrationUserData(
 
   // Ensure the callback is called asynchronously.
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
@@ -1169,7 +1170,7 @@ void ServiceWorkerContextWrapper::ClearRegistrationUserDataByKeyPrefixes(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
@@ -1182,7 +1183,7 @@ void ServiceWorkerContextWrapper::GetUserDataForAllRegistrations(
     const std::string& key,
     GetUserDataForAllRegistrationsCallback callback) {
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        std::vector<std::pair<int64_t, std::string>>(),
@@ -1200,7 +1201,7 @@ void ServiceWorkerContextWrapper::GetUserDataForAllRegistrationsByKeyPrefix(
 
   // Ensure the callback is called asynchronously.
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        std::vector<std::pair<int64_t, std::string>>(),
@@ -1219,7 +1220,7 @@ void ServiceWorkerContextWrapper::ClearUserDataForAllRegistrationsByKeyPrefix(
 
   // Ensure the callback is called asynchronously.
   if (!context_core_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;

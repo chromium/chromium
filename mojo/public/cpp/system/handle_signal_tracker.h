@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_SYSTEM_HANDLE_SIGNAL_TRACKER_H_
 
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -35,7 +36,7 @@ class MOJO_CPP_SYSTEM_EXPORT HandleSignalTracker {
   HandleSignalTracker(Handle handle,
                       MojoHandleSignals signals,
                       scoped_refptr<base::SequencedTaskRunner> task_runner =
-                          base::SequencedTaskRunnerHandle::Get());
+                          base::SequencedTaskRunner::GetCurrentDefault());
 
   HandleSignalTracker(const HandleSignalTracker&) = delete;
   HandleSignalTracker& operator=(const HandleSignalTracker&) = delete;

@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -51,7 +51,7 @@ void HostResolverNat64Task::Start(base::OnceClosure completion_closure) {
   next_state_ = State::kResolve;
   int rv = DoLoop(OK);
   if (rv != ERR_IO_PENDING) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(completion_closure_));
   }
 }

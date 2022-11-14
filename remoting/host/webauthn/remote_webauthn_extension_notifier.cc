@@ -18,9 +18,9 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -241,7 +241,7 @@ void RemoteWebAuthnExtensionNotifier::NotifyStateChange() {
     return;
   }
   is_wake_up_scheduled_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RemoteWebAuthnExtensionNotifier::WakeUpExtension,
                      weak_factory_.GetWeakPtr()));

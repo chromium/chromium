@@ -14,9 +14,9 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/net_errors.h"
 
@@ -96,7 +96,7 @@ DirectoryLister::Core::Core(const base::FilePath& dir,
                             DirectoryLister* lister)
     : dir_(dir),
       type_(type),
-      origin_task_runner_(base::SequencedTaskRunnerHandle::Get().get()),
+      origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault().get()),
       lister_(lister) {
   DCHECK(lister_);
 }

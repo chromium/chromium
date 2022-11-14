@@ -17,7 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
@@ -669,8 +669,9 @@ void FileSystemOperationRunner::DidOpenFile(
   base::ScopedClosureRunner scoped_on_close_callback;
   if (on_close_callback) {
     // Wrap `on_close_callback` to ensure it always runs, and on the IO thread.
-    scoped_on_close_callback = base::ScopedClosureRunner(base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(), std::move(on_close_callback)));
+    scoped_on_close_callback = base::ScopedClosureRunner(
+        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                           std::move(on_close_callback)));
   }
 
   std::move(callback).Run(std::move(file), std::move(scoped_on_close_callback));

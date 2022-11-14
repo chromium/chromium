@@ -9,7 +9,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -98,8 +98,8 @@ TEST_F(PdfNavigationThrottleTest, WillStartRequest) {
 
   EXPECT_CALL(web_contents_observer, DidStartLoading());
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 
   auto navigation_simulator = content::NavigationSimulator::CreateFromPending(
@@ -123,8 +123,8 @@ TEST_F(PdfNavigationThrottleTest, WillStartRequestDeleteContents) {
 
   EXPECT_CALL(web_contents_observer, DidStartLoading()).Times(0);
   base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

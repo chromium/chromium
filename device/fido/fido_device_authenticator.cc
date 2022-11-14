@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/appid_exclude_probe_task.h"
@@ -76,7 +76,7 @@ FidoDeviceAuthenticator::~FidoDeviceAuthenticator() = default;
 
 void FidoDeviceAuthenticator::InitializeAuthenticator(
     base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &FidoDevice::DiscoverSupportedProtocolAndDeviceInfo,

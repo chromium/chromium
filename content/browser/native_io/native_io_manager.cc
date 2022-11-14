@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
@@ -163,7 +164,7 @@ void NativeIOManager::BindReceiver(
   // bind receiver on retrieval.
   quota_manager_proxy_->UpdateOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&NativeIOManager::BindReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), storage_key,
                      std::move(receiver)));

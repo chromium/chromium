@@ -67,8 +67,8 @@ class Remote {
 
   // Constructs a new Remote which is bound from |pending_remote| and which
   // schedules response callbacks and disconnection notifications on the default
-  // SequencedTaskRunner (i.e., base::SequencedTaskRunnerHandle::Get() at
-  // construction time).
+  // SequencedTaskRunner (i.e., base::SequencedTaskRunner::GetCurrentDefault()
+  // at construction time).
   explicit Remote(PendingRemote<Interface> pending_remote)
       : Remote(std::move(pending_remote), nullptr) {}
 
@@ -230,8 +230,9 @@ class Remote {
   // Binds this Remote, connecting it to a new PendingReceiver which is
   // returned for transmission to some Receiver which can bind it. The Remote
   // will schedule any response callbacks or disconnection notifications on the
-  // default SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at
-  // the time of this call). Must only be called on an unbound Remote.
+  // default SequencedTaskRunner (i.e.
+  // base::SequencedTaskRunner::GetCurrentDefault() at the time of this call).
+  // Must only be called on an unbound Remote.
   [[nodiscard]] PendingReceiver<Interface> BindNewPipeAndPassReceiver() {
     DCHECK(!is_bound()) << "Remote for " << Interface::Name_
                         << " is already bound";
@@ -255,8 +256,8 @@ class Remote {
   // Binds this Remote by consuming |pending_remote|, which must be valid. The
   // Remote will schedule any response callbacks or disconnection notifications
   // on the default SequencedTaskRunner (i.e.
-  // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
-  // be called on an unbound Remote.
+  // base::SequencedTaskRunner::GetCurrentDefault() at the time of this call).
+  // Must only be called on an unbound Remote.
   void Bind(PendingRemote<Interface> pending_remote) {
     DCHECK(!is_bound()) << "Remote for " << Interface::Name_
                         << " is already bound";

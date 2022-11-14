@@ -23,10 +23,10 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
@@ -438,7 +438,7 @@ void DWriteFontLookupTableBuilder::PrepareFontUniqueNameTable(
   // tasks will eventually not reply.
   timeout_callback_.Reset(base::BindOnce(
       &DWriteFontLookupTableBuilder::OnTimeout, base::Unretained(this)));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_callback_.callback(), IndexingTimeout());
 }
 

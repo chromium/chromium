@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
@@ -273,7 +274,7 @@ void AudioInputImpl::HotwordStateManager::RecreateAudioInputStream() {
 }
 
 AudioInputImpl::AudioInputImpl(const absl::optional<std::string>& device_id)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       preferred_device_id_(device_id),
       weak_factory_(this) {
   DETACH_FROM_SEQUENCE(observer_sequence_checker_);
@@ -281,7 +282,7 @@ AudioInputImpl::AudioInputImpl(const absl::optional<std::string>& device_id)
   audio_capturer_ = std::make_unique<AudioCapturer>(
       base::BindRepeating(&AudioInputImpl::OnCaptureDataArrived,
                           weak_factory_.GetWeakPtr()),
-      /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get());
+      /*callback_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
 
   RecreateStateManager();
   if (assistant::features::IsStereoAudioInputEnabled())

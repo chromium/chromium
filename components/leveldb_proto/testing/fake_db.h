@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -217,7 +218,7 @@ void FakeDB<P, T>::UpdateEntries(
   update_callback_ = std::move(callback);
 
   if (!queued_update_results_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeDB<P, T>::UpdateCallback, base::Unretained(this),
                        queued_update_results_.front()));
@@ -244,7 +245,7 @@ void FakeDB<P, T>::UpdateEntriesWithRemoveFilter(
   update_callback_ = std::move(callback);
 
   if (!queued_update_results_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeDB<P, T>::UpdateCallback, base::Unretained(this),
                        queued_update_results_.front()));
@@ -380,7 +381,7 @@ void FakeDB<P, T>::GetEntry(
       base::BindOnce(RunGetCallback, std::move(callback), std::move(entry));
 
   if (!queued_get_results_.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeDB<P, T>::GetCallback, base::Unretained(this),
                        queued_get_results_.front()));

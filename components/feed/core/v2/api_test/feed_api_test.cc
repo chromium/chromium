@@ -25,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
@@ -702,8 +703,8 @@ void TestFeedNetwork::Reply(base::OnceClosure reply_closure) {
     if (on_reply_added_)
       on_reply_added_.Run();
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(reply_closure));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(reply_closure));
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -116,8 +117,8 @@ std::string Read(mojo::ScopedDataPipeConsumerHandle readable) {
         readable->ReadData(buffer, &size, MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       run_loop.QuitClosure());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
       run_loop.Run();
       continue;
     }
@@ -378,8 +379,8 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
 
   void RunPendingTasks() {
     base::RunLoop run_loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
 

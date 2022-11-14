@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -90,7 +91,7 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
   auto impl = std::make_unique<CopyOutputResultSenderImpl>(
       request->result_format(), request->result_destination(),
       std::move(request->result_callback_),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   auto runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   runner->PostTask(
       FROM_HERE,

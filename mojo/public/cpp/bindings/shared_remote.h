@@ -12,8 +12,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -316,7 +316,8 @@ class SharedRemote {
           std::move(pending_remote), std::move(bind_task_runner));
     } else if (pending_remote) {
       remote_ = SharedRemoteBase<Remote<Interface>>::Create(
-          std::move(pending_remote), base::SequencedTaskRunnerHandle::Get());
+          std::move(pending_remote),
+          base::SequencedTaskRunner::GetCurrentDefault());
     }
   }
 

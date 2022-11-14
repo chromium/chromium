@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/quota/quota_features.h"
 #include "url/origin.h"
 
@@ -60,7 +61,7 @@ StoragePolicyObserver::StoragePolicyObserver(
     return;
 
   storage_policy_observer_ = base::SequenceBound<StoragePolicyObserverIOThread>(
-      std::move(io_task_runner), base::SequencedTaskRunnerHandle::Get(),
+      std::move(io_task_runner), base::SequencedTaskRunner::GetCurrentDefault(),
       storage_policy_, weak_factory_.GetWeakPtr());
 }
 

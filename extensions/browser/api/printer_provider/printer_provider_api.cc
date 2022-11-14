@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -408,7 +409,7 @@ int PendingGetCapabilityRequests::Add(
     PrinterProviderAPI::GetCapabilityCallback callback) {
   pending_requests_[++last_request_id_] = std::move(callback);
   // Abort the request after the timeout is exceeded.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PendingGetCapabilityRequests::Complete,
                      weak_factory_.GetWeakPtr(), last_request_id_,

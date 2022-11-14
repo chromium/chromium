@@ -8,9 +8,9 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 
 int main(int argc, char* argv[]) {
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   base::RunLoop run_loop;
   base::TimeDelta duration = base::Seconds(duration_seconds);
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(run_loop.QuitClosure()), duration);
 
   // Tasks are run asynchronously, so this will print before the task runs.

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -78,7 +79,7 @@ bool NetworkConnectionTracker::GetConnectionType(
   }
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     connection_type_callbacks_.push_back(base::BindOnce(
-        &OnGetConnectionType, base::SequencedTaskRunnerHandle::Get(),
+        &OnGetConnectionType, base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(callback)));
   } else {
     connection_type_callbacks_.push_back(std::move(callback));

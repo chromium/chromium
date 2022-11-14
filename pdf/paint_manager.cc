@@ -17,7 +17,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "pdf/paint_ready_rect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -306,7 +306,7 @@ void PaintManager::Flush() {
   client_->UpdateSnapshot(std::move(snapshot));
 
   // TODO(crbug.com/1302059): Complete flush synchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::OnFlushComplete,
                                 weak_factory_.GetWeakPtr()));
   flush_pending_ = true;

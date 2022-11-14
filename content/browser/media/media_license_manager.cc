@@ -16,9 +16,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -116,7 +116,7 @@ void MediaLicenseManager::OpenCdmStorage(
   // Get the default bucket for `storage_key`.
   quota_manager_proxy()->UpdateOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&MediaLicenseManager::DidGetBucket,
                      weak_factory_.GetWeakPtr(), storage_key));
 }

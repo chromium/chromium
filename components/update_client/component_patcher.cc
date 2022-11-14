@@ -13,7 +13,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/update_client/component_patcher_operation.h"
 #include "components/update_client/patcher.h"
@@ -57,7 +57,7 @@ ComponentPatcher::~ComponentPatcher() = default;
 
 void ComponentPatcher::Start(Callback callback) {
   callback_ = std::move(callback);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ComponentPatcher::StartPatching,
                                 scoped_refptr<ComponentPatcher>(this)));
 }
@@ -109,7 +109,7 @@ void ComponentPatcher::DonePatchingFile(UnpackerError error,
 
 void ComponentPatcher::DonePatching(UnpackerError error, int extended_error) {
   current_operation_ = nullptr;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), error, extended_error));
 }
 

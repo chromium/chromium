@@ -208,7 +208,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
                      this));
   info_ = info;
   info->type = type;
-  info->main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  info->main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   listener_params_ = params;
 
   if (owning_window && owning_window->GetHost()) {

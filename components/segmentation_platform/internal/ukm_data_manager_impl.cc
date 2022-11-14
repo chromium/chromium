@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 
 #include "base/check_op.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
@@ -64,7 +65,7 @@ void UkmDataManagerImpl::InitiailizeImpl(
 
   GetOrCreateUrlHandler();
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&UkmDataManagerImpl::RunCleanupTask,
                      weak_factory_.GetWeakPtr()),
@@ -129,7 +130,7 @@ void UkmDataManagerImpl::RunCleanupTask() {
 
   // Consider waiting for the above task to finish successfully before posting
   // the next one.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&UkmDataManagerImpl::RunCleanupTask,
                      weak_factory_.GetWeakPtr()),

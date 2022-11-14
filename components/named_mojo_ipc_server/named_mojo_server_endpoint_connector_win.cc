@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -72,7 +72,7 @@ void NamedMojoServerEndpointConnectorWin::Connect(
           base::BindOnce(
               &NamedMojoServerEndpointConnectorWin::OnConnectedEventSignaled,
               base::Unretained(this)),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
       return;
     default:
       PLOG(ERROR) << "Unexpected error: " << err;

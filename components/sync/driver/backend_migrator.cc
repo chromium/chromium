@@ -10,7 +10,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace syncer {
 
@@ -105,7 +104,7 @@ void BackendMigrator::OnConfigureDone(
   // |manager_|'s methods aren't re-entrant, and we're notified from
   // them, so post a task to avoid problems.
   SDVLOG(1) << "Posting OnConfigureDoneImpl";
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&BackendMigrator::OnConfigureDoneImpl,
                                 weak_ptr_factory_.GetWeakPtr(), result));
 }

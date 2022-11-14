@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -450,7 +449,8 @@ std::unique_ptr<SyncEncryptionHandler::Observer>
 SyncServiceCrypto::GetEncryptionObserverProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<SyncEncryptionObserverProxy>(
-      weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get());
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 ModelTypeSet SyncServiceCrypto::GetEncryptedDataTypes() const {

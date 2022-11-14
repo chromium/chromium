@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -56,7 +55,7 @@ TEST_F(TaskRunner, SingleAction) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_TRUE(result);
 }
@@ -98,7 +97,7 @@ TEST_F(TaskRunner, SeriesOfActions) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_EQ(result, 7u);
 }
@@ -145,7 +144,7 @@ TEST_F(TaskRunner, SeriesOfDelays) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_EQ(result, 7u);
 }
@@ -206,7 +205,7 @@ TEST_F(TaskRunner, SeriesOfAsyncs) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   run_loop.Run();
   EXPECT_EQ(result, 7u);
@@ -286,7 +285,7 @@ TEST_F(TaskRunner, TreeOfActions) {
   for (uint32_t n = 0; n < expected_fibo_results.size(); ++n) {
     uint32_t* const result = &actual_fibo_results[n];
     *result = 0;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](size_t* count, base::RunLoop* run_loop, uint32_t n,
                           uint32_t* result) {
@@ -301,7 +300,7 @@ TEST_F(TaskRunner, TreeOfActions) {
                                    }
                                  },
                                  count, run_loop, result),
-                             base::SequencedTaskRunnerHandle::Get());
+                             base::SequencedTaskRunner::GetCurrentDefault());
                        },
                        &count, &run_loop, n, result));
   }
@@ -356,7 +355,7 @@ TEST_F(TaskRunner, ActionsWithStatus) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_EQ(result, Status(error::CANCELLED, "Cancelled"));
 }
@@ -426,7 +425,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
             run_loop->Quit();
           },
           &run_loop, &result),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   run_loop.Run();
   EXPECT_TRUE(result.ok()) << result.status();
   EXPECT_EQ(result.ValueOrDie()->value(), kI);

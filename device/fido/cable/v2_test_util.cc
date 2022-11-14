@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -175,7 +176,7 @@ class TestNetworkContext : public network::TestNetworkContext {
                          MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                          base::BindRepeating(&Connection::OnOutPipeReady,
                                              base::Unretained(this)));
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Connection::CompleteConnection,
                                     base::Unretained(this)));
     }
@@ -432,7 +433,7 @@ class TestPlatform : public authenticator::Platform {
 
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &TestPlatform::DoSendBLEAdvert, weak_factory_.GetWeakPtr(),
@@ -709,7 +710,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
           case MessageType::kShutdown:
             state_ = State::kShutdownReceived;
-            base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
                 FROM_HERE,
                 base::BindOnce(&LateLinkingDevice::SendLinkingUpdate,
                                base::Unretained(this)),

@@ -38,6 +38,7 @@
 #include "base/system/system_monitor.h"
 #include "base/task/current_thread.h"
 #include "base/task/deferred_sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/threading/thread.h"
@@ -906,7 +907,7 @@ int BrowserMainLoop::CreateThreads() {
 
   // TODO(https://crbug.com/863341): Replace with a better API
   GetContentClient()->browser()->PostAfterStartupTask(
-      FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+      FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           [](BrowserMainLoop* browser_main_loop) {
             // Informs BrowserTaskExecutor that startup is complete.

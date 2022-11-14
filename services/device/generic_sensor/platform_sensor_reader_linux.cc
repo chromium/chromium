@@ -106,7 +106,7 @@ PollingSensorReader::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
     base::WeakPtr<PollingSensorReader> polling_sensor_reader,
     const SensorInfoLinux& sensor_info)
     : polling_sensor_reader_(polling_sensor_reader),
-      owner_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      owner_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       sensor_info_(sensor_info) {
   // Detaches from the sequence on which this object was created. It will be
   // bound to its owning sequence when StartPolling() is called.

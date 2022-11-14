@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -33,7 +34,7 @@ class VideoEncoderFallbackTest : public testing::Test {
     main_video_encoder_ = main_video_encoder.get();
     secondary_video_encoder_holder_ = std::make_unique<MockVideoEncoder>();
     secondary_video_encoder_ = secondary_video_encoder_holder_.get();
-    callback_runner_ = base::SequencedTaskRunnerHandle::Get();
+    callback_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     fallback_encoder_ = std::make_unique<VideoEncoderFallback>(
         std::move(main_video_encoder),
         base::BindOnce(&VideoEncoderFallbackTest::CreateSecondaryEncoder,

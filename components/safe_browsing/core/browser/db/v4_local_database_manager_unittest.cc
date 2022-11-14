@@ -20,7 +20,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_database.h"
@@ -63,7 +62,7 @@ class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
                      const std::vector<std::string>&,
                      FullHashCallback callback) override {
     // Async, since the real manager might use a fetcher.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), full_hash_infos_));
   }
 
@@ -116,7 +115,7 @@ class FakeV4Database : public V4Database {
       int64_t store_file_size) {
     // Mimics V4Database::Create
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner =
-        base::SequencedTaskRunnerHandle::Get();
+        base::SequencedTaskRunner::GetCurrentDefault();
     db_task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeV4Database::CreateOnTaskRunner, db_task_runner,
@@ -312,8 +311,8 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : V4LocalDatabaseManager(base_path,
                                extended_reporting_level_callback,
-                               base::SequencedTaskRunnerHandle::Get(),
-                               base::SequencedTaskRunnerHandle::Get(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
+                               base::SequencedTaskRunner::GetCurrentDefault(),
                                task_runner),
         perform_full_hash_check_called_(false) {}
 
@@ -364,8 +363,8 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
             base_dir_.GetPath(), erl_callback_,
-            base::SequencedTaskRunnerHandle::Get(),
-            base::SequencedTaskRunnerHandle::Get(), task_runner_));
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
 
     StartLocalDatabaseManager();
   }
@@ -429,8 +428,8 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_ =
         base::WrapRefCounted(new V4LocalDatabaseManager(
             base_dir_.GetPath(), erl_callback_,
-            base::SequencedTaskRunnerHandle::Get(),
-            base::SequencedTaskRunnerHandle::Get(), task_runner_));
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::SequencedTaskRunner::GetCurrentDefault(), task_runner_));
     StartLocalDatabaseManager();
   }
 

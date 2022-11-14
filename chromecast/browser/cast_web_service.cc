@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_web_view_default.h"
 #include "chromecast/browser/cast_web_view_factory.h"
@@ -49,7 +48,7 @@ CastWebService::CastWebService(content::BrowserContext* browser_context,
       override_web_view_factory_(nullptr),
       overlay_renderer_cache_(
           std::make_unique<LRURendererCache>(browser_context_, 1)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {
   DCHECK(browser_context_);
   DCHECK(task_runner_);

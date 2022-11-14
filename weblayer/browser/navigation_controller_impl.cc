@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -699,7 +700,7 @@ void NavigationControllerImpl::DoNavigate(
 void NavigationControllerImpl::ScheduleDelayedLoad(
     std::unique_ptr<content::NavigationController::LoadURLParams> params) {
   delayed_load_params_ = std::move(params);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&NavigationControllerImpl::ProcessDelayedLoad,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

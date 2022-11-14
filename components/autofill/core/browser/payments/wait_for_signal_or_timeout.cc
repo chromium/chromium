@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
-
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 WaitForSignalOrTimeout::WaitForSignalOrTimeout() = default;
 WaitForSignalOrTimeout::~WaitForSignalOrTimeout() = default;
@@ -26,7 +25,7 @@ void WaitForSignalOrTimeout::OnEventOrTimeOut(Callback callback,
     case State::kInitialState:
       callback_ = std::move(callback);
       ++generation_id_;  // Invalidate previous OnTimeOut tasks.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&WaitForSignalOrTimeout::OnTimeOut,
                          weak_factory_.GetWeakPtr(), generation_id_),

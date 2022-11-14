@@ -6,6 +6,7 @@
 #define COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_COMPOSITOR_CLIENT_IMPL_H_
 
 #include "base/callback_forward.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
@@ -23,8 +24,8 @@ using CompositorPtr =
 
 // The implementation of the PaintPreviewCompositorClient class.
 // The public interface should be invoked only on the |default_task_runner_|
-// which is the the runner returned by base::SequencedTaskRunnerHandle::Get()
-// when this is constructed.
+// which is the the runner returned by
+// base::SequencedTaskRunner::GetCurrentDefault() when this is constructed.
 class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
  public:
   using OnCompositorCreatedCallback =

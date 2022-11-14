@@ -23,6 +23,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -426,7 +427,7 @@ bool DatabaseTracker::DeleteClosedDatabase(
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, -db_file_size, base::Time::Now(),
-        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 
   // Clean up the main database and invalidate the cached record.
   databases_table_->DeleteDatabaseDetails(origin_identifier, database_name);
@@ -505,7 +506,7 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
         blink::mojom::StorageType::kTemporary, -deleted_size, base::Time::Now(),
-        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
 
   return true;
@@ -704,7 +705,7 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
           QuotaClientType::kDatabase,
           blink::StorageKey(GetOriginFromIdentifier(origin_id)),
           blink::mojom::StorageType::kTemporary, new_size - old_size,
-          base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+          base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
           base::DoNothing());
     for (auto& observer : observers_)
       observer.OnDatabaseSizeChanged(origin_id, name, new_size);

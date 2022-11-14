@@ -19,10 +19,10 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -284,14 +284,14 @@ void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
     // scheduled once machine statistics are loaded.
     if (!statistics_loaded_.IsSignaled()) {
       statistics_loaded_callbacks_.emplace_back(
-          std::move(callback), base::SequencedTaskRunnerHandle::Get());
+          std::move(callback), base::SequencedTaskRunner::GetCurrentDefault());
       return;
     }
   }
 
   // Machine statistics are loaded. Schedule `callback` immediately.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 absl::optional<base::StringPiece> StatisticsProviderImpl::GetMachineStatistic(

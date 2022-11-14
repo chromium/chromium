@@ -17,8 +17,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -42,7 +42,8 @@ LeveldbValueStore::LeveldbValueStore(const std::string& uma_client_name,
     : LazyLevelDb(uma_client_name, db_path) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "LeveldbValueStore", base::SequencedTaskRunnerHandle::Get(),
+          this, "LeveldbValueStore",
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
 }
 

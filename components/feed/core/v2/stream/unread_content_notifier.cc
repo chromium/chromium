@@ -5,7 +5,7 @@
 #include "components/feed/core/v2/stream/unread_content_notifier.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace feed {
 namespace feed_stream {
@@ -24,7 +24,7 @@ void UnreadContentNotifier::NotifyIfValueChanged(bool has_unread_content) {
   has_unread_content_ = has_unread_content;
   is_initialized_ = true;
   if (changed) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&UnreadContentObserver::HasUnreadContentChanged,
                        observer_, has_unread_content));

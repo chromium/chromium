@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/observer_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -89,7 +89,8 @@ V8DetailedMemoryRequest::V8DetailedMemoryRequest(
     : V8DetailedMemoryRequest(min_time_between_requests, mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   off_sequence_request_ = std::move(off_sequence_request);
-  off_sequence_request_sequence_ = base::SequencedTaskRunnerHandle::Get();
+  off_sequence_request_sequence_ =
+      base::SequencedTaskRunner::GetCurrentDefault();
   // Unretained is safe since |this| will be destroyed on the graph sequence
   // from an async task posted after this.
   PerformanceManager::CallOnGraph(

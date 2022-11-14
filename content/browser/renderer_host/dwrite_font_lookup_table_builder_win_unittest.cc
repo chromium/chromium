@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -96,7 +97,7 @@ TEST_F(DWriteFontLookupTableBuilderTest, TestFindUniqueFontDirect) {
   font_lookup_table_builder_->SchedulePrepareFontUniqueNameTableIfNeeded();
   bool test_callback_executed = false;
   font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindLambdaForTesting(
           [this, &test_callback_executed](base::ReadOnlySharedMemoryRegion) {
             TestMatchFonts();
@@ -112,7 +113,7 @@ TEST_P(DWriteFontLookupTableBuilderTimeoutTest, TestTimeout) {
   font_lookup_table_builder_->SchedulePrepareFontUniqueNameTableIfNeeded();
   bool test_callback_executed = false;
   font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindLambdaForTesting([this, &test_callback_executed](
                                      base::ReadOnlySharedMemoryRegion
                                          font_table_memory) {
@@ -147,7 +148,7 @@ TEST_F(DWriteFontLookupTableBuilderTest, TestReadyEarly) {
   font_lookup_table_builder_->SchedulePrepareFontUniqueNameTableIfNeeded();
   bool test_callback_executed = false;
   font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindLambdaForTesting(
           [this, &test_callback_executed](base::ReadOnlySharedMemoryRegion) {
             ASSERT_TRUE(font_lookup_table_builder_->FontUniqueNameTableReady());
@@ -166,7 +167,7 @@ TEST_F(DWriteFontLookupTableBuilderTest, RepeatedScheduling) {
     font_lookup_table_builder_->SchedulePrepareFontUniqueNameTableIfNeeded();
     bool test_callback_executed = false;
     font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindLambdaForTesting(
             [&test_callback_executed](base::ReadOnlySharedMemoryRegion) {
               test_callback_executed = true;
@@ -191,7 +192,7 @@ TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
   bool test_callback_executed = false;
   base::File cache_file;
   font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindLambdaForTesting([this, &cache_file, &test_callback_executed](
                                      base::ReadOnlySharedMemoryRegion) {
         ASSERT_TRUE(font_lookup_table_builder_->FontUniqueNameTableReady());
@@ -222,7 +223,7 @@ TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
 
   test_callback_executed = false;
   font_lookup_table_builder_->QueueShareMemoryRegionWhenReady(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindLambdaForTesting(
           [this, &test_callback_executed](base::ReadOnlySharedMemoryRegion) {
             TestMatchFonts();

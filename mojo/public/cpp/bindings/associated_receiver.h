@@ -112,7 +112,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // Constructs a bound AssociatedReceiver by consuming |pending_receiver|. The
   // AssociatedReceiver is permanently linked to |impl| and will schedule
   // incoming |impl| method and disconnection notifications on the default
-  // SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at
+  // SequencedTaskRunner (i.e. base::SequencedTaskRunner::GetCurrentDefault() at
   // construction time).
   AssociatedReceiver(ImplPointerType impl,
                      PendingAssociatedReceiver<Interface> pending_receiver)

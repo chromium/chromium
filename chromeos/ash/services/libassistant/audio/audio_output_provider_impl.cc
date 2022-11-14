@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/ash/services/libassistant/audio/audio_stream_handler.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
@@ -207,7 +208,7 @@ class AudioDecoderFactoryManagerImpl
 AudioOutputProviderImpl::AudioOutputProviderImpl(const std::string& device_id)
     : loop_back_input_(media::AudioDeviceDescription::kLoopbackInputDeviceId),
       volume_control_impl_(),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       device_id_(device_id),
       start_audio_decoder_on_demand_(
           features::IsStartAssistantAudioDecoderOnDemandEnabled()) {}

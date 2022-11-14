@@ -115,7 +115,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromecast {
 
@@ -216,8 +215,8 @@ class ObservableInternals
 
   const T& AddObserver(Observer<T>* observer) {
     DCHECK(observer);
-    DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-    auto task_runner = base::SequencedTaskRunnerHandle::Get();
+    DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
 
     base::AutoLock lock(lock_);
     auto it = per_sequence_.begin();
@@ -234,8 +233,8 @@ class ObservableInternals
 
   void RemoveObserver(Observer<T>* observer) {
     DCHECK(observer);
-    DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-    auto task_runner = base::SequencedTaskRunnerHandle::Get();
+    DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+    auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
 
     base::AutoLock lock(lock_);
     for (size_t i = 0; i < per_sequence_.size(); ++i) {

@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -38,7 +38,7 @@ ViewsAXTreeManager::ViewsAXTreeManager(Widget* widget)
   // synchronously) will create *another* |ViewsAXTreeManager| for the same
   // widget, since the wrapper that created this |ViewsAXTreeManager| hasn't
   // been added to the cache yet.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ViewsAXTreeManager::FireLoadComplete,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -87,7 +87,7 @@ void ViewsAXTreeManager::OnViewEvent(View* view, ax::mojom::Event event) {
   if (waiting_to_serialize_)
     return;
   waiting_to_serialize_ = true;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ViewsAXTreeManager::SerializeTreeUpdates,
                                 weak_factory_.GetWeakPtr()));
 }

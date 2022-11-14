@@ -83,7 +83,7 @@ class BlobRegistryImplTest : public testing::Test {
     } else {
       registry_impl_ = std::make_unique<BlobRegistryImpl>(
           context_->AsWeakPtr(), url_registry_.AsWeakPtr(),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
     }
     auto delegate = std::make_unique<MockBlobRegistryDelegate>();
     delegate_ptr_ = delegate.get();

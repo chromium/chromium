@@ -19,7 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -139,7 +139,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner = default_task_runner_;
   if (!task_runner)
-    task_runner = base::SequencedTaskRunnerHandle::Get();
+    task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
@@ -488,7 +488,7 @@ void ContextProviderCommandBuffer::OnLostContext() {
   // Observers may drop the last persistent references to `this`, but there may
   // be weak references in use further up the stack. This task is posted to
   // ensure that destruction is deferred until it's safe.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::DoNothingWithBoundArgs(base::WrapRefCounted(this)));
 
   for (auto& observer : observers_)

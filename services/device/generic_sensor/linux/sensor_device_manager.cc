@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
@@ -24,7 +24,7 @@ std::string StringOrEmptyIfNull(const char* value) {
 
 SensorDeviceManager::SensorDeviceManager(base::WeakPtr<Delegate> delegate)
     : delegate_(std::move(delegate)),
-      delegate_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      delegate_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

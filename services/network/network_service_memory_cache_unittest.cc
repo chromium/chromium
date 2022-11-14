@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1071,8 +1072,8 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
 
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       run_loop.QuitClosure());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
       run_loop.Run();
       continue;
     }
@@ -1120,8 +1121,8 @@ TEST_F(NetworkServiceMemoryCacheTest,
         consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       run_loop.QuitClosure());
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, run_loop.QuitClosure());
       run_loop.Run();
       continue;
     }

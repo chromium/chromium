@@ -12,7 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -780,7 +780,7 @@ void VerdictCacheManager::CleanUpAllPageLoadTokens(ClearReason reason) {
 void VerdictCacheManager::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindRepeating(
                      &VerdictCacheManager::RemoveContentSettingsOnURLsDeleted,
                      GetWeakPtr(), deletion_info.IsAllHistory(),

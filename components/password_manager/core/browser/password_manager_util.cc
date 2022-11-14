@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -212,7 +213,7 @@ void RemoveUselessCredentials(
   if (cleaning_tasks_runner->HasPendingTasks()) {
     // The runner will delete itself once the clearing tasks are done, thus we
     // are releasing ownership here.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &password_manager::CredentialsCleanerRunner::StartCleaning,

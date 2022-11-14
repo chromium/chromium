@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/libassistant/audio/audio_stream_handler.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/audio/audio_media_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -12,7 +13,7 @@
 namespace ash::libassistant {
 
 AudioStreamHandler::AudioStreamHandler()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {}
 
 AudioStreamHandler::~AudioStreamHandler() {

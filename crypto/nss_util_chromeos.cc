@@ -29,6 +29,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_checker.h"
@@ -269,8 +270,8 @@ class ChromeOSTokenManager {
       return;
     }
 
-    DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        /*is_tpm_enabled=*/(state_ == State::kTpmTokenEnabled)));
@@ -419,7 +420,7 @@ class ChromeOSTokenManager {
       return;
     }
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        /*system_slot=*/ScopedPK11Slot(

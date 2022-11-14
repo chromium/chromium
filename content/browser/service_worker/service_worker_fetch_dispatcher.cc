@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -199,7 +200,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
       return;
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::SequencedTaskRunnerHandle::Get();
+        base::SequencedTaskRunner::GetCurrentDefault();
     while (!devtools_callbacks.empty()) {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(std::move(devtools_callbacks.front()),

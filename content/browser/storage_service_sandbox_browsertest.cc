@@ -5,8 +5,8 @@
 #include <tuple>
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -47,7 +47,7 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
             return;
           }
 
-          base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
               FROM_HERE,
               base::BindOnce(&StorageServiceSandboxBrowserTest::
                                  WaitForAnyLocalStorageDataAsync,

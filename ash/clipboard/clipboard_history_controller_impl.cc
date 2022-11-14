@@ -35,8 +35,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -439,7 +439,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
   base::RepeatingClosure barrier = base::BarrierClosure(
       bitmaps_to_be_encoded.size(),
       base::BindPostTask(
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
               weak_ptr_factory_.GetMutableWeakPtr(), item_id_filter,
@@ -587,7 +587,7 @@ bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
 
   for (const auto& item : history()->GetItems()) {
     if (item.id().ToString() == item_id) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
@@ -771,7 +771,7 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(
   const ClipboardHistoryItem& selected_item =
       context_menu_->GetItemFromCommandId(command_id);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHistoryControllerImpl::PasteClipboardHistoryItem,
                      weak_ptr_factory_.GetWeakPtr(), active_window,

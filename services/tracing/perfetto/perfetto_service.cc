@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/tracing/perfetto/consumer_host.h"
@@ -66,9 +67,10 @@ PerfettoService* PerfettoService::GetInstance() {
 
 PerfettoService::PerfettoService(
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_testing)
-    : perfetto_task_runner_(task_runner_for_testing
-                                ? std::move(task_runner_for_testing)
-                                : base::SequencedTaskRunnerHandle::Get()) {
+    : perfetto_task_runner_(
+          task_runner_for_testing
+              ? std::move(task_runner_for_testing)
+              : base::SequencedTaskRunner::GetCurrentDefault()) {
   service_ = perfetto::TracingService::CreateInstance(
       std::make_unique<ChromeBaseSharedMemory::Factory>(),
       &perfetto_task_runner_);

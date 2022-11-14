@@ -17,7 +17,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/component_patcher.h"
 #include "components/update_client/patcher.h"
@@ -110,19 +110,19 @@ void ComponentUnpacker::BeginPatching() {
     if (!base::CreateNewTempDirectory(
             FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginPatching"),
             &unpack_path_)) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching, this,
                                     UnpackerError::kUnzipPathError, 0));
       return;
     }
     patcher_ = base::MakeRefCounted<ComponentPatcher>(
         unpack_diff_path_, unpack_path_, installer_, patcher_tool_);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ComponentPatcher::Start, patcher_,
                        base::BindOnce(&ComponentUnpacker::EndPatching, this)));
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ComponentUnpacker::EndPatching, this,
                                   UnpackerError::kNone, 0));
   }
@@ -150,7 +150,7 @@ void ComponentUnpacker::EndUnpacking() {
     result.public_key = public_key_;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), result));
 }
 

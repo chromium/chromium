@@ -13,7 +13,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/next_proto.h"
@@ -85,7 +85,7 @@ class SocketBuffer {
   }
 
   void PostReadCallback(net::CompletionOnceCallback callback, int result) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SocketBuffer::CallReadCallback,
                                   weak_factory_.GetWeakPtr(),
                                   std::move(callback), result));

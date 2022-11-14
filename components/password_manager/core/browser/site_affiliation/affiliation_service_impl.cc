@@ -15,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_backend.h"
@@ -228,10 +227,11 @@ void AffiliationServiceImpl::GetAffiliationsAndBranding(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AffiliationBackend::GetAffiliationsAndBranding,
-                                base::Unretained(backend_), facet_uri,
-                                cache_miss_strategy, std::move(result_callback),
-                                base::SequencedTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::GetAffiliationsAndBranding,
+                     base::Unretained(backend_), facet_uri, cache_miss_strategy,
+                     std::move(result_callback),
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void AffiliationServiceImpl::Prefetch(const FacetURI& facet_uri,

@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -26,7 +26,7 @@ void CheckResult(base::OnceClosure quit,
   }
 
   // Check again in the future
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(CheckResult<T>, std::move(quit), expected_value,
                      value_callback),

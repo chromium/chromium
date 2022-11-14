@@ -11,7 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -516,9 +516,10 @@ void V4L2VideoDecoder::Reset(base::OnceClosure closure) {
 
   // In order to preserve the order of the callbacks between Decode() and
   // Reset(), we also trampoline the callback of Reset().
-  auto trampoline_reset_cb = base::BindOnce(
-      &base::SequencedTaskRunner::PostTask,
-      base::SequencedTaskRunnerHandle::Get(), FROM_HERE, std::move(closure));
+  auto trampoline_reset_cb =
+      base::BindOnce(&base::SequencedTaskRunner::PostTask,
+                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+                     std::move(closure));
 
   if (state_ == State::kInitialized) {
     std::move(trampoline_reset_cb).Run();
@@ -572,7 +573,7 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
         this_sequence_runner->PostTask(
             FROM_HERE, base::BindOnce(std::move(decode_cb), status));
       },
-      base::SequencedTaskRunnerHandle::Get(), std::move(decode_cb));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(decode_cb));
 
   if (state_ == State::kError) {
     std::move(trampoline_decode_cb).Run(DecoderStatus::Codes::kFailed);

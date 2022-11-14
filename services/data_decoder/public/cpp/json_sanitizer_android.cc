@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/data_decoder/public/cpp/android/safe_json_jni_headers/JsonSanitizer_jni.h"
 
 using base::android::JavaParamRef;
@@ -36,7 +36,7 @@ namespace data_decoder {
 void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
   // The JSON parser only accepts wellformed UTF-8.
   if (!base::IsStringUTF8AllowingNoncharacters(json)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   Result::Error("Unsupported encoding")));
     return;
@@ -59,7 +59,7 @@ void JNI_JsonSanitizer_OnSuccess(JNIEnv* env,
   auto* callback = reinterpret_cast<JsonSanitizer::Callback*>(jcallback);
   JsonSanitizer::Result result;
   result.value = base::android::ConvertJavaStringToUTF8(env, json);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(*callback), std::move(result)));
 }
 
@@ -67,7 +67,7 @@ void JNI_JsonSanitizer_OnError(JNIEnv* env,
                                jlong jcallback,
                                const JavaParamRef<jstring>& error) {
   auto* callback = reinterpret_cast<JsonSanitizer::Callback*>(jcallback);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*callback),
                      JsonSanitizer::Result::Error(

@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_observers.h"
@@ -170,7 +169,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
       url_.storage_key(), FileSystemTypeToQuotaStorageType(url_.type()),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

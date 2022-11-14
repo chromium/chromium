@@ -23,7 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/scoped_defer_task_posting.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
@@ -109,7 +109,7 @@ TraceEventMetadataSource* TraceEventMetadataSource::GetInstance() {
 
 TraceEventMetadataSource::TraceEventMetadataSource()
     : DataSourceBase(mojom::kMetaDataSourceName),
-      origin_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   g_trace_event_metadata_source_for_testing = this;
   PerfettoTracedProcess::Get()->AddDataSource(this);
   AddGeneratorFunction(base::BindRepeating(

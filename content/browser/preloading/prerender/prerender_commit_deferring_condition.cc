@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -109,8 +110,8 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
   DCHECK(!prerender_frame_tree_node->HasNavigation());
 
   if (done_closure_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(done_closure_));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(done_closure_));
 
     // Record the defer waiting time for PrerenderCommitDeferringCondition.
     base::TimeDelta delta = base::TimeTicks::Now() - defer_start_time_;

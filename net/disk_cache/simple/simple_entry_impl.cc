@@ -18,8 +18,8 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/io_buffer.h"
@@ -90,7 +90,7 @@ int PostToCallbackIfNeeded(bool sync_possible,
                            net::CompletionOnceCallback callback,
                            int rv) {
   if (!sync_possible && !callback.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), rv));
     return net::ERR_IO_PENDING;
   } else {
@@ -627,7 +627,7 @@ void SimpleEntryImpl::PostClientCallback(net::CompletionOnceCallback callback,
     return;
   // Note that the callback is posted rather than directly invoked to avoid
   // reentrancy issues.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InvokeCallbackIfBackendIsAlive, backend_,
                                 std::move(callback), result));
 }
@@ -638,7 +638,7 @@ void SimpleEntryImpl::PostClientCallback(EntryResultCallback callback,
     return;
   // Note that the callback is posted rather than directly invoked to avoid
   // reentrancy issues.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&InvokeEntryResultCallbackIfBackendIsAlive, backend_,
                      std::move(callback), std::move(result)));
@@ -671,7 +671,7 @@ void SimpleEntryImpl::ReturnEntryToCallerAsync(bool is_open,
 
   // Note that the callback is posted rather than directly invoked to avoid
   // reentrancy issues.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&SimpleEntryImpl::FinishReturnEntryToCallerAsync, this,
                      is_open, std::move(callback)));
@@ -1079,7 +1079,7 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
           net::NetLogEventPhase::NONE, net::ERR_FAILED);
     }
     if (!callback.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
     }
     // |this| may be destroyed after return here.
@@ -1092,7 +1092,7 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
   if (stream_index == 0) {
     int ret_value = SetStream0Data(buf, offset, buf_len, truncate);
     if (!callback.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), ret_value));
     }
     return;
@@ -1103,7 +1103,7 @@ void SimpleEntryImpl::WriteDataInternal(int stream_index,
     int32_t data_size = data_size_[stream_index];
     if (truncate ? (offset == data_size) : (offset <= data_size)) {
       if (!callback.is_null()) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), 0));
       }
       return;
@@ -1194,7 +1194,7 @@ void SimpleEntryImpl::ReadSparseDataInternal(
           net::NetLogEventPhase::NONE, net::ERR_FAILED);
     }
     if (!callback.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
     }
     // |this| may be destroyed after return here.
@@ -1239,7 +1239,7 @@ void SimpleEntryImpl::WriteSparseDataInternal(
           net::NetLogEventPhase::NONE, net::ERR_FAILED);
     }
     if (!callback.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), net::ERR_FAILED));
     }
     // |this| may be destroyed after return here.
@@ -1282,7 +1282,7 @@ void SimpleEntryImpl::GetAvailableRangeInternal(int64_t sparse_offset,
 
   if (state_ == STATE_FAILURE || state_ == STATE_UNINITIALIZED) {
     if (!callback.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), RangeResult(net::ERR_FAILED)));
     }
@@ -1485,7 +1485,7 @@ void SimpleEntryImpl::EntryOperationComplete(
     int result) {
   UpdateStateAfterOperationComplete(entry_stat, result);
   if (!completion_callback.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback), result));
   }
   RunNextOperationIfNeeded();
@@ -1595,7 +1595,7 @@ void SimpleEntryImpl::GetAvailableRangeOperationComplete(
                              sparse_data_size_);
   UpdateStateAfterOperationComplete(entry_stat, result->net_error);
   if (!completion_callback.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(completion_callback), *result));
   }
   RunNextOperationIfNeeded();

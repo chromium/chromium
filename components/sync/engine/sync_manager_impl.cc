@@ -14,7 +14,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
@@ -471,7 +471,7 @@ std::unique_ptr<ModelTypeConnector>
 SyncManagerImpl::GetModelTypeConnectorProxy() {
   DCHECK(initialized_);
   return std::make_unique<ModelTypeConnectorProxy>(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       model_type_registry_->AsWeakPtr());
 }
 

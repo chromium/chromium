@@ -19,11 +19,11 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -851,7 +851,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderHappyPath) {
 
     EXPECT_CALL(is_set_up_callback, Run(false)).WillOnce([&]() {
       // Post task to prevent reentrant issue.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&UrlForwarderConfigurator::SetUpUrlForwarder,
                          base::Unretained(url_forwarder_configurator_.get()),
@@ -894,7 +894,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderFailed) {
 
     EXPECT_CALL(is_set_up_callback, Run(false)).WillOnce([&]() {
       // Post task to prevent reentrant issue.
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&UrlForwarderConfigurator::SetUpUrlForwarder,
                          base::Unretained(url_forwarder_configurator_.get()),

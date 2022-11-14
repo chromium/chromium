@@ -5,6 +5,7 @@
 #include "storage/browser/blob/mojo_blob_reader.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -34,14 +35,15 @@ MojoBlobReader::MojoBlobReader(
       response_body_stream_(std::move(response_body_stream)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunnerHandle::Get()),
-      peer_closed_handle_watcher_(FROM_HERE,
-                                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                                  base::SequencedTaskRunnerHandle::Get()) {
+                               base::SequencedTaskRunner::GetCurrentDefault()),
+      peer_closed_handle_watcher_(
+          FROM_HERE,
+          mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+          base::SequencedTaskRunner::GetCurrentDefault()) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("Blob", "BlobReader", TRACE_ID_LOCAL(this),
                                     "uuid", handle->uuid());
   DCHECK(delegate_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MojoBlobReader::Start, weak_factory_.GetWeakPtr()));
 }
@@ -272,7 +274,7 @@ void MojoBlobReader::DidRead(bool completed_synchronously, int num_bytes) {
     return;
   }
   if (completed_synchronously) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MojoBlobReader::ReadMore, weak_factory_.GetWeakPtr()));
   } else {

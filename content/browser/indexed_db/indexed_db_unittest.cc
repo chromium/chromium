@@ -10,10 +10,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -107,15 +107,15 @@ class IndexedDBTest : public testing::Test,
         quota_manager_proxy_(
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
                 quota_manager_.get(),
-                base::SequencedTaskRunnerHandle::Get())),
+                base::SequencedTaskRunner::GetCurrentDefault())),
         context_(base::MakeRefCounted<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_proxy_.get(),
             base::DefaultClock::GetInstance(),
             /*blob_storage_context=*/mojo::NullRemote(),
             /*file_system_access_context=*/mojo::NullRemote(),
-            base::SequencedTaskRunnerHandle::Get(),
-            base::SequencedTaskRunnerHandle::Get())) {
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::SequencedTaskRunner::GetCurrentDefault())) {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kThirdPartyStoragePartitioning,
         IsThirdPartyStoragePartitioningEnabled());

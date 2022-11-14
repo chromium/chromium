@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/network_hints/renderer/dns_prefetch_queue.h"
 
@@ -58,7 +58,7 @@ void RendererDnsPrefetch::Resolve(const char* name, size_t length) {
       if (0 != old_size)
         return;  // Overkill safety net: Don't send too many InvokeLater's.
       weak_factory_.InvalidateWeakPtrs();
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&RendererDnsPrefetch::SubmitHostnames,
                          weak_factory_.GetWeakPtr()),
@@ -97,7 +97,7 @@ void RendererDnsPrefetch::SubmitHostnames() {
   GetNamesToPrefetch(kMaxDnsHostnamesPerRequest, &names);
   if (new_name_count_ > 0 || 0 < c_string_queue_.Size()) {
     weak_factory_.InvalidateWeakPtrs();
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&RendererDnsPrefetch::SubmitHostnames,
                        weak_factory_.GetWeakPtr()),

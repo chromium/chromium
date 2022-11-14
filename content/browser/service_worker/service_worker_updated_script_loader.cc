@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -70,11 +71,11 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
       version_(std::move(version)),
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                       base::SequencedTaskRunnerHandle::Get()),
+                       base::SequencedTaskRunner::GetCurrentDefault()),
       client_(std::move(client)),
       client_producer_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                               base::SequencedTaskRunnerHandle::Get()),
+                               base::SequencedTaskRunner::GetCurrentDefault()),
       request_start_(base::TimeTicks::Now()) {
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(

@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -166,7 +167,7 @@ void DirectFromSellerSignalsRequester::Request::RunCallbackSync(Result result) {
 void DirectFromSellerSignalsRequester::Request::RunCallbackAsync(
     Result result) {
   DCHECK(!maybe_coalesce_iterator_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Request::RunCallbackSync,
                                 weak_factory_.GetWeakPtr(), std::move(result)));
 }

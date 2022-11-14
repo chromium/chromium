@@ -9,7 +9,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
 
@@ -69,7 +69,8 @@ void FileHostSettings::SetString(const HostSettingKey key,
   if (task_runner_for_checking_sequence_) {
     DCHECK(task_runner_for_checking_sequence_->RunsTasksInCurrentSequence());
   } else {
-    task_runner_for_checking_sequence_ = base::SequencedTaskRunnerHandle::Get();
+    task_runner_for_checking_sequence_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
   }
 #endif
 

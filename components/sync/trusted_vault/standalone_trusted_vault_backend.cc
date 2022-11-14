@@ -23,7 +23,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -543,7 +543,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
              TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1) &&
         base::FeatureList::IsEnabled(
             kSyncTrustedVaultVerifyDeviceRegistration)) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(
               &StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA,

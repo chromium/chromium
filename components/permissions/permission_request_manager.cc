@@ -15,7 +15,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/permissions/features.h"
@@ -764,7 +764,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
 }
 
 void PermissionRequestManager::ScheduleDequeueRequestIfNeeded() {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PermissionRequestManager::DequeueRequestIfNeeded,
                      weak_factory_.GetWeakPtr()));

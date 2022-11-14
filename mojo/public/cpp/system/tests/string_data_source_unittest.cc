@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -32,7 +33,7 @@ class DataPipeReader {
         on_read_done_(std::move(on_read_done)),
         watcher_(FROM_HERE,
                  SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                 base::SequencedTaskRunnerHandle::Get()) {
+                 base::SequencedTaskRunner::GetCurrentDefault()) {
     watcher_.Watch(consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                    MOJO_WATCH_CONDITION_SATISFIED,
                    base::BindRepeating(&DataPipeReader::OnDataAvailable,

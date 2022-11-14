@@ -14,9 +14,9 @@
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -56,7 +56,7 @@ void AshTracingHandler::Start(AshTracingRequest* request) {
                          ? testing_perfetto_session_creator()
                          : perfetto::Tracing::NewTrace();
   tracing_session_->Setup(perfetto_config, request->GetPlatformFile());
-  auto runner = base::SequencedTaskRunnerHandle::Get();
+  auto runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::WeakPtr<AshTracingHandler> weak_ptr = weak_factory_.GetWeakPtr();
   tracing_session_->SetOnStartCallback([runner, weak_ptr]() {
     runner->PostTask(

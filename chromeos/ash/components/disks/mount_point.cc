@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash {
 namespace disks {
@@ -28,7 +28,7 @@ void OnMountDone(DiskMountManager* disk_mount_manager,
 
   // Post a task to guarantee the callback isn't called inline with the
   // Mount() call.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), error_code, std::move(mount_point)));
 }

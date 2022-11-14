@@ -58,7 +58,7 @@ class Receiver {
   // Constructs a bound Receiver by consuming |pending_receiver|. The Receiver
   // is permanently linked to |impl| and will schedule incoming |impl| method
   // and disconnection notifications on the default SequencedTaskRunner (i.e.
-  // base::SequencedTaskRunnerHandle::Get() at construction time).
+  // base::SequencedTaskRunner::GetCurrentDefault() at construction time).
   Receiver(ImplPointerType impl, PendingReceiver<Interface> pending_receiver)
       : Receiver(std::move(impl), std::move(pending_receiver), nullptr) {}
 
@@ -122,8 +122,8 @@ class Receiver {
   //
   // The Receiver will schedule incoming |impl| method calls and disconnection
   // notifications on the default SequencedTaskRunner (i.e.
-  // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
-  // be called on an unbound Receiver.
+  // base::SequencedTaskRunner::GetCurrentDefault() at the time of this call).
+  // Must only be called on an unbound Receiver.
   [[nodiscard]] PendingRemote<Interface> BindNewPipeAndPassRemote() {
     return BindNewPipeAndPassRemote(nullptr);
   }
@@ -154,7 +154,7 @@ class Receiver {
   //
   // The newly bound Receiver will schedule incoming |impl| method calls and
   // disconnection notifications on the default SequencedTaskRunner (i.e.
-  // base::SequencedTaskRunnerHandle::Get() at the time of this call).
+  // base::SequencedTaskRunner::GetCurrentDefault() at the time of this call).
   void Bind(PendingReceiver<Interface> pending_receiver) {
     DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
                         << " is already bound";

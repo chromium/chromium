@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -165,7 +165,7 @@ void V8DetailedMemoryRequestOneShotAnySeq::InitializeWrappedRequest(
   auto wrapped_callback = base::BindOnce(
       &V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable,
       base::SequenceBound<MeasurementCallback>(
-          base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
+          base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
 
   // After construction the V8DetailedMemoryRequest must only be accessed on
   // the graph sequence.

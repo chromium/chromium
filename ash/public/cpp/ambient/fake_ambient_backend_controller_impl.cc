@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -124,14 +124,14 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
   }
 
   // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), update));
 }
 
 void FakeAmbientBackendControllerImpl::GetSettings(
     GetSettingsCallback callback) {
   // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), CreateFakeSettings()));
 }
 
@@ -150,7 +150,7 @@ void FakeAmbientBackendControllerImpl::FetchPersonalAlbums(
     const std::string& resume_token,
     OnPersonalAlbumsFetchedCallback callback) {
   // Pretend to respond asynchronously.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), CreateFakeAlbums()));
 }
 

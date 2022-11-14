@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/async_operation.h"
 #include "base/win/scoped_hstring.h"
 #include "device/bluetooth/test/fake_device_watcher_winrt.h"
@@ -111,7 +111,7 @@ HRESULT FakeDeviceInformationStaticsWinrt::CreateFromIdAsync(
     HSTRING device_id,
     IAsyncOperation<DeviceInformation*>** async_op) {
   auto operation = Make<base::win::AsyncOperation<DeviceInformation*>>();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(operation->callback(), device_information_));
   *async_op = operation.Detach();
   return S_OK;

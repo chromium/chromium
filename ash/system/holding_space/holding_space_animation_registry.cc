@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash {
 namespace {
@@ -277,7 +278,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
     // Once `animation` has finished, it can be removed from the registry. Note
     // that this needs to be posted as it is illegal to delete `animation` from
     // its update callback sequence.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const base::WeakPtr<ProgressIndicatorAnimationDelegate>&

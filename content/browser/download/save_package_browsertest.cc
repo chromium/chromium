@@ -8,8 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/download/save_package.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -77,7 +77,7 @@ class DownloadicidalObserver : public DownloadManager::Observer {
         after_closure_(std::move(after_closure)) {}
   void OnDownloadCreated(DownloadManager* manager,
                          download::DownloadItem* item) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](bool remove_download, base::OnceClosure closure,
                           download::DownloadItem* item) {

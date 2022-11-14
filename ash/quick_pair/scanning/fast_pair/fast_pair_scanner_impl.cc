@@ -13,7 +13,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
@@ -72,7 +72,7 @@ void FastPairScannerImpl::Factory::SetFactoryForTesting(
 FastPairScannerImpl::Factory::~Factory() = default;
 
 FastPairScannerImpl::FastPairScannerImpl()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &FastPairScannerImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
 }

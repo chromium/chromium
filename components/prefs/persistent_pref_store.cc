@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/prefs/persistent_pref_store.h"
+#include "base/task/sequenced_task_runner.h"
 
 #include <utility>
-
-#include "base/threading/sequenced_task_runner_handle.h"
 
 void PersistentPrefStore::CommitPendingWrite(
     base::OnceClosure reply_callback,
@@ -21,8 +20,8 @@ void PersistentPrefStore::CommitPendingWrite(
     std::move(synchronous_done_callback).Run();
 
   if (reply_callback) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(reply_callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(reply_callback));
   }
 }
 

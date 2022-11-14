@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/entity_annotator_native_library.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -205,7 +205,7 @@ PageEntitiesModelExecutorImpl::PageEntitiesModelExecutorImpl(
     : background_task_runner_(background_task_runner),
       entity_annotator_holder_(std::make_unique<EntityAnnotatorHolder>(
           background_task_runner_,
-          base::SequencedTaskRunnerHandle::Get(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
           GetPageEntitiesModelExecutorConfig()
               .should_reset_entity_annotator_on_shutdown)) {
   background_task_runner_->PostTask(

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/base/cdm_promise.h"
@@ -45,7 +46,7 @@ ContentDecryptionModuleAdapter::ContentDecryptionModuleAdapter(
       session_closed_cb_(session_closed_cb),
       session_keys_change_cb_(session_keys_change_cb),
       session_expiration_update_cb_(session_expiration_update_cb),
-      mojo_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DVLOG(1) << "Created ContentDecryptionModuleAdapter";
   cros_cdm_remote_.set_disconnect_handler(
       base::BindOnce(&ContentDecryptionModuleAdapter::OnConnectionError,

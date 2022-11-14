@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
@@ -245,7 +245,7 @@ void DnsConfigService::OnCompleteConfig() {
 void DnsConfigService::OnConfigChanged(bool succeeded) {
   if (config_change_delay_) {
     // Ignore transient flutter of config source by delaying the signal a bit.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DnsConfigService::OnConfigChangedDelayed,
                        weak_factory_.GetWeakPtr(), succeeded),

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -171,7 +170,7 @@ CrossThreadPendingSharedURLLoaderFactory::
 CrossThreadPendingSharedURLLoaderFactory::State::State(
     scoped_refptr<SharedURLLoaderFactory> base_factory)
     : base_factory_(std::move(base_factory)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

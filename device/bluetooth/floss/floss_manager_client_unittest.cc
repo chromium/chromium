@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -84,8 +84,8 @@ class FlossManagerClientTest : public testing::Test {
     EXPECT_CALL(*bus_.get(), GetObjectProxy(kManagerInterface, obj_mgr_path))
         .WillOnce(::testing::Return(manager_object_proxy_.get()));
     EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
-        .WillOnce(
-            ::testing::Return(::base::SequencedTaskRunnerHandle::Get().get()));
+        .WillOnce(::testing::Return(
+            ::base::SequencedTaskRunner::GetCurrentDefault().get()));
     object_manager_ = ::dbus::ObjectManager::Create(
         bus_.get(), kManagerInterface, obj_mgr_path);
     EXPECT_CALL(*bus_.get(),

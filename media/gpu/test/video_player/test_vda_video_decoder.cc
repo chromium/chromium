@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -118,7 +119,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
     vda_config.is_deferred_initialization_allowed = true;
     decoder_ = media::VdVideoDecodeAccelerator::Create(
         base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
-        vda_config, base::SequencedTaskRunnerHandle::Get());
+        vda_config, base::SequencedTaskRunner::GetCurrentDefault());
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {
     DVLOGF(2) << "Use original VDA";

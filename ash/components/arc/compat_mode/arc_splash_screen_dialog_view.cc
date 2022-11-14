@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -281,7 +282,7 @@ void ArcSplashScreenDialogView::OnWindowActivated(ActivationReason reason,
   forwarding_activation_ = true;
   // Forward the activation to the dialog if available.
   // To avoid nested-activation, here we post the task to the queue.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<ArcSplashScreenDialogView> view) {
                        if (!view)

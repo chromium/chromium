@@ -8,8 +8,8 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
@@ -136,7 +136,7 @@ AAudioOutputStream::~AAudioOutputStream() {
 
   // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
   // bound to the callback stays valid, until the callbacks stop.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::DoNothingWithBoundArgs(std::move(destruction_helper_)),
       base::Seconds(1));
 }

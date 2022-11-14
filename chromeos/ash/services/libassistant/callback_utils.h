@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace ash::libassistant {
 
@@ -94,7 +94,7 @@ base::OnceCallback<void(Args...)> BindToCurrentSequence(
               base::BindOnce(std::move(callback), std::forward<Args>(args)...));
         }
       },
-      std::move(callback), base::SequencedTaskRunnerHandle::Get());
+      std::move(callback), base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 // Binds a method call to the current sequence, meaning we ensure |callback|
@@ -116,7 +116,7 @@ base::RepeatingCallback<void(Args...)> BindToCurrentSequenceRepeating(
               base::BindRepeating(callback, std::forward<Args>(args)...));
         }
       },
-      callback, base::SequencedTaskRunnerHandle::Get());
+      callback, base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 // Binds a method call to the current sequence.

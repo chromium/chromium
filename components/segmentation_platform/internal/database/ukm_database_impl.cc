@@ -4,19 +4,19 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database_impl.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/ukm_database_backend.h"
 
 namespace segmentation_platform {
 
 UkmDatabaseImpl::UkmDatabaseImpl(const base::FilePath& database_path)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       backend_(std::make_unique<UkmDatabaseBackend>(
           database_path,
-          base::SequencedTaskRunnerHandle::Get())) {}
+          base::SequencedTaskRunner::GetCurrentDefault())) {}
 
 UkmDatabaseImpl::~UkmDatabaseImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

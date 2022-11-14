@@ -15,11 +15,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -81,8 +81,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
     base::RunLoop().RunUntilIdle();
     SetupTempDir();
   }
@@ -446,8 +446,8 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
       base::DefaultClock::GetInstance(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunnerHandle::Get(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 
   IndexedDBQuotaClient client(*incognito_idb_context.get());
@@ -474,8 +474,8 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
       base::DefaultClock::GetInstance(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunnerHandle::Get(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 
   IndexedDBQuotaClient client(*incognito_idb_context.get());

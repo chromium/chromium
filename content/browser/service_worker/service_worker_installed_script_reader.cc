@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "net/http/http_response_headers.h"
@@ -26,7 +27,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
         handle_(std::move(handle)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-                 base::SequencedTaskRunnerHandle::Get()) {}
+                 base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   void Start(base::OnceCallback<void(bool /* success */)> callback) {
     callback_ = std::move(callback);

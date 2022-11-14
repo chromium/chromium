@@ -8,6 +8,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_scheduler.h"
@@ -180,7 +181,7 @@ media::learning::LearningSession* BrowserContextImpl::GetLearningSession() {
 
   if (!learning_session_) {
     learning_session_ = std::make_unique<media::learning::LearningSessionImpl>(
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     // Using base::Unretained is safe below, because the callback here will not
     // be called or retained after the Register method below returns.

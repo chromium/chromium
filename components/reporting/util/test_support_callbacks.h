@@ -19,7 +19,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
@@ -65,7 +64,7 @@ class TestMultiEvent {
 
   // Completion callback to hand over to the processing method.
   [[nodiscard]] base::OnceCallback<void(ResType... res)> cb() {
-    return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+    return base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                               base::BindOnce(&TestMultiEvent::SetResult,
                                              weak_ptr_factory_.GetWeakPtr()));
   }
@@ -76,7 +75,7 @@ class TestMultiEvent {
   // for cases when the caller requires it.
   [[nodiscard]] base::RepeatingCallback<void(ResType... res)> repeating_cb() {
     return base::BindPostTask(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&TestMultiEvent::SetResult,
                             weak_ptr_factory_.GetWeakPtr()));
   }

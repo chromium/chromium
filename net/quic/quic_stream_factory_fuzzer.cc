@@ -8,7 +8,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -62,7 +62,7 @@ struct FuzzerEnvironment {
   FuzzerEnvironment()
       : scheme_host_port(url::kHttpsScheme, kServerHostName, kServerPort) {
     net::SetSystemDnsResolutionTaskRunnerForTesting(  // IN-TEST
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     quic_context.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
     ssl_config_service = std::make_unique<SSLConfigServiceDefaults>();

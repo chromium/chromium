@@ -32,6 +32,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
@@ -324,7 +325,7 @@ void PhoneHubTray::UpdateVisibility() {
 }
 
 void PhoneHubTray::TemporarilyDisableAnimation() {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, DisableShowAnimation().Release(), base::Seconds(5));
 }
 

@@ -16,6 +16,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -314,7 +315,7 @@ void SCTAuditingReporter::ScheduleRequestWithBackoff(base::OnceClosure request,
   if (delay.is_positive()) {
     // TODO(crbug.com/1199827): Investigate if explicit task traits should be
     // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, std::move(request), delay);
     return;
   }

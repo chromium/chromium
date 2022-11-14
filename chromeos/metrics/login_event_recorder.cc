@@ -300,7 +300,7 @@ static base::LazyInstance<LoginEventRecorder>::DestructorAtExit
     g_login_event_recorder = LAZY_INSTANCE_INITIALIZER;
 
 LoginEventRecorder::LoginEventRecorder()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(base::CurrentUIThread::IsSet());
   login_time_markers_.reserve(30);
   logout_time_markers_.reserve(30);

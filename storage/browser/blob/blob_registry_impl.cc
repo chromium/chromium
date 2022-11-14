@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -349,7 +350,7 @@ void BlobRegistryImpl::BlobUnderConstruction::DependentBlobReady(
     // Asynchronously call ResolvedAllBlobDependencies, as otherwise |this|
     // might end up getting deleted while ResolvedAllBlobUUIDs is still
     // iterating over |referenced_blob_uuids_|.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BlobUnderConstruction::ResolvedAllBlobDependencies,
                        weak_ptr_factory_.GetWeakPtr()));

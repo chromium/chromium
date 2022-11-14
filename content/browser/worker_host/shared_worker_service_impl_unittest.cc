@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -334,8 +335,8 @@ TEST_F(SharedWorkerServiceImplTest, DISABLED_WebContentsDestroyed) {
 
   // Now asynchronously destroy |web_contents| so that the startup sequence at
   // least reaches SharedWorkerServiceImpl::StartWorker().
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     std::move(web_contents));
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(web_contents));
 
   base::RunLoop().RunUntilIdle();
 

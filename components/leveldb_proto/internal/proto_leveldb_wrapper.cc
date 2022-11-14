@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper_metrics.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -384,9 +383,10 @@ void ProtoLevelDBWrapper::LoadKeys(
     typename Callbacks::LoadKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(LoadKeysFromTaskRunner, base::Unretained(db_),
-                                target_prefix, metrics_id_, std::move(callback),
-                                base::SequencedTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(LoadKeysFromTaskRunner, base::Unretained(db_),
+                     target_prefix, metrics_id_, std::move(callback),
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void ProtoLevelDBWrapper::RemoveKeys(const KeyFilter& filter,
@@ -397,7 +397,7 @@ void ProtoLevelDBWrapper::RemoveKeys(const KeyFilter& filter,
       FROM_HERE,
       base::BindOnce(RemoveKeysFromTaskRunner, base::Unretained(db_),
                      target_prefix, filter, metrics_id_, std::move(callback),
-                     base::SequencedTaskRunnerHandle::Get()));
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void ProtoLevelDBWrapper::Destroy(Callbacks::DestroyCallback callback) {

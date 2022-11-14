@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 
@@ -71,7 +70,7 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
   if (deferred_option == STARTUP_DEFERRED &&
       get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
     if (first_start) {
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&StartupController::OnFallbackStartupTimerExpired,
                          weak_factory_.GetWeakPtr()),
@@ -90,7 +89,7 @@ void StartupController::TryStart(bool force_immediate) {
   // Post a task instead of running the startup checks directly, to guarantee
   // that |start_engine_callback_| is never called synchronously from
   // TryStart().
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&StartupController::TryStartImpl,
                                 weak_factory_.GetWeakPtr(), force_immediate));
 }

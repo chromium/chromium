@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -195,7 +196,7 @@ struct VTVideoEncodeAccelerator::BitstreamBufferRef {
 // of time.
 VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
     : bitrate_adjuster_(.5, .95),
-      client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       encoder_thread_task_runner_(
           base::ThreadPool::CreateSingleThreadTaskRunner({})),
       encoder_task_weak_factory_(this) {

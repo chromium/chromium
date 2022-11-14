@@ -5,8 +5,8 @@
 #include "weblayer/browser/download_manager_delegate_impl.h"
 
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
@@ -242,7 +242,7 @@ void DownloadManagerDelegateImpl::OnDownloadUpdated(
       delegate->DownloadFailed(PersistentDownload::Get(item));
 
     // Needs to happen asynchronously to avoid nested observer calls.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&DownloadManagerDelegateImpl::RemoveItem,
                        weak_ptr_factory_.GetWeakPtr(), item->GetGuid()));

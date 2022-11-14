@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/metrics/sampler.h"
@@ -31,7 +31,7 @@ void MultiSamplersCollector::CollectAll(
 MultiSamplersCollector::MultiSamplersCollector(
     OptionalMetricCallback metric_callback)
     : base::RefCountedDeleteOnSequence<MultiSamplersCollector>(
-          base::SequencedTaskRunnerHandle::Get()),
+          base::SequencedTaskRunner::GetCurrentDefault()),
       metric_callback_(std::move(metric_callback)) {}
 
 void MultiSamplersCollector::Collect(Sampler* sampler) {
@@ -39,8 +39,9 @@ void MultiSamplersCollector::Collect(Sampler* sampler) {
 
   auto on_collected_cb =
       base::BindOnce(&MultiSamplersCollector::MergeMetricData, this);
-  sampler->MaybeCollect(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
+  sampler->MaybeCollect(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(on_collected_cb)));
 }
 
 void MultiSamplersCollector::MergeMetricData(

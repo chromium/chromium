@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
@@ -193,7 +194,7 @@ LacrosService::LacrosService()
         *BrowserParamsProxy::Get()->IdleInfo());
 
     // After construction finishes, start caching.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LacrosService::StartSystemIdleCache,
                                   weak_factory_.GetWeakPtr()));
   } else {
@@ -207,7 +208,7 @@ LacrosService::LacrosService()
         *BrowserParamsProxy::Get()->NativeThemeInfo());
 
     // After construction finishes, start caching.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LacrosService::StartNativeThemeCache,
                                   weak_factory_.GetWeakPtr()));
   }

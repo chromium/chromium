@@ -11,7 +11,7 @@
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/scoped_observation.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
@@ -183,7 +183,7 @@ class DefaultProgressIndicatorAnimationRegistry
     // On completion, `animation` can be removed from the registry. This cannot
     // be done directly from `animation`'s subscription callback, so post a task
     // to delete `animation` as soon as possible.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](const base::WeakPtr<DefaultProgressIndicatorAnimationRegistry>&

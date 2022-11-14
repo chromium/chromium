@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -117,7 +118,8 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     quota_manager_proxy_->CreateBucketForTesting(
         test_src_storage_key_, "custom_bucket",
         blink::mojom::StorageType::kTemporary,
-        base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        bucket_future.GetCallback());
     auto bucket = bucket_future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();

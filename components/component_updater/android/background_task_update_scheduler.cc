@@ -5,7 +5,7 @@
 #include "components/component_updater/android/background_task_update_scheduler.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/component_updater/android/background_task_update_scheduler_jni_headers/UpdateScheduler_jni.h"
 
 namespace component_updater {
@@ -56,7 +56,7 @@ void BackgroundTaskUpdateScheduler::OnStartTask(
     const base::android::JavaParamRef<jobject>& obj) {
   // Component registration is async. Add some delay to give some time for the
   // registration.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BackgroundTaskUpdateScheduler::OnStartTaskDelayed,
                      weak_ptr_factory_.GetWeakPtr()),

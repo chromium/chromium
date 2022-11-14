@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
 
@@ -81,7 +81,7 @@ void LRURendererCache::ReleaseRendererPrelauncher(const GURL& page_url) {
   // the prior site (which is in the process of being released) has completed
   // destruction; otherwise, its renderer process will overlap with the next
   // pre-launched process, temporarily exceeding |max_renderers_|.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LRURendererCache::StartNextPrelauncher,
                                 weak_factory_.GetWeakPtr(), page_url));
 }

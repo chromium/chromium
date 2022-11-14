@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -69,7 +70,7 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   // Callback for sending progress events with the current number of processed
   // bytes.
   void OnCopyOrMoveFileProgress(int64_t size) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnProgress,
                                   copy_or_move_hook_delegate_weak_ptr_,
                                   src_url_, dest_url_, size));
@@ -80,13 +81,13 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   void DidEndCopy(CopyOrMoveOperationDelegate::StatusCallback callback,
                   base::File::Error error) {
     if (error == base::File::FILE_OK) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnEndCopy,
                                     copy_or_move_hook_delegate_weak_ptr_,
                                     src_url_, dest_url_));
 
     } else if (error != base::File::FILE_ERROR_NOT_A_FILE) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnError,
                                     copy_or_move_hook_delegate_weak_ptr_,
                                     src_url_, dest_url_, error));
@@ -117,12 +118,12 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   void DidEndMove(CopyOrMoveOperationDelegate::StatusCallback callback,
                   base::File::Error error) {
     if (error == base::File::FILE_OK) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnEndMove,
                                     copy_or_move_hook_delegate_weak_ptr_,
                                     src_url_, dest_url_));
     } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnError,
                                     copy_or_move_hook_delegate_weak_ptr_,
                                     src_url_, dest_url_, error));
@@ -137,12 +138,12 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
     if (error == base::File::FILE_OK) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&CopyOrMoveHookDelegate::OnEndRemoveSource,
                          copy_or_move_hook_delegate_weak_ptr_, src_url_));
     } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&CopyOrMoveHookDelegate::OnError,
                                     copy_or_move_hook_delegate_weak_ptr_,
                                     src_url_, dest_url_, error));
@@ -1070,8 +1071,8 @@ void CopyOrMoveOperationDelegate::PostProcessDirectory(
 }
 
 void CopyOrMoveOperationDelegate::PostTask(base::OnceClosure closure) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(closure));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(closure));
 }
 
 void CopyOrMoveOperationDelegate::OnCancel() {

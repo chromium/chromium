@@ -8,7 +8,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,8 +32,8 @@ void FakeMetricEventObserver::SetReportingEnabled(bool is_enabled) {
 void FakeMetricEventObserver::RunCallback(MetricData metric_data) {
   base::RunLoop run_loop;
   cb_.Run(std::move(metric_data));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 

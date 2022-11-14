@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -1162,7 +1163,7 @@ void CacheStorageDispatcherHost::UpdateOrCreateDefaultBucket(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   quota_manager_proxy_->UpdateOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key),
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
 }
 
 bool CacheStorageDispatcherHost::WasNotifiedOfBucketDataDeletion(

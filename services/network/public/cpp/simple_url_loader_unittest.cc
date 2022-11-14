@@ -452,8 +452,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
     }
 
     if (download_to_stream_async_resume_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       std::move(resume));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(resume));
       return;
     }
     std::move(resume).Run();
@@ -501,8 +501,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
     }
 
     if (download_to_stream_async_retry_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                       std::move(start_retry));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(start_retry));
       return;
     }
     std::move(start_retry).Run();
@@ -3522,8 +3522,8 @@ TEST_F(SimpleURLLoaderMockTimeTest, StreamResumeAfterTimeout) {
 
   base::OnceClosure captured_resume = test_helper->TakeCapturedStreamResume();
   ASSERT_TRUE(captured_resume);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(captured_resume));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(captured_resume));
   // Make sure no pending task results in a crash.
   base::RunLoop().RunUntilIdle();
 }

@@ -23,11 +23,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store_unittest.h"
@@ -865,7 +865,7 @@ class JsonPrefStoreCallbackTest : public testing::Test {
                        pref_store->AsWeakPtr()),
         base::BindOnce(&WriteCallbacksObserver::OnPostWrite,
                        base::Unretained(&write_callback_observer_)),
-        base::SequencedTaskRunnerHandle::Get(), success);
+        base::SequencedTaskRunner::GetCurrentDefault(), success);
   }
 
   SuccessfulWriteReplyObserver successful_write_reply_observer_;

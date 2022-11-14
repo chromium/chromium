@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -237,7 +238,7 @@ class ProtoDatabaseImplTest : public testing::Test {
   std::unique_ptr<TestSharedProtoDatabaseProvider> CreateSharedProvider(
       TestProtoDatabaseProvider* db_provider) {
     return std::make_unique<TestSharedProtoDatabaseProvider>(
-        base::SequencedTaskRunnerHandle::Get(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         db_provider->weak_factory_.GetWeakPtr());
   }
 

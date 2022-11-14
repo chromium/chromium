@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/observer_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
@@ -22,7 +22,7 @@ namespace device {
 PlatformSensor::PlatformSensor(mojom::SensorType type,
                                SensorReadingSharedBuffer* reading_buffer,
                                PlatformSensorProvider* provider)
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       reading_buffer_(reading_buffer),
       type_(type),
       provider_(provider) {

@@ -9,10 +9,10 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -42,8 +42,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager()
       : TestSafeBrowsingDatabaseManager(
-            base::SequencedTaskRunnerHandle::Get(),
-            base::SequencedTaskRunnerHandle::Get()) {}
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            base::SequencedTaskRunner::GetCurrentDefault()) {}
   // SafeBrowsingDatabaseManager implementation.
   // Checks the threat type of |gurl| previously set by |SetThreatTypeForUrl|.
   // It crashes if the threat type of |gurl| is not set in advance.
@@ -57,7 +57,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       return true;
     }
     if (!urls_delayed_callback_[url]) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                          this, gurl, client));
@@ -98,7 +98,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_delayed_callback_, url));
     DCHECK_EQ(true, urls_delayed_callback_[url]);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                        this, gurl, urls_client_[url]));
@@ -312,7 +312,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*can_check_high_confidence_allowlist=*/true,
         /*url_lookup_service_metric_suffix=*/
         real_time_lookup_enabled ? ".Enterprise" : ".None",
-        /*last_committed_url=*/GURL(), base::SequencedTaskRunnerHandle::Get(),
+        /*last_committed_url=*/GURL(),
+        base::SequencedTaskRunner::GetCurrentDefault(),
         real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr() : nullptr,
         /*webui_delegate_=*/nullptr);
   }

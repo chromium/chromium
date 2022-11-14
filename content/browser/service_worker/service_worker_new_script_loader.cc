@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -90,7 +91,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
       version_(version),
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                       base::SequencedTaskRunnerHandle::Get()),
+                       base::SequencedTaskRunner::GetCurrentDefault()),
       loader_factory_(std::move(loader_factory)),
       client_(std::move(client)),
       requesting_frame_id_(requesting_frame_id) {

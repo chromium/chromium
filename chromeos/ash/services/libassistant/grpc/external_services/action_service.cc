@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/action_args.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_libassistant_client.h"
@@ -29,7 +30,7 @@ ActionService::ActionService(::grpc::ServerBuilder* server_builder,
     : AsyncServiceDriver(server_builder),
       libassistant_client_(libassistant_client),
       assistant_service_address_(assistant_service_address),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(server_builder);
   DCHECK(libassistant_client_);
 

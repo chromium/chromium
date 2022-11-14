@@ -5,8 +5,8 @@
 #include "chromecast/media/gpu/cast_gpu_factory_impl.h"
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/mojo/remote_interfaces.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_info.h"
@@ -154,8 +154,8 @@ bool CastGpuFactoryImpl::IsDecoderSupportKnown() {
 }
 
 void CastGpuFactoryImpl::NotifyDecoderSupportKnown(base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 std::unique_ptr<::media::VideoDecoder> CastGpuFactoryImpl::CreateVideoDecoder(
@@ -186,8 +186,8 @@ bool CastGpuFactoryImpl::IsEncoderSupportKnown() {
 }
 
 void CastGpuFactoryImpl::NotifyEncoderSupportKnown(base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 std::unique_ptr<::media::VideoEncodeAccelerator>

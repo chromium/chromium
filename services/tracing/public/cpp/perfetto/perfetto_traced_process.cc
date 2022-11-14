@@ -363,7 +363,7 @@ void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(
   DCHECK(!allow_system_consumer_callback_ || !callback);
   allow_system_consumer_callback_ = std::move(callback);
   allow_system_consumer_callback_runner_ =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 void PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(

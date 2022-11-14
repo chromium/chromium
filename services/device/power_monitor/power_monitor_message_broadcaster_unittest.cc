@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/power_monitor_test.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
@@ -78,7 +78,7 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerMessageBroadcast) {
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
           std::make_unique<MockClient>(run_loop.QuitClosure()),
-          base::SequencedTaskRunnerHandle::Get()));
+          base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());
@@ -152,7 +152,7 @@ TEST_F(PowerMonitorMessageBroadcasterTest, PowerClientUpdateWhenOnBattery) {
   std::unique_ptr<PowerMonitorBroadcastSource> broadcast_source(
       new PowerMonitorBroadcastSource(
           std::make_unique<MockClient>(run_loop.QuitClosure()),
-          base::SequencedTaskRunnerHandle::Get()));
+          base::SequencedTaskRunner::GetCurrentDefault()));
   mojo::PendingRemote<mojom::PowerMonitor> remote_monitor;
   device_service()->BindPowerMonitor(
       remote_monitor.InitWithNewPipeAndPassReceiver());

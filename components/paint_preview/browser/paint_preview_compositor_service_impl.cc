@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_compositor_client_impl.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
@@ -16,7 +17,7 @@ PaintPreviewCompositorServiceImpl::PaintPreviewCompositorServiceImpl(
     mojo::PendingRemote<mojom::PaintPreviewCompositorCollection> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> compositor_task_runner_,
     base::OnceClosure disconnect_handler)
-    : default_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : default_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       compositor_task_runner_(compositor_task_runner_),
       compositor_service_(
           new mojo::Remote<mojom::PaintPreviewCompositorCollection>(),
@@ -52,10 +53,10 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
     base::OnceClosure connected_closure) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   std::unique_ptr<PaintPreviewCompositorClientImpl, base::OnTaskRunnerDeleter>
-      compositor(
-          new PaintPreviewCompositorClientImpl(compositor_task_runner_,
-                                               weak_ptr_factory_.GetWeakPtr()),
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+      compositor(new PaintPreviewCompositorClientImpl(
+                     compositor_task_runner_, weak_ptr_factory_.GetWeakPtr()),
+                 base::OnTaskRunnerDeleter(
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 
   compositor_task_runner_->PostTask(
       FROM_HERE,

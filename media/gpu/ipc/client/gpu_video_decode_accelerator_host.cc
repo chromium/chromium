@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -78,7 +79,7 @@ bool GpuVideoDecodeAcceleratorHost::Initialize(const Config& config,
       base::BindOnce(
           &GpuVideoDecodeAcceleratorHost::OnDisconnectedFromGpuProcess,
           weak_this_),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   return true;
 }
 

@@ -13,8 +13,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
@@ -94,7 +94,7 @@ absl::optional<T> TestCookieAccessDelegate::RunMaybeAsync(
     T result,
     base::OnceCallback<void(T)> callback) const {
   if (invoke_callbacks_asynchronously_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
     return absl::nullopt;
   }

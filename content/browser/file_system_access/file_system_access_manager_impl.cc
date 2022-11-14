@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
@@ -370,7 +369,7 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
                 std::move(callback), root, fs_name, result));
       },
       weak_factory_.GetWeakPtr(), binding_context, std::move(callback),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemContext::OpenFileSystem, context(),
@@ -937,11 +936,13 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
         // Use the default storage bucket.
         context_->quota_manager_proxy()->UpdateOrCreateBucket(
             storage::BucketInitParams::ForDefaultBucket(storage_key),
-            base::SequencedTaskRunnerHandle::Get(), std::move(bucket_callback));
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            std::move(bucket_callback));
       } else {
         context_->quota_manager_proxy()->GetBucketById(
             storage::BucketId::FromUnsafeValue(data.sandboxed().bucket_id()),
-            base::SequencedTaskRunnerHandle::Get(), std::move(bucket_callback));
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            std::move(bucket_callback));
       }
       break;
     }
@@ -1372,7 +1373,7 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
         base::BindOnce(
             &FileSystemAccessManagerImpl::DidCreateAndTruncateSaveFile, this,
             binding_context, entries.front(), fs_url, std::move(callback)),
-        base::SequencedTaskRunnerHandle::Get()));
+        base::SequencedTaskRunner::GetCurrentDefault()));
     return;
   }
 
@@ -1645,7 +1646,7 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
   context_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kFileSystem, url.bucket()->id, -overallocation,
       base::Time::Now(),
-      /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
+      /*callback_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
       std::move(callback));
 }
 

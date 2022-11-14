@@ -12,9 +12,9 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "chromeos/printing/fake_printer_config_cache.h"
 #include "chromeos/printing/ppd_metadata_matchers.h"
@@ -219,7 +219,8 @@ TEST_F(PpdMetadataManagerTest, CanGetLocale) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_TRUE(results_.get_locale_succeeded);
@@ -244,7 +245,8 @@ TEST_F(PpdMetadataManagerTest, DefaultsToEnglishLocale) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_TRUE(results_.get_locale_succeeded);
@@ -268,7 +270,8 @@ TEST_F(PpdMetadataManagerTest, CanSelectNonEnglishCloseFitLocale) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_TRUE(results_.get_locale_succeeded);
@@ -299,7 +302,8 @@ TEST_F(PpdMetadataManagerTest, FailsToFindAnyCloseFitLocale) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_FALSE(results_.get_locale_succeeded);
@@ -323,7 +327,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetLocaleOnFetchFailure) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_FALSE(results_.get_locale_succeeded);
@@ -348,7 +353,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetLocaleOnParseFailure) {
   auto call =
       base::BindOnce(&PpdMetadataManager::GetLocale,
                      base::Unretained(manager_.get()), std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_FALSE(results_.get_locale_succeeded);
@@ -382,7 +388,8 @@ TEST_F(PpdMetadataManagerTest, CanGetManufacturers) {
   auto call = base::BindOnce(&PpdMetadataManager::GetManufacturers,
                              base::Unretained(manager_.get()),
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_EQ(results_.get_manufacturers_code,
@@ -411,7 +418,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetManufacturersOnFetchFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::GetManufacturers,
                              base::Unretained(manager_.get()),
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_EQ(results_.get_manufacturers_code,
@@ -435,7 +443,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetManufacturersOnParseFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::GetManufacturers,
                              base::Unretained(manager_.get()),
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_EQ(results_.get_manufacturers_code,
@@ -571,7 +580,8 @@ TEST_F(PpdMetadataManagerTest, CanGetPrinters) {
   auto call = base::BindOnce(&PpdMetadataManager::GetPrinters,
                              base::Unretained(manager_.get()), "Manufacturer A",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_TRUE(results_.get_printers_succeeded);
@@ -611,7 +621,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetPrintersOnFetchFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::GetPrinters,
                              base::Unretained(manager_.get()), "Manufacturer A",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   EXPECT_FALSE(results_.get_printers_succeeded);
@@ -652,7 +663,8 @@ TEST_F(PpdMetadataManagerTest, FailsToGetPrintersOnParseFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::GetPrinters,
                              base::Unretained(manager_.get()), "Manufacturer A",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   EXPECT_FALSE(results_.get_printers_succeeded);
@@ -1423,7 +1435,8 @@ TEST_F(PpdMetadataManagerTest, CanSplitMakeAndModel) {
   auto call = base::BindOnce(&PpdMetadataManager::SplitMakeAndModel,
                              base::Unretained(manager_.get()), "Hello there!",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_EQ(results_.split_make_and_model_code,
@@ -1452,7 +1465,8 @@ TEST_F(PpdMetadataManagerTest, FailsToSplitMakeAndModelOnFetchFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::SplitMakeAndModel,
                              base::Unretained(manager_.get()), "Hello there!",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   EXPECT_EQ(results_.split_make_and_model_code,
@@ -1482,7 +1496,8 @@ TEST_F(PpdMetadataManagerTest, FailsToSplitMakeAndModelOnParseFailure) {
   auto call = base::BindOnce(&PpdMetadataManager::SplitMakeAndModel,
                              base::Unretained(manager_.get()), "Hello there!",
                              kArbitraryTimeDelta, std::move(callback));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(call));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(call));
   loop.Run();
 
   ASSERT_EQ(results_.split_make_and_model_code,

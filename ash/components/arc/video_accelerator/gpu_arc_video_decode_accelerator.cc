@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
@@ -400,7 +400,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
     VLOGF(2) << "Using VideoDecoder-backed VdVideoDecodeAccelerator.";
     vda_ = media::VdVideoDecodeAccelerator::Create(
         base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
-        vda_config, base::SequencedTaskRunnerHandle::Get());
+        vda_config, base::SequencedTaskRunner::GetCurrentDefault());
   } else {
     VLOGF(2) << "Using original VDA";
     auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(

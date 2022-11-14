@@ -10,7 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/browser/bad_message.h"
@@ -1155,7 +1155,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
                      weak_ptr_factory_.GetWeakPtr(), idp, status, id_token),
@@ -1346,7 +1346,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
         .Run(status, selected_idp_config_url, id_token);
     auth_request_callback_.Reset();
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FederatedAuthRequestImpl::OnRejectRequest,
                        weak_ptr_factory_.GetWeakPtr()),

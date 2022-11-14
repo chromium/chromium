@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace reporting {
 namespace test {
@@ -72,8 +72,8 @@ void FakeReportingSettings::SetIsTrusted(bool is_trusted) {
     std::move(trusted_callbacks_.front()).Run();
     trusted_callbacks_.pop();
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   run_loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 }  // namespace test

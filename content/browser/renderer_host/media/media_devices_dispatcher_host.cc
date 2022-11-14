@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
@@ -425,7 +426,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
   MediaStreamManager::GetMediaDeviceIDForHMAC(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       salt_and_origin.device_id_salt, salt_and_origin.origin, hashed_device_id,
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId,
           weak_factory_.GetWeakPtr(), hashed_device_id, try_in_use_first,

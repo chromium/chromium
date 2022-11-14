@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace safe_browsing {
@@ -32,7 +32,7 @@ int SafeBrowsingTokenFetchTracker::StartTrackingTokenFetch(
   // TODO(crbug.com/1276273): Use base::OneShotTimer here to enabling cancelling
   // tracking of timeouts when requests complete. The implementation of
   // OnTokenFetchTimeout can then be correspondingly simplified.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&SafeBrowsingTokenFetchTracker::OnTokenFetchTimeout,
                      weak_ptr_factory_.GetWeakPtr(), request_id,

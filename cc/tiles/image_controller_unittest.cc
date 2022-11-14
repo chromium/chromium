@@ -11,8 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_restrictions.h"
@@ -190,7 +190,8 @@ DrawImage CreateBitmapDrawImage(gfx::Size size) {
 
 class ImageControllerTest : public testing::Test {
  public:
-  ImageControllerTest() : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+  ImageControllerTest()
+      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
     image_ = CreateDiscardableDrawImage(gfx::Size(1, 1));
   }
   ~ImageControllerTest() override = default;

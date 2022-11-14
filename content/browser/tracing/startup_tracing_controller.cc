@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -115,7 +116,7 @@ class StartupTracingController::BackgroundTracer {
       : state_(State::kTracing),
         write_mode_(write_mode),
         temp_file_policy_(temp_file_policy),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()),
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
         output_file_(output_file),
         output_format_(output_format),
         on_tracing_finished_(std::move(on_tracing_finished)) {

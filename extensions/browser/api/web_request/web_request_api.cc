@@ -26,6 +26,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -509,7 +510,7 @@ void WebRequestAPI::Proxy::HandleAuthRequest(
     int32_t request_id,
     AuthRequestCallback callback) {
   // Default implementation cancels the request.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                 false /* should_cancel */));
 }
@@ -584,7 +585,7 @@ void WebRequestAPI::ProxySet::MaybeProxyAuthRequest(
   if (!proxy) {
     // Run the |callback| which will display a dialog for the user to enter
     // their auth credentials.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                   false /* should_cancel */));
     return;
@@ -716,8 +717,8 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   // allow cases where blocking listeners remove themselves inside the handler.
   // This Unretained is safe because the ExtensionWebRequestEventRouter
   // singleton is leaked.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(remove_listener));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(remove_listener));
 }
 
 bool WebRequestAPI::MaybeProxyURLLoaderFactory(

@@ -8,9 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_bridge.h"
@@ -42,7 +42,7 @@ class CodecWrapperTest : public testing::Test {
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(),
         // Unrendered output buffers are released on our thread.
-        base::SequencedTaskRunnerHandle::Get(), kInitialCodedSize);
+        base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(MEDIA_CODEC_OK));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))

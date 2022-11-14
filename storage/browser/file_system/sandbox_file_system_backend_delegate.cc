@@ -17,6 +17,7 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -372,7 +373,7 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
     proxy->NotifyStorageModified(
         QuotaClientType::kFileSystem, storage_key,
         FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now(),
-        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+        base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
   }
 
   if (result)
@@ -396,7 +397,7 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
   if (result && proxy && usage) {
     proxy->NotifyBucketModified(QuotaClientType::kFileSystem, bucket_locator.id,
                                 -usage, base::Time::Now(),
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 base::DoNothing());
   }
 

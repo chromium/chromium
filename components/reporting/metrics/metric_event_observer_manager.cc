@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
@@ -34,14 +34,15 @@ MetricEventObserverManager::MetricEventObserverManager(
     : event_observer_(std::move(event_observer)),
       metric_report_queue_(metric_report_queue),
       sampler_pool_(sampler_pool) {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   auto on_event_observed_cb =
       base::BindRepeating(&MetricEventObserverManager::OnEventObserved,
                           weak_ptr_factory_.GetWeakPtr());
-  event_observer_->SetOnEventObservedCallback(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_event_observed_cb)));
+  event_observer_->SetOnEventObservedCallback(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(on_event_observed_cb)));
 
   reporting_controller_ = std::make_unique<MetricReportingController>(
       reporting_settings, enable_setting_path, setting_enabled_default_value,

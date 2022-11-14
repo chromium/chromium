@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
@@ -23,8 +24,8 @@ using CompositorCollectionPtr =
 
 // The implementation of the PaintPreviewCompositorService class.
 // The public interface should be invoked only on the |default_task_runner_|
-// which is the the runner returned by base::SequencedTaskRunnerHandle::Get()
-// when this is constructed.
+// which is the the runner returned by
+// base::SequencedTaskRunner::GetCurrentDefault() when this is constructed.
 class PaintPreviewCompositorServiceImpl : public PaintPreviewCompositorService {
  public:
   explicit PaintPreviewCompositorServiceImpl(

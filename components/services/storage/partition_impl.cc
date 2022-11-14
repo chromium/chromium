@@ -11,7 +11,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/dom_storage/session_storage_impl.h"
@@ -30,7 +29,7 @@ base::OnceClosure MakeDeferredDeleter(std::unique_ptr<T> object) {
       [](scoped_refptr<base::SequencedTaskRunner> task_runner, T* object) {
         task_runner->DeleteSoon(FROM_HERE, object);
       },
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       // NOTE: We release `object` immediately. In the case
       // where this task never runs, we prefer to leak the
       // object rather than potentilaly destroying it on the
@@ -86,7 +85,7 @@ void PartitionImpl::BindSessionStorageControl(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
 #if BUILDFLAG(IS_ANDROID)
       // On Android there is no support for session storage restoring, and since
       // the restoring code is responsible for database cleanup, we must
@@ -102,8 +101,8 @@ void PartitionImpl::BindSessionStorageControl(
 void PartitionImpl::BindLocalStorageControl(
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver) {
   local_storage_ = std::make_unique<LocalStorageImpl>(
-      path_.value_or(base::FilePath()), base::SequencedTaskRunnerHandle::Get(),
-      std::move(receiver));
+      path_.value_or(base::FilePath()),
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(receiver));
 }
 
 void PartitionImpl::BindServiceWorkerStorageControl(

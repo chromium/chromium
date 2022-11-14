@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -136,7 +137,7 @@ void PlayerCompositorDelegate::Initialize(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel() >=
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(compositor_error),
                        static_cast<int>(
@@ -211,7 +212,7 @@ void PlayerCompositorDelegate::InitializeInternal(
     timeout_.Reset(
         base::BindOnce(&PlayerCompositorDelegate::OnCompositorTimeout,
                        weak_factory_.GetWeakPtr()));
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, timeout_.callback(), timeout_duration);
   }
 }
@@ -302,7 +303,7 @@ void PlayerCompositorDelegate::OnMemoryPressure(
       paint_preview_compositor_service_.reset();
 
     if (compositor_error_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               std::move(compositor_error_),

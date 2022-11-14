@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
@@ -128,7 +128,7 @@ net::Error CacheCreator::Run() {
   if (!retry_ && reset_handling_ == disk_cache::ResetHandling::kReset) {
     // Pretend that we failed to create a cache, so that we can handle `kReset`
     // and `kResetOnError` in a unified way, in CacheCreator::OnIOComplete.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&CacheCreator::OnIOComplete,
                                   base::Unretained(this), net::ERR_FAILED));
     return net::ERR_IO_PENDING;
@@ -227,7 +227,7 @@ void CacheCreator::OnIOComplete(int result) {
   if (!file_operations_) {
     if (file_operations_factory_) {
       file_operations_ = file_operations_factory_->Create(
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
     } else {
       file_operations_ = std::make_unique<disk_cache::TrivialFileOperations>();
     }
@@ -331,7 +331,7 @@ BackendResult CreateCacheBackendImpl(
       return BackendResult::Make(std::move(mem_backend_impl));
     } else {
       if (!post_cleanup_callback.is_null())
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, std::move(post_cleanup_callback));
       return BackendResult::MakeError(net::ERR_FAILED);
     }
@@ -421,7 +421,7 @@ void FlushCacheThreadAsynchronouslyForTesting(base::OnceClosure callback) {
 
   // For simple backend.
   base::ThreadPoolInstance::Get()->FlushAsyncForTesting(  // IN-TEST
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          repeating_callback));
 
   // Block backend.
@@ -631,7 +631,7 @@ void TrivialFileOperations::CleanupDirectory(
 
   // This is needed for some unittests.
   if (path.empty()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }

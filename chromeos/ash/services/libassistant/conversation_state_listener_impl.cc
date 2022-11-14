@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/conversation_state_listener_impl.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/libassistant/audio_input_controller.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
@@ -34,7 +35,7 @@ ConversationStateListenerImpl::ConversationStateListenerImpl(
     : speech_recognition_observers_(*speech_recognition_observers),
       conversation_observers_(*conversation_observers),
       audio_input_controller_(audio_input_controller),
-      mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      mojom_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(speech_recognition_observers);
   DCHECK(conversation_observers);
   DCHECK(audio_input_controller);

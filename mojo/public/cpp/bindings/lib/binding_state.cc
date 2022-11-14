@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 
@@ -138,7 +139,7 @@ void BindingStateBase::BindInternal(
       base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
-  MakeBindingRandomlyPaused(base::SequencedTaskRunnerHandle::Get(),
+  MakeBindingRandomlyPaused(base::SequencedTaskRunner::GetCurrentDefault(),
                             weak_ptr_factory_.GetWeakPtr());
 #endif
 }

@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace mojo {
@@ -79,7 +78,7 @@ class DataPipeProducer::SequenceState
       // watcher and complete the read asynchronously.
       watcher_ = std::make_unique<SimpleWatcher>(
           FROM_HERE, SimpleWatcher::ArmingPolicy::AUTOMATIC,
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
       watcher_->Watch(producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
                       MOJO_WATCH_CONDITION_SATISFIED,
                       base::BindRepeating(&SequenceState::OnHandleReady, this));
@@ -202,7 +201,7 @@ void DataPipeProducer::InitializeNewRequest(CompletionCallback callback) {
       std::move(producer_), file_task_runner,
       base::BindOnce(&DataPipeProducer::OnWriteComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 void DataPipeProducer::OnWriteComplete(CompletionCallback callback,

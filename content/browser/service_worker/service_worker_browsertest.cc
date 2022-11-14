@@ -28,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -2615,7 +2616,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
     code_cache_host_interfaces_.emplace_back(
         receiver_set.SwapImplForTesting(receiver_id, std::move(interceptor))
             .release(),
-        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+        base::OnTaskRunnerDeleter(
+            base::SequencedTaskRunner::GetCurrentDefault()));
   }
 
  private:
@@ -3119,7 +3121,8 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
       base::WeakPtr<BlockingResponse> owner_;
     };
 
-    BlockingResponse() : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    BlockingResponse()
+        : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
     // Mint an HttpResponse suitable for returning to the EmbeddedTestServer
     // that will forward to this BlockingResponse.

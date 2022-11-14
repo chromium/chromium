@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
@@ -166,9 +166,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
         GTEST_SKIP() << "5.1 channel audio is not supported by the MF AAC "
                         "encoder on versions below Win10.";
       }
-      ASSERT_TRUE(base::SequencedTaskRunnerHandle::IsSet());
+      ASSERT_TRUE(base::SequencedTaskRunner::HasCurrentDefault());
       encoder_ = std::make_unique<MFAudioEncoder>(
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
       frames_per_buffer_ = kAacFramesPerBuffer;
       buffer_duration_ = AudioTimestampHelper::FramesToTime(
           frames_per_buffer_, options_.sample_rate);
@@ -816,7 +816,7 @@ class AACAudioEncoderTest : public AudioEncodersTest {
 #if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
   void InitializeDecoder() {
     decoder_ = std::make_unique<FFmpegAudioDecoder>(
-        base::SequencedTaskRunnerHandle::Get(), &media_log);
+        base::SequencedTaskRunner::GetCurrentDefault(), &media_log);
     ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
     switch (options_.channels) {
       case 1:

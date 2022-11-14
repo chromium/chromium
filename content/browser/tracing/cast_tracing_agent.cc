@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_config.h"
 #include "chromecast/tracing/system_tracer.h"
@@ -76,10 +77,11 @@ class CastSystemTracingSession {
 
     worker_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &CastSystemTracingSession::StartTracingOnWorker,
-            base::Unretained(this), base::SequencedTaskRunnerHandle::Get(),
-            GetTracingCategories(trace_config), std::move(callback)));
+        base::BindOnce(&CastSystemTracingSession::StartTracingOnWorker,
+                       base::Unretained(this),
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       GetTracingCategories(trace_config),
+                       std::move(callback)));
   }
 
   // Stops the active tracing session, calls |callback| on the current sequence
@@ -89,7 +91,8 @@ class CastSystemTracingSession {
         FROM_HERE,
         base::BindOnce(&CastSystemTracingSession::StopAndFlushOnWorker,
                        base::Unretained(this),
-                       base::SequencedTaskRunnerHandle::Get(), callback));
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       callback));
   }
 
  private:

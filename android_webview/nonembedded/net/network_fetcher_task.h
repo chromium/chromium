@@ -12,8 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/update_client/network.h"
 
 namespace base {
@@ -80,7 +80,7 @@ class NetworkFetcherTask {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   update_client::NetworkFetcher::ResponseStartedCallback
       response_started_callback_;
   update_client::NetworkFetcher::ProgressCallback progress_callback_;

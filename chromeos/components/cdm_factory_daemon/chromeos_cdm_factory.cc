@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -171,7 +172,7 @@ ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver() {
   auto receiver = browser_proxy.InitWithNewPipeAndPassReceiver();
   GetBrowserCdmFactoryRemote().Bind(std::move(browser_proxy));
 
-  GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
+  GetFactoryTaskRunner() = base::SequencedTaskRunner::GetCurrentDefault();
   return receiver;
 }
 
@@ -229,7 +230,7 @@ void ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
     mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
   GetBrowserCdmFactoryRemoteHolder().ReplaceBrowserCdmFactoryRemote(
       std::move(remote));
-  GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
+  GetFactoryTaskRunner() = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 // static

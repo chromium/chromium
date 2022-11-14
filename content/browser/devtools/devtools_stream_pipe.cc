@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ scoped_refptr<DevToolsStreamPipe> DevToolsStreamPipe::Create(
 DevToolsStreamPipe::DevToolsStreamPipe(DevToolsIOContext* context,
                                        mojo::ScopedDataPipeConsumerHandle pipe,
                                        bool is_binary)
-    : DevToolsIOContext::Stream(base::SequencedTaskRunnerHandle::Get()),
+    : DevToolsIOContext::Stream(base::SequencedTaskRunner::GetCurrentDefault()),
       handle_(Register(context)),
       pipe_(std::move(pipe)),
       is_binary_(is_binary),

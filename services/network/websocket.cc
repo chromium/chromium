@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -716,7 +717,7 @@ void WebSocket::SendDataFrame(base::span<const char>* payload) {
       begin_result != MOJO_RESULT_SHOULD_WAIT) {
     DVLOG(1) << "WebSocket::OnWritable mojo error=" << begin_result;
     DCHECK_EQ(begin_result, MOJO_RESULT_FAILED_PRECONDITION);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&WebSocket::OnConnectionError,
                                   weak_ptr_factory_.GetWeakPtr(), FROM_HERE));
   }

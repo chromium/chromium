@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
@@ -104,7 +105,7 @@ BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
 
   helper_ = base::SequenceBound<AdapterHelper>(
       std::move(adapter_runner), weak_ptr_factory_.GetWeakPtr(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;

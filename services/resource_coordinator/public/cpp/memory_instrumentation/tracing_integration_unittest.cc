@@ -9,11 +9,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_manager_test_utils.h"
 #include "base/trace_event/memory_dump_scheduler.h"
@@ -493,7 +493,8 @@ TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
             TRACE_EVENT0(MemoryDumpManager::kTraceCategory, "foo");
             main_task_runner->PostTask(FROM_HERE, std::move(quit_closure));
           },
-          base::SequencedTaskRunnerHandle::Get(), run_loop.QuitClosure()));
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_TRUE(RequestChromeDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,

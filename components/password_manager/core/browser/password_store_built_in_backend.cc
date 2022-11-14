@@ -53,7 +53,7 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
   DCHECK(background_task_runner_);
   helper_ = std::make_unique<LoginDatabaseAsyncHelper>(
       std::move(login_db), std::move(notifier),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 PasswordStoreBuiltInBackend::~PasswordStoreBuiltInBackend() {

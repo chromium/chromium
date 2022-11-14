@@ -20,7 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 
@@ -104,7 +104,7 @@ DelayedHttpResponse::~DelayedHttpResponse() = default;
 
 void DelayedHttpResponse::SendResponse(
     base::WeakPtr<HttpResponseDelegate> delegate) {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HttpResponseDelegate::SendHeadersContentAndFinish,
                      delegate, code(), reason(), BuildHeaders(), content()),

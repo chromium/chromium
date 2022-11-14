@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -304,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, MAYBE_PauseResume) {
     download->Pause();
     GURL url = embedded_test_server()->GetURL(
         content::SlowDownloadHttpResponse::kFinishSlowResponseUrl);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](Download* download, Shell* shell, const GURL& url) {
                          CHECK_EQ(download->GetState(), DownloadState::kPaused);

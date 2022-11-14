@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/apdu/apdu_response.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -128,7 +128,7 @@ void U2fSignOperation::OnSignResponseReceived(
 
     case apdu::ApduResponse::Status::SW_CONDITIONS_NOT_SATISFIED:
       // Waiting for user touch. Retry after 200 milliseconds delay.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&U2fSignOperation::WinkAndTrySign,
                          weak_factory_.GetWeakPtr()),
@@ -178,7 +178,7 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
 
     case apdu::ApduResponse::Status::SW_CONDITIONS_NOT_SATISFIED:
       // Waiting for user touch. Retry after 200 milliseconds delay.
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&U2fSignOperation::TryFakeEnrollment,
                          weak_factory_.GetWeakPtr()),

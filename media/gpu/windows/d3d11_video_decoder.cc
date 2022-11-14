@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
@@ -127,7 +127,7 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     : media_log_(std::move(media_log)),
       impl_(std::move(impl)),
       gpu_task_runner_(std::move(gpu_task_runner)),
-      decoder_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      decoder_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       already_initialized_(false),
       gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),

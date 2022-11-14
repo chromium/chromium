@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,7 +39,7 @@ struct TypeConverter<AudioOutputStreamType,
 namespace ash::libassistant {
 
 VolumeControlImpl::VolumeControlImpl()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {}
 
 void VolumeControlImpl::Initialize(

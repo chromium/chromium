@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/memory_tracking.h"
-
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace gpu {
 
 // This can be created on the render thread on Andorid Webview which is managed
 // by the OS and doesn't have a task runner associated with it in which case
-// base::SequencedTaskRunnerHandle::Get() will trigger a DCHECK.
+// base::SequencedTaskRunner::GetCurrentDefault() will trigger a DCHECK.
 MemoryTypeTracker::MemoryTypeTracker(MemoryTracker* memory_tracker)
     : MemoryTypeTracker(memory_tracker,
-                        base::SequencedTaskRunnerHandle::IsSet()
-                            ? base::SequencedTaskRunnerHandle::Get()
+                        base::SequencedTaskRunner::HasCurrentDefault()
+                            ? base::SequencedTaskRunner::GetCurrentDefault()
                             : nullptr) {}
 
 MemoryTypeTracker::MemoryTypeTracker(

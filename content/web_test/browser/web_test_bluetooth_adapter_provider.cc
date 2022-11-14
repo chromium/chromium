@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1376,7 +1377,7 @@ WebTestBluetoothAdapterProvider::GetBaseDevice(
       .WillByDefault(
           WithArg<1>([device_ptr](BluetoothDevice::ConnectCallback callback) {
             device_ptr->SetPaired(/*paired=*/true);
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback),
                                           /*error_code=*/absl::nullopt));
           }));

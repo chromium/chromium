@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -410,7 +411,8 @@ GpuServiceImpl::GpuServiceImpl(
     // Initialize the OverlayStateService using the GPUServiceImpl task
     // sequence.
     auto* overlay_state_service = OverlayStateService::GetInstance();
-    overlay_state_service->Initialize(base::SequencedTaskRunnerHandle::Get());
+    overlay_state_service->Initialize(
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   // Add GpuServiceImpl to DirectCompositionOverlayCapsMonitor observer list for

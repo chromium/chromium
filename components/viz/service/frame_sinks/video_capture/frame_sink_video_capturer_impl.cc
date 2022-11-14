@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1047,7 +1047,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                      capture_weak_factory_.GetWeakPtr(),
                      std::move(request_properties)));
 
-  request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
+  request->set_result_task_runner(
+      base::SequencedTaskRunner::GetCurrentDefault());
   request->set_source(copy_request_source_);
   request->set_area(capture_region);
   request->SetScaleRatio(

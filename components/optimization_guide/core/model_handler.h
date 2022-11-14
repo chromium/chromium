@@ -13,7 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_executor.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -59,7 +59,8 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
     model_executor_->InitializeAndMoveToExecutionThread(
         model_inference_timeout, optimization_target_,
-        model_executor_task_runner_, base::SequencedTaskRunnerHandle::Get());
+        model_executor_task_runner_,
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     // Run this after the executor is initialized in case the model is already
     // available.

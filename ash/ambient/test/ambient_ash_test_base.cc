@@ -36,7 +36,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -67,7 +66,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
                        : base::StringPrintf("test_image_%i", download_count_));
     download_count_++;
     // Pretend to respond asynchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(data)),
         photo_download_delay_);
   }
@@ -76,7 +75,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
                            int cache_index,
                            base::OnceCallback<void(bool)> callback) override {
     if (!download_data_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false));
       return;
     }
@@ -87,7 +86,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     files_.insert(
         std::pair<int, ::ambient::PhotoCacheEntry>(cache_index, cache_entry));
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
   }
 
@@ -102,7 +101,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     decoded_image_.reset();
 
     // Pretend to respond asynchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), image));
   }
 

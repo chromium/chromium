@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -39,7 +39,7 @@ ScheduledMetricsManager::ScheduledMetricsManager(
   daily_scheduled_task_ = std::make_unique<base::CancelableRepeatingClosure>(
       base::BindRepeating(&ScheduledMetricsManager::RunDailyTask,
                           weak_ptr_factory_.GetWeakPtr()));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, daily_scheduled_task_->callback(),
       base::Milliseconds(daily_ms_delay));
 }
@@ -50,7 +50,7 @@ void ScheduledMetricsManager::RunDailyTask() {
   // Update the last update time in prefs and immediately schedule the next.
   daily_last_run_ = base::Time::Now();
   pref_service_->SetTime(kCommerceDailyMetricsLastUpdateTime, daily_last_run_);
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, daily_scheduled_task_->callback(), kDailyInterval);
 
   std::vector<const bookmarks::BookmarkNode*> tracked_products =

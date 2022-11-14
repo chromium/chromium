@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -1285,7 +1286,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
         storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary,
         stored_resources_total_size_bytes - deleted_resources_size,
-        base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
         base::DoNothing());
   }
 
@@ -1326,7 +1327,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     quota_manager_proxy_->NotifyStorageModified(
         storage::QuotaClientType::kServiceWorker, key,
         blink::mojom::StorageType::kTemporary, -deleted_resources_size,
-        base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+        base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
         base::DoNothing());
   }
 
@@ -1580,7 +1581,7 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
                 kServiceWorkerStorageControlResponseQueue)
                 ? GetUIThreadTaskRunner(
                       {BrowserTaskType::kServiceWorkerStorageControlResponse})
-                : base::SequencedTaskRunnerHandle::Get()));
+                : base::SequencedTaskRunner::GetCurrentDefault()));
     DCHECK(remote_storage_control_.is_bound());
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,

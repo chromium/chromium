@@ -15,9 +15,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -420,7 +420,7 @@ class PacLibraryTest : public testing::Test {
     // If all the ConnectAsync() completion callbacks haven't been called yet
     // they may need to in the future.
     if (!finished) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&PacLibraryTest::RunAsyncConnectCallbacksAndPostAgain,
                          base::Unretained(this)));
@@ -971,10 +971,10 @@ TEST_F(PacLibraryTest, DeleteMyIpAddressImpl) {
   impl_->SetSocketFactoryForTest(&factory_);
   impl_->SetHostResolverProcForTest(host_resolver_proc_);
   // Post a task that deletes `impl_`.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { impl_.reset(); }));
   // Then post a task that runs the async connection callbacks.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&MockSocketFactory::RunAsyncConnectCallbacks),
@@ -1014,7 +1014,7 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotes) {
 
   // Connections happen asynchronously so post a task to respond to connection
   // requests.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { factory_.RunAsyncConnectCallbacks(); }));
 
@@ -1051,13 +1051,13 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotesAsync) {
   mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient> remote2;
   MockClient client2(remote2.InitWithNewPipeAndPassReceiver(), results_cb);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { impl_->AddRequest(std::move(remote2)); }));
 
   // Connections happen asynchronously so post a task to respond to connection
   // requests.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { factory_.RunAsyncConnectCallbacks(); }));
 
@@ -1098,12 +1098,12 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotesOneDisconnects) {
                                    base::BindOnce([]() { NOTREACHED(); }));
 
   // Post a task that deletes |client2|.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { client2.reset(); }));
 
   // Connections happen asynchronously so post a task to respond to connection
   // requests.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { factory_.RunAsyncConnectCallbacks(); }));
 
@@ -1153,16 +1153,16 @@ TEST_F(PacLibraryTest, ConnectMultipleRemotesButAllDisconnect) {
                                    base::BindOnce([]() { NOTREACHED(); }));
 
   // Post a task that deletes |client1|.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { client1.reset(); }));
 
   // Post a task to respond to connection requests.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { factory_.RunAsyncConnectCallbacks(); }));
 
   // Post a task that deletes |client2|.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { client2.reset(); }));
 
   impl_->AddRequest(std::move(remote1));
@@ -1209,7 +1209,7 @@ TEST_F(PacLibraryTest, ConnectOneRemoteAndThenAnother) {
       remote2.InitWithNewPipeAndPassReceiver(), run_loop.QuitClosure());
 
   // Post a task that deletes |client1| but connects |client2|.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         client1.reset();
         impl_->AddRequest(std::move(remote2));

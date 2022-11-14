@@ -429,7 +429,7 @@ void SyncChannel::SyncContext::OnChannelOpened() {
         shutdown_event_,
         base::BindOnce(&SyncChannel::SyncContext::OnShutdownEventSignaled,
                        base::Unretained(this)),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
   Context::OnChannelOpened();
 }

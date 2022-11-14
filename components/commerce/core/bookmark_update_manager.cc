@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -57,7 +57,7 @@ void BookmarkUpdateManager::ScheduleUpdate() {
   scheduled_task_ =
       std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
           &BookmarkUpdateManager::RunUpdate, weak_ptr_factory_.GetWeakPtr()));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, scheduled_task_->callback(), base::Milliseconds(ms_delay));
 }
 

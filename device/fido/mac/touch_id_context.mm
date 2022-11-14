@@ -18,7 +18,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/keychain.h"
@@ -156,7 +155,7 @@ void TouchIdContext::PromptTouchId(const std::u16string& reason,
                                    Callback callback) {
   callback_ = std::move(callback);
   scoped_refptr<base::SequencedTaskRunner> runner =
-      base::SequencedTaskRunnerHandle::Get();
+      base::SequencedTaskRunner::GetCurrentDefault();
   auto weak_self = weak_ptr_factory_.GetWeakPtr();
   // If evaluation succeeds (i.e. user provides a fingerprint), |context_| can
   // be used for one signing operation. N.B. even in |MakeCredentialOperation|,

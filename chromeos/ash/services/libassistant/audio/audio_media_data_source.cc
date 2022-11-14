@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace ash::libassistant {
@@ -24,7 +25,7 @@ constexpr uint32_t kMaxBytesToDecode = 512;
 AudioMediaDataSource::AudioMediaDataSource(
     mojo::PendingReceiver<AssistantMediaDataSource> receiver)
     : receiver_(this, std::move(receiver)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {}
 
 AudioMediaDataSource::~AudioMediaDataSource() {

@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/common/feature_constants.h"
@@ -24,7 +24,7 @@ RuntimeApplicationBase::RuntimeApplicationBase(
     cast_receiver::ApplicationClient& application_client)
     : cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       application_client_(application_client) {
   DCHECK(task_runner_);
 }

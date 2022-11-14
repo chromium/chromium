@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/customer_registration_client.h"
@@ -40,7 +41,7 @@ GrpcServicesInitializer::GrpcServicesInitializer(
     const std::string& assistant_service_address)
     : ServicesInitializerBase(
           /*cq_thread_name=*/assistant_service_address + ".GrpcCQ",
-          /*main_task_runner=*/base::SequencedTaskRunnerHandle::Get()),
+          /*main_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault()),
       assistant_service_address_(assistant_service_address),
       libassistant_service_address_(libassistant_service_address) {
   DCHECK(!libassistant_service_address.empty());

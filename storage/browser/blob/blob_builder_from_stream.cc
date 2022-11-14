@@ -8,6 +8,7 @@
 #include "base/containers/span.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "mojo/public/c/system/types.h"
@@ -44,7 +45,7 @@ void RunCallbackWhenDataPipeReady(
     base::OnceCallback<void(mojo::ScopedDataPipeConsumerHandle)> callback) {
   auto watcher = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   auto* watcher_ptr = watcher.get();
   auto raw_pipe = pipe.get();
   watcher_ptr->Watch(
@@ -67,7 +68,7 @@ class DataPipeConsumerHelper {
         progress_client_(std::move(progress_client)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                 base::SequencedTaskRunnerHandle::Get()),
+                 base::SequencedTaskRunner::GetCurrentDefault()),
         max_bytes_to_read_(max_bytes_to_read) {
     watcher_.Watch(pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                    MOJO_WATCH_CONDITION_SATISFIED,
@@ -180,13 +181,13 @@ class BlobBuilderFromStream::WritePipeToFileHelper
       uint64_t max_file_size,
       DoneCallback callback) {
     base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &WritePipeToFileHelper::CreateAndAppendOnFileSequence,
-                std::move(pipe), std::move(progress_client),
-                std::move(file_path), max_file_size,
-                base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       &WritePipeToFileHelper::CreateAndAppendOnFileSequence,
+                       std::move(pipe), std::move(progress_client),
+                       std::move(file_path), max_file_size,
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(callback)));
   }
 
   static void CreateAndStart(
@@ -202,7 +203,7 @@ class BlobBuilderFromStream::WritePipeToFileHelper
             base::BindOnce(&WritePipeToFileHelper::CreateAndStartOnFileSequence,
                            std::move(pipe), std::move(progress_client),
                            std::move(file), max_file_size,
-                           base::SequencedTaskRunnerHandle::Get(),
+                           base::SequencedTaskRunner::GetCurrentDefault(),
                            std::move(callback)));
   }
 

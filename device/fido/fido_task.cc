@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -15,7 +15,7 @@ namespace device {
 FidoTask::FidoTask(FidoDevice* device) : device_(device) {
   DCHECK(device_);
   DCHECK(device_->SupportedProtocolIsInitialized());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FidoTask::StartTask, weak_factory_.GetWeakPtr()));
 }

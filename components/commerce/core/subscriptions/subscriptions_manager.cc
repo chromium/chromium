@@ -4,7 +4,7 @@
 
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
@@ -201,7 +201,7 @@ void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
              std::unique_ptr<std::vector<CommerceSubscription>>
                  unique_subscriptions) {
             if (unique_subscriptions->size() == 0) {
-              base::SequencedTaskRunnerHandle::Get()->PostTask(
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(std::move(callback),
                                  SubscriptionsRequestStatus::kSuccess));
@@ -231,7 +231,7 @@ void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
              std::unique_ptr<std::vector<CommerceSubscription>>
                  unique_subscriptions) {
             if (unique_subscriptions->size() == 0) {
-              base::SequencedTaskRunnerHandle::Get()->PostTask(
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(std::move(callback),
                                  SubscriptionsRequestStatus::kSuccess));

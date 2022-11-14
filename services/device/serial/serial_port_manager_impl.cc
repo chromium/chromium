@@ -111,10 +111,11 @@ void SerialPortManagerImpl::OpenPort(
   if (path) {
     io_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&SerialPortImpl::Open, *path, std::move(options),
-                       std::move(client), std::move(watcher), ui_task_runner_,
-                       base::BindOnce(&OnPortOpened, std::move(callback),
-                                      base::SequencedTaskRunnerHandle::Get())));
+        base::BindOnce(
+            &SerialPortImpl::Open, *path, std::move(options), std::move(client),
+            std::move(watcher), ui_task_runner_,
+            base::BindOnce(&OnPortOpened, std::move(callback),
+                           base::SequencedTaskRunner::GetCurrentDefault())));
     return;
   }
 
@@ -137,7 +138,7 @@ void SerialPortManagerImpl::OpenPort(
               weak_factory_.GetWeakPtr(), *address, service_class_id,
               std::move(options), std::move(client), std::move(watcher),
               base::BindOnce(&OnPortOpened, std::move(callback),
-                             base::SequencedTaskRunnerHandle::Get())));
+                             base::SequencedTaskRunner::GetCurrentDefault())));
       return;
     }
   }

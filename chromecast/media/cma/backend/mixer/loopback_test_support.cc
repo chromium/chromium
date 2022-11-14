@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 #include "chromecast/media/cma/backend/mixer/mixer_loopback_connection.h"
@@ -28,10 +28,12 @@ std::unique_ptr<mixer_service::MixerSocket> CreateLoopbackConnectionForTest(
   auto receiver_socket = std::make_unique<mixer_service::MixerSocket>();
   auto caller_socket = std::make_unique<mixer_service::MixerSocket>();
 
-  receiver_socket->SetLocalCounterpart(caller_socket->GetWeakPtr(),
-                                       base::SequencedTaskRunnerHandle::Get());
-  caller_socket->SetLocalCounterpart(receiver_socket->GetWeakPtr(),
-                                     base::SequencedTaskRunnerHandle::Get());
+  receiver_socket->SetLocalCounterpart(
+      caller_socket->GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
+  caller_socket->SetLocalCounterpart(
+      receiver_socket->GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   auto mixer_side =
       std::make_unique<MixerLoopbackConnection>(std::move(receiver_socket));

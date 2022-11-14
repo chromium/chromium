@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -193,7 +194,7 @@ Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
     : context_(std::make_unique<Context>(this)),
       identity_manager_(identity_manager),
       token_refresh_timer_(std::make_unique<base::OneShotTimer>()),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)) {
   DCHECK(identity_manager_);
   chromeos::PowerManagerClient* power_manager_client =

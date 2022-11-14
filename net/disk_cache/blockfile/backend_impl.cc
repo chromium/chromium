@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -2137,8 +2138,8 @@ void BackendImpl::FlushForTesting() {
 
 void BackendImpl::FlushAsynchronouslyForTesting(base::OnceClosure callback) {
   if (!g_internal_cache_thread.IsCreated()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
 

@@ -20,8 +20,8 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
@@ -185,7 +185,7 @@ printing::PrintDialogLinuxInterface* PrintDialogGtk::CreatePrintDialog(
 
 PrintDialogGtk::PrintDialogGtk(PrintingContextLinux* context)
     : base::RefCountedDeleteOnSequence<PrintDialogGtk>(
-          base::SequencedTaskRunnerHandle::Get()),
+          base::SequencedTaskRunner::GetCurrentDefault()),
       context_(context) {
   // Paired with the ReleaseDialog() call.
   AddRef();

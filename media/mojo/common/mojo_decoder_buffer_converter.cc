@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_buffer.h"
@@ -88,7 +89,7 @@ MojoDecoderBufferReader::MojoDecoderBufferReader(
     : consumer_handle_(std::move(consumer_handle)),
       pipe_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                    base::SequencedTaskRunnerHandle::Get()),
+                    base::SequencedTaskRunner::GetCurrentDefault()),
       armed_(false),
       bytes_read_(0) {
   DVLOG(1) << __func__;
@@ -320,7 +321,7 @@ MojoDecoderBufferWriter::MojoDecoderBufferWriter(
     : producer_handle_(std::move(producer_handle)),
       pipe_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                    base::SequencedTaskRunnerHandle::Get()),
+                    base::SequencedTaskRunner::GetCurrentDefault()),
       armed_(false),
       bytes_written_(0) {
   DVLOG(1) << __func__;

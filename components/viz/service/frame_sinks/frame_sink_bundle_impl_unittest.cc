@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -296,8 +297,8 @@ TEST_F(FrameSinkBundleImplTest, DestroyOnDisconnect) {
 
   bundle().reset();
   base::RunLoop loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   loop.QuitClosure());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           loop.QuitClosure());
   loop.Run();
 
   EXPECT_EQ(nullptr, manager().GetFrameSinkBundle(kBundleId));

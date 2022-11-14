@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
@@ -46,7 +46,7 @@ void SqlFeatureProcessor::Process(
         metadata_utils::ValidationResult::kValidationSuccess) {
       feature_processor_state->SetError(
           stats::FeatureProcessingError::kSqlValidationError);
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_),
                                     std::move(feature_processor_state),
                                     std::move(result_)));
@@ -91,7 +91,7 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
   if (total_bind_values != result.size()) {
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kSqlBindValuesError);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::move(feature_processor_state),
                        std::move(result_)));
@@ -115,7 +115,7 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
           1) {
         feature_processor_state->SetError(
             stats::FeatureProcessingError::kResultTensorError);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback_),
                                       std::move(feature_processor_state),
                                       std::move(result_)));
@@ -147,7 +147,7 @@ void SqlFeatureProcessor::OnQueriesRun(
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kSqlQueryRunError);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), std::move(feature_processor_state),
                      std::move(result)));

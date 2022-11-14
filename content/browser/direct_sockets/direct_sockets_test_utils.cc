@@ -8,8 +8,8 @@
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -103,7 +103,7 @@ MockUDPSocket::~MockUDPSocket() {
 void MockUDPSocket::Connect(const net::IPEndPoint& remote_addr,
                             network::mojom::UDPSocketOptionsPtr socket_options,
                             ConnectCallback callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), net::OK,
                      net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}));

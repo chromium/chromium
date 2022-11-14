@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier_delegate.h"
@@ -36,7 +35,7 @@ namespace internals {
 
 ContentHashFetcher::ContentHashFetcher(ContentHash::FetchKey key)
     : fetch_key_(std::move(key)),
-      response_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      response_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 void ContentHashFetcher::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {

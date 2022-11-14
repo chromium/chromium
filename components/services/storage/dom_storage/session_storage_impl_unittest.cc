@@ -85,7 +85,7 @@ class SessionStorageImplTest : public testing::Test {
       remote_session_storage_.reset();
       session_storage_ = std::make_unique<SessionStorageImpl>(
           temp_path(), blocking_task_runner_,
-          base::SequencedTaskRunnerHandle::Get(), backing_mode_,
+          base::SequencedTaskRunner::GetCurrentDefault(), backing_mode_,
           kSessionStorageDirectory,
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }

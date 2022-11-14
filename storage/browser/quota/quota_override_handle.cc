@@ -6,7 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -17,7 +17,7 @@ QuotaOverrideHandle::QuotaOverrideHandle(
     : quota_manager_proxy_(std::move(quota_manager_proxy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   quota_manager_proxy_->GetOverrideHandleId(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&QuotaOverrideHandle::DidGetOverrideHandleId,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -45,7 +45,7 @@ void QuotaOverrideHandle::OverrideQuotaForStorageKey(
   }
   quota_manager_proxy_->OverrideQuotaForStorageKey(
       id_.value(), storage_key, quota_size,
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
 }
 
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {

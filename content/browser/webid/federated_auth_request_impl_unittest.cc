@@ -12,10 +12,10 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
@@ -473,7 +473,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         config_.idp_info[provider_key].manifest_list.provider_urls.begin(),
         config_.idp_info[provider_key].manifest_list.provider_urls.end());
     FetchStatus success{ParseStatus::kSuccess, net::HTTP_OK};
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), success, url_set));
   }
 
@@ -495,7 +495,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        config_.idp_info[provider_key].manifest.fetch_status,
@@ -515,7 +515,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         break;
     }
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), info.client_metadata.fetch_status,
                        IdpNetworkRequestManager::ClientMetadata{
@@ -536,7 +536,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         break;
     }
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), info.accounts_response,
                                   info.accounts));
   }
@@ -556,7 +556,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     if (config_.delay_token_response) {
       delayed_callbacks_.push_back(std::move(bound_callback));
     } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(bound_callback));
     }
   }
@@ -912,7 +912,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                       identity_provider_data[0].accounts;
                   displayed_accounts_ =
                       AccountList(accounts.begin(), accounts.end());
-                  base::SequencedTaskRunnerHandle::Get()->PostTask(
+                  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                       FROM_HERE,
                       base::BindOnce(
                           std::move(on_selected),

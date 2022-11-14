@@ -8,8 +8,8 @@
 
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/public/mojom/conversation_controller.mojom.h"
@@ -204,7 +204,7 @@ ConversationController::ConversationController()
           std::make_unique<chromeos::assistant::action::CrosActionModule>(
               assistant::features::IsAppSupportEnabled(),
               assistant::features::IsWaitSchedulingEnabled())),
-      mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      mojom_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   action_module_->AddObserver(this);
 }
 

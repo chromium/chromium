@@ -12,7 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
@@ -40,7 +40,7 @@ class SubKeyRequest : public SubKeyRequester::Request {
         on_subkeys_received_(std::move(on_subkeys_received)),
         on_timeout_(base::BindOnce(&SubKeyRequest::OnRulesLoaded,
                                    base::Unretained(this))) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, on_timeout_.callback(), base::Seconds(timeout_seconds));
   }
 

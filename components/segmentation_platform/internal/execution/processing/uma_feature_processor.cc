@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
@@ -59,7 +59,7 @@ void UmaFeatureProcessor::Process(
 void UmaFeatureProcessor::ProcessNextUmaFeature() {
   // Processing of the feature list has completed.
   if (uma_features_.empty() || feature_processor_state_->error()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   std::move(feature_processor_state_),
                                   std::move(result_)));

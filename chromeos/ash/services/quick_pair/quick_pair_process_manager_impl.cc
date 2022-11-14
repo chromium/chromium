@@ -9,7 +9,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process_shutdown_controller.h"
@@ -96,7 +96,7 @@ void QuickPairProcessManagerImpl::BindToProcess() {
       base::BindOnce(&QuickPairProcessManagerImpl::ShutdownProcess,
                      weak_ptr_factory_.GetWeakPtr(),
                      ShutdownReason::kFastPairDataParserMojoPipeDisconnection),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   service_->Connect(std::move(fast_pair_data_parser_receiver));
 }

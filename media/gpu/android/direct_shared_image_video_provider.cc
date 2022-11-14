@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -180,7 +181,7 @@ void GpuSharedImageVideoFactory::CreateImage(
   // should work with some other object that happens to be used by CodecImage,
   // and non-GL things, to hold the output buffer, etc.
   record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
-      base::SequencedTaskRunnerHandle::Get(), std::move(codec_image),
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(codec_image),
       std::move(drdc_lock));
 
   std::move(image_ready_cb).Run(std::move(record));

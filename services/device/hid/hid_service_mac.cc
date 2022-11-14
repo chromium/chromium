@@ -18,8 +18,8 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_mac.h"
 #include "services/device/utils/mac_utils.h"
@@ -124,7 +124,7 @@ void HidServiceMac::Connect(const std::string& device_guid,
 
   const auto& map_entry = devices().find(device_guid);
   if (map_entry == devices().end()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
     return;
   }

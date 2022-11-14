@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
@@ -144,7 +145,7 @@ class MockOpenUDPSocket : public content::test::MockUDPSocket {
                                           socket_options->receive_buffer_size,
                                           {}});
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), result,
                        net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}));

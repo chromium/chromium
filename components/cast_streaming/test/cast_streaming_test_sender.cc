@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/config_conversions.h"
 #include "components/cast_streaming/test/cast_message_port_sender_impl.h"
 
@@ -100,7 +100,7 @@ class CastStreamingTestSender::SenderObserver final
 };
 
 CastStreamingTestSender::CastStreamingTestSender()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       environment_(&openscreen::Clock::now,
                    &task_runner_,
                    openscreen::IPEndpoint::kAnyV4()) {}

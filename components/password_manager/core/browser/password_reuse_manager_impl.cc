@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -52,7 +53,7 @@ class CheckReuseRequest : public PasswordReuseDetectorConsumer {
 };
 
 CheckReuseRequest::CheckReuseRequest(PasswordReuseDetectorConsumer* consumer)
-    : origin_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : origin_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       consumer_weak_(consumer->AsWeakPtr()) {}
 
 CheckReuseRequest::~CheckReuseRequest() = default;
@@ -110,7 +111,7 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
                                     PasswordStoreInterface* account_store) {
   prefs_ = prefs;
   hash_password_manager_.set_prefs(prefs_);
-  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
 
   if (!IsPasswordReuseDetectionEnabled())

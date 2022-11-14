@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace media {
@@ -68,7 +68,7 @@ bool SerialRunner::Queue::empty() {
 }
 
 SerialRunner::SerialRunner(Queue&& bound_fns, PipelineStatusCallback done_cb)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       bound_fns_(std::move(bound_fns)),
       done_cb_(std::move(done_cb)) {
   // Respect both cancellation and calling stack guarantees for |done_cb|

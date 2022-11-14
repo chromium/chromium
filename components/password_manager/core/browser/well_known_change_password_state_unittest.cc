@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/mock_timer.h"
@@ -105,7 +106,7 @@ void WellKnownChangePasswordStateTest::RespondeToNonExistingRequest(
   EXPECT_EQ(net::LOAD_DISABLE_CACHE, request.load_flags);
   EXPECT_EQ(url::Origin::Create(GURL(kOrigin)), request.request_initiator);
   EXPECT_TRUE(request.trusted_params->EqualsForTesting(trusted_params_));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           [](net::HttpStatusCode status,
@@ -122,7 +123,7 @@ void WellKnownChangePasswordStateTest::RespondeToNonExistingRequest(
 void WellKnownChangePasswordStateTest::RespondeToChangePasswordRequest(
     net::HttpStatusCode status,
     int delay) {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &WellKnownChangePasswordState::SetChangePasswordResponseCode,

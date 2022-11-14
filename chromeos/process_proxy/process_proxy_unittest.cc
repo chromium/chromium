@@ -16,9 +16,9 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/process_proxy/process_proxy_registry.h"
@@ -240,7 +240,7 @@ class ProcessProxyTest : public testing::Test {
         base::BindOnce(
             &ProcessProxyTest::InitRegistryTest, base::Unretained(this),
             base::BindOnce(&RunOnTaskRunner, init_registry_waiter.QuitClosure(),
-                           base::SequencedTaskRunnerHandle::Get())));
+                           base::SequencedTaskRunner::GetCurrentDefault())));
     // Wait until all data from output watcher is received (QuitTask will be
     // fired on watcher thread).
     init_registry_waiter.Run();
@@ -251,7 +251,7 @@ class ProcessProxyTest : public testing::Test {
         base::BindOnce(
             &ProcessProxyTest::EndRegistryTest, base::Unretained(this),
             base::BindOnce(&RunOnTaskRunner, end_registry_waiter.QuitClosure(),
-                           base::SequencedTaskRunnerHandle::Get())));
+                           base::SequencedTaskRunner::GetCurrentDefault())));
     // Wait until we clean up the process proxy.
     end_registry_waiter.Run();
   }

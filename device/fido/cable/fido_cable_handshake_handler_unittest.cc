@@ -12,8 +12,8 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -309,12 +309,12 @@ TEST_F(FidoCableHandshakeHandlerTest, HandShakeSuccess) {
 
   EXPECT_CALL(*connection(), WriteControlPointPtr(IsControlFrame(), _))
       .WillOnce(Invoke([this](const auto& data, auto* cb) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
             base::make_span(data).subspan(3);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 connection()->read_callback(),
@@ -341,12 +341,12 @@ TEST_F(FidoCableHandshakeHandlerTest, HandShakeWithIncorrectSessionPreKey) {
 
   EXPECT_CALL(*connection(), WriteControlPointPtr(IsControlFrame(), _))
       .WillOnce(Invoke([this](const auto& data, auto* cb) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
             base::make_span(data).subspan(3);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 connection()->read_callback(),
@@ -368,12 +368,12 @@ TEST_F(FidoCableHandshakeHandlerTest, HandshakeFailWithIncorrectNonce) {
 
   EXPECT_CALL(*connection(), WriteControlPointPtr(IsControlFrame(), _))
       .WillOnce(Invoke([this](const auto& data, auto* cb) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto client_ble_handshake_message =
             base::make_span(data).subspan(3);
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 connection()->read_callback(),

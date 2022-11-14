@@ -19,6 +19,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -359,7 +360,7 @@ class MediaDevicesManager::AudioServiceDeviceListener
 
     // Resetting the error handler in a posted task since doing it synchronously
     // results in a browser crash. See https://crbug.com/845142.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AudioServiceDeviceListener::ConnectToService,
                                   weak_factory_.GetWeakPtr()));
   }

@@ -74,7 +74,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -747,7 +746,7 @@ class CertNetFetcherRequestImpl : public net::CertNetFetcher::Request {
 }  // namespace
 
 CertNetFetcherURLLoader::CertNetFetcherURLLoader()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 CertNetFetcherURLLoader::~CertNetFetcherURLLoader() = default;
 

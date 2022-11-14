@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace chromeos {
 namespace sensors {
@@ -167,7 +167,7 @@ void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
       values.push_back(absl::nullopt);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(values)));
 }
 
@@ -181,7 +181,7 @@ void FakeSensorDevice::SetFrequency(double frequency,
   auto& client = clients_[receiver_set_.current_receiver()];
 
   client.frequency = frequency;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(frequency)));
 
   SendSampleIfReady(client);
@@ -235,7 +235,7 @@ void FakeSensorDevice::GetAllChannelIds(GetAllChannelIdsCallback callback) {
   for (const ChannelData& channel : channels_)
     channel_ids.push_back(channel.id);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(channel_ids)));
 }
 
@@ -257,7 +257,7 @@ void FakeSensorDevice::SetChannelsEnabled(
     client.channels_enabled[index] = en;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(failed_indices)));
 
@@ -281,7 +281,7 @@ void FakeSensorDevice::GetChannelsEnabled(
     enabled.push_back(client.channels_enabled[index]);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(enabled)));
 }
 
@@ -303,7 +303,7 @@ void FakeSensorDevice::GetChannelsAttributes(
     attrs.push_back(it->second);
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(attrs)));
 }
 

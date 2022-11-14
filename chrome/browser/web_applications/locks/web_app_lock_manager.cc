@@ -10,8 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
@@ -233,7 +233,7 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
   // posted async. https://crbug.com/1354312
   auto posted_callback = base::BindOnce(
       base::IgnoreResult(&base::TaskRunner::PostTask),
-      base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+      base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
       base::BindOnce(std::move(on_lock_acquired), std::move(result_lock)));
   lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                              result_lock_description->holder_->AsWeakPtr(),

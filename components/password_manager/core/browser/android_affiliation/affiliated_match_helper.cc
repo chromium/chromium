@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -43,7 +43,7 @@ void AffiliatedMatchHelper::Initialize(PasswordStoreInterface* password_store) {
   DCHECK(password_store);
   DCHECK(affiliation_service_);
   password_store_ = password_store;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AffiliatedMatchHelper::DoDeferredInitialization,
                      weak_ptr_factory_.GetWeakPtr()),

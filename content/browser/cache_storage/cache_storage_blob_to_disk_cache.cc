@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -23,7 +24,7 @@ CacheStorageBlobToDiskCache::CacheStorageBlobToDiskCache(
     const blink::StorageKey& storage_key)
     : handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunnerHandle::Get()),
+                      base::SequencedTaskRunner::GetCurrentDefault()),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       storage_key_(storage_key) {}
 

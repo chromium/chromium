@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -95,20 +95,20 @@ WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
       datastore_provider_(&feed_stream->GetGlobalXsurfaceDatastore()) {
   base::TimeDelta delay = GetFeedConfig().fetch_web_feed_info_delay;
   if (IsSignedInAndWebFeedsEnabled() && !delay.is_zero()) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale,
             GetWeakPtr()),
         delay);
     base::OnceClosure do_nothing = base::DoNothing();
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &WebFeedSubscriptionCoordinator::FetchSubscribedWebFeedsIfStale,
             GetWeakPtr(), std::move(do_nothing)),
         delay);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebFeedSubscriptionCoordinator::RetryPendingOperations,
                        GetWeakPtr()),

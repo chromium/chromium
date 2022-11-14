@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/features.h"
@@ -219,7 +218,7 @@ void PumpLoop() {
   // Do it this way instead of RunAllPending to pump loop exactly once
   // (necessary in the presence of timers; see comment in
   // QuitLoopNow).
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&QuitLoopNow));
   RunLoop();
 }
@@ -341,7 +340,7 @@ class SyncSchedulerImplTest : public testing::Test {
 
   // This stops the scheduler synchronously.
   void StopSyncScheduler() {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SyncSchedulerImplTest::DoQuitLoopNow,
                                   weak_ptr_factory_.GetWeakPtr()));
     RunLoop();

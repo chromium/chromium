@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
@@ -199,7 +199,7 @@ bool AudioCapturerMac::Start(const PacketCapturedCallback& callback) {
   DCHECK(!callback_);
   DCHECK(callback);
 
-  caller_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  caller_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   if (!StartInputQueue()) {
     return false;

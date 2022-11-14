@@ -11,11 +11,11 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/feedback/features.h"
 #include "components/feedback/feedback_report.h"
@@ -60,7 +60,7 @@ class MockFeedbackUploader : public FeedbackUploader {
         base::BindOnce(
             &FeedbackReport::LoadReportsAndQueue, feedback_reports_path(),
             base::BindRepeating(&MockFeedbackUploader::QueueSingleReport,
-                                base::SequencedTaskRunnerHandle::Get(),
+                                base::SequencedTaskRunner::GetCurrentDefault(),
                                 AsWeakPtr())));
   }
 

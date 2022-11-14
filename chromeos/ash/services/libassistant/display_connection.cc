@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 
@@ -18,7 +18,7 @@ DisplayConnection::DisplayConnection(DisplayConnectionObserver* observer,
                                      bool feedback_ui_enabled)
     : observer_(observer),
       feedback_ui_enabled_(feedback_ui_enabled),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(observer_);
 }
 

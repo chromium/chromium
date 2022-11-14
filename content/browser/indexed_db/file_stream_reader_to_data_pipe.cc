@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 
 namespace content {
@@ -21,9 +22,9 @@ void FileStreamReaderToDataPipe::Start(
     base::OnceCallback<void(int)> completion_callback,
     uint64_t read_length) {
   DCHECK(!writable_handle_watcher_.has_value());
-  writable_handle_watcher_.emplace(FROM_HERE,
-                                   mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                                   base::SequencedTaskRunnerHandle::Get());
+  writable_handle_watcher_.emplace(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+      base::SequencedTaskRunner::GetCurrentDefault());
   writable_handle_watcher_->Watch(
       dest_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       base::BindRepeating(&FileStreamReaderToDataPipe::OnDataPipeWritable,
@@ -87,7 +88,7 @@ void FileStreamReaderToDataPipe::DidRead(int result) {
 
   pending_write_ = nullptr;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FileStreamReaderToDataPipe::ReadMore,
                                 weak_factory_.GetWeakPtr()));
 }

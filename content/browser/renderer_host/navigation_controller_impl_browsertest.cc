@@ -22,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13789,7 +13788,8 @@ class RequestMonitoringNavigationBrowserTest
     // |accumulated_requests_| container.
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &RequestMonitoringNavigationBrowserTest::MonitorRequestOnIoThread,
-        weak_factory_.GetWeakPtr(), base::SequencedTaskRunnerHandle::Get()));
+        weak_factory_.GetWeakPtr(),
+        base::SequencedTaskRunner::GetCurrentDefault()));
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }

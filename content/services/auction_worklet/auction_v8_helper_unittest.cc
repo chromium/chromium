@@ -13,9 +13,9 @@
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -242,10 +242,11 @@ class AuctionV8HelperTest : public testing::Test {
     mojo::Remote<auction_worklet::mojom::BidderWorklet> connector_pipe;
 
     helper_->v8_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&DebugConnector::Create, helper_,
-                                  base::SequencedTaskRunnerHandle::Get(),
-                                  std::move(debug_id),
-                                  connector_pipe.BindNewPipeAndPassReceiver()));
+        FROM_HERE,
+        base::BindOnce(&DebugConnector::Create, helper_,
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(debug_id),
+                       connector_pipe.BindNewPipeAndPassReceiver()));
     connector_pipe->ConnectDevToolsAgent(std::move(agent_receiver));
     return connector_pipe;
   }

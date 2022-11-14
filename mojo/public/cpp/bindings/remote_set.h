@@ -106,8 +106,9 @@ class RemoteSetImpl {
   }
 
   // Same as above but for the equivalent pending remote type. If |task_runner|
-  // is null, the value of |base::SequencedTaskRunnerHandle::Get()| at the time
-  // of the |Add()| call will be used to run scheduled tasks for the remote.
+  // is null, the value of |base::SequencedTaskRunner::GetCurrentDefault()| at
+  // the time of the |Add()| call will be used to run scheduled tasks for the
+  // remote.
   RemoteSetElementId Add(
       PendingRemoteType<Interface> remote,
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {

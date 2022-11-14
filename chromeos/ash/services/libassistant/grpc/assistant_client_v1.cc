@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
@@ -123,7 +124,7 @@ class AssistantClientV1::DeviceStateListener
  public:
   explicit DeviceStateListener(AssistantClientV1* assistant_client)
       : assistant_client_(assistant_client),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
   DeviceStateListener(const DeviceStateListener&) = delete;
   DeviceStateListener& operator=(const DeviceStateListener&) = delete;
   ~DeviceStateListener() override = default;
@@ -156,7 +157,7 @@ class AssistantClientV1::DisplayConnectionImpl
     : public assistant_client::DisplayConnection {
  public:
   DisplayConnectionImpl()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
   DisplayConnectionImpl(const DisplayConnectionImpl&) = delete;
   DisplayConnectionImpl& operator=(const DisplayConnectionImpl&) = delete;
   ~DisplayConnectionImpl() override = default;
@@ -215,7 +216,7 @@ class AssistantClientV1::MediaManagerListener
  public:
   explicit MediaManagerListener(AssistantClientV1* assistant_client)
       : assistant_client_(assistant_client),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
   MediaManagerListener(const MediaManagerListener&) = delete;
   MediaManagerListener& operator=(const MediaManagerListener&) = delete;
   ~MediaManagerListener() override = default;
@@ -255,7 +256,7 @@ class AssistantClientV1::AssistantManagerDelegateImpl
  public:
   explicit AssistantManagerDelegateImpl(AssistantClientV1* assistant_client)
       : assistant_client_(assistant_client),
-        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
   AssistantManagerDelegateImpl(const AssistantManagerDelegateImpl&) = delete;
   AssistantManagerDelegateImpl& operator=(const AssistantManagerDelegateImpl&) =
       delete;

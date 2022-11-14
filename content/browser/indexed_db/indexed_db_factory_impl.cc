@@ -175,7 +175,8 @@ IndexedDBFactoryImpl::IndexedDBFactoryImpl(
   DCHECK(clock);
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "IndexedDBFactoryImpl", base::SequencedTaskRunnerHandle::Get(),
+          this, "IndexedDBFactoryImpl",
+          base::SequencedTaskRunner::GetCurrentDefault(),
           base::trace_event::MemoryDumpProvider::Options());
 }
 
@@ -1002,7 +1003,7 @@ void IndexedDBFactoryImpl::MaybeRunTasksForBucket(
     return;
 
   bucket_state->set_task_run_scheduled();
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&IndexedDBFactoryImpl::RunTasksForBucket,
                      bucket_state_destruction_weak_factory_.GetWeakPtr(),

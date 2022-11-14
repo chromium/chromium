@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/system/fake_statistics_provider.h"
+#include "base/task/sequenced_task_runner.h"
 
 #include <utility>
-
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace chromeos {
 namespace system {
@@ -22,8 +21,8 @@ void FakeStatisticsProvider::StartLoadingMachineStatistics(
 void FakeStatisticsProvider::ScheduleOnMachineStatisticsLoaded(
     base::OnceClosure callback) {
   // No load is required for FakeStatisticsProvider.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 absl::optional<base::StringPiece> FakeStatisticsProvider::GetMachineStatistic(

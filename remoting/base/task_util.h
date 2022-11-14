@@ -6,8 +6,8 @@
 #define REMOTING_BASE_TASK_UTIL_H_
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace remoting {
 
@@ -29,7 +29,8 @@ base::OnceCallback<void(Args...)> WrapCallbackToCurrentSequence(
         }
         task_runner->PostTask(from_here, std::move(closure));
       },
-      base::SequencedTaskRunnerHandle::Get(), from_here, std::move(callback));
+      base::SequencedTaskRunner::GetCurrentDefault(), from_here,
+      std::move(callback));
 }
 
 // Similar to base::SequenceBound::Post, but executes the callback (which should

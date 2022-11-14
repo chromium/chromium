@@ -14,8 +14,8 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
@@ -238,7 +238,7 @@ class FuzzerEnvironment {
  public:
   FuzzerEnvironment() {
     net::SetSystemDnsResolutionTaskRunnerForTesting(  // IN-TEST
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
   }
   ~FuzzerEnvironment() = default;
 };

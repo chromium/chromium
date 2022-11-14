@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/test/fake_model_type_connector.h"
@@ -63,7 +62,7 @@ void FakeSyncManager::WaitForSyncThread() {
 }
 
 void FakeSyncManager::Init(InitArgs* args) {
-  sync_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  sync_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   cache_guid_ = args->cache_guid;
   birthday_ = args->birthday;
   bag_of_chips_ = args->bag_of_chips;

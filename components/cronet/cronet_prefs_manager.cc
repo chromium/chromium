@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -129,8 +129,8 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   void WaitForPrefLoad(base::OnceClosure callback) override {
     // Notify the pref manager that settings are already loaded, as a result
     // of initializing the pref store synchronously.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
  private:

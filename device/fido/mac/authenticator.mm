@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/base/features.h"
 #include "device/fido/authenticator_supported_options.h"
@@ -48,8 +48,8 @@ std::unique_ptr<TouchIdAuthenticator> TouchIdAuthenticator::Create(
 TouchIdAuthenticator::~TouchIdAuthenticator() = default;
 
 void TouchIdAuthenticator::InitializeAuthenticator(base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 void TouchIdAuthenticator::GetCredentialInformationForRequest(

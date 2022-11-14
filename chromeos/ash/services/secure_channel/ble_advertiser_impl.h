@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/services/secure_channel/ble_advertiser.h"
 #include "chromeos/ash/services/secure_channel/ble_constants.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
@@ -57,7 +56,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
         BleSynchronizerBase* ble_synchronizer_base,
         TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
-            base::SequencedTaskRunnerHandle::Get());
+            base::SequencedTaskRunner::GetCurrentDefault());
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:

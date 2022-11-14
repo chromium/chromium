@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -82,7 +83,7 @@ HostResolver::HostResolver(
       net_log_(net_log) {
   // Bind the pending receiver asynchronously to give the resolver a chance
   // to set up (some resolvers need to obtain the system config asynchronously).
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&HostResolver::AsyncSetUp, weak_factory_.GetWeakPtr()));
 }

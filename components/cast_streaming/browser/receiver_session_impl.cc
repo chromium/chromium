@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/browser/receiver_session_impl.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "media/base/audio_decoder_config.h"
@@ -84,7 +84,7 @@ void ReceiverSessionImpl::OnReceiverEnabled() {
   cast_streaming_session_.Start(this, std::move(renderer_control_config_),
                                 std::move(av_constraints_),
                                 std::move(message_port_provider_).Run(),
-                                base::SequencedTaskRunnerHandle::Get());
+                                base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 void ReceiverSessionImpl::OnSessionInitialization(

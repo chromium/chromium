@@ -8,13 +8,12 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
 namespace audio {
 
 DeviceNotifier::DeviceNotifier()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   base::SystemMonitor::Get()->AddDevicesChangedObserver(this);
 }
 

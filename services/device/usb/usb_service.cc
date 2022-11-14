@@ -12,8 +12,8 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/base/features.h"
@@ -90,7 +90,7 @@ void UsbService::GetDevices(GetDevicesCallback callback) {
   devices.reserve(devices_.size());
   for (const auto& map_entry : devices_)
     devices.push_back(map_entry.second);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), devices));
 }
 

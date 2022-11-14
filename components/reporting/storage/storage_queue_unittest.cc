@@ -745,7 +745,7 @@ class StorageQueueTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Sequenced task runner where all EXPECTs will happen.
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
-      base::SequencedTaskRunnerHandle::Get()};
+      base::SequencedTaskRunner::GetCurrentDefault()};
 
   base::ScopedTempDir location_;
   StorageOptions options_;

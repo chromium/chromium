@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -20,8 +19,8 @@ FakeMissiveClient::FakeMissiveClient() = default;
 FakeMissiveClient::~FakeMissiveClient() = default;
 
 void FakeMissiveClient::Init() {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  origin_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  origin_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 void FakeMissiveClient::EnqueueRecord(

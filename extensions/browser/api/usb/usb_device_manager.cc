@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -193,7 +194,7 @@ void UsbDeviceManager::GetDevices(
   std::vector<device::mojom::UsbDeviceInfoPtr> device_list;
   for (const auto& pair : devices_)
     device_list.push_back(pair.second->Clone());
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(device_list)));
 }
 

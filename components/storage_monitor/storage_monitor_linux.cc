@@ -27,10 +27,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_info.h"
@@ -261,7 +261,7 @@ void StorageMonitorLinux::Init() {
   base::PostTaskAndReplyWithResult(
       mtab_watcher_task_runner_.get(), FROM_HERE,
       base::BindOnce(&CreateMtabWatcherLinuxOnMtabWatcherTaskRunner, mtab_path_,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      base::BindRepeating(&StorageMonitorLinux::UpdateMtab,
                                          weak_ptr_factory_.GetWeakPtr())),
       base::BindOnce(&StorageMonitorLinux::OnMtabWatcherCreated,

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher_factory.h"
 #include "net/filter/source_stream.h"
@@ -217,7 +218,7 @@ MockSignedExchangeHandler::MockSignedExchangeHandler(
   }
   body = std::make_unique<PrefixStrippingSourceStream>(kMockSxgPrefix,
                                                        std::move(body));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(headers_callback), params.result, params.error,
                      params.inner_url, std::move(head), std::move(body)));

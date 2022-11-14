@@ -16,6 +16,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -343,7 +344,7 @@ void VaapiVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // If we're in the error state, immediately fail the decode task.
   if (state_ == State::kError) {
     // VideoDecoder interface: |decode_cb| can't be called from within Decode().
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
     return;

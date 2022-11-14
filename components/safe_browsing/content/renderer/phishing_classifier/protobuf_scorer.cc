@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -106,14 +107,14 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
     base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            &ApplyVisualTfLiteModelHelper, bitmap,
-            model_.tflite_metadata().input_width(),
-            model_.tflite_metadata().input_height(),
-            std::string(
-                reinterpret_cast<const char*>(visual_tflite_model_.data()),
-                visual_tflite_model_.length()),
-            base::SequencedTaskRunnerHandle::Get(), std::move(callback)));
+        base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
+                       model_.tflite_metadata().input_width(),
+                       model_.tflite_metadata().input_height(),
+                       std::string(reinterpret_cast<const char*>(
+                                       visual_tflite_model_.data()),
+                                   visual_tflite_model_.length()),
+                       base::SequencedTaskRunner::GetCurrentDefault(),
+                       std::move(callback)));
     base::UmaHistogramTimes(
         "SBClientPhishing.TfLiteModelLoadTime.ProtobufScorer",
         base::Time::Now() - start_post_task_time);

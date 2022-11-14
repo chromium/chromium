@@ -17,8 +17,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "base/timer/timer.h"
 #include "remoting/proto/control.pb.h"
@@ -93,7 +93,7 @@ void KeyboardLayoutMonitorWin::QueryLayout() {
   input_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&QueryLayoutOnInputThread,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      weak_ptr_factory_.GetWeakPtr(), previous_layout_),
       base::BindOnce(&KeyboardLayoutMonitorWin::ResetTimer,
                      weak_ptr_factory_.GetWeakPtr()));

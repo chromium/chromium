@@ -60,7 +60,7 @@ bool LoginDatabaseAsyncHelper::Initialize(
 
     // Delay the actual reporting by 30 seconds, to ensure it doesn't happen
     // during the "hot phase" of Chrome startup.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&LoginDatabaseAsyncHelper::ReportMetrics,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -256,7 +256,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
         base::BindOnce(&LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
                        weak_ptr_factory_.GetWeakPtr(),
                        /*success=*/false));
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, deletions_have_synced_timeout_.callback(), kSyncTaskTimeout);
 
     // Do an immediate check for the case where there are already no unsynced

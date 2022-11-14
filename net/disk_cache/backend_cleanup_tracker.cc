@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace disk_cache {
 
@@ -68,7 +67,7 @@ void BackendCleanupTracker::AddPostCleanupCallback(base::OnceClosure cb) {
 }
 
 void BackendCleanupTracker::AddPostCleanupCallbackImpl(base::OnceClosure cb) {
-  post_cleanup_cbs_.emplace_back(base::SequencedTaskRunnerHandle::Get(),
+  post_cleanup_cbs_.emplace_back(base::SequencedTaskRunner::GetCurrentDefault(),
                                  std::move(cb));
 }
 

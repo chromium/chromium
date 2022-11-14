@@ -33,6 +33,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -1231,7 +1232,7 @@ ResultCode SandboxWin::GetPolicyDiagnostics(
   CHECK(g_broker_services);
   CHECK(!response.is_null());
   auto receiver = std::make_unique<ServiceManagerDiagnosticsReceiver>(
-      base::SequencedTaskRunnerHandle::Get(), std::move(response));
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(response));
   return g_broker_services->GetPolicyDiagnostics(std::move(receiver));
 }
 

@@ -14,7 +14,7 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -299,8 +299,9 @@ scoped_refptr<VideoFrame> InternalRefCountedPool::MaybeCreateVideoFrame(
   // this on the calling thread.
   auto callback = base::BindOnce(&InternalRefCountedPool::OnVideoFrameDestroyed,
                                  this, std::move(frame_resources));
-  video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback), FROM_HERE));
+  video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         std::move(callback), FROM_HERE));
   return video_frame;
 }
 

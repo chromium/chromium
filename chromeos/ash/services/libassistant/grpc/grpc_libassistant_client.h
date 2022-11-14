@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_state.h"
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
@@ -40,7 +40,7 @@ class GrpcLibassistantClient {
     new RPCState<Response>(
         channel_, client_thread_.completion_queue(),
         GetLibassistGrpcMethodName<Request>(), request, std::move(done),
-        /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
+        /*callback_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         state_config);
   }
 

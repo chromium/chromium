@@ -210,7 +210,7 @@ void RunMkDirCallback(
       storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED;
 
   auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&RunMkDirAndThenStatCallback, std::move(callback),
                      fs_context, read_only));
 
@@ -500,7 +500,7 @@ void Server::MkDir(const fusebox_staging::MkDirRequestProto& request_proto,
   }
 
   auto outer_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&RunMkDirCallback, std::move(callback), common.fs_context,
                      common.fs_url, common.read_only));
 
@@ -632,7 +632,7 @@ void Server::RmDir(const fusebox_staging::RmDirRequestProto& request_proto,
   }
 
   auto outer_callback =
-      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&RunRmDirCallback, std::move(callback),
                                         common.fs_context));
 

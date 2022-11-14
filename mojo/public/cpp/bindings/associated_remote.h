@@ -50,8 +50,8 @@ class AssociatedRemote {
 
   // Constructs a new AssociatedRemote which is bound from |pending_remote| and
   // which schedules response callbacks and disconnection notifications on the
-  // default SequencedTaskRunner (i.e., base::SequencedTaskRunnerHandle::Get()
-  // at construction time).
+  // default SequencedTaskRunner (i.e.,
+  // base::SequencedTaskRunner::GetCurrentDefault() at construction time).
   explicit AssociatedRemote(PendingAssociatedRemote<Interface> pending_remote)
       : AssociatedRemote(std::move(pending_remote), nullptr) {}
 

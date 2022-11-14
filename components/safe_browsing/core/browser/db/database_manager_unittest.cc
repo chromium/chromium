@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
@@ -72,8 +71,8 @@ class SafeBrowsingDatabaseManagerTest : public testing::Test {
             &test_url_loader_factory_);
 
     db_manager_ = new TestSafeBrowsingDatabaseManager(
-        base::SequencedTaskRunnerHandle::Get(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        base::SequencedTaskRunner::GetCurrentDefault());
     db_manager_->StartOnIOThread(test_shared_loader_factory_,
                                  GetTestV4ProtocolConfig());
   }

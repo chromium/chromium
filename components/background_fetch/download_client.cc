@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/background_fetch/background_fetch_delegate_base.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
@@ -73,7 +73,7 @@ void DownloadClient::OnServiceInitialized(
     if (download.paused) {
       // We need to resurface the notification in a paused state.
       content::BrowserThread::PostBestEffortTask(
-          FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+          FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&BackgroundFetchDelegateBase::RestartPausedDownload,
                          GetDelegate()->GetWeakPtr(), download.guid));
     }

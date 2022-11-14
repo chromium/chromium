@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -37,7 +37,7 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       on_done_(std::move(on_complete)),
       timeout_time_(max_run_time),
       timeout_timer_(std::move(timer)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() = default;
 
 void IndexedDBPreCloseTaskQueue::Stop(StopReason reason) {

@@ -15,7 +15,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_selector.h"
 #include "components/leveldb_proto/internal/shared_proto_database.h"
 #include "components/leveldb_proto/internal/shared_proto_database_provider.h"
@@ -392,7 +392,7 @@ void ProtoDatabaseImpl<P, T>::InitInternal(
       FROM_HERE,
       base::BindOnce(&ProtoDatabaseSelector::InitUniqueOrShared, db_wrapper_,
                      client_name, db_dir_, unique_db_options, use_shared_db,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
 }
 
@@ -407,7 +407,7 @@ void ProtoDatabaseImpl<P, T>::InitWithDatabase(
       FROM_HERE,
       base::BindOnce(&ProtoDatabaseSelector::InitWithDatabase, db_wrapper_,
                      base::Unretained(database), database_dir, options,
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
 }
 
@@ -419,7 +419,8 @@ void ProtoDatabaseImpl<P, T>::UpdateEntries(
   base::OnceClosure update_task = base::BindOnce(
       &UpdateEntriesFromTaskRunner<P, T>, std::move(entries_to_save),
       std::move(keys_to_remove), db_wrapper_,
-      base::BindOnce(&RunUpdateCallback, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RunUpdateCallback,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
   PostTransaction(std::move(update_task));
 }
@@ -432,7 +433,8 @@ void ProtoDatabaseImpl<P, T>::UpdateEntriesWithRemoveFilter(
   base::OnceClosure update_task = base::BindOnce(
       &UpdateEntriesWithRemoveFilterFromTaskRunner<P, T>,
       std::move(entries_to_save), delete_key_filter, db_wrapper_,
-      base::BindOnce(&RunUpdateCallback, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RunUpdateCallback,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
   PostTransaction(std::move(update_task));
 }
@@ -457,12 +459,12 @@ void ProtoDatabaseImpl<P, T>::LoadEntriesWithFilter(
     const leveldb::ReadOptions& options,
     const std::string& target_prefix,
     typename Callbacks::Internal<T>::LoadCallback callback) {
-  base::OnceClosure load_task =
-      base::BindOnce(&ProtoDatabaseSelector::LoadEntriesWithFilter, db_wrapper_,
-                     key_filter, options, target_prefix,
-                     base::BindOnce(&ParseLoadedEntries<P, T>,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure load_task = base::BindOnce(
+      &ProtoDatabaseSelector::LoadEntriesWithFilter, db_wrapper_, key_filter,
+      options, target_prefix,
+      base::BindOnce(&ParseLoadedEntries<P, T>,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(load_task));
 }
 
@@ -486,12 +488,12 @@ void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesWithFilter(
     const leveldb::ReadOptions& options,
     const std::string& target_prefix,
     typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
-  base::OnceClosure load_task =
-      base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesWithFilter,
-                     db_wrapper_, filter, options, target_prefix,
-                     base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure load_task = base::BindOnce(
+      &ProtoDatabaseSelector::LoadKeysAndEntriesWithFilter, db_wrapper_, filter,
+      options, target_prefix,
+      base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(load_task));
 }
 
@@ -500,12 +502,12 @@ void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesInRange(
     const std::string& start,
     const std::string& end,
     typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
-  base::OnceClosure load_task =
-      base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesInRange,
-                     db_wrapper_, start, end,
-                     base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure load_task = base::BindOnce(
+      &ProtoDatabaseSelector::LoadKeysAndEntriesInRange, db_wrapper_, start,
+      end,
+      base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(load_task));
 }
 
@@ -514,22 +516,22 @@ void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesWhile(
     const std::string& start,
     const KeyIteratorController& controller,
     typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
-  base::OnceClosure load_task =
-      base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesWhile,
-                     db_wrapper_, start, controller,
-                     base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure load_task = base::BindOnce(
+      &ProtoDatabaseSelector::LoadKeysAndEntriesWhile, db_wrapper_, start,
+      controller,
+      base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(load_task));
 }
 
 template <typename P, typename T>
 void ProtoDatabaseImpl<P, T>::LoadKeys(Callbacks::LoadKeysCallback callback) {
-  base::OnceClosure load_task =
-      base::BindOnce(&ProtoDatabaseSelector::LoadKeys, db_wrapper_,
-                     base::BindOnce(&RunLoadKeysCallback,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure load_task = base::BindOnce(
+      &ProtoDatabaseSelector::LoadKeys, db_wrapper_,
+      base::BindOnce(&RunLoadKeysCallback,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(load_task));
 }
 
@@ -537,21 +539,21 @@ template <typename P, typename T>
 void ProtoDatabaseImpl<P, T>::GetEntry(
     const std::string& key,
     typename Callbacks::Internal<T>::GetCallback callback) {
-  base::OnceClosure get_task =
-      base::BindOnce(&ProtoDatabaseSelector::GetEntry, db_wrapper_, key,
-                     base::BindOnce(&ParseLoadedEntry<P, T>,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure get_task = base::BindOnce(
+      &ProtoDatabaseSelector::GetEntry, db_wrapper_, key,
+      base::BindOnce(&ParseLoadedEntry<P, T>,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(get_task));
 }
 
 template <typename P, typename T>
 void ProtoDatabaseImpl<P, T>::Destroy(Callbacks::DestroyCallback callback) {
-  base::OnceClosure destroy_task =
-      base::BindOnce(&ProtoDatabaseSelector::Destroy, db_wrapper_,
-                     base::BindOnce(&RunDestroyCallback,
-                                    base::SequencedTaskRunnerHandle::Get(),
-                                    std::move(callback)));
+  base::OnceClosure destroy_task = base::BindOnce(
+      &ProtoDatabaseSelector::Destroy, db_wrapper_,
+      base::BindOnce(&RunDestroyCallback,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     std::move(callback)));
   PostTransaction(std::move(destroy_task));
 }
 
@@ -563,7 +565,8 @@ void ProtoDatabaseImpl<P, T>::RemoveKeysForTesting(
   base::OnceClosure update_task = base::BindOnce(
       &ProtoDatabaseSelector::RemoveKeysForTesting, db_wrapper_, key_filter,
       target_prefix,
-      base::BindOnce(&RunUpdateCallback, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RunUpdateCallback,
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(callback)));
   PostTransaction(std::move(update_task));
 }

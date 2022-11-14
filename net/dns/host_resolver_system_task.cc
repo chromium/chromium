@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/sequence_checker_impl.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -297,7 +298,7 @@ void HostResolverSystemTask::StartLookupAttempt() {
   // Use a WeakPtr to avoid keeping the HostResolverSystemTask alive after
   // completion or cancellation.
   if (attempt_number_ <= params_.max_retry_attempts) {
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&HostResolverSystemTask::StartLookupAttempt,
                        weak_ptr_factory_.GetWeakPtr()),

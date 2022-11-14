@@ -10,10 +10,10 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
@@ -138,7 +138,7 @@ TEST_F(PrinterConfigCacheTest, SucceedAtSingleFetch) {
   base::RunLoop run_loop;
 
   // Fetches the "known-good" resource.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
@@ -159,7 +159,7 @@ TEST_F(PrinterConfigCacheTest, FailAtSingleFetch) {
   base::RunLoop run_loop;
 
   // Fetches the "known-bad" resource.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
@@ -179,7 +179,7 @@ TEST_F(PrinterConfigCacheTest, FailAtSingleFetch) {
 TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
   // Fetches the "known-good" resource with its stock contents.
   base::RunLoop first_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(0LL),
@@ -197,7 +197,7 @@ TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
   // We've mutated the content; now, this fetches the "known-good"
   // resource with its new contents.
   base::RunLoop second_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(0LL),
@@ -224,7 +224,7 @@ TEST_F(PrinterConfigCacheTest, RefreshSubsequentFetch) {
 TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
   // Fetches the "known-good" resource with its stock contents.
   base::RunLoop first_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(0LL),
@@ -243,7 +243,7 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
   // some local fetches without hitting the network. These Fetch()es
   // will return the stock content.
   base::RunLoop second_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good",
@@ -258,14 +258,14 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
                                     base::RepeatingClosure())));
 
   // Performs a local Fetch() a few more times for no particular reason.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
           "known-good", base::Seconds(3600LL),
           base::BindOnce(&PrinterConfigCacheTest::CaptureFetchResult,
                          base::Unretained(this), base::RepeatingClosure())));
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
@@ -274,7 +274,7 @@ TEST_F(PrinterConfigCacheTest, LocallyPerformSubsequentFetch) {
                          base::Unretained(this), base::RepeatingClosure())));
 
   // Performs a live Fetch(), returning the live (mutated) contents.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good",
@@ -315,7 +315,7 @@ TEST_F(PrinterConfigCacheTest, FetchExpirationIsRespected) {
   // here since there are no locally resident cache entries at this
   // time; it'll have to be a networked fetch.
   base::RunLoop first_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(32LL),
@@ -333,7 +333,7 @@ TEST_F(PrinterConfigCacheTest, FetchExpirationIsRespected) {
   // in that the clock does not yet indicate that the locally resident
   // cache entry has expired.
   base::RunLoop second_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(32LL),
@@ -353,7 +353,7 @@ TEST_F(PrinterConfigCacheTest, FetchExpirationIsRespected) {
   // beyond the staleness threshold, though, so this Fetch() will be
   // networked.
   base::RunLoop third_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good",
@@ -381,7 +381,7 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
   base::RunLoop first_run_loop;
 
   // Fetches the "known-good" resource with its stock contents.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(604800LL),
@@ -392,7 +392,7 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
 
   // Drops that which we just fetched. This isn't immediately externally
   // visible, but its effects will soon be made apparent.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PrinterConfigCache::Drop,
                                 base::Unretained(cache_.get()), "known-good"));
 
@@ -404,7 +404,7 @@ TEST_F(PrinterConfigCacheTest, DropLocalContents) {
   // the "known-good" resource is no longer cached, so not even a wide
   // timeout will spare us a networked fetch.
   base::RunLoop second_run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterConfigCache::Fetch, base::Unretained(cache_.get()),
                      "known-good", base::Seconds(18748800LL),

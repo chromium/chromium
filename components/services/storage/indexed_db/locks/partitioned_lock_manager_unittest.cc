@@ -9,9 +9,9 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -211,8 +211,8 @@ TEST_F(PartitionedLockManagerTest, SharedAndExclusiveQueuing) {
   // Flush the task queue.
   {
     base::RunLoop loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
   EXPECT_TRUE(exclusive_lock3_holder.locks.empty());
@@ -228,8 +228,8 @@ TEST_F(PartitionedLockManagerTest, SharedAndExclusiveQueuing) {
   // lock.
   {
     base::RunLoop loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
   EXPECT_FALSE(exclusive_lock3_holder.locks.empty());
@@ -251,8 +251,8 @@ TEST_F(PartitionedLockManagerTest, SharedAndExclusiveQueuing) {
   // lock.
   {
     base::RunLoop loop;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     loop.QuitClosure());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
     loop.Run();
   }
   EXPECT_FALSE(shared_lock3_holder.locks.empty());

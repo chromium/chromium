@@ -6,6 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/pickle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -259,7 +260,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
         producer_handle_(std::move(producer_handle)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                 base::SequencedTaskRunnerHandle::Get()) {
+                 base::SequencedTaskRunner::GetCurrentDefault()) {
     DCHECK(owner_);
   }
   ~DataReader() = default;

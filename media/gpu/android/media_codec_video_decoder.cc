@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/android/media_codec_bridge_impl.h"
@@ -705,7 +705,7 @@ void MediaCodecVideoDecoder::OnCodecConfiguredInternal(
           std::move(codec),
           base::BindOnce(
               &base::SequencedTaskRunner::ReleaseSoon<CodecSurfaceBundle>,
-              base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+              base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
               std::move(surface_bundle)));
     }
     return;
@@ -746,7 +746,8 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
                           BindToCurrentLoop(base::BindRepeating(
                               &MediaCodecVideoDecoder::StartTimerOrPumpCodec,
                               weak_factory_.GetWeakPtr()))),
-      base::SequencedTaskRunnerHandle::Get(), decoder_config_.coded_size());
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      decoder_config_.coded_size());
 
   // If the target surface changed while codec creation was in progress,
   // transition to it immediately.
@@ -1171,7 +1172,7 @@ void MediaCodecVideoDecoder::OnCodecDrained() {
 
   if (drain_type == DrainType::kForDestroy) {
     // Post the delete in case the caller uses |this| after we return.
-    base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE, this);
     return;
   }
 
@@ -1227,7 +1228,7 @@ void MediaCodecVideoDecoder::ReleaseCodec() {
       std::move(pair.first),
       base::BindOnce(
           &base::SequencedTaskRunner::ReleaseSoon<CodecSurfaceBundle>,
-          base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+          base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
           std::move(pair.second)));
 }
 

@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
@@ -64,7 +65,7 @@ class TracingServiceTest : public TracingUnitTest {
     s_service = service();
     auto factory = []() -> mojom::TracingService& { return *s_service; };
     PerfettoTracedProcess::Get()->SetConsumerConnectionFactory(
-        factory, base::SequencedTaskRunnerHandle::Get());
+        factory, base::SequencedTaskRunner::GetCurrentDefault());
   }
 
   void EnableClientApiProducer() {

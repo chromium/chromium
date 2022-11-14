@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
@@ -50,7 +50,7 @@ SurfaceManager::SurfaceManager(
   thread_checker_.DetachFromThread();
 
   // Android WebView doesn't have a task runner and doesn't need the timer.
-  if (base::SequencedTaskRunnerHandle::IsSet())
+  if (base::SequencedTaskRunner::HasCurrentDefault())
     expire_timer_.emplace();
 }
 

@@ -29,7 +29,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -58,7 +57,7 @@ void DeleteBucketDidDeleteDir(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     bool rv) {
   // On scheduler sequence.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
                      rv ? blink::mojom::QuotaStatusCode::kOk
@@ -71,12 +70,12 @@ void DeleteStorageKeyDidDeleteAllData(
   // On scheduler sequence.
   for (auto result : results) {
     if (result != blink::mojom::QuotaStatusCode::kOk) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), result));
       return;
     }
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk));
 }
@@ -292,7 +291,7 @@ void GetStorageKeyAndLastModifiedGotBucket(
     bucket_locator = result->ToBucketLocator();
     DCHECK_EQ(info->storage_key, result->storage_key);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
@@ -438,7 +437,7 @@ void AllStorageKeySizesReported(
   }
 
   // On scheduler sequence.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(new_usages)));
 }
 
@@ -449,7 +448,7 @@ void OneStorageKeySizeReported(
     int64_t size) {
   // On scheduler sequence.
   DCHECK_NE(size, CacheStorage::kSizeUnknown);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 storage::mojom::StorageUsageInfo::New(
                                     storage_key, size, last_modified)));
@@ -993,8 +992,8 @@ void CacheStorageManager::DeleteBucketDidClose(
 
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner), bucket_locator.id,
-      -bucket_size, base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
-      base::DoNothing());
+      -bucket_size, base::Time::Now(),
+      base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 
   if (owner == storage::mojom::CacheStorageOwner::kCacheAPI)
     NotifyCacheListChanged(bucket_locator);

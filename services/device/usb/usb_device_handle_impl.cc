@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -385,7 +386,7 @@ UsbDeviceHandleImpl::Transfer::Transfer(
       claimed_interface_(claimed_interface),
       length_(length),
       callback_(std::move(callback)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 UsbDeviceHandleImpl::Transfer::Transfer(
     scoped_refptr<UsbDeviceHandleImpl> device_handle,
@@ -397,7 +398,7 @@ UsbDeviceHandleImpl::Transfer::Transfer(
       buffer_(buffer),
       claimed_interface_(claimed_interface),
       iso_callback_(std::move(callback)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 UsbDeviceHandleImpl::Transfer::~Transfer() {
   if (platform_transfer_) {
@@ -848,7 +849,7 @@ UsbDeviceHandleImpl::UsbDeviceHandleImpl(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : device_(std::move(device)),
       handle_(std::move(handle)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       blocking_task_runner_(blocking_task_runner) {
   DCHECK(handle_.IsValid()) << "Cannot create device with an invalid handle.";
 }

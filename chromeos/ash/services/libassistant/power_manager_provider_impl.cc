@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -38,7 +39,7 @@ base::TimeDelta ClockNow(clockid_t clk_id) {
 }  // namespace
 
 PowerManagerProviderImpl::PowerManagerProviderImpl()
-    : main_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : main_thread_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {}
 
 void PowerManagerProviderImpl::Initialize(mojom::PlatformDelegate* delegate) {

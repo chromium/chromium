@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -103,7 +102,7 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   TestQuotaManagerProxy()
       : QuotaManagerProxy(
             /*quota_manager_impl=*/nullptr,
-            base::SequencedTaskRunnerHandle::Get(),
+            base::SequencedTaskRunner::GetCurrentDefault(),
             /*profile_path=*/base::FilePath()) {}
 
   void RegisterClient(

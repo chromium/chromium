@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "url/gurl.h"
@@ -115,7 +115,7 @@ void WorkletLoaderBase::OnDownloadComplete(
       base::BindOnce(&WorkletLoaderBase::HandleDownloadResultOnV8Thread,
                      source_url_, mime_type_, v8_helper_, debug_id_,
                      std::move(body), std::move(error_msg),
-                     base::SequencedTaskRunnerHandle::Get(),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
                      weak_ptr_factory_.GetWeakPtr(),
                      base::TimeTicks::Now() - start_time_));
 }

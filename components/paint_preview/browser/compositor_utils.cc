@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
@@ -57,7 +58,8 @@ StartCompositorService(base::OnceClosure disconnect_handler) {
       new PaintPreviewCompositorServiceImpl(std::move(pending_remote),
                                             compositor_task_runner,
                                             std::move(disconnect_handler)),
-      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 mojo::Remote<mojom::PaintPreviewCompositorCollection>

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -956,7 +957,7 @@ class NavigationBrowserTest2 : public NavigationBrowserTest {
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2, ReplaceXClientDataHeader) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   std::string last_header_value;
-  auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   https_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&, main_task_runner](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -1002,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2,
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   std::string last_header_value;
   bool should_redirect = true;
-  auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   https_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&, main_task_runner](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
@@ -1045,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2, SetXClientDataHeaderInRedirect) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   std::string last_header_value;
   bool should_redirect = true;
-  auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   https_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&, main_task_runner](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {

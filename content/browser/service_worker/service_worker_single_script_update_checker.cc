@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
@@ -126,7 +127,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       time_since_last_check_(time_since_last_check),
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                       base::SequencedTaskRunnerHandle::Get()),
+                       base::SequencedTaskRunner::GetCurrentDefault()),
       callback_(std::move(callback)) {
   DCHECK(browser_context);
 

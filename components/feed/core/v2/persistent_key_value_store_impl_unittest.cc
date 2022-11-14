@@ -12,6 +12,7 @@
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
@@ -335,7 +336,7 @@ void CallAfterNPostTasks(int post_task_count, base::OnceClosure done) {
   if (post_task_count == 0) {
     std::move(done).Run();
   } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(base::BindOnce(&CallAfterNPostTasks, post_task_count - 1,
                                       std::move(done))));

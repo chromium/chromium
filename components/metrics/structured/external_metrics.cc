@@ -11,10 +11,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -139,7 +139,7 @@ void ExternalMetrics::CollectEventsAndReschedule() {
 }
 
 void ExternalMetrics::ScheduleCollector() {
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExternalMetrics::CollectEventsAndReschedule,
                      weak_factory_.GetWeakPtr()),

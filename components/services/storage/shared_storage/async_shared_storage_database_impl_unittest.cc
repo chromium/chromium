@@ -183,7 +183,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
               base::BindOnce(std::move(callback), std::move(task).Run(db)));
         },
         std::move(task), future.GetCallback(),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
 
     GetImpl()->GetSequenceBoundDatabaseForTesting()->PostTaskWithThisObject(
         std::move(wrapped_task));

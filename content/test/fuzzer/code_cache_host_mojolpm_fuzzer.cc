@@ -256,7 +256,8 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
       cache_storage_control_wrapper_.get());
   UniqueCodeCacheReceiverSet receivers(
       new mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>(),
-      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
   receivers->Add(std::move(code_cache_host), std::move(receiver));
   code_cache_host_receivers_.insert({renderer_id, std::move(receivers)});
 }

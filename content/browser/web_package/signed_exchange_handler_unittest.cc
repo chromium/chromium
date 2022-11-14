@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -148,7 +149,7 @@ class MockSignedExchangeCertFetcherFactory
         base::as_bytes(base::make_span(cert_str_)), devtools_proxy);
     EXPECT_TRUE(cert_chain);
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), SignedExchangeLoadResult::kSuccess,
                        std::move(cert_chain), net::IPAddress()));

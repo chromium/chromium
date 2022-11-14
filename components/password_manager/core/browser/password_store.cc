@@ -20,8 +20,8 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
@@ -81,7 +81,7 @@ PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
 void PasswordStore::Init(
     PrefService* prefs,
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
-  main_task_runner_ = base::SequencedTaskRunnerHandle::Get();
+  main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
   prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);

@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/storage_service.h"
 
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/segmentation_platform/internal/database/database_maintenance_impl.h"
@@ -164,7 +164,7 @@ int StorageService::GetServiceStatus() const {
 void StorageService::ExecuteDatabaseMaintenanceTasks(bool is_startup) {
   if (is_startup) {
     // Initiate database maintenance tasks with a small delay at startup.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&StorageService::ExecuteDatabaseMaintenanceTasks,
                        weak_ptr_factory_.GetWeakPtr(), false),

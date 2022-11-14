@@ -12,10 +12,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +39,7 @@ class FileManagerTest : public ::testing::Test {
   const base::FilePath& Dir() const { return temp_dir.GetPath(); }
 
   scoped_refptr<base::SequencedTaskRunner> MainTaskRunner() {
-    return base::SequencedTaskRunnerHandle::Get();
+    return base::SequencedTaskRunner::GetCurrentDefault();
   }
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> SecondaryTaskRunner() {

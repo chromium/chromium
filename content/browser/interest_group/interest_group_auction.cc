@@ -26,7 +26,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -593,7 +593,7 @@ class InterestGroupAuction::BuyerHelper
     // This relies on AuctionWorkletManager::Handle invoking all the callbacks
     // listening for creation of the same BidderWorklet synchronously.
     if (interest_group.trusted_bidding_signals_url) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&BuyerHelper::SendPendingSignalsRequestsForBidder,
                          weak_ptr_factory_.GetWeakPtr(), bid_state));
@@ -1042,7 +1042,7 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
   if (!is_interest_group_api_allowed_callback.Run(
           ContentBrowserClient::InterestGroupApiOperation::kSell,
           config_->seller)) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete,
@@ -1076,7 +1076,7 @@ void InterestGroupAuction::StartLoadInterestGroupsPhase(
 
   // Fail if there are no pending loads.
   if (num_pending_loads_ == 0) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &InterestGroupAuction::OnStartLoadInterestGroupsPhaseComplete,

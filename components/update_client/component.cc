@@ -20,8 +20,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
 #include "components/update_client/buildflags.h"
@@ -497,7 +497,7 @@ void Component::ChangeState(std::unique_ptr<State> next_state) {
   else
     is_handled_ = true;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(callback_handle_complete_));
 }
 
@@ -629,7 +629,7 @@ void Component::NotifyObservers(UpdateClient::Observer::Events event) const {
   // There is no corresponding component state for the COMPONENT_WAIT event.
   if (update_context_->crx_state_change_callback &&
       event != UpdateClient::Observer::Events::COMPONENT_WAIT) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindRepeating(update_context_->crx_state_change_callback,
                             GetCrxUpdateItem()));
@@ -784,7 +784,7 @@ void Component::State::TransitionState(std::unique_ptr<State> next_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(next_state);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_next_state_), std::move(next_state)));
 }
@@ -792,7 +792,7 @@ void Component::State::TransitionState(std::unique_ptr<State> next_state) {
 void Component::State::EndState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_next_state_), nullptr));
 }
 
@@ -819,7 +819,7 @@ void Component::StateNew::DoHandle() {
     // on state transitions but it does not allow such notifications when a
     // new state is entered. Hence, posting the task below is a workaround for
     // this design oversight.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](Component& component) {
@@ -1140,7 +1140,7 @@ void Component::StateUpdatingDiff::DoHandle() {
   // Adapts the repeating progress callback invoked by the installer so that
   // the callback can be posted to the main sequence instead of running
   // the callback on the sequence the installer is running on.
-  auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
   // we should remove this #if.
@@ -1159,7 +1159,7 @@ void Component::StateUpdatingDiff::DoHandle() {
             FROM_HERE,
             base::BindOnce(
                 &update_client::StartGetPreviousCrxOnBlockingTaskRunner,
-                base::SequencedTaskRunnerHandle::Get(),
+                base::SequencedTaskRunner::GetCurrentDefault(),
                 component.crx_component()->pk_hash, component.payload_path_,
                 component.crx_component()->app_id, component.previous_fp_,
                 component.next_fp_, component.install_params(),
@@ -1180,7 +1180,7 @@ void Component::StateUpdatingDiff::DoHandle() {
           FROM_HERE,
           base::BindOnce(
               &update_client::StartInstallOnBlockingTaskRunner,
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               component.crx_component()->pk_hash, component.payload_path_,
               component.next_fp_, component.install_params(),
               component.crx_component()->installer,
@@ -1255,7 +1255,7 @@ void Component::StateUpdating::DoHandle() {
   // Adapts the repeating progress callback invoked by the installer so that
   // the callback can be posted to the main sequence instead of running
   // the callback on the sequence the installer is running on.
-  auto main_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
 #if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
   // we should remove this #if.

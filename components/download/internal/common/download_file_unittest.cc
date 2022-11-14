@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -268,7 +269,7 @@ class DownloadFileTest : public testing::Test {
     DownloadInterruptReason result = DOWNLOAD_INTERRUPT_REASON_NONE;
     base::RunLoop loop_runner;
     download_file_->SetTaskRunnerForTesting(
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
     download_file_->Initialize(
         base::BindRepeating(&DownloadFileTest::SetInterruptReasonCallback,
                             weak_ptr_factory.GetWeakPtr(),

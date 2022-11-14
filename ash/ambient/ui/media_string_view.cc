@@ -19,6 +19,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
@@ -274,7 +275,7 @@ void MediaStringView::ScheduleScrolling(bool is_initial) {
   if (!GetVisible())
     return;
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MediaStringView::StartScrolling,
                                 weak_factory_.GetWeakPtr(), is_initial));
 }

@@ -25,8 +25,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -454,7 +454,7 @@ void CameraHalDispatcherImpl::DisableSensorForTesting() {
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()
     : proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       camera_hal_server_callbacks_(this),
       active_client_observers_(
           new base::ObserverListThreadSafe<CameraActiveClientObserver>()),
@@ -1023,7 +1023,7 @@ void CameraHalDispatcherImpl::GetAutoFramingSupported(
           &CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread,
           base::Unretained(this),
           // Make sure to hop back to the current thread for the reply.
-          base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                              std::move(callback), FROM_HERE)));
 }
 

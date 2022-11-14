@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 #define MAKE_SURE_ON_SEQUENCE(callback, ...)                                   \
   if (!task_runner_->RunsTasksInCurrentSequence()) {                           \
@@ -21,7 +20,7 @@ namespace chromecast {
 namespace media {
 
 VideoGeometrySetterService::VideoGeometrySetterService()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       weak_factory_(this) {}
 
 VideoGeometrySetterService::~VideoGeometrySetterService() {

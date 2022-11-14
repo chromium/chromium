@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/merkle_integrity_source_stream.h"
@@ -234,7 +235,7 @@ SignedExchangeHandler::SignedExchangeHandler(
   // Triggering the read (asynchronously) for the prologue bytes.
   SetupBuffers(
       signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&SignedExchangeHandler::DoHeaderLoop,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -331,7 +332,7 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
          state_ == State::kReadingPrologueFallbackUrlAndAfter ||
          state_ == State::kReadingHeaders);
   if (completed_syncly) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SignedExchangeHandler::DoHeaderLoop,
                                   weak_factory_.GetWeakPtr()));
   } else {

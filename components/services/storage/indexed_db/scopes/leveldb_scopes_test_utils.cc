@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -76,7 +75,7 @@ void LevelDBScopesTestBase::CloseScopesAndDestroyLevelDBState() {
     event_watcher.StartWatching(
         leveldb_close_event_ptr,
         base::BindLambdaForTesting([&](base::WaitableEvent*) { loop.Quit(); }),
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
     leveldb_.reset();
     loop.Run();
     // There is a possible race in |leveldb_close_event| where the signaling

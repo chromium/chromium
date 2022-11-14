@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
@@ -200,7 +201,7 @@ void PerformanceManagerRegistryImpl::
         content::RenderProcessHost* render_process_host) {
   registry->AddInterface(base::BindRepeating(&BindProcessCoordinationUnit,
                                              render_process_host->GetID()),
-                         base::SequencedTaskRunnerHandle::Get());
+                         base::SequencedTaskRunner::GetCurrentDefault());
 
   // Ideally this would strictly be a "Create", but when a
   // RenderFrameHost is "resurrected" with a new process it will

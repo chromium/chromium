@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/child/child_histogram_fetcher_impl.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -23,7 +22,7 @@ void ExposeChildInterfacesToBrowser(
       io_task_runner);
   binders->Add<tracing::mojom::TracedProcess>(
       base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   GetContentClient()->ExposeInterfacesToBrowser(io_task_runner, binders);
 }

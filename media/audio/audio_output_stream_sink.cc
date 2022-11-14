@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -88,7 +88,7 @@ OutputDeviceInfo AudioOutputStreamSink::GetOutputDeviceInfo() {
 
 void AudioOutputStreamSink::GetOutputDeviceInfoAsync(
     OutputDeviceInfoCB info_cb) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(info_cb), GetOutputDeviceInfo()));
 }
 

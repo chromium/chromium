@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -464,7 +464,7 @@ void BookmarkModelTypeProcessor::ConnectIfReady() {
   activation_context->type_processor =
       std::make_unique<syncer::ModelTypeProcessorProxy>(
           weak_ptr_factory_for_worker_.GetWeakPtr(),
-          base::SequencedTaskRunnerHandle::Get());
+          base::SequencedTaskRunner::GetCurrentDefault());
   std::move(start_callback_).Run(std::move(activation_context));
 }
 

@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
@@ -354,7 +355,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     const base::FilePath& model_dir_path,
     const base::FilePath& unzipped_dir_path) {
   // Clean up temp dir when this function finishes.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::GetDeletePathRecursivelyCallback(unzipped_dir_path));
 
   // Unpack and verify model info file.

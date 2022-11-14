@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -139,7 +139,7 @@ void RandomTreeTrainer::Train(const LearningTask& task,
 
   // It's a little odd that we don't post training.  Perhaps we should.
   auto model = Train(task, training_data, training_idx);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(model_cb), std::move(model)));
 }
 

@@ -16,7 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
@@ -265,7 +265,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
     if (pending_frame_) {
       accumulated_update_rect_.Union(pending_frame_->update_rect());
 
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
                          weak_factory_.GetWeakPtr()));
@@ -343,7 +343,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
       (now - latest_frame_encode_start_time_ < kKeepAliveInterval)) {
     // Drop the frame. There is no need to track the update-rect as the
     // frame being dropped is empty.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&WebrtcVideoEncoderWrapper::NotifyFrameDropped,
                        weak_factory_.GetWeakPtr()));
@@ -374,7 +374,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
   encode_pending_ = true;
 
   auto encode_callback = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&WebrtcVideoEncoderWrapper::OnFrameEncoded,
                      weak_factory_.GetWeakPtr()));
   encode_task_runner_->PostTask(

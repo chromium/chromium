@@ -5,7 +5,7 @@
 #include "content/browser/media/android/browser_gpu_video_accelerator_factories.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/public/browser/android/gpu_video_accelerator_factories_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -136,8 +136,8 @@ bool BrowserGpuVideoAcceleratorFactories::IsDecoderSupportKnown() {
 
 void BrowserGpuVideoAcceleratorFactories::NotifyDecoderSupportKnown(
     base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 std::unique_ptr<media::VideoDecoder>
@@ -210,8 +210,8 @@ bool BrowserGpuVideoAcceleratorFactories::IsEncoderSupportKnown() {
 
 void BrowserGpuVideoAcceleratorFactories::NotifyEncoderSupportKnown(
     base::OnceClosure callback) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 }
 
 viz::RasterContextProvider*

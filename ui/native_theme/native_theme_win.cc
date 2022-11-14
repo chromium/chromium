@@ -17,7 +17,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -286,7 +286,8 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
   // dark mode changes. This generally happens in tests. As a result, ignore
   // dark mode in this case.
   if (!should_only_use_dark_colors && !IsForcedDarkMode() &&
-      !IsForcedHighContrast() && base::SequencedTaskRunnerHandle::IsSet()) {
+      !IsForcedHighContrast() &&
+      base::SequencedTaskRunner::HasCurrentDefault()) {
     // Dark Mode currently targets UWP apps, which means Win32 apps need to use
     // alternate, less reliable means of detecting the state. The following
     // can break in future Windows versions.
@@ -312,7 +313,7 @@ NativeThemeWin::NativeThemeWin(bool configure_web_instance,
 
 void NativeThemeWin::ConfigureWebInstance() {
   if (!IsForcedDarkMode() && !IsForcedHighContrast() &&
-      base::SequencedTaskRunnerHandle::IsSet()) {
+      base::SequencedTaskRunner::HasCurrentDefault()) {
     // Add the web native theme as an observer to stay in sync with color scheme
     // changes.
     color_scheme_observer_ =

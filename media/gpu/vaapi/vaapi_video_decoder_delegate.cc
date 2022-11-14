@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
@@ -362,9 +363,8 @@ void VaapiVideoDecoderDelegate::RecoverProtectedSession() {
     // The ARC decoder doesn't handle the WaitingCB that'll get invoked so we
     // need to trigger a protected update ourselves in order to get decoding
     // running again.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindRepeating(on_protected_session_update_cb_, true));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindRepeating(on_protected_session_update_cb_, true));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

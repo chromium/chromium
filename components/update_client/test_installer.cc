@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
@@ -25,7 +25,7 @@ namespace update_client {
 TestInstaller::TestInstaller()
     : error_(0),
       install_count_(0),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 TestInstaller::~TestInstaller() {
   // The unpack path is deleted unconditionally by the component state code,

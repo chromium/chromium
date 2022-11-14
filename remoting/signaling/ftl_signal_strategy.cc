@@ -14,7 +14,7 @@
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
@@ -494,8 +494,8 @@ FtlSignalStrategy::FtlSignalStrategy(
 FtlSignalStrategy::~FtlSignalStrategy() {
   // All listeners should be removed at this point, so it's safe to detach
   // |core_|.
-  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
-                                                     core_.release());
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                             core_.release());
 }
 
 void FtlSignalStrategy::Connect() {

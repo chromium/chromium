@@ -66,7 +66,7 @@ namespace reporting {
 //   Start<SeriesOfActionsContext>(
 //       ...,
 //       returning_callback,
-//       base::SequencedTaskRunnerHandle::Get());
+//       base::SequencedTaskRunner::GetCurrentDefault());
 //
 template <typename ResponseType>
 class TaskRunnerContext {

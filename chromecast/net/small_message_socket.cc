@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -81,7 +80,7 @@ SmallMessageSocket::SmallMessageSocket(Delegate* delegate,
                                        std::unique_ptr<net::Socket> socket)
     : delegate_(delegate),
       socket_(std::move(socket)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       write_storage_(base::MakeRefCounted<net::GrowableIOBuffer>()),
       write_buffer_(base::MakeRefCounted<BufferWrapper>()),
       read_storage_(base::MakeRefCounted<net::GrowableIOBuffer>()),

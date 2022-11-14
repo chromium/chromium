@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/update_client/persisted_data.h"
 
 namespace update_client {
@@ -63,7 +63,7 @@ void TestActivityDataService::GetActiveBits(
     if (it != actives_.end() && it->second)
       actives.insert(id);
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 
@@ -76,7 +76,7 @@ void TestActivityDataService::GetAndClearActiveBits(
       actives.insert(id);
     actives_[id] = false;
   }
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), actives));
 }
 

@@ -90,11 +90,12 @@ SharedProtoDatabase::SharedProtoDatabase(const std::string& client_db_id,
 void SharedProtoDatabase::GetDatabaseInitStatusAsync(
     const std::string& client_db_id,
     Callbacks::InitStatusCallback callback) {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SharedProtoDatabase::RunInitCallback, this,
-                                std::move(callback),
-                                base::SequencedTaskRunnerHandle::Get()));
+      FROM_HERE,
+      base::BindOnce(&SharedProtoDatabase::RunInitCallback, this,
+                     std::move(callback),
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 void SharedProtoDatabase::RunInitCallback(
@@ -108,7 +109,7 @@ void SharedProtoDatabase::UpdateClientMetadataAsync(
     const std::string& client_db_id,
     SharedDBMetadataProto::MigrationStatus migration_status,
     base::OnceCallback<void(bool)> callback) {
-  if (base::SequencedTaskRunnerHandle::Get() != task_runner_) {
+  if (base::SequencedTaskRunner::GetCurrentDefault() != task_runner_) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SharedProtoDatabase::UpdateClientMetadataAsync, this,
@@ -538,8 +539,8 @@ void GetClientInitCallback(
   // |current_task_runner| is valid because Init already takes the current
   // TaskRunner as a parameter and uses that to trigger this callback when it's
   // finished.
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   if (status != Enums::InitStatus::kOK && status != Enums::InitStatus::kCorrupt)
     client.reset();
   // Set migration status of client. The metadata database was already updated.
@@ -556,8 +557,8 @@ void SharedProtoDatabase::GetClientAsync(
     base::OnceCallback<void(std::unique_ptr<SharedProtoDatabaseClient>,
                             Enums::InitStatus)> callback) {
   auto client = GetClientInternal(db_type);
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   SharedProtoDatabaseClient* client_ptr = client.get();
   task_runner_->PostTask(
       FROM_HERE,
@@ -574,8 +575,8 @@ std::unique_ptr<SharedProtoDatabaseClient>
 SharedProtoDatabase::GetClientForTesting(ProtoDbType db_type,
                                          bool create_if_missing,
                                          SharedClientInitCallback callback) {
-  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
-  auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  auto current_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   auto client = GetClientInternal(db_type);
   task_runner_->PostTask(
       FROM_HERE,

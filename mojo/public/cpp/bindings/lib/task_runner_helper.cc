@@ -5,7 +5,6 @@
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace mojo {
 namespace internal {
@@ -15,7 +14,7 @@ GetTaskRunnerToUseFromUserProvidedTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> runner) {
   if (runner)
     return runner;
-  return base::SequencedTaskRunnerHandle::Get();
+  return base::SequencedTaskRunner::GetCurrentDefault();
 }
 
 }  // namespace internal

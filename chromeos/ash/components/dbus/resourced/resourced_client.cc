@@ -8,8 +8,8 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "dbus/bus.h"
@@ -248,7 +248,7 @@ void ResourcedClientImpl::HandleSetMemoryMarginBps(
     // If Chrome startup was racing with resourced startup it's possible
     // that the message was not delivered because resourced was not up yet.
     // Let's redispatch the message in 30 seconds.
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ResourcedClientImpl::SetMemoryMarginsBps,
                        weak_factory_.GetWeakPtr(), critical_margin,

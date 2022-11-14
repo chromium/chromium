@@ -24,9 +24,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/object_watcher.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -584,7 +584,7 @@ const mojom::UsbInterfaceInfo* UsbDeviceHandleWin::FindInterfaceByEndpoint(
 
 UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
     : device_(std::move(device)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       blocking_task_runner_(UsbService::CreateBlockingTaskRunner()) {
   if (const auto* config = device_->GetActiveConfiguration()) {
     for (const auto& interface : config->interfaces) {
@@ -633,7 +633,7 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : device_(std::move(device)),
       hub_handle_(std::move(handle)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       blocking_task_runner_(std::move(blocking_task_runner)) {}
 
 UsbDeviceHandleWin::~UsbDeviceHandleWin() = default;

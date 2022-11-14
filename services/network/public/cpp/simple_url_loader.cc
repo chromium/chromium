@@ -24,7 +24,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/interned_args_helper.h"
@@ -117,7 +116,7 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
     upload_body_pipe_ = std::move(pipe);
     handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
         FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
     handle_watcher_->Watch(
         upload_body_pipe_.get(),
         // Don't bother watching for close - rely on read pipes for errors.
@@ -484,7 +483,7 @@ class BodyReader {
     body_data_pipe_ = std::move(body_data_pipe);
     handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
         FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-        base::SequencedTaskRunnerHandle::Get());
+        base::SequencedTaskRunner::GetCurrentDefault());
     handle_watcher_->Watch(
         body_data_pipe_.get(),
         MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
@@ -925,7 +924,8 @@ class SaveToFileBodyHandler : public BodyHandler {
                base::TaskPriority priority,
                base::RepeatingCallback<void(int64_t)> progress_callback,
                const base::Location& url_loader_created_from)
-        : body_handler_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+        : body_handler_task_runner_(
+              base::SequencedTaskRunner::GetCurrentDefault()),
           file_writer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), priority,
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -1209,7 +1209,7 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
     // Can't call DownloadAsStreamBodyHandler::Resume() immediately when called
     // recursively from OnDataRead.
     if (in_recursive_call_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&DownloadAsStreamBodyHandler::Resume,
                                     weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -1580,7 +1580,7 @@ void SimpleURLLoaderImpl::OnBodyHandlerDone(net::Error error,
 
 void SimpleURLLoaderImpl::OnBodyHandlerProgress(int64_t progress) {
   if (on_download_progress_callback_) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SimpleURLLoaderImpl::DispatchDownloadProgress,
                        weak_ptr_factory_.GetWeakPtr(), progress));

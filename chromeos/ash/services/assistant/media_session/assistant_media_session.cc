@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/assistant/media_host.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/libassistant/public/mojom/media_controller.mojom.h"
@@ -36,7 +37,8 @@ const char kAudioFocusSourceName[] = "assistant";
 }  // namespace
 
 AssistantMediaSession::AssistantMediaSession(MediaHost* host)
-    : host_(host), main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : host_(host),
+      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 AssistantMediaSession::~AssistantMediaSession() {
   AbandonAudioFocusIfNeeded();

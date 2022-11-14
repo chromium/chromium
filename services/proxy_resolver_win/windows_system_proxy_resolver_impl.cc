@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -152,7 +151,7 @@ WindowsSystemProxyResolverImpl::Request::Request(
     : parent_(parent),
       callback_(std::move(callback)),
       resolver_handle_(nullptr),
-      sequenced_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 WindowsSystemProxyResolverImpl::Request::~Request() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

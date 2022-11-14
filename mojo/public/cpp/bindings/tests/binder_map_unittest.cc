@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -80,7 +80,7 @@ TEST_F(BinderMapTest, BasicMatch) {
   map.Add<mojom::TestInterface1>(
       base::BindRepeating(&TestInterface1Impl::Bind, base::Unretained(&impl),
                           nullptr),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
   EXPECT_TRUE(map.TryBind(&receiver));
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -112,7 +112,7 @@ TEST_F(BinderMapTest, CorrectSequence) {
   Remote<mojom::TestInterface2> remote2;
   GenericPendingReceiver receiver2(remote2.BindNewPipeAndPassReceiver());
 
-  auto task_runner1 = base::SequencedTaskRunnerHandle::Get();
+  auto task_runner1 = base::SequencedTaskRunner::GetCurrentDefault();
   auto task_runner2 = base::ThreadPool::CreateSequencedTaskRunner({});
 
   TestInterface1Impl impl1;

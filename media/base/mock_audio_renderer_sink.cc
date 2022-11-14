@@ -5,7 +5,7 @@
 #include "media/base/mock_audio_renderer_sink.h"
 
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace media {
 MockAudioRendererSink::MockAudioRendererSink()
@@ -50,7 +50,7 @@ OutputDeviceInfo MockAudioRendererSink::GetOutputDeviceInfo() {
 
 void MockAudioRendererSink::GetOutputDeviceInfoAsync(
     OutputDeviceInfoCB info_cb) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(info_cb), output_device_info_));
 }
 

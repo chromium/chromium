@@ -8,12 +8,12 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace syncer::internal {
 
 WeakHandleCoreBase::WeakHandleCoreBase()
-    : owner_loop_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+    : owner_loop_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 bool WeakHandleCoreBase::IsOnOwnerThread() const {
   return owner_loop_task_runner_->RunsTasksInCurrentSequence();

@@ -8,9 +8,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -47,7 +47,7 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
   PooledSharedImageVideoProviderTest() = default;
 
   void SetUp() override {
-    task_runner_ = base::SequencedTaskRunnerHandle::Get();
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     base::SequenceBound<MockGpuHelper> mock_gpu_helper(task_runner_,
                                                        &sync_token_);
 

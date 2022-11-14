@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/wifi_data.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -81,7 +82,7 @@ void PublicIpAddressLocationNotifier::OnConnectionChanged(
   react_to_network_change_closure_.Reset(
       base::BindOnce(&PublicIpAddressLocationNotifier::ReactToNetworkChange,
                      base::Unretained(this)));
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, react_to_network_change_closure_.callback(),
       kNetworkChangeReactionDelay);
 }

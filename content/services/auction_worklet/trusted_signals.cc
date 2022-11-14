@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
@@ -443,14 +444,15 @@ void TrustedSignals::OnDownloadComplete(
   // over to the parser on the V8 thread.
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &TrustedSignals::HandleDownloadResultOnV8Thread, v8_helper_,
-          trusted_signals_url_, std::move(interest_group_names_),
-          std::move(bidding_signals_keys_), std::move(render_urls_),
-          std::move(ad_component_render_urls_), std::move(body),
-          std::move(headers), std::move(error_msg),
-          base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory.GetWeakPtr(),
-          base::TimeTicks::Now() - download_start_time_));
+      base::BindOnce(&TrustedSignals::HandleDownloadResultOnV8Thread,
+                     v8_helper_, trusted_signals_url_,
+                     std::move(interest_group_names_),
+                     std::move(bidding_signals_keys_), std::move(render_urls_),
+                     std::move(ad_component_render_urls_), std::move(body),
+                     std::move(headers), std::move(error_msg),
+                     base::SequencedTaskRunner::GetCurrentDefault(),
+                     weak_ptr_factory.GetWeakPtr(),
+                     base::TimeTicks::Now() - download_start_time_));
 }
 
 // static

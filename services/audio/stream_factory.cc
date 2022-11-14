@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
@@ -280,7 +281,7 @@ void StreamFactory::DestroyMuter(base::WeakPtr<LocalMuter> muter) {
     }
   };
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(do_destroy, weak_ptr_factory_.GetWeakPtr(), muter));
 }

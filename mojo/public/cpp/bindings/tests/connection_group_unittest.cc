@@ -4,9 +4,9 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
@@ -156,7 +156,7 @@ TEST_P(ConnectionGroupBindingsTest, PassedEndpointsInheritFromReceiver) {
 TEST_F(ConnectionGroupTest, NotifyOnDecrementToZero) {
   base::RunLoop loop;
   ConnectionGroup::Ref ref = ConnectionGroup::Create(
-      loop.QuitClosure(), base::SequencedTaskRunnerHandle::Get());
+      loop.QuitClosure(), base::SequencedTaskRunner::GetCurrentDefault());
   auto group = ref.GetGroupForTesting();
 
   EXPECT_EQ(0u, group->GetNumRefsForTesting());
@@ -175,7 +175,7 @@ TEST_F(ConnectionGroupTest, NotifyOnDecrementToZeroMultipleTimes) {
                                 ASSERT_TRUE(loop.has_value());
                                 loop->Quit();
                               }),
-                              base::SequencedTaskRunnerHandle::Get());
+                              base::SequencedTaskRunner::GetCurrentDefault());
 
   auto group = ref.GetGroupForTesting();
 

@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
@@ -247,7 +248,7 @@ GamepadDeviceLinux::GamepadDeviceLinux(
     : syspath_prefix_(syspath_prefix),
       button_indices_used_(Gamepad::kButtonsLengthCap, false),
       dbus_runner_(dbus_runner),
-      polling_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      polling_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 GamepadDeviceLinux::~GamepadDeviceLinux() = default;
 

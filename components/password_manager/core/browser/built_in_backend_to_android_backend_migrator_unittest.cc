@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -767,7 +768,7 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestMetrics,
     LoginsResultOrError result = GetParam().is_successful_migration
                                      ? LoginsResultOrError(LoginsResult())
                                      : LoginsResultOrError(kBackendError);
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(reply), std::move(result)),
         kLatencyDelta);
   };
@@ -900,7 +901,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   ON_CALL(android_backend_, UpdateLoginAsync)
       .WillByDefault(
           WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), kBackendError));
           })));
 
@@ -937,7 +938,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   // Simulate an empty Android backend.
   EXPECT_CALL(android_backend_, GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(reply), LoginsResult()));
       })));
 
@@ -945,7 +946,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest,
   ON_CALL(android_backend_, AddLoginAsync)
       .WillByDefault(
           WithArg<1>(Invoke([](PasswordChangesOrErrorReply callback) -> void {
-            base::SequencedTaskRunnerHandle::Get()->PostTask(
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), kBackendError));
           })));
 

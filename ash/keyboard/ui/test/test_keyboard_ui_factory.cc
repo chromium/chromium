@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -46,8 +46,8 @@ aura::Window* TestKeyboardUIFactory::TestKeyboardUI::LoadKeyboardWindow(
       KeyboardBoundsFromRootBounds(screen->GetPrimaryDisplay().bounds()));
 
   // Simulate an asynchronous load.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(callback));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(callback));
 
   return window_.get();
 }

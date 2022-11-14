@@ -13,7 +13,7 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/base/metrics/cast_histograms.h"
@@ -73,7 +73,7 @@ void CastRuntimeMetricsRecorder::RecordSimpleActionWithValue(
 
 CastRuntimeMetricsRecorder::CastRuntimeMetricsRecorder(
     EventBuilderFactory* event_builder_factory)
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       event_builder_factory_(event_builder_factory) {
   DCHECK(event_builder_factory_);
 

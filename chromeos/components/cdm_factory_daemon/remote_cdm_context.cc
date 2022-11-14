@@ -5,7 +5,7 @@
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
 
 #include "base/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "media/cdm/cdm_context_ref_impl.h"
 
@@ -34,7 +34,7 @@ RemoteCdmContext::RemoteCdmContext(
     mojo::PendingRemote<media::stable::mojom::StableCdmContext>
         stable_cdm_context)
     : stable_cdm_context_(std::move(stable_cdm_context)),
-      mojo_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+      mojo_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 std::unique_ptr<media::CallbackRegistration> RemoteCdmContext::RegisterEventCB(
     EventCB event_cb) {

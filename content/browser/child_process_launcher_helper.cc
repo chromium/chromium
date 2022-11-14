@@ -11,10 +11,10 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -81,7 +81,7 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     const mojo::ProcessErrorCallback& process_error_callback,
     std::unique_ptr<ChildProcessLauncherFileData> file_data)
     : child_process_id_(child_process_id),
-      client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      client_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       command_line_(std::move(command_line)),
       delegate_(std::move(delegate)),
       child_process_launcher_(child_process_launcher),

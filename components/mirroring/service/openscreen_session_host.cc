@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -254,7 +255,7 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   // related Open Screen tasks must be ran on the same sequence to avoid
   // checking errors.
   openscreen_task_runner_ = std::make_unique<openscreen_platform::TaskRunner>(
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   // The Open Screen environment should not be set up until after the network
   // context is set up.

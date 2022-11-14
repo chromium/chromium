@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -925,7 +924,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
   if (error_code != net::OK) {
     // Here we come from an onHeaderReceived failure.
     state_ = State::kRejectedByOnHeadersReceivedForAuth;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                   true /* should_cancel */));
     return;
@@ -1000,8 +999,8 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   }
 
   auth_credentials_ = absl::nullopt;
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   std::move(completion));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(completion));
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
@@ -1575,7 +1574,7 @@ void WebRequestProxyingURLLoaderFactory::HandleAuthRequest(
     WebRequestAPI::AuthRequestCallback callback) {
   auto it = network_request_id_to_web_request_id_.find(request_id);
   if (it == network_request_id_to_web_request_id_.end()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt,
                                   true /* should_cancel */));
     return;

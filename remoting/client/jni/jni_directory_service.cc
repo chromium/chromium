@@ -12,7 +12,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/android/jni_headers/DirectoryService_jni.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
@@ -46,7 +46,7 @@ JniDirectoryService::RequestError MapError(
 JniDirectoryService::JniDirectoryService()
     : client_(ChromotingClientRuntime::GetInstance()
                   ->CreateDirectoryServiceClient()),
-      sequence_(base::SequencedTaskRunnerHandle::Get()) {}
+      sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 JniDirectoryService::~JniDirectoryService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

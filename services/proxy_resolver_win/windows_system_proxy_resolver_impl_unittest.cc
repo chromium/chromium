@@ -18,8 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
@@ -203,7 +203,7 @@ class MockWinHttpAPIWrapper final : public WinHttpAPIWrapper {
     if (!get_proxy_for_url_success_)
       return false;
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockWinHttpAPIWrapper::RunCallback,
                        base::Unretained(this), resolver_handle, context));

@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
@@ -1563,7 +1564,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     current_request_id_++;
     observations_.num_isuvpaa++;
     if (config_.resolve_callbacks) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), config_.is_uvpaa));
       return current_request_id_;
     }
@@ -1595,8 +1596,8 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
                              WebAuthnDOMExceptionDetails::New(
                                  config_.request_error_name, "message"),
                              nullptr);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   void RunPendingGetCallback() {
@@ -1611,8 +1612,8 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
                              WebAuthnDOMExceptionDetails::New(
                                  config_.request_error_name, "message"),
                              nullptr);
-    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                     std::move(callback));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
   }
 
   void RunPendingIsUvpaaCallback() {
@@ -4999,14 +5000,14 @@ class UVTestAuthenticatorClientDelegate
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     *collected_pin_ = true;
     *min_pin_length_ = options.min_pin_length;
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(provide_pin_cb), kTestPIN16));
   }
 
   void StartBioEnrollment(base::OnceClosure next_callback) override {
     *did_bio_enrollment_ = true;
     if (cancel_bio_enrollment_) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(next_callback));
       return;
     }
@@ -5015,7 +5016,7 @@ class UVTestAuthenticatorClientDelegate
 
   void OnSampleCollected(int remaining_samples) override {
     if (remaining_samples <= 0) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(bio_callback_));
     }
   }
@@ -5179,7 +5180,7 @@ class PINTestAuthenticatorRequestDelegate
     std::u16string pin = std::move(expected_.front().pin);
     expected_.pop_front();
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(provide_pin_cb), std::move(pin)));
   }
 
@@ -6636,7 +6637,7 @@ class BlockingAuthenticatorRequestDelegate
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
     // Post a task to cancel the request to give the second authenticator a
     // chance to return a status from the cancelled request.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(cancel_callback_));
     return true;
   }
@@ -6727,7 +6728,7 @@ TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
       base::BindLambdaForTesting([&](VirtualFidoDevice* ignore) -> bool {
         // If asked for a fingerprint, fail the makeCredential request by
         // simulating a matched excluded credential by the other authenticator.
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(state_1->transact_callback),
                                       std::vector<uint8_t>{static_cast<uint8_t>(
                                           device::CtapDeviceResponseCode::
@@ -6800,7 +6801,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   void CollectPIN(
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(provide_pin_cb), kTestPIN16));
   }
 
@@ -6845,7 +6846,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         });
     ASSERT_TRUE(selected != responses.end());
 
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(*selected)));
   }
 
