@@ -1081,7 +1081,15 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
 // Tests calling setIcon() in the service worker with an invalid icon paths
 // specified. Regression test for https://crbug.com/1262029. Regression test for
 // https://crbug.com/1372518.
-IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest, SetIconInWorkerWithInvalidPath) {
+// Flaky (https://crbug.com/1383903)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SetIconInWorkerWithInvalidPath \
+  DISABLED_SetIconInWorkerWithInvalidPath
+#else
+#define MAYBE_SetIconInWorkerWithInvalidPath SetIconInWorkerWithInvalidPath
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionActionAPITest,
+                       MAYBE_SetIconInWorkerWithInvalidPath) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Bad Icon Path In Worker",
