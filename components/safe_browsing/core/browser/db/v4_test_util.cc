@@ -53,16 +53,14 @@ bool TestV4Store::HasValidData() {
 void TestV4Store::MarkPrefixAsBad(HashPrefix prefix) {
   auto& vec = mock_prefixes_[prefix.size()];
   vec.insert(std::upper_bound(vec.begin(), vec.end(), prefix), prefix);
-  hash_prefix_map_->Clear();
-  hash_prefix_map_->Append(prefix.size(), base::StrCat(vec));
+  hash_prefix_map_[prefix.size()] = base::StrCat(vec);
 }
 
 void TestV4Store::SetPrefixes(std::vector<HashPrefix> prefixes,
                               PrefixSize size) {
   std::sort(prefixes.begin(), prefixes.end());
   mock_prefixes_[size] = prefixes;
-  hash_prefix_map_->Clear();
-  hash_prefix_map_->Append(size, base::StrCat(prefixes));
+  hash_prefix_map_[size] = base::StrCat(prefixes);
 }
 
 TestV4Database::TestV4Database(

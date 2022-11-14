@@ -22,9 +22,9 @@ class V4StoreFuzzer {
  public:
   static int FuzzMergeUpdate(const uint8_t* data, size_t size) {
     // |prefix_map_old| represents the existing state of the |V4Store|.
-    InMemoryHashPrefixMap prefix_map_old;
+    HashPrefixMap prefix_map_old;
     // |prefix_map_additions| represents the update being applied.
-    InMemoryHashPrefixMap prefix_map_additions;
+    HashPrefixMap prefix_map_additions;
 
     // Pass 1:
     // Add a prefix_size->[prefixes] pair in |prefix_map_old|.
@@ -112,7 +112,7 @@ class V4StoreFuzzer {
 
   static void DisplayHashPrefixMapDetails(
       const HashPrefixMap& hash_prefix_map) {
-    for (const auto& pair : hash_prefix_map.view()) {
+    for (const auto& pair : hash_prefix_map) {
       PrefixSize prefix_size = pair.first;
       size_t prefixes_length = pair.second.length();
       DVLOG(5) << __FUNCTION__ << " : " << prefix_size << " : "
