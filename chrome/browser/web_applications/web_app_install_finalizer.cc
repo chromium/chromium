@@ -653,8 +653,7 @@ void WebAppInstallFinalizer::ScheduleUninstallCommand(
     UninstallWebAppCallback callback) {
   auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
       app_id, external_install_source, uninstall_source, std::move(callback),
-      profile_, os_integration_manager_, sync_bridge_, icon_manager_,
-      registrar_, install_manager_, translation_manager_);
+      profile_);
 
   if (management_type_removed_callback_for_testing_) {
     uninstall_command->SetRemoveManagementTypeCallbackForTesting(  // IN-TEST

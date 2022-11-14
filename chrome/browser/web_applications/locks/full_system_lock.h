@@ -11,9 +11,12 @@
 namespace web_app {
 
 class OsIntegrationManager;
+class WebAppIconManager;
 class WebAppInstallFinalizer;
+class WebAppInstallManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
+class WebAppTranslationManager;
 
 // This locks the whole system. No other locks can be held when this lock is
 // acquired.
@@ -33,7 +36,10 @@ class FullSystemLock : public AppLock {
   FullSystemLock(WebAppRegistrar& registrar,
                  WebAppSyncBridge& sync_bridge,
                  WebAppInstallFinalizer& install_finalizer,
-                 OsIntegrationManager& os_integration_manager);
+                 OsIntegrationManager& os_integration_manager,
+                 WebAppInstallManager& install_manager,
+                 WebAppIconManager& icon_manager,
+                 WebAppTranslationManager& translation_manager);
   ~FullSystemLock();
 };
 

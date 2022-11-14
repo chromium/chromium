@@ -106,12 +106,12 @@ class OsIntegrationManager : public AppRegistrarObserver {
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   ~OsIntegrationManager() override;
 
-  void SetSubsystems(WebAppSyncBridge* sync_bridge,
-                     WebAppRegistrar* registrar,
-                     WebAppUiManager* ui_manager,
-                     WebAppIconManager* icon_manager);
+  virtual void SetSubsystems(WebAppSyncBridge* sync_bridge,
+                             WebAppRegistrar* registrar,
+                             WebAppUiManager* ui_manager,
+                             WebAppIconManager* icon_manager);
 
-  void Start();
+  virtual void Start();
 
   virtual void Synchronize(const AppId& app_id,
                            SubManagerCompletedCallback callback);

@@ -244,9 +244,7 @@ class WebAppInstallManagerTest
           result = code;
           run_loop.Quit();
         }),
-        profile(), &provider().os_integration_manager(),
-        &provider().sync_bridge(), &icon_manager(), &registrar(),
-        &install_manager(), &provider().translation_manager());
+        profile());
     uninstall_command->SetRemoveManagementTypeCallbackForTesting(
         base::BindLambdaForTesting([&](const AppId& app_id) {
           // On removing the policy source, the web app can now be user
@@ -269,9 +267,7 @@ class WebAppInstallManagerTest
           result = code;
           run_loop.Quit();
         }),
-        profile(), &provider().os_integration_manager(),
-        &provider().sync_bridge(), &icon_manager(), &registrar(),
-        &install_manager(), &provider().translation_manager());
+        profile());
     command_manager().ScheduleCommand(std::move(uninstall_command));
     run_loop.Run();
     return result;

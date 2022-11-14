@@ -159,7 +159,9 @@ void WebAppLockManager::AcquireLock(
 
   auto lock = std::make_unique<AppLock>(
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->install_finalizer(), provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager(),
+      provider_->install_manager(), provider_->icon_manager(),
+      provider_->translation_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -175,7 +177,9 @@ void WebAppLockManager::AcquireLock(
   auto lock = std::make_unique<SharedWebContentsWithAppLock>(
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->install_finalizer(), provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager(),
+      provider_->install_manager(), provider_->icon_manager(),
+      provider_->translation_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -190,7 +194,9 @@ void WebAppLockManager::AcquireLock(
 
   auto lock = std::make_unique<FullSystemLock>(
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->install_finalizer(), provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager(),
+      provider_->install_manager(), provider_->icon_manager(),
+      provider_->translation_manager());
 
   AcquireLock(lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
@@ -228,7 +234,9 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
 
   auto result_lock = std::make_unique<AppLock>(
       provider_->registrar(), provider_->sync_bridge(),
-      provider_->install_finalizer(), provider_->os_integration_manager());
+      provider_->install_finalizer(), provider_->os_integration_manager(),
+      provider_->install_manager(), provider_->icon_manager(),
+      provider_->translation_manager());
   // TODO(dmurph): Create option for lock acquisition callbacks to always be
   // posted async. https://crbug.com/1354312
   auto posted_callback = base::BindOnce(

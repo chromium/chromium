@@ -22,6 +22,12 @@ class MockOsIntegrationManager : public OsIntegrationManager {
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager);
   ~MockOsIntegrationManager() override;
 
+  void SetSubsystems(WebAppSyncBridge* sync_bridge,
+                     WebAppRegistrar* registrar,
+                     WebAppUiManager* ui_manager,
+                     WebAppIconManager* icon_manager) override {}
+  void Start() override {}
+
   // Installation:
   MOCK_METHOD(void,
               CreateShortcuts,
