@@ -1777,8 +1777,8 @@
   },
   {
     "name": "enable-autofill-upi-vpa",
-    "owners": [ "cfroussios" ],
-    "expiry_milestone": 108
+    "owners": [ "mlerman" ],
+    "expiry_milestone": 115
   },
   {
     "name": "enable-automatic-snooze",
