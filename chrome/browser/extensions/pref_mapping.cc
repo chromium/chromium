@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
+#include <span>  // std::size.
 
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
@@ -26,7 +26,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_map.h"
 #endif
 
 using extensions::mojom::APIPermissionID;
@@ -210,43 +210,42 @@ PrefTransformerInterface* PrefMapping::FindTransformerForBrowserPref(
 // the pref in ash, or nullptr if no pref exists.
 crosapi::mojom::PrefPath PrefMapping::GetPrefPathForPrefName(
     const std::string& pref_name) const {
-  static base::NoDestructor<std::map<std::string, crosapi::mojom::PrefPath>>
-      name_to_extension_prefpath(
-          {{chromeos::prefs::kDockedMagnifierEnabled,
-            crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
-           {chromeos::prefs::kAccessibilityAutoclickEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
-           {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
-           {chromeos::prefs::kAccessibilityCursorColorEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
-           {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
-           {chromeos::prefs::kAccessibilityDictationEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
-           {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
-           {chromeos::prefs::kAccessibilityHighContrastEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
-           {chromeos::prefs::kAccessibilityLargeCursorEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
-           {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
-           {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
-            crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
-           {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
-            crosapi::mojom::PrefPath::
-                kExtensionAccessibilitySpokenFeedbackEnabled},
-           {chromeos::prefs::kAccessibilityStickyKeysEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
-           {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
-            crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
-           {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
-           {prefs::kProtectedContentDefault,
-            crosapi::mojom::PrefPath::kProtectedContentDefault}});
-  auto pref_iter = name_to_extension_prefpath->find(pref_name);
-  return pref_iter == name_to_extension_prefpath->end()
+  static const auto name_to_extension_prefpath = base::MakeFixedFlatMap<
+      base::StringPiece, crosapi::mojom::PrefPath>(
+      {{chromeos::prefs::kDockedMagnifierEnabled,
+        crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
+       {chromeos::prefs::kAccessibilityAutoclickEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
+       {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
+       {chromeos::prefs::kAccessibilityCursorColorEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
+       {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
+       {chromeos::prefs::kAccessibilityDictationEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
+       {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
+       {chromeos::prefs::kAccessibilityHighContrastEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
+       {chromeos::prefs::kAccessibilityLargeCursorEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
+       {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
+       {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
+        crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
+       {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
+        crosapi::mojom::PrefPath::kExtensionAccessibilitySpokenFeedbackEnabled},
+       {chromeos::prefs::kAccessibilityStickyKeysEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
+       {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
+        crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
+       {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
+       {prefs::kProtectedContentDefault,
+        crosapi::mojom::PrefPath::kProtectedContentDefault}});
+  auto* pref_iter = name_to_extension_prefpath.find(pref_name);
+  return pref_iter == name_to_extension_prefpath.end()
              ? crosapi::mojom::PrefPath::kUnknown
              : pref_iter->second;
 }
