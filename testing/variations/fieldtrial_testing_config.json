@@ -4196,6 +4196,26 @@
             ]
         }
     ],
+    "DisruptiveNotificationPermissionRevocation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221114",
+                    "enable_features": [
+                        "DisruptiveNotificationPermissionRevocation"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsHttpsSvcbTimeout": [
         {
             "platforms": [
