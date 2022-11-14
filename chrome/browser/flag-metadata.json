@@ -1660,8 +1660,8 @@
   },
   {
     "name": "enable-accessibility-page-zoom",
-    "owners": [ "mschillaci@google.com", "aldietz@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
+    "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 130
   },
   {
     "name": "enable-accessibility-select-to-speak-context-menu-option",
