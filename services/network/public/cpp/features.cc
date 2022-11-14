@@ -201,7 +201,7 @@ BASE_FEATURE(kSCTAuditingRetryReports,
 
 BASE_FEATURE(kSCTAuditingPersistReports,
              "SCTAuditingPersistReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 // The default Mojo ring buffer size, used to send the content body.
