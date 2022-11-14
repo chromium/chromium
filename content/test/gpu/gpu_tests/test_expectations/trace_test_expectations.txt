@@ -231,6 +231,12 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTe
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 
+# 2DCanvasWebGL flakily crashes, which then affects the following test.
+crbug.com/1383609 [ android android-sm-a135m ] TraceTest_2DCanvasWebGL [ Failure ]
+crbug.com/1383609 [ android android-sm-a135m ] TraceTest_BackgroundImage [ Failure ]
+crbug.com/1383609 [ android android-sm-a235m ] TraceTest_2DCanvasWebGL [ Failure ]
+crbug.com/1383609 [ android android-sm-a235m ] TraceTest_BackgroundImage [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

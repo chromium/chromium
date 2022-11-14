@@ -120,6 +120,12 @@ crbug.com/1170840 [ mac amd renderer-skia-gl ] GpuProcess_mac_webgl_terminated_h
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
+# canvas2d flakily crashes, which then affects the following test.
+crbug.com/1383609 [ android android-sm-a135m ] GpuProcess_canvas2d [ Failure ]
+crbug.com/1383609 [ android android-sm-a135m ] GpuProcess_css3d [ Failure ]
+crbug.com/1383609 [ android android-sm-a235m ] GpuProcess_canvas2d [ Failure ]
+crbug.com/1383609 [ android android-sm-a235m ] GpuProcess_css3d [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
