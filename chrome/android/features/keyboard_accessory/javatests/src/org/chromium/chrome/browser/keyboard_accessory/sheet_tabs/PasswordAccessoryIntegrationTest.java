@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.isTransformed;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.scrollToLastElement;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 import static org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabTestHelper.isKeyboardAccessoryTabLayout;
@@ -112,7 +113,7 @@ public class PasswordAccessoryIntegrationTest {
                 .perform(selectTabAtPosition(0));
 
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.passwords_sheet));
+        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
         onView(withText(containsString("Manage password"))).check(matches(isDisplayed()));
     }
 
