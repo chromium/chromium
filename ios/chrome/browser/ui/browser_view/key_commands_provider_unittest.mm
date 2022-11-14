@@ -655,4 +655,90 @@ TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
   [handler verify];
 }
 
+// Verifies that showing the tab at a given index is a no-op when there are no
+// tabs.
+TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_NoTab) {
+  ASSERT_EQ(web_state_list_->count(), 0);
+
+  [provider_ keyCommand_showFirstTab];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab2];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab3];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab4];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab5];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab6];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab7];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showTab8];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+  [provider_ keyCommand_showLastTab];
+  EXPECT_EQ(web_state_list_->active_index(), WebStateList::kInvalidIndex);
+}
+
+// Verifies that showing the tab at a given index is a no-op when there is one
+// tab.
+TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_OneTab) {
+  InsertNewWebState(0);
+  ASSERT_EQ(web_state_list_->count(), 1);
+
+  [provider_ keyCommand_showFirstTab];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab2];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab3];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab4];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab5];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab6];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab7];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab8];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showLastTab];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+}
+
+// Verifies that showing the tab at a given index is showing the correct tab.
+TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_SomeTabs) {
+  InsertNewWebState(0);
+  InsertNewWebState(1);
+  InsertNewWebState(2);
+  InsertNewWebState(3);
+  InsertNewWebState(4);
+  InsertNewWebState(5);
+  InsertNewWebState(6);
+  InsertNewWebState(7);
+  InsertNewWebState(8);
+  InsertNewWebState(9);
+  InsertNewWebState(10);
+  ASSERT_EQ(web_state_list_->count(), 11);
+
+  [provider_ keyCommand_showFirstTab];
+  EXPECT_EQ(web_state_list_->active_index(), 0);
+  [provider_ keyCommand_showTab2];
+  EXPECT_EQ(web_state_list_->active_index(), 1);
+  [provider_ keyCommand_showTab3];
+  EXPECT_EQ(web_state_list_->active_index(), 2);
+  [provider_ keyCommand_showTab4];
+  EXPECT_EQ(web_state_list_->active_index(), 3);
+  [provider_ keyCommand_showTab5];
+  EXPECT_EQ(web_state_list_->active_index(), 4);
+  [provider_ keyCommand_showTab6];
+  EXPECT_EQ(web_state_list_->active_index(), 5);
+  [provider_ keyCommand_showTab7];
+  EXPECT_EQ(web_state_list_->active_index(), 6);
+  [provider_ keyCommand_showTab8];
+  EXPECT_EQ(web_state_list_->active_index(), 7);
+  [provider_ keyCommand_showLastTab];
+  EXPECT_EQ(web_state_list_->active_index(), 10);
+}
+
 }  // namespace
