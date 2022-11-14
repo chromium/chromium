@@ -47,7 +47,7 @@ the easiest way is to set up the debugger in VSCode (guide
 ## Creating New Tests (stories)
 
 [This document](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry)
-provides an oveview of how tests are structured and some of the underlying
+provides an overview of how tests are structured and some of the underlying
 technologies. After reading that doc, figure out if your story fits into an
 existing benchmark by checking
 [here](https://goto.google.com/chrome-benchmarking-sheet) (or
