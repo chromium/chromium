@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
@@ -517,8 +518,10 @@ enum class IOSOverflowMenuActionType {
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.dispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  self.mediator.browserCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
+  self.mediator.lensCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   self.mediator.bookmarkModel = ios::BookmarkModelFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();

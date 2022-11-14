@@ -10,10 +10,12 @@
 
 @implementation SearchImageWithLensCommand
 
-- (instancetype)initWithImage:(UIImage*)image {
+- (instancetype)initWithImage:(UIImage*)image
+                   entryPoint:(LensEntrypoint)entryPoint {
   self = [super init];
   if (self) {
     _image = image;
+    _entryPoint = entryPoint;
   }
   return self;
 }

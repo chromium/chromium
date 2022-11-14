@@ -816,6 +816,13 @@ const char kEnableLensInNTPDescription[] =
     "menu when Google is the selected search engine, accessible from the"
     "new tab page.";
 
+const char kEnableLensInOmniboxCopiedImageName[] =
+    "Enable Google Lens in the Omnibox for Copied Images";
+const char kEnableLensInOmniboxCopiedImageDescription[] =
+    "When enabled, use Lens to search images from your device clipboard "
+    "when Google is the selected search engine, accessible from the omnibox or "
+    "popup menu.";
+
 const char kTabGridRecencySortName[] = "Sort tabs by recency";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted by last time used.";

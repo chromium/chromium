@@ -33,10 +33,13 @@
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
@@ -62,6 +65,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -435,21 +439,18 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)searchCopiedImage {
+  __weak LocationBarCoordinator* weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        web::NavigationManager::WebLoadParams webParams =
-            ImageSearchParamGenerator::LoadParamsForImage(
-                image, ios::TemplateURLServiceFactory::GetForBrowserState(
-                           self.browser->GetBrowserState()));
-        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+      base::BindOnce(^(absl::optional<gfx::Image> image) {
+        [weakSelf searchImage:std::move(image) usingLens:NO];
+      }));
+}
 
-        UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-
-        [self cancelOmniboxEdit];
+- (void)lensCopiedImage {
+  __weak LocationBarCoordinator* weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> image) {
+        [weakSelf searchImage:std::move(image) usingLens:YES];
       }));
 }
 
@@ -461,6 +462,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
   self.viewController.searchByImageEnabled = searchByImageSupported;
+}
+
+- (void)updateLensImageSupported:(BOOL)lensImageSupported {
+  self.viewController.lensImageEnabled = lensImageSupported;
 }
 
 #pragma mark - LocationBarSteadyViewConsumer
@@ -540,6 +545,37 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.viewController.view
       addInteraction:[[UIDragInteraction alloc]
                          initWithDelegate:self.dragDropHandler]];
+}
+
+- (void)searchImage:(absl::optional<gfx::Image>)optionalImage
+          usingLens:(BOOL)usingLens {
+  if (!optionalImage)
+    return;
+
+  // If the Browser has been destroyed, then the UI should
+  // no longer be active. Return early to avoid crashing.
+  Browser* browser = self.browser;
+  if (!browser)
+    return;
+
+  UIImage* image = optionalImage->ToUIImage();
+  if (usingLens) {
+    id<LensCommands> handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
+    SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+        initWithImage:image
+           entryPoint:LensEntrypoint::OmniboxPostCapture];
+    [handler searchImageWithLens:command];
+  } else {
+    web::NavigationManager::WebLoadParams webParams =
+        ImageSearchParamGenerator::LoadParamsForImage(
+            image, ios::TemplateURLServiceFactory::GetForBrowserState(
+                       browser->GetBrowserState()));
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+    UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+  }
+
+  [self cancelOmniboxEdit];
 }
 
 @end

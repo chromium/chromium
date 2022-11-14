@@ -17240,6 +17240,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.OmniboxContextMenu.LensCopiedImage">
+  <owner>hujasonx@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>
+    User pressed 'Lens Copied Image' in the omnibox context menu (iOS only).
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <owner>stkhapugin@google.com</owner>
@@ -18880,6 +18888,12 @@ should be able to be added at any place in this file.
     The user tapped the &quot;Incognito Search&quot; button in the mobile menu
     displayed when long pressing the New Tab button.
   </description>
+</action>
+
+<action name="MobileMenuLensCopiedImage">
+  <owner>hujasonx@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <description>User pressed 'Lens Copied Image' in the app menu.</description>
 </action>
 
 <action name="MobileMenuMoveToOtherWindow">

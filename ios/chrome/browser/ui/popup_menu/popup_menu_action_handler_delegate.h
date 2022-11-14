@@ -25,6 +25,8 @@ class WebState;
 - (void)recordDownloadsMetricsPerProfile;
 // Starts a reverse image search for the image currently in the pasteboard.
 - (void)searchCopiedImage;
+// Starts a Lens search for the image currently in the pasteboard.
+- (void)lensCopiedImage;
 // Toggles the follow status of the on browsing website. Called when the follow
 // menu option has been tapped. Follows or unfollows the website according to
 // the current follow status of the website.

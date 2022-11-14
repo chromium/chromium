@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
 
 #import "base/bind.h"
+#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -564,24 +566,17 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   desired_types.insert(ClipboardContentType::Image);
   __weak __typeof(self) weakSelf = self;
   clipboardRecentContent->HasRecentContentFromClipboard(
-      desired_types,
-      base::BindOnce(^(std::set<ClipboardContentType> matched_types) {
-        weakSelf.hasCopiedContent = !matched_types.empty();
-        if (weakSelf.searchByImageEnabled &&
-            matched_types.find(ClipboardContentType::Image) !=
-                matched_types.end()) {
-          weakSelf.copiedContentType = ClipboardContentType::Image;
-        } else if (matched_types.find(ClipboardContentType::URL) !=
-                   matched_types.end()) {
-          weakSelf.copiedContentType = ClipboardContentType::URL;
-        } else if (matched_types.find(ClipboardContentType::Text) !=
-                   matched_types.end()) {
-          weakSelf.copiedContentType = ClipboardContentType::Text;
-        }
-        weakSelf.isUpdatingCachedClipboardState = NO;
+      desired_types, base::BindOnce(^(std::set<ClipboardContentType> types) {
+        [weakSelf onClipboardContentTypeReceived:types];
         completion();
       }));
   return YES;
+}
+
+- (BOOL)shouldUseLensInLongPressMenu {
+  return ios::provider::IsLensSupported() &&
+         base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
+         self.lensImageEnabled;
 }
 
 #pragma mark - UIMenu
@@ -592,6 +587,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     [self.locationBarSteadyView becomeFirstResponder];
 
     UIMenuController* menu = [UIMenuController sharedMenuController];
+    RegisterEditMenuItem([[UIMenuItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
+               action:@selector(lensCopiedImage:)]);
     RegisterEditMenuItem([[UIMenuItem alloc]
         initWithTitle:l10n_util::GetNSString((IDS_IOS_SEARCH_COPIED_IMAGE))
                action:@selector(searchCopiedImage:)]);
@@ -630,20 +629,35 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       std::set<ClipboardContentType>
           clipboard_content_types_values =
               clipboard_content_types.value();
-
+      __weak LocationBarViewController* weakSelf = self;
       if (clipboard_content_types_values.find(
               ClipboardContentType::Image) !=
           clipboard_content_types_values.end()) {
-        id searchCopiedImageHandler = ^(UIAction* action) {
-          [self searchCopiedImage:nil];
-        };
-        UIAction* searchCopiedImageAction = [UIAction
-            actionWithTitle:l10n_util::GetNSString(
-                                (IDS_IOS_SEARCH_COPIED_IMAGE))
-                      image:nil
-                 identifier:nil
-                    handler:searchCopiedImageHandler];
-        [menuElements addObject:searchCopiedImageAction];
+        // Either add an option to search the copied image with Lens, or via the
+        // default search engine's reverse image search functionality.
+        if (self.shouldUseLensInLongPressMenu) {
+          id lensCopiedImageHandler = ^(UIAction* action) {
+            [weakSelf lensCopiedImage:nil];
+          };
+          UIAction* lensCopiedImageAction = [UIAction
+              actionWithTitle:l10n_util::GetNSString(
+                                  (IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS))
+                        image:nil
+                   identifier:nil
+                      handler:lensCopiedImageHandler];
+          [menuElements addObject:lensCopiedImageAction];
+        } else {
+          id searchCopiedImageHandler = ^(UIAction* action) {
+            [weakSelf searchCopiedImage:nil];
+          };
+          UIAction* searchCopiedImageAction =
+              [UIAction actionWithTitle:l10n_util::GetNSString(
+                                            (IDS_IOS_SEARCH_COPIED_IMAGE))
+                                  image:nil
+                             identifier:nil
+                                handler:searchCopiedImageHandler];
+          [menuElements addObject:searchCopiedImageAction];
+        }
       } else if (clipboard_content_types_values.find(
                      ClipboardContentType::URL) !=
                  clipboard_content_types_values.end()) {
@@ -709,6 +723,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   BOOL isClipboardAction = action == @selector(searchCopiedImage:) ||
+                           action == @selector(lensCopiedImage:) ||
                            action == @selector(visitCopiedLink:) ||
                            action == @selector(searchCopiedText:);
   if (self.locationBarSteadyView.isFirstResponder && isClipboardAction) {
@@ -716,6 +731,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       return NO;
     }
     if (self.copiedContentType == ClipboardContentType::Image) {
+      if ([self shouldUseLensInLongPressMenu]) {
+        return action == @selector(lensCopiedImage:);
+      }
       return action == @selector(searchCopiedImage:);
     }
     if (self.copiedContentType == ClipboardContentType::URL) {
@@ -737,6 +755,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   [self.delegate searchCopiedImage];
+}
+
+- (void)lensCopiedImage:(id)sender {
+  RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.LensCopiedImage"));
+  [self.delegate lensCopiedImage];
 }
 
 - (void)visitCopiedLink:(id)sender {
@@ -773,6 +796,20 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           [self.dispatcher cancelOmniboxEdit];
         });
       }));
+}
+
+- (void)onClipboardContentTypeReceived:
+    (const std::set<ClipboardContentType>&)types {
+  self.hasCopiedContent = !types.empty();
+  if (base::Contains(types, ClipboardContentType::Image) &&
+      (self.searchByImageEnabled || self.shouldUseLensInLongPressMenu)) {
+    self.copiedContentType = ClipboardContentType::Image;
+  } else if (base::Contains(types, ClipboardContentType::URL)) {
+    self.copiedContentType = ClipboardContentType::URL;
+  } else if (base::Contains(types, ClipboardContentType::Text)) {
+    self.copiedContentType = ClipboardContentType::Text;
+  }
+  self.isUpdatingCachedClipboardState = NO;
 }
 
 @end

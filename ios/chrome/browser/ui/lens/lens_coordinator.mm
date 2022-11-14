@@ -139,7 +139,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   __weak LensCoordinator* weakSelf = self;
 
   ios::provider::GenerateLensLoadParamsForImageAsync(
-      command.image, LensEntrypoint::ContextMenu, isIncognito,
+      command.image, command.entryPoint, isIncognito,
       base::BindOnce(^(const web::NavigationManager::WebLoadParams params) {
         [weakSelf openWebLoadParams:params];
       }));
