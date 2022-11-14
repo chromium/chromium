@@ -70,6 +70,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private WebContents mWebContents;
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
+    private boolean mEchoCredProps;
     private WebAuthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
 
@@ -140,6 +141,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         // filtered here.
         mAttestationAcceptable =
                 options.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
+        mEchoCredProps = options.credProps;
+
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), mSupportLevel);
         Parcel args = call.start();
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
@@ -479,8 +482,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             errorCode = convertError(error);
         } else if (mMakeCredentialCallback != null) {
             if (response instanceof org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse) {
-                mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
-                        (org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse) response);
+                org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse creationResponse =
+                        (org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse) response;
+                if (mEchoCredProps) {
+                    // The other credProps fields will have been set by
+                    // `parseIntentResponse` if Play Services provided credProps
+                    // information.
+                    creationResponse.echoCredProps = true;
+                }
+                mMakeCredentialCallback.onRegisterResponse(
+                        AuthenticatorStatus.SUCCESS, creationResponse);
                 mMakeCredentialCallback = null;
                 return;
             }

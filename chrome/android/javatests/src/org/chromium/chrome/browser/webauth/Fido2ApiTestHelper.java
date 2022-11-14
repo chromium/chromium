@@ -321,12 +321,10 @@ public class Fido2ApiTestHelper {
         return intent;
     }
 
-    public static Intent createSuccessfulMakeCredentialIntentWithAttestation() {
+    private static Intent intentFromPath(String path) {
         byte[] response;
         try {
-            // This blob is too large (9KB) to reasonably include as a literal.
-            response = Files.readAllBytes(Paths.get(UrlUtils.getTestFilePath(
-                    "webauthn/android_make_credential_bundle_with_attestation")));
+            response = Files.readAllBytes(Paths.get(UrlUtils.getTestFilePath(path)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -334,6 +332,15 @@ public class Fido2ApiTestHelper {
         Intent intent = new Intent();
         intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, response);
         return intent;
+    }
+
+    public static Intent createSuccessfulMakeCredentialIntentWithAttestation() {
+        // This blob is too large (9KB) to reasonably include as a literal.
+        return intentFromPath("webauthn/android_make_credential_bundle_with_attestation");
+    }
+
+    public static Intent createSuccessfulMakeCredentialIntentWithCredProps() {
+        return intentFromPath("webauthn/android_make_credential_bundle_with_credprops_rk_true");
     }
 
     /**

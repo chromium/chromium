@@ -787,11 +787,17 @@ public final class Fido2Api {
             if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
                 creationResponse.authenticatorAttachment = attachment;
             }
-            if (extensions != null && extensions.devicePublicKey != null) {
-                creationResponse.devicePublicKey = extensions.devicePublicKey;
-                creationResponse.devicePublicKey.authenticatorOutput =
-                        Fido2ApiJni.get().getDevicePublicKeyFromAuthenticatorData(
-                                creationResponse.info.authenticatorData);
+            if (extensions != null) {
+                if (extensions.devicePublicKey != null) {
+                    creationResponse.devicePublicKey = extensions.devicePublicKey;
+                    creationResponse.devicePublicKey.authenticatorOutput =
+                            Fido2ApiJni.get().getDevicePublicKeyFromAuthenticatorData(
+                                    creationResponse.info.authenticatorData);
+                }
+                if (extensions.hasCredProps) {
+                    creationResponse.hasCredPropsRk = true;
+                    creationResponse.credPropsRk = extensions.didCreateDiscoverableCredential;
+                }
             }
             return creationResponse;
         }
@@ -1014,6 +1020,8 @@ public final class Fido2Api {
     private static class Extensions {
         public ArrayList<UvmEntry> userVerificationMethods;
         public DevicePublicKeyResponse devicePublicKey;
+        public boolean hasCredProps;
+        public boolean didCreateDiscoverableCredential;
     }
 
     private static Extensions parseExtensionResponse(Parcel parcel)
@@ -1038,6 +1046,11 @@ public final class Fido2Api {
 
                 case 2:
                     ret.devicePublicKey = parseDevicePublicKeyResponse(parcel);
+                    break;
+
+                case 3:
+                    ret.hasCredProps = true;
+                    ret.didCreateDiscoverableCredential = parseCredPropsResponse(parcel);
                     break;
 
                 default:
@@ -1141,6 +1154,31 @@ public final class Fido2Api {
 
         if (ret.signature == null) {
             throw new IllegalArgumentException();
+        }
+
+        return ret;
+    }
+
+    private static boolean parseCredPropsResponse(Parcel parcel) throws IllegalArgumentException {
+        Pair<Integer, Integer> header = readHeader(parcel);
+        if (header.first != OBJECT_MAGIC) {
+            throw new IllegalArgumentException();
+        }
+        final int endPosition = addLengthToParcelPosition(header.second, parcel);
+
+        boolean ret = false;
+
+        while (parcel.dataPosition() < endPosition) {
+            header = readHeader(parcel);
+            switch (header.first) {
+                case 1:
+                    ret = parcel.readInt() != 0;
+                    break;
+
+                default:
+                    // unknown tag. Skip over it.
+                    parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));
+            }
         }
 
         return ret;
