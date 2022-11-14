@@ -210,6 +210,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   bool ignore_accent_color_for_text = false;
 
   FullscreenVisibility fullscreen_visibility = FullscreenVisibility::NONE;
+
+  // Whether the notification should be removed from the MessageCenter when it's
+  // clicked after the delegate has been executed (if any).
+  bool remove_on_click = false;
 };
 
 class MESSAGE_CENTER_PUBLIC_EXPORT Notification {

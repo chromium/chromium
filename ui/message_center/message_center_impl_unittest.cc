@@ -220,7 +220,16 @@ class MessageCenterImplTest : public testing::Test {
       const std::string& id,
       scoped_refptr<NotificationDelegate> delegate) {
     return CreateNotificationWithNotifierIdAndDelegate(
-        id, kDefaultAppId, NOTIFICATION_TYPE_SIMPLE, delegate);
+        id, kDefaultAppId, NOTIFICATION_TYPE_SIMPLE, delegate,
+        RichNotificationData());
+  }
+
+  std::unique_ptr<Notification> CreateSimpleNotificationWithOptionalFields(
+      const std::string& id,
+      const RichNotificationData& optional_fields) {
+    return CreateNotificationWithNotifierIdAndDelegate(
+        id, kDefaultAppId, NOTIFICATION_TYPE_SIMPLE,
+        base::MakeRefCounted<TestDelegate>(), optional_fields);
   }
 
   std::unique_ptr<Notification> CreateNotification(const std::string& id,
@@ -233,17 +242,16 @@ class MessageCenterImplTest : public testing::Test {
       const std::string& notifier_id,
       NotificationType type) {
     return CreateNotificationWithNotifierIdAndDelegate(
-        id, notifier_id, type, base::MakeRefCounted<TestDelegate>());
+        id, notifier_id, type, base::MakeRefCounted<TestDelegate>(),
+        RichNotificationData());
   }
 
   std::unique_ptr<Notification> CreateNotificationWithNotifierIdAndDelegate(
       const std::string& id,
       const std::string& notifier_id,
       NotificationType type,
-      scoped_refptr<NotificationDelegate> delegate) {
-    RichNotificationData optional_fields;
-    optional_fields.buttons.emplace_back(u"foo");
-    optional_fields.buttons.emplace_back(u"foo");
+      scoped_refptr<NotificationDelegate> delegate,
+      const RichNotificationData& optional_fields) {
     return std::make_unique<Notification>(
         type, id, u"title", UTF8ToUTF16(id), ui::ImageModel() /* icon */,
         std::u16string() /* display_source */, GURL(),
@@ -1245,6 +1253,56 @@ TEST_F(MessageCenterImplTest, ButtonClick) {
   message_center()->ClickOnNotificationButton(id, 1);
 
   EXPECT_EQ("ButtonClick_1_", GetDelegate(id)->log());
+}
+
+TEST_F(MessageCenterImplTest, RemoveAfterClick) {
+  const std::string id = "n";
+  RichNotificationData notification_data;
+
+  ASSERT_FALSE(message_center()->FindNotificationById(id));
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithOptionalFields(id, notification_data));
+  ASSERT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->ClickOnNotification(id);
+  EXPECT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->RemoveNotification(id, false);
+  ASSERT_FALSE(message_center()->FindNotificationById(id));
+
+  notification_data.remove_on_click = true;
+
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithOptionalFields(id, notification_data));
+  ASSERT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->ClickOnNotification(id);
+  EXPECT_FALSE(message_center()->FindNotificationById(id));
+}
+
+TEST_F(MessageCenterImplTest, RemoveAfterButtonClick) {
+  const std::string id = "n";
+  RichNotificationData notification_data;
+  notification_data.buttons.emplace_back(u"button");
+
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithOptionalFields(id, notification_data));
+  ASSERT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->ClickOnNotificationButton(id, 0);
+  EXPECT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->RemoveNotification(id, false);
+  ASSERT_FALSE(message_center()->FindNotificationById(id));
+
+  notification_data.remove_on_click = true;
+
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithOptionalFields(id, notification_data));
+  ASSERT_TRUE(message_center()->FindNotificationById(id));
+
+  message_center()->ClickOnNotificationButton(id, 0);
+  EXPECT_FALSE(message_center()->FindNotificationById(id));
 }
 
 TEST_F(MessageCenterImplTest, ButtonClickWithReply) {

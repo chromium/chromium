@@ -124,6 +124,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   message_center::RichNotificationData notification_data;
   notification_data.priority = priority;
   current_notification_priority_ = priority;
+  notification_data.remove_on_click = true;
 
   scoped_refptr<message_center::NotificationDelegate> delegate;
   // Don't show a button to unmute device if the microphone was muted by a HW
@@ -135,12 +136,6 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
     delegate =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating([](absl::optional<int> button_index) {
-              message_center::MessageCenter* message_center =
-                  message_center::MessageCenter::Get();
-              DCHECK(message_center);
-              message_center->RemoveNotification(kNotificationId,
-                                                 /*by_user=*/true);
-
               if (!button_index) {
                 PrivacyHubNotificationController::OpenPrivacyHubSettingsPage();
                 return;

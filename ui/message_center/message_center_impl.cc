@@ -459,6 +459,12 @@ void MessageCenterImpl::ClickOnNotificationUnlocked(
       notification_list_->GetNotificationDelegate(id);
   if (delegate)
     delegate->Click(button_index, reply);
+
+  if (const Notification* notification =
+          notification_list_->GetNotificationById(id);
+      notification && notification->rich_notification_data().remove_on_click) {
+    RemoveNotification(id, /*by_user=*/true);
+  }
 }
 
 void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {

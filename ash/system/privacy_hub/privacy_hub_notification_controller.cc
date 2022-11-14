@@ -79,6 +79,7 @@ void PrivacyHubNotificationController::
   message_center::RichNotificationData notification_data;
   notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON));
+  notification_data.remove_on_click = true;
 
   message_center::MessageCenter::Get()->AddNotification(
       CreateSystemNotification(
@@ -165,10 +166,6 @@ void PrivacyHubNotificationController::ShowAllActiveNotifications(
 
 void PrivacyHubNotificationController::HandleNotificationClicked(
     absl::optional<int> button_index) {
-  message_center::MessageCenter::Get()->RemoveNotification(
-      PrivacyHubNotificationController::kCombinedNotificationId,
-      /*by_user=*/true);
-
   if (!button_index) {
     ignore_new_combinable_notifications_ = true;
     OpenPrivacyHubSettingsPage();

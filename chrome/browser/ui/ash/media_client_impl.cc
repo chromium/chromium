@@ -61,6 +61,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using ash::MediaCaptureState;
 
@@ -547,6 +548,9 @@ void MediaClientImpl::ShowCameraOffNotification(
 
   SystemNotificationHelper::GetInstance()->Close(notification_id);
 
+  message_center::RichNotificationData rich_notification_data;
+  rich_notification_data.remove_on_click = true;
+
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
@@ -557,7 +561,7 @@ void MediaClientImpl::ShowCameraOffNotification(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kCameraPrivacySwitchNotifierId,
               ash::NotificationCatalogName::kCameraPrivacySwitch),
-          message_center::RichNotificationData(),
+          rich_notification_data,
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),
           vector_icons::kSettingsIcon,
