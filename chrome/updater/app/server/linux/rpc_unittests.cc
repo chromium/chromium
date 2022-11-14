@@ -297,12 +297,7 @@ TEST_F(UpdaterIPCTestCase, RunInstaller) {
 class UpdaterIPCErrorTestCase : public UpdaterIPCTestCase {
  public:
   void SetUp() override {
-    // Create a Mojo Remote with a bound message pipe but without a receiver.
-    // This will cause RPC calls to eventually be dropped.
-    mojo::Remote<mojom::UpdateService> remote;
-    std::ignore = remote.BindNewPipeAndPassReceiver();
-    client_proxy_ = CreateUpdateServiceProxy(UpdaterScope::kUser, nullptr,
-                                             std::move(remote));
+    client_proxy_ = CreateUpdateServiceProxy(UpdaterScope::kUser);
   }
 };
 
@@ -369,12 +364,7 @@ TEST_F(UpdaterIPCInternalTestCase, Hello) {
 class UpdaterIPCInternalErrorTestCase : public UpdaterIPCInternalTestCase {
  public:
   void SetUp() override {
-    // Create a Mojo Remote with a bound message pipe but without a receiver.
-    // This will cause RPC calls to eventually be dropped.
-    mojo::Remote<mojom::UpdateServiceInternal> remote;
-    std::ignore = remote.BindNewPipeAndPassReceiver();
-    client_proxy_ = CreateUpdateServiceInternalProxy(
-        UpdaterScope::kUser, nullptr, std::move(remote));
+    client_proxy_ = CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
   }
 };
 

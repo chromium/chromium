@@ -17,7 +17,10 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
@@ -30,10 +33,12 @@
 #include "chrome/updater/util/util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -45,6 +50,9 @@ class TimeDelta;
 
 namespace updater {
 namespace {
+
+// The maximum amount of time to poll the server's socket for a connection.
+constexpr base::TimeDelta kConnectionTimeout = base::Seconds(3);
 
 [[nodiscard]] UpdateService::UpdateState MakeUpdateState(
     const mojom::UpdateStatePtr& state_mojom) {
@@ -144,57 +152,113 @@ MakeStateChangeObserver(
 class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl> {
  public:
-  explicit UpdateServiceProxyImpl(
-      UpdaterScope /*scope*/,
-      std::unique_ptr<mojo::IsolatedConnection> connection,
-      mojo::Remote<mojom::UpdateService> remote)
-      : connection_(std::move(connection)), remote_(std::move(remote)) {}
+  explicit UpdateServiceProxyImpl(UpdaterScope scope) {
+    base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&UpdateServiceProxyImpl::Connect, scope),
+        base::BindOnce(&UpdateServiceProxyImpl::OnConnected,
+                       weak_factory_.GetWeakPtr(),
+                       remote_.BindNewPipeAndPassReceiver()));
+  }
+
+  UpdateServiceProxyImpl(UpdaterScope /*scope*/,
+                         std::unique_ptr<mojo::IsolatedConnection> connection,
+                         mojo::Remote<mojom::UpdateService> remote)
+      : connection_(std::move(connection)), remote_(std::move(remote)) {
+    remote_.set_disconnect_handler(base::BindOnce(
+        &UpdateServiceProxyImpl::OnDisconnected, weak_factory_.GetWeakPtr()));
+  }
 
   void GetVersion(base::OnceCallback<void(const base::Version&)> callback) {
-    remote_->GetVersion(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        base::BindOnce(
-            [](base::OnceCallback<void(const base::Version&)> callback,
-               const std::string& version) {
-              std::move(callback).Run(base::Version(version));
-            },
-            std::move(callback)),
-        ""));
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::GetVersionCallback wrapped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(
+                [](base::OnceCallback<void(const base::Version&)> callback,
+                   const std::string& version) {
+                  std::move(callback).Run(base::Version(version));
+                },
+                std::move(callback)),
+            "");
+
+    if (!remote_)
+      return;
+
+    remote_->GetVersion(std::move(wrapped_callback));
   }
 
   void FetchPolicies(base::OnceCallback<void(int)> callback) {
-    remote_->FetchPolicies(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        std::move(callback), kErrorMojoDisconnect));
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::FetchPoliciesCallback wrapped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                    kErrorMojoDisconnect);
+    if (!remote_)
+      return;
+
+    remote_->FetchPolicies(std::move(wrapped_callback));
   }
 
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::RegisterAppCallback wrapped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                    kErrorMojoDisconnect);
+
+    if (!remote_)
+      return;
+
     remote_->RegisterApp(MakeRegistrationRequest(request),
-                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                             std::move(callback), kErrorMojoDisconnect));
+                         std::move(wrapped_callback));
   }
 
   void GetAppStates(
       base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>
           callback) {
-    remote_->GetAppStates(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        base::BindOnce([](std::vector<mojom::AppStatePtr> app_states_mojo) {
-          std::vector<updater::UpdateService::AppState> app_states;
-          base::ranges::transform(
-              app_states_mojo, std::back_inserter(app_states), &MakeAppState);
-          return app_states;
-        }).Then(std::move(callback)),
-        std::vector<mojom::AppStatePtr>()));
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::GetAppStatesCallback wrapped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce([](std::vector<mojom::AppStatePtr> app_states_mojo) {
+              std::vector<updater::UpdateService::AppState> app_states;
+              base::ranges::transform(app_states_mojo,
+                                      std::back_inserter(app_states),
+                                      &MakeAppState);
+              return app_states;
+            }).Then(std::move(callback)),
+            std::vector<mojom::AppStatePtr>());
+
+    if (!remote_)
+      return;
+
+    remote_->GetAppStates(std::move(wrapped_callback));
   }
 
   void RunPeriodicTasks(base::OnceClosure callback) {
-    remote_->RunPeriodicTasks(
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback)));
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::RunPeriodicTasksCallback wrapped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
+
+    if (!remote_)
+      return;
+
+    remote_->RunPeriodicTasks(std::move(wrapped_callback));
   }
 
   void UpdateAll(UpdateService::StateChangeCallback state_change_callback,
                  UpdateService::Callback complete_callback) {
-    remote_->UpdateAll(MakeStateChangeObserver(std::move(state_change_callback),
-                                               std::move(complete_callback)));
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::UpdateAllCallback state_change_observer_callback =
+        MakeStateChangeObserver(std::move(state_change_callback),
+                                std::move(complete_callback));
+    if (!remote_)
+      return;
+
+    remote_->UpdateAll(std::move(state_change_observer_callback));
   }
 
   void Update(const std::string& app_id,
@@ -203,12 +267,20 @@ class UpdateServiceProxyImpl
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
               UpdateService::StateChangeCallback state_change_callback,
               UpdateService::Callback complete_callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::UpdateCallback state_change_observer_callback =
+        MakeStateChangeObserver(std::move(state_change_callback),
+                                std::move(complete_callback));
+
+    if (!remote_)
+      return;
+
     remote_->Update(app_id, install_data_index,
                     static_cast<mojom::UpdateService::Priority>(priority),
                     static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
                         policy_same_version_update),
-                    MakeStateChangeObserver(std::move(state_change_callback),
-                                            std::move(complete_callback)));
+                    std::move(state_change_observer_callback));
   }
 
   void Install(const RegistrationRequest& registration,
@@ -217,14 +289,26 @@ class UpdateServiceProxyImpl
                UpdateService::Priority priority,
                UpdateService::StateChangeCallback state_change_callback,
                UpdateService::Callback complete_callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::InstallCallback state_change_observer_callback =
+        MakeStateChangeObserver(std::move(state_change_callback),
+                                std::move(complete_callback));
+
+    if (!remote_)
+      return;
+
     remote_->Install(MakeRegistrationRequest(registration), client_install_data,
                      install_data_index,
                      static_cast<mojom::UpdateService::Priority>(priority),
-                     MakeStateChangeObserver(std::move(state_change_callback),
-                                             std::move(complete_callback)));
+                     std::move(state_change_observer_callback));
   }
 
   void CancelInstalls(const std::string& app_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!remote_)
+      return;
+
     remote_->CancelInstalls(app_id);
   }
 
@@ -235,19 +319,97 @@ class UpdateServiceProxyImpl
                     const std::string& install_settings,
                     UpdateService::StateChangeCallback state_change_callback,
                     UpdateService::Callback complete_callback) {
-    remote_->RunInstaller(
-        app_id, installer_path, install_args, install_data, install_settings,
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    mojom::UpdateService::RunInstallerCallback state_change_observer_callback =
         MakeStateChangeObserver(std::move(state_change_callback),
-                                std::move(complete_callback)));
+                                std::move(complete_callback));
+
+    if (!remote_)
+      return;
+
+    remote_->RunInstaller(app_id, installer_path, install_args, install_data,
+                          install_settings,
+                          std::move(state_change_observer_callback));
   }
 
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImpl>;
   virtual ~UpdateServiceProxyImpl() = default;
 
-  std::unique_ptr<mojo::IsolatedConnection> connection_;
-  mojo::Remote<mojom::UpdateService> remote_;
+  void OnDisconnected() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    LOG(ERROR) << "UpdateService remote has unexpectedly disconnected.";
+    connection_.reset();
+    remote_.reset();
+  }
+
+  static absl::optional<mojo::PlatformChannelEndpoint> Connect(
+      UpdaterScope scope) {
+    absl::optional<base::FilePath> socket_path = GetActiveDutySocketPath(scope);
+    if (!socket_path) {
+      LOG(ERROR) << "Failed to get socket path.";
+      return absl::nullopt;
+    }
+
+    mojo::PlatformChannelEndpoint endpoint;
+
+    base::Time deadline = base::Time::NowFromSystemTime() + kConnectionTimeout;
+    do {
+      endpoint = mojo::NamedPlatformChannel::ConnectToServer(
+          socket_path->MaybeAsASCII());
+      base::PlatformThread::Sleep(base::Milliseconds(100));
+    } while (!endpoint.is_valid() &&
+             base::Time::NowFromSystemTime() < deadline);
+
+    if (!endpoint.is_valid()) {
+      LOG(ERROR)
+          << "Failed to connect to UpdateService remote. Connection timed "
+             "out.";
+      return absl::nullopt;
+    }
+
+    return std::move(endpoint);
+  }
+
+  void OnConnected(mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
+                   absl::optional<mojo::PlatformChannelEndpoint> endpoint) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!endpoint) {
+      remote_.reset();
+      return;
+    }
+
+    auto connection = std::make_unique<mojo::IsolatedConnection>();
+    // Connect `remote_` to the RPC server by fusing its message pipe to the one
+    // created by `IsolatedConnection::Connect`.
+    if (!mojo::FusePipes(
+            std::move(pending_receiver),
+            mojo::PendingRemote<mojom::UpdateService>(
+                connection->Connect(std::move(endpoint.value())), 0))) {
+      LOG(ERROR) << "Failed to fuse Mojo pipes for RPC.";
+      remote_.reset();
+      return;
+    }
+
+    connection_ = std::move(connection);
+    remote_.set_disconnect_handler(base::BindOnce(
+        &UpdateServiceProxyImpl::OnDisconnected, weak_factory_.GetWeakPtr()));
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<mojo::IsolatedConnection> connection_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::UpdateService> remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<UpdateServiceProxyImpl> weak_factory_{this};
 };
+
+UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope)
+    : impl_(base::MakeRefCounted<UpdateServiceProxyImpl>(scope)) {}
 
 UpdateServiceProxy::UpdateServiceProxy(
     UpdaterScope updater_scope,
@@ -352,37 +514,7 @@ UpdateServiceProxy::~UpdateServiceProxy() {
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope scope,
     const base::TimeDelta& timeout) {
-  absl::optional<base::FilePath> socket_path = GetActiveDutySocketPath(scope);
-  if (!socket_path)
-    return nullptr;
-
-  mojo::PlatformChannelEndpoint endpoint;
-
-  // TODO(1382127): Avoid blocking the calling thread.
-  base::Time deadline = base::Time::NowFromSystemTime() + timeout;
-  do {
-    endpoint = mojo::NamedPlatformChannel::ConnectToServer(
-        socket_path->MaybeAsASCII());
-    base::PlatformThread::Sleep(base::Milliseconds(100));
-  } while (!endpoint.is_valid() && base::Time::NowFromSystemTime() < deadline);
-
-  if (!endpoint.is_valid()) {
-    LOG(ERROR) << "Failed to connect to UpdateService remote. Connection timed "
-                  "out.";
-    return nullptr;
-  }
-
-  auto connection = std::make_unique<mojo::IsolatedConnection>();
-
-  mojo::Remote<mojom::UpdateService> remote(
-      mojo::PendingRemote<mojom::UpdateService>(
-          connection->Connect(std::move(endpoint)), 0));
-  remote.set_disconnect_handler(base::BindOnce([]() {
-    LOG(ERROR) << "UpdateService remote has unexpectedly disconnected.";
-  }));
-
-  return CreateUpdateServiceProxy(scope, std::move(connection),
-                                  std::move(remote));
+  return base::MakeRefCounted<UpdateServiceProxy>(scope);
 }
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(

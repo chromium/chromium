@@ -20,12 +20,22 @@ class UpdateServiceInternalProxyImpl;
 
 class UpdateServiceInternalProxy : public UpdateServiceInternal {
  public:
+  // Create an UpdateServiceInternalProxy which is not bound to a remote. It
+  // will search for and establish a connection in a background sequence.
+  explicit UpdateServiceInternalProxy(UpdaterScope scope);
+
+  // Create an UpdateServiceInternalProxy bound to the provided Mojo remote. The
+  // lifetime of the connection to the remote process is handled by
+  // `connection` and is bound to the lifetime of this instance.
   UpdateServiceInternalProxy(
       UpdaterScope scope,
       std::unique_ptr<mojo::IsolatedConnection> connection,
       mojo::Remote<mojom::UpdateServiceInternal> remote);
 
   // Overrides for UpdateServiceInternal.
+  // Note: Provided callbacks are wrapped with
+  // `mojo::WrapCallbackWithDefaultInvokeIfNotRun` to avoid deadlock if
+  // connection to the remote is broken.
   void Run(base::OnceClosure callback) override;
   void Hello(base::OnceClosure callback) override;
 

@@ -32,11 +32,21 @@ struct RegistrationRequest;
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
+  // Create an UpdateServiceProxy which is not bound to a remote. It will search
+  // for and establish a connection in a background sequence.
+  explicit UpdateServiceProxy(UpdaterScope scope);
+
+  // Create an UpdateServiceProxy bound to the provided Mojo remote. The
+  // lifetime of the connection to the remote process is handled by
+  // `connection` and is bound to the lifetime of this instance.
   UpdateServiceProxy(UpdaterScope scope,
                      std::unique_ptr<mojo::IsolatedConnection> connection,
                      mojo::Remote<mojom::UpdateService> remote);
 
-  // Overrides for updater::UpdateService
+  // Overrides for updater::UpdateService.
+  // Note: Provided OnceCallbacks are wrapped with
+  // `mojo::WrapCallbackWithDefaultInvokeIfNotRun` to avoid deadlock if
+  // connection to the remote is broken.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
   void FetchPolicies(base::OnceCallback<void(int)> callback) override;
