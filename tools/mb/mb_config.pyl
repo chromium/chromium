@@ -1019,11 +1019,11 @@
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
-      'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
-      'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot',
-      'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot',
-      'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64',
-      'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot',
+      'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
+      'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot_reclient',
+      'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot_reclient',
+      'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64_reclient',
+      'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot_reclient',
       'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
       'linux_android_dbg_ng': 'android_debug_bot',
       'try-nougat-phone-tester': 'android_debug_trybot_arm64_reclient',
@@ -2597,10 +2597,6 @@
       'gpu_tests', 'android', 'release_bot_reclient', 'arm64',
       'resource_allowlisting', 'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_clang_coverage',
-    ],
-
-    'gpu_tests_android_release_trybot': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols', 'static_angle',
     ],
 
     'gpu_tests_android_release_trybot_arm64': [

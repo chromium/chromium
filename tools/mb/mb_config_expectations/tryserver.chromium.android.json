@@ -1118,7 +1118,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -1132,7 +1132,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -1146,7 +1146,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -1161,7 +1161,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
@@ -1175,7 +1175,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
     }
   },
