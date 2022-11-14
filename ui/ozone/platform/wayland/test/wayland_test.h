@@ -112,6 +112,11 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // events have been handled.
   void SyncDisplay();
 
+  // A helper method that sets up the XKB configuration for tests that require
+  // it.
+  // Does nothing if XkbCommon is not used.
+  void MaybeSetUpXkb();
+
   base::test::TaskEnvironment task_environment_;
 
   wl::TestWaylandServerThread server_;

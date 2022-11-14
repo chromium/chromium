@@ -368,40 +368,7 @@ TEST_P(WaylandTouchTest, CheckTouchFocus) {
 TEST_P(WaylandTouchTest, KeyboardFlagsSet) {
   std::unique_ptr<Event> event;
 
-#if BUILDFLAG(USE_XKBCOMMON)
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    // Set up XKB bits and set the keymap to the client.
-    std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context(
-        xkb_context_new(XKB_CONTEXT_NO_FLAGS));
-    std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
-        xkb_keymap_new_from_names(xkb_context.get(), nullptr /*names*/,
-                                  XKB_KEYMAP_COMPILE_NO_FLAGS));
-    std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state(
-        xkb_state_new(xkb_keymap.get()));
-
-    std::unique_ptr<char, base::FreeDeleter> keymap_string(
-        xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
-    ASSERT_TRUE(keymap_string.get());
-    size_t keymap_size = strlen(keymap_string.get()) + 1;
-
-    base::UnsafeSharedMemoryRegion shared_keymap_region =
-        base::UnsafeSharedMemoryRegion::Create(keymap_size);
-    base::WritableSharedMemoryMapping shared_keymap =
-        shared_keymap_region.Map();
-    base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            std::move(shared_keymap_region));
-    ASSERT_TRUE(shared_keymap.IsValid());
-
-    memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
-
-    auto* const keyboard = server->seat()->keyboard()->resource();
-
-    wl_keyboard_send_keymap(keyboard, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
-                            platform_shared_keymap.GetPlatformHandle().fd,
-                            keymap_size);
-  });
-#endif
+  MaybeSetUpXkb();
 
   // Press 'control' key.
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

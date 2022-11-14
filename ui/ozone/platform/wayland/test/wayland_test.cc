@@ -17,6 +17,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
+#include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -239,6 +240,44 @@ void WaylandTest::SyncDisplay() {
   wl_callback_add_listener(sync_callback.get(), &listener, &run_loop);
   connection_->Flush();
   run_loop.Run();
+}
+
+void WaylandTest::MaybeSetUpXkb() {
+#if BUILDFLAG(USE_XKBCOMMON)
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    // Set up XKB bits and set the keymap to the client.
+    std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context(
+        xkb_context_new(XKB_CONTEXT_NO_FLAGS));
+    std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
+        xkb_keymap_new_from_names(xkb_context.get(), nullptr /*names*/,
+                                  XKB_KEYMAP_COMPILE_NO_FLAGS));
+    std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state(
+        xkb_state_new(xkb_keymap.get()));
+
+    std::unique_ptr<char, base::FreeDeleter> keymap_string(
+        xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
+    ASSERT_TRUE(keymap_string.get());
+
+    size_t keymap_size = strlen(keymap_string.get()) + 1;
+    base::UnsafeSharedMemoryRegion shared_keymap_region =
+        base::UnsafeSharedMemoryRegion::Create(keymap_size);
+    base::WritableSharedMemoryMapping shared_keymap =
+        shared_keymap_region.Map();
+    base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(shared_keymap_region));
+    ASSERT_TRUE(shared_keymap.IsValid());
+
+    memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
+
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    ASSERT_TRUE(keyboard);
+
+    wl_keyboard_send_keymap(keyboard, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                            platform_shared_keymap.GetPlatformHandle().fd,
+                            keymap_size);
+  });
+#endif
 }
 
 }  // namespace ui

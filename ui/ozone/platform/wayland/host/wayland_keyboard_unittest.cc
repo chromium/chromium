@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -35,103 +36,85 @@ namespace ui {
 
 class WaylandKeyboardTest : public WaylandTest {
  public:
-  WaylandKeyboardTest() {}
-
+  WaylandKeyboardTest() : WaylandTest(TestServerMode::kAsync) {}
   WaylandKeyboardTest(const WaylandKeyboardTest&) = delete;
   WaylandKeyboardTest& operator=(const WaylandKeyboardTest&) = delete;
+  ~WaylandKeyboardTest() override = default;
 
   void SetUp() override {
     WaylandTest::SetUp();
 
-    wl_seat_send_capabilities(server_.seat()->resource(),
-                              WL_SEAT_CAPABILITY_KEYBOARD);
-
-    Sync();
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      wl_seat_send_capabilities(server->seat()->resource(),
+                                WL_SEAT_CAPABILITY_KEYBOARD);
+    });
+    ASSERT_TRUE(connection_->seat()->keyboard());
 
     EXPECT_EQ(1u,
               DeviceDataManager::GetInstance()->GetKeyboardDevices().size());
 
-    keyboard_ = server_.seat()->keyboard();
-    ASSERT_TRUE(keyboard_);
-
-#if BUILDFLAG(USE_XKBCOMMON)
-    // Set up XKB bits and set the keymap to the client.
-    xkb_context_.reset(xkb_context_new(XKB_CONTEXT_NO_FLAGS));
-    xkb_keymap_.reset(xkb_keymap_new_from_names(
-        xkb_context_.get(), nullptr /*names*/, XKB_KEYMAP_COMPILE_NO_FLAGS));
-    xkb_state_.reset(xkb_state_new(xkb_keymap_.get()));
-
-    std::unique_ptr<char, base::FreeDeleter> keymap_string(
-        xkb_keymap_get_as_string(xkb_keymap_.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
-    ASSERT_TRUE(keymap_string.get());
-    size_t keymap_size = strlen(keymap_string.get()) + 1;
-
-    base::UnsafeSharedMemoryRegion shared_keymap_region =
-        base::UnsafeSharedMemoryRegion::Create(keymap_size);
-    base::WritableSharedMemoryMapping shared_keymap =
-        shared_keymap_region.Map();
-    base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            std::move(shared_keymap_region));
-    ASSERT_TRUE(shared_keymap.IsValid());
-
-    memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
-    wl_keyboard_send_keymap(
-        keyboard_->resource(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
-        platform_shared_keymap.GetPlatformHandle().fd, keymap_size);
-#endif
+    MaybeSetUpXkb();
   }
 
  protected:
-  raw_ptr<wl::TestKeyboard> keyboard_;
+  // Enters the keyboard into the surface.
+  void SendEnter(int32_t rate, int32_t delay) {
+    PostToServerAndWait(
+        [rate, delay, surface_id = window_->root_surface()->get_surface_id()](
+            wl::TestWaylandServerThread* server) {
+          auto* const keyboard = server->seat()->keyboard()->resource();
+          auto* const surface =
+              server->GetObject<wl::MockSurface>(surface_id)->resource();
 
-  // There may be a pending wl_display_sync event, which is triggered by auto
-  // key repeat and needs to be processed. Wait for its completion.
-  void SyncDisplay() {
-    Sync();
-    base::RunLoop run_loop;
-    wl::Object<wl_callback> sync_callback(
-        wl_display_sync(connection_->display_wrapper()));
-    wl_callback_listener listener = {
-        [](void* data, struct wl_callback* cb, uint32_t time) {
-          static_cast<base::RunLoop*>(data)->Quit();
-        }};
-    wl_callback_add_listener(sync_callback.get(), &listener, &run_loop);
-    connection_->Flush();
-    Sync();
+          wl::ScopedWlArray empty({});
+          wl_keyboard_send_enter(keyboard, server->GetNextSerial(), surface,
+                                 empty.get());
 
-    server_.Resume();
-    run_loop.Run();
-    server_.Pause();
+          wl_keyboard_send_repeat_info(keyboard, rate, delay);
+        });
   }
 
- private:
-#if BUILDFLAG(USE_XKBCOMMON)
-  // The Xkb state used for the keyboard.
-  std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context_;
-  std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap_;
-  std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
-#endif
+  void SendEnter() {
+    // Set "no repeat" so that events would be "squashed" with the modifiers,
+    // otherwise the behaviour is not determined and we cannot set stable
+    // expectations.
+    SendEnter(0, 0);
+  }
 };
 
 ACTION_P(CloneEvent, ptr) {
   *ptr = arg0->Clone();
 }
 
-TEST_P(WaylandKeyboardTest, Keypress) {
-  struct wl_array empty;
-  wl_array_init(&empty);
-  wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                         &empty);
-  wl_array_release(&empty);
+ACTION_P(AppendEvent, ptr) {
+  ptr->emplace_back(arg0->Clone());
+}
 
-  wl_keyboard_send_key(keyboard_->resource(), 2, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+ACTION_P(AppendEventAndQuitLoop, ptr, event_count, closure) {
+  ptr->emplace_back(arg0->Clone());
+  if (ptr->size() == event_count)
+    closure.Run();
+}
+
+TEST_P(WaylandKeyboardTest, Keypress) {
+  SendEnter();
 
   std::unique_ptr<Event> event;
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
 
-  Sync();
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+
+    wl_keyboard_send_leave(keyboard, server->GetNextSerial(), surface);
+  });
+
   ASSERT_TRUE(event);
   ASSERT_TRUE(event->IsKeyEvent());
 
@@ -139,210 +122,225 @@ TEST_P(WaylandKeyboardTest, Keypress) {
   EXPECT_EQ(ui::VKEY_A, key_event->key_code());
   EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
 
-  wl_keyboard_send_leave(keyboard_->resource(), 3, surface_->resource());
+  // The window no longer has keyboard focus, and the below should not result in
+  // receiving more events.  The expectation set in the beginning of the test
+  // should not over-saturate.
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
 
-  Sync();
-
-  wl_keyboard_send_key(keyboard_->resource(), 3, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
-  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
 }
 
 TEST_P(WaylandKeyboardTest, ControlShiftModifiers) {
-  struct wl_array empty;
-  wl_array_init(&empty);
-  wl_array_init(&empty);
-  wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                         &empty);
-  wl_array_release(&empty);
+  SendEnter();
 
-  // Pressing control.
-  wl_keyboard_send_key(keyboard_->resource(), 2, 0, 29 /* Control */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .Times(3)
+      .WillRepeatedly(AppendEvent(&events));
 
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
-  Sync();
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
 
-  wl_keyboard_send_modifiers(keyboard_->resource(), 3, 4 /* mods_depressed*/,
-                             0 /* mods_latched */, 0 /* mods_locked */,
-                             0 /* group */);
-  Sync();
+    // Pressing control.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 29 /* Control */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
 
-  // Pressing shift (with control key still held down).
-  wl_keyboard_send_key(keyboard_->resource(), 4, 0, 42 /* Shift */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+    wl_keyboard_send_modifiers(keyboard, server->GetNextSerial(),
+                               4 /* mods_depressed*/, 0 /* mods_latched */,
+                               0 /* mods_locked */, 0 /* group */);
 
-  std::unique_ptr<Event> event2;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event2));
-  Sync();
+    // Pressing shift (with control key still held down).
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 42 /* Shift */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
 
-  wl_keyboard_send_modifiers(keyboard_->resource(), 5, 5 /* mods_depressed*/,
-                             0 /* mods_latched */, 0 /* mods_locked */,
-                             0 /* group */);
-  Sync();
+    wl_keyboard_send_modifiers(keyboard, server->GetNextSerial(),
+                               5 /* mods_depressed*/, 0 /* mods_latched */,
+                               0 /* mods_locked */, 0 /* group */);
 
-  // Sending a reguard keypress, eg 'a'.
-  wl_keyboard_send_key(keyboard_->resource(), 6, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+    // Sending a reguard keypress, eg 'a'.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
 
-  std::unique_ptr<Event> event3;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event3));
-  Sync();
+  auto& last_event = events[events.size() - 1];
+  ASSERT_TRUE(last_event);
+  ASSERT_TRUE(last_event->IsKeyEvent());
 
-  ASSERT_TRUE(event3);
-  ASSERT_TRUE(event3->IsKeyEvent());
+  auto* key_event = last_event->AsKeyEvent();
 
-  auto* key_event3 = event3->AsKeyEvent();
-
-  EXPECT_EQ(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, key_event3->flags());
-  EXPECT_EQ(ui::VKEY_A, key_event3->key_code());
-  EXPECT_EQ(ET_KEY_PRESSED, key_event3->type());
+  EXPECT_EQ(ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN, key_event->flags());
+  EXPECT_EQ(ui::VKEY_A, key_event->key_code());
+  EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
 }
 
 #if BUILDFLAG(USE_XKBCOMMON)
 TEST_P(WaylandKeyboardTest, CapsLockModifier) {
-  struct wl_array empty;
-  wl_array_init(&empty);
-  wl_array_init(&empty);
-  wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                         &empty);
-  wl_array_release(&empty);
+  SendEnter();
 
-  // Pressing capslock (led ON).
-  wl_keyboard_send_key(keyboard_->resource(), 2, 0, 58 /* Capslock */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .Times(3)
+      .WillRepeatedly(AppendEvent(&events));
 
-  std::unique_ptr<Event> event;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event));
-  Sync();
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
 
-  wl_keyboard_send_modifiers(keyboard_->resource(), 3, 2 /* mods_depressed*/,
-                             0 /* mods_latched */, 2 /* mods_locked */,
-                             0 /* group */);
-  Sync();
+    // Pressing capslock (led ON).
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 58 /* Capslock */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
 
-  // Releasing capslock (led ON).
-  wl_keyboard_send_key(keyboard_->resource(), 4, 0, 58 /* Capslock */,
-                       WL_KEYBOARD_KEY_STATE_RELEASED);
+    wl_keyboard_send_modifiers(keyboard, server->GetNextSerial(),
+                               2 /* mods_depressed*/, 0 /* mods_latched */,
+                               2 /* mods_locked */, 0 /* group */);
 
-  std::unique_ptr<Event> event2;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event2));
-  Sync();
+    // Releasing capslock (led ON).
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 58 /* Capslock */,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
 
-  wl_keyboard_send_modifiers(keyboard_->resource(), 5, 0 /* mods_depressed*/,
-                             0 /* mods_latched */, 2 /* mods_locked */,
-                             0 /* group */);
-  Sync();
+    wl_keyboard_send_modifiers(keyboard, server->GetNextSerial(),
+                               0 /* mods_depressed*/, 0 /* mods_latched */,
+                               2 /* mods_locked */, 0 /* group */);
 
-  // Sending a reguard keypress, eg 'a'.
-  wl_keyboard_send_key(keyboard_->resource(), 6, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
+    // Sending a reguard keypress, eg 'a'.
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
 
-  std::unique_ptr<Event> event3;
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&event3));
-  Sync();
+  auto& last_event = events[events.size() - 1];
+  ASSERT_TRUE(last_event);
+  ASSERT_TRUE(last_event->IsKeyEvent());
 
-  ASSERT_TRUE(event3);
-  ASSERT_TRUE(event3->IsKeyEvent());
+  auto* key_event = last_event->AsKeyEvent();
 
-  auto* key_event3 = event3->AsKeyEvent();
-
-  EXPECT_EQ(ui::EF_CAPS_LOCK_ON, key_event3->flags());
-  EXPECT_EQ(ui::VKEY_A, key_event3->key_code());
-  EXPECT_EQ(ET_KEY_PRESSED, key_event3->type());
+  EXPECT_EQ(ui::EF_CAPS_LOCK_ON, key_event->flags());
+  EXPECT_EQ(ui::VKEY_A, key_event->key_code());
+  EXPECT_EQ(ET_KEY_PRESSED, key_event->type());
 }
 #endif
 
 TEST_P(WaylandKeyboardTest, EventAutoRepeat) {
-  struct wl_array empty;
-  wl_array_init(&empty);
-
-  wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                         &empty);
-  wl_array_release(&empty);
-
   constexpr int32_t rate = 5;    // num key events per second.
   constexpr int32_t delay = 60;  // in milliseconds.
 
-  wl_keyboard_send_repeat_info(keyboard_->resource(), rate, delay);
+  SendEnter(rate, delay);
 
-  // Keep the key pressed.
-  EXPECT_CALL(delegate_, DispatchEvent(NotNull())).Times(1);
-  wl_keyboard_send_key(keyboard_->resource(), 2, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
-  Sync();
+  // Press the key and wait for two automatically repeated events to come.
+  base::RunLoop run_loop;
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillRepeatedly(
+          AppendEventAndQuitLoop(&events, 3u, run_loop.QuitClosure()));
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  auto check_repeat_event = [](Event* event) {
-    ASSERT_TRUE(event);
-    EXPECT_EQ(ET_KEY_PRESSED, event->type());
-    EXPECT_TRUE(event->flags() & EF_IS_REPEAT);
-    EXPECT_EQ(KeyboardCode::VKEY_A, event->AsKeyEvent()->key_code());
+  // Release the key.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+  });
+
+  ASSERT_EQ(events.size(), 3u);
+
+  const auto press_timestamp = events[0]->time_stamp();
+
+  auto check_repeat_event = [](const Event& event) {
+    EXPECT_EQ(ET_KEY_PRESSED, event.type());
+    EXPECT_TRUE(event.flags() & EF_IS_REPEAT);
+    EXPECT_EQ(KeyboardCode::VKEY_A, event.AsKeyEvent()->key_code());
   };
 
-  // First key repeat event happens after |delay| milliseconds.
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(check_repeat_event);
-  task_environment_.FastForwardBy(base::Milliseconds(delay));
-  SyncDisplay();
-  Mock::VerifyAndClearExpectations(&delegate_);
+  // The first key repeat event happens after |delay| milliseconds.
+  const auto& first_repeat_event = *events[1];
+  check_repeat_event(first_repeat_event);
+  const auto first_repeat_delay =
+      first_repeat_event.time_stamp() - press_timestamp;
+  EXPECT_EQ(first_repeat_delay.InMilliseconds(), delay);
 
   // The next key event happens after 1/|rate| seconds.
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(check_repeat_event);
-  task_environment_.FastForwardBy(base::Milliseconds(1000 / rate));
-  SyncDisplay();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Then release.
-  wl_keyboard_send_key(keyboard_->resource(), 3, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_RELEASED);
-  Sync();
+  const auto& second_repeat_event = *events[2];
+  check_repeat_event(second_repeat_event);
+  const auto second_repeat_delay =
+      second_repeat_event.time_stamp() - press_timestamp - first_repeat_delay;
+  EXPECT_EQ(second_repeat_delay.InMilliseconds(), 1000 / rate);
 }
 
 TEST_P(WaylandKeyboardTest, NoEventAutoRepeatOnLeave) {
-  struct wl_array empty;
-  wl_array_init(&empty);
-
-  wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                         &empty);
-  wl_array_release(&empty);
-
   constexpr int32_t rate = 5;    // num key events per second.
   constexpr int32_t delay = 60;  // in milliseconds.
 
-  wl_keyboard_send_repeat_info(keyboard_->resource(), rate, delay);
-  Sync();
+  SendEnter(rate, delay);
 
-  EXPECT_CALL(delegate_, DispatchEvent(NotNull())).Times(1);
-  wl_keyboard_send_key(keyboard_->resource(), 2, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_PRESSED);
-  Sync();
-  Mock::VerifyAndClearExpectations(&delegate_);
+  // Press the key and wait for one automatically repeated event to come.
+  base::RunLoop run_loop;
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillRepeatedly(
+          AppendEventAndQuitLoop(&events, 2u, run_loop.QuitClosure()));
 
-  // Check first key repeating event.
-  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([](Event* event) {
-    ASSERT_TRUE(event);
-    EXPECT_EQ(ET_KEY_PRESSED, event->type());
-    EXPECT_TRUE(event->flags() & EF_IS_REPEAT);
-    EXPECT_EQ(KeyboardCode::VKEY_A, event->AsKeyEvent()->key_code());
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
   });
-  task_environment_.FastForwardBy(base::Milliseconds(delay));
-  SyncDisplay();
+  run_loop.Run();
   Mock::VerifyAndClearExpectations(&delegate_);
 
   // Then leave.
-  wl_keyboard_send_leave(keyboard_->resource(), 3, surface_->resource());
-  Sync();
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
 
-  // After that, no key repeat events are expected.
+    wl_keyboard_send_leave(keyboard, server->GetNextSerial(), surface);
+  });
+
+  // Check the first key repeating event.
+  const auto& first_repeat_event = *events[1];
+  EXPECT_EQ(ET_KEY_PRESSED, first_repeat_event.type());
+  EXPECT_TRUE(first_repeat_event.flags() & EF_IS_REPEAT);
+  EXPECT_EQ(KeyboardCode::VKEY_A, first_repeat_event.AsKeyEvent()->key_code());
+
+  // The window no longer has keyboard focus, and the below should not result in
+  // receiving more events.
   EXPECT_CALL(delegate_, DispatchEvent(NotNull())).Times(0);
-  task_environment_.FastForwardBy(base::Milliseconds(1000 / rate));
-  Sync();
+
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  wl_keyboard_send_key(keyboard_->resource(), 4, 0, 30 /* a */,
-                       WL_KEYBOARD_KEY_STATE_RELEASED);
-  Sync();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 30 /* a */,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+  });
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
