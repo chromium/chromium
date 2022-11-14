@@ -317,9 +317,6 @@ using base::UserMetricsAction;
 - (void)keyCommand_showNextTab {
   RecordAction(UserMetricsAction("MobileKeyCommandShowNextTab"));
   WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
   int activeIndex = webStateList->active_index();
   if (activeIndex == WebStateList::kInvalidIndex)
     return;
@@ -337,9 +334,6 @@ using base::UserMetricsAction;
 - (void)keyCommand_showPreviousTab {
   RecordAction(UserMetricsAction("MobileKeyCommandShowPreviousTab"));
   WebStateList* webStateList = self.browser->GetWebStateList();
-  if (!webStateList)
-    return;
-
   int activeIndex = webStateList->active_index();
   if (activeIndex == WebStateList::kInvalidIndex)
     return;
