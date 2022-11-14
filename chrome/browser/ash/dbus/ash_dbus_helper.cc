@@ -297,6 +297,7 @@ void ShutdownDBus() {
   chromeos::PermissionBrokerClient::Shutdown();
   PciguardClient::Shutdown();
   PatchPanelClient::Shutdown();
+  PrivateComputingClient::Shutdown();
   OsInstallClient::Shutdown();
   OobeConfigurationClient::Shutdown();
   chromeos::MissiveClient::Shutdown();
