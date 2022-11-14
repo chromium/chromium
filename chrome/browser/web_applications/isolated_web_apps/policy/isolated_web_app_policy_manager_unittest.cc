@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -38,7 +39,9 @@ constexpr char kUpdateManifestUrl1[] =
 constexpr char kUpdateManifestUrl2[] =
     "https://example.com/2/update-manifest-2.json";
 constexpr char kUpdateManifestUrl3[] =
-    "https://example.com/2/update-manifest-3.json";
+    "https://example.com/3/update-manifest-3.json";
+constexpr char kUpdateManifestUrl4[] =
+    "https://example.com/4/update-manifest-4.json";
 
 constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
@@ -50,6 +53,7 @@ constexpr char kUpdateManifestValue2[] = R"(
     [{"version": "3.0.0","src": "https://example.com/2/p3.swbn"}]})";
 constexpr char kUpdateManifestValue3[] =
     "This update manifest should return error 404";
+constexpr char kUpdateManifestValue4[] = R"(This is not JSON)";
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -57,6 +61,8 @@ constexpr char kWebBundleId2[] =
     "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId3[] =
     "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+constexpr char kWebBundleId4[] =
+    "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
@@ -83,11 +89,17 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   IsolatedWebAppExternalInstallOptions app_options_3 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_3)
           .value();
+  const base::Value policy_value_4 =
+      CreatePolicyEntry(kWebBundleId4, kUpdateManifestUrl4);
+  IsolatedWebAppExternalInstallOptions app_options_4 =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_4)
+          .value();
 
   std::vector<IsolatedWebAppExternalInstallOptions> options;
   options.push_back(std::move(app_options_1));
   options.push_back(std::move(app_options_2));
   options.push_back(std::move(app_options_3));
+  options.push_back(std::move(app_options_4));
   return options;
 }
 
@@ -134,6 +146,7 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
     AddJsonResponse(kUpdateManifestUrl2, kUpdateManifestValue2);
     test_factory_.AddResponse(kUpdateManifestUrl3, kUpdateManifestValue3,
                               net::HttpStatusCode::HTTP_NOT_FOUND);
+    AddJsonResponse(kUpdateManifestUrl4, kUpdateManifestValue4);
     StartManagedGuestSession();
   }
 
@@ -155,6 +168,7 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
   base::ScopedTempDir dir_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   const std::vector<IsolatedWebAppExternalInstallOptions> all_install_options_ =
       GenerateInstallOptions();
 };
@@ -173,6 +187,8 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
       IsolatedWebAppPolicyManager::EphemeralAppInstallResult::kSuccess;
   expected_results.at(2) = IsolatedWebAppPolicyManager::
       EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed;
+  expected_results.at(3) = IsolatedWebAppPolicyManager::
+      EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed;
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;

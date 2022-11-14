@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -159,19 +160,13 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestDownloaded(
     return;
   }
 
-  LOG(ERROR) << "We will parse the update manifest for the app "
-             << current_app_->web_bundle_id().id()
-             << " after the feature is complete.";
-  // Even though the app is not installed because the feature is not yet
-  // implemented, let's set the result to kSuccess as for nothing went wrong for
-  // the current app.
-  SetResultForCurrentEphemeralApp(EphemeralAppInstallResult::kSuccess);
-  ContinueWithTheNextApp();
+  ParseUpdateManifest(*update_manifest_string);
 }
 
 void IsolatedWebAppPolicyManager::ContinueWithTheNextApp() {
   ++current_app_;
   if (current_app_ == ephemeral_iwa_install_options_.end()) {
+    json_parser_.reset();
     std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
@@ -189,6 +184,49 @@ void IsolatedWebAppPolicyManager::SetResultForCurrentEphemeralApp(
 void IsolatedWebAppPolicyManager::SetResultForAllEphemeralApps(
     EphemeralAppInstallResult result) {
   base::ranges::fill(result_vector_, result);
+}
+
+void IsolatedWebAppPolicyManager::ParseUpdateManifest(
+    const std::string& manifest_content) {
+  auto* json_parser_ptr = GetJsonParserPtr();
+  json_parser_ptr->Parse(
+      manifest_content, base::JSON_PARSE_RFC,
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnUpdateManifestParsed,
+                     base::Unretained(this)));
+}
+
+void IsolatedWebAppPolicyManager::OnUpdateManifestParsed(
+    absl::optional<base::Value> result,
+    const absl::optional<std::string>& error) {
+  if (!result.has_value()) {
+    SetResultForCurrentEphemeralApp(
+        EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed);
+    ContinueWithTheNextApp();
+    return;
+  }
+  LOG(ERROR) << "We have parsed update manifest of the app "
+             << current_app_->web_bundle_id().id()
+             << ". Further installation steps will be executed after "
+                "the feature is complete.";
+  // Even though the app is not installed because the feature is not yet
+  // implemented, let's set the result to kSuccess as nothing went wrong for
+  // the current app.
+  SetResultForCurrentEphemeralApp(EphemeralAppInstallResult::kSuccess);
+  ContinueWithTheNextApp();
+}
+
+data_decoder::mojom::JsonParser*
+IsolatedWebAppPolicyManager::GetJsonParserPtr() {
+  if (!json_parser_) {
+    data_decoder_.GetService()->BindJsonParser(
+        json_parser_.BindNewPipeAndPassReceiver());
+    json_parser_.set_disconnect_handler(
+        base::BindOnce(&IsolatedWebAppPolicyManager::OnUpdateManifestParsed,
+                       base::Unretained(this), absl::nullopt,
+                       "Data Decoder terminated unexpectedly"));
+  }
+
+  return json_parser_.get();
 }
 
 }  // namespace web_app
