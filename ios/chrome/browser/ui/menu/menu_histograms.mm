@@ -44,6 +44,8 @@ const char KContextMenuLinkActionsHistogram[] =
     "Mobile.ContextMenu.WebLink.Actions";
 const char kToolbarMenuActionsHistogram[] =
     "Mobile.ContextMenu.Toolbar.Actions";
+const char kOmniboxMostVisitedEntryActionsHistogram[] =
+    "Mobile.ContextMenu.OmniboxMostVisitedEntry.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenario scenario) {
@@ -83,5 +85,7 @@ const char* GetActionsHistogramName(MenuScenario scenario) {
       return kTabGridSearchResultHistogram;
     case MenuScenario::kToolbarMenu:
       return kToolbarMenuActionsHistogram;
+    case MenuScenario::kOmniboxMostVisitedEntry:
+      return kOmniboxMostVisitedEntryActionsHistogram;
   }
 }

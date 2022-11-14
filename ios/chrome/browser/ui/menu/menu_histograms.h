@@ -25,7 +25,8 @@ enum class MenuScenario {
   kToolbarMenu = 13,
   kTabGridSearchResult = 14,
   kThumbStrip = 15,
-  kMaxValue = kThumbStrip,
+  kOmniboxMostVisitedEntry = 16,
+  kMaxValue = kOmniboxMostVisitedEntry,
 };
 
 // Records a menu shown histogram metric for the `scenario`.

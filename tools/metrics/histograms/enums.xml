@@ -53361,6 +53361,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8" label="Tab Grid Item"/>
   <int value="9" label="Tab Grid Selection Mode"/>
   <int value="10" label="Share Chrome"/>
+  <int value="11" label="Omnibox Most Visited Tile"/>
 </enum>
 
 <enum name="IOSAppState">
@@ -53643,6 +53644,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="13" label="Toolbar Popup Menus"/>
   <int value="14" label="Tab Grid Search"/>
   <int value="15" label="Thumb Strip"/>
+  <int value="16" label="Omnibox Most Visited Entry"/>
 </enum>
 
 <enum name="IOSMultiWindowConfiguration">

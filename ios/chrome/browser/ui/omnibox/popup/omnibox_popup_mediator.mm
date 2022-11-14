@@ -503,6 +503,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         BrowserActionFactory* actionFactory =
             strongSelf.mostVisitedActionFactory;
 
+        // Record that this context menu was shown to the user.
+        RecordMenuShown(MenuScenario::kOmniboxMostVisitedEntry);
+
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 

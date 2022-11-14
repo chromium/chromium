@@ -106,7 +106,7 @@
   self.mediator.protocolProvider = self;
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
-             scenario:MenuScenario::kMostVisitedEntry];
+             scenario:MenuScenario::kOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
 
   if (IsSwiftUIPopupEnabled()) {
