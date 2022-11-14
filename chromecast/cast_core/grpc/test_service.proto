@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package cast.utils;
 
-option optimize_for = LITE_RUNTIME;
-
 import "chromecast/cast_core/grpc/test_service_messages.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 // An unary test service.
 service SimpleService {
@@ -25,4 +25,4 @@ service ServerStreamingService {
 // The request is added here to verify the build rules.
 message TestExtraRequest {
   string extra = 1;
-};
+}

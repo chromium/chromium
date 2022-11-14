@@ -17,7 +17,7 @@ namespace utils {
 // Tracks number of currently active reactors per server and allows to quickly
 // diagnose the rpc names of the reactors that are left pending via ostream
 // operator.
-class ServerReactorTracker {
+class ServerReactorTracker final {
  public:
   ServerReactorTracker();
   ~ServerReactorTracker();

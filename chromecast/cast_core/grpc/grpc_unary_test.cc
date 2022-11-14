@@ -34,9 +34,7 @@ const auto kServerStopTimeout = base::Milliseconds(100);
 
 class GrpcUnaryTest : public ::testing::Test {
  protected:
-  GrpcUnaryTest()
-      : grpc_client_task_runner_(
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
+  GrpcUnaryTest() {
     CHECK(temp_dir_.CreateUniqueTempDir());
     endpoint_ = "unix:" +
                 temp_dir_.GetPath()
@@ -46,7 +44,6 @@ class GrpcUnaryTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<base::SequencedTaskRunner> grpc_client_task_runner_;
   base::ScopedTempDir temp_dir_;
   std::string endpoint_;
 };
@@ -122,8 +119,7 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallCancelledIfServerIsStopped) {
 
 TEST_F(GrpcUnaryTest, AsyncUnaryCallSucceeds) {
   GrpcServer server;
-  server.SetHandler<SimpleServiceHandler::SimpleCall>(base::BindPostTask(
-      grpc_client_task_runner_,
+  server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
           [](TestRequest request,
              SimpleServiceHandler::SimpleCall::Reactor* reactor) {
@@ -131,7 +127,7 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallSucceeds) {
             TestResponse response;
             response.set_bar("test_bar");
             reactor->Write(std::move(response));
-          })));
+          }));
   server.Start(endpoint_);
 
   SimpleServiceStub stub(endpoint_);
@@ -144,42 +140,34 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallSucceeds) {
         EXPECT_EQ(response->bar(), "test_bar");
         response_received_event.Signal();
       }));
-  {
-    base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
-    ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
-  }
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
 
   test::StopGrpcServer(server, kServerStopTimeout);
 }
 
 TEST_F(GrpcUnaryTest, AsyncUnaryCallReturnsErrorStatus) {
   GrpcServer server;
-  server.SetHandler<SimpleServiceHandler::SimpleCall>(base::BindPostTask(
-      grpc_client_task_runner_,
+  server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
           [&](TestRequest request,
               SimpleServiceHandler::SimpleCall::Reactor* reactor) {
             EXPECT_EQ(request.foo(), "test_foo");
             reactor->Write(
                 grpc::Status(grpc::StatusCode::NOT_FOUND, "Not Found"));
-          })));
+          }));
   server.Start(endpoint_);
 
   SimpleServiceStub stub(endpoint_);
   auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
   call.request().set_foo("test_foo");
   base::WaitableEvent response_received_event;
-  std::move(call).InvokeAsync(base::BindPostTask(
-      grpc_client_task_runner_,
+  std::move(call).InvokeAsync(
       base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
         ASSERT_THAT(response.status(),
                     StatusIs(grpc::StatusCode::NOT_FOUND, "Not Found"));
         response_received_event.Signal();
-      })));
-  {
-    base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
-    ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
-  }
+      }));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
 
   test::StopGrpcServer(server, kServerStopTimeout);
 }
@@ -187,8 +175,7 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallReturnsErrorStatus) {
 TEST_F(GrpcUnaryTest, AsyncUnaryCallCancelledIfServerIsStopped) {
   GrpcServer server;
   base::WaitableEvent server_stopped_event;
-  server.SetHandler<SimpleServiceHandler::SimpleCall>(base::BindPostTask(
-      grpc_client_task_runner_,
+  server.SetHandler<SimpleServiceHandler::SimpleCall>(
       base::BindLambdaForTesting(
           [&](TestRequest request,
               SimpleServiceHandler::SimpleCall::Reactor* reactor) {
@@ -196,26 +183,22 @@ TEST_F(GrpcUnaryTest, AsyncUnaryCallCancelledIfServerIsStopped) {
             server.Stop(kServerManualStopTimeout.InMilliseconds(),
                         base::BindLambdaForTesting(
                             [&]() { server_stopped_event.Signal(); }));
-          })));
+          }));
   server.Start(endpoint_);
 
   SimpleServiceStub stub(endpoint_);
   auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
   call.request().set_foo("test_foo");
   base::WaitableEvent response_received_event;
-  std::move(call).InvokeAsync(base::BindPostTask(
-      grpc_client_task_runner_,
+  std::move(call).InvokeAsync(
       base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
         ASSERT_THAT(response, StatusIs(grpc::StatusCode::UNAVAILABLE));
         response_received_event.Signal();
-      })));
-  {
-    base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
-    ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+      }));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
 
-    // Need to wait for server to fully stop.
-    ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
-  }
+  // Need to wait for server to fully stop.
+  ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
 }
 
 TEST_F(GrpcUnaryTest, SyncUnaryCallSucceedsExtra) {
@@ -240,6 +223,46 @@ TEST_F(GrpcUnaryTest, SyncUnaryCallSucceedsExtra) {
 
   test::StopGrpcServer(server, kServerStopTimeout);
 }
+
+// Cancelling a streaming call from the client side results in a race condition
+// between two threads, one deletes the ClientContext while the other releases
+// the mutex in that ClientContext. Problem is not always manifested as it's a
+// timing issue between scheduled threads in the EventManager. Hence, the tsan
+// config is disabled for this test.
+#ifndef THREAD_SANITIZER
+
+// TODO(b/259123902): Enable as gRPC framework is synced.
+TEST_F(GrpcUnaryTest, DISABLED_AsyncUnaryCallCancelledByClient) {
+  GrpcServer server;
+  base::WaitableEvent request_received_event;
+  server.SetHandler<SimpleServiceHandler::SimpleCall>(
+      base::BindLambdaForTesting(
+          [&](TestRequest request,
+              SimpleServiceHandler::SimpleCall::Reactor* reactor) {
+            EXPECT_EQ(request.foo(), "test_foo");
+            request_received_event.Signal();
+          }));
+  server.Start(endpoint_);
+
+  SimpleServiceStub stub(endpoint_);
+  auto call = stub.CreateCall<SimpleServiceStub::SimpleCall>();
+  call.request().set_foo("test_foo");
+  base::WaitableEvent response_received_event;
+  auto context = std::move(call).InvokeAsync(
+      base::BindLambdaForTesting([&](GrpcStatusOr<TestResponse> response) {
+        ASSERT_THAT(response, StatusIs(grpc::StatusCode::CANCELLED));
+        response_received_event.Signal();
+      }));
+  ASSERT_TRUE(request_received_event.TimedWait(kEventTimeout));
+
+  context.Cancel();
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  test::StopGrpcServer(server, kServerStopTimeout);
+  task_environment_.RunUntilIdle();
+}
+
+#endif  // THREAD_SANITIZER
 
 }  // namespace
 }  // namespace utils

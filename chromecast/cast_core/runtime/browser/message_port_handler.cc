@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/platform_message_port.h"
 

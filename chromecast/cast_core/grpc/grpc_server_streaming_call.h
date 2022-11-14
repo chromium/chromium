@@ -8,10 +8,8 @@
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/support/client_callback.h>
 
-#include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/time/time.h"
 #include "chromecast/cast_core/grpc/grpc_call.h"
 #include "chromecast/cast_core/grpc/grpc_client_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
@@ -47,6 +45,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
   using Base::request;
   using Base::sync;
   using typename Base::AsyncInterface;
+  using typename Base::Context;
   using typename Base::Request;
 
   using Response = TResponse;
@@ -55,7 +54,9 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
 
   // Invokes a gRPC call asynchronously. The method follows moves semantics:
   //   std::move(call).InvokeAsync(...);
-  void InvokeAsync(ResponseCallback response_callback) && {
+  // The returned Context is valid only during duration of the call and can be
+  // used to cancel it.
+  Context InvokeAsync(ResponseCallback response_callback) && {
     // gRPC doesn't support setting a deadline for individual streaming
     // requests\responses. Hence, the zero timeout is set to allow for
     // inifinitely long streaming connections.
@@ -64,6 +65,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
         new Reactor(std::move(*this).async(), std::move(*this).request(),
                     std::move(*this).options(), std::move(response_callback));
     reactor->Start();
+    return Context(reactor->context());
   }
 
  private:
@@ -80,13 +82,12 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
             GrpcCallOptions options,
             ResponseCallback response_callback)
         : ReactorBase(std::move(request), std::move(options)),
-          async_stub_call_(
-              base::BindOnce(AsyncMethodPtr, base::Unretained(async_stub))),
+          async_interface_(async_stub),
           response_callback_(std::move(response_callback)) {}
 
     void Start() override {
       ReactorBase::Start();
-      std::move(async_stub_call_).Run(context(), request(), this);
+      (async_interface_->*AsyncMethodPtr)(context(), request(), this);
       grpc::ClientReadReactor<Response>::StartRead(&response_);
       grpc::ClientReadReactor<Response>::StartCall();
     }
@@ -120,7 +121,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
                                 const Request*,
                                 grpc::ClientReadReactor<Response>*)>;
 
-    AsyncStubCall async_stub_call_;
+    AsyncInterface* async_interface_;
     ResponseCallback response_callback_;
     Response response_;
   };

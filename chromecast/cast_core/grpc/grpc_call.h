@@ -24,6 +24,19 @@ class GrpcCall {
   using AsyncInterface = typename TGrpcStub::AsyncInterface;
   using Request = TRequest;
 
+  // Client call context valid only through duration of the call.
+  class Context {
+   public:
+    explicit Context(grpc::ClientContext* grpc_context)
+        : grpc_context_(grpc_context) {}
+
+    // Try cancelling the call.
+    void Cancel() { grpc_context_->TryCancel(); }
+
+   private:
+    grpc::ClientContext* grpc_context_;
+  };
+
   explicit GrpcCall(SyncInterface* stub) : GrpcCall(stub, Request()) {}
 
   GrpcCall(SyncInterface* stub, Request request)

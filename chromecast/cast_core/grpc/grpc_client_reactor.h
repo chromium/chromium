@@ -28,7 +28,7 @@ template <typename TRequest, typename TUnderlyingReactor>
 class GrpcClientReactor : public TUnderlyingReactor {
  public:
   GrpcClientReactor() = default;
-  virtual ~GrpcClientReactor() = default;
+  ~GrpcClientReactor() override = default;
 
   // Copy and move are deleted.
   GrpcClientReactor(const GrpcClientReactor&) = delete;

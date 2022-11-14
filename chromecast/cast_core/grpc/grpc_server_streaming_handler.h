@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "chromecast/cast_core/grpc/cancellable_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/grpc_server_reactor.h"
@@ -88,6 +87,10 @@ class GrpcServerStreamingHandler : public GrpcHandler {
                << ", status=" << GrpcStatusToString(status);
       DCHECK(!buffer)
           << "Server streaming call can only be finished with a status";
+      if (!status.ok() && writes_available_callback_) {
+        // A signal that the caller has aborted the streaming session.
+        writes_available_callback_.Run(status);
+      }
       Finish(status);
     }
 

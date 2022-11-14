@@ -8,14 +8,13 @@
 #include <grpcpp/grpcpp.h>
 
 #include "base/callback.h"
-#include "base/strings/stringprintf.h"
+#include "base/logging.h"
 #include "chromecast/cast_core/grpc/cancellable_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_handler.h"
 #include "chromecast/cast_core/grpc/grpc_server_reactor.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/grpc/server_reactor_tracker.h"
 #include "chromecast/cast_core/grpc/trackable_reactor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast {
 namespace utils {
