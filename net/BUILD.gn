@@ -1184,10 +1184,8 @@ component("net") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
-      # TODO(crbug.com/1331211): Remove network_change_notifier_linux for Lacros
-      # when BindNertworkChangeManager is supported by default.
       "base/network_change_notifier_linux.cc",
       "base/network_change_notifier_linux.h",
       "proxy_resolution/proxy_config_service_linux.cc",
@@ -4642,14 +4640,15 @@ test("net_unittests") {
     ]
   }
 
+  if (is_linux) {
+    sources += [ "proxy_resolution/proxy_config_service_linux_unittest.cc" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [
       "base/address_tracker_linux_unittest.cc",
       "base/network_interfaces_linux_unittest.cc",
     ]
-    if (!is_chromeos_ash) {
-      sources += [ "proxy_resolution/proxy_config_service_linux_unittest.cc" ]
-    }
   }
 
   if (is_mac) {
