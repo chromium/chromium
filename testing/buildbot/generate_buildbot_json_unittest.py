@@ -1895,9 +1895,10 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

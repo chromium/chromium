@@ -5358,12 +5358,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5387,12 +5388,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5416,12 +5418,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5446,15 +5449,16 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
           "0"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5479,15 +5483,16 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
           "--git-revision=${got_revision}"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5516,12 +5521,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5546,15 +5552,16 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
           "--git-revision=${got_revision}"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5584,12 +5591,13 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5613,12 +5621,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5642,12 +5651,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating"
+          "--stable-jobs"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5672,14 +5682,15 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
           "--jobs=1"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5704,14 +5715,15 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
           "--jobs=1"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5736,13 +5748,14 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=1"
         ],
+        "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
+        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
