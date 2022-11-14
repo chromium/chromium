@@ -468,6 +468,12 @@ class DropTargetView : public views::WidgetDelegateView {
 // Base class for holding space UI browser tests.
 class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
  public:
+  HoldingSpaceUiBrowserTest() {
+    // TODO(crbug.com/1382945): Parameterize.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kHoldingSpacePredictability);
+  }
+
   // HoldingSpaceBrowserTestBase:
   void SetUpOnMainThread() override {
     HoldingSpaceBrowserTestBase::SetUpOnMainThread();
@@ -487,6 +493,9 @@ class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
     // Confirm that holding space model has been emptied for test execution.
     ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

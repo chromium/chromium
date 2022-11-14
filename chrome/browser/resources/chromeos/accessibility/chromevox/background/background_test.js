@@ -3055,26 +3055,54 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'SwipeLeftRight4ByContainers', async function() {
-      const mockFeedback = this.createMockFeedback();
-      const root = await this.runWithLoadedTree(`<p>test</p>`);
-      mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT4))
-          .expectSpeech('Launcher', 'Button', 'Shelf', 'Tool bar', ', window')
-          .call(doGesture(Gesture.SWIPE_RIGHT4))
-          .expectSpeech('Shelf', 'Tool bar')
-          .call(doGesture(Gesture.SWIPE_RIGHT4))
-          .expectSpeech(/Calendar*/)
-          .call(doGesture(Gesture.SWIPE_RIGHT4))
-          .expectSpeech(/Address and search bar*/)
+/**
+ * Fixtures and tests that need to be parameterized based on whether the
+ * `ash::features::kHoldingSpacePredictability` feature flag is enabled.
+ *
+ * Generated fixtures are:
+ * - ChromeVoxBackgroundTestWithHoldingSpacePredictabilityEnabled
+ * - ChromeVoxBackgroundTestWithHoldingSpacePredictabilityDisabled
+ */
+[true, false].forEach((enabled) => {
+  const testFixture = `ChromeVoxBackgroundTestWithHoldingSpacePredictability${
+      enabled ? 'Enabled' : 'Disabled'}`;
 
-          .call(doGesture(Gesture.SWIPE_LEFT4))
-          .expectSpeech(/Calendar*/)
-          .call(doGesture(Gesture.SWIPE_LEFT4))
-          .expectSpeech('Shelf', 'Tool bar');
+  this[testFixture] = class extends ChromeVoxBackgroundTest {
+    /** @override */
+    testGenCppIncludes() {
+      super.testGenCppIncludes();
+      GEN('#include "ash/constants/ash_features.h"');
+    }
 
-      await mockFeedback.replay();
-    });
+    /** @override */
+    get featureList() {
+      const featureList = {enabled: [], disabled: []};
+      (enabled ? featureList.enabled : featureList.disabled)
+          .push('ash::features::kHoldingSpacePredictability');
+      return featureList;
+    }
+  };
+
+  AX_TEST_F(testFixture, 'SwipeLeftRight4ByContainers', async function() {
+    const mockFeedback = this.createMockFeedback();
+    const root = await this.runWithLoadedTree(`<p>test</p>`);
+    mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT4))
+        .expectSpeech('Launcher', 'Button', 'Shelf', 'Tool bar', ', window')
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
+        .expectSpeech('Shelf', 'Tool bar')
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
+        .expectSpeech(enabled ? /Tote*/ : /Calendar*/)
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
+        .expectSpeech(/Address and search bar*/)
+
+        .call(doGesture(Gesture.SWIPE_LEFT4))
+        .expectSpeech(enabled ? /Tote*/ : /Calendar*/)
+        .call(doGesture(Gesture.SWIPE_LEFT4))
+        .expectSpeech('Shelf', 'Tool bar');
+
+    await mockFeedback.replay();
+  });
+});
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', async function() {
   const mockFeedback = this.createMockFeedback();

@@ -2558,6 +2558,45 @@
             ]
         }
     ],
+    "ChromeOSHoldingSpaceExperiments": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "PredictabilityOnlyEnabled",
+                    "enable_features": [
+                        "HoldingSpacePredictability"
+                    ],
+                    "disable_features": [
+                        "HoldingSpaceRefresh",
+                        "HoldingSpaceSuggestions"
+                    ]
+                },
+                {
+                    "name": "PredictabilityWithRefreshEnabled",
+                    "enable_features": [
+                        "HoldingSpacePredictability",
+                        "HoldingSpaceRefresh"
+                    ],
+                    "disable_features": [
+                        "HoldingSpaceSuggestions"
+                    ]
+                },
+                {
+                    "name": "PredictabilityWithSuggestionsEnabled",
+                    "enable_features": [
+                        "HoldingSpacePredictability",
+                        "HoldingSpaceSuggestions"
+                    ],
+                    "disable_features": [
+                        "HoldingSpaceRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSMemoryPressureSignalStudy": [
         {
             "platforms": [

@@ -16,10 +16,11 @@ SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
--ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
 -ChromeVoxBackgroundTest.TouchEditingState
+-ChromeVoxBackgroundTestWithHoldingSpacePredictabilityDisabled.SwipeLeftRight4ByContainers
+-ChromeVoxBackgroundTestWithHoldingSpacePredictabilityEnabled.SwipeLeftRight4ByContainers
 -ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
 -ChromeVoxISearchTest.Simple
 -ChromeVoxPanelTest.FormControlsMenu

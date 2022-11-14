@@ -243,6 +243,15 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ShelfAPITest) {
 class AutotestPrivateHoldingSpaceApiTest
     : public AutotestPrivateApiTest,
       public ::testing::WithParamInterface<bool /* mark_time_of_first_add */> {
+ public:
+  AutotestPrivateHoldingSpaceApiTest() {
+    // TODO(crbug.com/1382945): Parameterize.
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kHoldingSpacePredictability);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
