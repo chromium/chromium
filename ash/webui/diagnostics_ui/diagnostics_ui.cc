@@ -156,6 +156,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"currentNowTooltipText", IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT},
       {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"cycleCountTooltipText", IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT},
+      {"deviceDisconnected", IDS_INPUT_DIAGNOSTICS_DEVICE_DISCONNECTED},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
       {"disabledText", IDS_DIAGNOSTICS_DISABLED_TEXT},
       {"dischargeTestResultText", IDS_DISCHARGE_TEST_RESULT},

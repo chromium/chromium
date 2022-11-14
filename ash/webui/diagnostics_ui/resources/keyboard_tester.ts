@@ -13,6 +13,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
@@ -183,14 +184,11 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   private receiver_: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();
+  private eventTracker: EventTracker = new EventTracker();
 
-  constructor() {
-    super();
-    document.addEventListener('keydown', (e) => this.onKeyPress(e));
-    document.addEventListener('keyup', (e) => this.onKeyPress(e));
-    document.addEventListener(
-        'announce-text',
-        (e) => this.announceTextHandler((e as AnnounceTextEvent)));
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
   }
 
   /**
@@ -272,12 +270,23 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     return keyboard.topRowKeys.map((keyId: TopRowKey) => topRowKeyMap[keyId]);
   }
 
+  private addEventListeners(): void {
+    this.eventTracker.add(
+        document, 'keydown', (e: KeyboardEvent) => this.onKeyPress(e));
+    this.eventTracker.add(
+        document, 'keyup', (e: KeyboardEvent) => this.onKeyPress(e));
+    this.eventTracker.add(
+        document, 'announce-text',
+        (e: AnnounceTextEvent) => this.announceTextHandler(e));
+  }
+
   /** Shows the tester's dialog. */
   show(): void {
     assert(this.inputDataProvider);
     this.receiver_ = new KeyboardObserverReceiver(this);
     this.inputDataProvider.observeKeyEvents(
         this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
+    this.addEventListeners();
     this.$.dialog.showModal();
   }
 
@@ -312,6 +321,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   handleClose(): void {
+    this.eventTracker.removeAll();
     if (this.receiver_) {
       this.receiver_.$.close();
     }

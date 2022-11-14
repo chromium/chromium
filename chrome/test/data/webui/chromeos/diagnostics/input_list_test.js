@@ -14,6 +14,7 @@ import {InputCardElement} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -178,6 +179,40 @@ suite('inputListTestSuite', function() {
     const keyboardTester =
         inputListElement.shadowRoot.querySelector('keyboard-tester');
     assertTrue(keyboardTester.isOpen());
+  });
+
+
+  test('ShowToastIfKeyboardDisconnectedDuringTest', async () => {
+    await initializeInputList([fakeKeyboards[0]], []);
+    const testButton =
+        getCardByDeviceType('keyboard').shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    const keyboardTester =
+        inputListElement.shadowRoot.querySelector('keyboard-tester');
+    assertTrue(keyboardTester.isOpen());
+    const showToastEvent = eventToPromise('show-toast', inputListElement);
+    // Remove keyboard while tester is open.
+    provider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    // Verify that the custom event was dispatched
+    const e = await showToastEvent;
+    assertEquals(
+        e.detail.message, loadTimeData.getString('deviceDisconnected'));
+
+    // Verify that tester is closed.
+    assertFalse(keyboardTester.isOpen());
+
+    // Verify that key events are no longer blocked by keyboard-tester.
+    let keyEventReceived = false;
+    inputListElement.addEventListener('keydown', () => keyEventReceived = true);
+    const keyDownEvent = eventToPromise('keydown', inputListElement);
+    keyboardTester.dispatchEvent(new KeyboardEvent(
+        'keydown', {bubbles: true, key: 'A', composed: true}));
+    await keyDownEvent;
+    assertTrue(keyEventReceived);
   });
 
   test('TouchpadAddAndRemove', async () => {

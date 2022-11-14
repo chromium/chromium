@@ -1188,9 +1188,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_INPUT_DIAGNOSTICS_USB_TOUCHSCREEN" desc="Noun phrase that describes a USB touchscreen to the user. Used as a label in a list of input devices in a diagnostic tool.">
         USB touchscreen
       </message>
-
       <message name="IDS_INPUT_DIAGNOSTICS_TESTER_DONE" desc="Text for a button the user clicks to indicate that they are done testing an input device, causing the dialog to close.">
         Done
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_DEVICE_DISCONNECTED" desc="Text shown if a device is disconnected while the user is testing it.">
+        Device has been disconnected. Try reconnecting to test
       </message>
 
       <!-- TODO(zhangwenyu): Finalize string and localization -->
