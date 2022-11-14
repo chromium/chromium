@@ -58,7 +58,7 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     mojom::BacklightColor backlight_color) {
   if (!ash::features::IsRgbKeyboardEnabled()) {
-    mojo::ReportBadMessage(
+    keyboard_backlight_receiver_.ReportBadMessage(
         "Cannot call `SetBacklightColor()` without rgb keyboard enabled");
     return;
   }
