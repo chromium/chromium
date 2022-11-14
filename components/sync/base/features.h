@@ -104,11 +104,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling",
         base::Hours(1)};
 
-#if BUILDFLAG(IS_IOS)
-// Whether RPC is enabled.
-BASE_DECLARE_FEATURE(kSyncTrustedVaultPassphraseiOSRPC);
-#endif  // BUILDFLAG(IS_IOS)
-
 // Whether the entry point to opt in to trusted vault in settings should be
 // shown.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultPassphrasePromo);
@@ -162,11 +157,6 @@ BASE_DECLARE_FEATURE(kUseSyncInvalidationsForWalletAndOffer);
 // registration tokens) will be disabled if during the current sync cycle
 // DeviceInfo has been updated.
 BASE_DECLARE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
-
-#if BUILDFLAG(IS_IOS)
-// Returns whether RPC is enabled.
-bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();
-#endif  // BUILDFLAG(IS_IOS)
 
 BASE_DECLARE_FEATURE(kSyncEnableHistoryDataType);
 

@@ -654,11 +654,6 @@ extern const char kSyncEnableHistoryDataTypeName[];
 extern const char kSyncEnableHistoryDataTypeDescription[];
 
 // Title and description for the flag to control if Chrome Sync should support
-// trusted vault RPC.
-extern const char kSyncTrustedVaultPassphraseiOSRPCName[];
-extern const char kSyncTrustedVaultPassphraseiOSRPCDescription[];
-
-// Title and description for the flag to control if Chrome Sync should support
 // trusted vault passphrase promos.
 extern const char kSyncTrustedVaultPassphrasePromoName[];
 extern const char kSyncTrustedVaultPassphrasePromoDescription[];

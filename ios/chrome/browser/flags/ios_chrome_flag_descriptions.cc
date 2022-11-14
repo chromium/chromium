@@ -728,12 +728,6 @@ const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
 const char kSyncEnableHistoryDataTypeDescription[] =
     "Enables the History sync data type instead of TypedURLs";
 
-const char kSyncTrustedVaultPassphraseiOSRPCName[] =
-    "Enable RPC for sync trusted vault passphrase.";
-const char kSyncTrustedVaultPassphraseiOSRPCDescription[] =
-    "Enables RPC for an experimental sync passphrase type, referred to as "
-    "trusted vault.";
-
 const char kSyncTrustedVaultPassphrasePromoName[] =
     "Enable promos for sync trusted vault passphrase.";
 const char kSyncTrustedVaultPassphrasePromoDescription[] =

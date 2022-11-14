@@ -83,12 +83,6 @@ BASE_FEATURE(kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling,
              "SyncTrustedVaultDegradedRecoverabilityHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kSyncTrustedVaultPassphraseiOSRPC,
-             "SyncTrustedVaultPassphraseiOSRPC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
-
 BASE_FEATURE(kSyncTrustedVaultPassphrasePromo,
              "SyncTrustedVaultPassphrasePromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -130,13 +124,6 @@ BASE_FEATURE(kUseSyncInvalidationsForWalletAndOffer,
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-bool IsSyncTrustedVaultPassphraseiOSRPCEnabled() {
-  return base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery) &&
-         base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseiOSRPC);
-}
-#endif  // BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kSyncEnableHistoryDataType,
              "SyncEnableHistoryDataType",
