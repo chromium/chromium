@@ -497,17 +497,16 @@
     </div>
     <div id="syncBenefitsList">
       <!-- TODO(crbug.com/1374702): Transform the sync benefit item into a
-           polymer component. Replace filled icons and move repeated ones to cr
-           icons -->
+           polymer component and create the list dynamically. -->
       <div class="sync-benefit">
-        <iron-icon class="sync-benefit-icon" icon="signin:star-border">
+        <iron-icon class="sync-benefit-icon" icon="signin:star-outline">
         </iron-icon>
         <div class="sync-benefit-text" consent-description>
           $i18n{syncConfirmationBookmarks}
         </div>
       </div>
       <div class="sync-benefit">
-        <iron-icon class="sync-benefit-icon" icon="signin:assignment">
+        <iron-icon class="sync-benefit-icon" icon="signin:assignment-outline">
         </iron-icon>
         <div class="sync-benefit-text" consent-description>
           $i18n{syncConfirmationAutofill}
@@ -520,7 +519,8 @@
         </div>
       </div>
       <div class="sync-benefit">
-        <iron-icon class="sync-benefit-icon" icon="cr:extension"></iron-icon>
+        <iron-icon class="sync-benefit-icon" icon="signin:extension-outline">
+        </iron-icon>
         <div class="sync-benefit-text" consent-description>
           $i18n{syncConfirmationExtensionsAndMore}
         </div>
