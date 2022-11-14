@@ -12,8 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
-#include <dlfcn.h>
-
 using base::internal::PlatformThreadLocalStorage;
 
 // Chrome Thread Local Storage (TLS)
@@ -258,20 +256,7 @@ TlsVectorEntry* ConstructTlsVector() {
   return tls_data;
 }
 
-static bool IsRecordingOrReplaying() {
-  void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAttach");
-  return !!fnptr;
-}
-
-  void OnThreadExitInternal(TlsVectorEntry* tls_data) {
-  // Thread local value destructors do not run consistently when recording/replaying.
-  // When recording the current thread is no longer known and calls/locks/etc.
-  // made by the destructors cannot be recorded, and when replaying the destructor
-  // does not run at all. To avoid these problems we skip running the destructors
-  // for now and let associated resources leak.
-  if (IsRecordingOrReplaying())
-    return;
-
+void OnThreadExitInternal(TlsVectorEntry* tls_data) {
   DCHECK(tls_data);
   // Some allocators, such as TCMalloc, use TLS. As a result, when a thread
   // terminates, one of the destructor calls we make may be to shut down an
