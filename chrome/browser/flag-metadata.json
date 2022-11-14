@@ -4976,7 +4976,7 @@
   {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta", "sczs" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 115
   },
   {
     "name": "offline-pages-live-page-sharing",
