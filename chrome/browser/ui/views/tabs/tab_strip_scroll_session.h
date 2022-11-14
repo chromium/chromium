@@ -21,11 +21,10 @@ class TabStripScrollSession {
   TabStripScrollSession(const TabStripScrollSession&) = delete;
   TabStripScrollSession& operator=(const TabStripScrollSession&) = delete;
   virtual ~TabStripScrollSession();
-  // TODO: Make RTL work for Tab Scrolling in https://crbug.com/1377094
   enum class TabScrollDirection {
     kNoScroll,
-    kScrollTowardsLeft,
-    kScrollTowardsRight
+    kScrollTowardsLeadingTabs,
+    kScrollTowardsTrailingTabs
   };
   // Calculates which direction should the scrolling occur and
   // starts the `Start()` method

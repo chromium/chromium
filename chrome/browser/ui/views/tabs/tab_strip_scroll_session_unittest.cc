@@ -12,6 +12,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 
@@ -42,21 +43,6 @@ class MockTabDragWithScrollManager : public TabDragWithScrollManager {
   MOCK_METHOD(gfx::Point, GetLastPointInScreen, (), ());
   MOCK_METHOD(views::View*, GetAttachedContext, (), ());
   MOCK_METHOD(gfx::Rect, GetEnclosingRectForDraggedTabs, (), ());
-};
-
-// Mock class for scroll bar used in test for argument capture
-class MockScrollBar : public views::ScrollBar {
- public:
-  MockScrollBar() : ScrollBar(true) {}
-  ~MockScrollBar() override = default;
-  MockScrollBar(const MockScrollBar&) = delete;
-  MockScrollBar(MockScrollBar&&) = delete;
-  MockScrollBar& operator=(const MockScrollBar&) = delete;
-  MockScrollBar& operator=(MockScrollBar&&) = delete;
-
-  MOCK_METHOD(bool, OnScroll, (float dx, float dy), ());
-  MOCK_METHOD(gfx::Rect, GetTrackBounds, (), (const));
-  MOCK_METHOD(int, GetThickness, (), (const));
 };
 
 class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
@@ -97,10 +83,6 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
         scroll_view_->SetContents(std::make_unique<views::View>());
     attached_context_->SetBounds(
         0, 0, 10 * TabStyleViews::GetMinimumInactiveWidth(), 5);
-
-    auto scroll_bar = std::make_unique<MockScrollBar>();
-    scroll_bar_ = scroll_bar.get();
-    scroll_view_->SetHorizontalScrollBar(std::move(scroll_bar));
   }
 
   void TearDown() override { ChromeViewsTestBase::TearDown(); }
@@ -112,7 +94,6 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
   std::unique_ptr<views::ScrollView> scroll_view_;
   std::unique_ptr<TabStripScrollSessionWithTimer> scroll_session_;
   raw_ptr<views::View> attached_context_;
-  raw_ptr<MockScrollBar> scroll_bar_;
   raw_ptr<base::MockRepeatingTimer> mock_timer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -177,8 +158,6 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
 // When scroll session starts with correct arguments, timer callback is invoked
 TEST_F(TabStripScrollSessionTestWithConstantSpeed,
        GivenScrollSessionWhenMaybeStartThenTimerCallback) {
-  // arrange
-  float scroll_offset_x = 0;
   // create a rect that is in the right scrollable region.
   const gfx::Rect dragged_tabs_rect =
       gfx::Rect(scroll_view_->GetVisibleRect().top_right().x(), 0, 1, 1);
@@ -203,10 +182,6 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(dragged_tabs_rect));
 
-  EXPECT_CALL(*(scroll_bar_), OnScroll(_, 0))
-      .Times(1)
-      .WillOnce(DoAll(SaveArg<0>(&scroll_offset_x), Return(true)));
-
   EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
 
   // act
@@ -221,8 +196,8 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
 
   // assert
   EXPECT_TRUE(scroll_session_->IsRunning());
-  EXPECT_EQ(floor(-scroll_session_->CalculateBaseScrollOffset()),
-            scroll_offset_x);
+  EXPECT_EQ(ceil(scroll_session_->CalculateBaseScrollOffset()),
+            scroll_view_->GetVisibleRect().x());
 }
 
 // When scroll is started with one direction but in the callback check,
@@ -246,7 +221,6 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .WillOnce(Return(dragged_tabs_rect_for_scrolling_right))
       .WillRepeatedly(Return(dragged_tabs_rect_for_scrolling_left));
   EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(0);
-  EXPECT_CALL(*(scroll_bar_), OnScroll(_, 0)).Times(0);
 
   // act
   scroll_session_->MaybeStart();
@@ -255,6 +229,7 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
   mock_timer_->Fire();
   // assert
   EXPECT_FALSE(scroll_session_->IsRunning());
+  EXPECT_EQ(scroll_view_->GetVisibleRect().x(), 0);
 }
 
 class TabStripScrollSessionTestWithVariableSpeed
@@ -275,8 +250,6 @@ class TabStripScrollSessionTestWithVariableSpeed
 // When scroll session starts with correct arguments, timer callback is invoked
 TEST_F(TabStripScrollSessionTestWithVariableSpeed,
        GivenScrollSessionWhenMaybeStartThenTimerCallback) {
-  // arrange
-  float scroll_offset_x = 0;
   // create a rect starting from the scrollable region to half of the end of the
   // attached_context
   const gfx::Rect dragged_tabs_rect = gfx::Rect(
@@ -304,10 +277,6 @@ TEST_F(TabStripScrollSessionTestWithVariableSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(gfx::Point()));
 
-  EXPECT_CALL(*(scroll_bar_), OnScroll(_, 0))
-      .Times(1)
-      .WillOnce(DoAll(SaveArg<0>(&scroll_offset_x), Return(true)));
-
   EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
 
   scroll_session_->MaybeStart();
@@ -318,6 +287,7 @@ TEST_F(TabStripScrollSessionTestWithVariableSpeed,
   }
 
   EXPECT_TRUE(scroll_session_->IsRunning());
-  EXPECT_LT(scroll_offset_x, 0);
-  EXPECT_GE(scroll_offset_x, -scroll_session_->CalculateBaseScrollOffset());
+  EXPECT_GE(scroll_view_->GetVisibleRect().x(), 0);
+  EXPECT_LE(scroll_view_->GetVisibleRect().x(),
+            ceil(scroll_session_->CalculateBaseScrollOffset()));
 }

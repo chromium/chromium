@@ -138,6 +138,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
 
+  // Scrolls the `contents_` by an offset.
+  void ScrollByOffset(const gfx::PointF& offset);
+
   bool GetUseColorId() const { return !!background_color_id_; }
 
   ScrollBarMode GetHorizontalScrollBarMode() const {

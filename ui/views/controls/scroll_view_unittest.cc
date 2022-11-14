@@ -922,6 +922,31 @@ TEST_F(ScrollViewTest, ScrollRectToVisible) {
   EXPECT_EQ(415 - viewport_height, test_api.CurrentOffset().y());
 }
 
+// Verifies ScrollByOffset() method works as expected
+TEST_F(ScrollViewTest, ScrollByOffset) {
+  // setup
+  ScrollViewTestApi test_api(scroll_view_.get());
+  auto contents = std::make_unique<CustomView>();
+  contents->SetPreferredSize(gfx::Size(500, 1000));
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
+
+  views::test::RunScheduledLayout(scroll_view_.get());
+  EXPECT_EQ(gfx::Vector2d(0, 0), test_api.IntegralViewOffset());
+
+  // scroll by an offset of x=5 and y=5
+  scroll_view_->ScrollByOffset(gfx::PointF(5, 5));
+
+  EXPECT_EQ(test_api.CurrentOffset().x(), 5);
+  EXPECT_EQ(test_api.CurrentOffset().y(), 5);
+
+  // scroll back to the initial position
+  scroll_view_->ScrollByOffset(gfx::PointF(-5, -5));
+
+  EXPECT_EQ(test_api.CurrentOffset().x(), 0);
+  EXPECT_EQ(test_api.CurrentOffset().y(), 0);
+}
+
 // Verifies ScrollRectToVisible() scrolls the view horizontally even if the
 // horizontal scrollbar is hidden (but not disabled).
 TEST_F(ScrollViewTest, ScrollRectToVisibleWithHiddenHorizontalScrollbar) {

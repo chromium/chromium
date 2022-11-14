@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace {
@@ -64,8 +65,8 @@ void TabStripScrollSessionWithTimer::TabScrollCallback() {
   const int tab_scroll_offset = CalculateSpeed();
   views::ScrollView* const scroll_view =
       tab_drag_with_scroll_manager_->GetScrollView();
+  scroll_view->ScrollByOffset(gfx::PointF(tab_scroll_offset, 0));
 
-  scroll_view->horizontal_scroll_bar()->OnScroll(tab_scroll_offset, 0);
   tab_drag_with_scroll_manager_->MoveAttached(
       tab_drag_with_scroll_manager_->GetLastPointInScreen(), false);
 }
@@ -88,7 +89,7 @@ int TabStripScrollSessionWithTimer::CalculateSpeed() {
   DCHECK(scroll_direction_ !=
          TabStripScrollSession::TabScrollDirection::kNoScroll);
   const int tab_scroll_offset =
-      (scroll_direction_ == TabScrollDirection::kScrollTowardsLeft)
+      (scroll_direction_ == TabScrollDirection::kScrollTowardsTrailingTabs)
           ? ceil(CalculateBaseScrollOffset())
           : floor(-CalculateBaseScrollOffset());
 
@@ -96,7 +97,7 @@ int TabStripScrollSessionWithTimer::CalculateSpeed() {
     case TabStripScrollSessionWithTimer::ScrollSessionTimerType::kConstantTimer:
       return tab_scroll_offset;
     case TabStripScrollSessionWithTimer::ScrollSessionTimerType::kVariableTimer:
-      if (scroll_direction_ == TabScrollDirection::kScrollTowardsLeft) {
+      if (scroll_direction_ == TabScrollDirection::kScrollTowardsTrailingTabs) {
         return ceil(
             base::clamp(GetRatioInScrollableRegion() * tab_scroll_offset, 0.0,
                         CalculateBaseScrollOffset() * 3));
@@ -131,14 +132,14 @@ double TabStripScrollSessionWithTimer::GetRatioInScrollableRegion() {
   double scrollable_start = 0;
 
   switch (scroll_direction_) {
-    case TabStripScrollSession::TabScrollDirection::kScrollTowardsRight:
+    case TabStripScrollSession::TabScrollDirection::kScrollTowardsTrailingTabs:
       scrollable_start = visible_rect_drag_context_coord.right() -
                          kScrollableOffsetFromScrollView;
       ratio =
           (dragged_tabs_rect_drag_context_coord.right() - scrollable_start) /
           kScrollableOffsetFromScrollView;
       return ratio;
-    case TabStripScrollSession::TabScrollDirection::kScrollTowardsLeft:
+    case TabStripScrollSession::TabScrollDirection::kScrollTowardsLeadingTabs:
       scrollable_start = visible_rect_drag_context_coord.origin().x() +
                          kScrollableOffsetFromScrollView;
       ratio = (scrollable_start -
@@ -163,22 +164,23 @@ TabStripScrollSessionWithTimer::GetTabScrollDirection() {
           tab_drag_with_scroll_manager_->GetAttachedContext(),
           gfx::RectF(scroll_view->GetVisibleRect())));
 
-  const bool maybe_scroll_right =
+  const bool maybe_scroll_towards_trailing_tabs =
       dragged_tabs_rect_drag_context_coord.right() >=
       (visible_rect_drag_context_coord.right() -
        kScrollableOffsetFromScrollView);
 
-  const bool maybe_scroll_left =
+  const bool maybe_scroll_towards_leading_tabs =
       dragged_tabs_rect_drag_context_coord.origin().x() <=
       (visible_rect_drag_context_coord.origin().x() +
        kScrollableOffsetFromScrollView);
 
   // TODO(crbug.com/1378683): Add case for both maybe scroll left and right.
   // This would happen when many tabs are selected.
-  if (maybe_scroll_right) {
-    return TabStripScrollSession::TabScrollDirection::kScrollTowardsRight;
-  } else if (maybe_scroll_left) {
-    return TabStripScrollSession::TabScrollDirection::kScrollTowardsLeft;
+  if (maybe_scroll_towards_trailing_tabs) {
+    return TabStripScrollSession::TabScrollDirection::
+        kScrollTowardsTrailingTabs;
+  } else if (maybe_scroll_towards_leading_tabs) {
+    return TabStripScrollSession::TabScrollDirection::kScrollTowardsLeadingTabs;
   } else {
     return TabStripScrollSession::TabScrollDirection::kNoScroll;
   }
