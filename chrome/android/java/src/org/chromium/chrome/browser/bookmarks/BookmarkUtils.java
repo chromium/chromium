@@ -610,10 +610,7 @@ public class BookmarkUtils {
         if (ReadingListFeatures.shouldUseCustomTab()) {
             openReadingListInCustomTab(context, url, isIncognito);
         } else {
-            openUrl(context, componentName, url, id, isIncognito,
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                            ? null
-                            : TabLaunchType.FROM_READING_LIST,
+            openUrl(context, componentName, url, id, isIncognito, TabLaunchType.FROM_READING_LIST,
                     openInNewTab);
         }
     }
