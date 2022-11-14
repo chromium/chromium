@@ -2,46 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-# TODO(crbug.com/1323980): Migrate files listed below to TypeScript.
-ts_files = [
-  "omnibox_element.ts",
-  "omnibox_input.ts",
-  "omnibox.ts",
-  "omnibox_output.ts",
-]
-
-copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_src") {
-  sources = ts_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + [ "omnibox.mojom-webui.js" ]
-  deps = [ "//ui/webui/resources:library" ]
-  extra_deps = [
-    ":copy_mojo",
-    ":copy_src",
-  ]
-}
-
-# TODO(crbug.com/1340376) migrate to `build_webui`.
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "omnibox"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+
+  static_files = [
     "icon_tabs.svg",
     "omnibox.css",
     "omnibox.html",
@@ -49,23 +15,23 @@ generate_grd("build_grd") {
     "omnibox_output_column_widths.css",
     "output_results_group.css",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  deps = [ ":build_ts" ]
-}
-
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/omnibox_resources.h",
-    "grit/omnibox_resources_map.cc",
-    "grit/omnibox_resources_map.h",
-    "omnibox_resources.pak",
+  # Some of the files below even though they hold web component definitions,
+  # they don't use dedicated HTML files for each web component and therefore for
+  # the purposes of build_webui() are passed as non_web_component_files.
+  non_web_component_files = [
+    "omnibox_element.ts",
+    "omnibox_input.ts",
+    "omnibox.ts",
+    "omnibox_output.ts",
   ]
-  output_dir = "$root_gen_dir/chrome"
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js" ]
+
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
 }
