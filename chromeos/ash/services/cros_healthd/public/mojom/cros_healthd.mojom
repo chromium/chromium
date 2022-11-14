@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 3, NextIndex: 34
+// NextMinVersion: 4, NextIndex: 36
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -524,6 +524,32 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=2] RunSensitiveSensorRoutine@33()
+      => (RunRoutineResponse response);
+
+  // Requests that the Fingerprint routine is created and started on the
+  // platform. This routine checks whether the fingerprint module is healthy or
+  // not.
+  // The availability of this routine can be determined by checking that
+  // kFingerprint is returned by GetAvailableRoutines.
+  //
+  // Note that this routine can be run ONLY when WP is off, so it'll only be
+  // used in the RMA center or factory.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=3] RunFingerprintRoutine@34() => (RunRoutineResponse response);
+
+  // Requests that the FingerprintAlive routine is created and started on the
+  // platform. This routine checks whether the fingerprint module is alive or
+  // not.
+  // The availability of this routine can be determined by checking that
+  // kFingerprintAlive is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=3] RunFingerprintAliveRoutine@35()
       => (RunRoutineResponse response);
 };
 

@@ -496,6 +496,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           std::move(response_callback));
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprint: {
+      diagnostics_service->RunFingerprintRoutine(std::move(response_callback));
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive: {
+      diagnostics_service->RunFingerprintAliveRoutine(
+          std::move(response_callback));
+      break;
+    }
   }
 }
 

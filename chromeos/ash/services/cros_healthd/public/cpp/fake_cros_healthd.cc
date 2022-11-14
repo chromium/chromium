@@ -763,6 +763,18 @@ void FakeCrosHealthd::RunSensitiveSensorRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunFingerprintRoutine(
+    RunFingerprintRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kFingerprint;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunFingerprintAliveRoutine(
+    RunFingerprintAliveRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kFingerprintAlive;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));
