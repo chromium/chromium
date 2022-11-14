@@ -209,7 +209,7 @@
     Add site exception
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DIALOG_TITLE" desc="The title of the dialog to add a website to a list.">
-    Add site
+    Add a site
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_ADD_BUTTON" desc="The label for the button to add a website to a list.">
     Add
@@ -220,8 +220,8 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_SITE_URL" desc="The label for the input field where the user can type a website URL.">
     Site URL
   </message>
-  <message name="IDS_EXAMPLE_URL" desc="The hint for a website url field, showing an example url.">
-    www.example.com
+  <message name="IDS_ENTER_WEB_ADDRESS" desc="The hint for a website url field.">
+    Enter web address
   </message>
 
   <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->

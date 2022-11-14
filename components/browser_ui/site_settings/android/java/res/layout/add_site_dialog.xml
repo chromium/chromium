@@ -16,7 +16,7 @@ found in the LICENSE file.
         android:id="@+id/site"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/example_url"
+        android:hint="@string/enter_web_address"
         android:inputType="textNoSuggestions" />
 
     <!-- A checkbox to decide how this exception is applied. -->
