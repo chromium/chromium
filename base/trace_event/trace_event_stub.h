@@ -256,9 +256,6 @@ inline const char* QueueName_Name(QueueName value) {
 namespace ChromeProcessDescriptor {
 
 enum ProcessType {};
-inline const char* ProcessType_Name(ProcessType process_type) {
-  return "";
-}
 
 }  // namespace ChromeProcessDescriptor
 

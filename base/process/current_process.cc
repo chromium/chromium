@@ -8,84 +8,96 @@ namespace base {
 
 namespace {
 
-struct ProcessName {
-  CurrentProcessType type;
-  const char* name;
-};
-
-constexpr ProcessName kProcessNames[] = {
-    {CurrentProcessType::PROCESS_UNSPECIFIED, "Null"},
-    {CurrentProcessType::PROCESS_BROWSER, "Browser"},
-    {CurrentProcessType::PROCESS_RENDERER, "Renderer"},
-    {CurrentProcessType::PROCESS_UTILITY, "Utility"},
-    {CurrentProcessType::PROCESS_ZYGOTE, "SandboxHelper"},
-    {CurrentProcessType::PROCESS_GPU, "Gpu"},
-    {CurrentProcessType::PROCESS_PPAPI_PLUGIN, "PpapiPlugin"},
-    {CurrentProcessType::PROCESS_PPAPI_BROKER, "PpapiBroker"},
-    {CurrentProcessType::PROCESS_SERVICE_NETWORK,
-     "Service: network.mojom.NetworkService"},
-    {CurrentProcessType::PROCESS_SERVICE_TRACING,
-     "Service: tracing.mojom.TracingService"},
-    {CurrentProcessType::PROCESS_SERVICE_STORAGE,
-     "Service: storage.mojom.StorageService"},
-    {CurrentProcessType::PROCESS_SERVICE_AUDIO,
-     "Service: audio.mojom.AudioService"},
-    {CurrentProcessType::PROCESS_SERVICE_DATA_DECODER,
-     "Service: data_decoder.mojom.DataDecoderService"},
-    {CurrentProcessType::PROCESS_SERVICE_UTIL_WIN,
-     "Service: chrome.mojom.UtilWin"},
-    {CurrentProcessType::PROCESS_SERVICE_PROXY_RESOLVER,
-     "Service: proxy_resolver.mojom.ProxyResolverFactory"},
-    {CurrentProcessType::PROCESS_SERVICE_CDM,
-     "Service: media.mojom.CdmService"},
-    {CurrentProcessType::PROCESS_SERVICE_VIDEO_CAPTURE,
-     "Service: video_capture.mojom.VideoCaptureService"},
-    {CurrentProcessType::PROCESS_SERVICE_UNZIPPER,
-     "Service: unzip.mojom.Unzipper"},
-    {CurrentProcessType::PROCESS_SERVICE_MIRRORING,
-     "Service: mirroring.mojom.MirroringService"},
-    {CurrentProcessType::PROCESS_SERVICE_FILEPATCHER,
-     "Service: patch.mojom.FilePatcher"},
-    {CurrentProcessType::PROCESS_SERVICE_TTS,
-     "Service: chromeos.tts.mojom.TtsService"},
-    {CurrentProcessType::PROCESS_SERVICE_PRINTING,
-     "Service: printing.mojom.PrintingService"},
-    {CurrentProcessType::PROCESS_SERVICE_QUARANTINE,
-     "Service: quarantine.mojom.Quarantine"},
-    {CurrentProcessType::PROCESS_SERVICE_CROS_LOCALSEARCH,
-     "Service: chromeos.local_search_service.mojom.LocalSearchService"},
-    {CurrentProcessType::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER,
-     "Service: chromeos.assistant.mojom.AssistantAudioDecoderFactory"},
-    {CurrentProcessType::PROCESS_SERVICE_FILEUTIL,
-     "Service: chrome.mojom.FileUtilService"},
-    {CurrentProcessType::PROCESS_SERVICE_PRINTCOMPOSITOR,
-     "Service: printing.mojom.PrintCompositor"},
-    {CurrentProcessType::PROCESS_SERVICE_PAINTPREVIEW,
-     "Service: paint_preview.mojom.PaintPreviewCompositorCollection"},
-    {CurrentProcessType::PROCESS_SERVICE_SPEECHRECOGNITION,
-     "Service: media.mojom.SpeechRecognitionService"},
-    {CurrentProcessType::PROCESS_SERVICE_XRDEVICE,
-     "Service: device.mojom.XRDeviceService"},
-    {CurrentProcessType::PROCESS_SERVICE_READICON,
-     "Service: chrome.mojom.UtilReadIcon"},
-    {CurrentProcessType::PROCESS_SERVICE_LANGUAGEDETECTION,
-     "Service: language_detection.mojom.LanguageDetectionService"},
-    {CurrentProcessType::PROCESS_SERVICE_SHARING,
-     "Service: sharing.mojom.Sharing"},
-    {CurrentProcessType::PROCESS_SERVICE_MEDIAPARSER,
-     "Service: chrome.mojom.MediaParserFactory"},
-    {CurrentProcessType::PROCESS_SERVICE_QRCODEGENERATOR,
-     "Service: qrcode_generator.mojom.QRCodeGeneratorService"},
-    {CurrentProcessType::PROCESS_SERVICE_PROFILEIMPORT,
-     "Service: chrome.mojom.ProfileImport"},
-    {CurrentProcessType::PROCESS_SERVICE_IME,
-     "Service: chromeos.ime.mojom.ImeService"},
-    {CurrentProcessType::PROCESS_SERVICE_RECORDING,
-     "Service: recording.mojom.RecordingService"},
-    {CurrentProcessType::PROCESS_SERVICE_SHAPEDETECTION,
-     "Service: shape_detection.mojom.ShapeDetectionService"},
-    {CurrentProcessType::PROCESS_RENDERER_EXTENSION, "Extension Renderer"},
-};
+const char* GetNameForProcessType(CurrentProcessType process_type) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  switch (process_type) {
+    case CurrentProcessType::PROCESS_UNSPECIFIED:
+      return "Null";
+    case CurrentProcessType::PROCESS_BROWSER:
+      return "Browser";
+    case CurrentProcessType::PROCESS_RENDERER:
+      return "Renderer";
+    case CurrentProcessType::PROCESS_UTILITY:
+      return "Utility";
+    case CurrentProcessType::PROCESS_ZYGOTE:
+      return "Zygote";
+    case CurrentProcessType::PROCESS_SANDBOX_HELPER:
+      return "SandboxHelper";
+    case CurrentProcessType::PROCESS_GPU:
+      return "Gpu";
+    case CurrentProcessType::PROCESS_PPAPI_PLUGIN:
+      return "PpapiPlugin";
+    case CurrentProcessType::PROCESS_PPAPI_BROKER:
+      return "PpapiBroker";
+    case CurrentProcessType::PROCESS_SERVICE_NETWORK:
+      return "Service: network.mojom.NetworkService";
+    case CurrentProcessType::PROCESS_SERVICE_TRACING:
+      return "Service: tracing.mojom.TracingService";
+    case CurrentProcessType::PROCESS_SERVICE_STORAGE:
+      return "Service: storage.mojom.StorageService";
+    case CurrentProcessType::PROCESS_SERVICE_AUDIO:
+      return "Service: audio.mojom.AudioService";
+    case CurrentProcessType::PROCESS_SERVICE_DATA_DECODER:
+      return "Service: data_decoder.mojom.DataDecoderService";
+    case CurrentProcessType::PROCESS_SERVICE_UTIL_WIN:
+      return "Service: chrome.mojom.UtilWin";
+    case CurrentProcessType::PROCESS_SERVICE_PROXY_RESOLVER:
+      return "Service: proxy_resolver.mojom.ProxyResolverFactory";
+    case CurrentProcessType::PROCESS_SERVICE_CDM:
+      return "Service: media.mojom.CdmService";
+    case CurrentProcessType::PROCESS_SERVICE_VIDEO_CAPTURE:
+      return "Service: video_capture.mojom.VideoCaptureService";
+    case CurrentProcessType::PROCESS_SERVICE_UNZIPPER:
+      return "Service: unzip.mojom.Unzipper";
+    case CurrentProcessType::PROCESS_SERVICE_MIRRORING:
+      return "Service: mirroring.mojom.MirroringService";
+    case CurrentProcessType::PROCESS_SERVICE_FILEPATCHER:
+      return "Service: patch.mojom.FilePatcher";
+    case CurrentProcessType::PROCESS_SERVICE_TTS:
+      return "Service: chromeos.tts.mojom.TtsService";
+    case CurrentProcessType::PROCESS_SERVICE_PRINTING:
+      return "Service: printing.mojom.PrintingService";
+    case CurrentProcessType::PROCESS_SERVICE_QUARANTINE:
+      return "Service: quarantine.mojom.Quarantine";
+    case CurrentProcessType::PROCESS_SERVICE_CROS_LOCALSEARCH:
+      return "Service: chromeos.local_search_service.mojom.LocalSearchService";
+    case CurrentProcessType::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER:
+      return "Service: chromeos.assistant.mojom.AssistantAudioDecoderFactory";
+    case CurrentProcessType::PROCESS_SERVICE_FILEUTIL:
+      return "Service: chrome.mojom.FileUtilService";
+    case CurrentProcessType::PROCESS_SERVICE_PRINTCOMPOSITOR:
+      return "Service: printing.mojom.PrintCompositor";
+    case CurrentProcessType::PROCESS_SERVICE_PAINTPREVIEW:
+      return "Service: paint_preview.mojom.PaintPreviewCompositorCollection";
+    case CurrentProcessType::PROCESS_SERVICE_SPEECHRECOGNITION:
+      return "Service: media.mojom.SpeechRecognitionService";
+    case CurrentProcessType::PROCESS_SERVICE_XRDEVICE:
+      return "Service: device.mojom.XRDeviceService";
+    case CurrentProcessType::PROCESS_SERVICE_READICON:
+      return "Service: chrome.mojom.UtilReadIcon";
+    case CurrentProcessType::PROCESS_SERVICE_LANGUAGEDETECTION:
+      return "Service: language_detection.mojom.LanguageDetectionService";
+    case CurrentProcessType::PROCESS_SERVICE_SHARING:
+      return "Service: sharing.mojom.Sharing";
+    case CurrentProcessType::PROCESS_SERVICE_MEDIAPARSER:
+      return "Service: chrome.mojom.MediaParserFactory";
+    case CurrentProcessType::PROCESS_SERVICE_QRCODEGENERATOR:
+      return "Service: qrcode_generator.mojom.QRCodeGeneratorService";
+    case CurrentProcessType::PROCESS_SERVICE_PROFILEIMPORT:
+      return "Service: chrome.mojom.ProfileImport";
+    case CurrentProcessType::PROCESS_SERVICE_IME:
+      return "Service: chromeos.ime.mojom.ImeService";
+    case CurrentProcessType::PROCESS_SERVICE_RECORDING:
+      return "Service: recording.mojom.RecordingService";
+    case CurrentProcessType::PROCESS_SERVICE_SHAPEDETECTION:
+      return "Service: shape_detection.mojom.ShapeDetectionService";
+    case CurrentProcessType::PROCESS_RENDERER_EXTENSION:
+      return "Extension Renderer";
+  }
+#else
+  return "Null";
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
 
 }  // namespace
 
@@ -96,12 +108,7 @@ CurrentProcess& CurrentProcess::GetInstance() {
 }
 
 void CurrentProcess::SetProcessType(CurrentProcessType process_type) {
-  std::string process_name;
-  for (size_t i = 0; i < std::size(kProcessNames); ++i) {
-    if (process_type == kProcessNames[i].type) {
-      process_name = kProcessNames[i].name;
-    }
-  }
+  std::string process_name = GetNameForProcessType(process_type);
   CurrentProcess::GetInstance().SetProcessNameAndType(process_name,
                                                       process_type);
 }
