@@ -811,6 +811,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>
+      <message name="IDS_PRIVACY_SECTION_TITLE" desc="Title for the Privacy settings section.">
+        Privacy
+      </message>
+      <message name="IDS_SECURITY_SECTION_TITLE" desc="Title for the Security settings section.">
+        Security
+      </message>
       <message name="IDS_CONTEXTUAL_SEARCH_TITLE" desc="Name for the Contextual Search feature, which allows users to search for a term in a web page by tapping on it.">
         Touch to Search
       </message>

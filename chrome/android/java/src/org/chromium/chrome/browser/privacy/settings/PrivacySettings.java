@@ -70,8 +70,13 @@ public class PrivacySettings
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         PrivacyPreferencesManagerImpl privacyPrefManager =
                 PrivacyPreferencesManagerImpl.getInstance();
-        SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
         getActivity().setTitle(R.string.prefs_privacy_security);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences_v2);
+        } else {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
+        }
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Hide the Privacy Sandbox if it is restricted.
