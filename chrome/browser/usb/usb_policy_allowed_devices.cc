@@ -85,7 +85,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
     // A urls item can contain a pair of URLs that are delimited by a comma. If
     // it does not contain a second URL, set the embedding URL to an empty GURL
     // to signify a wildcard embedded URL.
-    for (const auto& urls_value : urls_list->GetListDeprecated()) {
+    for (const auto& urls_value : urls_list->GetList()) {
       std::vector<std::string> urls =
           base::SplitString(urls_value.GetString(), ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL);
@@ -117,7 +117,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
     // For each device entry in the map, create or update its respective URL
     // set.
     const base::Value* devices = item.FindKey(kPrefDevicesKey);
-    for (const auto& device : devices->GetListDeprecated()) {
+    for (const auto& device : devices->GetList()) {
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
       const base::Value* vendor_id_value = device.FindKey(kPrefVendorIdKey);
