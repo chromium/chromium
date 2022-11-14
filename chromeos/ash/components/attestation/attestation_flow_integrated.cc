@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -16,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/attestation/attestation_flow_utils.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -127,11 +129,11 @@ void AttestationFlowIntegrated::GetCertificate(
           ? key_name
           : GetKeyNameForProfile(certificate_profile, request_origin);
 
-  base::OnceCallback<void(bool)> start_certificate_request =
-      base::BindOnce(&AttestationFlowIntegrated::StartCertificateRequest,
-                     weak_factory_.GetWeakPtr(), certificate_profile,
-                     account_id, request_origin, force_new_key, key_crypto_type,
-                     attestation_key_name, std::move(callback));
+  base::OnceCallback<void(bool)> start_certificate_request = base::BindOnce(
+      &AttestationFlowIntegrated::StartCertificateRequest,
+      weak_factory_.GetWeakPtr(), certificate_profile, account_id,
+      request_origin, force_new_key, key_crypto_type, attestation_key_name,
+      profile_specific_data, std::move(callback));
 
   base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
   WaitForAttestationPrepared(end_time, std::move(start_certificate_request));
@@ -177,6 +179,7 @@ void AttestationFlowIntegrated::StartCertificateRequest(
     bool generate_new_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
+    const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
     bool is_prepared) {
   if (!is_prepared) {
@@ -205,6 +208,28 @@ void AttestationFlowIntegrated::StartCertificateRequest(
   request.set_key_label(key_name);
   request.set_shall_trigger_enrollment(true);
   request.set_forced(generate_new_key);
+
+  if (profile_attestation_enum ==
+      ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE) {
+    DCHECK(profile_specific_data.has_value())
+        << "profile_specific_data must be provided for "
+           "DEVICE_SETUP_CERTIFICATE";
+    DCHECK(absl::holds_alternative<
+           ::attestation::DeviceSetupCertificateRequestMetadata>(
+        profile_specific_data.value()))
+        << "profile_specific_data must be of type "
+           "::attestation::DeviceSetupCertificateRequestMetadata";
+
+    request.mutable_device_setup_certificate_request_metadata()->set_id(
+        absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+            profile_specific_data.value())
+            .id());
+    request.mutable_device_setup_certificate_request_metadata()
+        ->set_content_binding(
+            absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+                profile_specific_data.value())
+                .content_binding());
+  }
 
   attestation_client_->GetCertificate(
       request, base::BindOnce(&AttestationFlowIntegrated::OnCertRequestFinished,

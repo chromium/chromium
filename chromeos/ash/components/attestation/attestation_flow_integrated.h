@@ -130,6 +130,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   //   key_crypto_type - The crypto type of the key.
   //   key_name - The name of the key. If left empty, a default name derived
   //              from the |certificate_profile| and |account_id| will be used.
+  //   profile_specific_data - Optional certificate profile specific data. The
+  //                           type must correspond to `certificate_profile`.
   //   callback - Called when the operation completes.
   //   is_prepared - Success or failure of the enrollment preparation phase.
   void StartCertificateRequest(
@@ -139,6 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       bool generate_new_key,
       ::attestation::KeyType key_crypto_type,
       const std::string& key_name,
+      const absl::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
       bool is_prepared);
 
