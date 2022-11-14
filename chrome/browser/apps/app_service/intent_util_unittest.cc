@@ -200,22 +200,6 @@ TEST_F(IntentUtilsTest, CreateNoteTakingFilter) {
   EXPECT_TRUE(apps_util::CreateCreateNoteIntent()->MatchFilter(filter));
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateNoteTakingFilterMojom) {
-  apps::mojom::IntentFilterPtr filter =
-      apps_util::CreateNoteTakingFilterMojom();
-
-  ASSERT_EQ(filter->conditions.size(), 1u);
-  const apps::mojom::Condition& condition = *filter->conditions[0];
-  EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1u);
-  EXPECT_EQ(condition.condition_values[0]->value,
-            apps_util::kIntentActionCreateNote);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()), filter));
-}
-
 TEST_F(IntentUtilsTest, CreateLockScreenFilter) {
   IntentFilterPtr filter = apps_util::CreateLockScreenFilter();
 
@@ -227,23 +211,6 @@ TEST_F(IntentUtilsTest, CreateLockScreenFilter) {
             apps_util::kIntentActionStartOnLockScreen);
 
   EXPECT_TRUE(apps_util::CreateStartOnLockScreenIntent()->MatchFilter(filter));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateLockScreenFilterMojom) {
-  apps::mojom::IntentFilterPtr filter =
-      apps_util::CreateLockScreenFilterMojom();
-
-  ASSERT_EQ(filter->conditions.size(), 1u);
-  const apps::mojom::Condition& condition = *filter->conditions[0];
-  EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1u);
-  EXPECT_EQ(condition.condition_values[0]->value,
-            apps_util::kIntentActionStartOnLockScreen);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      ConvertIntentToMojomIntent(apps_util::CreateStartOnLockScreenIntent()),
-      filter));
 }
 
 TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
@@ -447,49 +414,6 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_NoteTaking) {
 
   apps::IntentPtr intent = apps_util::CreateCreateNoteIntent();
   EXPECT_TRUE(intent->MatchFilter(filter));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilsTest, CreateChromeAppIntentFilters_NoteTaking) {
-  const std::string note_action_handler =
-      extensions::api::app_runtime::ToString(
-          extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE);
-  // Foo app has a note-taking action handler.
-  extensions::ExtensionBuilder foo_app;
-  foo_app.SetManifest(
-      extensions::DictionaryBuilder()
-          .Set("name", "Foo")
-          .Set("version", "1.0.0")
-          .Set("manifest_version", 2)
-          .Set("app", extensions::DictionaryBuilder()
-                          .Set("background",
-                               extensions::DictionaryBuilder()
-                                   .Set("scripts", extensions::ListBuilder()
-                                                       .Append("background.js")
-                                                       .Build())
-                                   .Build())
-                          .Build())
-          .Set("action_handlers",
-               extensions::ListBuilder().Append(note_action_handler).Build())
-          .Build());
-  foo_app.SetID("abcdefghzxcv");
-  scoped_refptr<const extensions::Extension> foo = foo_app.Build();
-
-  std::vector<apps::mojom::IntentFilterPtr> filters =
-      apps_util::CreateChromeAppIntentFilters(foo.get());
-
-  ASSERT_EQ(filters.size(), 1u);
-  const apps::mojom::IntentFilterPtr& filter = filters[0];
-  ASSERT_EQ(filter->conditions.size(), 1u);
-  const apps::mojom::Condition& condition = *filter->conditions[0];
-  EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1u);
-  EXPECT_EQ(condition.condition_values[0]->value,
-            apps_util::kIntentActionCreateNote);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(
-      apps::ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()),
-      filter));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

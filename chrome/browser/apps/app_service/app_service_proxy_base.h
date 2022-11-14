@@ -393,10 +393,6 @@ class AppServiceProxyBase : public KeyedService,
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
 
   IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  apps::mojom::IntentFilterPtr FindBestMatchingMojomFilter(
-      const apps::mojom::IntentPtr& intent);
 
   virtual void PerformPostLaunchTasks(apps::LaunchSource launch_source);
 

@@ -822,37 +822,6 @@ IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
   return best_matching_intent_filter;
 }
 
-apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingMojomFilter(
-    const apps::mojom::IntentPtr& mojom_intent) {
-  apps::mojom::IntentFilterPtr best_matching_intent_filter;
-  if (!app_service_.is_bound() || !mojom_intent) {
-    return best_matching_intent_filter;
-  }
-
-  auto intent = ConvertMojomIntentToIntent(mojom_intent);
-  if (!intent) {
-    return best_matching_intent_filter;
-  }
-  int best_match_level = static_cast<int>(IntentFilterMatchLevel::kNone);
-  app_registry_cache_.ForEachApp(
-      [&intent, &best_match_level,
-       &best_matching_intent_filter](const apps::AppUpdate& update) {
-        for (const auto& filter : update.IntentFilters()) {
-          if (!intent->MatchFilter(filter)) {
-            continue;
-          }
-          auto match_level = filter->GetFilterMatchLevel();
-          if (match_level <= best_match_level) {
-            continue;
-          }
-          best_matching_intent_filter =
-              ConvertIntentFilterToMojomIntentFilter(filter);
-          best_match_level = match_level;
-        }
-      });
-  return best_matching_intent_filter;
-}
-
 void AppServiceProxyBase::PerformPostLaunchTasks(
     apps::LaunchSource launch_source) {}
 

@@ -403,18 +403,6 @@ bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
                               });
 }
 
-bool IntentMatchesFilter(const apps::mojom::IntentPtr& intent,
-                         const apps::mojom::IntentFilterPtr& filter) {
-  // Intent matches with this intent filter when all of the existing conditions
-  // match.
-  for (const auto& condition : filter->conditions) {
-    if (!IntentMatchesCondition(intent, condition)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter) {
   for (const auto& condition : filter->conditions) {
     // We expect action conditions to be paired with file conditions.

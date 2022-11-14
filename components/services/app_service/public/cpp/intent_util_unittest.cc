@@ -127,16 +127,6 @@ class IntentUtilTest : public testing::Test {
   }
 };
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, AllConditionMatchesMojom) {
-  GURL test_url = GURL("https://www.google.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  auto intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, intent_filter));
-}
-
 TEST_F(IntentUtilTest, AllConditionMatches) {
   GURL test_url("https://www.google.com/");
   auto intent =
@@ -146,16 +136,6 @@ TEST_F(IntentUtilTest, AllConditionMatches) {
   EXPECT_TRUE(intent->MatchFilter(intent_filter));
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, OneConditionDoesNotMatchMojom) {
-  GURL test_url = GURL("https://www.abc.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  auto intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
-
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, intent_filter));
-}
-
 TEST_F(IntentUtilTest, OneConditionDoesNotMatch) {
   GURL test_url("https://www.abc.com/");
   auto intent =
@@ -163,16 +143,6 @@ TEST_F(IntentUtilTest, OneConditionDoesNotMatch) {
   auto intent_filter = apps_util::MakeIntentFilterForUrlScope(GURL(kFilterUrl));
 
   EXPECT_FALSE(intent->MatchFilter(intent_filter));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, IntentDoesNotHaveValueToMatchMojom) {
-  GURL test_url = GURL("www.abc.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  auto intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
-
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, intent_filter));
 }
 
 TEST_F(IntentUtilTest, IntentDoesNotHaveValueToMatch) {
@@ -478,25 +448,6 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
               filter_empty->GetFilterMatchLevel());
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, ActionMatchMojom) {
-  GURL test_url("https://www.google.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  auto intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, intent_filter));
-
-  auto send_intent = apps_util::CreateIntentFromUrl(test_url);
-  send_intent->action = apps_util::kIntentActionSend;
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(send_intent, intent_filter));
-
-  auto send_intent_filter =
-      apps_util::CreateIntentFilterForUrlScope(GURL(kFilterUrl));
-  send_intent_filter->conditions[0]->condition_values[0]->value =
-      apps_util::kIntentActionSend;
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, send_intent_filter));
-}
-
 TEST_F(IntentUtilTest, ActionMatch) {
   GURL test_url("https://www.google.com/");
   auto intent =
@@ -514,97 +465,6 @@ TEST_F(IntentUtilTest, ActionMatch) {
   send_intent_filter->conditions[0]->condition_values[0]->value =
       apps_util::kIntentActionSend;
   EXPECT_FALSE(intent->MatchFilter(send_intent_filter));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, MimeTypeMatchMojom) {
-  std::string mime_type1 = "text/plain";
-  std::string mime_type2 = "image/jpeg";
-  std::string mime_type_sub_wildcard = "text/*";
-  std::string mime_type_all_wildcard = "*/*";
-  std::string mime_type_only_main_type = "text";
-  std::string mime_type_only_star = "*";
-
-  auto intent1 = CreateShareMojomIntent(mime_type1);
-  auto intent2 = CreateShareMojomIntent(mime_type2);
-  auto intent_sub_wildcard = CreateShareMojomIntent(mime_type_sub_wildcard);
-  auto intent_all_wildcard = CreateShareMojomIntent(mime_type_all_wildcard);
-  auto intent_only_main_type = CreateShareMojomIntent(mime_type_only_main_type);
-  auto intent_only_star = CreateShareMojomIntent(mime_type_only_star);
-
-  auto filter1 = apps_util::CreateIntentFilterForMimeType(mime_type1);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent1, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent2, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_sub_wildcard, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_all_wildcard, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_only_main_type, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_only_star, filter1));
-
-  auto filter2 = apps_util::CreateIntentFilterForMimeType(mime_type2);
-
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent1, filter2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent2, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_sub_wildcard, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_all_wildcard, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_only_main_type, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_only_star, filter2));
-
-  auto filter_sub_wildcard =
-      apps_util::CreateIntentFilterForMimeType(mime_type_sub_wildcard);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent1, filter_sub_wildcard));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent2, filter_sub_wildcard));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_sub_wildcard, filter_sub_wildcard));
-  EXPECT_FALSE(
-      apps_util::IntentMatchesFilter(intent_all_wildcard, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent_only_main_type,
-                                             filter_sub_wildcard));
-  EXPECT_FALSE(
-      apps_util::IntentMatchesFilter(intent_only_star, filter_sub_wildcard));
-
-  auto filter_all_wildcard =
-      apps_util::CreateIntentFilterForMimeType(mime_type_all_wildcard);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent1, filter_all_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent2, filter_all_wildcard));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_sub_wildcard, filter_all_wildcard));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_all_wildcard, filter_all_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent_only_main_type,
-                                             filter_all_wildcard));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_only_star, filter_all_wildcard));
-
-  auto filter_only_main_type =
-      apps_util::CreateIntentFilterForMimeType(mime_type_only_main_type);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent1, filter_only_main_type));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent2, filter_only_main_type));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent_sub_wildcard,
-                                             filter_only_main_type));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent_all_wildcard,
-                                              filter_only_main_type));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent_only_main_type,
-                                             filter_only_main_type));
-  EXPECT_FALSE(
-      apps_util::IntentMatchesFilter(intent_only_star, filter_only_main_type));
-
-  auto filter_only_star =
-      apps_util::CreateIntentFilterForMimeType(mime_type_only_star);
-
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent1, filter_only_star));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent2, filter_only_star));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_sub_wildcard, filter_only_star));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_all_wildcard, filter_only_star));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_only_main_type, filter_only_star));
-  EXPECT_TRUE(
-      apps_util::IntentMatchesFilter(intent_only_star, filter_only_star));
 }
 
 TEST_F(IntentUtilTest, MimeTypeMatch) {
@@ -679,86 +539,6 @@ TEST_F(IntentUtilTest, MimeTypeMatch) {
   EXPECT_TRUE(intent_all_wildcard->MatchFilter(filter_only_star));
   EXPECT_TRUE(intent_only_main_type->MatchFilter(filter_only_star));
   EXPECT_TRUE(intent_only_star->MatchFilter(filter_only_star));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, CommonMimeTypeMatchMojom) {
-  std::string mime_type1 = "text/plain";
-  std::string mime_type2 = "image/jpeg";
-  std::string mime_type3 = "text/html";
-  std::string mime_type_sub_wildcard = "text/*";
-  std::string mime_type_all_wildcard = "*/*";
-
-  auto filter1 = apps_util::CreateIntentFilterForSend(mime_type1);
-  auto filter2 = apps_util::CreateIntentFilterForSend(mime_type2);
-  auto filter3 = apps_util::CreateIntentFilterForSend(mime_type3);
-  auto filter_sub_wildcard =
-      apps_util::CreateIntentFilterForSend(mime_type_sub_wildcard);
-  auto filter_all_wildcard =
-      apps_util::CreateIntentFilterForSend(mime_type_all_wildcard);
-  auto filter1_and_2 = apps_util::CreateIntentFilterForSend(mime_type1);
-  filter1_and_2->conditions[1]->condition_values.push_back(
-      apps_util::MakeConditionValue(mime_type2,
-                                    apps::mojom::PatternMatchType::kMimeType));
-
-  std::vector<GURL> urls;
-  std::vector<std::string> mime_types;
-
-  urls.emplace_back("abc");
-
-  // Test match with text/plain type.
-  mime_types.push_back(mime_type1);
-  auto intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
-
-  // Test match with image/jpeg type.
-  mime_types.clear();
-  mime_types.push_back(mime_type2);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
-
-  // Test match with text/html type.
-  mime_types.clear();
-  mime_types.push_back(mime_type3);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
-
-  // Test match with text/* types.
-  mime_types.clear();
-  mime_types.push_back(mime_type_sub_wildcard);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
-
-  // Test match with */* type.
-  mime_types.clear();
-  mime_types.push_back(mime_type_all_wildcard);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
 
 TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
@@ -838,81 +618,6 @@ TEST_F(IntentUtilTest, CommonMimeTypeMatch) {
   EXPECT_FALSE(intent->MatchFilter(filter3));
   EXPECT_FALSE(intent->MatchFilter(filter_sub_wildcard));
   EXPECT_TRUE(intent->MatchFilter(filter_all_wildcard));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, CommonMimeTypeMatchMultipleMojom) {
-  std::string mime_type1 = "text/plain";
-  std::string mime_type2 = "image/jpeg";
-  std::string mime_type3 = "text/html";
-  std::string mime_type_sub_wildcard = "text/*";
-  std::string mime_type_all_wildcard = "*/*";
-
-  auto filter1 = apps_util::CreateIntentFilterForSendMultiple(mime_type1);
-  auto filter2 = apps_util::CreateIntentFilterForSendMultiple(mime_type2);
-  auto filter3 = apps_util::CreateIntentFilterForSendMultiple(mime_type3);
-  auto filter_sub_wildcard =
-      apps_util::CreateIntentFilterForSendMultiple(mime_type_sub_wildcard);
-  auto filter_all_wildcard =
-      apps_util::CreateIntentFilterForSendMultiple(mime_type_all_wildcard);
-  auto filter1_and_2 = apps_util::CreateIntentFilterForSendMultiple(mime_type1);
-  filter1_and_2->conditions[1]->condition_values.push_back(
-      apps_util::MakeConditionValue(mime_type2,
-                                    apps::mojom::PatternMatchType::kMimeType));
-
-  std::vector<GURL> urls;
-  std::vector<std::string> mime_types;
-
-  urls.emplace_back("abc");
-  urls.emplace_back("def");
-
-  // Test match with same mime types.
-  mime_types.push_back(mime_type1);
-  mime_types.push_back(mime_type1);
-  auto intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-
-  // Test match with same main type and different sub type.
-  mime_types.clear();
-  mime_types.push_back(mime_type1);
-  mime_types.push_back(mime_type3);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter3));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-
-  // Test match with explicit type and wildcard sub type.
-  mime_types.clear();
-  mime_types.push_back(mime_type1);
-  mime_types.push_back(mime_type_sub_wildcard);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-
-  // Test match with different mime types.
-  mime_types.clear();
-  mime_types.push_back(mime_type1);
-  mime_types.push_back(mime_type2);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
-
-  // Test match with explicit type and general wildcard type.
-  mime_types.clear();
-  mime_types.push_back(mime_type1);
-  mime_types.push_back(mime_type_all_wildcard);
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types);
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter1_and_2));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter_sub_wildcard));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter_all_wildcard));
 }
 
 TEST_F(IntentUtilTest, CommonMimeTypeMatchMultiple) {
@@ -1015,59 +720,6 @@ std::vector<apps::mojom::IntentFilePtr> vectorise(
   return vector;
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, FileExtensionMatchMojom) {
-  std::string mime_type_mp3 = "audio/mp3";
-  std::string file_ext_mp3 = "mp3";
-  std::string mime_type_mpeg = "audio/mpeg";
-
-  auto file_filter =
-      apps_util::CreateFileFilterForView(mime_type_mp3, file_ext_mp3, "label");
-
-  auto file = apps::mojom::IntentFile::New();
-  file->url = test_url("abc.mp3");
-  file->is_directory = apps::mojom::OptionalBool::kFalse;
-
-  // Test match with the same mime type and the same file extension.
-  file->mime_type = mime_type_mp3;
-  auto intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
-
-  // Test match with different mime types and the same file extension.
-  file->mime_type = mime_type_mpeg;
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
-
-  // Test match with the same mime type and a different file extension.
-  file->url = test_url("abc.png");
-  file->mime_type = mime_type_mp3;
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter));
-
-  // Test match with different mime types and a different file extension.
-  file->url = test_url("abc.png");
-  file->mime_type = mime_type_mpeg;
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter));
-
-  std::string file_ext_dot_mp3 = ".mp3";
-  auto file_filter_dot = apps_util::CreateFileFilterForView(
-      mime_type_mp3, file_ext_dot_mp3, "label");
-
-  // The whole extension must match, not just the end.
-  file->url = test_url("abc.extramp3");
-  file->mime_type = mime_type_mpeg;
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
-
-  // Check that the filter behaves the same with and without a leading ".".
-  file->url = test_url("abc.mp3");
-  file->mime_type = mime_type_mpeg;
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
-}
-
 TEST_F(IntentUtilTest, FileExtensionMatch) {
   std::string mime_type_mp3 = "audio/mp3";
   std::string file_ext_mp3 = "mp3";
@@ -1116,61 +768,6 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
       apps_util::kIntentActionView,
       CreateIntentFiles(test_url("abc.mp3"), mime_type_mpeg, false));
   EXPECT_TRUE(intent->MatchFilter(file_filter_dot));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, FileURLMatchMojom) {
-  std::string mp3_url_pattern = R"(filesystem:chrome-extension://.*/.*\.mp3)";
-
-  auto url_filter = apps_util::CreateURLFilterForView(mp3_url_pattern, "label");
-
-  auto file = apps::mojom::IntentFile::New();
-  file->url = ext_test_url("abc.mp3");
-  file->is_directory = apps::mojom::OptionalBool::kFalse;
-
-  // Test match with mp3 file extension.
-  file->mime_type = "";
-  auto intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, url_filter));
-
-  // Test non-match with mp4 file extension.
-  file->url = ext_test_url("abc.mp4");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, url_filter));
-
-  // Test non-match with just the end of a file extension.
-  file->url = ext_test_url("abc.testmp3");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, url_filter));
-
-  std::string single_wild_url_pattern = "filesystem:chrome-extension://.*/.*";
-  auto wild_filter =
-      apps_util::CreateURLFilterForView(single_wild_url_pattern, "label");
-
-  // Test that mp3 matches with *
-  file->url = ext_test_url("abc.mp3");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, wild_filter));
-
-  // Test that no file extension matches with *
-  file->url = ext_test_url("abc");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, wild_filter));
-
-  std::string ext_wild_url_pattern =
-      R"(filesystem:chrome-extension://.*/.*\..*)";
-  auto ext_wild_filter =
-      apps_util::CreateURLFilterForView(ext_wild_url_pattern, "label");
-
-  // Test that mp3 matches with *.*
-  file->url = ext_test_url("abc.mp3");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, ext_wild_filter));
-
-  // Test that no file extension does not match with *.*
-  file->url = ext_test_url("abc");
-  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, ext_wild_filter));
 }
 
 TEST_F(IntentUtilTest, FileURLMatch) {
@@ -1254,40 +851,6 @@ TEST_F(IntentUtilTest, FileSystemWebAppURLMatch) {
   EXPECT_FALSE(intent->MatchFilter(url_filter));
 }
 
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, FileWithTitleTextMojom) {
-  const std::string mime_type = "image/jpeg";
-  auto filter = apps_util::CreateIntentFilterForSend(mime_type);
-
-  const std::vector<GURL> urls{GURL("abc")};
-  const std::vector<std::string> mime_types{mime_type};
-
-  auto intent =
-      apps_util::CreateShareIntentFromFiles(urls, mime_types, "text", "title");
-  EXPECT_TRUE(intent->share_text.has_value());
-  EXPECT_EQ(intent->share_text.value(), "text");
-  EXPECT_TRUE(intent->share_title.has_value());
-  EXPECT_EQ(intent->share_title.value(), "title");
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
-
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "text", "");
-  EXPECT_TRUE(intent->share_text.has_value());
-  EXPECT_EQ(intent->share_text.value(), "text");
-  EXPECT_FALSE(intent->share_title.has_value());
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
-
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "", "title");
-  EXPECT_FALSE(intent->share_text.has_value());
-  EXPECT_TRUE(intent->share_title.has_value());
-  EXPECT_EQ(intent->share_title.value(), "title");
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
-
-  intent = apps_util::CreateShareIntentFromFiles(urls, mime_types, "", "");
-  EXPECT_FALSE(intent->share_text.has_value());
-  EXPECT_FALSE(intent->share_title.has_value());
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
-}
-
 TEST_F(IntentUtilTest, FileWithTitleText) {
   const std::string mime_type = "image/jpeg";
   auto filter = apps_util::MakeIntentFilterForSend(mime_type);
@@ -1318,26 +881,6 @@ TEST_F(IntentUtilTest, FileWithTitleText) {
   EXPECT_FALSE(intent->share_text.has_value());
   EXPECT_FALSE(intent->share_title.has_value());
   EXPECT_TRUE(intent->MatchFilter(filter));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, TextMatchMojom) {
-  std::string mime_type1 = "text/plain";
-  std::string mime_type2 = "image/jpeg";
-  auto filter1 = apps_util::CreateIntentFilterForMimeType(mime_type1);
-  auto filter2 = apps_util::CreateIntentFilterForMimeType(mime_type2);
-
-  auto intent = apps_util::CreateShareIntentFromText("text", "");
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-
-  intent = apps_util::CreateShareIntentFromText("", "title");
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
-
-  intent = apps_util::CreateShareIntentFromText("text", "title");
-  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
-  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
 }
 
 TEST_F(IntentUtilTest, TextMatch) {

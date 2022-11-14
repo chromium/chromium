@@ -146,11 +146,6 @@ bool ConditionValueMatches(
 bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
                             const apps::mojom::ConditionPtr& condition);
 
-// Return true if a |filter| matches an |intent|. This is true when intent
-// matches all existing conditions in the filter.
-bool IntentMatchesFilter(const apps::mojom::IntentPtr& intent,
-                         const apps::mojom::IntentFilterPtr& filter);
-
 // Return true if |filter| only contains file extension pattern matches.
 bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter);
 
