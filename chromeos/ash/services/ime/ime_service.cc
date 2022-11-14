@@ -182,6 +182,11 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kAutocorrectParamsTuning);
   }
+  if (strcmp(feature_name,
+             chromeos::features::kFirstPartyVietnameseInput.name) == 0) {
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kFirstPartyVietnameseInput);
+  }
   if (strcmp(feature_name, chromeos::features::kLacrosSupport.name) == 0) {
     return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
   }
