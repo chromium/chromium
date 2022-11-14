@@ -147,6 +147,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeDMServer::HandleRequest(
   if (url.path() == "/test/ping")
     return policy::CreateHttpResponse(net::HTTP_OK, "Pong.");
 
+  EmbeddedPolicyTestServer::ResetServerState();
+
   if (!ReadPolicyBlobFile()) {
     return policy::CreateHttpResponse(net::HTTP_INTERNAL_SERVER_ERROR,
                                       "Failed to read policy blob file.");
@@ -210,7 +212,6 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     LOG(INFO) << "Policy blob file doesn't exist yet.";
     return true;
   }
-  EmbeddedPolicyTestServer::ResetPolicyStorage();
   JSONFileValueDeserializer deserializer(policy_blob_file);
   int error_code = 0;
   std::string error_msg;
@@ -505,7 +506,6 @@ bool FakeDMServer::ReadClientStateFile() {
     LOG(INFO) << "Client state file doesn't exist yet.";
     return true;
   }
-  EmbeddedPolicyTestServer::ResetClientStorage();
   JSONFileValueDeserializer deserializer(client_state_file);
   int error_code = 0;
   std::string error_msg;

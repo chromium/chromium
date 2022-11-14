@@ -70,9 +70,9 @@ class EmbeddedPolicyTestServer {
   // Initializes and waits until the server is ready to accept requests.
   virtual bool Start();
 
-  ClientStorage* client_storage() const { return client_storage_.get(); }
+  ClientStorage* client_storage();
 
-  PolicyStorage* policy_storage() const { return policy_storage_.get(); }
+  PolicyStorage* policy_storage();
 
   // Returns the service URL.
   GURL GetServiceURL() const;
@@ -86,9 +86,8 @@ class EmbeddedPolicyTestServer {
   void ConfigureRequestError(const std::string& request_type,
                              net::HttpStatusCode error_code);
 
-  // Resets the policy/client storage to its original state.
-  void ResetPolicyStorage();
-  void ResetClientStorage();
+  // Resets the server state.
+  void ResetServerState();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Updates policy selected by |type| and optional |entity_id|. The
@@ -112,8 +111,10 @@ class EmbeddedPolicyTestServer {
 
   net::test_server::EmbeddedTestServer http_server_;
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
-  std::unique_ptr<ClientStorage> client_storage_;
-  std::unique_ptr<PolicyStorage> policy_storage_;
+
+  // ServerState contains all the fields that represent the server state.
+  struct ServerState;
+  std::unique_ptr<ServerState> server_state_;
 };
 
 }  // namespace policy
