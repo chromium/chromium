@@ -108,6 +108,11 @@ class AppEventsObserverTest
     app_events_observer_->SetReportingEnabled(IsReportingEnabled());
   }
 
+  void TearDown() override {
+    app_events_observer_.reset();
+    ::apps::AppPlatformMetricsServiceTestBase::TearDown();
+  }
+
   bool IsAppServiceAvailableForProfile() const {
     return ::testing::get<0>(GetParam());
   }
