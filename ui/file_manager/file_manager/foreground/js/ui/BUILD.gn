@@ -56,6 +56,7 @@ group("js_modules") {
     ":multi_menu_button",
     ":progress_center_panel",
     ":providers_menu",
+    ":search_box",
     ":splitter",
     ":tree",
   ]
@@ -105,6 +106,7 @@ js_type_check("closure_compile_jsmodules") {
     ":multi_menu_button",
     ":progress_center_panel",
     ":providers_menu",
+    ":search_box",
     ":splitter",
     ":tree",
     "table:table",
@@ -387,6 +389,7 @@ js_library("file_manager_ui") {
     ":multi_menu_button",
     ":progress_center_panel",
     ":providers_menu",
+    ":search_box",
     ":splitter",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:ui",
@@ -770,6 +773,20 @@ js_library("providers_menu") {
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert",
   ]
+}
+
+js_library("search_box") {
+  deps = [
+    ":autocomplete_list",
+    ":list_item",
+    "//ash/webui/common/resources:cr_deprecated",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js/cr:event_target",
+  ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/search_item.js" ]
 }
 
 js_library("splitter") {
