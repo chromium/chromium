@@ -62,13 +62,6 @@ void ACMatchClassificationsToTags(const std::u16string& text,
   }
 }
 
-ChromeSearchResult::Tags CalculateTags(const std::u16string& query,
-                                       const std::u16string& text) {
-  ChromeSearchResult::Tags tags;
-  AppendMatchTags(query, text, &tags);
-  return tags;
-}
-
 void AppendMatchTags(const std::u16string& query,
                      const std::u16string& text,
                      ChromeSearchResult::Tags* tags) {

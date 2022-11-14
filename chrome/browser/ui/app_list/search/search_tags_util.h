@@ -18,11 +18,6 @@ void ACMatchClassificationsToTags(const std::u16string& text,
                                   ChromeSearchResult::Tags* tags,
                                   const bool ignore_match = false);
 
-// TODO(crbug.com/1382984): Remove this and its references once the productivity
-// launcher is enabled.
-ChromeSearchResult::Tags CalculateTags(const std::u16string& query,
-                                       const std::u16string& text);
-
 // Calculates ChromeSearchResult tags for highlighting occurrences of |query| in
 // |text|, and appends them to supplied Tags.
 void AppendMatchTags(const std::u16string& query,

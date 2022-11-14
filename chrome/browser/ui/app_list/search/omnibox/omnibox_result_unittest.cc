@@ -63,8 +63,7 @@ const char16_t kExampleKeyword[] = u"example.com";
 static_assert(std::is_trivially_destructible<ACMatchClassification>::value &&
               std::is_trivially_destructible<ash::SearchResultTag>::value);
 
-// Example contents is a URL, and includes a substring matching the example
-// query.
+// Example contents is a URL.
 const ACMatchClassification kExampleContentsClass[] = {
     {/*offset=*/0,
      /*style=*/ACMatchClassification::URL | ACMatchClassification::MATCH},
@@ -72,19 +71,12 @@ const ACMatchClassification kExampleContentsClass[] = {
 };
 
 const ash::SearchResultTag kExpectedExampleContentsTags[] = {
-    {/*styles=*/ash::SearchResultTag::MATCH, /*start=*/0, /*end=*/5},
     {/*styles=*/ash::SearchResultTag::URL, /*start=*/0, /*end=*/25},
 };
 
-// Example description is not a URL but does include a matching substring.
-
+// Example description is not a URL.
 const ACMatchClassification kExampleDescriptionClass[] = {
     {/*offset=*/0, /*style=*/ACMatchClassification::NONE},
-    {/*offset=*/12, /*style=*/ACMatchClassification::MATCH},
-};
-
-const ash::SearchResultTag kExpectedExampleDescriptionTags[] = {
-    {/*styles=*/ash::SearchResultTag::MATCH, /*start=*/12, /*end=*/17},
 };
 
 // The bytes of a 16x16 yellow square PNG image. Encoded in base64 for
@@ -428,9 +420,8 @@ TEST_F(OmniboxResultTest, UrlText) {
 
   // The output title should be the input description and the output details
   // should be the input contents.
-  EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
-                                    kExampleDescription,
-                                    kExpectedExampleDescriptionTags));
+  EXPECT_TRUE(IsSingletonTextVectorNoTags(result->title_text_vector(),
+                                          kExampleDescription));
   EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
                                     kExampleContents,
                                     kExpectedExampleContentsTags));
@@ -453,9 +444,8 @@ TEST_F(OmniboxResultTest, RichEntityText) {
   EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
                                     kExampleContents,
                                     kExpectedExampleContentsTags));
-  EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
-                                    expected_description,
-                                    kExpectedExampleDescriptionTags));
+  EXPECT_TRUE(IsSingletonTextVectorNoTags(result->details_text_vector(),
+                                          expected_description));
 
   // Accessible name should be set.
   EXPECT_NE(std::u16string::npos, result->accessible_name().find(u"contents"));
