@@ -2848,13 +2848,6 @@ const char kStylusBatteryStatusDescription[] =
     "Enables viewing the current stylus battery level in the stylus tools "
     "menu.";
 
-const char kSubframeShutdownDelayName[] =
-    "Add delay to subframe renderer process shutdown";
-const char kSubframeShutdownDelayDescription[] =
-    "Delays shutdown of subframe renderer processes by a few seconds to allow "
-    "them to be potentially reused. This aims to reduce process churn in "
-    "navigations where the source and destination share subframes.";
-
 const char kTabEngagementReportingName[] = "Tab Engagement Metrics";
 const char kTabEngagementReportingDescription[] =
     "Tracks tab engagement and lifetime metrics.";

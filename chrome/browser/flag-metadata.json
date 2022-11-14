@@ -6458,11 +6458,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "subframe-shutdown-delay",
-    "owners": [ "jessemckenna@google.com", "olivierli" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "suggestions-scrolling-ipad",
     "owners": [ "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120

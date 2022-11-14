@@ -8447,10 +8447,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(metrics::structured::kBluetoothSessionizedMetrics)},
 #endif
 
-    {"subframe-shutdown-delay", flag_descriptions::kSubframeShutdownDelayName,
-     flag_descriptions::kSubframeShutdownDelayDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSubframeShutdownDelay)},
-
     {"autofill-parse-merchant-promo-code-fields",
      flag_descriptions::kAutofillParseMerchantPromoCodeFieldsName,
      flag_descriptions::kAutofillParseMerchantPromoCodeFieldsDescription,
