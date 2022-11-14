@@ -459,11 +459,11 @@ std::string VariationsFieldTrialCreator::LoadPermanentConsistencyCountry(
 void VariationsFieldTrialCreator::StorePermanentCountry(
     const base::Version& version,
     const std::string& country) {
-  base::ListValue new_list_value;
+  base::Value::List new_list_value;
   new_list_value.Append(version.GetString());
   new_list_value.Append(country);
-  local_state()->Set(prefs::kVariationsPermanentConsistencyCountry,
-                     new_list_value);
+  local_state()->SetList(prefs::kVariationsPermanentConsistencyCountry,
+                         std::move(new_list_value));
 }
 
 void VariationsFieldTrialCreator::StoreVariationsOverriddenCountry(
