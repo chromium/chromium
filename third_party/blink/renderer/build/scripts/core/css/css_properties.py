@@ -188,13 +188,13 @@ class CSSProperties(object):
 
         Property = generate_property_class(self._default_parameters)
 
-        # Map of feature name -> origin trial feature name
-        origin_trial_features = {}
         # TODO(crbug/1031309): Refactor OriginTrialsWriter to reuse logic here.
         origin_trials_writer = OriginTrialsWriter(
             [runtime_enabled_features_path], "")
-        for feature in origin_trials_writer.origin_trial_features:
-            origin_trial_features[str(feature['name'])] = True
+        self._origin_trial_features = {
+            str(f['name'])
+            for f in origin_trials_writer.origin_trial_features
+        }
 
         properties = [
             Property(**x) for x in css_properties_file.name_dictionaries
@@ -202,7 +202,7 @@ class CSSProperties(object):
 
         self._properties_by_name = {p.name.original: p for p in properties}
 
-        self.add_properties(properties, origin_trial_features)
+        self.add_properties(properties)
 
         self._last_unresolved_property_id = max(property_.enum_value
                                                 for property_ in self._aliases)
@@ -220,13 +220,10 @@ class CSSProperties(object):
             self.set_derived_attributes(field)
             validate_property(field, self._properties_by_name)
 
-    def add_properties(self, properties, origin_trial_features):
+    def add_properties(self, properties):
         for property_ in properties:
             self.set_derived_attributes(property_)
             self.set_derived_visited_attributes(property_)
-            property_.in_origin_trial = False
-            self.set_derived_origin_trials_attributes(property_,
-                                                      origin_trial_features)
             self.set_derived_surrogate_attributes(property_)
             validate_property(property_, self._properties_by_name)
 
@@ -280,13 +277,6 @@ class CSSProperties(object):
         self.expand_aliases()
         self._properties_including_aliases = self._longhands + \
             self._shorthands + self._aliases
-
-    def set_derived_origin_trials_attributes(self, property_,
-                                             origin_trial_features):
-        if not property_.runtime_flag:
-            return
-        if property_.runtime_flag in origin_trial_features:
-            property_.in_origin_trial = True
 
     def set_derived_visited_attributes(self, property_):
         if not property_.visited_property_for:
@@ -457,6 +447,9 @@ class CSSProperties(object):
         set_if_none(property_, 'custom_copy', False)
         set_if_none(property_, 'custom_compare', False)
         set_if_none(property_, 'mutable', False)
+
+        property_.in_origin_trial = property_.runtime_flag and \
+            property_.runtime_flag in self._origin_trial_features
 
     @property
     def default_parameters(self):
