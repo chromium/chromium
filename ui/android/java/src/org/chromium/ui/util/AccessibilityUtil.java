@@ -7,7 +7,6 @@ package org.chromium.ui.util;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
@@ -220,18 +219,13 @@ public class AccessibilityUtil {
     /**
      * Checks whether the given {@link AccessibilityServiceInfo} can perform gestures.
      * @param service The service to check.
-     * @return Whether the {@code service} can perform gestures. On N+, this relies on the
-     *         capabilities the service can perform. On L & M, this looks specifically for
-     *         Switch Access.
+     * @return Whether the {@code service} can perform gestures. This relies on the capabilities
+     *         the service can perform.
      */
     private boolean canPerformGestures(AccessibilityServiceInfo service) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return (service.getCapabilities()
-                           & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
-                    != 0;
-        }
-        return service.getResolveInfo() != null
-                && service.getResolveInfo().toString().contains("switchaccess");
+        return (service.getCapabilities()
+                       & AccessibilityServiceInfo.CAPABILITY_CAN_PERFORM_GESTURES)
+                != 0;
     }
 
     /**

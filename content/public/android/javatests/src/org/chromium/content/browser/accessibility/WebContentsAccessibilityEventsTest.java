@@ -26,7 +26,6 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
  * Tests for WebContentsAccessibilityImpl integration with accessibility services.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 public class WebContentsAccessibilityEventsTest {

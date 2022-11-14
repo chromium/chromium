@@ -9,7 +9,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -23,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -31,7 +29,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for WebContentsAccessibilityImpl integration with accessibility services.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 public class WebContentsAccessibilityTreeTest {

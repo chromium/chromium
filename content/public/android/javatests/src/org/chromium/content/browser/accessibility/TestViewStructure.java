@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Implementation of ViewStructure that allows us to print it out as a
  * string and assert that the data in the structure is correct.
  */
-public class TestViewStructure extends ViewStructure implements TestViewStructureInterface {
+public class TestViewStructure extends ViewStructure {
     private CharSequence mText;
     private String mClassName;
     private Bundle mBundle;
@@ -35,7 +35,6 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
 
     public TestViewStructure() {}
 
-    @Override
     public boolean isDone() {
         if (!mDone) return false;
 
@@ -53,27 +52,22 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
         return builder.toString();
     }
 
-    @Override
     public String getClassName() {
         return mClassName;
     }
 
-    @Override
     public float getTextSize() {
         return mTextSize;
     }
 
-    @Override
     public int getFgColor() {
         return mFgColor;
     }
 
-    @Override
     public int getBgColor() {
         return mBgColor;
     }
 
-    @Override
     public int getStyle() {
         return mStyle;
     }
@@ -180,7 +174,6 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
         return mChildren.size();
     }
 
-    @Override
     public void dumpHtmlTags() {
         mDumpHtmlTags = true;
     }
@@ -194,8 +187,7 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
         return viewStructure;
     }
 
-    @Override
-    public TestViewStructureInterface getChild(int index) {
+    public TestViewStructure getChild(int index) {
         return mChildren.get(index);
     }
 

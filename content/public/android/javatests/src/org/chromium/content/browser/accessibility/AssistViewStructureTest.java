@@ -5,10 +5,8 @@
 package org.chromium.content.browser.accessibility;
 
 import android.app.assist.AssistStructure.ViewNode;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -19,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -40,7 +37,7 @@ public class AssistViewStructureTest {
     /**
      * Helper to call onProvideVirtualStructure and block until the results are received.
      */
-    private TestViewStructureInterface getViewStructureFromHtml(String htmlContent, String js)
+    private TestViewStructure getViewStructureFromHtml(String htmlContent, String js)
             throws TimeoutException {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(htmlContent));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -52,23 +49,20 @@ public class AssistViewStructureTest {
 
         final WebContentsAccessibilityImpl wcax = mActivityTestRule.getWebContentsAccessibility();
 
-        TestViewStructureInterface testViewStructure =
-                TestViewStructureFactory.createTestViewStructure();
+        TestViewStructure testViewStructure = new TestViewStructure();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> wcax.onProvideVirtualStructure((TestViewStructure) testViewStructure, false));
+                () -> wcax.onProvideVirtualStructure(testViewStructure, false));
 
-        CriteriaHelper.pollUiThread(()
-                                            -> testViewStructure.isDone(),
-                "Timed out waiting for onProvideVirtualStructure");
+        CriteriaHelper.pollUiThread(
+                testViewStructure::isDone, "Timed out waiting for onProvideVirtualStructure");
         return testViewStructure;
     }
 
     /**
      * Call getViewStructureFromHtml without the js parameter.
      */
-    private TestViewStructureInterface getViewStructureFromHtml(String htmlContent)
-            throws TimeoutException {
+    private TestViewStructure getViewStructureFromHtml(String htmlContent) throws TimeoutException {
         return getViewStructureFromHtml(htmlContent, null);
     }
 
@@ -90,11 +84,8 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testSimpleParagraph() throws Throwable {
-        TestViewStructureInterface testViewStructure =
-                getViewStructureFromHtml("<p>Hello World</p>");
+        TestViewStructure testViewStructure = getViewStructureFromHtml("<p>Hello World</p>");
         Assert.assertEquals(testViewStructure.toString(),
                 "\n"
                         + "  android.webkit.WebView\n"
@@ -107,10 +98,8 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testStaticList() throws Throwable {
-        TestViewStructureInterface testViewStructure = getViewStructureFromHtml("<ol>"
+        TestViewStructure testViewStructure = getViewStructureFromHtml("<ol>"
                 + "  <li>Kirk</li>"
                 + "  <li>Picard</li>"
                 + "  <li>Janeway</li>"
@@ -135,12 +124,10 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testUrl() throws Throwable {
-        TestViewStructureInterface root = getViewStructureFromHtml("<p>Hello World</p>");
+        TestViewStructure root = getViewStructureFromHtml("<p>Hello World</p>");
         Assert.assertEquals(1, root.getChildCount());
-        TestViewStructureInterface webview = root.getChild(0);
+        TestViewStructure webview = root.getChild(0);
         Assert.assertNotNull(webview);
 
         Bundle extras = webview.getExtras();
@@ -164,14 +151,11 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testAccessibleLabelsAugmentInnerText() throws Throwable {
-        TestViewStructureInterface testViewStructure =
-                getViewStructureFromHtml("<a href='#'>Link</a>"
-                        + "<a href='#' aria-label='AriaLabel'>Link</a>"
-                        + "<button>Button</button>"
-                        + "<button aria-label='AriaLabel'>Button</button>");
+        TestViewStructure testViewStructure = getViewStructureFromHtml("<a href='#'>Link</a>"
+                + "<a href='#' aria-label='AriaLabel'>Link</a>"
+                + "<button>Button</button>"
+                + "<button aria-label='AriaLabel'>Button</button>");
         Assert.assertEquals(testViewStructure.toString(),
                 "\n"
                         + "  android.webkit.WebView\n"
@@ -191,10 +175,8 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlTagNames() throws Throwable {
-        TestViewStructureInterface testViewStructure = getViewStructureFromHtml("<h1>Heading</h1>"
+        TestViewStructure testViewStructure = getViewStructureFromHtml("<h1>Heading</h1>"
                 + "  <p>Paragraph</p>"
                 + "  <div><input></div>");
         testViewStructure.dumpHtmlTags();
@@ -215,10 +197,8 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlAttributes() throws Throwable {
-        TestViewStructureInterface node =
+        TestViewStructure node =
                 getViewStructureFromHtml("<button id='a' class='b' aria-label='c'>D</button>");
 
         while (node != null
@@ -240,10 +220,8 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlMetadata() throws Throwable {
-        TestViewStructureInterface root = getViewStructureFromHtml("<head>"
+        TestViewStructure root = getViewStructureFromHtml("<head>"
                 + "  <title>Hello World</title>"
                 + "  <script>console.log(\"Skip me!\");</script>"
                 + "  <meta charset=\"utf-8\">"
@@ -251,7 +229,7 @@ public class AssistViewStructureTest {
                 + "  <script type=\"application/ld+json\">{}</script>"
                 + "</head>"
                 + "<body>Hello, world</body>")
-                                                  .getChild(0);
+                                         .getChild(0);
         Bundle extras = root.getExtras();
         ArrayList<String> metadata = extras.getStringArrayList("metadata");
         Assert.assertNotNull(metadata);
@@ -268,21 +246,19 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testButton() throws Throwable {
         final String data = "<button>Click</button>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
+        TestViewStructure child = root.getChild(0);
         Assert.assertEquals(1, child.getChildCount());
         Assert.assertEquals("", child.getText());
-        TestViewStructureInterface button = child.getChild(0);
+        TestViewStructure button = child.getChild(0);
         Assert.assertEquals(1, button.getChildCount());
         Assert.assertEquals("android.widget.Button", button.getClassName());
-        TestViewStructureInterface buttonText = button.getChild(0);
+        TestViewStructure buttonText = button.getChild(0);
         Assert.assertEquals("Click", buttonText.getText());
     }
 
@@ -291,18 +267,16 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testColors() throws Throwable {
         final String data = "<p style=\"color:#123456;background:#abcdef\">color</p>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface para = root.getChild(0);
+        TestViewStructure para = root.getChild(0);
         Assert.assertEquals("ff123456", Integer.toHexString(para.getFgColor()));
         Assert.assertEquals("ffabcdef", Integer.toHexString(para.getBgColor()));
-        TestViewStructureInterface paraText = para.getChild(0);
+        TestViewStructure paraText = para.getChild(0);
         Assert.assertEquals("color", paraText.getText());
     }
 
@@ -311,19 +285,17 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1224422")
     public void testFontSize() throws Throwable {
         final String data = "<html><head><style> "
                 + "    p { font-size:16px; transform: scale(2); }"
                 + "    </style></head><body><p>foo</p></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface para = root.getChild(0);
-        TestViewStructureInterface paraText = para.getChild(0);
+        TestViewStructure para = root.getChild(0);
+        TestViewStructure paraText = para.getChild(0);
         Assert.assertEquals("foo", paraText.getText());
 
         // The font size should not be affected by page zoom or CSS transform.
@@ -335,24 +307,22 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testTextStyles() throws Throwable {
         final String data = "<html><head><style> "
                 + "    body { font: italic bold 12px Courier; }"
                 + "    </style></head><body><p>foo</p></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface para = root.getChild(0);
+        TestViewStructure para = root.getChild(0);
         int style = para.getStyle();
         Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_BOLD));
         Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_ITALIC));
         Assert.assertFalse(0 != (style & ViewNode.TEXT_STYLE_UNDERLINE));
         Assert.assertFalse(0 != (style & ViewNode.TEXT_STYLE_STRIKE_THRU));
 
-        TestViewStructureInterface paraText = para.getChild(0);
+        TestViewStructure paraText = para.getChild(0);
         Assert.assertEquals("foo", paraText.getText());
     }
 
@@ -361,20 +331,18 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testStrongStyle() throws Throwable {
         final String data = "<html><body><p>foo</p><p><strong>bar</strong></p></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(2, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child1 = root.getChild(0);
+        TestViewStructure child1 = root.getChild(0);
         Assert.assertEquals("foo", child1.getChild(0).getText());
         int child1style = child1.getStyle();
         Assert.assertFalse(0 != (child1style & ViewNode.TEXT_STYLE_BOLD));
-        TestViewStructureInterface child2 = root.getChild(1);
-        TestViewStructureInterface child2child = child2.getChild(0);
+        TestViewStructure child2 = root.getChild(1);
+        TestViewStructure child2child = child2.getChild(0);
         Assert.assertEquals("bar", child2child.getText());
         Assert.assertEquals(child1.getTextSize(), child2child.getTextSize(), 0);
         int child2childstyle = child2child.getStyle();
@@ -386,16 +354,14 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testItalicStyle() throws Throwable {
         final String data = "<html><body><i>foo</i></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         int style = grandchild.getStyle();
         Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_ITALIC));
     }
@@ -405,16 +371,14 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testBoldStyle() throws Throwable {
         final String data = "<html><body><b>foo</b></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         int style = grandchild.getStyle();
         Assert.assertTrue(0 != (style & ViewNode.TEXT_STYLE_BOLD));
     }
@@ -424,17 +388,15 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testOneCharacterSelection() throws Throwable {
         final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
         final String js = getSelectionScript("node", 0, "node", 1);
-        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data, js).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("foo", grandchild.getText());
         Assert.assertEquals(0, grandchild.getTextSelectionStart());
         Assert.assertEquals(1, grandchild.getTextSelectionEnd());
@@ -445,17 +407,15 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testOneNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
         final String js = getSelectionScript("node", 0, "node", 3);
-        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data, js).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("foo", grandchild.getText());
         Assert.assertEquals(0, grandchild.getTextSelectionStart());
         Assert.assertEquals(3, grandchild.getTextSelectionEnd());
@@ -466,18 +426,16 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testSubsequentNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node1' role='none'>foo</b>"
                 + "<b id='node2' role='none'>bar</b></body></html>";
         final String js = getSelectionScript("node1", 1, "node2", 1);
-        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data, js).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("foo", grandchild.getText());
         Assert.assertEquals(1, grandchild.getTextSelectionStart());
         Assert.assertEquals(3, grandchild.getTextSelectionEnd());
@@ -492,18 +450,16 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testMultiNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node1' role='none'>foo</b><b>middle</b>"
                 + "<b id='node2' role='none'>bar</b></body></html>";
         final String js = getSelectionScript("node1", 1, "node2", 1);
-        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data, js).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("foo", grandchild.getText());
         Assert.assertEquals(1, grandchild.getTextSelectionStart());
         Assert.assertEquals(3, grandchild.getTextSelectionEnd());
@@ -522,8 +478,6 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testRequestAccessibilitySnapshotInputSelection() throws Throwable {
         final String data = "<html><body><input id='input' value='Hello, world'></body></html>";
         final String js = "var input = document.getElementById('input');"
@@ -531,12 +485,12 @@ public class AssistViewStructureTest {
                 + "input.selectionStart = 0;"
                 + "input.selectionEnd = 5;";
 
-        TestViewStructureInterface root = getViewStructureFromHtml(data, js).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data, js).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("Hello, world", grandchild.getText());
         Assert.assertEquals(0, grandchild.getTextSelectionStart());
         Assert.assertEquals(5, grandchild.getTextSelectionEnd());
@@ -547,17 +501,15 @@ public class AssistViewStructureTest {
      */
     @Test
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @RequiresApi(Build.VERSION_CODES.M)
     public void testRequestAccessibilitySnapshotPasswordField() throws Throwable {
         final String data =
                 "<html><body><input id='input' type='password' value='foo'></body></html>";
-        TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
+        TestViewStructure root = getViewStructureFromHtml(data).getChild(0);
 
         Assert.assertEquals(1, root.getChildCount());
         Assert.assertEquals("", root.getText());
-        TestViewStructureInterface child = root.getChild(0);
-        TestViewStructureInterface grandchild = child.getChild(0);
+        TestViewStructure child = root.getChild(0);
+        TestViewStructure grandchild = child.getChild(0);
         Assert.assertEquals("•••", grandchild.getText());
     }
 }

@@ -778,17 +778,6 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
   // Update cached nodes by providing new enclosing Rects
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
 
-  // On Android L and M, there is a bug in the Android framework that could
-  // result in an incorrect RangeInfo object being returned from the pool, so
-  // update the cached node to work around this. This is not necessary on newer
-  // versions of Android that contain the fix, see: ag/930331
-  // TODO(mschillaci): Remove this when Android M is no longer supported.
-  if (node->IsRangeControlWithoutAriaValueText()) {
-    Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoRangeInfo(
-        env, obj, info, node->AndroidRangeType(), node->RangeMin(),
-        node->RangeMax(), node->RangeCurrentValue());
-  }
-
   return true;
 }
 

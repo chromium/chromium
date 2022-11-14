@@ -10,8 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewStructure;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
@@ -34,7 +32,6 @@ public class ViewStructureBuilder {
         this.mRenderCoordinates = renderCoordinates;
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void populateViewStructureNode(ViewStructure node, String text, boolean hasSelection,
             int selStart, int selEnd, int color, int bgcolor, float size, boolean bold,
@@ -59,7 +56,6 @@ public class ViewStructureBuilder {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void setViewStructureNodeBounds(ViewStructure node, boolean isRootNode,
             int parentRelativeLeft, int parentRelativeTop, int width, int height) {
@@ -76,7 +72,6 @@ public class ViewStructureBuilder {
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     protected void setViewStructureNodeHtmlInfo(
             ViewStructure node, String htmlTag, String cssDisplay, String[][] htmlAttributes) {
@@ -88,7 +83,6 @@ public class ViewStructureBuilder {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     protected void setViewStructureNodeHtmlMetadata(ViewStructure node, String[] metadataStrings) {
         Bundle extras = node.getExtras();
@@ -96,13 +90,11 @@ public class ViewStructureBuilder {
                 "metadata", new ArrayList<String>(Arrays.asList(metadataStrings)));
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void commitViewStructureNode(ViewStructure node) {
         node.asyncCommit();
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private ViewStructure addViewStructureNodeChild(ViewStructure node, int index) {
         return node.asyncNewChild(index);

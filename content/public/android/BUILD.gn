@@ -579,8 +579,6 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcherTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/AssistViewStructureTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/TestViewStructure.java",
-    "javatests/src/org/chromium/content/browser/accessibility/TestViewStructureFactory.java",
-    "javatests/src/org/chromium/content/browser/accessibility/TestViewStructureInterface.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java",
