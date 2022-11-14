@@ -104,14 +104,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
-                       EstablishIsac16KCallAndEnsureAudioIsPlaying) {
-  std::string constraints =
-      BuildConstraints(kAudioConstraints, kVideoConstraints);
-  MakeAudioDetectingPeerConnectionCall(
-      "callWithIsac16KAndEnsureAudioIsPlaying(" + constraints + ");");
-}
-
-IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
                        EstablishAudioVideoCallAndVerifyRemoteMutingWorks) {
   std::string constraints =
       BuildConstraints(kAudioConstraints, kVideoConstraints);

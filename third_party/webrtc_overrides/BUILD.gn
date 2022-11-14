@@ -48,8 +48,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/g711:audio_encoder_g711",
   "//third_party/webrtc/api/audio_codecs/g722:audio_decoder_g722",
   "//third_party/webrtc/api/audio_codecs/g722:audio_encoder_g722",
-  "//third_party/webrtc/api/audio_codecs/isac:audio_decoder_isac",
-  "//third_party/webrtc/api/audio_codecs/isac:audio_encoder_isac",
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",

@@ -60,19 +60,6 @@
         .catch(failTest);
   }
 
-  function callWithIsac16KAndEnsureAudioIsPlaying(constraints) {
-    setOfferSdpTransform(function(sdp) {
-      sdp = sdp.replace(/m=audio (\d+) RTP\/SAVPF.*\r\n/g,
-                        'm=audio $1 RTP/SAVPF 103 126\r\n');
-      sdp = sdp.replace('a=fmtp:111 minptime=10', 'a=fmtp:103 minptime=10');
-      if (sdp.search(/a=rtpmap:103 ISAC\/16000/i) == -1)
-        failTest('Missing iSAC 16K codec on Android; cannot force codec.');
-
-      return sdp;
-    });
-    callAndEnsureAudioIsPlaying(constraints);
-  }
-
   function enableRemoteVideo(peerConnection, enabled) {
     remoteStream = peerConnection.getRemoteStreams()[0];
     remoteStream.getVideoTracks()[0].enabled = enabled;
