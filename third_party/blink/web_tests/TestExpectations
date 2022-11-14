@@ -3674,8 +3674,6 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-001.html [ F
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Crash Failure Timeout ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-stretch.html [ Failure ]
 
-crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
-
 # [css-animations]
 
 crbug.com/664450 http/tests/devtools/console/console-on-animation-worklet.js [ Failure Pass Timeout ]
