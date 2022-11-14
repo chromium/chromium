@@ -130,6 +130,11 @@ BASE_FEATURE(kMuteCompromisedPasswords,
 #endif
 );
 
+// Enables new regex for OTP fields.
+BASE_FEATURE(kNewRegexForOtpFields,
+             "NewRegexForOtpFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the new password viewing subpage.
 BASE_FEATURE(kPasswordViewPageInSettings,
              "PasswordViewPageInSettings",

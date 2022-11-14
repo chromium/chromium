@@ -1890,11 +1890,52 @@ TEST(FormParserTest, CCNumber) {
   });
 }
 
+// TODO(crbug.com/1382805): Remove this test once the new regex launched.
 // The parser should avoid identifying Social Security number and
 // one time password fields as passwords.
-TEST(FormParserTest, SSN_and_OTP) {
+TEST(FormParserTest, SSN_and_OTP_Old_Regex) {
   for (const char16_t* field_name :
        {u"SocialSecurityNumber", u"OneTimePassword", u"SMS-token"}) {
+    CheckTestData({
+        {
+            .description_for_logging = "Field name matches the SSN/OTP pattern,"
+                                       "Ignore that one.",
+            .fields =
+                {
+                    {.role = ElementRole::USERNAME,
+                     .form_control_type = "text"},
+                    {.name = field_name, .form_control_type = "password"},
+                    {.role = ElementRole::CURRENT_PASSWORD,
+                     .form_control_type = "password"},
+                },
+            // The result should be trusted for more than just fallback, because
+            // there is an actual password field present.
+            .fallback_only = false,
+        },
+        {
+            .description_for_logging = "Create a fallback for the only password"
+                                       "field being an SSN/OTP field",
+            .fields =
+                {
+                    {.role = ElementRole::USERNAME,
+                     .form_control_type = "text"},
+                    {.role = ElementRole::CURRENT_PASSWORD,
+                     .name = field_name,
+                     .form_control_type = "password"},
+                },
+            .fallback_only = true,
+        },
+    });
+  }
+}
+
+TEST(FormParserTest, SSN_and_OTP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kNewRegexForOtpFields);
+  for (const char16_t* field_name :
+       {u"SocialSecurityNumber", u"OneTimePassword", u"SMS-token", u"otp-code",
+        u"input_SMS", u"second.factor"}) {
     CheckTestData({
         {
             .description_for_logging = "Field name matches the SSN/OTP pattern,"

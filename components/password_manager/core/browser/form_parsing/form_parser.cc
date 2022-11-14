@@ -102,7 +102,12 @@ bool StringMatchesSSN(const std::u16string& str) {
 
 // Returns true if the |str| contains words related to one time password fields.
 bool StringMatchesOTP(const std::u16string& str) {
-  return autofill::MatchesRegex<autofill::kOneTimePwdRe>(str);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kNewRegexForOtpFields)) {
+    return autofill::MatchesRegex<autofill::kNewOneTimePwdRe>(str);
+  } else {
+    return autofill::MatchesRegex<autofill::kOneTimePwdRe>(str);
+  }
 }
 
 // Returns true if the |str| consists of one repeated non alphanumeric symbol.
