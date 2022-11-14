@@ -63,6 +63,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
                     PeriodicWaveImpl* wave_table,
                     AudioParamHandler& frequency,
                     AudioParamHandler& detune);
+
   bool SetType(uint8_t);  // Returns true on success.
 
   // Returns true if there are sample-accurate timeline parameter changes.

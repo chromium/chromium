@@ -44,6 +44,7 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
 
  private:
   ConvolverHandler(AudioNode&, float sample_rate);
+
   double TailTime() const override;
   double LatencyTime() const override;
   bool RequiresTailProcessing() const final;
