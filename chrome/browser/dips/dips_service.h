@@ -55,6 +55,10 @@ class DIPSService : public KeyedService {
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  // The persisted timer controlling how often incidental state is cleared.
+  // This timer is null if the DIPS feature isn't enabled with a valid TimeDelta
+  // given for its `timer_delay` parameter.
+  // See base/time/time_delta_from_string.h for how that param should be given.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
   base::SequenceBound<DIPSStorage> storage_;
 
