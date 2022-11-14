@@ -201,11 +201,6 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
     Layer()->SetNeedsCompositingInputsUpdate();
 }
 
-LayoutUnit LayoutVideo::MinimumReplacedHeight() const {
-  NOT_DESTROYED();
-  return LayoutReplaced::MinimumReplacedHeight();
-}
-
 PhysicalRect LayoutVideo::ReplacedContentRect() const {
   NOT_DESTROYED();
   if (GetDisplayMode() == kVideo) {

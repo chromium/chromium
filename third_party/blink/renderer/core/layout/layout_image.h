@@ -150,8 +150,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     return true;
   }
 
-  LayoutUnit MinimumReplacedHeight() const override;
-
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,

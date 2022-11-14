@@ -282,12 +282,6 @@ bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
   return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(), 0);
 }
 
-LayoutUnit LayoutImage::MinimumReplacedHeight() const {
-  NOT_DESTROYED();
-  return image_resource_->ErrorOccurred() ? IntrinsicSize().Height()
-                                          : LayoutUnit();
-}
-
 HTMLMapElement* LayoutImage::ImageMap() const {
   NOT_DESTROYED();
   auto* i = DynamicTo<HTMLImageElement>(GetNode());

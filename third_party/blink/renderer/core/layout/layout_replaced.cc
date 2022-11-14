@@ -125,8 +125,6 @@ void LayoutReplaced::UpdateLayout() {
 
   PhysicalRect old_content_rect = ReplacedContentRect();
 
-  SetHeight(MinimumReplacedHeight());
-
   UpdateLogicalWidth();
   UpdateLogicalHeight();
 

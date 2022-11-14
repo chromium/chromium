@@ -83,8 +83,6 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   void UpdateLayout() override;
 
-  LayoutUnit MinimumReplacedHeight() const override;
-
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
     return true;

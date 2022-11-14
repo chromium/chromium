@@ -173,11 +173,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return IntrinsicLogicalHeight();
   }
 
-  virtual LayoutUnit MinimumReplacedHeight() const {
-    NOT_DESTROYED();
-    return LayoutUnit();
-  }
-
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size) {
