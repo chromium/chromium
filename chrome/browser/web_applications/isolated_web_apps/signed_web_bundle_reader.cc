@@ -49,17 +49,38 @@ SignedWebBundleReader::CreateAndStartReading(
   // Using `new` to access a non-public constructor.
   auto reader = base::WrapUnique(new SignedWebBundleReader(
       web_bundle_path, std::move(signature_verifier)));
-  reader->Initialize(std::move(integrity_block_result_callback),
-                     std::move(read_error_callback));
+  reader->StartReading(std::move(integrity_block_result_callback),
+                       std::move(read_error_callback));
 
   return reader;
+}
+
+// static
+std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
+    const base::FilePath& web_bundle_path,
+    std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>
+        signature_verifier) {
+  return base::WrapUnique(new SignedWebBundleReader(
+      web_bundle_path, std::move(signature_verifier)));
+}
+
+void SignedWebBundleReader::StartReading(
+    IntegrityBlockReadResultCallback integrity_block_result_callback,
+    ReadErrorCallback read_error_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kUninitialized);
+
+  Initialize(std::move(integrity_block_result_callback),
+             std::move(read_error_callback));
 }
 
 void SignedWebBundleReader::Initialize(
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(state_, State::kInitializing);
+  CHECK_EQ(state_, State::kUninitialized);
+
+  state_ = State::kInitializing;
 
   parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
 
