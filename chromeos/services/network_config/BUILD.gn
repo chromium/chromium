@@ -65,6 +65,8 @@ source_set("test_support") {
   sources = [
     "test_apn_data.cc",
     "test_apn_data.h",
+    "test_network_configuration_observer.cc",
+    "test_network_configuration_observer.h",
   ]
 }
 
@@ -87,7 +89,9 @@ source_set("unit_tests") {
     "//components/onc",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//mojo/public/cpp/bindings",
     "//services/network/public/mojom:mojom_ip_address",
     "//testing/gtest",
+    "//third_party/re2",
   ]
 }

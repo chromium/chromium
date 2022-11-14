@@ -1242,6 +1242,11 @@ interface CrosNetworkConfig {
   // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
   SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
     (bool success);
+
+  // Creates a new APN for the cellular network with ID |network_guid|, and
+  // appends it to |custom_apn_list|. Should only be called when the APN
+  // Revamp feature flag is enabled.
+  CreateCustomApn(string network_guid, ApnProperties apn);
 };
 
 interface CrosNetworkConfigObserver {

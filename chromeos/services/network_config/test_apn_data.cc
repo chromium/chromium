@@ -15,6 +15,16 @@ namespace {
 constexpr char kShillApnId[] = "id";
 constexpr char kShillApnAuthenticationType[] = "authentication_type";
 constexpr char kShillApnTypes[] = "apn_types";
+
+bool IsPropertyEquals(const base::Value::Dict& apn,
+                      const char* key,
+                      const std::string& expected_value) {
+  const std::string* actual_value = apn.FindString(key);
+  if (!actual_value)
+    return false;
+  return expected_value == *actual_value;
+}
+
 }  //  namespace
 
 TestApnData::TestApnData()
@@ -119,7 +129,7 @@ std::string TestApnData::AsApnShillDict() const {
   return AsShillApn().DebugString();
 }
 
-bool TestApnData::IsMojoApnEquals(const mojom::ApnProperties& apn) const {
+bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   bool ret = access_point_name == apn.access_point_name;
 
   static auto MatchOptionalString =
@@ -139,6 +149,49 @@ bool TestApnData::IsMojoApnEquals(const mojom::ApnProperties& apn) const {
     ret &= mojo_ip_type == apn.ip_type;
     ret &= mojo_apn_types == apn.apn_types;
   }
+  return ret;
+}
+
+bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
+                               bool has_state_field,
+                               bool is_password_masked) const {
+  bool ret = true;
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAccessPointName,
+                          access_point_name);
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kName, name);
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kUsername, username);
+
+  const std::string* onc_password =
+      onc_apn.FindString(::onc::cellular_apn::kPassword);
+  if (is_password_masked) {
+    ret &= policy_util::kFakeCredential == *onc_password;
+  } else {
+    ret &= password == *onc_password;
+  }
+
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAttach, attach);
+  if (ash::features::IsApnRevampEnabled()) {
+    const std::string* state = onc_apn.FindString(::onc::cellular_apn::kState);
+    if (has_state_field) {
+      ret &= state && onc_state == *state;
+    } else {
+      ret &= !state;
+    }
+
+    ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAuthenticationType,
+                            onc_authentication_type);
+    ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kIpType, onc_ip_type);
+
+    if (const base::Value::List* apn_types =
+            onc_apn.FindList(::onc::cellular_apn::kApnTypes)) {
+      if (onc_apn_types.size() != apn_types->size())
+        return false;
+      for (size_t i = 0; i < onc_apn_types.size(); i++)
+        if (onc_apn_types[i] != ((*apn_types)[i]).GetString())
+          return false;
+    }
+  }
+
   return ret;
 }
 

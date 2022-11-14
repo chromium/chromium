@@ -65,7 +65,13 @@ struct TestApnData {
 
   // Verifies that an APN constructed as a Mojo struct matches with the test
   // APN data.
-  bool IsMojoApnEquals(const mojom::ApnProperties& apn) const;
+  bool MojoApnEquals(const mojom::ApnProperties& apn) const;
+
+  // Verifies that an APN constructed as an ONC dictionary matches with the
+  // test APN data.
+  bool OncApnEquals(const base::Value::Dict& onc_apn,
+                    bool has_state_field,
+                    bool is_password_masked) const;
 };
 
 }  // namespace chromeos::network_config

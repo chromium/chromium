@@ -108,6 +108,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       bool auto_reset,
       mojom::UInt32ValuePtr day,
       SetTrafficCountersAutoResetCallback callback) override;
+  void CreateCustomApn(const std::string& network_guid,
+                       mojom::ApnPropertiesPtr apn) override;
 
   // static
   static mojom::TrafficCounterSource GetTrafficCounterEnumForTesting(
@@ -124,6 +126,10 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
                                  const std::string& service_path,
                                  absl::optional<base::Value> properties,
                                  absl::optional<std::string> error);
+  void SetPropertiesInternal(const std::string& guid,
+                             const NetworkState& network,
+                             base::Value::Dict onc,
+                             SetPropertiesCallback callback);
   void SetPropertiesSuccess(int callback_id);
   void SetPropertiesConfigureSuccess(int callback_id,
                                      const std::string& service_path,
@@ -145,9 +151,9 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void SelectCellularMobileNetworkSuccess(int callback_id);
   void SelectCellularMobileNetworkFailure(int callback_id,
                                           const std::string& error_name);
-  void UpdateCustomAPNList(const NetworkState* network,
+  void UpdateCustomApnList(const NetworkState* network,
                            const mojom::ConfigProperties* properties);
-  std::vector<mojom::ApnPropertiesPtr> GetCustomAPNList(
+  std::vector<mojom::ApnPropertiesPtr> GetCustomApnList(
       const std::string& guid);
 
   void StartConnectSuccess(int callback_id);
