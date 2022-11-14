@@ -12,6 +12,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/reentry_guard.h"
+#include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
@@ -27,47 +28,7 @@ using ::base::allocator::dispatcher::ReentryGuard;
 
 const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
-// Notes on TLS usage:
-//
-// * There's no safe way to use TLS in malloc() as both C++ thread_local and
-//   pthread do not pose any guarantees on whether they allocate or not.
-// * We think that we can safely use thread_local w/o re-entrancy guard because
-//   the compiler will use "tls static access model" for static builds of
-//   Chrome [https://www.uclibc.org/docs/tls.pdf].
-//   But there's no guarantee that this will stay true, and in practice
-//   it seems to have problems on macOS/Android. These platforms do allocate
-//   on the very first access to a thread_local on each thread.
-// * Directly using/warming-up platform TLS seems to work on all platforms,
-//   but is also not guaranteed to stay true. We make use of it for reentrancy
-//   guards on macOS/Android.
-// * We cannot use Windows Tls[GS]etValue API as it modifies the result of
-//   GetLastError.
-//
-// Android thread_local seems to be using __emutls_get_address from libgcc:
-// https://github.com/gcc-mirror/gcc/blob/master/libgcc/emutls.c
-// macOS version is based on _tlv_get_addr from dyld:
-// https://opensource.apple.com/source/dyld/dyld-635.2/src/threadLocalHelpers.s.auto.html
-
-// The guard protects against reentering on platforms other the macOS and
-// Android.
-thread_local bool g_tls_internal_reentry_guard = false;
-
-// Accumulated bytes towards sample thread local key.
-thread_local intptr_t g_tls_accumulated_bytes = 0;
-
-// Used as a workaround to avoid bias from muted samples. See
-// ScopedMuteThreadSamples for more details.
-thread_local intptr_t g_tls_accumulated_bytes_snapshot = 0;
 const intptr_t kAccumulatedBytesOffset = 1 << 29;
-
-// A boolean used to distinguish first allocation on a thread:
-//   false - first allocation on the thread;
-//   true  - otherwise.
-// Since g_tls_accumulated_bytes is initialized with zero the very first
-// allocation on a thread would always trigger the sample, thus skewing the
-// profile towards such allocations. To mitigate that we use the flag to
-// ensure the first allocation is properly accounted.
-thread_local bool g_tls_sampling_interval_initialized = false;
 
 // Controls if sample intervals should not be randomized. Used for testing.
 bool g_deterministic = false;
@@ -92,11 +53,67 @@ void (*g_hooks_install_callback)() = nullptr;
 // true, knows that the other function has already run so it's time to invoke
 // the callback.
 std::atomic_bool g_hooks_installed{false};
+
+struct ThreadLocalData {
+  // Accumulated bytes towards sample.
+  intptr_t accumulated_bytes = 0;
+  // Used as a workaround to avoid bias from muted samples. See
+  // ScopedMuteThreadSamples for more details.
+  intptr_t accumulated_bytes_snapshot = 0;
+  // PoissonAllocationSampler performs allocations while handling a
+  // notification. The guard protects against recursions originating from these.
+  bool internal_reentry_guard = false;
+  // A boolean used to distinguish first allocation on a thread:
+  //   false - first allocation on the thread;
+  //   true  - otherwise.
+  // Since accumulated_bytes is initialized with zero the very first
+  // allocation on a thread would always trigger the sample, thus skewing the
+  // profile towards such allocations. To mitigate that we use the flag to
+  // ensure the first allocation is properly accounted.
+  bool sampling_interval_initialized = false;
+};
+
+ThreadLocalData* GetThreadLocalData() {
+#if USE_LOCAL_TLS_EMULATION()
+  // If available, use ThreadLocalStorage to bypass dependencies introduced by
+  // Clang's implementation of thread_local.
+  static base::NoDestructor<
+      base::allocator::dispatcher::ThreadLocalStorage<ThreadLocalData>>
+      thread_local_data;
+  return thread_local_data->GetThreadLocalData();
+#else
+  // Notes on TLS usage:
+  //
+  // * There's no safe way to use TLS in malloc() as both C++ thread_local and
+  //   pthread do not pose any guarantees on whether they allocate or not.
+  // * We think that we can safely use thread_local w/o re-entrancy guard
+  //   because the compiler will use "tls static access model" for static builds
+  //   of Chrome [https://www.uclibc.org/docs/tls.pdf].
+  //   But there's no guarantee that this will stay true, and in practice
+  //   it seems to have problems on macOS/Android. These platforms do allocate
+  //   on the very first access to a thread_local on each thread.
+  // * Directly using/warming-up platform TLS seems to work on all platforms,
+  //   but is also not guaranteed to stay true. We make use of it for reentrancy
+  //   guards on macOS/Android.
+  // * We cannot use Windows Tls[GS]etValue API as it modifies the result of
+  //   GetLastError.
+  //
+  // Android thread_local seems to be using __emutls_get_address from libgcc:
+  // https://github.com/gcc-mirror/gcc/blob/master/libgcc/emutls.c
+  // macOS version is based on _tlv_get_addr from dyld:
+  // https://opensource.apple.com/source/dyld/dyld-635.2/src/threadLocalHelpers.s.auto.html
+  thread_local ThreadLocalData thread_local_data;
+  return &thread_local_data;
+#endif
+}
+
 }  // namespace
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
-  DCHECK(!g_tls_internal_reentry_guard);
-  g_tls_internal_reentry_guard = true;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+
+  DCHECK(!thread_local_data->internal_reentry_guard);
+  thread_local_data->internal_reentry_guard = true;
 
   // We mute thread samples immediately after taking a sample, which is when we
   // reset g_tls_accumulated_bytes. This breaks the random sampling requirement
@@ -108,29 +125,34 @@ PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
   // To counteract this, we drop g_tls_accumulated_bytes by a large, fixed
   // amount to lower the probability that a sample is taken to close to 0. Then
   // we reset it after we're done muting thread samples.
-  g_tls_accumulated_bytes_snapshot = g_tls_accumulated_bytes;
-  g_tls_accumulated_bytes -= kAccumulatedBytesOffset;
+  thread_local_data->accumulated_bytes_snapshot =
+      thread_local_data->accumulated_bytes;
+  thread_local_data->accumulated_bytes -= kAccumulatedBytesOffset;
 }
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::~ScopedMuteThreadSamples() {
-  DCHECK(g_tls_internal_reentry_guard);
-  g_tls_internal_reentry_guard = false;
-  g_tls_accumulated_bytes = g_tls_accumulated_bytes_snapshot;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+  DCHECK(thread_local_data->internal_reentry_guard);
+  thread_local_data->internal_reentry_guard = false;
+  thread_local_data->accumulated_bytes =
+      thread_local_data->accumulated_bytes_snapshot;
 }
 
 // static
 bool PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted() {
-  return g_tls_internal_reentry_guard;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+  return thread_local_data->internal_reentry_guard;
 }
 
 PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
     ScopedSuppressRandomnessForTesting() {
   DCHECK(!g_deterministic);
   g_deterministic = true;
-  // The g_tls_accumulated_bytes may contain a random value from previous
+  // The accumulated_bytes may contain a random value from previous
   // test runs, which would make the behaviour of the next call to
   // RecordAlloc unpredictable.
-  g_tls_accumulated_bytes = 0;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+  thread_local_data->accumulated_bytes = 0;
 }
 
 PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
@@ -162,15 +184,17 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   allocator::dispatcher::RemoveStandardAllocatorHooksForTesting();  // IN-TEST
 
   // Reset the accumulated bytes to 0 on this thread.
-  accumulated_bytes_snapshot_ = g_tls_accumulated_bytes;
-  g_tls_accumulated_bytes = 0;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+  accumulated_bytes_snapshot_ = thread_local_data->accumulated_bytes;
+  thread_local_data->accumulated_bytes = 0;
 }
 
 PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
     ~ScopedMuteHookedSamplesForTesting() {
   DCHECK(g_mute_hooked_samples);
   // Restore the allocator hooks and accumulated bytes.
-  g_tls_accumulated_bytes = accumulated_bytes_snapshot_;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+  thread_local_data->accumulated_bytes = accumulated_bytes_snapshot_;
 
   allocator::dispatcher::InstallStandardAllocatorHooks();
 
@@ -275,8 +299,10 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
                                            size_t size,
                                            AllocatorType type,
                                            const char* context) {
-  g_tls_accumulated_bytes += size;
-  intptr_t accumulated_bytes = g_tls_accumulated_bytes;
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
+
+  thread_local_data->accumulated_bytes += size;
+  intptr_t accumulated_bytes = thread_local_data->accumulated_bytes;
   if (LIKELY(accumulated_bytes < 0))
     return;
 
@@ -284,8 +310,8 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
     // Sampling is in fact disabled. Reset the state of the sampler.
     // We do this check off the fast-path, because it's quite a rare state when
     // allocation hooks are installed but the sampler is not running.
-    g_tls_sampling_interval_initialized = false;
-    g_tls_accumulated_bytes = 0;
+    thread_local_data->sampling_interval_initialized = false;
+    thread_local_data->accumulated_bytes = 0;
     return;
   }
 
@@ -301,17 +327,18 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
   if (UNLIKELY(!address))
     return;
 
+  ThreadLocalData* const thread_local_data = GetThreadLocalData();
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
-  if (UNLIKELY(!g_tls_sampling_interval_initialized)) {
-    g_tls_sampling_interval_initialized = true;
+  if (UNLIKELY(!thread_local_data->sampling_interval_initialized)) {
+    thread_local_data->sampling_interval_initialized = true;
     // This is the very first allocation on the thread. It always makes it
-    // passing the condition at |RecordAlloc|, because g_tls_accumulated_bytes
+    // passing the condition at |RecordAlloc|, because accumulated_bytes
     // is initialized with zero due to TLS semantics.
     // Generate proper sampling interval instance and make sure the allocation
     // has indeed crossed the threshold before counting it as a sample.
     accumulated_bytes -= GetNextSampleInterval(mean_interval);
     if (accumulated_bytes < 0) {
-      g_tls_accumulated_bytes = accumulated_bytes;
+      thread_local_data->accumulated_bytes = accumulated_bytes;
       return;
     }
   }
@@ -326,7 +353,7 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     ++samples;
   } while (accumulated_bytes >= 0);
 
-  g_tls_accumulated_bytes = accumulated_bytes;
+  thread_local_data->accumulated_bytes = accumulated_bytes;
 
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
     return;
