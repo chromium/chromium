@@ -156,7 +156,7 @@ bool AnchorScrollData::ValidateSnapshot() {
 
 bool AnchorScrollData::ShouldScheduleNextService() {
   return IsActive() &&
-         TakeAndCompareSnapshot(false /*update*/) == SnapshotDiff::kNone;
+         TakeAndCompareSnapshot(false /*update*/) != SnapshotDiff::kNone;
 }
 
 void AnchorScrollData::InvalidateLayout() {

@@ -186,6 +186,11 @@ TEST_F(AnchorScrollDataTest, ScrollerSizeChange) {
   EXPECT_TRUE(anchored->GetAnchorScrollData());
   EXPECT_EQ(ScrollOffset(0, 200),
             anchored->GetAnchorScrollData()->AccumulatedScrollOffset());
+
+  // Should not schedule another frame after all updates are done.
+  UnsetAnimationScheduled();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(AnimationScheduled());
 }
 
 // Verifies that a new frame is scheduled if a style update changes the size of
@@ -247,6 +252,11 @@ TEST_F(AnchorScrollDataTest, ScrollContentSizeChange) {
   EXPECT_TRUE(anchored->GetAnchorScrollData());
   EXPECT_EQ(ScrollOffset(0, 200),
             anchored->GetAnchorScrollData()->AccumulatedScrollOffset());
+
+  // Should not schedule another frame after all updates are done.
+  UnsetAnimationScheduled();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(AnimationScheduled());
 }
 
 }  // namespace blink
