@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -28,21 +29,21 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(::wm::TransientWindowManager*)
 namespace wm {
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager, kPropertyKey, NULL)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
+                                   kPropertyKey,
+                                   nullptr)
 
 }  // namespace
 
-TransientWindowManager::~TransientWindowManager() {
-}
+TransientWindowManager::~TransientWindowManager() = default;
 
 // static
 TransientWindowManager* TransientWindowManager::GetOrCreate(Window* window) {
-  TransientWindowManager* manager = window->GetProperty(kPropertyKey);
-  if (!manager) {
-    manager = new TransientWindowManager(window);
-    window->SetProperty(kPropertyKey, manager);
-  }
-  return manager;
+  if (auto* manager = window->GetProperty(kPropertyKey))
+    return manager;
+  // Using WrapUnique due to private constructor.
+  return window->SetProperty(
+      kPropertyKey, base::WrapUnique(new TransientWindowManager(window)));
 }
 
 // static

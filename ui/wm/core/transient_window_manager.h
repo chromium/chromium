@@ -38,11 +38,11 @@ class COMPONENT_EXPORT(UI_WM) TransientWindowManager
   ~TransientWindowManager() override;
 
   // Returns the TransientWindowManager for |window|, creating if necessary.
-  // This never returns NULL.
+  // This never returns nullptr.
   static TransientWindowManager* GetOrCreate(aura::Window* window);
 
   // Returns the TransientWindowManager for |window| only if it already exists.
-  // WARNING: this may return NULL.
+  // WARNING: this may return nullptr.
   static const TransientWindowManager* GetIfExists(const aura::Window* window);
 
   void AddObserver(TransientWindowObserver* observer);
