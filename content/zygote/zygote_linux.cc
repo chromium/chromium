@@ -666,7 +666,7 @@ bool Zygote::HandleGetSandboxStatus(int fd, base::PickleIterator iter) {
 
 void Zygote::HandleReinitializeLoggingRequest(base::PickleIterator iter,
                                               std::vector<base::ScopedFD> fds) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   uint32_t logging_dest;
   if (!iter.ReadUInt32(&logging_dest)) {
     LOG(ERROR) << "Missing logging_dest parameter";
@@ -690,9 +690,9 @@ void Zygote::HandleReinitializeLoggingRequest(base::PickleIterator iter,
   if (!logging::InitLogging(logging_settings))
     LOG(ERROR) << "Unable to reinitialize logging";
 #else
-  // This method should only be used in ChromeOS (Ash).
+  // This method should only be used in ChromeOS.
   NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace content

@@ -571,7 +571,7 @@ void MockRenderProcessHost::ReinitializeLogging(
     base::ScopedFD log_file_descriptor) {
   NOTIMPLEMENTED();
 }
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void MockRenderProcessHost::FilterURL(bool empty_allowed, GURL* url) {
   RenderProcessHostImpl::FilterURL(this, empty_allowed, url);
