@@ -934,6 +934,12 @@ config("compiler_cpu_abi") {
     configs += [ "//build/config/chromeos:compiler_cpu_abi" ]
   }
 
+  # TODO(https://crbug.com/1383873): Remove this once figured out.
+  if (is_apple && current_cpu == "arm64") {
+    cflags += [ "-fno-global-isel" ]
+    ldflags += [ "-fno-global-isel" ]
+  }
+
   if ((is_posix && !is_apple) || is_fuchsia) {
     # CPU architecture. We may or may not be doing a cross compile now, so for
     # simplicity we always explicitly set the architecture.
