@@ -563,6 +563,13 @@
       "content_script"
     ]
   },
+  "runtime.onConnectExternal": {
+    "contexts": [
+      "blessed_extension",
+      "lock_screen_extension",
+      "offscreen_extension"
+    ]
+  },
   "runtime.onConnectNative": {
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
@@ -574,6 +581,13 @@
       "offscreen_extension",
       "unblessed_extension",
       "content_script"
+    ]
+  },
+  "runtime.onMessageExternal": {
+    "contexts": [
+      "blessed_extension",
+      "lock_screen_extension",
+      "offscreen_extension"
     ]
   },
   "runtime.sendMessage": [{

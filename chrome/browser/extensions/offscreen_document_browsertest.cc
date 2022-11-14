@@ -232,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
     static constexpr char kExpectedProperties[] =
         R"(["OnInstalledReason","OnRestartRequiredReason","PlatformArch",)"
         R"("PlatformNaclArch","PlatformOs","RequestUpdateCheckStatus",)"
-        R"("connect","getURL","id","onConnect","onMessage","sendMessage"])";
+        R"("connect","getURL","id","onConnect","onConnectExternal",)"
+        R"("onMessage","onMessageExternal","sendMessage"])";
     EXPECT_EQ(kExpectedProperties, ExecuteScriptSync(contents, kScript));
   }
 }
