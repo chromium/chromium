@@ -1736,7 +1736,7 @@
   {
     "name": "enable-async-dns",
     "owners": [ "horo", "net-dev" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "enable-auto-disable-accessibility",
