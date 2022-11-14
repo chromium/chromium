@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -25,7 +24,6 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -964,38 +962,6 @@ struct AttributionTriggerMatcherConfig {
 
 ::testing::Matcher<AttributionTrigger> AttributionTriggerMatches(
     const AttributionTriggerMatcherConfig&);
-
-struct AttributionFilterSizeTestCase {
-  const char* description;
-  bool valid;
-
-  size_t filter_count;
-  size_t filter_size;
-  size_t value_count;
-  size_t value_size;
-
-  using Map = base::flat_map<std::string, std::vector<std::string>>;
-
-  Map AsMap() const;
-};
-
-constexpr AttributionFilterSizeTestCase kAttributionFilterSizeTestCases[] = {
-    {"empty", true, 0, 0, 0, 0},
-    {"max_filters", true, attribution_reporting::kMaxFiltersPerSource, 1, 0, 0},
-    {"too_many_filters", false, attribution_reporting::kMaxFiltersPerSource + 1,
-     1, 0, 0},
-    {"max_filter_size", true, 1,
-     attribution_reporting::kMaxBytesPerFilterString, 0, 0},
-    {"excessive_filter_size", false, 1,
-     attribution_reporting::kMaxBytesPerFilterString + 1, 0, 0},
-    {"max_values", true, 1, 0, attribution_reporting::kMaxValuesPerFilter, 0},
-    {"too_many_values", false, 1, 0,
-     attribution_reporting::kMaxValuesPerFilter + 1, 0},
-    {"max_value_size", true, 1, 0, 1,
-     attribution_reporting::kMaxBytesPerFilterString},
-    {"excessive_value_size", false, 1, 0, 1,
-     attribution_reporting::kMaxBytesPerFilterString + 1},
-};
 
 class TestAggregatableSourceProvider {
  public:

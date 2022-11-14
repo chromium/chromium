@@ -1266,21 +1266,6 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
   }
 }
 
-AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
-    const {
-  Map map;
-
-  for (size_t i = 0; i < filter_count; i++) {
-    // Give each filter a unique name while respecting the desired size.
-    std::string filter(filter_size, 'A' + i);
-    std::vector<std::string> values(value_count, std::string(value_size, '*'));
-    map.emplace(std::move(filter), std::move(values));
-  }
-
-  DCHECK_EQ(map.size(), filter_count);
-  return map;
-}
-
 EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(
     ::testing::Matcher<uint64_t> data,
     ::testing::Matcher<int64_t> priority,
