@@ -1,0 +1,36 @@
+{
+    "archives": {
+        "fencedframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.238871593;sz=300x600": {
+            "DEFAULT": "ad_frame_927a4f6e5c.wprgo"
+        },
+        "fencedframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.256945163;sz=320x50": {
+            "DEFAULT": "ad_frame_927a4f6e5c.wprgo"
+        },
+        "fencedframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.261324265;sz=300x250": {
+            "DEFAULT": "ad_frame_927a4f6e5c.wprgo"
+        },
+        "fencedframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.127425649;sz=970x250": {
+            "DEFAULT": "ad_frame_927a4f6e5c.wprgo"
+        },
+        "fencedframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.129556071;sz=970x250": {
+            "DEFAULT": "ad_frame_927a4f6e5c.wprgo"
+        },
+        "iframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.238871593;sz=300x600": {
+            "DEFAULT": "ad_frame_65fb07b8fb.wprgo"
+        },
+        "iframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.256945163;sz=320x50": {
+            "DEFAULT": "ad_frame_65fb07b8fb.wprgo"
+        },
+        "iframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B22225778.261324265;sz=300x250": {
+            "DEFAULT": "ad_frame_65fb07b8fb.wprgo"
+        },
+        "iframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.127425649;sz=970x250": {
+            "DEFAULT": "ad_frame_65fb07b8fb.wprgo"
+        },
+        "iframe: https://ad.doubleclick.net/ddm/adi/N378.275220.MYBESTOPTION.IT4/B8455269.129556071;sz=970x250": {
+            "DEFAULT": "ad_frame_65fb07b8fb.wprgo"
+        }
+    },
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
+    "platform_specific": true
+}
