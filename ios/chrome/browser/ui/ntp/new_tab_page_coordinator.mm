@@ -423,7 +423,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
   DCHECK(self.ntpViewController);
-  if (!self.feedViewController) {
+  if (!self.feedViewController || !self.ntpViewController.viewDidAppear) {
     return;
   }
   // When the visible feed has been updated, recalculate the minimum NTP height.
