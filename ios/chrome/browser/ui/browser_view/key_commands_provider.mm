@@ -365,10 +365,15 @@ using base::UserMetricsAction;
   if (!currentWebState) {
     return;
   }
+  GURL URL = currentWebState->GetLastCommittedURL();
+  if (!URL.is_valid()) {
+    return;
+  }
 
-  BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithWebState:currentWebState
-                              presentFolderChooser:NO];
+  NSString* title = tab_util::GetTabTitle(currentWebState);
+  BookmarkAddCommand* command = [[BookmarkAddCommand alloc] initWithURL:URL
+                                                                  title:title
+                                                   presentFolderChooser:NO];
   [_bookmarksCommandsHandler bookmark:command];
 }
 

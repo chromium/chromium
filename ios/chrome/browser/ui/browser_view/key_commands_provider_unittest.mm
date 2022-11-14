@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
@@ -564,6 +565,62 @@ TEST_F(KeyCommandsProviderTest, NextPreviousTab) {
   EXPECT_EQ(web_state_list_->active_index(), 1);
   [provider_ keyCommand_showPreviousTab];
   EXPECT_EQ(web_state_list_->active_index(), 0);
+}
+
+// Verifies that the Bookmarks are asked to be shown.
+TEST_F(KeyCommandsProviderTest, ShowBookmarks) {
+  id handler = OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+  provider_.browserCoordinatorCommandsHandler = handler;
+  OCMExpect([provider_.browserCoordinatorCommandsHandler showBookmarksManager]);
+
+  [provider_ keyCommand_showBookmarks];
+
+  [handler verify];
+}
+
+// Verifies that nothing is added to Bookmarks when there is no tab.
+TEST_F(KeyCommandsProviderTest, AddToBookmarks_DoesntAddWhenNoTab) {
+  provider_.bookmarksCommandsHandler =
+      OCMStrictProtocolMock(@protocol(BookmarksCommands));
+
+  [provider_ keyCommand_addToBookmarks];
+}
+
+// Verifies that nothing is added to Bookmarks when on the NTP.
+TEST_F(KeyCommandsProviderTest, AddToBookmarks_DoesntAddWhenNTP) {
+  provider_.bookmarksCommandsHandler =
+      OCMStrictProtocolMock(@protocol(BookmarksCommands));
+  InsertNewWebState(0);
+
+  [provider_ keyCommand_addToBookmarks];
+}
+
+// Verifies that the correct URL is added to Bookmarks.
+TEST_F(KeyCommandsProviderTest, AddToBookmarks_AddURL) {
+  id handler = OCMStrictProtocolMock(@protocol(BookmarksCommands));
+  provider_.bookmarksCommandsHandler = handler;
+  GURL url = GURL("https://e.test");
+  id addCommand = [OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* command) {
+    return command.URLs.count == 1 && command.URLs.firstObject.URL == url;
+  }];
+  OCMExpect([provider_.bookmarksCommandsHandler bookmark:addCommand]);
+  web::FakeWebState* web_state = InsertNewWebState(0);
+  web_state->SetCurrentURL(url);
+
+  [provider_ keyCommand_addToBookmarks];
+
+  [handler verify];
+}
+
+// Verifies that the Reading List is asked to be shown.
+TEST_F(KeyCommandsProviderTest, ShowReadingList) {
+  id handler = OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
+  provider_.browserCoordinatorCommandsHandler = handler;
+  OCMExpect([provider_.browserCoordinatorCommandsHandler showReadingList]);
+
+  [provider_ keyCommand_showReadingList];
+
+  [handler verify];
 }
 
 // Verifies that nothing is added to Reading List when there is no tab.
