@@ -10,7 +10,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "android-rust-arm-rel": {
@@ -25,7 +25,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-rust-x64-dbg": {

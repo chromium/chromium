@@ -992,22 +992,21 @@
       'android-perfetto-rel': 'perfetto_release_trybot_android',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
-      'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage',
-      'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage',
-      'android-pie-arm64-dbg': 'android_debug_trybot_arm64',
+      'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage_reclient',
+      'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage_reclient',
+      'android-pie-arm64-dbg': 'android_debug_trybot_arm64_reclient',
       # TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
-      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
+      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
-      'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
+      'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-marshmallow-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-weblayer-pie-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
       'android-webview-10-x86-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome_reclient',
       'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell_reclient',
-      'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
-      'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
-      'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
-      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell',
+      'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
+      'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
+      'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome_reclient',
+      'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-x64-cast': 'android_cast_debug_static_bot_compile_only',
       'android_archive_rel_ng': 'android_release_trybot',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild_reclient',
@@ -1283,8 +1282,8 @@
     },
 
     'tryserver.chromium.rust': {
-      'android-rust-arm-dbg': 'debug_bot_rust_android_arm',
-      'android-rust-arm-rel': 'release_rust_android_arm',
+      'android-rust-arm-dbg': 'debug_bot_rust_android_arm_reclient',
+      'android-rust-arm-rel': 'release_rust_android_arm_reclient',
       'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
       'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
       'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain',
@@ -1643,11 +1642,6 @@
       'webview_shell',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell': [
-      'android', 'release_bot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'android_fastbuild', 'webview_monochrome', 'webview_shell',
-    ],
-
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
@@ -1688,28 +1682,27 @@
 
     # TODO(crbug/1182468) Remove these android coverage expectations after
     # existing CQ bot is running them.
-    'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+    'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'webview_monochrome', 'fail_on_android_expectations',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_native_coverage': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+    'android_release_trybot_arm64_webview_monochrome_native_coverage_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'webview_monochrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'android_release_trybot_arm64_webview_monochrome_reclient': [
+      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
+      'webview_monochrome',
     ],
 
     'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google': [
       'android', 'release_trybot', 'minimal_symbols',
       'android_fastbuild', 'x86', 'strip_debug_info', 'disable_proguard',
       'chrome_google'
-    ],
-
-    'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome': [
-      'android', 'release_trybot', 'minimal_symbols', 'x86',
-      'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
-      'disable_proguard'
     ],
 
     'android_release_trybot_reclient': [
@@ -2477,10 +2470,6 @@
 
     'debug_bot_reclient': [
       'debug_bot_reclient',
-    ],
-
-    'debug_bot_rust_android_arm': [
-      'debug_bot', 'enable_rust', 'android', 'arm',
     ],
 
     'debug_bot_rust_android_arm_reclient': [
@@ -3505,10 +3494,6 @@
 
     'release_fuchsia_arm64_binary_size': [
       'release', 'official_optimize_goma', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
-    ],
-
-    'release_rust_android_arm': [
-      'release_trybot_minimal_symbols', 'enable_rust', 'android', 'arm',
     ],
 
     'release_rust_android_arm_reclient': [

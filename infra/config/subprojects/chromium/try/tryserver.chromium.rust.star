@@ -27,10 +27,12 @@ consoles.list_view(
 
 try_.builder(
     name = "android-rust-arm-dbg",
+    goma_backend = None,
 )
 
 try_.builder(
     name = "android-rust-arm-rel",
+    goma_backend = None,
 )
 
 try_.builder(
