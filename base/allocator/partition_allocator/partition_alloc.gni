@@ -69,6 +69,21 @@ assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
        "MTECheckedPtrSupport conflicts with BRPSupport.")
 
 declare_args() {
+  # The supported platforms are supposed to match `_is_brp_supported`, but we
+  # enable the feature on Linux early because it's most widely used for security
+  # research
+  use_asan_backup_ref_ptr = is_asan && (is_win || is_android || is_linux)
+}
+
+# BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !enable_backup_ref_ptr_support || !use_asan_backup_ref_ptr,
+    "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
+
+assert(!use_asan_backup_ref_ptr || is_asan,
+       "AsanBackupRefPtr requires AddressSanitizer")
+
+declare_args() {
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
   #   opposed to the beginning of the slot.

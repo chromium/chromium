@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
-import("//build/config/chromecast_build.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/partition_alloc.gni")
 
 if (is_ios) {
@@ -60,18 +58,3 @@ if (!use_partition_alloc_as_malloc) {
   assert(!enable_mte_checked_ptr_support,
          "Chromium does not use MTECheckedPtr without PA-E")
 }
-
-declare_args() {
-  # The supported platforms are supposed to match `_is_brp_supported`, but we
-  # enable the feature on Linux early because it's most widely used for security
-  # research
-  use_asan_backup_ref_ptr = is_asan && (is_win || is_android || is_linux)
-}
-
-# BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
-assert(
-    !enable_backup_ref_ptr_support || !use_asan_backup_ref_ptr,
-    "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
-
-assert(!use_asan_backup_ref_ptr || is_asan,
-       "AsanBackupRefPtr requires AddressSanitizer")
