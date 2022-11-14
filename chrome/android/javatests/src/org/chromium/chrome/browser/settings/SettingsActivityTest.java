@@ -45,7 +45,8 @@ public class SettingsActivityTest {
         @Policies.Item(key = "PasswordManagerEnabled", string = "false")
         , @Policies.Item(key = "BrowserSignin", string = "0")
     })
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
     public void
     testPasswordSettings_ManagedAndDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(

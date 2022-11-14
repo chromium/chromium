@@ -183,6 +183,7 @@ public class MainSettingsFragmentTest {
     @Feature({"RenderTest"})
     @DisableFeatures({
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON,
             ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
@@ -704,7 +705,8 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add({
@@ -719,6 +721,7 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING,
             SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID})
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
@@ -780,8 +783,10 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-    public void testPasswordsItemTitleNotUpdatedWithoutUPM() throws InterruptedException {
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
+    public void
+    testPasswordsItemTitleNotUpdatedWithoutUPM() throws InterruptedException {
         launchSettingsActivity();
         Assert.assertEquals(mMainSettings.getString(R.string.password_settings_title),
                 mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).getTitle().toString());

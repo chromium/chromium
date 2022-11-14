@@ -146,8 +146,10 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testShowsOneCredentialOld() throws Exception {
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
+    public void
+    testShowsOneCredentialOld() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
                     org.chromium.chrome.browser.touch_to_fill.R.string
@@ -169,8 +171,10 @@ public class TouchToFillRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testShowsTwoCredentialsOld() throws Exception {
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING})
+    public void
+    stShowsTwoCredentialsOld() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
                     org.chromium.chrome.browser.touch_to_fill.R.string
