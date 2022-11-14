@@ -293,9 +293,7 @@ class COMPONENT_EXPORT(URL) GURL {
   bool HostIsIPAddress() const;
 
   // Not including the colon. If you are comparing schemes, prefer SchemeIs.
-  bool has_scheme() const {
-    return parsed_.scheme.len >= 0;
-  }
+  bool has_scheme() const { return parsed_.scheme.is_valid(); }
   std::string scheme() const {
     return ComponentString(parsed_.scheme);
   }
@@ -303,9 +301,7 @@ class COMPONENT_EXPORT(URL) GURL {
     return ComponentStringPiece(parsed_.scheme);
   }
 
-  bool has_username() const {
-    return parsed_.username.len >= 0;
-  }
+  bool has_username() const { return parsed_.username.is_valid(); }
   std::string username() const {
     return ComponentString(parsed_.username);
   }
@@ -313,9 +309,7 @@ class COMPONENT_EXPORT(URL) GURL {
     return ComponentStringPiece(parsed_.username);
   }
 
-  bool has_password() const {
-    return parsed_.password.len >= 0;
-  }
+  bool has_password() const { return parsed_.password.is_valid(); }
   std::string password() const {
     return ComponentString(parsed_.password);
   }
@@ -328,7 +322,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // HostNoBrackets() below.
   bool has_host() const {
     // Note that hosts are special, absence of host means length 0.
-    return parsed_.host.len > 0;
+    return parsed_.host.is_nonempty();
   }
   std::string host() const {
     return ComponentString(parsed_.host);
@@ -340,9 +334,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // The port if one is explicitly specified. Most callers will want IntPort()
   // or EffectiveIntPort() instead of these. The getters will not include the
   // ':'.
-  bool has_port() const {
-    return parsed_.port.len >= 0;
-  }
+  bool has_port() const { return parsed_.port.is_valid(); }
   std::string port() const {
     return ComponentString(parsed_.port);
   }
@@ -352,9 +344,7 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Including first slash following host, up to the query. The URL
   // "http://www.google.com/" has a path of "/".
-  bool has_path() const {
-    return parsed_.path.len >= 0;
-  }
+  bool has_path() const { return parsed_.path.is_valid(); }
   std::string path() const {
     return ComponentString(parsed_.path);
   }
@@ -363,9 +353,7 @@ class COMPONENT_EXPORT(URL) GURL {
   }
 
   // Stuff following '?' up to the ref. The getters will not include the '?'.
-  bool has_query() const {
-    return parsed_.query.len >= 0;
-  }
+  bool has_query() const { return parsed_.query.is_valid(); }
   std::string query() const {
     return ComponentString(parsed_.query);
   }
@@ -375,9 +363,7 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Stuff following '#' to the end of the string. This will be %-escaped UTF-8.
   // The getters will not include the '#'.
-  bool has_ref() const {
-    return parsed_.ref.len >= 0;
-  }
+  bool has_ref() const { return parsed_.ref.is_valid(); }
   std::string ref() const {
     return ComponentString(parsed_.ref);
   }
