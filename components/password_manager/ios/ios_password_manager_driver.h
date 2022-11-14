@@ -59,7 +59,8 @@ class IOSPasswordManagerDriver
   // deleted by the webpage straight after form submission, but the driver is
   // still alive). So only use this getter when you are sure that the frame
   // still exists.
-  web::WebFrame* web_frame() { return web_frame_; }
+  web::WebFrame* web_frame() const { return web_frame_; }
+  const GURL& security_origin() const { return security_origin_; }
   void ProcessFrameDeletion();
 
  private:
@@ -86,6 +87,8 @@ class IOSPasswordManagerDriver
   web::WebFrame* web_frame_;
   int id_;
   bool is_in_main_frame_;
+  // The security origin associated with |web_frame_|.
+  GURL security_origin_;
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_

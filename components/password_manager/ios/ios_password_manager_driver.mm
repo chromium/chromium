@@ -31,8 +31,9 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
       std::make_unique<password_manager::PasswordGenerationFrameHelper>(
           password_manager_->GetClient(), this);
 
-  // Cache this value early, so that it can be accessed after frame deletion.
+  // Cache these values early, so that it can be accessed after frame deletion.
   is_in_main_frame_ = web_frame->IsMainFrame();
+  security_origin_ = web_frame->GetSecurityOrigin();
 }
 
 IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;
@@ -44,8 +45,14 @@ int IOSPasswordManagerDriver::GetId() const {
 void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
   // No need to cache data if the frame is already destroyed.
-  if (web_frame_)
-    [bridge_ processPasswordFormFillData:form_data inFrame:web_frame_];
+  // (crbug.com/1383214): |web_frame_| is not guaranteed to be alive, that's
+  // why cached values for isMainFrame & forSecurityOrigin need to be passed.
+  if (web_frame_) {
+    [bridge_ processPasswordFormFillData:form_data
+                                 inFrame:web_frame_
+                             isMainFrame:is_in_main_frame_
+                       forSecurityOrigin:security_origin_];
+  }
 }
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(

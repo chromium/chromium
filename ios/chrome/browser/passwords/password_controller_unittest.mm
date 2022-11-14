@@ -574,7 +574,9 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
 
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:frame];
+                          inFrame:frame
+                      isMainFrame:frame->IsMainFrame()
+                forSecurityOrigin:frame->GetSecurityOrigin()];
 
   __block BOOL block_was_called = NO;
 
@@ -1105,9 +1107,12 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
   SetPasswordFormFillData(base_url, "", 1, "un", 2, "user0", "pw", 3,
                           "password0", "abc", "def", &form_data);
 
+  web::WebFrame* expected_frame = web::GetMainFrame(web_state());
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:web::GetMainFrame(web_state())];
+                          inFrame:expected_frame
+                      isMainFrame:expected_frame->IsMainFrame()
+                forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 
   // clang-format off
   SuggestionTestData test_data[] = {
@@ -1594,9 +1599,12 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
   SetPasswordFormFillData(base_url, "", 1, "un", 2, "user0", "pw", 3,
                           "password0", "abc", "def", &form_data);
 
+  web::WebFrame* expected_frame = web::GetMainFrame(web_state());
   [passwordController_.sharedPasswordController
       processPasswordFormFillData:form_data
-                          inFrame:web::GetMainFrame(web_state())];
+                          inFrame:expected_frame
+                      isMainFrame:expected_frame->IsMainFrame()
+                forSecurityOrigin:expected_frame->GetSecurityOrigin()];
 
   // clang-format off
   SuggestionTestData test_data[] = {

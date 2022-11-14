@@ -158,7 +158,11 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 }
 
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
-                                inFrame:(web::WebFrame*)frame {
+                                inFrame:(web::WebFrame*)frame
+                            isMainFrame:(BOOL)isMainFrame
+                      forSecurityOrigin:(const GURL&)origin {
+  // TODO(crbug.com/1383214): Rewrite the code to eliminate the chance of using
+  // |frame| after its destruction.
   AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
   if (!fillData) {
     auto it = _fillDataMap.insert(
@@ -167,7 +171,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   }
 
   DCHECK(_webState.get());
-  fillData->Add(formData, IsCrossOriginIframe(_webState.get(), frame));
+  fillData->Add(formData,
+                IsCrossOriginIframe(_webState.get(), isMainFrame, origin));
 
   _processedPasswordSuggestions = YES;
 

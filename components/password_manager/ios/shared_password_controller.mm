@@ -279,7 +279,8 @@ BOOL canProcessCrossOriginIframes() {
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
                                              inFrame:web_frame];
 
-  if (IsCrossOriginIframe(_webState, web_frame) &&
+  if (IsCrossOriginIframe(_webState, web_frame->IsMainFrame(),
+                          web_frame->GetSecurityOrigin()) &&
       !canProcessCrossOriginIframes()) {
     return;
   }
@@ -302,7 +303,8 @@ BOOL canProcessCrossOriginIframes() {
     return;
   }
 
-  if (IsCrossOriginIframe(_webState, web_frame) &&
+  if (IsCrossOriginIframe(_webState, web_frame->IsMainFrame(),
+                          web_frame->GetSecurityOrigin()) &&
       !canProcessCrossOriginIframes()) {
     return;
   }
@@ -359,7 +361,8 @@ BOOL canProcessCrossOriginIframes() {
   // previous clicked field in the previous password form. Getting the frame
   // from this previous frame id will result in a null frame pointer, hence
   // the check below.
-  if (!frame || (IsCrossOriginIframe(_webState, frame) &&
+  if (!frame || (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
+                                     frame->GetSecurityOrigin()) &&
                  !canProcessCrossOriginIframes())) {
     completion(NO);
     return;
@@ -425,7 +428,8 @@ BOOL canProcessCrossOriginIframes() {
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, SysNSStringToUTF8(formQuery.frameID));
 
-  if (frame == nullptr || (IsCrossOriginIframe(_webState, frame) &&
+  if (frame == nullptr || (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
+                                               frame->GetSecurityOrigin()) &&
                            !canProcessCrossOriginIframes())) {
     completion({}, self);
     return;
@@ -564,12 +568,16 @@ BOOL canProcessCrossOriginIframes() {
 
 - (void)processPasswordFormFillData:
             (const autofill::PasswordFormFillData&)formData
-                            inFrame:(web::WebFrame*)frame {
+                            inFrame:(web::WebFrame*)frame
+                        isMainFrame:(BOOL)isMainFrame
+                  forSecurityOrigin:(const GURL&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);
   [self.suggestionHelper processWithPasswordFormFillData:formData
-                                                 inFrame:frame];
+                                                 inFrame:frame
+                                             isMainFrame:isMainFrame
+                                       forSecurityOrigin:origin];
 }
 
 - (void)onNoSavedCredentials {
@@ -592,7 +600,8 @@ BOOL canProcessCrossOriginIframes() {
   if (frame->IsMainFrame()) {
     _passwordManager->OnPasswordFormSubmitted(driver, form);
   } else {
-    if (IsCrossOriginIframe(_webState, frame) &&
+    if (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
+                            frame->GetSecurityOrigin()) &&
         !canProcessCrossOriginIframes()) {
       return;
     }
@@ -880,7 +889,8 @@ BOOL canProcessCrossOriginIframes() {
   GURL pageURL;
   if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
       !frame->CanCallJavaScriptFunction() || params.input_missing ||
-      (IsCrossOriginIframe(_webState, frame) &&
+      (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
+                           frame->GetSecurityOrigin()) &&
        !canProcessCrossOriginIframes())) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();
@@ -926,7 +936,8 @@ BOOL canProcessCrossOriginIframes() {
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
-  if (IsCrossOriginIframe(_webState, frame) &&
+  if (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
+                          frame->GetSecurityOrigin()) &&
       !canProcessCrossOriginIframes()) {
     return;
   }
