@@ -1,15 +1,3 @@
-# Always on top is a feature of platform apps (aka packaged apps v2, aka chrome
-# apps). It allows a window to usually, but not always, stay on top of other
-# windows. It's implemented via window z-ordering, which vanilla Wayland does
-# not support. Platform apps are deprecated. It's unknown how often this feature
-# is used in the wild. It's unknown how much impact failing to implement this
-# for Lacros will cause. See https://crbug.com/1343973.
--AppWindowTest.InitAlwaysOnTopToFullscreen
--AppWindowTest.InitFullscreenAndAlwaysOnTop
--AppWindowTest.InitFullscreenToAlwaysOnTop
--AppWindowTest.RuntimeAlwaysOnTopToFullscreen
--AppWindowTest.RuntimeFullscreenToAlwaysOnTop
-
 # Drag and drop based interactive_ui_tests mostly don't work. This will be fixed
 # by making a new ui control test protocol.
 # https://crbug.com/1366264
