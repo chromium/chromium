@@ -26,6 +26,7 @@ import android.util.Base64;
 import android.util.Pair;
 import android.widget.TextView;
 
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
@@ -60,6 +61,9 @@ import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -168,6 +172,8 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_fenced_frame.html";
     private static final String NAVIGATION_FROM_LONG_TIMEOUT =
             BASE_PATH + "navigation_from_long_timeout.html";
+    private static final String NAVIGATION_FROM_PAGE_SHOW =
+            BASE_PATH + "navigation_from_page_show.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     private static final String NON_BROWSER_PACKAGE = "not.a.browser";
@@ -1197,5 +1203,29 @@ public class UrlOverridingTest {
                 originalUrl, false, fallbackUrl, PageTransition.AUTO_BOOKMARK);
         Assert.assertEquals(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, result);
         Assert.assertNull(getCurrentExternalNavigationMessage());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_PREFETCH_DELAY_SHOW_ON_START})
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testRedirectFromCCTSpeculation() throws Exception {
+        final String url = mTestServer.getURL(NAVIGATION_FROM_PAGE_SHOW);
+        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        final CustomTabsSessionToken token =
+                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        Assert.assertTrue(connection.newSession(token));
+
+        connection.setCanUseHiddenTabForSession(token, true);
+        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
+        CustomTabsTestUtils.ensureCompletedSpeculationForUrl(connection, url);
+
+        // Can't wait for Activity startup as we close so fast the polling is flaky.
+        mCustomTabActivityRule.launchActivity(intent);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

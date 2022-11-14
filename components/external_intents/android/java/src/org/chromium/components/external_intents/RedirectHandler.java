@@ -101,8 +101,8 @@ public class RedirectHandler {
         }
     }
 
-    private long mLastNewUrlLoadingTime = INVALID_TIME;
     private IntentState mIntentState;
+    private boolean mIsPrefetchLoadForIntent;
     private NavigationChainState mNavigationChainState;
 
     // Not part of NavigationChainState as this should persist through resetting of the
@@ -141,6 +141,14 @@ public class RedirectHandler {
                 initialIntent, preferToStayInChrome, isCustomTabIntent, externalIntentStartedTask);
     }
 
+    /**
+     * Will cause the next FROM_API navigation to be treated as though it were coming from an Intent
+     * even if an Intent even if an Intent has not yet been received.
+     */
+    public void setIsPrefetchLoadForIntent(boolean isPrefetchLoadForIntent) {
+        mIsPrefetchLoadForIntent = isPrefetchLoadForIntent;
+    }
+
     private static boolean isIntentToChrome(Intent intent) {
         String chromePackageName = ContextUtils.getApplicationContext().getPackageName();
         return TextUtils.equals(chromePackageName, intent.getPackage())
@@ -154,6 +162,7 @@ public class RedirectHandler {
     public void clear() {
         mIntentState = null;
         mNavigationChainState = null;
+        mIsPrefetchLoadForIntent = false;
     }
 
     /**
@@ -229,12 +238,15 @@ public class RedirectHandler {
         // Create the NavigationChainState for a new Navigation chain.
         int pageTransitionCore = pageTransType & PageTransition.CORE_MASK;
         boolean isFromApi = (pageTransType & PageTransition.FROM_API) != 0;
-        boolean isFromIntent = isFromApi && mIntentState != null;
+        boolean isFromIntent = isFromApi && (mIntentState != null || mIsPrefetchLoadForIntent);
         boolean isFromReload = pageTransitionCore == PageTransition.RELOAD;
         boolean isFromTyping = pageTransitionCore == PageTransition.TYPED;
         boolean isFromFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
 
-        if (!isFromIntent) mIntentState = null;
+        if (!isFromIntent) {
+            mIntentState = null;
+            mIsPrefetchLoadForIntent = false;
+        }
         InitialNavigationState initialNavigationChainState =
                 new InitialNavigationState(isRendererInitiated, hasUserGesture, isFromReload,
                         isFromTyping, isFromFormSubmit, isFromIntent);
