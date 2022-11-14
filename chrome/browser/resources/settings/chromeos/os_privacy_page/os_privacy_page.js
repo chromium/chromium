@@ -225,7 +225,8 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
         type: Boolean,
         readOnly: true,
         value: function() {
-          return loadTimeData.getBoolean('showPrivacyHubPage');
+          return loadTimeData.getBoolean('showPrivacyHubPage') &&
+              !loadTimeData.getBoolean('isGuest');
         },
       },
     };
@@ -360,7 +361,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   }
 
   /** @private */
-  onPrivacyHub_() {
+  onPrivacyHubClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.PrivacyHub.Opened',
         PrivacyHubNavigationOrigin.SYSTEM_SETTINGS,

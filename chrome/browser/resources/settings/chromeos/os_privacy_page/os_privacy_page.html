@@ -41,15 +41,6 @@
         </cr-link-row>
         <div class="hr"></div>
       </template>
-      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <cr-link-row id="privacyHubSubpageTrigger"
-            on-click="onPrivacyHub_"
-            label="$i18n{privacyHubTitle}"
-            sub-label="$i18n{privacyHubSubtext}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-        <div class="hr"></div>
-      </template>
     </template>
 
 <if expr="_google_chrome">
@@ -88,6 +79,15 @@
         label="$i18n{enableContentProtectionAttestation}"
         deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
+    <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
+      <div class="hr"></div>
+      <cr-link-row id="privacyHubSubpageTrigger"
+          on-click="onPrivacyHubClick_"
+          label="$i18n{privacyHubTitle}"
+          sub-label="$i18n{privacyHubSubtext}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
     <template is="dom-if" if="[[isThunderboltSupported_]]">
       <div class="hr"></div>
       <!-- This toggle is always disabled. The underlying pref state is
@@ -132,7 +132,6 @@
       </div>
     </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
-      <div class="hr"></div>
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>
   </div>
