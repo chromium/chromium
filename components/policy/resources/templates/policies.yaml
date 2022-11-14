@@ -1029,6 +1029,8 @@ policies:
   1028: AccessControlAllowMethodsInCORSPreflightSpecConformant
   1029: AllowWebAuthnWithBrokenTlsCerts
   1030: ExtensionManifestV2Availability
+  1031: OffsetParentNewSpecBehaviorEnabled
+  1032: SendMouseEventsDisabledFormControlsEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
