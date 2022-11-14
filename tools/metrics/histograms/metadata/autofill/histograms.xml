@@ -1716,11 +1716,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormFillSuccessIOS"
-    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2022-12-12">
-  <owner>kazinova@google.com</owner>
+    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2023-02-12">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records whether the the form was successfully filled by Autofill on iOS.
+    Records whether the form was successfully filled by Autofill on iOS.
   </summary>
 </histogram>
 
