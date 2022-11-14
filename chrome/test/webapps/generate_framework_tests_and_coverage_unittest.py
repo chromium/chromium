@@ -53,7 +53,6 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
             generate_framework_tests_and_coverage(
                 supported_actions_file, enums, actions_file, coverage_file,
                 custom_partitions, default_partition, output_dir, None)
-            print(capturedOutput.read())
             # The framework uses stdout to inform the developer of tests that
             # need to be added or removed. Since there should be no tests
             # changes required, nothing should be printed to stdout.

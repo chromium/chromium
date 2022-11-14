@@ -55,7 +55,8 @@ def generate_framework_tests_and_coverage(
         default_partition: TestPartitionDescription,
         coverage_output_dir: str,
         graph_output_dir: Optional[str],
-        delete_in_place: bool = False):
+        delete_in_place: bool = False,
+        suppress_coverage: bool = False):
     for partition_a in custom_partitions:
         check_partition_prefixes(partition_a, default_partition)
         for partition_b in custom_partitions:
@@ -142,6 +143,9 @@ def generate_framework_tests_and_coverage(
         existing_tests_ids_by_platform_set, required_coverage_by_platform_set,
         custom_partitions, default_partition)
 
+    if suppress_coverage:
+        return
+
     # To calculate coverage we need to incorporate any disabled tests.
     # Remove any disabled tests from the generated tests per platform.
     for platform, tests in generated_tests_by_platform.items():
@@ -169,7 +173,7 @@ def generate_framework_tests_and_coverage(
     return
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description='WebApp Test List Processor')
     parser.add_argument('-v',
                         dest='v',
@@ -188,8 +192,13 @@ def main():
                         action='store_true',
                         help='Delete test cases no longer needed in place',
                         required=False)
+    parser.add_argument('--suppress-coverage',
+                        dest='suppress_coverage',
+                        action='store_true',
+                        help='Do not write coverage information.',
+                        required=False)
 
-    options = parser.parse_args()
+    options = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO if options.v else logging.WARN,
                         format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%H:%M:%S')
@@ -236,7 +245,8 @@ def main():
         generate_framework_tests_and_coverage(
             supported_actions, enums_file, actions_file, coverage_file,
             custom_partitions, default_partition, coverage_output_dir,
-            graph_output_dir, options.delete_in_place)
+            graph_output_dir, options.delete_in_place,
+            options.suppress_coverage)
 
 
 if __name__ == '__main__':
