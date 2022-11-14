@@ -522,6 +522,24 @@ TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial) {
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 1);
 }
 
+TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Initial_CancelsPairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  SetPairFailure();
+  CreatePairer();
+
+  // Mock that the device was paired unsuccessfully.
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsPaired()).WillOnce(Return(false));
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+
+  // Check to make sure that, when pairing fails, we call CancelPairing.
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, CancelPairing()).Times(1);
+}
+
 TEST_F(FastPairPairerImplTest, PairByDeviceFailure_Subsequent) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
@@ -1880,6 +1898,34 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+}
+
+TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFastPairSavedDevices,
+                             features::kFastPairSavedDevicesStrictOptIn});
+  base::RunLoop().RunUntilIdle();
+
+  CreateDevice(DeviceFastPairVersion::kHigherThanV1);
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(account_key_failure_callback_, Run);
+  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
+
+  // Mock that the device was paired successfully.
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, IsPaired()).WillOnce(Return(true));
+  adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
+  RunWriteAccountKeyCallback(
+      device::BluetoothGattService::GattErrorCode::kFailed);
+
+  // Check to make sure that, after bonding a device, we don't cancel pairing
+  // (since this causes a paired device to disconnect).
+  EXPECT_CALL(*fake_bluetooth_device_ptr_, CancelPairing()).Times(0);
 }
 
 TEST_F(FastPairPairerImplTest, FastPairVersionOne_DevicePaired) {

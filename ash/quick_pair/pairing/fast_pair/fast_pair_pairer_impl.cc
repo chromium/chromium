@@ -221,8 +221,24 @@ FastPairPairerImpl::~FastPairPairerImpl() {
   device::BluetoothDevice* bt_device = nullptr;
   if (device_->classic_address())
     bt_device = adapter_->GetDevice(device_->classic_address().value());
-  if (bt_device)
+  if (!bt_device) {
+    QP_LOG(VERBOSE)
+        << __func__
+        << ": No device found in destructor for failed pairing attempt.";
+    return;
+  }
+
+  if (!bt_device->IsPaired()) {
+    QP_LOG(INFO)
+        << __func__
+        << ": Cancelling pairing in destructor for failed pair attempt.";
     bt_device->CancelPairing();
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__
+                  << ": Not cancelling pairing in destructor for successful "
+                     "pair attempt.";
 }
 
 void FastPairPairerImpl::StartPairing() {
