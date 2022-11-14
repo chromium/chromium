@@ -200,8 +200,6 @@ StorageQueue::StorageQueue(
       low_priority_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
       options_(options),
-      upload_timer_(options.clock()),
-      check_back_timer_(options.clock()),
       async_start_upload_cb_(async_start_upload_cb),
       encryption_module_(encryption_module),
       compression_module_(compression_module) {
@@ -212,9 +210,8 @@ StorageQueue::StorageQueue(
 StorageQueue::~StorageQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
-  // Stop timers.
+  // Stop upload timer.
   upload_timer_.AbandonAndStop();
-  check_back_timer_.AbandonAndStop();
   // Make sure no pending writes is present.
   DCHECK(write_contexts_queue_.empty());
 
@@ -297,9 +294,8 @@ Status StorageQueue::Init() {
   //
   if (!options_.upload_period().is_zero() &&
       !options_.upload_period().is_max()) {
-    upload_timer_.Start(FROM_HERE, options_.upload_period(),
-                        base::BindRepeating(&StorageQueue::PeriodicUpload,
-                                            weakptr_factory_.GetWeakPtr()));
+    upload_timer_.Start(FROM_HERE, options_.upload_period(), this,
+                        &StorageQueue::PeriodicUpload);
   }
   // In case some events are found in the queue, initiate an upload.
   // This is especially imporant for non-periodic queues, but won't harm
@@ -1076,13 +1072,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     // retry the upload.
     if (storage_queue_ &&
         !storage_queue_->options_.upload_retry_delay().is_zero()) {
-      storage_queue_->check_back_timer_.Start(
-          FROM_HERE, storage_queue_->options_.upload_retry_delay(),
-          base::BindPostTask(
-              storage_queue_->sequenced_task_runner_,
-              base::BindRepeating(
-                  &StorageQueue::CheckBackUpload, storage_queue_, status,
-                  /*next_sequencing_id=*/sequence_info_.sequencing_id())));
+      ScheduleAfter(storage_queue_->options_.upload_retry_delay(),
+                    base::BindOnce(
+                        &StorageQueue::CheckBackUpload, storage_queue_, status,
+                        /*next_sequencing_id=*/sequence_info_.sequencing_id()));
     }
   }
 

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
@@ -25,13 +24,11 @@ class EncryptionModule : public EncryptionModuleInterface {
 
   // Factory method creates |EncryptionModule| object.
   static scoped_refptr<EncryptionModuleInterface> Create(
-      base::TimeDelta renew_encryption_key_period,
-      const base::TickClock* clock);
+      base::TimeDelta renew_encryption_key_period = base::Days(1));
 
  protected:
   // Constructor can only be called by |Create| factory method.
-  EncryptionModule(base::TimeDelta renew_encryption_key_period,
-                   const base::TickClock* clock);
+  explicit EncryptionModule(base::TimeDelta renew_encryption_key_period);
 
   ~EncryptionModule() override;
 
