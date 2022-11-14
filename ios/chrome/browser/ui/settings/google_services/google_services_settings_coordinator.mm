@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -87,7 +86,9 @@ using signin_metrics::PromoAction;
       [[GoogleServicesSettingsViewController alloc]
           initWithStyle:ChromeTableViewStyle()];
   viewController.presentationDelegate = self;
-  viewController.forcedSigninEnabled = IsForceSignInEnabled();
+  viewController.forcedSigninEnabled =
+      self.authService->GetServiceStatus() ==
+      AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()

@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/force_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
@@ -54,16 +53,26 @@
     // access point will still be used. The forced sign-in screen may also be
     // presented outside of the FRE when the user has to be prompted to sign-in
     // because of the policy.
-    if (IsForceSignInEnabled()) {
-      _logger = [[ForceSigninLogger alloc]
-            initWithPromoAction:signin_metrics::PromoAction::
-                                    PROMO_ACTION_NO_SIGNIN_PROMO
-          accountManagerService:accountManagerService];
-    } else {
-      _logger = [[FirstRunSigninLogger alloc]
-            initWithPromoAction:signin_metrics::PromoAction::
-                                    PROMO_ACTION_NO_SIGNIN_PROMO
-          accountManagerService:accountManagerService];
+    switch (authenticationService->GetServiceStatus()) {
+      case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+        _logger = [[ForceSigninLogger alloc]
+              initWithPromoAction:signin_metrics::PromoAction::
+                                      PROMO_ACTION_NO_SIGNIN_PROMO
+            accountManagerService:accountManagerService];
+        break;
+      case AuthenticationService::ServiceStatus::SigninAllowed:
+        _logger = [[FirstRunSigninLogger alloc]
+              initWithPromoAction:signin_metrics::PromoAction::
+                                      PROMO_ACTION_NO_SIGNIN_PROMO
+            accountManagerService:accountManagerService];
+        break;
+      case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+        NOTREACHED() << "Sign-in disabled: "
+                     << static_cast<int>(
+                            authenticationService->GetServiceStatus());
+        break;
     }
     [_logger logSigninStarted];
   }

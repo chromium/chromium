@@ -284,7 +284,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL hasSyncConsent =
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
   TableViewLinkHeaderFooterItem* footerItem = nil;
-  if (IsForceSignInEnabled()) {
+  if ([self authService]->GetServiceStatus() ==
+      AuthenticationService::ServiceStatus::SigninForcedByPolicy) {
     if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       footerItem =
           [self signOutSyncingFooterItemForForcedSignin:hasSyncConsent];

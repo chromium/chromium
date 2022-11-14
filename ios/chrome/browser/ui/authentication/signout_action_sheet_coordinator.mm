@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -59,6 +58,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 // YES if the user has confirmed that they want to signout.
 @property(nonatomic, assign) BOOL confirmSignOut;
+// YES if sign-in is forced by enterprise policy.
+@property(nonatomic, assign, readonly) BOOL isForceSigninEnabled;
 
 @end
 
@@ -121,7 +122,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // Need a first step to show logout contextual information about the forced
   // sign-in policy. Only return this state when sync is enabled because it is
   // already shown for sync disabled.
-  if (IsForceSignInEnabled() && syncEnabled && !self.confirmSignOut) {
+  if (self.isForceSigninEnabled && syncEnabled && !self.confirmSignOut) {
     return SignedInUserStateWithForcedSigninInfoRequired;
   }
 
@@ -155,7 +156,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     case SignedInUserStateWithForcedSigninInfoRequired:
     case SignedInUserStateWithManagedAccountAndNotSyncing:
     case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
-      if (IsForceSignInEnabled()) {
+      if (self.isForceSigninEnabled) {
         title = l10n_util::GetNSString(
             IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE);
       } else if (self.showUnavailableFeatureDialogHeader) {
@@ -177,7 +178,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     case SignedInUserStateWithForcedSigninInfoRequired:
     case SignedInUserStateWithNoneManagedAccountAndNotSyncing:
     case SignedInUserStateWithManagedAccountAndNotSyncing: {
-      if (IsForceSignInEnabled()) {
+      if (self.isForceSigninEnabled) {
         return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE);
       }
       return nil;
@@ -187,6 +188,13 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       return nil;
     }
   }
+}
+
+#pragma mark - Properties
+
+- (BOOL)isForceSigninEnabled {
+  return self.authenticationService->GetServiceStatus() ==
+         AuthenticationService::ServiceStatus::SigninForcedByPolicy;
 }
 
 #pragma mark - Private
