@@ -40,6 +40,8 @@ class LensStaticPageController : public content::WebContentsObserver {
   void StartRegionSearch(content::WebContents* web_contents);
   raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<LensRegionSearchController> lens_region_search_controller_;
+
+  base::WeakPtrFactory<LensStaticPageController> weak_ptr_factory_{this};
 };
 
 // Class to store a static page controller for launching region search on a
