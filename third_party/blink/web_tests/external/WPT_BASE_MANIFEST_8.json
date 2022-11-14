@@ -252518,6 +252518,19 @@
         {}
        ]
       ],
+      "pathlength-circle-mutating.svg": [
+       "a033962e6a3d7c967bc2acfedd4b86075d20acd6",
+       [
+        null,
+        [
+         [
+          "/svg/linking/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "pathlength-path-mutating.svg": [
        "b3f71653f4214c0283ead06fa465a027001c433a",
        [
@@ -296200,6 +296213,10 @@
       ],
       "column-rule-shorthand.html.ini": [
        "12cb8d80daab01297951f78ecffe5cf2ff477ce6",
+       []
+      ],
+      "columns-valid-expected.txt": [
+       "f38a8576554f6faa3b86385d3f6ffebe14b62df9",
        []
       ]
      },
@@ -372190,12 +372207,8 @@
      "5238ce954992f94507668167696b314cfddcf71d",
      []
     ],
-    "disabled-by-feature-policy.https.sub-expected.txt": [
-     "4ddf8ebc03d3d1b364a9b0752ff4046334ae4959",
-     []
-    ],
-    "disabled-by-permissions-policy.https.sub-expected.txt": [
-     "0bed6c9378cea6535eb2b0ffcfa09acbd0f5d530",
+    "disabled-by-permissions-policy-cross-origin.https.sub-expected.txt": [
+     "8125bf16b96d4614bc6fb4ea9c751aa865afbf94",
      []
     ],
     "disabled-by-permissions-policy.https.sub.html.headers": [
@@ -414587,6 +414600,13 @@
        null,
        {}
       ]
+     ],
+     "position-fallback-dynamic.html": [
+      "f6d82104276121aa86b81daed6337339ebc24ac0",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-animations": {
@@ -427474,14 +427494,14 @@
        ]
       ],
       "columns-invalid.html": [
-       "c84fb6cacef292b572dfef918fa3836b01280966",
+       "dc9b27bf3759f01086d79af65b6075236223d5d8",
        [
         null,
         {}
        ]
       ],
       "columns-valid.html": [
-       "fff7cdd4aff0be3e18b9226ba962f3cbdac41ecf",
+       "7b643e2d9a309221f6e987847ee558df53151903",
        [
         null,
         {}

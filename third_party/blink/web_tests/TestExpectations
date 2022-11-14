@@ -3079,7 +3079,7 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/mediaqueries/mq-calc-008.html [ Failure ]
 crbug.com/626703 [ Mac12 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
-crbug.com/626703 external/wpt/html/user-activation/consumption-crossorigin.sub.tentative.html [ Timeout Failure ]
+crbug.com/626703 external/wpt/html/user-activation/consumption-crossorigin.sub.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash Failure ]
