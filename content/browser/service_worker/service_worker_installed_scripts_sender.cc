@@ -248,7 +248,7 @@ void ServiceWorkerInstalledScriptsSender::RequestInstalledScript(
       owner_->script_cache_map()->LookupResourceId(script_url);
 
   if (resource_id == blink::mojom::kInvalidServiceWorkerResourceId) {
-    mojo::ReportBadMessage("Requested script was not installed.");
+    receiver_.ReportBadMessage("Requested script was not installed.");
     return;
   }
 
