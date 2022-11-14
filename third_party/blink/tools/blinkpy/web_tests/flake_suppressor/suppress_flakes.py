@@ -41,9 +41,13 @@ def main() -> int:
     querier_instance = web_tests_queries.WebTestsBigQueryQuerier(
         args.sample_period, args.project, results_processor)
 
-    results = querier_instance.GetFlakyOrFailingCiTests()
-    results.extend(querier_instance.GetFlakyOrFailingTryTests())
-    aggregated_results = results_processor.AggregateResults(results)
+    if args.non_hidden_failures:
+        results = querier_instance.GetFailingCiBuildCulpritTests()
+        aggregated_results = results_processor.AggregateResults(results)
+    else:
+        results = querier_instance.GetFlakyOrFailingCiTests()
+        results.extend(querier_instance.GetFlakyOrFailingTryTests())
+        aggregated_results = results_processor.AggregateResults(results)
     if args.result_output_file:
         with open(args.result_output_file, 'w') as outfile:
             result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
@@ -58,10 +62,15 @@ def main() -> int:
         expectations_processor.IterateThroughResultsForUser(
             aggregated_results, args.group_by_tags, args.include_all_tags)
     else:
-        result_counts = querier_instance.GetResultCounts()
-        expectations_processor.IterateThroughResultsWithThresholds(
-            aggregated_results, args.group_by_tags, result_counts,
-            args.ignore_threshold, args.flaky_threshold, args.include_all_tags)
+        if args.non_hidden_failures:
+            expectations_processor.CreateFailureExpectationsForAllResults(
+                aggregated_results, args.group_by_tags, args.include_all_tags)
+        else:
+            result_counts = querier_instance.GetResultCounts()
+            expectations_processor.IterateThroughResultsWithThresholds(
+                aggregated_results, args.group_by_tags, result_counts,
+                args.ignore_threshold, args.flaky_threshold,
+                args.include_all_tags)
     print('\nGenerated expectations will need to have bugs manually added.')
 
     return 0

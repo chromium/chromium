@@ -56,7 +56,7 @@ class BigQueryQuerier():
     self._result_processor = result_processor
 
   def GetFlakyOrFailingCiTests(self) -> ct.QueryJsonType:
-    """Gets all flaky or failing GPU tests from CI.
+    """Gets all flaky or failing tests from CI.
 
     Returns:
       A JSON representation of the BigQuery results containing all found flaky
@@ -64,8 +64,18 @@ class BigQueryQuerier():
     """
     return self._GetJsonResultsFromBigQuery(self.GetFlakyOrFailingCiQuery())
 
+  def GetFailingCiBuildCulpritTests(self) -> ct.QueryJsonType:
+    """Gets all failing build culprit tests from CI builders.
+
+    Returns:
+      A JSON representation of the BigQuery results containing all found
+      all failing build culprit results that came from CI bots.
+    """
+    return self._GetJsonResultsFromBigQuery(
+        self.GetFailingBuildCulpritFromCiQuery())
+
   def GetFlakyOrFailingTryTests(self) -> ct.QueryJsonType:
-    """Gets all flaky or failing GPU tests from the trybots.
+    """Gets all flaky or failing tests from the trybots.
 
     Limits results to those that came from builds used for CL submission.
 
@@ -98,6 +108,13 @@ class BigQueryQuerier():
     """
     Returns:
       Query string to get all the failing or flaky results from CI bots.
+    """
+    raise NotImplementedError
+
+  def GetFailingBuildCulpritFromCiQuery(self) -> str:
+    """
+    Returns:
+      Query string to get all failing build culprit results from CI bots.
     """
     raise NotImplementedError
 

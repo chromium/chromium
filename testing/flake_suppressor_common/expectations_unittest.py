@@ -311,6 +311,98 @@ class IterateThroughResultsWithThresholdsUnittest(
 
 
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
+class CreateFailureExpectationsForAllResultsUnittest(
+    fake_filesystem_unittest.TestCase):
+  def setUp(self) -> None:
+    self.setUpPyfakefs()
+    self._expectations = uu.UnitTestExpectationProcessor()
+    self.result_map = {
+        'pixel_integration_test': {
+            'foo_test': {
+                tuple(['win']): ['a'],
+                tuple(['mac']): ['b'],
+            },
+            'bar_test': {
+                tuple(['win']): ['c'],
+            },
+        },
+    }
+
+    self.expectation_file = os.path.join(uu.ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
+                                         'pixel_expectations.txt')
+    uu.CreateFile(self, self.expectation_file)
+    expectation_file_contents = uu.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    self._expectation_file_patcher = mock.patch.object(
+        uu.UnitTestExpectationProcessor, 'GetExpectationFileForSuite')
+    self._expectation_file_mock = self._expectation_file_patcher.start()
+    self._expectation_file_mock.return_value = self.expectation_file
+    self.addCleanup(self._expectation_file_patcher.stop)
+
+  def testGroupByTags(self) -> None:
+    """Tests that threshold-based expectations work when grouping by tags."""
+    self._expectations.CreateFailureExpectationsForAllResults(
+        self.result_map, True, True)
+    expected_contents = uu.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ win ] foo_test [ Failure ]
+[ win ] bar_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ android ] some_test [ Failure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+  def testNoGroupByTags(self) -> None:
+    """Tests that threshold-based expectations work when not grouping by tags"""
+    self._expectations.CreateFailureExpectationsForAllResults(
+        self.result_map, False, True)
+    expected_contents = uu.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+[ win ] foo_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ win ] bar_test [ Failure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+  def testNoIncludeAllTags(self) -> None:
+    """Tests that threshold-based expectations work when filtering tags."""
+    self.result_map = {
+        'pixel_integration_test': {
+            'foo_test': {
+                tuple(['win', 'win10']): ['a'],
+                tuple(['mac']): ['b'],
+            },
+            'bar_test': {
+                tuple(['win', 'win10']): ['c'],
+            },
+        },
+    }
+    self._expectations.CreateFailureExpectationsForAllResults(
+        self.result_map, False, False)
+    expected_contents = uu.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+[ win10 ] foo_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ win10 ] bar_test [ Failure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+
+@unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
 class FindFailuresInSameConditionUnittest(unittest.TestCase):
   def setUp(self) -> None:
     self._expectations = uu.UnitTestExpectationProcessor()

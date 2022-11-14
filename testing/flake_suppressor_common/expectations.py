@@ -127,6 +127,29 @@ class ExpectationProcessor():
             self.ModifyFileForResult(suite, test, typ_tags, '', expected_result,
                                      group_by_tags, include_all_tags)
 
+  def CreateFailureExpectationsForAllResults(
+      self, result_map: ct.AggregatedResultsType, group_by_tags: bool,
+      include_all_tags: bool) -> None:
+    """Iterates over |result_map| and adds Failure expectations for its results.
+
+    Args:
+      result_map: Aggregated query results from results.AggregateResults to
+          iterate over.
+      group_by_tags: A boolean denoting whether to attempt to group expectations
+          by tags or not. If True, expectations will be added after an existing
+          expectation whose tags are the largest subset of the produced tags. If
+          False, new expectations will be appended to the end of the file.
+      include_all_tags: A boolean denoting whether all tags should be used for
+          expectations or only the most specific ones.
+    """
+    for suite, test_map in result_map.items():
+      if self.IsSuiteUnsupported(suite):
+        continue
+      for test, tag_map in test_map.items():
+        for typ_tags in tag_map.keys():
+          self.ModifyFileForResult(suite, test, typ_tags, '', 'Failure',
+                                   group_by_tags, include_all_tags)
+
   # pylint: enable=too-many-locals,too-many-arguments
 
   def FindFailuresInSameTest(self, result_map: ct.AggregatedResultsType,
