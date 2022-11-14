@@ -172,8 +172,8 @@ void DocumentPictureInPictureWindowControllerImpl::NotifyClosedAndStopObserving(
   // user explicitly closed the window and any active media should be paused.
   // If false, the user used a "return to tab" feature with the expectation
   // that any active media will continue playing in the parent tab.
-  // TODO(klausw): connect this to the requestPictureInPicture API and/or
-  // onleavepictureinpicture event once that's implemented.
+  // TODO(https://crbug.com/1382958): connect this to the requestPictureInPicture
+  // API and/or onleavepictureinpicture event once that's implemented.
   GetWebContentsImpl()->ExitPictureInPicture();
   Observe(/*web_contents=*/nullptr);
 }
