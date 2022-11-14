@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include <memory>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_scrolling_overflow_indicator_strategy.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,6 +30,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view.h"
 
 namespace {
 // Define a custom FlexRule for |scroll_view_|. Equivalent to using a
@@ -70,80 +74,6 @@ std::unique_ptr<views::ImageButton> CreateScrollButton(
   return scroll_button;
 }
 
-// A customized overflow indicator that paints a shadow-like gradient over the
-// tabstrip.
-class TabStripContainerOverflowIndicator : public views::View {
- public:
-  METADATA_HEADER(TabStripContainerOverflowIndicator);
-  TabStripContainerOverflowIndicator(TabStrip* tab_strip,
-                                     views::OverflowIndicatorAlignment side)
-      : tab_strip_(tab_strip), side_(side) {
-    DCHECK(side_ == views::OverflowIndicatorAlignment::kLeft ||
-           side_ == views::OverflowIndicatorAlignment::kRight);
-  }
-
-  // Making this smaller than the margin provided by the leftmost/rightmost
-  // tab's tail (TabStyle::kTabOverlap / 2) makes the transition in and out of
-  // the scroll state smoother.
-  static constexpr int kOpaqueWidth = 8;
-  // The width of the full opacity part of the shadow.
-  static constexpr int kShadowSpread = 1;
-  // The width of the soft edge of the shadow.
-  static constexpr int kShadowBlur = 3;
-  static constexpr int kTotalWidth = kOpaqueWidth + kShadowSpread + kShadowBlur;
-
-  // views::View overrides:
-  void OnPaint(gfx::Canvas* canvas) override {
-    // TODO(tbergquist): Handle themes with titlebar background images.
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-    SkColor4f frame_color =
-        SkColor4f::FromColor(tab_strip_->controller()->GetFrameColor(
-            BrowserFrameActiveState::kUseCurrent));
-    SkColor4f shadow_color = SkColor4f::FromColor(
-        GetColorProvider()->GetColor(ui::kColorShadowBase));
-
-    // Mirror how the indicator is painted for the right vs left sides.
-    SkPoint points[2];
-    if (side_ == views::OverflowIndicatorAlignment::kLeft) {
-      points[0].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
-      points[1].iset(GetContentsBounds().right(), GetContentsBounds().y());
-    } else {
-      points[0].iset(GetContentsBounds().right(), GetContentsBounds().y());
-      points[1].iset(GetContentsBounds().origin().x(), GetContentsBounds().y());
-    }
-
-    SkColor4f colors[5];
-    SkScalar color_positions[5];
-    // Paint an opaque region on the outside.
-    colors[0] = frame_color;
-    colors[1] = frame_color;
-    color_positions[0] = 0;
-    color_positions[1] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
-
-    // Paint a shadow-like gradient on the inside.
-    colors[2] = shadow_color;
-    colors[3] = shadow_color;
-    colors[4] = shadow_color;
-    colors[4].fA = 0.0f;
-    color_positions[2] = static_cast<float>(kOpaqueWidth) / kTotalWidth;
-    color_positions[3] =
-        static_cast<float>(kOpaqueWidth + kShadowSpread) / kTotalWidth;
-    color_positions[4] = 1;
-
-    cc::PaintFlags flags;
-    flags.setShader(cc::PaintShader::MakeLinearGradient(
-        points, colors, color_positions, 5, SkTileMode::kClamp));
-    canvas->DrawRect(GetContentsBounds(), flags);
-  }
-
- private:
-  raw_ptr<TabStrip> tab_strip_;
-  views::OverflowIndicatorAlignment side_;
-};
-
-BEGIN_METADATA(TabStripContainerOverflowIndicator, views::View)
-END_METADATA
-
 // Must be kept the same as kTabScrollingButtonPositionVariations values
 enum ScrollButtonPositionType {
   kJoinedButtonsRight = 0,
@@ -176,18 +106,10 @@ TabStripScrollContainer::TabStripScrollContainer(
   scroll_view->SetTreatAllScrollEventsAsHorizontal(true);
   scroll_view->SetContents(std::move(tab_strip));
 
-  scroll_view->SetDrawOverflowIndicator(true);
-  left_overflow_indicator_ = scroll_view->SetCustomOverflowIndicator(
-      views::OverflowIndicatorAlignment::kLeft,
-      std::make_unique<TabStripContainerOverflowIndicator>(
-          tab_strip_, views::OverflowIndicatorAlignment::kLeft),
-      TabStripContainerOverflowIndicator::kTotalWidth, false);
-  right_overflow_indicator_ = scroll_view->SetCustomOverflowIndicator(
-      views::OverflowIndicatorAlignment::kRight,
-      std::make_unique<TabStripContainerOverflowIndicator>(
-          tab_strip_, views::OverflowIndicatorAlignment::kRight),
-      TabStripContainerOverflowIndicator::kTotalWidth, false);
-
+  overflow_indicator_strategy_ =
+      std::make_unique<ShadowOverflowIndicatorStrategy>(scroll_view_,
+                                                        tab_strip_);
+  overflow_indicator_strategy_->Init();
   // This base::Unretained is safe because the callback is called by the
   // layout manager, which is cleaned up before view children like
   // |scroll_view| (which owns |tab_strip_|).
@@ -320,8 +242,7 @@ void TabStripScrollContainer::FrameColorsChanged() {
         trailing_scroll_button_, kTrailingScrollIcon, foreground_color,
         gfx::kPlaceholderColor);
   }
-  left_overflow_indicator_->SchedulePaint();
-  right_overflow_indicator_->SchedulePaint();
+  overflow_indicator_strategy_->FrameColorsChanged();
 }
 
 bool TabStripScrollContainer::IsRectInWindowCaption(const gfx::Rect& rect) {

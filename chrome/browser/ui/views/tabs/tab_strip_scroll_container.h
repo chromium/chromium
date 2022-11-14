@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_CONTAINER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/overflow_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -16,6 +18,7 @@ class ImageButton;
 }
 
 class TabStrip;
+class TabStripScrollingOverflowIndicatorStrategy;
 
 // Allows the TabStrip to be scrolled back and forth when there are more tabs
 // than can be displayed at one time. When the TabStrip is scrollable, displays
@@ -72,10 +75,9 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
   raw_ptr<views::ImageButton> leading_scroll_button_;
   raw_ptr<views::ImageButton> trailing_scroll_button_;
 
-  // The views, owned by |scroll_view_|, that indicate that there are more
-  // tabs overflowing to the left or right.
-  raw_ptr<views::View> left_overflow_indicator_;
-  raw_ptr<views::View> right_overflow_indicator_;
+  // The class handling the overflow indiciators for the scroll view.
+  std::unique_ptr<TabStripScrollingOverflowIndicatorStrategy>
+      overflow_indicator_strategy_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLL_CONTAINER_H_

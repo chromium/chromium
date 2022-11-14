@@ -5111,6 +5111,8 @@ static_library("ui") {
       "views/tabs/tab_strip_scroll_container.h",
       "views/tabs/tab_strip_scroll_session.cc",
       "views/tabs/tab_strip_scroll_session.h",
+      "views/tabs/tab_strip_scrolling_overflow_indicator_strategy.cc",
+      "views/tabs/tab_strip_scrolling_overflow_indicator_strategy.h",
       "views/tabs/tab_style_views.cc",
       "views/tabs/tab_style_views.h",
       "views/tabs/tab_width_constraints.cc",
