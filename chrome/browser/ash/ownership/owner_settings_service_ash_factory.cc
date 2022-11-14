@@ -7,7 +7,6 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -34,7 +33,10 @@ DeviceSettingsService* GetDeviceSettingsService() {
 }  // namespace
 
 OwnerSettingsServiceAshFactory::OwnerSettingsServiceAshFactory()
-    : ProfileKeyedServiceFactory("OwnerSettingsService") {}
+    : ProfileKeyedServiceFactory("OwnerSettingsService",
+                                 ProfileSelections::Builder()
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {}
 
 OwnerSettingsServiceAshFactory::~OwnerSettingsServiceAshFactory() = default;
 
@@ -88,9 +90,6 @@ bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
 KeyedService* OwnerSettingsServiceAshFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
   // user as the owner, and write settings directly to the stubbed provider.
   // This is done using the FakeOwnerSettingsService.

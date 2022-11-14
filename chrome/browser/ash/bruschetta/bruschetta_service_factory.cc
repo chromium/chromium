@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 
 namespace bruschetta {
 
@@ -26,7 +27,12 @@ BruschettaServiceFactory* BruschettaServiceFactory::GetInstance() {
 }
 
 BruschettaServiceFactory::BruschettaServiceFactory()
-    : ProfileKeyedServiceFactory("BruschettaService") {}
+    : ProfileKeyedServiceFactory("BruschettaService",
+                                 // Takes care of not creating the service for
+                                 // OTR and non user profiles.
+                                 ProfileSelections::Builder()
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {}
 
 BruschettaServiceFactory::~BruschettaServiceFactory() = default;
 
@@ -36,9 +42,7 @@ KeyedService* BruschettaServiceFactory::BuildServiceInstanceFor(
 
   // Don't create a BruschettaService for anything except the primary user
   // profile for the session.
-  if (profile->IsOffTheRecord() ||
-      !ash::ProfileHelper::Get()->IsUserProfile(profile) ||
-      !ash::ProfileHelper::Get()->IsPrimaryProfile(profile) ||
+  if (!ash::ProfileHelper::Get()->IsPrimaryProfile(profile) ||
       ash::ProfileHelper::Get()->IsEphemeralUserProfile(profile))
     return nullptr;
 

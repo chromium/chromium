@@ -39,7 +39,11 @@ UserNetworkConfigurationUpdaterFactory::GetInstance() {
 UserNetworkConfigurationUpdaterFactory::UserNetworkConfigurationUpdaterFactory()
     : ProfileKeyedServiceFactory(
           "UserNetworkConfigurationUpdater",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // On the login/lock screen only device network policies apply.
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(NssServiceFactory::GetInstance());
 }
 
@@ -58,12 +62,7 @@ bool UserNetworkConfigurationUpdaterFactory::ServiceIsNULLWhileTesting() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 KeyedService* UserNetworkConfigurationUpdaterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  // On the login/lock screen only device network policies apply.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ash::ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);

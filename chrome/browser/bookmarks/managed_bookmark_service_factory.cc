@@ -17,10 +17,6 @@
 #include "components/policy/policy_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
-
 namespace {
 
 std::unique_ptr<KeyedService> BuildManagedBookmarkService(
@@ -79,19 +75,15 @@ ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // No service for system profile.
               .WithSystem(ProfileSelection::kNone)
+              // ChromeOS creates various profiles (login, lock screen...) that
+              // do not have/need access to bookmarks.
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
 ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
 
 KeyedService* ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various profiles (login, lock screen...) that do
-  // not have/need access to bookmarks.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
   return BuildManagedBookmarkService(context).release();
 }
 

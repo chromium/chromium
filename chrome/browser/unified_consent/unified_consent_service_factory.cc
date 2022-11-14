@@ -19,10 +19,6 @@
 #include "components/unified_consent/unified_consent_metrics.h"
 #include "components/unified_consent/unified_consent_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
-
 using unified_consent::UnifiedConsentService;
 using unified_consent::metrics::RecordSettingsHistogram;
 
@@ -51,8 +47,15 @@ std::vector<std::string> GetSyncedServicePrefNames() {
 }  // namespace
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
-    : ProfileKeyedServiceFactory("UnifiedConsentService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "UnifiedConsentService",
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              // ChromeOS creates various profiles (login, lock screen...) that
+              // do not have unified consent.
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
@@ -79,14 +82,6 @@ void UnifiedConsentServiceFactory::RegisterProfilePrefs(
 KeyedService* UnifiedConsentServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various profiles (login, lock screen...) that do
-  // not have unified consent.
-  if (!chromeos::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
-
   sync_preferences::PrefServiceSyncable* pref_service =
       PrefServiceSyncableFromProfile(profile);
   // Record settings for pre- and post-UnifiedConsent users.

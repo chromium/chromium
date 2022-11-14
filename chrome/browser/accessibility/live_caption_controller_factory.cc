@@ -45,6 +45,9 @@ LiveCaptionControllerFactory::LiveCaptionControllerFactory()
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               // No service for system profile.
               .WithSystem(ProfileSelection::kNone)
+              // ChromeOS creates various profiles (login, lock screen...) that
+              // do not need the Live Caption controller.
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
 LiveCaptionControllerFactory::~LiveCaptionControllerFactory() = default;
@@ -55,14 +58,6 @@ bool LiveCaptionControllerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 KeyedService* LiveCaptionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various profiles (login, lock screen...) that do
-  // not need the Live Caption controller.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
-
   return new LiveCaptionController(
       Profile::FromBrowserContext(context)->GetPrefs(),
       g_browser_process->local_state(), context);

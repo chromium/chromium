@@ -32,6 +32,9 @@ CupsPrintersManagerFactory::CupsPrintersManagerFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // We do not need an instance of CupsPrintersManager on the
+              // lockscreen.
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()),
       proxy_(CupsPrintersManagerProxy::Create()) {
   DependsOn(SyncedPrintersManagerFactory::GetInstance());
@@ -45,12 +48,7 @@ CupsPrintersManagerProxy* CupsPrintersManagerFactory::GetProxy() {
 
 KeyedService* CupsPrintersManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  // We do not need an instance of CupsPrintersManager on the lockscreen.
   auto* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
   // This condition still needs to be explicitly stated here despite having
   // ProfileKeyedService logic implemented because `IsGuestSession()` and
   // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.

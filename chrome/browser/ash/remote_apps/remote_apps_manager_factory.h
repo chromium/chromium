@@ -7,7 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -20,7 +20,7 @@ namespace ash {
 
 // Singleton that creates |RemoteAppsManager|s and associates them with a
 // |Profile|.
-class RemoteAppsManagerFactory : public BrowserContextKeyedServiceFactory {
+class RemoteAppsManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static RemoteAppsManager* GetForProfile(Profile* profile);
 
@@ -36,8 +36,6 @@ class RemoteAppsManagerFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };

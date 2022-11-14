@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
@@ -31,9 +30,11 @@ RemoteAppsManagerFactory* RemoteAppsManagerFactory::GetInstance() {
 }
 
 RemoteAppsManagerFactory::RemoteAppsManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "RemoteAppsManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("RemoteAppsManager",
+                                 ProfileSelections::Builder()
+                                     .WithSystem(ProfileSelection::kNone)
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(extensions::EventRouterFactory::GetInstance());
@@ -55,17 +56,6 @@ KeyedService* RemoteAppsManagerFactory::BuildServiceInstanceFor(
   }
 
   return new RemoteAppsManager(profile);
-}
-
-content::BrowserContext* RemoteAppsManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile || profile->IsSystemProfile() ||
-      !ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
-  return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
 
 bool RemoteAppsManagerFactory::ServiceIsCreatedWithBrowserContext() const {

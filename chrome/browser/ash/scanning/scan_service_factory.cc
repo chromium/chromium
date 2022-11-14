@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,12 +31,7 @@ ScanServiceFactory* ScanServiceFactory::GetInstance() {
 // static
 KeyedService* ScanServiceFactory::BuildInstanceFor(
     content::BrowserContext* context) {
-  // Prevent an instance of ScanService from being created on the lock screen.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
   auto* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   bool drive_available = integration_service &&
@@ -54,7 +48,12 @@ KeyedService* ScanServiceFactory::BuildInstanceFor(
 ScanServiceFactory::ScanServiceFactory()
     : ProfileKeyedServiceFactory(
           "ScanService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Prevent an instance of ScanService from being created on the
+              // lock screen.
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(LorgnetteScannerManagerFactory::GetInstance());
   DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());
 }

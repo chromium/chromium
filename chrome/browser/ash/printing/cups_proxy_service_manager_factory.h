@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_CUPS_PROXY_SERVICE_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -16,8 +16,7 @@ namespace ash {
 
 class CupsProxyServiceManager;
 
-class CupsProxyServiceManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class CupsProxyServiceManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static CupsProxyServiceManagerFactory* GetInstance();
   static CupsProxyServiceManager* GetForBrowserContext(
@@ -36,8 +35,6 @@ class CupsProxyServiceManagerFactory
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;

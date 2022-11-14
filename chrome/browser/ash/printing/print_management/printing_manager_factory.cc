@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -32,7 +31,13 @@ PrintingManagerFactory* PrintingManagerFactory::GetInstance() {
 PrintingManagerFactory::PrintingManagerFactory()
     : ProfileKeyedServiceFactory(
           "PrintingManager",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // We do not want an instance of PrintingManager on the lock
+              // screen. The result is multiple print job notifications.
+              // https://crbug.com/1011532
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(CupsPrintJobManagerFactory::GetInstance());
@@ -44,13 +49,6 @@ PrintingManagerFactory::~PrintingManagerFactory() = default;
 KeyedService* PrintingManagerFactory::BuildInstanceFor(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-
-  // We do not want an instance of PrintingManager on the lock screen. The
-  // result is multiple print job notifications. https://crbug.com/1011532
-  if (!ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
   return new PrintingManager(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
@@ -61,7 +59,7 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
 
 KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return BuildInstanceFor(static_cast<Profile*>(context));
+  return BuildInstanceFor(context);
 }
 
 void PrintingManagerFactory::RegisterProfilePrefs(

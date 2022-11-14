@@ -25,10 +25,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
-
 namespace {
 
 using bookmarks::BookmarkModel;
@@ -84,6 +80,9 @@ BookmarkModelFactory::BookmarkModelFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // No service for system profile.
               .WithSystem(ProfileSelection::kNone)
+              // ChromeOS creates various profiles (login, lock screen...) that
+              // do not have/need access to bookmarks.
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ManagedBookmarkServiceFactory::GetInstance());
@@ -95,13 +94,6 @@ BookmarkModelFactory::~BookmarkModelFactory() {
 
 KeyedService* BookmarkModelFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS creates various profiles (login, lock screen...) that do
-  // not have/need access to bookmarks.
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!chromeos::ProfileHelper::IsUserProfile(profile))
-    return nullptr;
-#endif
   return BuildBookmarkModel(context).release();
 }
 

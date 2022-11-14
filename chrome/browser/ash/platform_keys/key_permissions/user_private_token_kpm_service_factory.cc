@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -63,8 +62,10 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance() {
 
 UserPrivateTokenKeyPermissionsManagerServiceFactory::
     UserPrivateTokenKeyPermissionsManagerServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "UserPrivateTokenKeyPermissionsManagerService") {
+    : ProfileKeyedServiceFactory("UserPrivateTokenKeyPermissionsManagerService",
+                                 ProfileSelections::Builder()
+                                     .WithAshInternals(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(PlatformKeysServiceFactory::GetInstance());
 }
 
@@ -74,13 +75,8 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::
 KeyedService*
 UserPrivateTokenKeyPermissionsManagerServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-
-  if (!ProfileHelper::IsUserProfile(profile)) {
-    return nullptr;
-  }
-
-  return new UserPrivateTokenKeyPermissionsManagerService(profile);
+  return new UserPrivateTokenKeyPermissionsManagerService(
+      Profile::FromBrowserContext(context));
 }
 
 bool UserPrivateTokenKeyPermissionsManagerServiceFactory::
