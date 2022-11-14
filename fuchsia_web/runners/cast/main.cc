@@ -39,9 +39,6 @@ namespace {
 // Config-data key for launching Cast content without using Scenic.
 constexpr char kHeadlessConfigKey[] = "headless";
 
-// Config-data key to enable the fuchsia.web.FrameHost provider component.
-constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
-
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
   const absl::optional<base::Value>& config =
@@ -163,15 +160,6 @@ int main(int argc, char** argv) {
 
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
-  }
-
-  // Optionally enable a pseudo-component providing the fuchsia.web.FrameHost
-  // service, to allow the Cast application web.Context to be shared by other
-  // components.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableFrameHostComponentForTestsSwitch) ||
-      GetConfigBool(kFrameHostConfigKey)) {
-    runner.set_enable_frame_host_component();
   }
 
   // Publish version information for this component to Inspect.

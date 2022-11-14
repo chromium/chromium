@@ -55,16 +55,9 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   void DeletePersistentData(DeletePersistentDataCallback callback) override;
 
   // Returns a connection request handler for the fuchsia.web.FrameHost
-  // protocol exposed by the main web_instance. This is available regardless
-  // of whether `enable_frame_host_component_` is set.
+  // protocol exposed by the main web_instance.
   fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>
   GetFrameHostRequestHandler();
-
-  // Enables the special component that provides the fuchsia.web.FrameHost API,
-  // hosted using the same WebEngine instance as the main web.Context.
-  void set_enable_frame_host_component() {
-    enable_frame_host_component_ = true;
-  }
 
   // Disables use of the VULKAN feature when creating Contexts. Must be set
   // before calling StartComponent().
@@ -147,9 +140,6 @@ class CastRunner final : public fuchsia::component::runner::ComponentRunner,
   base::flat_set<std::unique_ptr<PendingCastComponent>,
                  base::UniquePtrComparator>
       pending_components_;
-
-  // True if this Runner should offer the fuchsia.web.FrameHost component.
-  bool enable_frame_host_component_ = false;
 
   // Used to fetch & cache the list of CORS exempt HTTP headers to configure
   // each web.Context with.

@@ -84,9 +84,6 @@ void CastResolver::Resolve(std::string component_url,
   DeclareAndExposeProtocol(decl, "fuchsia.ui.app.ViewProvider");
   DeclareAndExposeProtocol(decl, "fuchsia.modular.Lifecycle");
 
-  // TODO(crbug.com/1120914): Remove this with the FrameHost component.
-  DeclareAndExposeProtocol(decl, "fuchsia.web.FrameHost");
-
   // Expose the Binder, from the framework, to allow CastRunnerV1 to start the
   // component.
   decl.mutable_exposes()->push_back(Expose::WithProtocol(
