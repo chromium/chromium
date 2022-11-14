@@ -215,7 +215,7 @@ class CSSProperties(object):
                 Property(**x) for x in fields.name_dictionaries
             ]
         for field in self._extra_fields:
-            self.expand_parameters(field)
+            self.set_derived_attributes(field)
             validate_field(field)
 
     def add_properties(self, properties, origin_trial_features):
@@ -223,14 +223,12 @@ class CSSProperties(object):
             self._properties_by_name[property_.name.original] = property_
 
         for property_ in properties:
-            property_.is_shorthand = \
-                property_.is_property and bool(property_.longhands)
-            property_.is_longhand = \
-                property_.is_property and not property_.is_shorthand
-            self.expand_visited(property_)
+            self.set_derived_attributes(property_)
+            self.set_derived_visited_attributes(property_)
             property_.in_origin_trial = False
-            self.expand_origin_trials(property_, origin_trial_features)
-            self.expand_surrogate(property_)
+            self.set_derived_origin_trials_attributes(property_,
+                                                      origin_trial_features)
+            self.set_derived_surrogate_attributes(property_)
 
         self._aliases = [
             property_ for property_ in properties if property_.alias_for
@@ -247,7 +245,6 @@ class CSSProperties(object):
         # the resulting order is deterministic.
         # Sort properties by priority, then alphabetically.
         for property_ in self._longhands + self._shorthands:
-            self.expand_parameters(property_)
             validate_property(property_, self._longhands)
             priority_numbers = {'High': 0, 'Low': 1}
             priority = priority_numbers[property_.priority]
@@ -285,13 +282,14 @@ class CSSProperties(object):
         self._properties_including_aliases = self._longhands + \
             self._shorthands + self._aliases
 
-    def expand_origin_trials(self, property_, origin_trial_features):
+    def set_derived_origin_trials_attributes(self, property_,
+                                             origin_trial_features):
         if not property_.runtime_flag:
             return
         if property_.runtime_flag in origin_trial_features:
             property_.in_origin_trial = True
 
-    def expand_visited(self, property_):
+    def set_derived_visited_attributes(self, property_):
         if not property_.visited_property_for:
             return
         visited_property_for = property_.visited_property_for
@@ -304,7 +302,7 @@ class CSSProperties(object):
             'A property may not have multiple visited properties'
         unvisited_property.visited_property = property_
 
-    def expand_surrogate(self, property_):
+    def set_derived_surrogate_attributes(self, property_):
         if not property_.surrogate_for:
             return
         assert property_.surrogate_for in self._properties_by_name, \
@@ -334,7 +332,22 @@ class CSSProperties(object):
                 'Shorthand' if aliased_property.longhands else 'Longhand'
             self._aliases[i] = updated_alias
 
-    def expand_parameters(self, property_):
+    def set_derived_attributes(self, property_):
+        """Set new attributes on 'property_', based on existing attribute values
+        or defaults.
+
+        The 'Property' class (of which 'property_' is an instance) contains an
+        attribute for every "parameter" [1] specified in css_properties.json5.
+        However, these attributes are not always sufficient or ergonimic to use
+        in template files. For example, any property whose name starts with the
+        string "-internal-" are not web-exposed, and therefore needs special
+        treatment in a few places. Checking for this prefix repeatedly is
+        error-prone and unergonomic, so we set a 'is_internal' attribute in this
+        function.
+
+        [1] See "parameters" dictionary in css_properties.json5.
+        """
+
         def set_if_none(property_, key, value):
             if not getattr(property_, key, None):
                 setattr(property_, key, value)
@@ -344,6 +357,10 @@ class CSSProperties(object):
         property_.property_id = id_for_css_property(name)
         property_.enum_key = enum_key_for_css_property(name)
         property_.is_internal = name.original.startswith('-internal-')
+        property_.is_shorthand = \
+                property_.is_property and bool(property_.longhands)
+        property_.is_longhand = \
+                property_.is_property and not property_.is_shorthand
         method_name = property_.name_for_methods
         if not method_name:
             method_name = name.to_upper_camel_case().replace('Webkit', '')
@@ -402,8 +419,6 @@ class CSSProperties(object):
         else:
             set_if_none(property_, 'converter', 'CSSIdentifierValue')
 
-        assert not property_.alias_for, \
-            'Use expand_aliases to expand aliases'
         if not property_.longhands:
             property_.superclass = 'Longhand'
             property_.namespace_group = 'Longhand'
