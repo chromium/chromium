@@ -175,6 +175,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
 
   View* GetHeaderViewForTesting() const { return header_view_; }
 
+  // Update the |view_shown_time_stamp_| of input protector. A short time
+  // from this point onward, input event will be ignored.
+  void UpdateInputProtectorTimeStamp();
+
   // Resets the time when view has been shown. Tests may need to call this
   // method if they use events that could be otherwise treated as unintended.
   // See IsPossiblyUnintendedInteraction().
@@ -211,6 +215,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
                            IgnorePossiblyUnintendedClicksClose);
   FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest,
                            IgnorePossiblyUnintendedClicksMinimize);
+  FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest,
+                           IgnorePossiblyUnintendedClicksAnchorBoundsChanged);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CloseReasons);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CloseMethods);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CreateDelegate);

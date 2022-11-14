@@ -18,6 +18,14 @@ void InputEventActivationProtector::VisibilityChanged(bool is_visible) {
     view_shown_time_stamp_ = base::TimeTicks::Now();
 }
 
+void InputEventActivationProtector::UpdateViewShownTimeStamp() {
+  // The UI was never shown, ignore.
+  if (view_shown_time_stamp_ == base::TimeTicks())
+    return;
+
+  view_shown_time_stamp_ = base::TimeTicks::Now();
+}
+
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     const ui::Event& event) {
   if (g_disable_for_testing)

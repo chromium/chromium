@@ -44,6 +44,7 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/dialog_client_view.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
@@ -798,6 +799,16 @@ void BubbleDialogDelegate::OnAnchorBoundsChanged() {
   // TODO(pbos): Reconsider whether to update the anchor when the view isn't
   // drawn.
   SizeToContents();
+
+  // We will not accept input event a short time after anchored view changed.
+  UpdateInputProtectorsTimeStamp();
+}
+
+void BubbleDialogDelegate::UpdateInputProtectorsTimeStamp() {
+  if (auto* dialog = GetDialogClientView())
+    dialog->UpdateInputProtectorTimeStamp();
+
+  GetBubbleFrameView()->UpdateInputProtectorTimeStamp();
 }
 
 gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {

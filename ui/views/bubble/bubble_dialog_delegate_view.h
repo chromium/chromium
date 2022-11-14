@@ -144,6 +144,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // normally, do not call this.
   void OnAnchorBoundsChanged();
 
+  // Call this method to update view shown time stamp of underneath input
+  // protectors.
+  void UpdateInputProtectorsTimeStamp();
+
   //////////////////////////////////////////////////////////////////////////////
   // Subtitle:
   //
