@@ -250,6 +250,7 @@ if (include_js_tests) {
       "media/media_history_webui_browsertest.js",
       "metrics_reporter/metrics_reporter_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
+      "side_panel/customize_chrome/side_panel_customize_chrome_browsertest.js",
       "side_panel/side_panel_browsertest.js",
       "tab_search/tab_search_browsertest.js",
       "usb_internals_browsertest.js",
@@ -518,6 +519,7 @@ generate_grd("build_grd") {
     "privacy_sandbox:build_grdp",
     "settings:build_grdp",
     "side_panel:build_grdp",
+    "side_panel/customize_chrome:build_grdp",
     "tab_search:build_grdp",
   ]
 
@@ -535,6 +537,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/net_internals/resources.grdp",
     "$target_gen_dir/new_tab_page/resources.grdp",
     "$target_gen_dir/side_panel/resources.grdp",
+    "$target_gen_dir/side_panel/customize_chrome/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/settings/resources.grdp",

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"

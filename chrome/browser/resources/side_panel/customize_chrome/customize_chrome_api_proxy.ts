@@ -7,17 +7,21 @@ import {CustomizeChromePageHandler, CustomizeChromePageHandlerInterface} from '.
 let instance: CustomizeChromeApiProxy|null = null;
 
 export class CustomizeChromeApiProxy {
+  static getInstance(): CustomizeChromeApiProxy {
+    if (!instance) {
+      const handler = CustomizeChromePageHandler.getRemote();
+      instance = new CustomizeChromeApiProxy(handler);
+    }
+    return instance;
+  }
+
+  static setInstance(handler: CustomizeChromePageHandlerInterface) {
+    instance = new CustomizeChromeApiProxy(handler);
+  }
+
   handler: CustomizeChromePageHandlerInterface;
 
-  constructor() {
-    this.handler = CustomizeChromePageHandler.getRemote();
-  }
-
-  static getInstance(): CustomizeChromeApiProxy {
-    return instance || (instance = new CustomizeChromeApiProxy());
-  }
-
-  static setInstance(newInstance: CustomizeChromeApiProxy) {
-    instance = newInstance;
+  private constructor(handler: CustomizeChromePageHandlerInterface) {
+    this.handler = handler;
   }
 }

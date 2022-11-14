@@ -14,7 +14,7 @@ build_webui("build") {
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
-    "customize_shortcuts.ts",
+    "shortcuts.ts",
   ]
 
   non_web_component_files = [ "customize_chrome_api_proxy.ts" ]
@@ -27,6 +27,7 @@ build_webui("build") {
   mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_webui_js" ]
   mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.js" ]
 
+  ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
