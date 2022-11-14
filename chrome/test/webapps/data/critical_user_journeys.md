@@ -264,13 +264,20 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 ## Windows Control Overlay
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_or_shortcut_windowed(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
-| WMLC | install_or_shortcut_windowed(Standalone) | check_window_controls_overlay_toggle(Standalone, NotShown) |
-| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, On) |
-| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
-| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, Off) |
-| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
-| WMLC | install_or_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) | check_window_controls_overlay_toggle(Standalone, NotShown) |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch(Standalone) | check_window_controls_overlay_toggle(Standalone, NotShown) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, On) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, On) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, Off) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, Off) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
+| WMLC | install_or_shortcut_by_user_windowed(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
+| WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
 | WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
 | WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
 | WMLC | install_or_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, On) |

@@ -2498,24 +2498,26 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
 void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
     Site site,
     IsShown is_shown) {
-  if (!BeforeStateChangeAction(__FUNCTION__))
+  if (!BeforeStateCheckAction(__FUNCTION__))
     return;
-  if (!app_browser())
-    app_browser_ = GetAppBrowserForSite(site);
   ASSERT_TRUE(app_browser());
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(),
+                                                GetAppIdBySiteMode(site)));
   EXPECT_EQ(app_browser()->app_controller()->AppUsesWindowControlsOverlay(),
             is_shown == IsShown::kShown);
-  AfterStateChangeAction();
+  AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckWindowControlsOverlay(Site site,
                                                              IsOn is_on) {
-  if (!BeforeStateChangeAction(__FUNCTION__))
+  if (!BeforeStateCheckAction(__FUNCTION__))
     return;
   ASSERT_TRUE(app_browser());
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(),
+                                                GetAppIdBySiteMode(site)));
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
   EXPECT_EQ(app_view->IsWindowControlsOverlayEnabled(), is_on == IsOn::kOn);
-  AfterStateChangeAction();
+  AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
@@ -2586,6 +2588,7 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
 
 bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
     const char* function) {
+  DCHECK(!base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_)
     return false;
   LOG(INFO) << "BeforeStateChangeAction: "
@@ -2649,6 +2652,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 }
 
 bool WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
+  DCHECK(base::StartsWith(function, "Check"));
   if (testing::Test::HasFatalFailure() && !in_tear_down_)
     return false;
   ++executing_action_level_;
