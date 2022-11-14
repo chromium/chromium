@@ -299,6 +299,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       force_anchor_rect_(anchor_rect) {
   // The anchor for promo bubbles should not highlight.
   set_highlight_button_when_shown(false);
+  set_color_id(delegate_->GetHelpBubbleBackgroundColorId());
+
   DCHECK(anchor_view)
       << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();
@@ -370,6 +372,9 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     icon_view_->SetPreferredSize(
         gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
     icon_view_->SetAccessibleName(params.body_icon_alt_text);
+    icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+        delegate->GetHelpBubbleForegroundColorId(),
+        icon_view_->GetPreferredSize().height() / 2));
   }
 
   // Add title (optional) and body label.
@@ -392,6 +397,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     label->SetMultiLine(true);
     label->SetElideBehavior(gfx::NO_ELIDE);
+    label->SetEnabledColorId(delegate_->GetHelpBubbleForegroundColorId());
+    label->SetBackgroundColorId(delegate_->GetHelpBubbleBackgroundColorId());
   }
 
   // Add close button (optional).
@@ -660,27 +667,6 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     } else {
       MaybeStartAutoCloseTimer();
     }
-  }
-}
-
-void HelpBubbleView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-
-  const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
-  set_color(background_color);
-
-  const SkColor foreground_color =
-      color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
-  if (icon_view_) {
-    icon_view_->SetBackground(views::CreateRoundedRectBackground(
-        foreground_color, icon_view_->GetPreferredSize().height() / 2));
-  }
-
-  for (auto* label : labels_) {
-    label->SetBackgroundColor(background_color);
-    label->SetEnabledColor(foreground_color);
   }
 }
 

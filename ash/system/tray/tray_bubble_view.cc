@@ -258,8 +258,10 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   SetAccessibleRole(ax::mojom::Role::kDialog);
   // We force to create contents background since the bubble border background
   // is not shown in this view.
-  if (features::IsDarkLightModeEnabled())
+  if (features::IsDarkLightModeEnabled()) {
     set_force_create_contents_background(true);
+    set_color_id(kColorAshShieldAndBase80);
+  }
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
@@ -522,7 +524,6 @@ void TrayBubbleView::OnThemeChanged() {
     SetBorder(std::make_unique<views::HighlightBorder>(
         params_.corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
-    set_color(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
     return;
   }
 

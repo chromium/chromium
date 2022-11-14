@@ -15,6 +15,8 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -254,11 +256,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Direct access to the background color. Only use the getter when you know
   // you don't need to worry about the color being out-of-date due to a recent
   // theme update.
-  SkColor color() const { return color_; }
-  void set_color(SkColor color) {
-    color_ = color;
-    color_explicitly_set_ = true;
-  }
+  SkColor color() const;
+  void set_color(SkColor color) { color_ = color; }
+  void set_color_id(ui::ColorId color_id) { color_id_ = color_id; }
 
   void set_force_create_contents_background(
       bool force_create_contents_background) {
@@ -315,12 +315,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // before it is shown.
   // TODO(pbos): Turn this into a (Once?)Callback and add set_init(cb).
   virtual void Init() {}
-
-  // TODO(ellyjones): Replace uses of this with uses of set_color(), and/or
-  // otherwise get rid of this function.
-  void set_color_internal(SkColor color) { color_ = color; }
-
-  bool color_explicitly_set() const { return color_explicitly_set_; }
 
   // Redeclarations of virtuals that BubbleDialogDelegate used to inherit from
   // WidgetObserver. These should not exist; do not add new overrides of them.
@@ -392,8 +386,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   gfx::Insets title_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
   BubbleBorder::Shadow shadow_;
-  SkColor color_ = gfx::kPlaceholderColor;
-  bool color_explicitly_set_ = false;
+  absl::optional<SkColor> color_;
+  ui::ColorId color_id_ = ui::kColorBubbleBackground;
   raw_ptr<Widget, DanglingUntriaged> anchor_widget_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
@@ -527,6 +521,8 @@ VIEW_BUILDER_METHOD(SetButtonEnabled, ui::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
+VIEW_BUILDER_METHOD(set_color, SkColor)
+VIEW_BUILDER_METHOD(set_color_id, ui::ColorId)
 VIEW_BUILDER_METHOD(set_draggable, bool)
 VIEW_BUILDER_METHOD(set_use_custom_frame, bool)
 VIEW_BUILDER_METHOD(set_fixed_width, int)

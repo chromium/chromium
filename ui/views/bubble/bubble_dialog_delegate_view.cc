@@ -723,6 +723,13 @@ SkColor BubbleDialogDelegate::GetBackgroundColor() {
   return color();
 }
 
+SkColor BubbleDialogDelegate::color() const {
+  if (!color_.has_value() && GetWidget())
+    return GetWidget()->GetColorProvider()->GetColor(color_id_);
+
+  return color_.value_or(gfx::kPlaceholderColor);
+}
+
 ui::LayerType BubbleDialogDelegate::GetLayerType() const {
   return ui::LAYER_TEXTURED;
 }
@@ -933,10 +940,7 @@ void BubbleDialogDelegate::SetSubtitle(const std::u16string& subtitle) {
 void BubbleDialogDelegate::UpdateColorsFromTheme() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);
-  if (!color_explicitly_set()) {
-    set_color_internal(contents_view->GetColorProvider()->GetColor(
-        ui::kColorBubbleBackground));
-  }
+
   BubbleFrameView* frame_view = GetBubbleFrameView();
   if (frame_view)
     frame_view->SetBackgroundColor(color());

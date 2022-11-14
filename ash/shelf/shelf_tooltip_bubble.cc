@@ -38,6 +38,7 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
   SetCanActivate(false);
   set_accept_events(false);
   set_shadow(views::BubbleBorder::NO_SHADOW);
+  set_color_id(kColorAshShelfTooltipBackgroundColor);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto label = std::make_unique<views::Label>(text);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -54,11 +55,6 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
 
 void ShelfTooltipBubble::OnThemeChanged() {
   ShelfBubble::OnThemeChanged();
-
-  const auto* color_provider = GetColorProvider();
-
-  // TODO(crbug.com/1377484): Update this function to use color id instead.
-  set_color(color_provider->GetColor(kColorAshShelfTooltipBackgroundColor));
 
   // Updates the background color in the bubble frame view.
   GetBubbleFrameView()->SetBackgroundColor(color());

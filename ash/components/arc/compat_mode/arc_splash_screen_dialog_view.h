@@ -61,7 +61,6 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // views::ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;
@@ -81,8 +80,6 @@ class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
 
   base::OnceClosure close_callback_;
   views::MdTextButton* close_button_ = nullptr;
-
-  const ui::ColorId background_color_id_ = ash::kColorAshDialogBackgroundColor;
 
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       anchor_highlight_observations_{this};
