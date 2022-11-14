@@ -2547,6 +2547,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-isolated-web-app-dev-mode",
+    "owners": [ "cmfcmf", "reillyg", "rmcelrath", "peletskyi@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-isolated-web-apps",
     "owners": [ "cmfcmf", "reillyg", "rmcelrath", "peletskyi@google.com" ],
     "expiry_milestone": 140

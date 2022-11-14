@@ -18,6 +18,7 @@
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
@@ -172,9 +173,10 @@ static const char* kBadFlags[] = {
 // Dangerous feature flags in about:flags for which to display a warning that
 // "stability and security will suffer".
 static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
-    // This feature enables experimental support for isolated web apps, which
+    // These features enables experimental support for isolated web apps, which
     // unlock capabilities with a high potential for security / privacy abuse.
     &features::kIsolatedWebApps,
+    &features::kIsolatedWebAppDevMode,
 
     &features::kWebBundlesFromNetwork,
 #if BUILDFLAG(IS_ANDROID)

@@ -1089,6 +1089,11 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for isolated web apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
+const char kEnableIsolatedWebAppDevModeName[] =
+    "Enable Isolated Web App Developer Mode";
+const char kEnableIsolatedWebAppDevModeDescription[] =
+    "Enables the installation of unverified Isolated Web Apps";
+
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
     "Enable RGB Keyboard support on supported devices.";

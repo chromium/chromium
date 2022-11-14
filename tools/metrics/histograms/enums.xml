@@ -58156,6 +58156,7 @@ from previous Chrome versions.
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
   <int value="-1905351186" label="FeedAblation:disabled"/>
   <int value="-1903365454" label="SyncPseudoUSSPreferences:disabled"/>
+  <int value="-1903166011" label="IsolatedWebAppDevMode:disabled"/>
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1899715534" label="GamepadPollingInterval:enabled"/>
   <int value="-1899652563" label="ReportFeedUserActions:enabled"/>
@@ -60261,6 +60262,7 @@ from previous Chrome versions.
   <int value="-684900739" label="disable-merge-key-char-events"/>
   <int value="-684503292"
       label="OmniboxTabSwitchSuggestionsDedicatedRow:enabled"/>
+  <int value="-684336980" label="IsolatedWebAppDevMode:enabled"/>
   <int value="-684223908" label="enable-android-wallpapers-app"/>
   <int value="-683370370" label="EnableAppDataSearch:enabled"/>
   <int value="-683306022" label="OverscrollHistoryNavigation:enabled"/>

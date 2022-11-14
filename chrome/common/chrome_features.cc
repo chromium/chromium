@@ -693,6 +693,12 @@ BASE_FEATURE(kIncognitoNtpRevamp,
              "IncognitoNtpRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Isolated Web App Developer Mode, which allows developers to
+// install untrusted Isolated Web Apps.
+BASE_FEATURE(kIsolatedWebAppDevMode,
+             "IsolatedWebAppDevMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKioskEnableAppService,
              "KioskEnableAppService",
