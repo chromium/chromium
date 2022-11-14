@@ -89,8 +89,8 @@ static CalculationValueHandleMap& CalcHandles() {
 }
 
 Length::Length(scoped_refptr<const CalculationValue> calc)
-    : quirk_(false), type_(kCalculated), is_float_(false) {
-  int_value_ = CalcHandles().insert(std::move(calc));
+    : quirk_(false), type_(kCalculated) {
+  calculation_handle_ = CalcHandles().insert(std::move(calc));
 }
 
 Length Length::BlendMixedTypes(const Length& from,
@@ -210,10 +210,11 @@ String Length::ToString() const {
   else
     builder.Append("?");
   builder.Append(", ");
-  if (is_float_)
-    builder.AppendNumber(float_value_);
-  else
-    builder.AppendNumber(int_value_);
+  if (IsCalculated()) {
+    builder.AppendNumber(calculation_handle_);
+  } else {
+    builder.AppendNumber(value_);
+  }
   if (quirk_)
     builder.Append(", Quirk");
   builder.Append(")");

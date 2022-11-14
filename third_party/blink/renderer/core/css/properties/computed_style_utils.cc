@@ -56,6 +56,20 @@
 
 namespace blink {
 
+static Length Negate(const Length& length) {
+  if (length.IsCalculated()) {
+    NOTREACHED();
+    return length;
+  }
+
+  Length ret =
+      length.GetRoundToInt()
+          ? Length(-static_cast<int>(length.GetFloatValue()), length.GetType())
+          : Length(-length.GetFloatValue(), length.GetType());
+  ret.SetQuirk(length.Quirk());
+  return ret;
+}
+
 // TODO(rjwright): make this const
 CSSValue* ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
     const Length& length,
@@ -611,9 +625,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
         return CSSIdentifierValue::Create(CSSValueID::kAuto);
       }
 
-      // Length doesn't provide operator -, so multiply by -1.
-      Length negated_opposite = opposite;
-      negated_opposite *= -1.f;
+      Length negated_opposite = Negate(opposite);
       return ZoomAdjustedPixelValueForLength(negated_opposite, style);
     }
 

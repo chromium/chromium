@@ -73,6 +73,20 @@
 
 namespace blink {
 
+static Length BrokenLegacyMultiply(const Length& length, float v) {
+  if (length.IsCalculated()) {
+    NOTREACHED();
+    return length;
+  }
+
+  Length ret = length.GetRoundToInt()
+                   ? Length(static_cast<int>(length.GetFloatValue() * v),
+                            length.GetType())
+                   : Length(length.GetFloatValue() * v, length.GetType());
+  ret.SetQuirk(length.Quirk());
+  return ret;
+}
+
 TableLayoutAlgorithmFixed::TableLayoutAlgorithmFixed(LayoutTable* table)
     : TableLayoutAlgorithm(table), recorded_width_difference_(false) {}
 
@@ -127,8 +141,8 @@ int TableLayoutAlgorithmFixed::CalcWidthArray() {
       if ((col_style_logical_width.IsFixed() ||
            col_style_logical_width.IsPercent()) &&
           col_style_logical_width.IsPositive()) {
-        width_[current_effective_column] = col_style_logical_width;
-        width_[current_effective_column] *= span_in_current_effective_column;
+        width_[current_effective_column] = BrokenLegacyMultiply(
+            col_style_logical_width, span_in_current_effective_column);
         used_width += effective_col_width * span_in_current_effective_column;
       }
       span -= span_in_current_effective_column;
@@ -176,8 +190,8 @@ int TableLayoutAlgorithmFixed::CalcWidthArray() {
       float e_span = table_->SpanOfEffectiveColumn(current_column);
       // Only set if no col element has already set it.
       if (width_[current_column].IsAuto() && !logical_width.IsAuto()) {
-        width_[current_column] = logical_width;
-        width_[current_column] *= e_span / span;
+        width_[current_column] =
+            BrokenLegacyMultiply(logical_width, e_span / span);
         used_width += fixed_border_box_logical_width * e_span / span;
       }
       used_span += e_span;

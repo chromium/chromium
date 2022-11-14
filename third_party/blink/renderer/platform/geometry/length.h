@@ -29,7 +29,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -73,34 +72,32 @@ class PLATFORM_EXPORT Length {
     kContent  // only valid for flex-basis
   };
 
-  Length() : int_value_(0), quirk_(false), type_(kAuto), is_float_(false) {}
+  Length() : value_(0), quirk_(false), type_(kAuto) {}
 
-  explicit Length(Length::Type t)
-      : int_value_(0), quirk_(false), type_(t), is_float_(false) {
+  explicit Length(Length::Type t) : value_(0), quirk_(false), type_(t) {
     DCHECK_NE(t, kCalculated);
   }
 
   Length(int v, Length::Type t, bool q = false)
-      : int_value_(v), quirk_(q), type_(t), is_float_(false) {
+      : value_(v), quirk_(q), type_(t), round_to_int_(true) {
     DCHECK_NE(t, kCalculated);
   }
 
   Length(LayoutUnit v, Length::Type t, bool q = false)
-      : float_value_(v.ToFloat()), quirk_(q), type_(t), is_float_(true) {
+      : value_(v.ToFloat()), quirk_(q), type_(t) {
     DCHECK(std::isfinite(v.ToFloat()));
     DCHECK_NE(t, kCalculated);
   }
 
   Length(float v, Length::Type t, bool q = false)
-      : float_value_(v), quirk_(q), type_(t), is_float_(true) {
+      : value_(v), quirk_(q), type_(t) {
     DCHECK(std::isfinite(v));
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(double v, Length::Type t, bool q = false)
-      : quirk_(q), type_(t), is_float_(true) {
+  Length(double v, Length::Type t, bool q = false) : quirk_(q), type_(t) {
     DCHECK(std::isfinite(v));
-    float_value_ = ClampTo<float>(v);
+    value_ = ClampTo<float>(v);
   }
 
   explicit Length(scoped_refptr<const CalculationValue>);
@@ -126,25 +123,18 @@ class PLATFORM_EXPORT Length {
   }
 
   bool operator==(const Length& o) const {
-    return (type_ == o.type_) && (quirk_ == o.quirk_) &&
-           (IsNone() || (GetFloatValue() == o.GetFloatValue()) ||
-            IsCalculatedEqual(o));
+    if (type_ != o.type_ || quirk_ != o.quirk_) {
+      return false;
+    }
+    if (type_ == kCalculated) {
+      return IsCalculatedEqual(o);
+    } else {
+      // For everything that doesn't use value_, it is defined to be zero,
+      // so we can compare here unconditionally.
+      return value_ == o.value_;
+    }
   }
   bool operator!=(const Length& o) const { return !(*this == o); }
-
-  const Length& operator*=(float v) {
-    if (IsCalculated()) {
-      NOTREACHED();
-      return *this;
-    }
-
-    if (is_float_)
-      float_value_ = static_cast<float>(float_value_ * v);
-    else
-      int_value_ = static_cast<int>(int_value_ * v);
-
-    return *this;
-  }
 
   template <typename NUMBER_TYPE>
   static Length Fixed(NUMBER_TYPE number) {
@@ -179,7 +169,8 @@ class PLATFORM_EXPORT Length {
       NOTREACHED();
       return 0;
     }
-    return GetIntValue();
+    DCHECK(!IsNone());
+    return static_cast<int>(value_);
   }
 
   float Pixels() const {
@@ -217,7 +208,7 @@ class PLATFORM_EXPORT Length {
     if (IsCalculated())
       return false;
 
-    return is_float_ ? !float_value_ : !int_value_;
+    return !value_;
   }
   bool IsPositive() const {
     if (IsNone())
@@ -305,8 +296,11 @@ class PLATFORM_EXPORT Length {
 
   float GetFloatValue() const {
     DCHECK(!IsNone());
-    return is_float_ ? float_value_ : int_value_;
+    DCHECK(!IsCalculated());
+    return value_;
   }
+
+  bool GetRoundToInt() const { return round_to_int_; }
 
   class PLATFORM_EXPORT AnchorEvaluator {
    public:
@@ -326,29 +320,31 @@ class PLATFORM_EXPORT Length {
   String ToString() const;
 
  private:
-  int GetIntValue() const {
-    DCHECK(!IsNone());
-    return is_float_ ? static_cast<int>(float_value_) : int_value_;
-  }
-
   Length BlendMixedTypes(const Length& from, double progress, ValueRange) const;
 
   Length BlendSameTypes(const Length& from, double progress, ValueRange) const;
 
   int CalculationHandle() const {
     DCHECK(IsCalculated());
-    return GetIntValue();
+    return calculation_handle_;
   }
   void IncrementCalculatedRef() const;
   void DecrementCalculatedRef() const;
 
   union {
-    int int_value_;
-    float float_value_;
+    // If kType == kCalculated.
+    int calculation_handle_;
+
+    // Otherwise. Must be zero if not in use (e.g., for kAuto or kNone).
+    float value_;
   };
   bool quirk_;
   unsigned char type_;
-  bool is_float_;
+
+  // This only affects BrokenLegacyMultiplyBy()
+  // (in table_layout_algorithm_fixed.cc), nothing else,
+  // so it can be removed when that legacy table code is removed.
+  bool round_to_int_ = false;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const Length&);
