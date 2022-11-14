@@ -17,8 +17,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -181,5 +180,4 @@ TEST_F(TabbedPaneAccessibilityMacTest, WritableValue) {
   EXPECT_TRUE(GetTabAt(0)->selected());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

@@ -611,8 +611,7 @@ ui::test::EventGenerator* GetActiveGenerator() {
 
 }  // namespace
 
-namespace views {
-namespace test {
+namespace views::test {
 
 std::unique_ptr<ui::test::EventGeneratorDelegate>
 CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
@@ -621,8 +620,7 @@ CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
   return std::make_unique<EventGeneratorDelegateMac>(owner, root_window,
                                                      target_window);
 }
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 @implementation NSEventDonor
 

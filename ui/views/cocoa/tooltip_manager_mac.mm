@@ -25,8 +25,7 @@ TooltipManagerMac::TooltipManagerMac(
     remote_cocoa::mojom::NativeWidgetNSWindow* bridge)
     : bridge_(bridge) {}
 
-TooltipManagerMac::~TooltipManagerMac() {
-}
+TooltipManagerMac::~TooltipManagerMac() = default;
 
 int TooltipManagerMac::GetMaxWidth(const gfx::Point& location) const {
   return kTooltipMaxWidthPixels;

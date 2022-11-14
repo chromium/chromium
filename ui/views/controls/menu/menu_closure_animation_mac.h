@@ -86,7 +86,7 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   std::unique_ptr<gfx::Animation> fade_animation_;
   raw_ptr<MenuItemView> item_;
   raw_ptr<SubmenuView> menu_;
-  AnimationStep step_;
+  AnimationStep step_ = AnimationStep::kStart;
 };
 
 }  // namespace views

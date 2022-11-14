@@ -9,22 +9,18 @@
 
 #include "ui/gfx/native_widget_types.h"
 
-namespace ui {
-namespace test {
+namespace ui::test {
 class EventGenerator;
 class EventGeneratorDelegate;
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
-namespace views {
-namespace test {
+namespace views::test {
 
 std::unique_ptr<ui::test::EventGeneratorDelegate>
 CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
                                 gfx::NativeWindow root_window,
                                 gfx::NativeWindow target_window);
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_TEST_EVENT_GENERATOR_DELEGATE_MAC_H_

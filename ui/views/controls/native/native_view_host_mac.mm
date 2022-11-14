@@ -38,8 +38,7 @@ NativeViewHostMac::NativeViewHostMac(NativeViewHost* host) : host_(host) {
   host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
-NativeViewHostMac::~NativeViewHostMac() {
-}
+NativeViewHostMac::~NativeViewHostMac() = default;
 
 NativeWidgetMacNSWindowHost* NativeViewHostMac::GetNSWindowHost() const {
   return NativeWidgetMacNSWindowHost::GetFromNativeWindow(

@@ -25,7 +25,7 @@ DragDropClientMac::DragDropClientMac(
   DCHECK(bridge);
 }
 
-DragDropClientMac::~DragDropClientMac() {}
+DragDropClientMac::~DragDropClientMac() = default;
 
 void DragDropClientMac::StartDragAndDrop(
     View* view,

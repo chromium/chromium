@@ -15,11 +15,9 @@
 #if BUILDFLAG(IS_MAC)
 #include <memory>
 
-namespace display {
-namespace test {
+namespace display::test {
 class TestScreen;
-}  // namespace test
-}  // namespace display
+}  // namespace display::test
 #endif
 
 namespace views::test {

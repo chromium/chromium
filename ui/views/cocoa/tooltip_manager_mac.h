@@ -8,11 +8,9 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/views/widget/tooltip_manager.h"
 
-namespace remote_cocoa {
-namespace mojom {
+namespace remote_cocoa::mojom {
 class NativeWidgetNSWindow;
-}  // namespace mojom
-}  // namespace remote_cocoa
+}  // namespace remote_cocoa::mojom
 
 namespace views {
 

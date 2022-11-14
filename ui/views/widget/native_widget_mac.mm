@@ -102,7 +102,7 @@ CGWindowLevel CGWindowLevelForZOrderLevel(ui::ZOrderLevel level,
 class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
  public:
   ZoomFocusMonitor() = default;
-  ~ZoomFocusMonitor() override {}
+  ~ZoomFocusMonitor() override = default;
   void OnWillChangeFocus(View* focused_before, View* focused_now) override {}
   void OnDidChangeFocus(View* focused_before, View* focused_now) override {
     if (!focused_now || !UAZoomEnabled())
@@ -120,8 +120,7 @@ class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
 
 NativeWidgetMac::NativeWidgetMac(internal::NativeWidgetDelegate* delegate)
     : delegate_(delegate),
-      ns_window_host_(new NativeWidgetMacNSWindowHost(this)),
-      ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {}
+      ns_window_host_(new NativeWidgetMacNSWindowHost(this)) {}
 
 NativeWidgetMac::~NativeWidgetMac() {
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)

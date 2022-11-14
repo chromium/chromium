@@ -117,8 +117,7 @@ enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
 
 @end
 
-namespace views {
-namespace test {
+namespace views::test {
 
 using ::base::ASCIIToUTF16;
 using ::ui::mojom::DragOperation;
@@ -316,7 +315,7 @@ TEST_F(DragDropClientMacTest, PasteboardToOSExchangeTest) {
 // View object that will close Widget on drop.
 class DragDropCloseView : public DragDropView {
  public:
-  DragDropCloseView() {}
+  DragDropCloseView() = default;
 
   DragDropCloseView(const DragDropCloseView&) = delete;
   DragDropCloseView& operator=(const DragDropCloseView&) = delete;
@@ -356,5 +355,4 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   widget_ = nullptr;
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

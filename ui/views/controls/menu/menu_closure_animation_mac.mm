@@ -24,10 +24,7 @@ namespace views {
 MenuClosureAnimationMac::MenuClosureAnimationMac(MenuItemView* item,
                                                  SubmenuView* menu,
                                                  base::OnceClosure callback)
-    : callback_(std::move(callback)),
-      item_(item),
-      menu_(menu),
-      step_(AnimationStep::kStart) {}
+    : callback_(std::move(callback)), item_(item), menu_(menu) {}
 
 MenuClosureAnimationMac::~MenuClosureAnimationMac() = default;
 

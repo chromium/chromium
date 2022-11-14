@@ -15,8 +15,7 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/root_view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 namespace {
 
@@ -126,5 +125,4 @@ void WidgetTest::WaitForSystemAppActivation() {
   [observer wait];
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

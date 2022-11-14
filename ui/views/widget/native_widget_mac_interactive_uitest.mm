@@ -19,8 +19,7 @@
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 // Tests for NativeWidgetMac that rely on global window manager state, and can
 // not be parallelized.
@@ -381,5 +380,4 @@ INSTANTIATE_TEST_SUITE_P(NativeWidgetMacInteractiveUITestInstance,
                          NativeWidgetMacInteractiveUITest,
                          ::testing::Bool());
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

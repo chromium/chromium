@@ -35,8 +35,7 @@ namespace {
 // Simple capture delegate that just counts events forwarded.
 class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
  public:
-  explicit TestCaptureDelegate(NSWindow* window)
-      : event_count_(0), capture_lost_count_(0), window_(window) {}
+  explicit TestCaptureDelegate(NSWindow* window) : window_(window) {}
 
   TestCaptureDelegate(const TestCaptureDelegate&) = delete;
   TestCaptureDelegate& operator=(const TestCaptureDelegate&) = delete;
@@ -62,8 +61,8 @@ class TestCaptureDelegate : public CocoaMouseCaptureDelegate {
  private:
   std::unique_ptr<CocoaMouseCapture> mouse_capture_;
   bool should_claim_event_ = true;
-  int event_count_;
-  int capture_lost_count_;
+  int event_count_ = 0;
+  int capture_lost_count_ = 0;
   NSWindow* window_;
 };
 

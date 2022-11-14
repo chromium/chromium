@@ -276,7 +276,8 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   raw_ptr<internal::NativeWidgetDelegate, DanglingUntriaged> delegate_;
   std::unique_ptr<NativeWidgetMacNSWindowHost> ns_window_host_;
 
-  Widget::InitParams::Ownership ownership_;
+  Widget::InitParams::Ownership ownership_ =
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
 
   // Internal name.
   std::string name_;

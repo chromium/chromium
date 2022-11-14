@@ -18,8 +18,7 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/window/native_frame_view.h"
 
-namespace views {
-namespace test {
+namespace views::test {
 
 class BridgedNativeWidgetUITest : public WidgetTest {
  public:
@@ -176,5 +175,4 @@ TEST_F(BridgedNativeWidgetUITest, FullscreenRestore) {
   EXPECT_EQ(restored_bounds, widget_->GetRestoredBounds());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

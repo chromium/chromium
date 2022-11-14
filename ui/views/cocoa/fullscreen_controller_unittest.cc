@@ -8,8 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remote_cocoa {
-namespace test {
+namespace remote_cocoa::test {
 
 using testing::_;
 using testing::Invoke;
@@ -704,5 +703,4 @@ TEST_F(MacFullscreenControllerTest, EnterCrossScreenWhileEntering) {
   EXPECT_FALSE(controller_.GetTargetFullscreenState());
 }
 
-}  // namespace test
-}  // namespace remote_cocoa
+}  // namespace remote_cocoa::test

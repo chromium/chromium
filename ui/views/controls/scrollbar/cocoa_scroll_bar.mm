@@ -148,10 +148,7 @@ CocoaScrollBar::CocoaScrollBar(bool horizontal)
                             base::Milliseconds(500),
                             base::BindRepeating(&CocoaScrollBar::HideScrollbar,
                                                 base::Unretained(this))),
-      thickness_animation_(this),
-      last_contents_scroll_offset_(0),
-      is_expanded_(false),
-      did_start_dragging_(false) {
+      thickness_animation_(this) {
   SetThumb(new CocoaScrollBarThumb(this));
   bridge_.reset([[ViewsScrollbarBridge alloc] initWithDelegate:this]);
   scroller_style_ = [ViewsScrollbarBridge getPreferredScrollerStyle];
