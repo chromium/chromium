@@ -21627,6 +21627,40 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MultiWindowResizerClick">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the multi window resize widget is clicked on.
+  </description>
+</action>
+
+<action name="MultiWindowResizerClick_TwoWindowsSnapped">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the multi window resize widget is clicked on when two windows
+    are snapped.
+  </description>
+</action>
+
+<action name="MultiWindowResizerShow">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the resize widget shows on mouse hover on the ResizeWindows.
+  </description>
+</action>
+
+<action name="MultiWindowResizerShow_TwoWindowsSnapped">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the resize widget shows on mouse hover on the ResizeWindows
+    and the two windows of the ResizeWindows are snapped.
+  </description>
+</action>
+
 <action name="NativeFileSystemAPI.OpenedBubble">
   <owner>mek@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>

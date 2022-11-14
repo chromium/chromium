@@ -56,7 +56,7 @@ class ASH_EXPORT UserMetricsRecorder {
   // Informs |this| that the Shell is going to be shut down.
   void OnShellShuttingDown();
 
-  LoginMetricsRecorder* login_metrics_recorder() {
+  LoginMetricsRecorder* login_metrics_recorder() const {
     return login_metrics_recorder_.get();
   }
 

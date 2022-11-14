@@ -30,6 +30,40 @@ enum class WindowSnapActionSource {
 constexpr char kWindowSnapActionSourceHistogram[] =
     "Ash.Wm.WindowSnapActionSource";
 
+// Used to record the user action on initiating the multi-window resizer.
+constexpr char kMultiWindowResizerShow[] = "MultiWindowResizerShow";
+
+// Used to record the user action on initiating the multi-window resizer when
+// two windows are snapped.
+constexpr char kMultiWindowResizerShowTwoWindowsSnapped[] =
+    "MultiWindowResizerShow_TwoWindowsSnapped";
+
+// Used to record the user action on clicking on the multi-window resizer.
+constexpr char kMultiWindowResizerClick[] = "MultiWindowResizerClick";
+
+// Used to record the user action on clicking on the multi-window resizer when
+// two windows are snapped.
+constexpr char kMultiWindowResizerClickTwoWindowsSnapped[] =
+    "MultiWindowResizerClick_TwoWindowsSnapped";
+
+// Used to record the histogram metrics on initiating the multi-window resizer.
+constexpr char kMultiWindowResizerShowHistogramName[] =
+    "Ash.Wm.MultiWindowResizerShow";
+
+// Used to record the histogram metrics on initiating the multi-window resizer
+// when two windows are snapped.
+constexpr char kMultiWindowResizerShowTwoWindowsSnappedHistogramName[] =
+    "Ash.Wm.MultiWindowResizerShowTwoWindowsSnapped";
+
+// Used to record the histogram metrics on clicking on the multi-window resizer.
+constexpr char kMultiWindowResizerClickHistogramName[] =
+    "Ash.Wm.MultiWindowResizerClick";
+
+// Used to record the histogram metrics on clicking on the multi-window resizer
+// when two windows are snapped.
+constexpr char kMultiWindowResizerClickTwoWindowsSnappedHistogramName[] =
+    "Ash.Wm.MultiWindowResizerClickTwoWindowsSnapped";
+
 }  // namespace ash
 
 #endif  // ASH_WM_WM_METRICS_H_

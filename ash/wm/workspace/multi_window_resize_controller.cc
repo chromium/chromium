@@ -12,8 +12,12 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/adapters.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/cursor/cursor.h"
@@ -32,11 +36,8 @@
 namespace ash {
 namespace {
 
-// Delay before showing.
-const int kShowDelayMS = 400;
-
-// Delay before hiding.
-const int kHideDelayMS = 500;
+// Delay before hiding the `resize_widget_`.
+constexpr base::TimeDelta kHideDelay = base::Milliseconds(500);
 
 // Padding from the bottom/right edge the resize widget is shown at.
 const int kResizeWidgetPadding = 15;
@@ -259,7 +260,7 @@ void MultiWindowResizeController::Show(aura::Window* window,
   StartObserving(windows_.window2);
   show_location_in_parent_ =
       ConvertPointToTarget(window, window->parent(), point_in_window);
-  show_timer_.Start(FROM_HERE, base::Milliseconds(kShowDelayMS), this,
+  show_timer_.Start(FROM_HERE, kShowDelay, this,
                     &MultiWindowResizeController::ShowIfValidMouseLocation);
 }
 
@@ -331,7 +332,7 @@ MultiWindowResizeController::DetermineWindowsFromScreenPoint(
 void MultiWindowResizeController::CreateMouseWatcher() {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<ResizeMouseWatcherHost>(this), this);
-  mouse_watcher_->set_notify_on_exit_time(base::Milliseconds(kHideDelayMS));
+  mouse_watcher_->set_notify_on_exit_time(kHideDelay);
   DCHECK(resize_widget_);
   mouse_watcher_->Start(resize_widget_->GetNativeWindow());
 }
@@ -485,12 +486,14 @@ void MultiWindowResizeController::ShowNow() {
   DCHECK(!resize_widget_.get());
   DCHECK(windows_.is_valid());
   show_timer_.Stop();
+  aura::Window* window1 = windows_.window1;
+  aura::Window* window2 = windows_.window2;
   resize_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.name = "MultiWindowResizeController";
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.parent = windows_.window1->GetRootWindow()->GetChildById(
+  params.parent = window1->GetRootWindow()->GetChildById(
       kShellWindowId_AlwaysOnTopContainer);
   resize_widget_->set_focus_on_creation(false);
   resize_widget_->Init(std::move(params));
@@ -500,11 +503,22 @@ void MultiWindowResizeController::ShowNow() {
   resize_widget_->SetContentsView(
       std::make_unique<ResizeView>(this, windows_.direction));
   show_bounds_in_screen_ = ConvertRectToScreen(
-      windows_.window1->parent(),
+      window1->parent(),
       CalculateResizeWidgetBounds(gfx::PointF(show_location_in_parent_)));
   resize_widget_->SetBounds(show_bounds_in_screen_);
   resize_widget_->Show();
   CreateMouseWatcher();
+
+  base::RecordAction(base::UserMetricsAction(kMultiWindowResizerShow));
+  base::UmaHistogramBoolean(kMultiWindowResizerShowHistogramName, true);
+
+  if (WindowState::Get(window1)->IsSnapped() &&
+      WindowState::Get(window2)->IsSnapped()) {
+    base::RecordAction(
+        base::UserMetricsAction(kMultiWindowResizerShowTwoWindowsSnapped));
+    base::UmaHistogramBoolean(
+        kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true);
+  }
 }
 
 bool MultiWindowResizeController::IsShowing() const {
@@ -566,6 +580,16 @@ void MultiWindowResizeController::StartResize(
 
   // Do not hide the resize widget while a drag is active.
   mouse_watcher_.reset();
+  base::RecordAction(base::UserMetricsAction(kMultiWindowResizerClick));
+  base::UmaHistogramBoolean(kMultiWindowResizerClickHistogramName, true);
+
+  if (WindowState::Get(windows_.window1)->IsSnapped() &&
+      WindowState::Get(windows_.window2)->IsSnapped()) {
+    base::RecordAction(
+        base::UserMetricsAction(kMultiWindowResizerClickTwoWindowsSnapped));
+    base::UmaHistogramBoolean(
+        kMultiWindowResizerClickTwoWindowsSnappedHistogramName, true);
+  }
 }
 
 void MultiWindowResizeController::Resize(const gfx::PointF& location_in_screen,

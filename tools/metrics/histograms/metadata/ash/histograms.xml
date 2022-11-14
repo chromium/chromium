@@ -5543,6 +5543,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wm.MultiWindowResizerClick" enum="Boolean"
+    expires_after="2023-11-25">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Emits true if the resize widget is clicked to start the resizing while in
+    mulit-window resizing mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.MultiWindowResizerClickTwoWindowsSnapped"
+    enum="Boolean" expires_after="2023-11-15">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Emits true if the resize widget is clicked to start the resizing while in
+    mulit-window resizing mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.MultiWindowResizerShow" enum="Boolean"
+    expires_after="2023-11-15">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Emits true if the resize widget shows on mouse hover on the ResizeWindows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wm.MultiWindowResizerShowTwoWindowsSnapped" enum="Boolean"
+    expires_after="2023-11-15">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Emits true if the resize widget shows on mouse hover on the ResizeWindows
+    and the two windows of the ResizeWindows are snapped.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wm.WindowSnapActionSource" enum="WindowSnapActionSource"
     expires_after="2023-04-30">
   <owner>xdai@chromium.org</owner>

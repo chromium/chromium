@@ -10,21 +10,21 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
-#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_event_handler_test_helper.h"
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
-#include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/test/event_generator.h"
@@ -83,8 +83,6 @@ class MultiWindowResizeControllerTest : public AshTestBase {
 
   bool IsShowing() { return resize_controller_->IsShowing(); }
 
-  bool HasPendingShow() { return resize_controller_->show_timer_.IsRunning(); }
-
   bool HasTarget(aura::Window* window) {
     if (!resize_controller_->windows_.is_valid())
       return false;
@@ -103,6 +101,17 @@ class MultiWindowResizeControllerTest : public AshTestBase {
     return resize_controller_->resize_widget_.get();
   }
 
+  base::OneShotTimer* GetShowTimer() {
+    return &(resize_controller_->show_timer_);
+  }
+
+  bool IsShowTimerRunning() {
+    base::OneShotTimer* show_timer = GetShowTimer();
+    return show_timer->IsRunning() &&
+           show_timer->GetCurrentDelay() ==
+               MultiWindowResizeController::kShowDelay;
+  }
+
   MultiWindowResizeController* resize_controller_ = nullptr;
 };
 
@@ -118,19 +127,19 @@ TEST_F(MultiWindowResizeControllerTest, BasicTests) {
   delegate2.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Force a show now.
   ShowNow();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   EXPECT_FALSE(IsOverWindows(gfx::Point(200, 200)));
 
   // Have to explicitly invoke this as MouseWatcher listens for native events.
   resize_controller_->MouseMovedOutOfHost();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_FALSE(IsShowing());
 }
 
@@ -174,7 +183,7 @@ TEST_F(MultiWindowResizeControllerTest, IsOverWindows) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(gfx::Point(100, 150));
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
   ShowNow();
   EXPECT_TRUE(IsShowing());
@@ -222,19 +231,19 @@ TEST_F(MultiWindowResizeControllerTest, DeleteWindow) {
   delegate2.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Force a show now.
   ShowNow();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Move the mouse over the resize widget.
   ASSERT_TRUE(resize_widget());
   gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
   generator->MoveMouseTo(bounds.x() + 1, bounds.y() + 1);
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Move the resize widget
@@ -244,7 +253,7 @@ TEST_F(MultiWindowResizeControllerTest, DeleteWindow) {
   // Delete w2.
   w2.reset();
   EXPECT_FALSE(resize_widget());
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_FALSE(IsShowing());
   EXPECT_FALSE(HasTarget(w1.get()));
 }
@@ -261,19 +270,19 @@ TEST_F(MultiWindowResizeControllerTest, Drag) {
   delegate2.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Force a show now.
   ShowNow();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Move the mouse over the resize widget.
   ASSERT_TRUE(resize_widget());
   gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
   generator->MoveMouseTo(bounds.x() + 1, bounds.y() + 1);
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Move the resize widget
@@ -282,7 +291,7 @@ TEST_F(MultiWindowResizeControllerTest, Drag) {
   generator->ReleaseLeftButton();
 
   EXPECT_TRUE(resize_widget());
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
   EXPECT_EQ(gfx::Rect(0, 0, 110, 100), w1->bounds());
   EXPECT_EQ(gfx::Rect(110, 0, 100, 100), w2->bounds());
@@ -316,12 +325,12 @@ TEST_F(MultiWindowResizeControllerTest, Three) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
   EXPECT_FALSE(HasTarget(w3.get()));
 
   ShowNow();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // w3 should be picked up when resize is started.
@@ -377,7 +386,7 @@ TEST_F(MultiWindowResizeControllerTest, ClickOutside) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   gfx::Point w1_center_in_screen = w1->GetBoundsInScreen().CenterPoint();
   generator->MoveMouseTo(w1_center_in_screen);
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
   ShowNow();
   EXPECT_TRUE(IsShowing());
@@ -496,7 +505,7 @@ TEST_F(MultiWindowResizeControllerTest, NonResizeableWindowTestA) {
   delegate3.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
 }
 
 // Tests that the resizer does not appear while the mouse resides in a window
@@ -518,7 +527,7 @@ TEST_F(MultiWindowResizeControllerTest, NonResizeableWindowTestB) {
   delegate3.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
 }
 
 // Tests that the resizer appears while the mouse resides in a window bordering
@@ -539,7 +548,7 @@ TEST_F(MultiWindowResizeControllerTest, NonResizeableWindowTestC) {
   delegate3.set_window_component(HTRIGHT);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_FALSE(HasTarget(w2.get()));
 }
 
@@ -632,11 +641,11 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(w1->bounds().CenterPoint());
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
   // Force a show now.
   ShowNow();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Setup delegates
@@ -648,7 +657,7 @@ TEST_F(MultiWindowResizeControllerTest, TwoSnappedWindows) {
   gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
   gfx::Point resize_widget_center = bounds.CenterPoint();
   generator->MoveMouseTo(resize_widget_center);
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Move the resize widget.
@@ -681,13 +690,220 @@ TEST_F(MultiWindowResizeControllerTest, HiddenInOverview) {
   // Move the mouse to the middle of the two windows. The multi window resizer
   // should appear.
   GetEventGenerator()->MoveMouseTo(gfx::Point(104, 50));
-  EXPECT_TRUE(HasPendingShow());
+  EXPECT_TRUE(IsShowTimerRunning());
   EXPECT_TRUE(IsShowing());
 
   // Tests that after starting overview, the widget is hidden.
   EnterOverview();
-  EXPECT_FALSE(HasPendingShow());
+  EXPECT_FALSE(IsShowTimerRunning());
   EXPECT_FALSE(IsShowing());
+}
+
+// Tests that the metrics to record the user action of initiating and clicking
+// on the multi-window resizer widget for normal cases and the special cases
+// when the two windows are snapped are recorded correctly in the metrics.
+TEST_F(MultiWindowResizeControllerTest, MultiWindowResizeUserActionMetrics) {
+  UpdateDisplay("400x300");
+  // Create two windows with shared edge. Hover the mouse over the edge and only
+  // `kMultiWindowResizerShow` will be recorded.
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
+      &delegate1, -1, gfx::Rect(0, 0, 100, 100)));
+  delegate1.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &delegate2, -2, gfx::Rect(100, 0, 100, 100)));
+  delegate2.set_window_component(HTRIGHT);
+
+  // Verify the initial state of the metrics.
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerShow), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerShowTwoWindowsSnapped),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerClick), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerClickTwoWindowsSnapped),
+            0);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(w1->bounds().CenterPoint());
+  EXPECT_TRUE(IsShowTimerRunning());
+  EXPECT_TRUE(IsShowing());
+  ShowNow();
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerShow), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerShowTwoWindowsSnapped),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerClick), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerClickTwoWindowsSnapped),
+            0);
+  generator->MoveMouseTo(w1->GetBoundsInRootWindow().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_FALSE(IsShowing());
+
+  // Hover on the shared edge and click on the resize widget and both
+  // `kMultiWindowResizerShow` and `kMultiWindowResizerClick` will be
+  // incremented.
+  generator->MoveMouseTo(w1->GetBoundsInRootWindow().CenterPoint());
+  EXPECT_TRUE(IsShowTimerRunning());
+  EXPECT_TRUE(IsShowing());
+  ShowNow();
+  ASSERT_TRUE(resize_widget());
+  gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
+  generator->MoveMouseTo(bounds.CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerShow), 2);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerShowTwoWindowsSnapped),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerClick), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerClickTwoWindowsSnapped),
+            0);
+  generator->MoveMouseTo(w1->GetBoundsInRootWindow().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_FALSE(IsShowing());
+
+  // Snap two windows, one on the left, the other on the right. Hover the mouse
+  // over the edge and both `kMultiWindowResizerShow` and
+  // `kMultiWindowResizerShowTwoWindowsSnapped` will be recorded.
+  WindowState* w1_state = WindowState::Get(w1.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  w1_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
+  WindowState* w2_state = WindowState::Get(w2.get());
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  w2_state->OnWMEvent(&snap_right);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
+  EXPECT_EQ(0.5f, *w1_state->snap_ratio());
+  EXPECT_EQ(0.5f, *w2_state->snap_ratio());
+
+  generator->MoveMouseTo(w1->bounds().CenterPoint());
+  EXPECT_TRUE(IsShowTimerRunning());
+  EXPECT_TRUE(IsShowing());
+  ShowNow();
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerShow), 3);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerShowTwoWindowsSnapped),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerClick), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerClickTwoWindowsSnapped),
+            0);
+  generator->MoveMouseTo(w1->GetBoundsInRootWindow().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_FALSE(IsShowing());
+
+  // Hover on the shared edge and click on the resize widget and all the metrics
+  // will be incremented.
+  generator->MoveMouseTo(w1->bounds().CenterPoint());
+  EXPECT_TRUE(IsShowTimerRunning());
+  EXPECT_TRUE(IsShowing());
+  ShowNow();
+  ASSERT_TRUE(resize_widget());
+  generator->MoveMouseTo(
+      resize_widget()->GetWindowBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerShow), 4);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerShowTwoWindowsSnapped),
+            2);
+  EXPECT_EQ(user_action_tester.GetActionCount(kMultiWindowResizerClick), 2);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                kMultiWindowResizerClickTwoWindowsSnapped),
+            1);
+}
+
+// Tests that the histogram metrics for the multi-window resizer are correctly
+// recorded.
+TEST_F(MultiWindowResizeControllerTest, MultiWindowResizeHistogramTest) {
+  UpdateDisplay("400x300");
+
+  // Create two windows with shared edge.
+  aura::test::TestWindowDelegate delegate1;
+  std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
+      &delegate1, -1, gfx::Rect(0, 0, 100, 100)));
+  delegate1.set_window_component(HTRIGHT);
+  aura::test::TestWindowDelegate delegate2;
+  std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
+      &delegate2, -2, gfx::Rect(100, 0, 100, 100)));
+  delegate2.set_window_component(HTRIGHT);
+
+  base::HistogramTester histogram_tester;
+
+  // Verify the initial count for the histogram metrics.
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerShowHistogramName, true,
+                                     0);
+  histogram_tester.ExpectBucketCount(
+      kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true, 0);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerClickHistogramName,
+                                     true, 0);
+  histogram_tester.ExpectBucketCount(
+      kMultiWindowResizerClickTwoWindowsSnappedHistogramName, true, 0);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto move_mouse_on_and_off_resizer_n_times = [&](int n, bool click) {
+    for (int i = 0; i < n; i++) {
+      generator->MoveMouseTo(w1->bounds().CenterPoint());
+      EXPECT_TRUE(IsShowTimerRunning());
+      EXPECT_TRUE(IsShowing());
+      ShowNow();
+      ASSERT_TRUE(resize_widget());
+
+      if (click) {
+        generator->MoveMouseTo(
+            resize_widget()->GetWindowBoundsInScreen().CenterPoint());
+        generator->ClickLeftButton();
+        generator->ReleaseLeftButton();
+      }
+
+      generator->MoveMouseTo(w1->GetBoundsInRootWindow().CenterPoint());
+      generator->ClickLeftButton();
+      EXPECT_FALSE(IsShowing());
+    }
+  };
+
+  // Verify that the multi-window resizer show and click histogram metrics are
+  // recorded correctly.
+  move_mouse_on_and_off_resizer_n_times(1, /*click=*/false);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerShowHistogramName, true,
+                                     1);
+
+  move_mouse_on_and_off_resizer_n_times(2, true);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerShowHistogramName, true,
+                                     3);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerClickHistogramName,
+                                     true, 2);
+
+  // Snap two windows
+  WindowState* w1_state = WindowState::Get(w1.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  w1_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, w1_state->GetStateType());
+  WindowState* w2_state = WindowState::Get(w2.get());
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  w2_state->OnWMEvent(&snap_right);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, w2_state->GetStateType());
+
+  // Verify that the multi-window resizer show and click histogram metrics with
+  // two windows snapped are recorded correctly.
+  move_mouse_on_and_off_resizer_n_times(5, /*click=*/false);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerShowHistogramName, true,
+                                     8);
+  histogram_tester.ExpectBucketCount(
+      kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true, 5);
+
+  move_mouse_on_and_off_resizer_n_times(7, true);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerShowHistogramName, true,
+                                     15);
+  histogram_tester.ExpectBucketCount(
+      kMultiWindowResizerShowTwoWindowsSnappedHistogramName, true, 12);
+  histogram_tester.ExpectBucketCount(kMultiWindowResizerClickHistogramName,
+                                     true, 9);
+  histogram_tester.ExpectBucketCount(
+      kMultiWindowResizerClickTwoWindowsSnappedHistogramName, true, 7);
 }
 
 }  // namespace ash
