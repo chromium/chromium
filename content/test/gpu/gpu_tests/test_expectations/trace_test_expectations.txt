@@ -224,9 +224,12 @@ crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_2DCanvasWebGL [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Canvas2DRedBox [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_MP4_Rounded_Corner [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLGreenTriangle_* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
