@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_UTIL_H_
 
+#include <map>
+#include <vector>
+
 #include "base/files/file_path.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace apps {
 
@@ -59,14 +63,24 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
   return a;
 }
 
-// Constructs path to app icon for specific scale factor.
+// Constructs path to an app icon file for the given `app_id` and
+// `icon_size_in_px`.
 base::FilePath GetIconPath(const base::FilePath& base_path,
                            const std::string& app_id,
                            int32_t icon_size_in_px);
 
+// Reads one single icon file for the given `app_id` and `icon_size_in_px`, and
+// returns the compressed icon.
 std::vector<uint8_t> ReadOnBackgroundThread(const base::FilePath& base_path,
                                             const std::string& app_id,
                                             int32_t icon_size_in_px);
+
+// Reads icon files for the given `app_id` and `size_in_dip`, and returns
+// the compressed icon format for all scale factors.
+std::map<ui::ResourceScaleFactor, std::vector<uint8_t>>
+ReadIconFilesOnBackgroundThread(const base::FilePath& base_path,
+                                const std::string& app_id,
+                                int32_t size_in_dip);
 
 }  // namespace apps
 

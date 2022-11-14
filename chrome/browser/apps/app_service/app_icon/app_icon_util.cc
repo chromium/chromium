@@ -7,6 +7,8 @@
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
+#include "ui/base/layout.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -44,6 +46,22 @@ std::vector<uint8_t> ReadOnBackgroundThread(const base::FilePath& base_path,
   }
 
   return {unsafe_icon_data.begin(), unsafe_icon_data.end()};
+}
+
+std::map<ui::ResourceScaleFactor, std::vector<uint8_t>>
+ReadIconFilesOnBackgroundThread(const base::FilePath& base_path,
+                                const std::string& app_id,
+                                int32_t size_in_dip) {
+  std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> result;
+  for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
+    int icon_size_in_px = gfx::ScaleToFlooredSize(
+                              gfx::Size(size_in_dip, size_in_dip),
+                              ui::GetScaleForResourceScaleFactor(scale_factor))
+                              .width();
+    result[scale_factor] =
+        ReadOnBackgroundThread(base_path, app_id, icon_size_in_px);
+  }
+  return result;
 }
 
 }  // namespace apps
