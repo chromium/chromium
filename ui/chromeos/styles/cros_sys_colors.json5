@@ -243,8 +243,8 @@
       light: 'rgba($cros.ref.neutral99.rgb, 0.16)',
       dark: 'rgba($cros.ref.neutral10.rgb, 0.12)',
     },
-    'ripple-neutral-on-quiet': {
-      light: 'rgba($cros.ref.neutral10.rgb, 0.6)',
+    'ripple-neutral-on-subtle': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.12)',
       dark: 'rgba($cros.ref.neutral90.rgb, 0.16)',
     },
     'highlight-shape': {
