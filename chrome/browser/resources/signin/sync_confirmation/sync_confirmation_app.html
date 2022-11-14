@@ -229,7 +229,8 @@
     top: 91px;
   }
 
-  .signin-intercept-design #avatar {
+  .signin-intercept-design #avatar,
+  .tangible-sync #avatar {
     /** The user avatar may be transparent, add a background */
     background-color: var(--md-background-color);
     left: calc(-1 * var(--avatar-border-width));
@@ -237,7 +238,8 @@
     top: calc(-1 * var(--avatar-border-width));
   }
 
-  .signin-intercept-design .work-badge {
+  .signin-intercept-design .work-badge,
+  .tangible-sync .work-badge {
     --badge-width: 26px;
     --badge-offset: -4px;
     background-color: var(--signin-work-badge-background-color);
@@ -246,7 +248,8 @@
     inset-inline-end: var(--badge-offset);
   }
 
-  .signin-intercept-design .work-badge > iron-icon {
+  .signin-intercept-design .work-badge > iron-icon,
+  .tangible-sync .work-badge > iron-icon {
     --work-icon-size: 16px;
     background-color: var(--signin-work-badge-background-color);
     margin: auto;
@@ -266,9 +269,18 @@
     width: 500px;
   }
 
-  .tangible-sync #avatar {
-    height: 64px;
-    width: 64px;
+  .tangible-sync #avatarContainer {
+    --avatar-size: 64px;
+    bottom: unset;
+    position: relative;
+  }
+
+  .tangible-sync .work-badge {
+    --badge-width: 22px;
+  }
+
+  .tangible-sync .work-badge > iron-icon {
+    --work-icon-size: 14px;
   }
 
   .tangible-sync #syncConfirmationHeading {
@@ -471,9 +483,12 @@
 
 <template is="dom-if" if="[[isTangibleSync_]]">
   <div id="contentContainer" class="tangible-sync">
-    <!-- TODO(crbug.com/1374702): Add work badge to avatar for managed
-         accounts -->
-    <img id="avatar" alt="" src="[[accountImageSrc_]]">
+    <div id="avatarContainer">
+      <img id="avatar" alt="" src="[[accountImageSrc_]]">
+      <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+    </div>
     <h1 id="syncConfirmationHeading" consent-description>
       $i18n{syncConfirmationTitle}
     </h1>
