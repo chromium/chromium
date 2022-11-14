@@ -1354,9 +1354,7 @@ bool content::IsNSRange(id value) {
   if (ax_range.IsNull())
     return nil;
 
-  // Voiceover expects this range to be backwards in order to read the selected
-  // words correctly.
-  return AXRangeToAXTextMarkerRange(ax_range.AsBackwardRange());
+  return AXRangeToAXTextMarkerRange(std::move(ax_range));
 }
 
 - (NSString*)sortDirection {

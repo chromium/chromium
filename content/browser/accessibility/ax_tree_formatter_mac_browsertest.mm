@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
                     </script>)~~",
              {":3;AXSelectedTextMarkerRange=*"}, R"~~(AXWebArea
 ++AXGroup
-++++AXStaticText AXSelectedTextMarkerRange={anchor: {:2, -1, down}, focus: {:3, 0, down}}
+++++AXStaticText AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:2, -1, down}}
 )~~");
 }
 
