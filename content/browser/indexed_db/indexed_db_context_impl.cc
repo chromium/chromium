@@ -64,7 +64,6 @@
 #include "url/origin.h"
 
 using base::DictionaryValue;
-using base::ListValue;
 using storage::DatabaseUtil;
 
 namespace content {
