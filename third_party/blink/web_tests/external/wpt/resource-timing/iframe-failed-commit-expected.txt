@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Failed to construct 'URL': Invalid URL
 PASS Test iframe from non-existent host gets reported
 PASS Test iframe redirecting to non-existent host gets reported
 PASS Same-origin iframe that complies with CSP attribute gets reported
@@ -7,9 +8,5 @@ PASS Cross-origin iframe that complies with CSP attribute gets reported
 PASS Cross-origin iframe that doesn't comply with CSP attribute gets reported
 PASS Same-origin empty iframe with a 200 status gets reported
 PASS Cross-origin empty iframe with a 200 status gets reported
-FAIL Same-origin empty iframe with a 204 status gets reported assert_unreached: No ResourceTiming entries found. Reached unreachable code
-FAIL Same-origin empty iframe with a 205 status gets reported assert_unreached: No ResourceTiming entries found. Reached unreachable code
-PASS Cross-origin empty iframe with a 204 status gets reported
-PASS Cross-origin empty iframe with a 205 status gets reported
 Harness: the test ran to completion.
 

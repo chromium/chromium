@@ -84,35 +84,12 @@ const load = {
         frame[key] = value;
       }
     }
-
-    const cache_busted_path = load.cache_bust(path);
-
     const loaded = new Promise(resolve => {
-      frame.onload = frame.onerror = () => {
-        resolve();
-      }
+      frame.onload = frame.onerror = resolve;
     });
-
-    const busyWait = new Promise(resolve => {
-      setInterval(() => {
-        const resourceTimingEntry = performance
-          .getEntries()
-          .filter((entry) => entry.name.includes(cache_busted_path));
-        if (resourceTimingEntry.length) {
-          resolve();
-          return;
-        }
-      }, 50);
-    });
-
-    const loadTimeout = 5 * 1000;
-
-    const timeout = new Promise(resolve => {
-      step_timeout(() => { resolve(); }, loadTimeout);
-    })
-    frame.src = cache_busted_path;
+    frame.src = load.cache_bust(path);
     document.body.appendChild(frame);
-    await Promise.race([loaded, busyWait, timeout]);
+    await loaded;
     if (validator instanceof Function) {
       validator(frame);
     }
