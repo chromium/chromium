@@ -197,6 +197,7 @@ content::WebUIDataSource* CreateBrowserSwitchUIHTMLSource(
       source,
       base::make_span(kBrowserSwitchResources, kBrowserSwitchResourcesSize),
       IDR_BROWSER_SWITCH_BROWSER_SWITCH_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   // Setup chrome://browser-switch/internals debug UI.
   source->AddResourcePath(

@@ -123,13 +123,15 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     return this.i18n('openingTitle', getAltBrowserName());
   }
 
-  private computeDescription_(): string {
+  private computeDescription_(): TrustedHTML {
     if (this.error_) {
-      return this.i18n(
-          this.error_, getUrlHostname(this.url_), getAltBrowserName());
+      return this.i18nAdvanced(this.error_, {
+        substitutions: [getUrlHostname(this.url_), getAltBrowserName()],
+      });
     }
-    return this.i18n(
-        'description', getUrlHostname(this.url_), getAltBrowserName());
+    return this.i18nAdvanced('description', {
+      substitutions: [getUrlHostname(this.url_), getAltBrowserName()],
+    });
   }
 }
 
