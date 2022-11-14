@@ -10,6 +10,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace apps::deduplication {
 
 enum class EntryType {

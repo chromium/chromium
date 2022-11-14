@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/safe_base_name.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/image/mojom/image.mojom";
-import "url/mojom/url.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
 // Mojom App struct is DEPRECATED. When adding new fields, please use the App
@@ -407,52 +406,6 @@ struct IntentFilter {
 
   // The label shown to the user for this activity.
   string? activity_label;
-};
-
-// Metadata for a single file shared through an intent.
-// Mojom IntentFile struct is DEPRECATED. When adding new fields, please use
-// the IntentFile struct in components/services/app_service/public/cpp/intent.h.
-struct IntentFile {
-  // The URL of the file to share. Normally has the filesystem: scheme, but
-  // could be externalfile: or a different scheme, depending on the source.
-  url.mojom.Url url;
-
-  // The following optional fields can be provided to supply additional metadata
-  // information in cases where fetching the metadata through the file would be
-  // difficult or expensive.
-
-  // File MIME type.
-  string? mime_type;
-  // Human readable file name, including extension.
-  mojo_base.mojom.SafeBaseName? file_name;
-  // File size in bytes.
-  uint64 file_size;
-  // Whether this is a directory or not.
-  OptionalBool is_directory;
-};
-
-// Action and resource handling request. This should
-// be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
-// components/services/app_service/public/cpp/intent_util.*
-// Mojom Intent struct is DEPRECATED. When adding new fields, please use
-// the Intent struct in components/services/app_service/public/cpp/intent.h.
-struct Intent {
-  string action; // Intent action. e.g. view, send.
-  url.mojom.Url? url; // The URL of the intent. e.g. https://www.google.com/.
-  string? mime_type; // MIME type. e.g. text/plain, image/*.
-  array<IntentFile>? files; // The files to share.
-  string? activity_name; // The activity for the app to launch.
-
-  // The Drive share URL, this is only filled if the intent contains a file
-  // from Google Drive.
-  url.mojom.Url? drive_share_url;
-  string? share_text; // Text to share. e.g. Share link to other app.
-  string? share_title; // Title for the share.
-  string? start_type; // Start type.
-  array<string>? categories;
-  string? data;  // URI
-  OptionalBool ui_bypassed; // Whether or not the user saw the UI.
-  map<string, string>? extras; // Optional string extras.
 };
 
 // The preferred app represents by |app_id| for |intent_fitler|.

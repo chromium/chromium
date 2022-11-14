@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "chrome/browser/apps/app_deduplication_service/entry_types.h"
+#include "url/gurl.h"
 
 namespace apps::deduplication {
 
