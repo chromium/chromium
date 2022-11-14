@@ -2102,7 +2102,7 @@
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
     "owners": [ "laurila@google.com", "isandrk@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "enable-desktop-pwas-app-home-page",
