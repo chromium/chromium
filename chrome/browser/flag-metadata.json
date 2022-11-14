@@ -4475,17 +4475,12 @@
   {
     "name": "launcher-game-search",
     "owners": ["wrong", "napper", "tby"],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "launcher-item-suggest",
     "owners": ["wrong", "amandadeacon", "tby"],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "launcher-play-store-search",
-    "owners": [ "amandadeacon", "tby", "wrong" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "legacy-tls-interstitial",

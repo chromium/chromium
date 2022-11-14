@@ -3112,7 +3112,8 @@ extern const char kExperimentalAccessibilityDictationMoreCommandsName[];
 extern const char kExperimentalAccessibilityDictationMoreCommandsDescription[];
 
 extern const char kExperimentalAccessibilityDictationContextCheckingName[];
-extern const char kExperimentalAccessibilityDictationContextCheckingDescription[];
+extern const char
+    kExperimentalAccessibilityDictationContextCheckingDescription[];
 
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
@@ -3270,9 +3271,6 @@ extern const char kLacrosWaylandLoggingDescription[];
 
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];
-
-extern const char kLauncherPlayStoreSearchName[];
-extern const char kLauncherPlayStoreSearchDescription[];
 
 extern const char kLimitShelfItemsToActiveDeskName[];
 extern const char kLimitShelfItemsToActiveDeskDescription[];
