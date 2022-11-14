@@ -47,6 +47,8 @@ static_library("extensions") {
     # here.
     "api/activity_log_private/activity_log_private_api.cc",
     "api/activity_log_private/activity_log_private_api.h",
+    "api/api_browser_context_keyed_service_factories.cc",
+    "api/api_browser_context_keyed_service_factories.h",
     "api/autofill_private/autofill_private_api.cc",
     "api/autofill_private/autofill_private_api.h",
     "api/autofill_private/autofill_private_event_router.cc",
@@ -444,6 +446,8 @@ static_library("extensions") {
     "chrome_app_icon_service_factory.h",
     "chrome_app_sorting.cc",
     "chrome_app_sorting.h",
+    "chrome_browser_context_keyed_service_factories.cc",
+    "chrome_browser_context_keyed_service_factories.h",
     "chrome_component_extension_resource_manager.cc",
     "chrome_component_extension_resource_manager.h",
     "chrome_content_browser_client_extensions_part.cc",
@@ -1009,8 +1013,8 @@ static_library("extensions") {
       "api/shared_storage/shared_storage_private_api.h",
 
       # TODO(crbug.com/1340540): Find an appropriate spot for this.
-      "chromeos_browser_context_keyed_service_factories.cc",
-      "chromeos_browser_context_keyed_service_factories.h",
+      "api/chromeos_api_browser_context_keyed_service_factories.cc",
+      "api/chromeos_api_browser_context_keyed_service_factories.h",
       "clipboard_extension_helper_chromeos.cc",
       "clipboard_extension_helper_chromeos.h",
       "extension_keeplist_chromeos.cc",

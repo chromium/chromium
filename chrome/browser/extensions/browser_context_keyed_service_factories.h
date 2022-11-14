@@ -8,7 +8,7 @@
 namespace chrome_extensions {
 
 // Ensures the existence of any BrowserContextKeyedServiceFactory provided by
-// the Chrome extensions code.
+// the Chrome extensions code or its corresponding APIs.
 void EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
 }  // namespace chrome_extensions

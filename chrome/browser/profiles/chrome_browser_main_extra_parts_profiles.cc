@@ -221,7 +221,7 @@
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/extensions/chromeos_browser_context_keyed_service_factories.h"
+#include "chrome/browser/extensions/api/chromeos_api_browser_context_keyed_service_factories.h"
 #endif
 #endif
 
