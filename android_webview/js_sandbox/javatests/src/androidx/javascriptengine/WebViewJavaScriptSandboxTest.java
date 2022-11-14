@@ -6,6 +6,8 @@ package androidx.javascriptengine;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,16 +18,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /** Instrumentation test for JavaScriptSandbox. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class WebViewJavaScriptSandboxTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
     // larger in future. However, we don't want it too large as that will make the tests slower and
@@ -42,7 +41,7 @@ public class WebViewJavaScriptSandboxTest {
     public void testSimpleJsEvaluation() throws Throwable {
         final String code = "\"PASS\"";
         final String expected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -60,7 +59,7 @@ public class WebViewJavaScriptSandboxTest {
     public void testClosingOneIsolate() throws Throwable {
         final String code = "'PASS'";
         final String expected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -84,7 +83,7 @@ public class WebViewJavaScriptSandboxTest {
         final String code2 = "this.x = 'SUPER_PASS';\n";
         final String expected2 = "SUPER_PASS";
 
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -108,7 +107,7 @@ public class WebViewJavaScriptSandboxTest {
         final String expected1 = "PASS";
         final String code2 = "this.y = this.y + ' PASS';\n";
         final String expected2 = "undefined PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -132,7 +131,7 @@ public class WebViewJavaScriptSandboxTest {
         final String expected1 = "PASS";
         final String code2 = "this.z = this.z + ' PASS';\n";
         final String expected2 = "PASS PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -153,7 +152,7 @@ public class WebViewJavaScriptSandboxTest {
     public void testJsEvaluationError() throws Throwable {
         final String code = "throw new WebAssembly.LinkError('RandomLinkError');";
         final String contains = "RandomLinkError";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -179,7 +178,7 @@ public class WebViewJavaScriptSandboxTest {
     @MediumTest
     public void testInfiniteLoop() throws Throwable {
         final String code = "while(true){}";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -208,7 +207,7 @@ public class WebViewJavaScriptSandboxTest {
     public void testMultipleInfiniteLoops() throws Throwable {
         final String code = "while(true){}";
         final int num_of_evaluations = 10;
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -249,7 +248,7 @@ public class WebViewJavaScriptSandboxTest {
                 + "android.consumeNamedDataAsArrayBuffer(\"id-1\").then((value) => {"
                 + " return ab2str(value);"
                 + "});";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
@@ -280,7 +279,7 @@ public class WebViewJavaScriptSandboxTest {
                 + "  return \"success\";"
                 + "  });"
                 + "});";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
@@ -306,7 +305,7 @@ public class WebViewJavaScriptSandboxTest {
     public void testPromiseReturn() throws Throwable {
         final String code = "Promise.resolve(\"PASS\")";
         final String expected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
@@ -331,7 +330,7 @@ public class WebViewJavaScriptSandboxTest {
                 + "});";
         final String code2 = "promiseResolve(\"PASS\");";
         final String expected = "PASS";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -368,7 +367,7 @@ public class WebViewJavaScriptSandboxTest {
                 + "  });"
                 + " });"
                 + "});";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
@@ -401,7 +400,7 @@ public class WebViewJavaScriptSandboxTest {
                 + " throw new WebAssembly.LinkError('RandomLinkError');"
                 + "});";
         final String contains = "RandomLinkError";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -429,7 +428,7 @@ public class WebViewJavaScriptSandboxTest {
     @MediumTest
     public void testEvaluationThrowsWhenSandboxDead() throws Throwable {
         final String code = "while(true){}";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -451,7 +450,7 @@ public class WebViewJavaScriptSandboxTest {
     @Test
     @MediumTest
     public void testMultipleSandboxesCannotCoexist() throws Throwable {
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         final String contains = "already bound";
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture1 =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
@@ -477,7 +476,7 @@ public class WebViewJavaScriptSandboxTest {
         final String code = "\"PASS\"";
         final String expected = "PASS";
         final int num_of_startups = 2;
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
 
         for (int i = 0; i < num_of_startups; i++) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -508,7 +507,7 @@ public class WebViewJavaScriptSandboxTest {
                 REASONABLE_HEAP_SIZE + 65536,
                 1L << 50,
         };
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
@@ -543,7 +542,7 @@ public class WebViewJavaScriptSandboxTest {
                 + "for (var i = 0; i < arrayLength; i++) {"
                 + " sum+=this.array[i];"
                 + "}";
-        Context context = ContextUtils.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                 JavaScriptSandbox.createConnectedInstanceAsync(context);
         try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {

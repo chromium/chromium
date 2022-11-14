@@ -17,10 +17,10 @@ instrumentation_test_apk("webview_js_sandbox_test_app_test_apk") {
       [ "src/androidx/javascriptengine/WebViewJavaScriptSandboxTest.java" ]
   deps = [
     "//android_webview/js_sandbox:js_sandbox_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
