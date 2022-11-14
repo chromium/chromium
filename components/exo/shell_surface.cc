@@ -402,6 +402,14 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
   }
 }
 
+void ShellSurface::SetUseImmersiveForFullscreen(bool value) {
+  ShellSurfaceBase::SetUseImmersiveForFullscreen(value);
+  // Ensure that the widget has been created before attempting to configure it.
+  // Otherwise, the positioning of the window could be undefined.
+  if (widget_)
+    Configure();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 

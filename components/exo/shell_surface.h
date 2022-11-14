@@ -114,6 +114,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   void InitializeWindowState(ash::WindowState* window_state) override;
   absl::optional<gfx::Rect> GetWidgetBounds() const override;
   gfx::Point GetSurfaceOrigin() const override;
+  void SetUseImmersiveForFullscreen(bool value) override;
 
   // Overridden from aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,

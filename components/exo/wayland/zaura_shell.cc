@@ -183,9 +183,9 @@ void aura_surface_draw_attention(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->DrawAttention();
 }
 
-void aura_surface_set_fullscreen_mode(wl_client* client,
-                                      wl_resource* resource,
-                                      uint32_t mode) {
+void aura_surface_set_fullscreen_mode_deprecated(wl_client* client,
+                                                 wl_resource* resource,
+                                                 uint32_t mode) {
   GetUserDataAs<AuraSurface>(resource)->SetFullscreenMode(mode);
 }
 
@@ -285,7 +285,7 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_unset_occlusion_tracking,
     aura_surface_activate,
     aura_surface_draw_attention,
-    aura_surface_set_fullscreen_mode,
+    aura_surface_set_fullscreen_mode_deprecated,
     aura_surface_set_client_surface_str_id,
     aura_surface_set_server_start_resize,
     aura_surface_intent_to_snap,
@@ -736,6 +736,22 @@ void AuraToplevel::Activate() {
 
 void AuraToplevel::Deactivate() {
   shell_surface_->RequestDeactivation();
+}
+
+bool IsImmersive(uint32_t mode) {
+  switch (mode) {
+    case ZAURA_TOPLEVEL_FULLSCREEN_MODE_PLAIN:
+      return false;
+    case ZAURA_TOPLEVEL_FULLSCREEN_MODE_IMMERSIVE:
+      return true;
+    default:
+      VLOG(2) << "Unknown immersive mode: " << mode;
+      return false;
+  }
+}
+
+void AuraToplevel::SetFullscreenMode(uint32_t mode) {
+  shell_surface_->SetUseImmersiveForFullscreen(IsImmersive(mode));
 }
 
 void AuraToplevel::SetClientUsesScreenCoordinates() {
@@ -1253,6 +1269,12 @@ void aura_toplevel_deactivate(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraToplevel>(resource)->Deactivate();
 }
 
+void aura_toplevel_set_fullscreen_mode(wl_client* client,
+                                       wl_resource* resource,
+                                       uint32_t mode) {
+  GetUserDataAs<AuraToplevel>(resource)->SetFullscreenMode(mode);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1270,6 +1292,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_origin,
     aura_toplevel_activate,
     aura_toplevel_deactivate,
+    aura_toplevel_set_fullscreen_mode,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
