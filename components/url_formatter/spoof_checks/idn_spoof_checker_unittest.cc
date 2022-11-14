@@ -10,14 +10,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/url_features.h"
-#include "url/url_idna_icu.h"
 
 namespace url_formatter {
 
@@ -822,6 +819,19 @@ const IDNTestCase kIdnCases[] = {
     {"xn--foog-opf.com", u"foog\u05b4.com", kUnsafe},    // Latin + Hebrew NSM
     {"xn--shb5495f.com", u"\uac00\u0650.com", kUnsafe},  // Hang + Arabic NSM
 
+    // 4 Deviation characters between IDNA 2003 and IDNA 2008
+    // When entered in Unicode, the first two are mapped to 'ss' and Greek sigma
+    // and the latter two are mapped away. However, the punycode form should
+    // remain in punycode.
+    // U+00DF(sharp-s)
+    {"xn--fu-hia.de", u"fu\u00df.de", kUnsafe},
+    // U+03C2(final-sigma)
+    {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr", kUnsafe},
+    // U+200C(ZWNJ)
+    {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in", kUnsafe},
+    // U+200C(ZWJ)
+    {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kUnsafe},
+
     // Math Monospace Small A. When entered in Unicode, it's canonicalized to
     // 'a'. The punycode form should remain in punycode.
     {"xn--bc-9x80a.xyz", u"\U0001d68abc.xyz", kInvalid},
@@ -1108,19 +1118,8 @@ bool IsPunycode(const std::u16string& s) {
 
 }  // namespace
 
-class IDNSpoofCheckerTest : public ::testing::Test,
-                            public ::testing::WithParamInterface<bool> {
+class IDNSpoofCheckerTest : public ::testing::Test {
  protected:
-  IDNSpoofCheckerTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kUseIDNA2008NonTransitional);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kUseIDNA2008NonTransitional);
-    }
-  }
-
   void SetUp() override {
     IDNSpoofChecker::HuffmanTrieParams trie_params{
         test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
@@ -1129,46 +1128,8 @@ class IDNSpoofCheckerTest : public ::testing::Test,
     IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
   }
 
-  void TearDown() override {
-    IDNSpoofChecker::RestoreTrieParamsForTesting();
-    url::ResetUIDNAForTesting();
-  }
-
-  void RunIDNToUnicodeTest(const IDNTestCase& test) {
-    // Sanity check to ensure that the unicode output matches the input. Bypass
-    // all spoof checks by doing an unsafe conversion.
-    const IDNConversionResult unsafe_result =
-        UnsafeIDNToUnicodeWithDetails(test.input);
-
-    // Ignore inputs that can't be converted even with unsafe conversion because
-    // they contain certain characters not allowed in IDNs. E.g. U+24DF (Latin
-    // CIRCLED LATIN SMALL LETTER P) in hostname causes the conversion to fail
-    // before reaching spoof checks.
-    if (test.expected_result != kInvalid) {
-      // Also ignore domains that need to remain partially in punycode, such
-      // as ѕсоре-рау.한국 where scope-pay is a Cyrillic whole-script
-      // confusable but 한국 is safe. This would require adding yet another
-      // field to the the test struct.
-      if (!IsPunycode(test.unicode_output)) {
-        EXPECT_EQ(unsafe_result.result, test.unicode_output);
-      }
-    } else {
-      // Invalid punycode should not be converted.
-      EXPECT_EQ(unsafe_result.result, base::ASCIIToUTF16(test.input));
-    }
-
-    const std::u16string output(IDNToUnicode(test.input));
-    const std::u16string expected(test.expected_result == kSafe
-                                      ? test.unicode_output
-                                      : base::ASCIIToUTF16(test.input));
-    EXPECT_EQ(expected, output);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void TearDown() override { IDNSpoofChecker::RestoreTrieParamsForTesting(); }
 };
-
-INSTANTIATE_TEST_SUITE_P(All, IDNSpoofCheckerTest, ::testing::Bool());
 
 // Test that a domain entered as punycode is decoded to unicode if safe,
 // otherwise is left in punycode.
@@ -1178,40 +1139,42 @@ INSTANTIATE_TEST_SUITE_P(All, IDNSpoofCheckerTest, ::testing::Bool());
 // certain unicode characters are canonicalized to other characters.
 // E.g. Mathematical Monospace Small A (U+1D68A) is canonicalized to "a" when
 // used in a domain name.
-TEST_P(IDNSpoofCheckerTest, IDNToUnicode) {
-  for (const auto& test : kIdnCases) {
-    RunIDNToUnicodeTest(test);
+TEST_F(IDNSpoofCheckerTest, IDNToUnicode) {
+  for (size_t i = 0; i < std::size(kIdnCases); i++) {
+    SCOPED_TRACE(
+        base::StringPrintf("input #%zu: \"%s\"", i, kIdnCases[i].input));
+
+    // Sanity check to ensure that the unicode output matches the input. Bypass
+    // all spoof checks by doing an unsafe conversion.
+    const IDNConversionResult unsafe_result =
+        UnsafeIDNToUnicodeWithDetails(kIdnCases[i].input);
+
+    // Ignore inputs that can't be converted even with unsafe conversion because
+    // they contain certain characters not allowed in IDNs. E.g. U+24DF (Latin
+    // CIRCLED LATIN SMALL LETTER P) in hostname causes the conversion to fail
+    // before reaching spoof checks.
+    if (kIdnCases[i].expected_result != kInvalid) {
+      // Also ignore domains that need to remain partially in punycode, such
+      // as ѕсоре-рау.한국 where scope-pay is a Cyrillic whole-script
+      // confusable but 한국 is safe. This would require adding yet another
+      // field to the the test struct.
+      if (!IsPunycode(kIdnCases[i].unicode_output)) {
+        EXPECT_EQ(unsafe_result.result, kIdnCases[i].unicode_output);
+      }
+    } else {
+      // Invalid punycode should not be converted.
+      EXPECT_EQ(unsafe_result.result, base::ASCIIToUTF16(kIdnCases[i].input));
+    }
+
+    const std::u16string output(IDNToUnicode(kIdnCases[i].input));
+    const std::u16string expected(kIdnCases[i].expected_result == kSafe
+                                      ? kIdnCases[i].unicode_output
+                                      : base::ASCIIToUTF16(kIdnCases[i].input));
+    EXPECT_EQ(expected, output);
   }
 }
 
-// Same as IDNToUnicode but only tests hostnames with deviation characters.
-TEST_P(IDNSpoofCheckerTest, IDNToUnicodeDeviationCharacters) {
-  const Result kExpectedSafety = GetParam() ? kSafe : kUnsafe;
-
-  // Tests for 4 Deviation characters between IDNA 2003 and IDNA 2008. When
-  // entered in Unicode:
-  // - In Transitional mode, the first two are mapped to 'ss' and Greek sigma
-  //   and the latter two are mapped away. However, the punycode form should
-  //   remain in punycode.
-  // - In Non-Transitional mode, none of the characters should be mapped and
-  //   the hostnames should be considered safe.
-  const IDNTestCase kTestCases[] = {
-      // U+00DF(sharp-s)
-      {"xn--fu-hia.de", u"fu\u00df.de", kExpectedSafety},
-      // U+03C2(final-sigma)
-      {"xn--mxac2c.gr", u"\u03b1\u03b2\u03c2.gr", kExpectedSafety},
-      // U+200C(ZWNJ)
-      {"xn--h2by8byc123p.in", u"\u0924\u094d\u200c\u0930\u093f.in",
-       kExpectedSafety},
-      // U+200C(ZWJ)
-      {"xn--11b6iy14e.in", u"\u0915\u094d\u200d.in", kExpectedSafety},
-  };
-  for (const auto& test : kTestCases) {
-    RunIDNToUnicodeTest(test);
-  }
-}
-
-TEST_P(IDNSpoofCheckerTest, GetSimilarTopDomain) {
+TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
   struct TestCase {
     const char16_t* const hostname;
     const char* const expected_top_domain;
@@ -1244,7 +1207,7 @@ TEST_P(IDNSpoofCheckerTest, GetSimilarTopDomain) {
   }
 }
 
-TEST_P(IDNSpoofCheckerTest, LookupSkeletonInTopDomains) {
+TEST_F(IDNSpoofCheckerTest, LookupSkeletonInTopDomains) {
   {
     TopDomainEntry entry =
         IDNSpoofChecker().LookupSkeletonInTopDomains("d4OOO.corn");

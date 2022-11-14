@@ -1258,13 +1258,6 @@
              "--enable-blink-features=DocumentPictureInPictureAPI"]
   },
 
-  {
-    "prefix": "idna-2008",
-    "platforms": ["Linux"],
-    "bases": [ "external/wpt/url", "fast/url"],
-    "args": ["--enable-features=UseIDNA2008NonTransitional"]
-  },
-
   "Tests in the virtual/origin-agent-cluster-default suite. These tests",
   "require isolation behaviour as in the actual browser and are therefore",
   "incompatible with auto-wpt-origin-isolation. Thus they are only run in",

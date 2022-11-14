@@ -47,8 +47,6 @@ component("url") {
     "url_canon_stdurl.cc",
     "url_constants.cc",
     "url_constants.h",
-    "url_features.cc",
-    "url_features.h",
     "url_file.h",
     "url_parse_file.cc",
     "url_parse_internal.h",
@@ -94,7 +92,6 @@ component("url") {
       "url_canon_icu.cc",
       "url_canon_icu.h",
       "url_idna_icu.cc",
-      "url_idna_icu.h",
     ]
     deps += [
       "//base:i18n",
