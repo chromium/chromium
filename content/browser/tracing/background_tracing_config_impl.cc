@@ -114,7 +114,7 @@ base::Value::Dict BackgroundTracingConfigImpl::ToDict() {
       break;
   }
 
-  base::ListValue configs_list;
+  base::Value::List configs_list;
   for (const auto& rule : rules_) {
     DCHECK(rule);
     configs_list.Append(rule->ToDict());
