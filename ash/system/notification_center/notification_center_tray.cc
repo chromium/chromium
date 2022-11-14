@@ -79,6 +79,11 @@ void NotificationCenterTray::CloseBubble() {
 
   bubble_.reset();
   SetIsActive(false);
+
+  // Inform the message center that the bubble has closed so that popups are
+  // created for new notifications.
+  message_center::MessageCenter::Get()->SetVisibility(
+      message_center::VISIBILITY_TRANSIENT);
 }
 
 void NotificationCenterTray::ShowBubble() {
@@ -94,6 +99,11 @@ void NotificationCenterTray::ShowBubble() {
   GetBubbleWidget()->AddObserver(this);
 
   SetIsActive(true);
+
+  // Inform the message center that the bubble is showing so that we do not
+  // create popups for incoming notifications and dismiss existing popups.
+  message_center::MessageCenter::Get()->SetVisibility(
+      message_center::VISIBILITY_MESSAGE_CENTER);
 }
 
 void NotificationCenterTray::UpdateAfterLoginStatusChange() {

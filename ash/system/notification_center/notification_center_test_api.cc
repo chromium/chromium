@@ -10,6 +10,7 @@
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/stacked_notification_bar.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -40,6 +41,10 @@ void NotificationCenterTestApi::RemoveNotification(const std::string& id) {
 
 bool NotificationCenterTestApi::IsBubbleShown() {
   return notification_center_tray_->is_active() && GetWidget()->IsVisible();
+}
+
+bool NotificationCenterTestApi::IsPopupShown(const std::string& id) {
+  return message_center::MessageCenter::Get()->FindPopupNotificationById(id);
 }
 
 bool NotificationCenterTestApi::IsTrayShown() {

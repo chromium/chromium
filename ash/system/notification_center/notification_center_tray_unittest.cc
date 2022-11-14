@@ -106,11 +106,40 @@ TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
   EXPECT_FALSE(test_api()->IsTrayShown());
 }
 
+// Tests that opening the bubble results in existing popups being dismissed
+// and no new ones being created.
+TEST_F(NotificationCenterTrayTest, NotificationPopupsHiddenWithBubble) {
+  // Adding a notification should generate a popup.
+  std::string id = test_api()->AddNotification();
+  EXPECT_TRUE(test_api()->IsPopupShown(id));
+
+  // Opening the notification center should result in the popup being dismissed.
+  test_api()->ToggleBubble();
+  EXPECT_FALSE(test_api()->IsPopupShown(id));
+
+  // New notifications should not generate popups while the notification center
+  // is visible.
+  std::string id2 = test_api()->AddNotification();
+  EXPECT_FALSE(test_api()->IsPopupShown(id));
+}
+
+// Tests that popups are shown after the notification center is closed.
+TEST_F(NotificationCenterTrayTest, NotificationPopupsShownAfterBubbleClose) {
+  test_api()->AddNotification();
+
+  // Open and close bubble to dismiss existing popups.
+  test_api()->ToggleBubble();
+  test_api()->ToggleBubble();
+
+  // New notifications should show up as popups after the bubble is closed.
+  std::string id = test_api()->AddNotification();
+  EXPECT_TRUE(test_api()->IsPopupShown(id));
+}
+
 // TODO(b/252875025):
 // Add following test cases as we add relevant functionality:
 // - Focus Change dismissing bubble
 // - Popup notifications are dismissed when the bubble appears.
-// - New popups are not created when the bubble exists.
 // - Display removed while the bubble is shown.
 // - Tablet mode transition with the bubble open.
 // - Open/Close bubble by keyboard shortcut.

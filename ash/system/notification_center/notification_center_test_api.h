@@ -44,6 +44,10 @@ class NotificationCenterTestApi {
   // Returns true if `NotificationCenterBubble` is shown, false otherwise.
   bool IsBubbleShown();
 
+  // Returns true if a popup associated with the provided `id` exists, false
+  // otherwise.
+  bool IsPopupShown(const std::string& id);
+
   // Returns true if `NotificationCenterTray`` is showing in the shelf, false
   // otherwise.
   bool IsTrayShown();
