@@ -12,7 +12,7 @@ import unittest.mock as mock
 
 from argparse import Namespace
 from device_target import DeviceTarget
-from ermine_ctl import ErmineCtl
+from legacy_ermine_ctl import LegacyErmineCtl
 from ffx_session import FfxRunner, FfxTarget
 from target import Target, FuchsiaTargetException
 
@@ -194,9 +194,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
   def testLoginCallsOnlyIfErmineExists(self, mock_daemon_stop):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(
-             ErmineCtl, 'exists',
+             LegacyErmineCtl, 'exists',
              new_callable=mock.PropertyMock) as mock_exists, \
-         mock.patch.object(ErmineCtl, 'TakeToShell') as mock_shell:
+         mock.patch.object(LegacyErmineCtl, 'take_to_shell') as mock_shell:
       mock_exists.return_value = True
 
       device_target_instance._Login()
@@ -206,9 +206,9 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
 
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(
-             ErmineCtl, 'exists',
+             LegacyErmineCtl, 'exists',
              new_callable=mock.PropertyMock) as mock_exists, \
-         mock.patch.object(ErmineCtl, 'TakeToShell') as mock_shell:
+         mock.patch.object(LegacyErmineCtl, 'take_to_shell') as mock_shell:
       mock_exists.return_value = False
 
       device_target_instance._Login()

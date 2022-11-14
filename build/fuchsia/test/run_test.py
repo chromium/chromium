@@ -26,6 +26,7 @@ from run_telemetry_test import TelemetryTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
 from test_runner import TestRunner
+from ermine_ctl import ErmineCtl
 
 
 def _get_test_runner(runner_args: argparse.Namespace,
@@ -106,6 +107,10 @@ def main():
         # so that logging will not be interrupted.
         start_system_log(log_manager, False, package_paths, ('--since', 'now'),
                          runner_args.target_id)
+
+        ermine = ErmineCtl(runner_args.target_id)
+        if ermine.exists:
+            ermine.take_to_shell()
 
         if test_runner.is_cfv2():
             resolve_packages(test_runner.packages, runner_args.target_id)

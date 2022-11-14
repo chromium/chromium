@@ -24,7 +24,6 @@ def CommonChecks(input_api, output_api):
       J('binary_sizes_test.py'),
       J('binary_size_differ_test.py'),
       J('device_target_test.py'),
-      J('ermine_ctl_test.py'),
       J('gcs_download_test.py'),
       J('update_images_test.py'),
       J('update_sdk_test.py'),

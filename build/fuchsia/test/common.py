@@ -252,16 +252,22 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
             check=False)
 
 
+def get_ssh_address(target_id: Optional[str]) -> str:
+    """Determines SSH address for given target."""
+    return run_ffx_command(('target', 'get-ssh-address'),
+                           target_id,
+                           capture_output=True).stdout.strip()
+
+
+
 # TODO(crbug.com/1342460): Remove when Telemetry tests are using CFv2 packages.
 def resolve_v1_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all cfv1 packages are installed on a device."""
-
-    ssh_address = run_ffx_command(('target', 'get-ssh-address'),
-                                  target_id,
-                                  capture_output=True).stdout.strip()
     for package in packages:
         resolve_cmd = [
             '--', 'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        subprocess.run(get_ssh_prefix(ssh_address) + resolve_cmd, check=True)
+        subprocess.run(get_ssh_prefix(get_ssh_address(target_id)) +
+                       resolve_cmd,
+                       check=True)

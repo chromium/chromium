@@ -14,7 +14,7 @@ import sys
 import target
 import time
 
-import ermine_ctl
+import legacy_ermine_ctl
 import ffx_session
 
 from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
@@ -102,7 +102,7 @@ class DeviceTarget(target.Target):
     self._pkg_repo = None
     self._target_context = None
     self._ffx_target = None
-    self._ermine_ctl = ermine_ctl.ErmineCtl(self)
+    self._ermine_ctl = legacy_ermine_ctl.LegacyErmineCtl(self)
     if not self._system_image_dir and self._os_check != 'ignore':
       raise Exception("Image directory must be provided if a repave is needed.")
 
@@ -233,7 +233,7 @@ class DeviceTarget(target.Target):
     though calling it multiple times should have no adverse effect.
     """
     if self._ermine_ctl.exists:
-      self._ermine_ctl.TakeToShell()
+      self._ermine_ctl.take_to_shell()
 
   def Start(self):
     if self._host:
