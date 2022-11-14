@@ -292,6 +292,12 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
                     perfetto::Track::ThreadScoped(task_annotator_),
                     task_end_time);
   }
+#if !BUILDFLAG(ENABLE_BASE_TRACING)
+  // Suppress the unused variable warning when TRACE_EVENT macros are turned
+  // into no-op.
+  (void)pending_task_;
+  (void)task_annotator_;
+#endif  // !BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 void TaskAnnotator::LongTaskTracker::SetIpcDetails(const char* interface_name,
