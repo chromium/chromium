@@ -35,4 +35,7 @@ ci.builder(
         },
         "repo_name": "chromium",
     },
+
+    # TODO(crbug.com/1370463): remove this.
+    omit_python2 = False,
 )
