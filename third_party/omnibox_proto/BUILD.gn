@@ -9,6 +9,7 @@ if (is_android) {
 }
 
 _proto_files = [
+  "entity_info.proto",
   "groups.proto",
   "types.proto",
 ]
