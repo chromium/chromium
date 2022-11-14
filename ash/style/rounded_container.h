@@ -38,9 +38,6 @@ class ASH_EXPORT RoundedContainer : public views::View {
   void SetBorderInsets(const gfx::Insets& insets);
 
  private:
-  // views::View:
-  void OnThemeChanged() override;
-
   // Returns the corners based on the `corner_behavior_`;
   gfx::RoundedCornersF GetRoundedCorners();
 
