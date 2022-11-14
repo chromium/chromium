@@ -43,16 +43,6 @@ class RefcountedProfileKeyedServiceFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const final;
 
-  // Since `RefcountedProfileKeyedServiceFactory` API uses `ProfileSelections`,
-  // there is still no way to prevent the creation of services for ChromeOS
-  // irregular profiles, with `ProfileSelections`. In order not to create
-  // services with these specific conditions, returning nullptr in
-  // `BuildServiceInstanceFor()` is accepted despite the recommendataion in
-  // `RefcountedBrowserContextKeyedServiceFactory::BuildServiceInstanceFor()`
-  // until the API is adapted (crbug/1284664).
-  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      content::BrowserContext* context) const override = 0;
-
  private:
   const ProfileSelections profile_selections_;
 };

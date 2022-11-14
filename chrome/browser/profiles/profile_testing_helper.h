@@ -31,6 +31,17 @@ class ProfileTestingHelper {
   Profile* system_profile_otr() { return system_profile_otr_; }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestingProfile* signin_profile() { return signin_profile_; }
+  Profile* signin_profile_otr() { return signin_profile_otr_; }
+
+  TestingProfile* lockscreen_profile() { return lockscreen_profile_; }
+  Profile* lockscreen_profile_otr() { return lockscreen_profile_otr_; }
+
+  TestingProfile* lockscreenapp_profile() { return lockscreenapp_profile_; }
+  Profile* lockscreenapp_profile_otr() { return lockscreenapp_profile_otr_; }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
@@ -45,6 +56,17 @@ class ProfileTestingHelper {
   TestingProfile* system_profile_ = nullptr;
   Profile* system_profile_otr_ = nullptr;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestingProfile* signin_profile_ = nullptr;
+  Profile* signin_profile_otr_ = nullptr;
+
+  TestingProfile* lockscreen_profile_ = nullptr;
+  Profile* lockscreen_profile_otr_ = nullptr;
+
+  TestingProfile* lockscreenapp_profile_ = nullptr;
+  Profile* lockscreenapp_profile_otr_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 #endif  // !CHROME_BROWSER_PROFILES_PROFILE_TESTING_HELPER_H_

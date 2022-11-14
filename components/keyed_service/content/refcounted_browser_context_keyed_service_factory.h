@@ -110,11 +110,6 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   //
   // This should not return nullptr; instead, return nullptr from
   // `GetBrowserContextToUse()`.
-  // NOTE: There is a //chrome-specific exception to this rule for a
-  // ChromeOS-specific case until crbug.com/1284664 is resolved. See
-  // documentation on //chrome's //
-  // `RefcountedProfileKeyedServiceFactory::BuildServiceInstanceFor()` for
-  // details.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const = 0;
 

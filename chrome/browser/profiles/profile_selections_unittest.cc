@@ -7,11 +7,12 @@
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class ProfileSelectionsTest : public testing::Test {
+class ProfileSelectionsTest : public testing::Test,
+                              public ProfileTestingHelper {
  public:
   void SetUp() override {
     testing::Test::SetUp();
-    profile_testing_helper_.SetUp();
+    ProfileTestingHelper::SetUp();
   }
 
  protected:
@@ -21,32 +22,6 @@ class ProfileSelectionsTest : public testing::Test {
     EXPECT_EQ(selections.ApplyProfileSelection(given_profile),
               expected_profile);
   }
-
-  TestingProfile* regular_profile() {
-    return profile_testing_helper_.regular_profile();
-  }
-  Profile* incognito_profile() {
-    return profile_testing_helper_.incognito_profile();
-  }
-
-  TestingProfile* guest_profile() {
-    return profile_testing_helper_.guest_profile();
-  }
-  Profile* guest_profile_otr() {
-    return profile_testing_helper_.guest_profile_otr();
-  }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-  TestingProfile* system_profile() {
-    return profile_testing_helper_.system_profile();
-  }
-  Profile* system_profile_otr() {
-    return profile_testing_helper_.system_profile_otr();
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
- private:
-  ProfileTestingHelper profile_testing_helper_;
 };
 
 TEST_F(ProfileSelectionsTest, CustomImplementation) {
@@ -55,6 +30,7 @@ TEST_F(ProfileSelectionsTest, CustomImplementation) {
           .WithRegular(ProfileSelection::kOwnInstance)
           .WithGuest(ProfileSelection::kOffTheRecordOnly)
           .WithSystem(ProfileSelection::kNone)
+          .WithAshInternals(ProfileSelection::kOriginalOnly)
           .Build();
 
   TestProfileSelection(selections, regular_profile(), regular_profile());
@@ -67,6 +43,18 @@ TEST_F(ProfileSelectionsTest, CustomImplementation) {
   TestProfileSelection(selections, system_profile(), nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
@@ -82,6 +70,18 @@ TEST_F(ProfileSelectionsTest, OnlyRegularProfile) {
   TestProfileSelection(selections, system_profile(), nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
@@ -98,6 +98,20 @@ TEST_F(ProfileSelectionsTest, RegularAndIncognito) {
   TestProfileSelection(selections, system_profile(), nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile_otr());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile_otr());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile_otr());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
@@ -114,6 +128,20 @@ TEST_F(ProfileSelectionsTest, RedirectedInIncognito) {
   TestProfileSelection(selections, system_profile(), nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, RedirectedToOriginal) {
@@ -129,6 +157,20 @@ TEST_F(ProfileSelectionsTest, RedirectedToOriginal) {
   TestProfileSelection(selections, system_profile(), system_profile());
   TestProfileSelection(selections, system_profile_otr(), system_profile());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, ForAllProfiles) {
@@ -144,6 +186,20 @@ TEST_F(ProfileSelectionsTest, ForAllProfiles) {
   TestProfileSelection(selections, system_profile(), system_profile());
   TestProfileSelection(selections, system_profile_otr(), system_profile_otr());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile_otr());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile_otr());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile_otr());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_F(ProfileSelectionsTest, NoProfiles) {
@@ -159,6 +215,17 @@ TEST_F(ProfileSelectionsTest, NoProfiles) {
   TestProfileSelection(selections, system_profile(), nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), nullptr);
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), nullptr);
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(), nullptr);
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)s
 }
 
 // Testing Experimental Builders.
@@ -228,6 +295,18 @@ TEST_P(ProfileSelectionsTestWithParams, BuildDefault) {
       force_system || !system_experiment ? system_profile() : nullptr);
   TestProfileSelection(selections, system_profile_otr(), nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(), nullptr);
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(), nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_P(ProfileSelectionsTestWithParams, BuildRedirectedInIncognito) {
@@ -257,6 +336,20 @@ TEST_P(ProfileSelectionsTestWithParams, BuildRedirectedInIncognito) {
       selections, system_profile_otr(),
       force_system || !system_experiment ? system_profile() : nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TEST_P(ProfileSelectionsTestWithParams, BuildForRegularAndIncognito) {
@@ -286,6 +379,20 @@ TEST_P(ProfileSelectionsTestWithParams, BuildForRegularAndIncognito) {
       selections, system_profile_otr(),
       force_system || !system_experiment ? system_profile_otr() : nullptr);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  TestProfileSelection(selections, signin_profile(), signin_profile());
+  TestProfileSelection(selections, signin_profile_otr(), signin_profile_otr());
+
+  TestProfileSelection(selections, lockscreen_profile(), lockscreen_profile());
+  TestProfileSelection(selections, lockscreen_profile_otr(),
+                       lockscreen_profile_otr());
+
+  TestProfileSelection(selections, lockscreenapp_profile(),
+                       lockscreenapp_profile());
+  TestProfileSelection(selections, lockscreenapp_profile_otr(),
+                       lockscreenapp_profile_otr());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 INSTANTIATE_TEST_SUITE_P(ExperimentalBuilders,
