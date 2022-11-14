@@ -157,13 +157,23 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 // base::Feature::name (instead of slightly-different bespoke names), and always
 // wire 1:1 to CrOS feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
-  if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0) {
+  // TODO(b/218815885): Replace refs of AssistiveEmojiEnhanced with
+  // AssistEmojiEnhanced in internal code for consistency.
+  // Then remove the AssistiveEmojiEnhanced check.
+  if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0 ||
+      strcmp(feature_name, chromeos::features::kAssistEmojiEnhanced.name) ==
+          0) {
     return base::FeatureList::IsEnabled(
         chromeos::features::kAssistEmojiEnhanced);
   }
-  if (strcmp(feature_name, "AssistiveMultiWord") == 0) {
+  // TODO(b/218815885): Replace refs of AssistiveMultiWord with
+  // AssistMultiWord in internal code for consistency.
+  // Then remove the AssistiveMultiWord check.
+  if (strcmp(feature_name, "AssistiveMultiWord") == 0 ||
+      strcmp(feature_name, chromeos::features::kAssistMultiWord.name) == 0) {
     return chromeos::features::IsAssistiveMultiWordEnabled();
   }
+  // TODO(b/218815885): Replace refs of this with true internally and delete.
   if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
     return true;
   }
