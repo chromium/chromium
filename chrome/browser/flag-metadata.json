@@ -6482,11 +6482,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "sync-android-limit-ntp-promo-impressions",
-    "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 109
-  },
-  {
     "name": "sync-chromeos-explicit-passphrase-sharing",
     "owners": ["mmoskvitin@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 111

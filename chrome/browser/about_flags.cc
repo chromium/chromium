@@ -3520,24 +3520,6 @@ const FeatureEntry::FeatureVariation kHighEfficiencyModeAvailableVariations[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kSyncAndroidNTPPromoMax2ImpressionsParam[] = {
-    {"2 Impressions Limit", "2"}};
-const FeatureEntry::FeatureParam kSyncAndroidNTPPromoMax10ImpressionsParam[] = {
-    {"10 Impressions Limit", "10"}};
-const FeatureEntry::FeatureParam kSyncAndroidNTPPromoMax20ImpressionsParam[] = {
-    {"20 Impressions Limit", "20"}};
-const FeatureEntry::FeatureVariation
-    kSyncAndroidLimitNTPPromoImpressionsVariations[] = {
-        {"2 Impressions Limit", kSyncAndroidNTPPromoMax2ImpressionsParam,
-         std::size(kSyncAndroidNTPPromoMax2ImpressionsParam), nullptr},
-        {"10 Impressions Limit", kSyncAndroidNTPPromoMax10ImpressionsParam,
-         std::size(kSyncAndroidNTPPromoMax10ImpressionsParam), nullptr},
-        {"20 Impressions Limit", kSyncAndroidNTPPromoMax20ImpressionsParam,
-         std::size(kSyncAndroidNTPPromoMax20ImpressionsParam), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam
     kBindingManagerConnectionLimit_10_connections[] = {
         {"max_connections", "10"}};
@@ -8137,17 +8119,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaUpdateDialogForAppTitleName,
      flag_descriptions::kPwaUpdateDialogForAppTitleDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForName)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"sync-android-limit-ntp-promo-impressions",
-     flag_descriptions::kSyncAndroidLimitNTPPromoImpressionsName,
-     flag_descriptions::kSyncAndroidLimitNTPPromoImpressionsDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         syncer::kSyncAndroidLimitNTPPromoImpressions,
-         kSyncAndroidLimitNTPPromoImpressionsVariations,
-         "SyncAndroidLimitNTPPromoImpressions")},
-#endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
