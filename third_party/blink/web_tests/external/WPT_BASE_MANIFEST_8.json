@@ -282056,6 +282056,10 @@
       "b9913eda83a45350b9a28884869a8fe5dcbe31b7",
       []
      ],
+     "font-shorthand-serialization-prevention-expected.txt": [
+      "8604d3dc92a0b3b0949b2d0f3604562a114febb1",
+      []
+     ],
      "font-size-adjust-001-ref.html": [
       "609e8d1d4bfd7429bcfbc971c9d765b56f497b7c",
       []
@@ -365928,10 +365932,6 @@
       "4bbd7113464eae59dfa615aa49c076aa7053232a",
       []
      ],
-     "opt-out.html.ini": [
-      "3c1804949690ca73cdb570f343e152d28520ae69",
-      []
-     ],
      "referrer-policy-mismatch.html.ini": [
       "ef3bb68bc966bcd52a244833f72ce896fbc277b0",
       []
@@ -421179,6 +421179,13 @@
      ],
      "font-shorthand-serialization-font-stretch.html": [
       "e39d6c6b198a0c04fd71194502a9c01cdc818072",
+      [
+       null,
+       {}
+      ]
+     ],
+     "font-shorthand-serialization-prevention.html": [
+      "223c2fa2cbe88468c86eb93067fcbe840bce3c84",
       [
        null,
        {}
