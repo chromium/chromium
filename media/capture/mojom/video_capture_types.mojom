@@ -276,7 +276,8 @@ enum VideoCaptureFrameDropReason {
   kResolutionAdapterHasNoCallbacks,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame,
   kRendererSinkFrameDelivererIsNotStarted,
-  [MinVersion=1] kCropVersionNotCurrent
+  [MinVersion=1] kCropVersionNotCurrent,
+  [MinVersion=5] kGpuMemoryBufferMapFailed
 };
 
 [Stable]

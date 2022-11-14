@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -408,8 +409,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
     last_captured_pixel_format_ = frame_format.pixel_format;
   }
 
-  if (!frame_format.IsValid())
+  if (!frame_format.IsValid()) {
+    receiver_->OnFrameDropped(
+        VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
     return;
+  }
 
   int destination_width = buffer->GetSize().width();
   int destination_height = buffer->GetSize().height();
@@ -437,6 +441,16 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   GetI420BufferAccess(output_buffer, dimensions, &y_plane_data, &u_plane_data,
                       &v_plane_data, &y_plane_stride, &uv_plane_stride);
 
+  if (!buffer->Map()) {
+    LOG(ERROR) << "Failed to map GPU memory buffer";
+    receiver_->OnFrameDropped(
+        VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+    return;
+  }
+  base::ScopedClosureRunner unmap_closure(
+      base::BindOnce([](gfx::GpuMemoryBuffer* buffer) { buffer->Unmap(); },
+                     base::Unretained(buffer)));
+
   int ret = -EINVAL;
   switch (frame_format.pixel_format) {
     case PIXEL_FORMAT_NV12:
@@ -455,6 +469,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   if (ret) {
     DLOG(WARNING) << "Failed to convert buffer's pixel format to I420 from "
                   << VideoPixelFormatToString(frame_format.pixel_format);
+    receiver_->OnFrameDropped(
+        VideoCaptureFrameDropReason::kDeviceClientLibyuvConvertToI420Failed);
     return;
   }
 

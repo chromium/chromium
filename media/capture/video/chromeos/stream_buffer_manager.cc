@@ -437,13 +437,6 @@ void StreamBufferManager::ReserveBufferFromFactory(StreamType stream_type) {
         FROM_HERE, "Failed to allocate GPU memory buffer");
     return;
   }
-  if (!gmb->Map()) {
-    device_context_->SetErrorState(
-        media::VideoCaptureError::
-            kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
-        FROM_HERE, "Failed to map GPU memory buffer");
-    return;
-  }
   // All the GpuMemoryBuffers are allocated from the factory in bulk when the
   // streams are configured.  Here we simply use the sequence of the allocated
   // buffer as the buffer id.
