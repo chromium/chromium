@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "components/cast_receiver/browser/public/application_client.h"
 
 namespace gfx {
@@ -26,7 +25,7 @@ class RuntimeApplication;
 
 namespace chromecast {
 
-class RuntimeApplicationDispatcher;
+class RuntimeServiceImpl;
 
 class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
  public:
@@ -93,7 +92,7 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
 
   // Wrapper around the observers used with the cast_receiver component.
   ApplicationClientObservers application_client_observers_;
-  std::unique_ptr<RuntimeApplicationDispatcher> app_dispatcher_;
+  std::unique_ptr<RuntimeServiceImpl> runtime_service_;
 };
 
 }  // namespace chromecast

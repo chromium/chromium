@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_BASE_H_
-#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_BASE_H_
+#ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
+#define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_
 
 #include <memory>
 
@@ -23,39 +23,29 @@
 namespace chromecast {
 
 template <typename TRuntimeApplicationPlatform>
-class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
+class RuntimeApplicationDispatcherImpl
+    : public RuntimeApplicationDispatcher<TRuntimeApplicationPlatform> {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
-  explicit RuntimeApplicationDispatcherBase(
+  explicit RuntimeApplicationDispatcherImpl(
       cast_receiver::ApplicationClient& application_client);
-  ~RuntimeApplicationDispatcherBase() override = default;
+  ~RuntimeApplicationDispatcherImpl() override = default;
 
- protected:
-  using RuntimeApplicationPlatformFactory =
-      base::OnceCallback<std::unique_ptr<TRuntimeApplicationPlatform>(
-          std::unique_ptr<RuntimeApplicationBase>)>;
+ private:
+  using RuntimeApplicationPlatformFactory = RuntimeApplicationDispatcher<
+      TRuntimeApplicationPlatform>::RuntimeApplicationPlatformFactory;
 
-  // Creates an application of |TRuntimeApplicationPlatform| type and adds to
-  // the |loaded_apps_| list.
+  // RuntimeApplicationDispatcher implementation.
   TRuntimeApplicationPlatform* CreateApplication(
       std::string session_id,
       cast_receiver::ApplicationConfig app_config,
-      RuntimeApplicationPlatformFactory factory);
-
-  // Returns an existing application or nullptr.
-  TRuntimeApplicationPlatform* GetApplication(const std::string& session_id);
-
-  // Destroys an existing application and returns its pointer for possible
-  // post-processing.
+      RuntimeApplicationPlatformFactory factory) override;
+  TRuntimeApplicationPlatform* GetApplication(
+      const std::string& session_id) override;
   std::unique_ptr<TRuntimeApplicationPlatform> DestroyApplication(
-      const std::string& session_id);
+      const std::string& session_id) override;
 
-  cast_receiver::ApplicationClient& application_client() {
-    return *application_client_;
-  }
-
- private:
   SEQUENCE_CHECKER(sequence_checker_);
   base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
 
@@ -64,14 +54,14 @@ class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
 };
 
 template <typename TRuntimeApplicationPlatform>
-RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
-    RuntimeApplicationDispatcherBase(
+RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::
+    RuntimeApplicationDispatcherImpl(
         cast_receiver::ApplicationClient& application_client)
     : application_client_(application_client) {}
 
 template <typename TRuntimeApplicationPlatform>
 TRuntimeApplicationPlatform*
-RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
+RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::
     CreateApplication(std::string session_id,
                       cast_receiver::ApplicationConfig app_config,
                       RuntimeApplicationPlatformFactory factory) {
@@ -99,7 +89,7 @@ RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
 
 template <typename TRuntimeApplicationPlatform>
 TRuntimeApplicationPlatform*
-RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::GetApplication(
+RuntimeApplicationDispatcherImpl<TRuntimeApplicationPlatform>::GetApplication(
     const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -108,7 +98,7 @@ RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::GetApplication(
 }
 
 template <typename TRuntimeApplicationPlatform>
-std::unique_ptr<TRuntimeApplicationPlatform> RuntimeApplicationDispatcherBase<
+std::unique_ptr<TRuntimeApplicationPlatform> RuntimeApplicationDispatcherImpl<
     TRuntimeApplicationPlatform>::DestroyApplication(const std::string&
                                                          session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -128,4 +118,4 @@ std::unique_ptr<TRuntimeApplicationPlatform> RuntimeApplicationDispatcherBase<
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_BASE_H_
+#endif  // CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_IMPL_H_

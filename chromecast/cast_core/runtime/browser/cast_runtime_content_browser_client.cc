@@ -12,7 +12,6 @@
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/application_client.h"
@@ -24,25 +23,25 @@ namespace chromecast {
 
 namespace {
 
-// CastServiceSimple impl for Cast Core that allows correct dispatcher start up
-// and tear down.
+// CastServiceSimple impl for Cast Core that allows the runtime service to start
+// up and tear down.
 class CoreCastService : public shell::CastServiceSimple {
  public:
   CoreCastService(CastWebService* web_service,
-                  RuntimeApplicationDispatcher& app_dispatcher)
-      : CastServiceSimple(web_service), app_dispatcher_(app_dispatcher) {}
+                  RuntimeServiceImpl& runtime_service)
+      : CastServiceSimple(web_service), runtime_service_(runtime_service) {}
 
   // CastServiceSimple overrides:
   void StartInternal() override {
-    if (!app_dispatcher_->Start().ok()) {
+    if (!runtime_service_->Start().ok()) {
       base::Process::TerminateCurrentProcessImmediately(1);
     }
   }
 
-  void StopInternal() override { app_dispatcher_->Stop(); }
+  void StopInternal() override { runtime_service_->Stop(); }
 
  private:
-  base::raw_ref<RuntimeApplicationDispatcher> app_dispatcher_;
+  base::raw_ref<RuntimeServiceImpl> runtime_service_;
 };
 
 // Implementation of cast_receiver::ApplicationClient.
@@ -93,7 +92,7 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
   InitializeCoreComponents(web_service);
 
   // Unretained() is safe here because this instance will outlive CastService.
-  return std::make_unique<CoreCastService>(web_service, *app_dispatcher_);
+  return std::make_unique<CoreCastService>(web_service, *runtime_service_);
 }
 
 std::unique_ptr<::media::CdmFactory>
@@ -183,7 +182,7 @@ void CastRuntimeContentBrowserClient::InitializeCoreComponents(
   std::string runtime_service_path =
       command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
 
-  app_dispatcher_ = std::make_unique<RuntimeServiceImpl>(
+  runtime_service_ = std::make_unique<RuntimeServiceImpl>(
       *application_client_, *web_service, runtime_id, runtime_service_path);
 }
 

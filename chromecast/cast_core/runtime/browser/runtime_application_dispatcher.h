@@ -5,19 +5,40 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_DISPATCHER_H_
 
-#include "components/cast_receiver/common/public/status.h"
+#include <memory>
+#include <string>
+
+#include "base/functional/callback.h"
+#include "components/cast_receiver/browser/public/application_config.h"
 
 namespace chromecast {
 
+class RuntimeApplicationBase;
+
+template <typename TRuntimeApplicationPlatform>
 class RuntimeApplicationDispatcher {
  public:
-  // |application_client| is expected to persist for the lifetime of this
-  // instance.
-  virtual ~RuntimeApplicationDispatcher();
+  using RuntimeApplicationPlatformFactory =
+      base::OnceCallback<std::unique_ptr<TRuntimeApplicationPlatform>(
+          std::unique_ptr<RuntimeApplicationBase>)>;
 
-  // Starts and stops the runtime service, including the gRPC completion queue.
-  virtual cast_receiver::Status Start() = 0;
-  virtual cast_receiver::Status Stop() = 0;
+  virtual ~RuntimeApplicationDispatcher() = default;
+
+  // Creates an application of |TRuntimeApplicationPlatform| type and adds to
+  // the |loaded_apps_| list.
+  virtual TRuntimeApplicationPlatform* CreateApplication(
+      std::string session_id,
+      cast_receiver::ApplicationConfig app_config,
+      RuntimeApplicationPlatformFactory factory) = 0;
+
+  // Returns an existing application or nullptr.
+  virtual TRuntimeApplicationPlatform* GetApplication(
+      const std::string& session_id) = 0;
+
+  // Destroys an existing application and returns its pointer for possible
+  // post-processing.
+  virtual std::unique_ptr<TRuntimeApplicationPlatform> DestroyApplication(
+      const std::string& session_id) = 0;
 };
 
 }  // namespace chromecast
