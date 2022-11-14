@@ -714,3 +714,33 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest,
   std::string imgSrc = "images/fail.gif";
   TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 1, flag_set);
 }
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, DataURIType) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kGIF |
+                  blink::LargestContentfulPaintType::kAnimatedImage |
+                  blink::LargestContentfulPaintType::kDataURI;
+  std::string imgSrc =
+      "data:image/gif;base64,R0lGODdhAgADAKEDAAAA//8AAAD/AP///"
+      "ywAAAAAAgADAAACBEwkAAUAOw==";
+  TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTypeTest, DataURIType_SVG) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kSVG |
+                  blink::LargestContentfulPaintType::kDataURI;
+  // percent-encoding of the svg url obtained by encodeURIComponent("<svg
+  // xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect
+  // stroke-width='2' stroke='black' x='1' y='1' width='14' height='14'
+  // fill='lime'/></svg>"
+  std::string imgSrc =
+      "data:image/"
+      "svg+xml, "
+      "%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%"
+      "200%2016%2016'%3E%3Crect%20stroke-width%3D'2'%20stroke%3D'black'%20x%3D'"
+      "1'%20y%3D'1'%20width%3D'14'%20height%3D'14'%20fill%3D'lime'%2F%3E%3C%"
+      "2Fsvg%3E";
+
+  TestImage(imgSrc, flag_set);
+}

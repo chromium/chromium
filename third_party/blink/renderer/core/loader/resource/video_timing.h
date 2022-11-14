@@ -23,6 +23,8 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   void SetUrl(const KURL& url) { url_ = url; }
   const KURL& Url() const override { return url_; }
+  // TODO: Detect data URLs in video elements.
+  bool IsDataUrl() const override { return false; }
 
   void SetIsSufficientContentLoadedForPaint() override { is_loaded_ = true; }
   bool IsSufficientContentLoadedForPaint() const override { return is_loaded_; }

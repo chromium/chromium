@@ -330,6 +330,12 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
       // Set specific type of the image.
       lcp_details_.largest_contentful_paint_type_ |=
           GetLargestContentfulPaintTypeFromString(image_record->media_type_);
+
+      // Set DataURI type.
+      if (image_record->media_timing->IsDataUrl()) {
+        lcp_details_.largest_contentful_paint_type_ |=
+            blink::LargestContentfulPaintType::kDataURI;
+      }
     }
   }
   lcp_details_.largest_image_paint_time_ = image_paint_time;

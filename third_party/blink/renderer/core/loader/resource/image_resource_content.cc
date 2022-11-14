@@ -687,6 +687,10 @@ const KURL& ImageResourceContent::Url() const {
   return info_->Url();
 }
 
+bool ImageResourceContent::IsDataUrl() const {
+  return Url().ProtocolIsData();
+}
+
 base::TimeTicks ImageResourceContent::LoadResponseEnd() const {
   return info_->LoadResponseEnd();
 }
