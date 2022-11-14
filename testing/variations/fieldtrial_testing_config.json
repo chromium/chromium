@@ -68,16 +68,8 @@
     "AlignWakeUps": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
                 "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -2226,14 +2218,7 @@
     "CacheFeatureOverrideState": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -3070,6 +3055,69 @@
             ]
         }
     ],
+    "CombinedPowerExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "delay": "30s"
+                    },
+                    "enable_features": [
+                        "AlignWakeUps",
+                        "AlwaysAbandonScheduledTask",
+                        "CacheFeatureOverrideState",
+                        "DelayFirstParkingOfStrings",
+                        "EarlyExitOnNoopClassOrStyleChange",
+                        "ExplicitHighResolutionTimerWin",
+                        "MessagePumpMacDelayedWorkOptimizations",
+                        "NoWakeUpsForCanceledTasks",
+                        "ReduceCpuUtilization",
+                        "RemoveCanceledTasksInTaskQueue2",
+                        "V8DelayMemoryReducer"
+                    ],
+                    "disable_features": [
+                        "FontManagerEarlyInit"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "delay": "30s"
+                    },
+                    "enable_features": [
+                        "AlignWakeUps",
+                        "AlwaysAbandonScheduledTask",
+                        "CacheFeatureOverrideState",
+                        "DelayFirstParkingOfStrings",
+                        "EarlyExitOnNoopClassOrStyleChange",
+                        "ExplicitHighResolutionTimerWin",
+                        "MessagePumpMacDelayedWorkOptimizations",
+                        "NoWakeUpsForCanceledTasks",
+                        "ReduceCpuUtilization",
+                        "RemoveCanceledTasksInTaskQueue2",
+                        "V8DelayMemoryReducer"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceHintAndroid": [
         {
             "platforms": [
@@ -3612,28 +3660,6 @@
             ]
         }
     ],
-    "DelayFirstParkingOfStrings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayFirstParkingOfStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "DelayFirstWorkerWake": [
         {
             "platforms": [
@@ -4062,26 +4088,6 @@
             ]
         }
     ],
-    "DisableFontManagerEarlyInitDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "FontManagerEarlyInit"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
@@ -4417,14 +4423,7 @@
     "EarlyExitOnNoopClassOrStyleChange": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -6888,21 +6887,6 @@
             ]
         }
     ],
-    "MessagePumpMacDelayedWorkOptimizations": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagePumpMacDelayedWorkOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "MessagesForAndroidOfferNotification": [
         {
             "platforms": [
@@ -7219,14 +7203,8 @@
     "NoWakeUpsForCanceledTasks": [
         {
             "platforms": [
-                "android",
                 "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -9400,14 +9378,7 @@
     "ReduceCpuUtilization": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -9515,15 +9486,8 @@
     "RemoveCanceledTasksInTaskQueue2": [
         {
             "platforms": [
-                "android",
                 "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
@@ -11879,14 +11843,7 @@
     "V8DelayMemoryReducer": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
