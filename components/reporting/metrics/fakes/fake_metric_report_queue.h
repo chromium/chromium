@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/repeating_test_future.h"
 #include "base/time/time.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -36,14 +37,16 @@ class FakeMetricReportQueue : public MetricReportQueue {
       MetricData metric_data,
       ReportQueue::EnqueueCallback callback = base::DoNothing()) override;
 
-  const std::vector<MetricData>& GetMetricDataReported() const;
+  MetricData GetMetricDataReported();
 
   int GetNumFlush() const;
+
+  bool IsEmpty() const;
 
  private:
   void Flush() override;
 
-  std::vector<MetricData> reported_data_;
+  base::test::RepeatingTestFuture<MetricData> reported_data_;
 
   int num_flush_ = 0;
 };

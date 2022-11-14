@@ -18,6 +18,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/reporting/client:report_queue",
     "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:metric_data_proto",

@@ -43,7 +43,7 @@ FakeMetricReportQueue::FakeMetricReportQueue(
 
 void FakeMetricReportQueue::Enqueue(MetricData metric_data,
                                     ReportQueue::EnqueueCallback callback) {
-  reported_data_.emplace_back(std::move(metric_data));
+  reported_data_.AddValue(std::move(metric_data));
   std::move(callback).Run(Status());
 }
 
@@ -53,12 +53,15 @@ void FakeMetricReportQueue::Flush() {
   num_flush_++;
 }
 
-const std::vector<MetricData>& FakeMetricReportQueue::GetMetricDataReported()
-    const {
-  return reported_data_;
+MetricData FakeMetricReportQueue::GetMetricDataReported() {
+  return reported_data_.Take();
 }
 
 int FakeMetricReportQueue::GetNumFlush() const {
   return num_flush_;
+}
+
+bool FakeMetricReportQueue::IsEmpty() const {
+  return reported_data_.IsEmpty();
 }
 }  // namespace reporting::test

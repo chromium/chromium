@@ -63,11 +63,10 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
   for (size_t i = 0; i < reporting_count; ++i) {
     event_observer_ptr->RunCallback(metric_data);
 
-    const auto& metric_data_reported =
+    MetricData metric_data_reported =
         metric_report_queue_->GetMetricDataReported();
-    ASSERT_THAT(metric_data_reported, ::testing::SizeIs(i + 1));
-    EXPECT_TRUE(metric_data_reported[i].has_timestamp_ms());
-    EXPECT_TRUE(metric_data_reported[i].has_event_data());
+    EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+    EXPECT_TRUE(metric_data_reported.has_event_data());
   }
 
   // Setting disabled, no more data should be reported even if the callback is
@@ -77,8 +76,7 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
-  EXPECT_THAT(metric_report_queue_->GetMetricDataReported(),
-              ::testing::SizeIs(reporting_count));
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
@@ -96,17 +94,17 @@ TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
-  EXPECT_TRUE(metric_report_queue_->GetMetricDataReported().empty());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
   settings_->SetBoolean(kEventEnableSettingPath, true);
 
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
-  const auto& metric_data_reported =
+  MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
-  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  EXPECT_TRUE(metric_data_reported.has_event_data());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
@@ -123,11 +121,11 @@ TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
   ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
   event_observer_ptr->RunCallback(metric_data);
 
-  const auto& metric_data_reported =
+  MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
-  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_event_data());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
@@ -144,7 +142,7 @@ TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
   event_observer_ptr->RunCallback(metric_data);
 
   ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
-  EXPECT_TRUE(metric_report_queue_->GetMetricDataReported().empty());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 TEST_F(MetricEventObserverManagerTest, EventDrivenTelemetry) {
@@ -188,18 +186,17 @@ TEST_F(MetricEventObserverManagerTest, EventDrivenTelemetry) {
   event_observer_ptr->RunCallback(std::move(event_metric_data));
   task_environment_.RunUntilIdle();
 
-  const auto& metric_data_reported =
+  MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
 
-  ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
-  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0].has_event_data());
-  ASSERT_TRUE(metric_data_reported[0].has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[0].telemetry_data().has_audio_telemetry());
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_event_data());
+  ASSERT_TRUE(metric_data_reported.has_telemetry_data());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().has_audio_telemetry());
   EXPECT_FALSE(
-      metric_data_reported[0].telemetry_data().has_peripherals_telemetry());
-  EXPECT_TRUE(
-      metric_data_reported[0].telemetry_data().has_networks_telemetry());
+      metric_data_reported.telemetry_data().has_peripherals_telemetry());
+  EXPECT_TRUE(metric_data_reported.telemetry_data().has_networks_telemetry());
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 }  // namespace

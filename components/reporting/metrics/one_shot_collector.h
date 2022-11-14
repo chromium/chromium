@@ -1,0 +1,57 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_REPORTING_METRICS_ONE_SHOT_COLLECTOR_H_
+#define COMPONENTS_REPORTING_METRICS_ONE_SHOT_COLLECTOR_H_
+
+#include <memory>
+#include <string>
+
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/collector_base.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace reporting {
+
+class MetricReportQueue;
+class MetricReportingController;
+class ReportingSettings;
+
+// Class to collect and report metric data only one time when the reporting
+// setting is enabled.
+class OneShotCollector : public CollectorBase {
+ public:
+  OneShotCollector(
+      Sampler* sampler,
+      MetricReportQueue* metric_report_queue,
+      ReportingSettings* reporting_settings,
+      const std::string& setting_path,
+      bool setting_enabled_default_value,
+      ReportQueue::EnqueueCallback on_data_reported = base::DoNothing());
+
+  OneShotCollector(const OneShotCollector& other) = delete;
+  OneShotCollector& operator=(const OneShotCollector& other) = delete;
+
+  ~OneShotCollector() override;
+
+ protected:
+  void Collect() override;
+
+  void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
+
+ private:
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
+
+  std::unique_ptr<MetricReportingController> reporting_controller_;
+
+  ReportQueue::EnqueueCallback on_data_reported_;
+
+  bool data_collected_ = false;
+};
+}  // namespace reporting
+
+#endif  // COMPONENTS_REPORTING_METRICS_ONE_SHOT_COLLECTOR_H_
