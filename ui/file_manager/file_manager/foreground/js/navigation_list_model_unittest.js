@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {DialogType} from '../../common/js/dialog_type.js';
-import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
@@ -579,6 +579,65 @@ export function testMyFilesVolumeEnabled(callback) {
         assertTrue(foundEntries[0].isDirectory);
       }),
       callback);
+}
+
+/**
+ * Tests that Android and Crostini, which are displayed within MyFiles, are set
+ * to disabled/enabled correctly.
+ */
+export function testMyFilesSubdirectoriesCanBeDisabled() {
+  const volumeManager = new MockVolumeManager();
+  // Item 1 of the volume info list should have Downloads volume type.
+  assertEquals(
+      VolumeManagerCommon.VolumeType.DOWNLOADS,
+      volumeManager.volumeInfoList.item(1).volumeType);
+  // Create a downloads folder inside the item.
+  const downloadsVolume = volumeManager.volumeInfoList.item(1);
+  /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
+    '/Downloads/',
+  ]);
+
+  const shortcutListModel = new MockFolderShortcutDataModel([]);
+  const recentItem = null;
+
+  // Create Android 'Play files' volume and set as disabled.
+  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+  volumeManager.isDisabled = (volume) => {
+    return (volume === VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  };
+
+  // Create Crostini 'Linux files' volume. It should be enabled by default.
+  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.CROSTINI, 'crostini'));
+
+  // Navigation items built above:
+  //  1. My files
+  //       -> Play files
+  //       -> Linux files
+  //  2. Drive  - added by default by MockVolumeManager.
+
+  // Constructor already calls orderAndNestItems_.
+  const model = new NavigationListModel(
+      volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
+
+  assertEquals(2, model.length);
+  assertEquals(str('MY_FILES_ROOT_LABEL'), model.item(0).label);
+  assertEquals(str('DRIVE_DIRECTORY_LABEL'), model.item(1).label);
+
+  // Android is displayed within My files, and should be disabled.
+  const myFilesItem = /** @type {!NavigationModelFakeItem} */ (model.item(0));
+  const myFilesEntryList = /** @type {!EntryList} */ (myFilesItem.entry);
+  assertEquals(2, myFilesEntryList.getUIChildren().length);
+  const androidItem =
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[0]);
+  const crostiniItem =
+      /** @type {!VolumeEntry} */ (myFilesEntryList.getUIChildren()[1]);
+  assertEquals('android_files:droid', androidItem.name);
+  assertTrue(androidItem.disabled);
+  assertEquals('crostini', crostiniItem.name);
+  assertFalse(crostiniItem.disabled);
 }
 
 /**

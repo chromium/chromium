@@ -24,7 +24,7 @@ import {MockFolderShortcutDataModel} from '../mock_folder_shortcut_data_model.js
 import {MockNavigationListModel} from '../mock_navigation_list_model.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationSection} from '../navigation_list_model.js';
 
-import {DirectoryTree, EntryListItem} from './directory_tree.js';
+import {DirectoryTree, EntryListItem, SubDirectoryItem} from './directory_tree.js';
 
 /** @type {!MockVolumeManager} */
 let volumeManager;
@@ -614,6 +614,53 @@ export function testUpdateSubElementsFromList() {
         str('REMOVABLE_DIRECTORY_LABEL'),
       ],
       getDirectoryTreeItemLabels(directoryTree));
+}
+
+/**
+ * Test case for updateSubElementsFromList.
+ *
+ * If some of the volumes under MyFiles are disabled, this should be reflected
+ * in the directory model as well.
+ */
+export function testUpdateSubElementsDisabled(callback) {
+  const recentItem = null;
+  const shortcutListModel = new MockFolderShortcutDataModel([]);
+  const androidAppListModel = createFakeAndroidAppListModel([]);
+
+  // Create Android 'Play files' volume and set as disabled.
+  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
+      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+  volumeManager.isDisabled = (volume) => {
+    return (volume === VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  };
+
+  const treeModel = new NavigationListModel(
+      volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
+      directoryModel, androidAppListModel, DialogType.FULL_PAGE);
+
+  // Populate the directory tree with the mock filesystem.
+  let directoryTree = createElements();
+  const mockMetadata = createMockMetadataModel();
+  DirectoryTree.decorate(
+      directoryTree, directoryModel, volumeManager, mockMetadata,
+      fileOperationManager, true);
+  directoryTree.dataModel = treeModel;
+
+  // Coerce to DirectoryTree type and update the tree.
+  directoryTree = /** @type {!DirectoryTree} */ (directoryTree);
+  directoryTree.updateSubElementsFromList(true);
+
+  const myFilesItem = directoryTree.items[0];
+
+  reportPromise(
+      waitUntil(() => {
+        return myFilesItem.items.length === 1;
+      }).then(() => {
+        const subdir = /** @type {!SubDirectoryItem} */ (myFilesItem.items[0]);
+        assertEquals(subdir.label, 'android_files:droid');
+        assertTrue(subdir.disabled);
+      }),
+      callback);
 }
 
 /**

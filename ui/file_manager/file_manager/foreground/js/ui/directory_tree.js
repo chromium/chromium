@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
+import {VolumeEntry} from '../../../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
 import {str, util} from '../../../common/js/util.js';
@@ -442,6 +443,7 @@ export class DirectoryItem extends FilesTreeItem {
               currentEntry.navigationModel, tree);
         } else {
           item = new SubDirectoryItem(label, currentEntry, this, tree);
+          item.disabled = !!currentEntry.disabled;
         }
         this.add(item);
         index++;
@@ -468,6 +470,7 @@ export class DirectoryItem extends FilesTreeItem {
               currentEntry.navigationModel, tree);
         } else {
           item = new SubDirectoryItem(label, currentEntry, this, tree);
+          item.disabled = !!currentEntry.disabled;
         }
         this.addAt(item, index);
         index++;

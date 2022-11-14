@@ -347,6 +347,8 @@ export class VolumeEntry {
 
     // TODO(lucmult): consider deriving this from volumeInfo.
     this.rootType = null;
+
+    this.disabled_ = false;
   }
 
   /**
@@ -391,6 +393,23 @@ export class VolumeEntry {
   get isFile() {
     // Defaults to false if root entry isn't resolved yet.
     return this.rootEntry_ ? this.rootEntry_.isFile : false;
+  }
+
+  /**
+   * @return {boolean} if this entry is disabled. This method is only valid for
+   * VolumeEntry instances.
+   */
+  get disabled() {
+    return this.disabled_;
+  }
+
+  /**
+   * Sets the disabled property. This method is only valid for
+   * VolumeEntry instances.
+   * @param {boolean} disabled
+   */
+  set disabled(disabled) {
+    this.disabled_ = disabled;
   }
 
   /**
