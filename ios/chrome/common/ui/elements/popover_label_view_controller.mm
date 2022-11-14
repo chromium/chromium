@@ -272,6 +272,22 @@ constexpr CGFloat kIconSize = 16;
   }
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [self updatePreferredContentSize];
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationController:
+            (UIPopoverPresentationController*)popoverPresentationController
+          willRepositionPopoverToRect:(inout CGRect*)rect
+                               inView:(inout UIView**)view {
+  // Popover moved to a different location, there might be more space available
+  // now so a new layout pass is needed.
+  [self.view setNeedsLayout];
+}
+
 #pragma mark - Private methods
 
 - (void)updateBackgroundColor {
@@ -337,7 +353,9 @@ constexpr CGFloat kIconSize = 16;
       [self.scrollView systemLayoutSizeFittingSize:CGSizeMake(width, 0)
                      withHorizontalFittingPriority:UILayoutPriorityRequired
                            verticalFittingPriority:500];
-  self.preferredContentSize = size;
+  [UIView performWithoutAnimation:^{
+    self.preferredContentSize = size;
+  }];
 }
 
 #pragma mark - UITextViewDelegate
