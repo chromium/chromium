@@ -2,11 +2,12 @@ caption: Suppress JavaScript Dialogs triggered from different origin subframes
 default: true
 desc: |-
   As described in https://www.chromestatus.com/feature/5148698084376576 , JavaScript modal dialogs, triggered by <ph name="JS_ALERT">window.alert</ph>, <ph name="JS_CONFIRM">window.confirm</ph>, and <ph name="JS_PROMPT">window.prompt</ph>, will be blocked in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> if triggered from a subframe whose origin is different from the main frame origin.
-         This policy allows overriding that change.
-         If the policy is set to enabled or unset, JavaScript dialogs triggered from a different origin subframe will be blocked.
-         If the policy is set to disabled, JavaScript dialogs triggered from a different origin subframe will not be blocked.
 
-         This policy will be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 95.
+  This policy allows overriding that change.
+  If the policy is set to enabled or unset, JavaScript dialogs triggered from a different origin subframe will be blocked.
+  If the policy is set to disabled, JavaScript dialogs triggered from a different origin subframe will not be blocked.
+
+  This policy will be removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> in the future.
 example_value: true
 features:
   dynamic_refresh: true
