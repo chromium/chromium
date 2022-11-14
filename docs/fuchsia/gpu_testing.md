@@ -21,6 +21,16 @@ $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir
 ```
 
+## Additional flags
+
+You can specify the following flags to help replicate failure cases:
+
+- `--test-filter=<regex of test cases>`: Use this to filter test cases
+- `--total-shards=<num shards>`: Specify total number of shards to split tests
+  over. You would use this to replicate sharding on a bot.
+- `--shard-index=<shard index>`: Specify shard index for splitting up the given
+  tests.
+
 ## Run on an physical device
 
 If ffx has already been set up to use the target device by default,
@@ -36,6 +46,15 @@ Otherwise, specify the id of the target device:
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir --target-id=[TARGET_ID]
+
+### Updating OS flag
+You can update the OS of a device by specifying the path to an image and how
+to check the OS:
+
+```bash
+$ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
+--browser=web-engine-shell --out-dir=/path/to/outdir -d --os-check=check
+--system-image-dir=path/to/dir/containing/image
 ```
 
 ## Run on a device that needs packages built from Fuchsia source
