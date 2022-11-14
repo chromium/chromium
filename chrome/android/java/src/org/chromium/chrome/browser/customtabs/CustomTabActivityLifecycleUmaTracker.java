@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
@@ -23,6 +22,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
+import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreUtils;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -33,9 +33,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.webapps.WebappCustomTabTimeSpentLogger;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -45,20 +42,6 @@ import javax.inject.Named;
 @ActivityScope
 public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
-    /**
-     * Identifier used for last CCT client App. Used as suffix for histogram
-     * "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch".
-     */
-    @StringDef({ClientIdentifierType.DIFFERENT, ClientIdentifierType.MIXED,
-            ClientIdentifierType.REFERRER, ClientIdentifierType.PACKAGE_NAME})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ClientIdentifierType {
-        String DIFFERENT = ".Different";
-        String MIXED = ".Mixed";
-        String REFERRER = ".Referrer";
-        String PACKAGE_NAME = ".PackageName";
-    }
-
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
@@ -194,10 +177,8 @@ public class CustomTabActivityLifecycleUmaTracker
     }
 
     /**
-     * Record shared pref and histogram when an retainable CCT session is launched back to back with
-     * same embedded app and URL, and user action has seen in the previous CCT. The embedded app is
-     * determine through taskId + package name combination. For the package name to use, this
-     * function will bias clientPackage if provided, otherwise fallback to referrer.
+     * Update shared preferences and record histogram when a retainable CCT session is launched back
+     * to back with same embedded app and URL, and user action was seen in the previous CCT.
      *
      * @param clientPackage Package name get from CCT service
      * @param referrer Referrer of the CCT activity.
@@ -213,15 +194,7 @@ public class CustomTabActivityLifecycleUmaTracker
                 preferences.readString(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER, null);
         int prevTaskId = preferences.readInt(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID);
 
-        preferences.writeInt(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID, taskId);
-        if (TextUtils.isEmpty(clientPackage)) {
-            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE);
-            preferences.writeString(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER, referrer);
-        } else {
-            preferences.writeString(
-                    ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, clientPackage);
-            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER);
-        }
+        updateSessionPreferences(preferences, clientPackage, referrer, taskId);
 
         if (!launchWithSameUrl
                 || !preferences.readBoolean(
@@ -229,32 +202,15 @@ public class CustomTabActivityLifecycleUmaTracker
             return;
         }
 
-        boolean hasClientPackage = !TextUtils.isEmpty(clientPackage);
-        String suffix = ClientIdentifierType.DIFFERENT;
-        if (hasClientPackage && TextUtils.equals(clientPackage, prevClientPackage)) {
-            suffix = ClientIdentifierType.PACKAGE_NAME;
-        } else if (!TextUtils.isEmpty(referrer) && TextUtils.equals(referrer, prevReferrer)
-                && prevTaskId == taskId) {
-            suffix = ClientIdentifierType.REFERRER;
-        } else if (hasClientPackage || prevTaskId == taskId) {
-            String currentPackage =
-                    hasClientPackage ? clientPackage : Uri.parse(referrer).getHost();
-            String prevPackage = !TextUtils.isEmpty(prevClientPackage)
-                    ? prevClientPackage
-                    : Uri.parse(prevReferrer).getHost();
-
-            if (TextUtils.equals(currentPackage, prevPackage)) {
-                suffix = ClientIdentifierType.MIXED;
-            }
-        }
-
+        String histogramSuffix = SessionRestoreUtils.getClientIdentifierType(
+                clientPackage, prevClientPackage, referrer, prevReferrer, taskId, prevTaskId);
         String histogramPrefix = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch";
         long time = SystemClock.uptimeMillis();
         long lastClosedTime =
                 preferences.readLong(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TIMESTAMP);
         if (lastClosedTime != 0 && lastClosedTime < time) {
             RecordHistogram.recordLongTimesHistogram(
-                    histogramPrefix + suffix, time - lastClosedTime);
+                    histogramPrefix + histogramSuffix, time - lastClosedTime);
         }
     }
 
@@ -282,5 +238,31 @@ public class CustomTabActivityLifecycleUmaTracker
             return activityReferrer.toString();
         }
         return IntentHandler.getReferrerUrlIncludingExtraHeaders(intent);
+    }
+
+    /**
+     * Updates the SharedPreferences for CCT session restore such that the current session is what
+     * will be compared back to as the previous session in the next potentially restorable
+     * Custom Tab activity.
+     *
+     * @param preferences Instance from {@link SharedPreferencesManager#getInstance()}.
+     * @param clientPackage Package name from CCT service.
+     * @param referrer Referrer of the CCT activity.
+     * @param taskId The task Id of CCT activity.
+     */
+    static void updateSessionPreferences(SharedPreferencesManager preferences, String clientPackage,
+            String referrer, int taskId) {
+        preferences.writeInt(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID, taskId);
+        if (TextUtils.isEmpty(clientPackage) && TextUtils.isEmpty(referrer)) {
+            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE);
+            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER);
+        } else if (TextUtils.isEmpty(clientPackage)) {
+            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE);
+            preferences.writeString(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER, referrer);
+        } else {
+            preferences.writeString(
+                    ChromePreferenceKeys.CUSTOM_TABS_LAST_CLIENT_PACKAGE, clientPackage);
+            preferences.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_REFERRER);
+        }
     }
 }

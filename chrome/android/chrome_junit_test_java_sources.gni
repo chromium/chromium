@@ -115,6 +115,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreMessageControllerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/sessionrestore/SessionRestoreUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
