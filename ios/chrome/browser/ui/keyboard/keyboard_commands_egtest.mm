@@ -92,6 +92,19 @@ using chrome_test_util::SettingsDoneButton;
   [self verifyKeyboardCommandsAreRegistered];
 }
 
+// Tests that keyboard commands are registered when the BVC is showing in
+// MultiWindow mode.
+- (void)testKeyboardCommandsRegistered_MultiWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [self verifyKeyboardCommandsAreRegistered];
+}
+
 // Tests that keyboard commands are not registered when Settings are shown.
 - (void)testKeyboardCommandsNotRegistered_SettingsPresented {
   [ChromeEarlGreyUI openSettingsMenu];
