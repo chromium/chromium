@@ -203,36 +203,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
 
 # --- Skia roll test suppressions
-
-crbug.com/1354678 compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
-crbug.com/1354678 compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
-crbug.com/1354678 fast/css/transformed-mask.html [ Failure Pass ]
-crbug.com/1354678 paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
-crbug.com/1354678 css3/filters/effect-reference-zoom-hw.html [ Failure Pass ]
-crbug.com/1354678 css3/filters/effect-reference-zoom.html [ Failure Pass ]
-crbug.com/1354678 svg/filters/feOffset.svg [ Failure Pass ]
-crbug.com/1354678 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-boundary.html [ Failure Pass ]
-
-crbug.com/1376647 [ Linux ] compositing/masks/mask-with-added-filters.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] compositing/overflow/border-radius-above-composited-subframe.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] compositing/overflow/border-radius-composited-subframe.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] compositing/overflow/mask-with-filter.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/backdrop-filter-basic-blur.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/backdrop-filter-boundary.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/backdrop-filter-edge-clipping-2.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/backdrop-filter-edge-pixels.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/effect-brightness-clamping-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/filter-repaint-child-layers.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/filter-repaint-composited-fallback-crash.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] css3/filters/filter-repaint-composited-fallback.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-all-on-background-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-combined-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-reference-colorspace-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-reference-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-reference-ordering-hw.html [ Failure Pass ]
-crbug.com/1376647 [ Linux ] virtual/scalefactor200/css3/filters/effect-reference-subregion-hw.html [ Failure Pass ]
-
 # --- END Skia roll test suppresions
 
 # ====== Popover and Anchor Positioning failures from here ======

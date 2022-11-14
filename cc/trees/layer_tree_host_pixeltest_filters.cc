@@ -91,12 +91,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTestGPU);
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
-  if (renderer_type() == viz::RendererType::kSkiaVk) {
-    // TODO(crbug.com/1354678): The vulkan expected image requires rebasing
-    // after Skia roll, so skip this test until then.
-    return;
-  }
-
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(200, 200), SK_ColorWHITE);
 
