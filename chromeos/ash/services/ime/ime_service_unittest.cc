@@ -106,10 +106,6 @@ class TestImeDecoder : public ImeDecoder {
         .process = [](const uint8_t* data, size_t size) {},
         .init_mojo_mode = [](ImeCrosPlatform* platform) {},
         .close_mojo_mode = []() {},
-        .connect_to_input_method =
-            [](const char* ime_spec, uint32_t receiver_pipe_handle,
-               uint32_t host_pipe_handle,
-               uint32_t host_pipe_version) { return false; },
         .initialize_connection_factory =
             [](uint32_t receiver_pipe_handle) {
               return g_test_decoder_state->InitializeConnectionFactory(

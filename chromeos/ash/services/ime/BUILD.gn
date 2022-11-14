@@ -93,10 +93,7 @@ source_set("services_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [
-    "decoder/system_engine_unittest.cc",
-    "ime_service_unittest.cc",
-  ]
+  sources = [ "ime_service_unittest.cc" ]
 }
 
 static_library("test_support") {

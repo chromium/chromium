@@ -248,20 +248,6 @@ __attribute__((visibility("default"))) void ImeDecoderProcess(
     size_t size);
 
 // ****************************************************************************
-// ************************* DEPRECATED MOJO MODE *****************************
-// ****************************************************************************
-// DEPRECATED: This method of bootstrapping a Mojo connection has been
-// deprecated in favor of the InitializeConnectionFactory method below.
-//
-// Bootstraps a direct Mojo connection with an input method in this IME shared
-// lib. Returns false if the connection attempt was unsuccessful.
-__attribute__((visibility("default"))) bool ConnectToInputMethod(
-    const char* ime_spec,
-    uint32_t receiver_input_method_handle,
-    uint32_t remote_input_method_host_handle,
-    uint32_t remote_input_method_host_version);
-
-// ****************************************************************************
 // ***************************** MOJO MODE ************************************
 // ****************************************************************************
 

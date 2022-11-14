@@ -87,8 +87,6 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
           library.GetFunctionPointer(kInitMojoModeFnName)),
       .close_mojo_mode = reinterpret_cast<CloseMojoModeFn>(
           library.GetFunctionPointer(kCloseMojoModeFnName)),
-      .connect_to_input_method = reinterpret_cast<ConnectToInputMethodFn>(
-          library.GetFunctionPointer(kConnectToInputMethodFnName)),
       .initialize_connection_factory =
           reinterpret_cast<InitializeConnectionFactoryFn>(
               library.GetFunctionPointer(kInitializeConnectionFactoryFnName)),
@@ -100,7 +98,7 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   if (!entry_points.init_proto_mode || !entry_points.close_proto_mode ||
       !entry_points.supports || !entry_points.activate_ime ||
       !entry_points.process || !entry_points.init_mojo_mode ||
-      !entry_points.close_mojo_mode || !entry_points.connect_to_input_method ||
+      !entry_points.close_mojo_mode ||
       !entry_points.is_input_method_connected ||
       !entry_points.initialize_connection_factory) {
     return absl::nullopt;

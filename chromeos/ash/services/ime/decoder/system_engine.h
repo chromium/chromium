@@ -36,12 +36,6 @@ class SystemEngine {
   SystemEngine& operator=(const SystemEngine&) = delete;
   ~SystemEngine();
 
-  // Binds the mojom::InputMethod interface to this object and returns true if
-  // the given ime_spec is supported by the engine.
-  bool BindRequest(const std::string& ime_spec,
-                   mojo::PendingReceiver<mojom::InputMethod> receiver,
-                   mojo::PendingRemote<mojom::InputMethodHost> host);
-
   // Binds the mojom::ConnectionFactory interface in the shared library.
   bool BindConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> receiver);

@@ -43,13 +43,6 @@ typedef void (*InitMojoModeFn)(ImeCrosPlatform* platform);
 inline constexpr char kCloseMojoModeFnName[] = "CloseMojoMode";
 typedef void (*CloseMojoModeFn)();
 
-inline constexpr char kConnectToInputMethodFnName[] = "ConnectToInputMethod";
-typedef bool (*ConnectToInputMethodFn)(
-    const char* ime_spec,
-    uint32_t receiver_input_method_handle,
-    uint32_t remote_input_method_host_handle,
-    uint32_t remote_input_method_host_version);
-
 inline constexpr char kInitializeConnectionFactoryFnName[] =
     "InitializeConnectionFactory";
 typedef bool (*InitializeConnectionFactoryFn)(
@@ -85,12 +78,6 @@ class ImeDecoder {
 
     InitMojoModeFn init_mojo_mode;
     CloseMojoModeFn close_mojo_mode;
-
-    // TODO(b/214153032): Prefix the following with "mojo_mode_" to better
-    // indicate they only pertain to the IME shared lib's MojoMode. While it's
-    // "hard" to rename corresponding "C" API functions due to cross-repo
-    // backward compat requirements, these are local and rename is feasible.
-    ConnectToInputMethodFn connect_to_input_method;
     InitializeConnectionFactoryFn initialize_connection_factory;
     IsInputMethodConnectedFn is_input_method_connected;
   };
