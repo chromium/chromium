@@ -76,7 +76,7 @@ struct SearchParams {
   // Relevance score will be calculated as a combination of prefix and fuzzy
   // matching. A Data item is relevant if the overall relevance score is above
   // this threshold. The threshold should be in [0,1].
-  double relevance_threshold = 0.32;
+  double relevance_threshold = 0.64;
   // |prefix_threshold| and |fuzzy_threshold| will be applicable if the backend
   // is kInvertedIndex. When a query term is matched against a Data item, it
   // will be considered relevant if either its prefix score is above

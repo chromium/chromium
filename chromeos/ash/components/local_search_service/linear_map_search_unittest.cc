@@ -185,7 +185,7 @@ TEST_F(LinearMapSearchTest, RelevanceThreshold) {
   }
   {
     SearchParams search_params;
-    search_params.relevance_threshold = 0.9;
+    search_params.relevance_threshold = 0.95;
     index_->SetSearchParams(search_params);
 
     FindAndCheckResults(index_.get(), "wifi",

@@ -30,6 +30,9 @@ constexpr double kPartialMatchPenaltyRate = 0.9;
 constexpr double kMinScore = 0.0;
 constexpr double kMaxScore = 1.0;
 
+// The maximum supported size for a prefix matching scoring boost.
+constexpr size_t kMaxBoostSize = 2;
+
 // Returns sorted tokens from a TokenizedString.
 std::vector<std::u16string> ProcessAndSort(const TokenizedString& text) {
   std::vector<std::u16string> result;
@@ -258,19 +261,23 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
     return relevance;
   }
 
-  const double prefix_score = PrefixMatcher(query, text);
+  double prefix_score = PrefixMatcher(query, text);
+  // A scoring boost for short prefix matching queries.
+  if (query_size <= kMaxBoostSize && prefix_score > kMinScore) {
+    prefix_score = std::min(
+        1.0, prefix_score + 2.0 / (query_size * (query_size + text_size)));
+  }
 
   if (use_weighted_ratio) {
-    // If WeightedRatio is used, |relevance_| is the average of WeightedRatio
+    // If WeightedRatio is used, |relevance_| is the maximum of WeightedRatio
     // and PrefixMatcher scores.
-    relevance = (WeightedRatio(query, text) + prefix_score) / 2;
+    relevance = std::max(WeightedRatio(query, text), prefix_score);
   } else {
     // Use simple algorithm to calculate match ratio.
-    relevance = (SequenceMatcher(base::i18n::ToLower(query_text),
-                                 base::i18n::ToLower(text_text))
-                     .Ratio() +
-                 prefix_score) /
-                2;
+    relevance = std::max(SequenceMatcher(base::i18n::ToLower(query_text),
+                                         base::i18n::ToLower(text_text))
+                             .Ratio(),
+                         prefix_score);
   }
 
   // If AcronymMatcher is used, return the maximum of the acronym match score

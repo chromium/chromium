@@ -37,7 +37,7 @@ using ::ash::string_matching::TokenizedString;
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;
 
-constexpr double kRelevanceThreshold = 0.32;
+constexpr double kRelevanceThreshold = 0.64;
 constexpr size_t kMaxResults = 3u;
 constexpr double kEpsilon = 1e-5;
 

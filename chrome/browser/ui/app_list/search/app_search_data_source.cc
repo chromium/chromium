@@ -48,7 +48,7 @@ constexpr size_t kMinimumReservedAppsContainerCapacity = 60U;
 
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;
-constexpr double kRelevanceThreshold = 0.32;
+constexpr double kRelevanceThreshold = 0.64;
 
 // Default recommended apps in descending order of priority.
 constexpr const char* const ranked_default_app_ids[] = {
