@@ -49089,6 +49089,32 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Broadcast"/>
 </enum>
 
+<enum name="GscArvStatus">
+  <int value="0" label="not run"/>
+  <int value="1" label="pass unverified gbb"/>
+  <int value="2" label="fail"/>
+  <int value="3" label="unsupported unknown"/>
+  <int value="4" label="unsupported not triggered"/>
+  <int value="5" label="unsupported triggered"/>
+  <int value="6" label="pass"/>
+  <int value="7" label="in progress"/>
+  <int value="20" label="v2 success"/>
+  <int value="21" label="v2 failed verification"/>
+  <int value="22" label="v2 inconsistent gscvd"/>
+  <int value="23" label="v2 inconsistent keyblock"/>
+  <int value="24" label="v2 inconsistent key"/>
+  <int value="25" label="v2 spi read"/>
+  <int value="26" label="v2 unsupported crypto algorithm"/>
+  <int value="27" label="v2 version mismatch"/>
+  <int value="28" label="v2 out of memory"/>
+  <int value="29" label="v2 internal"/>
+  <int value="30" label="v2 too big"/>
+  <int value="31" label="v2 missing gscvd"/>
+  <int value="32" label="v2 board id mismatch"/>
+  <int value="33" label="v2 setting not provisioned"/>
+  <int value="34" label="v2 unknown"/>
+</enum>
+
 <enum name="GuestOsFailureClasses">
   <int value="0" label="Concierge"/>
   <int value="1" label="Cicerone"/>

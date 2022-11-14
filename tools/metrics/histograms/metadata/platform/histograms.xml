@@ -1886,6 +1886,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.{GSC}.ARVStatus" enum="GscArvStatus"
+    expires_after="2023-11-09">
+  <owner>vbendeb@chromium.org</owner>
+  <owner>ti50-core+uma@chromium.org</owner>
+  <summary>
+    A histogram of values representing AP RO verification state on ChromeOS
+    devices in the field. The values are collected on each ChromeOS start up and
+    are clustered in two ranges: 0..7 and 20..34, both ranges could grow.
+
+    Cr50 and Ti50 are two generations of GSC (Google Security Chip), their AP RO
+    verification states are named such that it is clear which particular chip
+    version they refer to.
+  </summary>
+  <token key="GSC">
+    <variant name="Cr50"/>
+    <variant name="Ti50"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.{GSC}.BoardIdFlags" enum="Cr50BoardIdFlags"
     expires_after="2023-02-10">
   <owner>apronin@chromium.org</owner>
