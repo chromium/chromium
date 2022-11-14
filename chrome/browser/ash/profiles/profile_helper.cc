@@ -25,6 +25,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_types_ash.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -46,18 +47,6 @@ class UsernameHashMatcher {
  private:
   const std::string& username_hash;
 };
-
-bool IsSigninProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kInitialProfile;
-}
-
-bool IsLockScreenAppProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kLockScreenAppProfile;
-}
-
-bool IsLockScreenProfilePath(const base::FilePath& profile_path) {
-  return profile_path.value() == chrome::kLockScreenProfile;
-}
 
 }  // anonymous namespace
 
@@ -187,7 +176,7 @@ base::FilePath ProfileHelper::GetUserProfileDir(
 
 // static
 bool ProfileHelper::IsSigninProfile(const Profile* profile) {
-  return profile && IsSigninProfilePath(profile->GetBaseName());
+  return ::IsSigninProfile(profile);
 }
 
 // static
@@ -197,7 +186,7 @@ bool ProfileHelper::IsSigninProfileInitialized() {
 
 // static
 bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
-  return profile && IsLockScreenAppProfilePath(profile->GetBaseName());
+  return ::IsLockScreenAppProfile(profile);
 }
 
 // static
@@ -222,7 +211,7 @@ Profile* ProfileHelper::GetLockScreenProfile() {
 
 // static
 bool ProfileHelper::IsLockScreenProfile(const Profile* profile) {
-  return profile && IsLockScreenProfilePath(profile->GetBaseName());
+  return ::IsLockScreenProfile(profile);
 }
 
 // static
@@ -275,16 +264,12 @@ bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
 
 // static
 bool ProfileHelper::IsUserProfile(const Profile* profile) {
-  return !ProfileHelper::IsSigninProfile(profile) &&
-         !ProfileHelper::IsLockScreenAppProfile(profile) &&
-         !ProfileHelper::IsLockScreenProfile(profile);
+  return ::IsUserProfile(profile);
 }
 
 // static
 bool ProfileHelper::IsUserProfilePath(const base::FilePath& profile_path) {
-  return !IsSigninProfilePath(profile_path) &&
-         !IsLockScreenAppProfilePath(profile_path) &&
-         !IsLockScreenProfilePath(profile_path);
+  return ::IsUserProfilePath(profile_path);
 }
 
 // static
