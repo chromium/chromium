@@ -238,9 +238,11 @@ public final class ViewUtils {
      * @param view The view to call requestLayout on.
      * @param caller Some queryable information about the caller.
      */
+    // The trace event name is always a method/class name literal.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public static void requestLayout(View view, String caller) {
         assert view != null;
-        TraceEvent.instant("requestLayout", "caller: " + caller);
+        TraceEvent.instant("requestLayout caller: " + caller);
         view.requestLayout();
     }
 }
