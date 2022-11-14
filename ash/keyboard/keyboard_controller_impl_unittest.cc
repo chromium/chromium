@@ -24,6 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -770,6 +771,44 @@ TEST_F(KeyboardControllerImplTest, SwipeUpDoesntHideKeyboardInClamshellMode) {
                                              num_scroll_steps);
 
   EXPECT_FALSE(keyboard::IsKeyboardHiding());
+}
+
+TEST_F(KeyboardControllerImplTest, RecordsKeyRepeatSettings) {
+  // Initially expect no user preferences recorded.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled", /*count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/0u);
+
+  SimulateUserLogin("user1");
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled", /*count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/1u);
+
+  SimulateUserLogin("user2");
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled", /*count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/2u);
+
+  SimulateUserLogin("user1");
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay", /*count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled", /*count=*/2u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval", /*count=*/2u);
 }
 
 }  // namespace ash

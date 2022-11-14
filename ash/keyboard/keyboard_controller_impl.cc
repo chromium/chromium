@@ -23,6 +23,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -311,6 +312,20 @@ void KeyboardControllerImpl::OnSigninScreenPrefServiceInitialized(
 
 void KeyboardControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  if (prefs && !recorded_accounts_.contains(account_id)) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled",
+        prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled));
+    base::UmaHistogramTimes(
+        "ChromeOS.Settings.Device.KeyboardAutoRepeatDelay",
+        base::Milliseconds(prefs->GetInteger(prefs::kXkbAutoRepeatDelay)));
+    base::UmaHistogramTimes(
+        "ChromeOS.Settings.Device.KeyboardAutoRepeatInterval",
+        base::Milliseconds(prefs->GetInteger(prefs::kXkbAutoRepeatInterval)));
+    recorded_accounts_.insert(account_id);
+  }
+
   ObservePrefs(prefs);
 }
 

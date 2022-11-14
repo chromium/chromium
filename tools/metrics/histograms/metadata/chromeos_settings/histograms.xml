@@ -75,6 +75,30 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled"
+    enum="BooleanEnabled" expires_after="2023-11-01">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>dmblack@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records value of keyboard auto-repeat Enabled setting at session startup.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeat{Setting}"
+    units="ms" expires_after="2023-11-01">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>dmblack@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records value of keyboard auto-repeat {Setting} setting at session startup.
+  </summary>
+  <token key="Setting">
+    <variant name="Delay"/>
+    <variant name="Interval"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
     enum="BooleanToggled" expires_after="2023-03-15">
   <owner>jimmyxgong@chromium.org</owner>
