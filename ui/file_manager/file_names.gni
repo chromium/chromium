@@ -227,7 +227,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/position_util.js",
   "file_manager/foreground/js/ui/progress_center_panel.js",
   "file_manager/foreground/js/ui/providers_menu.js",
-  "file_manager/foreground/js/ui/search_box.js",
   "file_manager/foreground/js/ui/splitter.js",
   "file_manager/foreground/js/ui/table/table.js",
   "file_manager/foreground/js/ui/table/table_column.js",
@@ -262,6 +261,7 @@ ts_files = [
   # Containers.
   "file_manager/containers/breadcrumb_container.ts",
   "file_manager/containers/nudge_container.ts",
+  "file_manager/containers/search_container.ts",
 
   # Widgets.
   "file_manager/widgets/xf_base.ts",
@@ -270,6 +270,7 @@ ts_files = [
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_nudge.ts",
   "file_manager/widgets/xf_select.ts",
+  "file_manager/foreground/js/ui/search_autocomplete_list.ts",
 
   # Foreground.
   "file_manager/foreground/js/file_tasks.ts",
@@ -330,13 +331,17 @@ generate_definitions_js_files = [
   "file_manager/externs/volume_info.js",
   "file_manager/externs/volume_info_list.js",
   "file_manager/externs/volume_manager.js",
+  "file_manager/externs/search_item.js",
 ]
 
 # d.ts. files that are manually created and checked-in in the repo.
 checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
+  "file_manager/foreground/js/ui/autocomplete_list.d.ts",
   "file_manager/foreground/js/ui/command.d.ts",
+  "file_manager/foreground/js/ui/list.d.ts",
+  "file_manager/foreground/js/ui/list_item.d.ts",
   "file_manager/foreground/js/ui/multi_menu_button.d.ts",
 ]
 

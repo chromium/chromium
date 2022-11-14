@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
+import {decorate, define as crUiDefine} from '../../../common/js/ui.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
+import {SearchContainer} from '../../../containers/search_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
@@ -44,7 +45,6 @@ import {MultiMenu} from './multi_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
 import {ProvidersMenu} from './providers_menu.js';
-import {SearchBox} from './search_box.js';
 import {Splitter} from './splitter.js';
 
 
@@ -234,14 +234,12 @@ export class FileManagerUI {
         queryRequiredElement('.dialog-navigation-list', this.element);
 
     /**
-     * Search box.
-     * @type {!SearchBox}
+     * Search container, which controls search UI elements.
+     * @type {!SearchContainer}
      * @const
      */
-    this.searchBox = new SearchBox(
-        queryRequiredElement('#search-box', this.element),
-        queryRequiredElement('#search-wrapper', this.element),
-        queryRequiredElement('#search-button', this.element));
+    this.searchContainer = new SearchContainer(
+        queryRequiredElement('#search-wrapper', this.element));
 
     /**
      * Toggle-view button.

@@ -4,20 +4,22 @@
 
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {SEARCH_ITEM_CHANGED, SEARCH_QUERY_CHANGED, SearchContainer} from '../../containers/search_container.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {TaskController} from './task_controller.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
-import {SearchBox, SearchBoxEventType} from './ui/search_box.js';
+import {SearchItem} from './ui/search_autocomplete_list.js';
 
 /**
  * Controller for searching.
  */
 export class SearchController {
   /**
-   * @param {!SearchBox} searchBox Search box UI element.
+   * @param {!SearchContainer} searchContainer The controller of search
+   *     elements.
    * @param {!DirectoryModel} directoryModel Directory model.
    * @param {!VolumeManager} volumeManager Volume manager.
    * @param {!TaskController} taskController Task controller to execute the
@@ -25,9 +27,10 @@ export class SearchController {
    * @param {!FileManagerUI} a11y FileManagerUI to be able to announce a11y
    *     messages.
    */
-  constructor(searchBox, directoryModel, volumeManager, taskController, a11y) {
-    /** @const @private {!SearchBox} */
-    this.searchBox_ = searchBox;
+  constructor(
+      searchContainer, directoryModel, volumeManager, taskController, a11y) {
+    /** @const @private {!SearchContainer} */
+    this.searchContainer_ = searchContainer;
 
     /** @const @private {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
@@ -47,10 +50,11 @@ export class SearchController {
     /** @const @private {!FileManagerUI} */
     this.a11y_ = a11y;
 
-    searchBox.addEventListener(
-        SearchBoxEventType.TEXT_CHANGE, this.onTextChange_.bind(this));
-    searchBox.addEventListener(
-        SearchBoxEventType.ITEM_SELECT, this.onItemSelect_.bind(this));
+    searchContainer.addEventListener(SEARCH_QUERY_CHANGED, (event) => {
+      this.onTextChange_(event.detail.query);
+    });
+    searchContainer.addEventListener(
+        SEARCH_ITEM_CHANGED, this.onItemSelect_.bind(this));
     directoryModel.addEventListener('directory-changed', this.clear.bind(this));
   }
 
@@ -79,7 +83,7 @@ export class SearchController {
    */
   clear(opt_event) {
     this.directoryModel_.clearLastSearchQuery();
-    this.searchBox_.clear();
+    this.searchContainer_.clear();
     // Only update visibility if |clear| is called from "directory-changed"
     // event.
     if (opt_event) {
@@ -88,7 +92,7 @@ export class SearchController {
           (opt_event.newDirEntry &&
            opt_event.newDirEntry.rootType ===
                VolumeManagerCommon.RootType.MY_FILES);
-      this.searchBox_.setHidden(isMyFiles);
+      this.searchContainer_.setHidden(isMyFiles);
     }
   }
 
@@ -97,9 +101,8 @@ export class SearchController {
    * @param {string} searchQuery Search query string to be searched with.
    */
   setSearchQuery(searchQuery) {
-    this.searchBox_.inputElement.focus();
-    this.searchBox_.inputElement.value = searchQuery;
-    this.onTextChange_();
+    this.searchContainer_.setQuery(searchQuery);
+    this.onTextChange_(searchQuery);
     if (this.isOnDrive_) {
       this.onItemSelect_();
     }
@@ -107,10 +110,11 @@ export class SearchController {
 
   /**
    * Handles text change event.
+   * @param {string} query
    * @private
    */
-  onTextChange_() {
-    const searchString = this.searchBox_.inputElement.value.trimLeft();
+  onTextChange_(query) {
+    const searchString = query;
 
     // On drive, incremental search is not invoked since we have an auto-
     // complete suggestion instead.
@@ -138,7 +142,7 @@ export class SearchController {
     // Remember the most recent query. If there is an other request in progress,
     // then it's result will be discarded and it will call a new request for
     // this query.
-    const searchString = this.searchBox_.inputElement.value.trimLeft();
+    const searchString = this.searchContainer_.getQuery();
     this.lastAutocompleteQuery_ = searchString;
     if (this.autocompleteSuggestionsBusy_) {
       return;
@@ -148,24 +152,15 @@ export class SearchController {
     if (!searchString) {
       const msg = str('SEARCH_A11Y_CLEAR_SEARCH');
       this.a11y_.speakA11yMessage(msg);
-      this.searchBox_.autocompleteList.suggestions = [];
+      this.searchContainer_.clearSuggestions();
       return;
     }
 
     // Add header item.
     const headerItem = /** @type {SearchItem} */ (
         {isHeaderItem: true, searchQuery: searchString});
-    if (!this.searchBox_.autocompleteList.dataModel ||
-        this.searchBox_.autocompleteList.dataModel.length == 0) {
-      this.searchBox_.autocompleteList.suggestions = [headerItem];
-    } else {
-      // Updates only the head item to prevent a flickering on typing.
-      this.searchBox_.autocompleteList.dataModel.splice(0, 1, headerItem);
-    }
+    this.searchContainer_.setHeaderItem(headerItem);
 
-    // The autocomplete list should be resized and repositioned here as the
-    // search box is resized when it's focused.
-    this.searchBox_.autocompleteList.syncWidthAndPositionToInput();
     this.autocompleteSuggestionsBusy_ = true;
 
     chrome.fileManagerPrivate.searchDriveMetadata(
@@ -185,8 +180,8 @@ export class SearchController {
           }
 
           // Keeps the items in the suggestion list.
-          this.searchBox_.autocompleteList.suggestions =
-              [headerItem].concat(suggestions);
+          this.searchContainer_.setSuggestions(
+              [headerItem].concat(suggestions));
         });
   }
 
@@ -195,17 +190,17 @@ export class SearchController {
    * @private
    */
   onItemSelect_() {
-    const selectedItem = this.searchBox_.autocompleteList.selectedItem;
+    const selectedItem = this.searchContainer_.getSelectedItem();
 
     // Clear the current auto complete list.
     this.lastAutocompleteQuery_ = '';
-    this.searchBox_.autocompleteList.suggestions = [];
+    this.searchContainer_.clearSuggestions();
 
     // If the entry is the search item or no entry is selected, just change to
     // the search result.
     if (!selectedItem || selectedItem.isHeaderItem) {
       const query = selectedItem ? selectedItem.searchQuery :
-                                   this.searchBox_.inputElement.value;
+                                   this.searchContainer_.getQuery();
       this.search_(query);
       return;
     }
