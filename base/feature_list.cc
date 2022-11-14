@@ -75,7 +75,11 @@ class EarlyFeatureAccessTracker {
                       << stack_trace_->ToString();
     // Report the problem but don't crash if DCHECKs are disabled, to avoid
     // making Chrome unusable if a feature is accessed too early.
-    base::debug::DumpWithoutCrashing();
+    //
+    // TODO(crbug.com/1383852): Uncomment this once all known problematic cases
+    // are fixed. We don't want to increase the crash reporting rate while we
+    // work on known problematic cases.
+    // base::debug::DumpWithoutCrashing();
   }
 
   // Resets the state of this tracker.
