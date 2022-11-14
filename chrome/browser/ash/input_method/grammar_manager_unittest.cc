@@ -134,7 +134,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, /*text_input_flags=*/0);
+  manager.OnFocus(1, ui::SpellcheckMode::kUnspecified);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
@@ -155,7 +155,7 @@ TEST_F(GrammarManagerTest, RecordsUnderlinesMetricsWithoutDups) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, /*text_input_flags=*/0);
+  manager.OnFocus(1, ui::SpellcheckMode::kUnspecified);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error error", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
@@ -175,7 +175,7 @@ TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
                          &mock_suggestion_handler);
   base::HistogramTester histogram_tester;
 
-  manager.OnFocus(1, ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
+  manager.OnFocus(1, ui::SpellcheckMode::kDisabled);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));

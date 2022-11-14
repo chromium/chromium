@@ -434,7 +434,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                             ime::mojom::InputFieldType::kText,
                             ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kDisabled,
                             ime::mojom::TextPredictionMode::kDisabled)),
                         _, _))
         .WillOnce(
@@ -451,13 +451,9 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -500,13 +496,9 @@ TEST_F(NativeInputMethodEngineTest,
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   engine.FlushForTesting();
 
   InputMethodManager::Get()->GetActiveIMEState()->SetUIStyle(
@@ -525,13 +517,9 @@ TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdPinyin);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
   EXPECT_EQ(InputMethodManager::Get()
                 ->GetImeKeyboard()
@@ -562,7 +550,7 @@ TEST_F(NativeInputMethodEngineTest,
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                             ime::mojom::InputFieldType::kText,
                             ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kDisabled,
                             ime::mojom::TextPredictionMode::kEnabled)),
                         _, _))
         .WillOnce(
@@ -579,13 +567,9 @@ TEST_F(NativeInputMethodEngineTest,
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -613,7 +597,7 @@ TEST_F(
                 OnFocus(MojoEq(ime::mojom::InputFieldInfo(
                             ime::mojom::InputFieldType::kText,
                             ime::mojom::AutocorrectMode::kEnabled,
-                            ime::mojom::PersonalizationMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kDisabled,
                             ime::mojom::TextPredictionMode::kDisabled)),
                         _, _))
         .WillOnce(
@@ -630,13 +614,9 @@ TEST_F(
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
@@ -661,13 +641,9 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(input_context);
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   engine.FlushForTesting();
   ui::MockIMEInputContextHandler mock_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
@@ -717,10 +693,7 @@ TEST_F(NativeInputMethodEngineTest,
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(ui::TextInputMethod::InputContext(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled));
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
   // Each character in "你好" is one UTF-16 code unit.
   engine.SetSurroundingText(u"你好",
                             /*cursor_pos=*/2,
@@ -772,10 +745,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(ui::TextInputMethod::InputContext(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled));
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
   // Quote ("VKEY_OEM_7") + A is a dead key combination.
   engine.ProcessKeyEvent(
@@ -837,10 +807,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
-  engine.Focus(ui::TextInputMethod::InputContext(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled));
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
   // Enter and Backspace are named keys with Unicode representation.
   engine.ProcessKeyEvent(
@@ -888,10 +855,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   }
 
   engine.Enable(kEngineIdUs);
-  engine.Focus(ui::TextInputMethod::InputContext(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled));
+  engine.Focus(ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
 
   // Help is a named DOM key, but is not used by IMEs.
   engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_HELP, ui::DomCode::HELP,
@@ -953,10 +917,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", testing_profile);
-  ui::TextInputMethod::InputContext input_context(
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
-      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled);
+  ui::TextInputMethod::InputContext input_context(ui::TEXT_INPUT_TYPE_TEXT);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();
 

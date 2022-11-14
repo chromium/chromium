@@ -79,10 +79,7 @@ class InputMethodEngineBrowserTest
 
   ui::TextInputMethod::InputContext CreateInputContextWithInputType(
       ui::TextInputType type) {
-    return ui::TextInputMethod::InputContext(
-        type, ui::TEXT_INPUT_MODE_DEFAULT, ui::TEXT_INPUT_FLAG_NONE,
-        ui::TextInputClient::FOCUS_REASON_OTHER,
-        ui::PersonalizationMode::kDisabled);
+    return ui::TextInputMethod::InputContext(type);
   }
 
  protected:

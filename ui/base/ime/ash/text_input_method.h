@@ -55,6 +55,20 @@ enum class PersonalizationMode {
   kEnabled
 };
 
+enum class AutocompletionMode { kUnspecified, kDisabled, kEnabled };
+
+enum class AutocorrectionMode { kUnspecified, kDisabled, kEnabled };
+
+enum class SpellcheckMode { kUnspecified, kDisabled, kEnabled };
+
+enum class AutocapitalizationMode {
+  kUnspecified,
+  kNone,
+  kCharacters,
+  kWords,
+  kSentences,
+};
+
 // An interface representing an input method that can read and manipulate text
 // in a TextInputTarget. For example, this can represent a Japanese input method
 // that can compose and insert Japanese characters into a TextInputTarget.
@@ -67,25 +81,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   // A type of each member is based on the html spec, but InputContext can be
   // used to specify about a non html text field like Omnibox.
   struct InputContext {
-    InputContext(TextInputType type,
-                 TextInputMode mode,
-                 int flags,
-                 TextInputClient::FocusReason focus_reason,
-                 PersonalizationMode personalization_mode)
-        : type(type),
-          mode(mode),
-          flags(flags),
-          focus_reason(focus_reason),
-          personalization_mode(personalization_mode) {}
-    TextInputType type;
-    TextInputMode mode;
-    // Flags for web input fields. Please refer to WebTextInputType.
-    int flags;
+    explicit InputContext(TextInputType type) : type(type) {}
+
+    TextInputType type = ui::TEXT_INPUT_TYPE_NONE;
+    TextInputMode mode = ui::TEXT_INPUT_MODE_DEFAULT;
+    AutocompletionMode autocompletion_mode = AutocompletionMode::kUnspecified;
+    AutocorrectionMode autocorrection_mode = AutocorrectionMode::kUnspecified;
+    SpellcheckMode spellcheck_mode = SpellcheckMode::kUnspecified;
+    AutocapitalizationMode autocapitalization_mode =
+        AutocapitalizationMode::kUnspecified;
+    bool has_been_password = false;
     // How this input field was focused.
-    TextInputClient::FocusReason focus_reason;
+    TextInputClient::FocusReason focus_reason =
+        TextInputClient::FOCUS_REASON_NONE;
     // Whether text entered in this field should be used to improve typing
     // suggestions for the user.
-    PersonalizationMode personalization_mode;
+    PersonalizationMode personalization_mode = PersonalizationMode::kDisabled;
   };
 
   virtual ~TextInputMethod() = default;

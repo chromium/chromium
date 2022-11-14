@@ -29,11 +29,38 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
+namespace {
+
+template <typename T>
+T ConvertTextInputFlagToEnum(int flags, int flag_on_value, int flag_off_value) {
+  if (flags & flag_on_value) {
+    return T::kEnabled;
+  }
+  if (flags & flag_off_value) {
+    return T::kDisabled;
+  }
+  return T::kUnspecified;
+}
+
+AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
+  if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
+    return AutocapitalizationMode::kNone;
+  if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    return AutocapitalizationMode::kCharacters;
+  if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    return AutocapitalizationMode::kWords;
+  if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+    return AutocapitalizationMode::kSentences;
+  return AutocapitalizationMode::kUnspecified;
+}
+
+}  // namespace
 
 ui::TextInputMethod* GetEngine() {
   auto* bridge = ui::IMEBridge::Get();
@@ -847,16 +874,29 @@ bool InputMethodAsh::CanComposeInline() const {
 TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
   TextInputClient* client = GetTextInputClient();
   if (!client) {
-    return TextInputMethod::InputContext(
-        ui::TEXT_INPUT_TYPE_NONE, ui::TEXT_INPUT_MODE_DEFAULT, /*flags=*/0,
-        ui::TextInputClient::FOCUS_REASON_NONE, PersonalizationMode::kDisabled);
+    return TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_NONE);
   }
 
-  return TextInputMethod::InputContext(
-      client->GetTextInputType(), client->GetTextInputMode(),
-      client->GetTextInputFlags(), client->GetFocusReason(),
-      client->ShouldDoLearning() ? PersonalizationMode::kEnabled
-                                 : PersonalizationMode::kDisabled);
+  TextInputMethod::InputContext input_context(client->GetTextInputType());
+  input_context.mode = client->GetTextInputMode();
+  const int flags = client->GetTextInputFlags();
+  input_context.autocompletion_mode =
+      ConvertTextInputFlagToEnum<AutocompletionMode>(
+          flags, ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
+          ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_OFF);
+  input_context.autocorrection_mode =
+      ConvertTextInputFlagToEnum<AutocorrectionMode>(
+          flags, ui::TEXT_INPUT_FLAG_AUTOCORRECT_ON,
+          ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
+  input_context.autocapitalization_mode = ConvertAutocapitalizationMode(flags);
+  input_context.spellcheck_mode = ConvertTextInputFlagToEnum<SpellcheckMode>(
+      flags, ui::TEXT_INPUT_FLAG_SPELLCHECK_ON,
+      ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
+  input_context.focus_reason = client->GetFocusReason();
+  input_context.personalization_mode = client->ShouldDoLearning()
+                                           ? PersonalizationMode::kEnabled
+                                           : PersonalizationMode::kDisabled;
+  return input_context;
 }
 
 void InputMethodAsh::SendKeyEvent(KeyEvent* event) {

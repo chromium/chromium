@@ -8,12 +8,7 @@ namespace ui {
 
 static IMEBridge* g_ime_bridge = nullptr;
 
-IMEBridge::IMEBridge()
-    : current_input_context_(ui::TEXT_INPUT_TYPE_NONE,
-                             ui::TEXT_INPUT_MODE_DEFAULT,
-                             0,
-                             ui::TextInputClient::FOCUS_REASON_NONE,
-                             PersonalizationMode::kDisabled) {}
+IMEBridge::IMEBridge() : current_input_context_(ui::TEXT_INPUT_TYPE_NONE) {}
 
 IMEBridge::~IMEBridge() = default;
 

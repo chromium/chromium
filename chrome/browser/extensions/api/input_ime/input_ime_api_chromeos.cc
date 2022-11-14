@@ -482,15 +482,15 @@ class ImeObserverChromeOS
       private_api_input_context.mode = input_method_private::ParseInputModeType(
           ConvertInputContextMode(context));
       private_api_input_context.auto_correct =
-          ConvertInputContextAutoCorrect(context.flags);
+          ConvertInputContextAutoCorrect(context.autocorrection_mode);
       private_api_input_context.auto_complete =
-          ConvertInputContextAutoComplete(context.flags);
+          ConvertInputContextAutoComplete(context.autocompletion_mode);
       private_api_input_context.auto_capitalize =
-          ConvertInputContextAutoCapitalizePrivate(context.flags);
+          ConvertInputContextAutoCapitalizePrivate(
+              context.autocapitalization_mode);
       private_api_input_context.spell_check =
-          ConvertInputContextSpellCheck(context.flags);
-      private_api_input_context.has_been_password =
-          ConvertHasBeenPassword(context);
+          ConvertInputContextSpellCheck(context.spellcheck_mode);
+      private_api_input_context.has_been_password = context.has_been_password;
       private_api_input_context.should_do_learning =
           ConvertPersonalizationMode(context);
       private_api_input_context.focus_reason =
@@ -514,13 +514,14 @@ class ImeObserverChromeOS
       public_api_input_context.type =
           input_ime::ParseInputContextType(ConvertInputContextType(context));
       public_api_input_context.auto_correct =
-          ConvertInputContextAutoCorrect(context.flags);
+          ConvertInputContextAutoCorrect(context.autocorrection_mode);
       public_api_input_context.auto_complete =
-          ConvertInputContextAutoComplete(context.flags);
+          ConvertInputContextAutoComplete(context.autocompletion_mode);
       public_api_input_context.auto_capitalize =
-          ConvertInputContextAutoCapitalizePublic(context.flags);
+          ConvertInputContextAutoCapitalizePublic(
+              context.autocapitalization_mode);
       public_api_input_context.spell_check =
-          ConvertInputContextSpellCheck(context.flags);
+          ConvertInputContextSpellCheck(context.spellcheck_mode);
       public_api_input_context.should_do_learning =
           ConvertPersonalizationMode(context);
 
@@ -729,46 +730,47 @@ class ImeObserverChromeOS
     }
   }
 
-  bool ConvertInputContextAutoCorrect(int flags) {
+  bool ConvertInputContextAutoCorrect(ui::AutocorrectionMode mode) {
     return GetKeyboardConfig().auto_correct &&
-           !(flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
+           mode != ui::AutocorrectionMode::kDisabled;
   }
 
-  bool ConvertInputContextAutoComplete(int flags) {
+  bool ConvertInputContextAutoComplete(ui::AutocompletionMode mode) {
     return GetKeyboardConfig().auto_complete &&
-           !(flags & ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_OFF);
+           mode != ui::AutocompletionMode::kDisabled;
   }
 
   input_method_private::AutoCapitalizeType
-  ConvertInputContextAutoCapitalizePrivate(int flags) {
+  ConvertInputContextAutoCapitalizePrivate(ui::AutocapitalizationMode mode) {
     if (!GetKeyboardConfig().auto_capitalize)
       return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
-      return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
-      return input_method_private::AUTO_CAPITALIZE_TYPE_CHARACTERS;
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
-      return input_method_private::AUTO_CAPITALIZE_TYPE_WORDS;
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
-      return input_method_private::AUTO_CAPITALIZE_TYPE_SENTENCES;
 
-    // Autocapitalize flag may be missing for native text fields, crbug/1002713.
-    // As a safe default, use input_method_private::AUTO_CAPITALIZE_TYPE_OFF
-    // ("off" in API specs). This corresponds to Blink's "off" represented by
-    // ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE. Note: This fallback must not be
-    // input_method_private::AUTO_CAPITALIZE_TYPE_NONE which means "unspecified"
-    // and translates to JS falsy empty string, because the API specifies a
-    // non-falsy AutoCapitalizeType enum for InputContext.autoCapitalize.
-    return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+    switch (mode) {
+      case ui::AutocapitalizationMode::kUnspecified:
+        // Autocapitalize flag may be missing for native text fields,
+        // crbug/1002713. As a safe default, use
+        // input_method_private::AUTO_CAPITALIZE_TYPE_OFF
+        // ("off" in API specs). This corresponds to Blink's "off" represented
+        // by ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE. Note: This fallback must
+        // not be input_method_private::AUTO_CAPITALIZE_TYPE_NONE which means
+        // "unspecified" and translates to JS falsy empty string, because the
+        // API specifies a non-falsy AutoCapitalizeType enum for
+        // InputContext.autoCapitalize.
+        return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+      case ui::AutocapitalizationMode::kNone:
+        return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
+      case ui::AutocapitalizationMode::kCharacters:
+        return input_method_private::AUTO_CAPITALIZE_TYPE_CHARACTERS;
+      case ui::AutocapitalizationMode::kWords:
+        return input_method_private::AUTO_CAPITALIZE_TYPE_WORDS;
+      case ui::AutocapitalizationMode::kSentences:
+        return input_method_private::AUTO_CAPITALIZE_TYPE_SENTENCES;
+    }
   }
 
-  bool ConvertInputContextSpellCheck(int flags) {
+  bool ConvertInputContextSpellCheck(ui::SpellcheckMode mode) {
     return GetKeyboardConfig().spell_check &&
-           !(flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
-  }
-
-  bool ConvertHasBeenPassword(ui::TextInputMethod::InputContext input_context) {
-    return input_context.flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD;
+           mode != ui::SpellcheckMode::kDisabled;
   }
 
   std::string ConvertInputContextMode(
@@ -839,7 +841,7 @@ class ImeObserverChromeOS
   }
 
   input_ime::AutoCapitalizeType ConvertInputContextAutoCapitalizePublic(
-      int flags) {
+      ui::AutocapitalizationMode mode) {
     // NOTE: ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE corresponds to Blink's
     // "none" that's a synonym for "off", while
     // input_ime::AUTO_CAPITALIZE_TYPE_NONE auto-generated via API specs means
@@ -847,15 +849,19 @@ class ImeObserverChromeOS
     // emitted as the API specifies a non-falsy enum. So technically there's a
     // bug here; either this impl or the API needs fixing. However, as a public
     // API, the behaviour is left intact for now.
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
-      return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
-
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
-      return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
-    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
-      return input_ime::AUTO_CAPITALIZE_TYPE_WORDS;
-    // The default value is "sentences".
-    return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
+    switch (mode) {
+      case ui::AutocapitalizationMode::kNone:
+        return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
+      case ui::AutocapitalizationMode::kCharacters:
+        return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
+      case ui::AutocapitalizationMode::kWords:
+        return input_ime::AUTO_CAPITALIZE_TYPE_WORDS;
+      case ui::AutocapitalizationMode::kSentences:
+        return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
+      case ui::AutocapitalizationMode::kUnspecified:
+        // The default value is "sentences".
+        return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
+    }
   }
 
   std::string extension_id_;

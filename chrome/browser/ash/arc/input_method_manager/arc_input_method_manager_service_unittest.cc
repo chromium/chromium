@@ -941,10 +941,8 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::TextInputMethod::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled};
+  const ui::TextInputMethod::InputContext test_context(
+      ui::TEXT_INPUT_TYPE_TEXT);
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1038,10 +1036,8 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::TextInputMethod::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled};
+  const ui::TextInputMethod::InputContext test_context(
+      ui::TEXT_INPUT_TYPE_TEXT);
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1104,10 +1100,8 @@ TEST_F(ArcInputMethodManagerServiceTest, VisibilityObserver) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  const ui::TextInputMethod::InputContext test_context{
-      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE,
-      ui::PersonalizationMode::kEnabled};
+  const ui::TextInputMethod::InputContext test_context(
+      ui::TEXT_INPUT_TYPE_TEXT);
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);

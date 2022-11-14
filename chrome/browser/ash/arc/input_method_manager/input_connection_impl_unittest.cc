@@ -189,10 +189,7 @@ class InputConnectionImplTest : public testing::Test {
   MockTextInputClient* client() { return &text_input_client_; }
 
   ui::TextInputMethod::InputContext context() {
-    return ui::TextInputMethod::InputContext{
-        ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-        ui::TextInputClient::FOCUS_REASON_MOUSE,
-        ui::PersonalizationMode::kEnabled};
+    return ui::TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT);
   }
 
   void SetUp() override {
