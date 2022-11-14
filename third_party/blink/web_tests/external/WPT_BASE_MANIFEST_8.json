@@ -2114,6 +2114,13 @@
         {}
        ]
       ],
+      "multicol-at-page-boundary-print.html": [
+       "63b27c88cd01ccef03bb7eeffc3ee065194c5f33",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-block-in-inline-crash.html": [
        "037b558ac0be08da6dfa6868b06e7a03e44031de",
        [
@@ -2827,7 +2834,7 @@
       ]
      ],
      "spelling-error-005-crash.html": [
-      "b45fcc754653297e58cf079ff4c8274d1957862f",
+      "39b1aaf734a4f382aa742edb38cd346ae2408db7",
       [
        null,
        {}
