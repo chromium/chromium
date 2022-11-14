@@ -85,16 +85,6 @@ class FlashDeviceTest(unittest.TestCase):
             flash_device.flash(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
         self.assertEqual(self._ffx_mock.call_count, 4)
 
-    def test_flash_on_swarming(self) -> None:
-        """Test flash on swarming bots."""
-
-        with mock.patch('time.sleep'), \
-             mock.patch('flash_device.running_unattended',
-                        return_value = True), \
-             mock.patch('subprocess.run'):
-            flash_device.flash(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
-        self.assertEqual(self._ffx_mock.call_count, 3)
-
     def test_main(self) -> None:
         """Tests |main| function."""
 

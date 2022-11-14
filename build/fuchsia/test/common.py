@@ -118,7 +118,6 @@ def run_ffx_command(cmd: Iterable[str],
                     target_id: Optional[str] = None,
                     check: bool = True,
                     suppress_repair: bool = False,
-                    configs: Optional[List[str]] = None,
                     **kwargs) -> subprocess.CompletedProcess:
     """Runs `ffx` with the given arguments, waiting for it to exit.
 
@@ -136,7 +135,6 @@ def run_ffx_command(cmd: Iterable[str],
             exit code.
         suppress_repair: If True, do not attempt to find and run a repair
             command.
-        configs: A list of configs to be applied to the current command.
     Returns:
         A CompletedProcess instance
     Raises:
@@ -146,9 +144,6 @@ def run_ffx_command(cmd: Iterable[str],
     ffx_cmd = [_FFX_TOOL]
     if target_id:
         ffx_cmd.extend(('--target', target_id))
-    if configs:
-        for config in configs:
-            ffx_cmd.extend(('--config', config))
     ffx_cmd.extend(cmd)
     env = os.environ
     if _FFX_ISOLATE_DIR:

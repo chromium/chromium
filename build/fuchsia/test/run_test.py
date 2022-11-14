@@ -7,6 +7,7 @@
 import argparse
 import sys
 import tempfile
+import time
 
 from contextlib import ExitStack
 from typing import List
@@ -14,9 +15,9 @@ from typing import List
 from common import register_common_args, register_device_args, \
                    register_log_args, resolve_packages, resolve_v1_packages, \
                    set_ffx_isolate_dir
-from compatible_utils import running_unattended
+from compatible_utils import pave, running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
-from flash_device import flash, register_flash_args
+from flash_device import register_flash_args, update_required
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
@@ -82,8 +83,14 @@ def main():
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
         if runner_args.device:
-            flash(runner_args.system_image_dir, runner_args.os_check,
-                  runner_args.target_id, runner_args.serial_num)
+            if update_required(runner_args.os_check,
+                               runner_args.system_image_dir,
+                               runner_args.target_id):
+
+                # TODO(https://fxbug.dev/91843): Switch to flashing the device
+                # when the ffx command is more stable.
+                pave(runner_args.system_image_dir, runner_args.target_id)
+                time.sleep(120)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))

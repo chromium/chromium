@@ -7,14 +7,13 @@
 import argparse
 import json
 import os
-import subprocess
 import sys
 import time
 
 from typing import Optional, Tuple
 
 from common import register_device_args, run_ffx_command
-from compatible_utils import get_sdk_hash, get_ssh_keys, running_unattended
+from compatible_utils import get_sdk_hash
 from ffx_integration import ScopedFfxConfig
 
 
@@ -54,30 +53,6 @@ def update_required(os_check, system_image_dir: Optional[str],
     return True
 
 
-def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
-    """Helper function for running `ffx target flash`."""
-
-    # TODO(fxb/91843): Remove workaround when ffx has stable support for
-    # multiple hardware devices connected via USB.
-    if running_unattended():
-        flash_cmd = [
-            os.path.join(system_image_dir, 'flash.sh'),
-            '--ssh-key=%s' % get_ssh_keys(),
-        ]
-        if target_id:
-            flash_cmd.extend(('-s', target_id))
-        subprocess.run(flash_cmd, check=True, timeout=240)
-        return
-
-    manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
-    run_ffx_command(('target', 'flash', manifest, '--no-bootloader-reboot'),
-                    target_id=target_id,
-                    configs=[
-                        'fastboot.usb.disabled=true',
-                        'ffx.fastboot.inline_target=true'
-                    ])
-
-
 def flash(system_image_dir: str,
           os_check: str,
           target: Optional[str],
@@ -85,6 +60,7 @@ def flash(system_image_dir: str,
     """Flash the device."""
 
     if update_required(os_check, system_image_dir, target):
+        manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
         with ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'):
             if serial_num:
                 with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
@@ -96,9 +72,9 @@ def flash(system_image_dir: str,
                     if run_ffx_command(('target', 'list', serial_num),
                                        check=False).returncode == 0:
                         break
-                _run_flash_command(system_image_dir, serial_num)
+                run_ffx_command(('target', 'flash', manifest), serial_num)
             else:
-                _run_flash_command(system_image_dir, target)
+                run_ffx_command(('target', 'flash', manifest), target)
         run_ffx_command(('target', 'wait'), target)
 
 
