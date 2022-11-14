@@ -579,7 +579,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  const GURL& url = currentWebState->GetVisibleURL();
+  const GURL& url = currentWebState->GetLastCommittedURL();
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
 }
 
