@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_result.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/strings/strcat.h"
@@ -262,7 +261,7 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
     return;
 
   IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
-                     GetImageIconDimension(), IconShape::kRoundedRectangle);
+                     kImageIconDimension, IconShape::kRoundedRectangle);
   SetIcon(icon_info);
 }
 

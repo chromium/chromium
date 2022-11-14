@@ -8,29 +8,22 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/grit/generated_resources.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -79,7 +72,7 @@ HelpAppResult::HelpAppResult(
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::HELP_APP_DEFAULT);
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  SetIcon(IconInfo(icon, kAppIconDimension));
   SetDetails(result->main_category);
 }
 

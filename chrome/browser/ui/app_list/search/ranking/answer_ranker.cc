@@ -139,7 +139,7 @@ void AnswerRanker::PromoteChosenAnswer() {
 
   chosen_answer_->SetDisplayType(DisplayType::kAnswerCard);
   chosen_answer_->SetMultilineTitle(true);
-  chosen_answer_->SetIconDimension(GetAnswerCardIconDimension());
+  chosen_answer_->SetIconDimension(kAnswerCardIconDimension);
   chosen_answer_->scoring().filter = false;
 }
 

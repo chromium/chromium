@@ -14,22 +14,17 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
-#include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -57,7 +52,7 @@ PersonalizationResult::PersonalizationResult(
   SetTitle(result.text);
   SetResultType(ResultType::kPersonalization);
   SetDisplayType(DisplayType::kList);
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  SetIcon(IconInfo(icon, kAppIconDimension));
   SetMetricsType(::ash::SearchResultType::PERSONALIZATION);
 }
 

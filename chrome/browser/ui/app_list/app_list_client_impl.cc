@@ -378,12 +378,6 @@ void AppListClientImpl::GetContextMenuModel(
 
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   app_list_target_visibility_ = visible;
-  // TODO(crbug.com/1258415): This is only used in the old launcher, and can be
-  // removed once the productivity launcher is launched.
-  if (visible && search_controller_ &&
-      !ash::features::IsProductivityLauncherEnabled()) {
-    search_controller_->StartSearch(std::u16string());
-  }
   if (!visible && search_controller_)
     search_controller_->AppListClosing();
 }

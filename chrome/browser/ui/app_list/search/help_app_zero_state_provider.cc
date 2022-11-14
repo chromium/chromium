@@ -6,25 +6,18 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -40,16 +33,6 @@ namespace {
 
 constexpr char kHelpAppDiscoverResult[] = "help-app://discover";
 constexpr char kHelpAppUpdatesResult[] = "help-app://updates";
-
-// Whether we should show the Discover Tab suggestion chip.
-bool ShouldShowDiscoverTabSuggestionChip(Profile* profile) {
-  if (ash::features::IsProductivityLauncherEnabled())
-    return false;
-
-  const int times_left_to_show = profile->GetPrefs()->GetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow);
-  return times_left_to_show > 0;
-}
 
 // Decrements the times left to show the Discover Tab suggestion chip in
 // PrefService.
@@ -151,37 +134,23 @@ HelpAppZeroStateProvider::~HelpAppZeroStateProvider() {
 void HelpAppZeroStateProvider::StartZeroState() {
   SearchProvider::Results search_results;
 
-  if (ShouldShowDiscoverTabSuggestionChip(profile_)) {
-    search_results.emplace_back(std::make_unique<HelpAppZeroStateResult>(
-        profile_, kHelpAppDiscoverResult, DisplayType::kChip,
-        l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
-        /*details=*/u"", icon_));
-  } else if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
+  if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
     // With productivity launcher enabled, release notes are shown in continue
     // section.
-    if (ash::features::IsProductivityLauncherEnabled()) {
-      auto* color_provider = ash::ColorProvider::Get();
-      // NOTE: Color provider may not be set in unit tests.
-      SkColor icon_color = color_provider
-                               ? color_provider->GetContentLayerColor(
-                                     ash::ColorProvider::ContentLayerType::
-                                         kButtonIconColorPrimary)
-                               : gfx::kGoogleGrey900;
-      gfx::ImageSkia icon =
-          gfx::CreateVectorIcon(ash::kReleaseNotesChipIcon,
-                                app_list::kSystemIconDimension, icon_color);
-      search_results.emplace_back(std::make_unique<HelpAppZeroStateResult>(
-          profile_, kHelpAppUpdatesResult, DisplayType::kContinue,
-          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE),
-          l10n_util::GetStringUTF16(
-              IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_DETAILS),
-          icon));
-    } else {
-      search_results.emplace_back(std::make_unique<HelpAppZeroStateResult>(
-          profile_, kHelpAppUpdatesResult, DisplayType::kChip,
-          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
-          /*details=*/u"", icon_));
-    }
+    auto* color_provider = ash::ColorProvider::Get();
+    // NOTE: Color provider may not be set in unit tests.
+    SkColor icon_color =
+        color_provider
+            ? color_provider->GetContentLayerColor(
+                  ash::ColorProvider::ContentLayerType::kButtonIconColorPrimary)
+            : gfx::kGoogleGrey900;
+    gfx::ImageSkia icon = gfx::CreateVectorIcon(
+        ash::kReleaseNotesChipIcon, app_list::kSystemIconDimension, icon_color);
+    search_results.emplace_back(std::make_unique<HelpAppZeroStateResult>(
+        profile_, kHelpAppUpdatesResult, DisplayType::kContinue,
+        l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE),
+        l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_DETAILS),
+        icon));
   }
 
   SwapResults(&search_results);

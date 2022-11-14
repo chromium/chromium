@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
@@ -118,7 +117,7 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  SetIcon(IconInfo(icon, kAppIconDimension));
 
   // If the result is not a top-level section, set the display text with
   // information about the result's 'parent' category. This is the last element
@@ -186,8 +185,7 @@ OsSettingsProvider::OsSettingsProvider(
     app_service_proxy_->LoadIcon(
         app_service_proxy_->AppRegistryCache().GetAppType(
             web_app::kOsSettingsAppId),
-        web_app::kOsSettingsAppId, apps::IconType::kStandard,
-        GetAppIconDimension(),
+        web_app::kOsSettingsAppId, apps::IconType::kStandard, kAppIconDimension,
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                        weak_factory_.GetWeakPtr()));
@@ -267,8 +265,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (app_service_proxy_ &&
       (update.ReadinessChanged() || update.IconKeyChanged())) {
     app_service_proxy_->LoadIcon(update.AppType(), web_app::kOsSettingsAppId,
-                                 apps::IconType::kStandard,
-                                 GetAppIconDimension(),
+                                 apps::IconType::kStandard, kAppIconDimension,
                                  /*allow_placeholder_icon=*/false,
                                  base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                                                 weak_factory_.GetWeakPtr()));

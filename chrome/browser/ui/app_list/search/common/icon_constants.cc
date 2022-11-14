@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 
 namespace app_list {
@@ -15,22 +14,10 @@ constexpr SkColor kOmniboxGenericIconColor = gfx::kGoogleGrey700;
 
 }  // namespace
 
-int GetAnswerCardIconDimension() {
-  return ash::features::IsProductivityLauncherEnabled() ? 28 : 24;
-}
-
-int GetAppIconDimension() {
-  return ash::features::IsProductivityLauncherEnabled() ? 32 : 20;
-}
-
-int GetImageIconDimension() {
-  return ash::features::IsProductivityLauncherEnabled() ? 28 : 32;
-}
-
 SkColor GetGenericIconColor() {
   // May be null in tests.
   ash::ColorProvider* const color_provider = ash::ColorProvider::Get();
-  if (color_provider && ash::features::IsProductivityLauncherEnabled()) {
+  if (color_provider) {
     return color_provider->GetContentLayerColor(
         ash::ColorProvider::ContentLayerType::kButtonIconColor);
   }

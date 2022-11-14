@@ -24,7 +24,6 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -295,10 +294,9 @@ double KeyboardShortcutResult::CalculateRelevance(
 }
 
 void KeyboardShortcutResult::UpdateIcon() {
-  gfx::ImageSkia icon =
-      gfx::CreateVectorIcon(chromeos::kKeyboardShortcutsIcon,
-                            GetAppIconDimension(), SK_ColorTRANSPARENT);
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  gfx::ImageSkia icon = gfx::CreateVectorIcon(
+      chromeos::kKeyboardShortcutsIcon, kAppIconDimension, SK_ColorTRANSPARENT);
+  SetIcon(IconInfo(icon, kAppIconDimension));
 }
 
 }  // namespace app_list

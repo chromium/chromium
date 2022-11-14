@@ -116,7 +116,7 @@ TEST_F(GameResultTest, Icons) {
                              app_discovery_service_.get(), maskable_app, 0.6,
                              u"SomeGame");
 
-  EXPECT_EQ(maskable_result.icon().dimension, GetAppIconDimension());
+  EXPECT_EQ(maskable_result.icon().dimension, kAppIconDimension);
   EXPECT_EQ(maskable_result.icon().shape, ash::SearchResultIconShape::kCircle);
   EXPECT_TRUE(gfx::BitmapsAreEqual(*maskable_result.icon().icon.bitmap(),
                                    *GetTestIcon().bitmap()));
@@ -127,7 +127,7 @@ TEST_F(GameResultTest, Icons) {
                                  app_discovery_service_.get(), non_maskable_app,
                                  0.6, u"SomeGame");
 
-  EXPECT_EQ(non_maskable_result.icon().dimension, GetAppIconDimension());
+  EXPECT_EQ(non_maskable_result.icon().dimension, kAppIconDimension);
   EXPECT_EQ(non_maskable_result.icon().shape,
             ash::SearchResultIconShape::kCircle);
   EXPECT_TRUE(gfx::BitmapsAreEqual(*non_maskable_result.icon().icon.bitmap(),

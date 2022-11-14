@@ -41,7 +41,7 @@ Results MakeShortcutCandidates(std::vector<bool> best_matches) {
 bool AnswerFieldsAreSet(const std::unique_ptr<ChromeSearchResult>& result) {
   return result->display_type() == ash::SearchResultDisplayType::kAnswerCard &&
          result->multiline_title() &&
-         result->icon().dimension == GetAnswerCardIconDimension() &&
+         result->icon().dimension == kAnswerCardIconDimension &&
          !result->scoring().filter;
 }
 

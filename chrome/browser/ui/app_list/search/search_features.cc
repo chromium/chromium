@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/search_features.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace search_features {
@@ -16,9 +14,6 @@ BASE_FEATURE(kLauncherGameSearch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLauncherGameSearchEnabled() {
-  if (!ash::features::IsProductivityLauncherEnabled())
-    return false;
-
   return base::FeatureList::IsEnabled(kLauncherGameSearch) ||
          chromeos::features::IsCloudGamingDeviceEnabled();
 }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -174,7 +173,7 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const absl::optional<std::u16string>& prediction_reason,
     const float relevance) {
   absl::optional<std::u16string> details;
-  if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
+  if (prediction_reason)
     details = prediction_reason.value();
 
   auto result = std::make_unique<FileResult>(

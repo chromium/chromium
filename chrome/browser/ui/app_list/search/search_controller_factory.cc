@@ -7,10 +7,8 @@
 #include <stddef.h>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -98,8 +96,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         kMaxAppShortcutResults, profile, list_controller));
   }
 
-  if (ash::features::IsProductivityLauncherEnabled() &&
-      base::GetFieldTrialParamByFeatureAsBool(
+  if (base::GetFieldTrialParamByFeatureAsBool(
           ash::features::kProductivityLauncher, "enable_continue", false)) {
     controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
 

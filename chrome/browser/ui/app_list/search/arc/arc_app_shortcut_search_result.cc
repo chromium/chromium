@@ -8,9 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -113,7 +111,7 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
 }
 
 void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
-  SetIcon(IconInfo(icon, GetAppIconDimension()));
+  SetIcon(IconInfo(icon, kAppIconDimension));
 }
 
 }  // namespace app_list

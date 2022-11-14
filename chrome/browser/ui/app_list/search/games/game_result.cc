@@ -7,12 +7,8 @@
 #include <cmath>
 #include <string>
 
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "base/bind.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
@@ -24,13 +20,10 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
-#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
 namespace {
@@ -62,7 +55,7 @@ GameResult::GameResult(Profile* profile,
                        const std::u16string& query)
     : profile_(profile),
       list_controller_(list_controller),
-      dimension_(GetAppIconDimension()) {
+      dimension_(kAppIconDimension) {
   DCHECK(profile);
   DCHECK(list_controller);
   DCHECK(app_discovery_service);
@@ -162,7 +155,7 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
     icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
         radius, SK_ColorWHITE, resized_image);
   }
-  SetIcon(IconInfo(icon, GetAppIconDimension(), IconShape::kCircle));
+  SetIcon(IconInfo(icon, kAppIconDimension, IconShape::kCircle));
 }
 
 }  // namespace app_list
