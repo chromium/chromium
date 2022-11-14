@@ -225,22 +225,20 @@ class NetworkMetadataStoreTest : public ::testing::Test {
  protected:
   void TestGetSetCustomApnList() {
     ConfigureService(kConfigCellular);
-    EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
-    base::Value list(base::Value::Type::LIST);
-    base::Value custom_apn(base::Value::Type::DICTIONARY);
-    custom_apn.SetStringKey(::onc::cellular_apn::kAccessPointName, kApn);
-    custom_apn.SetStringKey(::onc::cellular_apn::kName, kApnName);
-    custom_apn.SetStringKey(::onc::cellular_apn::kUsername, kApnUsername);
-    custom_apn.SetStringKey(::onc::cellular_apn::kPassword, kApnPassword);
-    custom_apn.SetStringKey(::onc::cellular_apn::kAuthentication,
-                            kApnAuthentication);
-    custom_apn.SetStringKey(::onc::cellular_apn::kLocalizedName,
-                            kApnLocalizedName);
-    custom_apn.SetStringKey(::onc::cellular_apn::kLanguage, kApnLanguage);
-    custom_apn.SetStringKey(::onc::cellular_apn::kAttach, kApnAttach);
+    base::Value::List list;
+    base::Value::Dict custom_apn;
+    custom_apn.Set(::onc::cellular_apn::kAccessPointName, kApn);
+    custom_apn.Set(::onc::cellular_apn::kName, kApnName);
+    custom_apn.Set(::onc::cellular_apn::kUsername, kApnUsername);
+    custom_apn.Set(::onc::cellular_apn::kPassword, kApnPassword);
+    custom_apn.Set(::onc::cellular_apn::kAuthentication, kApnAuthentication);
+    custom_apn.Set(::onc::cellular_apn::kLocalizedName, kApnLocalizedName);
+    custom_apn.Set(::onc::cellular_apn::kLanguage, kApnLanguage);
+    custom_apn.Set(::onc::cellular_apn::kAttach, kApnAttach);
     list.Append(std::move(custom_apn));
-    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
+    metadata_store()->SetCustomApnList(kCellularkGuid, std::move(list));
 
     AssertCustomApnListFirstValue();
     ResetStore();
@@ -253,33 +251,31 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
  private:
   void AssertCustomApnListFirstValue() {
-    const base::Value* custom_apn_list =
-        metadata_store()->GetCustomAPNList(kCellularkGuid);
+    const base::Value::List* custom_apn_list =
+        metadata_store()->GetCustomApnList(kCellularkGuid);
 
     EXPECT_TRUE(custom_apn_list);
-    EXPECT_TRUE(custom_apn_list->is_list());
-    EXPECT_TRUE(custom_apn_list->GetList().front().is_dict());
-    const base::Value::Dict* custom_apn =
-        custom_apn_list->GetList().front().GetIfDict();
+    ASSERT_EQ(1u, custom_apn_list->size());
+    const base::Value::Dict& custom_apn = custom_apn_list->front().GetDict();
     EXPECT_EQ(
         kApn,
-        custom_apn->Find(::onc::cellular_apn::kAccessPointName)->GetString());
+        custom_apn.Find(::onc::cellular_apn::kAccessPointName)->GetString());
     EXPECT_EQ(kApnName,
-              custom_apn->Find(::onc::cellular_apn::kName)->GetString());
+              custom_apn.Find(::onc::cellular_apn::kName)->GetString());
     EXPECT_EQ(kApnUsername,
-              custom_apn->Find(::onc::cellular_apn::kUsername)->GetString());
+              custom_apn.Find(::onc::cellular_apn::kUsername)->GetString());
     EXPECT_EQ(kApnPassword,
-              custom_apn->Find(::onc::cellular_apn::kPassword)->GetString());
+              custom_apn.Find(::onc::cellular_apn::kPassword)->GetString());
     EXPECT_EQ(
         kApnAuthentication,
-        custom_apn->Find(::onc::cellular_apn::kAuthentication)->GetString());
+        custom_apn.Find(::onc::cellular_apn::kAuthentication)->GetString());
     EXPECT_EQ(
         kApnLocalizedName,
-        custom_apn->Find(::onc::cellular_apn::kLocalizedName)->GetString());
+        custom_apn.Find(::onc::cellular_apn::kLocalizedName)->GetString());
     EXPECT_EQ(kApnLanguage,
-              custom_apn->Find(::onc::cellular_apn::kLanguage)->GetString());
+              custom_apn.Find(::onc::cellular_apn::kLanguage)->GetString());
     EXPECT_EQ(kApnAttach,
-              custom_apn->Find(::onc::cellular_apn::kAttach)->GetString());
+              custom_apn.Find(::onc::cellular_apn::kAttach)->GetString());
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -695,67 +691,78 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampEnabled) {
 TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
   scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
   ConfigureService(kConfigCellular);
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
-
-  base::Value not_list(base::Value::Type::INTEGER);
-  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(not_list));
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   // Checks the case where the apn list doesn't contain a dict.
-  base::Value wrong_list(base::Value::Type::LIST);
+  base::Value::List wrong_list;
   base::Value not_dict(base::Value::Type::INTEGER);
   wrong_list.Append(std::move(not_dict));
-  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(wrong_list));
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+  metadata_store()->SetCustomApnList(kCellularkGuid, std::move(wrong_list));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   // Checks the case where the apn list contains a dict without kAccessPointName
   // key.
-  base::Value custom_apn_list(base::Value::Type::LIST);
-  base::Value custom_apn(base::Value::Type::DICT);
-  base::Value wrong_custom_apn(base::Value::Type::DICT);
-  custom_apn.SetStringKey(::onc::cellular_apn::kAccessPointName, kApn);
-  wrong_custom_apn.SetStringKey(::onc::cellular_apn::kName, kApnName);
+  base::Value::List custom_apn_list;
+  base::Value::Dict custom_apn;
+  base::Value::Dict wrong_custom_apn;
+  custom_apn.Set(::onc::cellular_apn::kAccessPointName, kApn);
+  wrong_custom_apn.Set(::onc::cellular_apn::kName, kApnName);
   custom_apn_list.Append(std::move(custom_apn));
   custom_apn_list.Append(std::move(wrong_custom_apn));
-  metadata_store()->SetCustomAPNList(kCellularkGuid,
+  metadata_store()->SetCustomApnList(kCellularkGuid,
                                      std::move(custom_apn_list));
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   // Empty lists are valid.
-  base::Value list(base::Value::Type::LIST);
-  metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
-  EXPECT_TRUE(metadata_store()->GetCustomAPNList(kCellularkGuid)->is_list());
-  EXPECT_TRUE(
-      metadata_store()->GetCustomAPNList(kCellularkGuid)->GetList().empty());
+  metadata_store()->SetCustomApnList(kCellularkGuid, base::Value::List());
+  const base::Value::List* actual_list =
+      metadata_store()->GetCustomApnList(kCellularkGuid);
+  ASSERT_TRUE(actual_list);
+  EXPECT_TRUE(actual_list->empty());
 }
 
 TEST_F(NetworkMetadataStoreTest, CustomApnListFlagChangingValues) {
   ConfigureService(kConfigCellular);
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+  EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
+
+  base::Value::List expected_list_feature_disabled;
+  base::Value::Dict test_apn1;
+  test_apn1.Set(::onc::cellular_apn::kAccessPointName, "test_apn1");
+  expected_list_feature_disabled.Append(std::move(test_apn1));
+
+  base::Value::List expected_list_feature_enabled;
+  base::Value::Dict test_apn2;
+  test_apn2.Set(::onc::cellular_apn::kAccessPointName, "test_apn2");
+  base::Value::Dict test_apn3;
+  test_apn3.Set(::onc::cellular_apn::kAccessPointName, "test_apn3");
+  expected_list_feature_enabled.Append(std::move(test_apn2));
+  expected_list_feature_enabled.Append(std::move(test_apn3));
 
   {
     base::test::ScopedFeatureList disabled_feature_list;
     disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
     base::Value not_list(1);
     // We validate the input only when the flag is enabled.
-    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(not_list));
-    EXPECT_EQ(1, metadata_store()->GetCustomAPNList(kCellularkGuid)->GetInt());
+    metadata_store()->SetCustomApnList(kCellularkGuid,
+                                       expected_list_feature_disabled.Clone());
+    EXPECT_EQ(expected_list_feature_disabled,
+              *metadata_store()->GetCustomApnList(kCellularkGuid));
   }
   {
     base::test::ScopedFeatureList enabled_feature_list;
     enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(nullptr, metadata_store()->GetCustomAPNList(kCellularkGuid));
+    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
-    base::Value list(base::Value::Type::LIST);
-    metadata_store()->SetCustomAPNList(kCellularkGuid, std::move(list));
-    EXPECT_TRUE(metadata_store()->GetCustomAPNList(kCellularkGuid)->is_list());
-    EXPECT_TRUE(
-        metadata_store()->GetCustomAPNList(kCellularkGuid)->GetList().empty());
+    metadata_store()->SetCustomApnList(kCellularkGuid,
+                                       expected_list_feature_enabled.Clone());
+    EXPECT_EQ(expected_list_feature_enabled,
+              *metadata_store()->GetCustomApnList(kCellularkGuid));
   }
   {
     base::test::ScopedFeatureList disabled_feature_list;
     disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(1, metadata_store()->GetCustomAPNList(kCellularkGuid)->GetInt());
+    EXPECT_EQ(expected_list_feature_disabled,
+              *metadata_store()->GetCustomApnList(kCellularkGuid));
   }
 }
 

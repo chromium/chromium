@@ -810,9 +810,9 @@ class CrosNetworkConfigTest : public testing::Test {
 
   bool UserApnsInNetworkMetadataStoreMatch(
       const std::vector<TestApnData*>& expected_apns) {
-    if (const base::Value* custom_apns =
-            network_metadata_store()->GetCustomAPNList(kCellularGuid)) {
-      return UserApnsMatch(expected_apns, custom_apns->GetList(),
+    if (const base::Value::List* custom_apns =
+            network_metadata_store()->GetCustomApnList(kCellularGuid)) {
+      return UserApnsMatch(expected_apns, *custom_apns,
                            /*has_state_field=*/true,
                            /*is_password_masked=*/false);
     }
@@ -1625,8 +1625,8 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
   SetProperties(kCellularGuid, std::move(config));
-  const base::Value* apn_list =
-      NetworkHandler::Get()->network_metadata_store()->GetCustomAPNList(
+  const base::Value::List* apn_list =
+      NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
           kCellularGuid);
   ASSERT_FALSE(apn_list);
 
@@ -1643,10 +1643,9 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
   SetProperties(kCellularGuid, std::move(config));
-  apn_list = NetworkHandler::Get()->network_metadata_store()->GetCustomAPNList(
+  apn_list = NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
       kCellularGuid);
   ASSERT_TRUE(apn_list);
-  ASSERT_TRUE(apn_list->is_list());
 
   // Verify that custom APN list is returned properly in managed properties.
   mojom::ManagedPropertiesPtr properties = GetManagedProperties(kCellularGuid);
@@ -1670,8 +1669,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value* custom_apns =
-      network_metadata_store()->GetCustomAPNList(kCellularGuid);
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
   TestApnData test_apn1;
@@ -1705,8 +1704,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  network_metadata_store()->SetCustomAPNList(
-      kCellularGuid, base::Value(base::Value::Type::LIST));
+  network_metadata_store()->SetCustomApnList(kCellularGuid,
+                                             base::Value::List());
 
   EXPECT_TRUE(UserApnsInNetworkMetadataStoreMatch({}));
   EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());

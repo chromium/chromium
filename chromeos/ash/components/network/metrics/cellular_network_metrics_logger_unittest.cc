@@ -152,11 +152,11 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitions) {
   histogram_tester_->ExpectBucketCount(kCellularCustomApnsCountHistogram, 0, 1);
 
   // Add an APN to the network.
-  base::Value apn(base::Value::Type::DICTIONARY);
-  apn.SetStringKey(shill::kApnProperty, "apn");
-  base::Value custom_apn_list(base::Value::Type::LIST);
+  base::Value::Dict apn;
+  apn.Set(shill::kApnProperty, "apn");
+  base::Value::List custom_apn_list;
   custom_apn_list.Append(std::move(apn));
-  NetworkHandler::Get()->network_metadata_store()->SetCustomAPNList(
+  NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
       kCellularGuid, std::move(custom_apn_list));
 
   // Successful connect from connecting to connected.

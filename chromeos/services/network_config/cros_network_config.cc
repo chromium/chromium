@@ -3125,8 +3125,8 @@ void CrosNetworkConfig::UpdateCustomApnList(
   NET_LOG(DEBUG) << "Saving Custom APN entry for " << network->guid();
   NetworkMetadataStore* network_metadata_store =
       NetworkHandler::Get()->network_metadata_store();
-  network_metadata_store->SetCustomAPNList(
-      network->guid(), base::Value(std::move(custom_apn_list)));
+  network_metadata_store->SetCustomApnList(network->guid(),
+                                           std::move(custom_apn_list));
 }
 
 std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomApnList(
@@ -3134,13 +3134,12 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomApnList(
   NetworkMetadataStore* network_metadata_store =
       NetworkHandler::Get()->network_metadata_store();
   std::vector<mojom::ApnPropertiesPtr> mojo_custom_apns;
-  const base::Value* custom_apn_list =
-      network_metadata_store->GetCustomAPNList(guid);
+  const base::Value::List* custom_apn_list =
+      network_metadata_store->GetCustomApnList(guid);
   if (!custom_apn_list) {
     return mojo_custom_apns;
   }
-  DCHECK(custom_apn_list->is_list());
-  for (const auto& apn : custom_apn_list->GetList()) {
+  for (const auto& apn : *custom_apn_list) {
     DCHECK(apn.is_dict());
     mojom::ApnPropertiesPtr mojo_apn = mojom::ApnProperties::New();
     mojo_apn->access_point_name =
@@ -3613,10 +3612,9 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   DCHECK(network_metadata_store);
 
   base::Value::List new_apns;
-  if (const base::Value* old_apns =
-          network_metadata_store->GetCustomAPNList(network_guid)) {
-    DCHECK(old_apns->is_list());
-    new_apns = old_apns->GetList().Clone();
+  if (const base::Value::List* old_apns =
+          network_metadata_store->GetCustomApnList(network_guid)) {
+    new_apns = old_apns->Clone();
   }
 
   // Set unique Id for custom APNs
@@ -3628,8 +3626,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   NET_LOG(USER) << "Setting user APNs for: " << network_guid << ": "
                 << new_apns.size();
 
-  network_metadata_store->SetCustomAPNList(network_guid,
-                                           base::Value(new_apns.Clone()));
+  network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
 
   base::Value::Dict onc;
   onc.Set(::onc::network_config::kGUID, network_guid);

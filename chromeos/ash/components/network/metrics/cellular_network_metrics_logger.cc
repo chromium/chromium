@@ -53,13 +53,12 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
                   : ShillConnectResult::kSuccess;
 
   size_t enabled_custom_apns_count = 0u;
-  const base::Value* custom_apn_list =
-      network_metadata_store_->GetCustomAPNList(network_state->guid());
+  const base::Value::List* custom_apn_list =
+      network_metadata_store_->GetCustomApnList(network_state->guid());
   if (custom_apn_list) {
-    DCHECK(custom_apn_list->is_list());
     // TODO(b/162365553): Filter on enabled custom APNs when the revamp flag is
     // on.
-    enabled_custom_apns_count = custom_apn_list->GetList().size();
+    enabled_custom_apns_count = custom_apn_list->size();
   }
 
   // If the connection was successful, log the number of custom APNs the network

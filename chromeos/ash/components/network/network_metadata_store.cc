@@ -61,11 +61,8 @@ base::Value::List CreateOrCloneListValue(const base::Value::List* list) {
   return base::Value::List();
 }
 
-bool IsApnListValid(const base::Value& list) {
-  if (!list.is_list())
-    return false;
-
-  for (const base::Value& apn : list.GetList()) {
+bool IsApnListValid(const base::Value::List& list) {
+  for (const base::Value& apn : list) {
     if (!apn.is_dict())
       return false;
 
@@ -489,28 +486,35 @@ bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {
   return has_bad_password->GetBool();
 }
 
-void NetworkMetadataStore::SetCustomAPNList(const std::string& network_guid,
-                                            base::Value list) {
+void NetworkMetadataStore::SetCustomApnList(const std::string& network_guid,
+                                            base::Value::List list) {
   if (ash::features::IsApnRevampEnabled()) {
     if (!IsApnListValid(list)) {
       NET_LOG(ERROR) << "network_guid: " << network_guid << std::endl
-                     << "Invalid list passed to SetCustomAPNList():" << list;
+                     << "Invalid list passed to SetCustomApnList():" << list;
       return;
     }
 
-    SetPref(network_guid, kCustomApnListV2, std::move(list));
+    SetPref(network_guid, kCustomApnListV2, base::Value(std::move(list)));
     return;
   }
 
-  SetPref(network_guid, kCustomApnList, std::move(list));
+  SetPref(network_guid, kCustomApnList, base::Value(std::move(list)));
 }
 
-const base::Value* NetworkMetadataStore::GetCustomAPNList(
+const base::Value::List* NetworkMetadataStore::GetCustomApnList(
     const std::string& network_guid) {
-  if (ash::features::IsApnRevampEnabled())
-    return GetPref(network_guid, kCustomApnListV2);
+  if (ash::features::IsApnRevampEnabled()) {
+    if (const base::Value* pref = GetPref(network_guid, kCustomApnListV2)) {
+      return pref->GetIfList();
+    }
+    return nullptr;
+  }
 
-  return GetPref(network_guid, kCustomApnList);
+  if (const base::Value* pref = GetPref(network_guid, kCustomApnList)) {
+    return pref->GetIfList();
+  }
+  return nullptr;
 }
 
 void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
