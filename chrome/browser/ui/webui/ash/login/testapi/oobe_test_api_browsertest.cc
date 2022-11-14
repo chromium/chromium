@@ -8,6 +8,7 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
+#include "chromeos/ash/components/hid_detection/fake_hid_detection_manager.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
@@ -65,6 +67,18 @@ class OobeTestApiTestChromebox : public OobeTestApiTest {
  public:
   OobeTestApiTestChromebox() = default;
   ~OobeTestApiTestChromebox() override = default;
+
+  // Called after the kOobeHidDetectionRevamp field trial has set the feature
+  // flag.
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    OobeBaseTest::CreatedBrowserMainParts(browser_main_parts);
+    if (!features::IsOobeHidDetectionRevampEnabled())
+      return;
+
+    HIDDetectionScreen::OverrideHidDetectionManagerForTesting(
+        std::make_unique<hid_detection::FakeHidDetectionManager>());
+  }
 
  protected:
   test::HIDControllerMixin hid_controller_{&mixin_host_};
