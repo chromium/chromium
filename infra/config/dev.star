@@ -20,7 +20,6 @@ lucicfg.enable_experiment("crbug.com/1182002")
 lucicfg.config(
     config_dir = "generated",
     tracked_files = [
-        "luci/chops-weetbix-dev.cfg",
         "luci/cr-buildbucket-dev.cfg",
         "luci/luci-analysis-dev.cfg",
         "luci/luci-logdog-dev.cfg",
@@ -35,13 +34,6 @@ lucicfg.config(
 lucicfg.emit(
     dest = "luci/luci-analysis-dev.cfg",
     data = io.read_file("luci-analysis-dev.cfg"),
-)
-
-# TODO(b/243488110): Delete when Weetbix renaming to
-# LUCI Analysis complete.
-lucicfg.emit(
-    dest = "luci/chops-weetbix-dev.cfg",
-    data = io.read_file("chops-weetbix-dev.cfg"),
 )
 
 branches.exec("//dev/dev.star")

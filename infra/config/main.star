@@ -26,7 +26,6 @@ lucicfg.config(
         "cq-usage/default.cfg",
         "cq-usage/full.cfg",
         "luci/commit-queue.cfg",
-        "luci/chops-weetbix.cfg",
         "luci/cr-buildbucket.cfg",
         "luci/luci-analysis.cfg",
         "luci/luci-logdog.cfg",
@@ -63,13 +62,6 @@ lucicfg.emit(
 lucicfg.emit(
     dest = "luci/luci-analysis.cfg",
     data = io.read_file("luci-analysis.cfg"),
-)
-
-# TODO(b/243488110): Delete when Weetbix renaming to
-# LUCI Analysis complete.
-lucicfg.emit(
-    dest = "luci/chops-weetbix.cfg",
-    data = io.read_file("chops-weetbix.cfg"),
 )
 
 luci.project(
@@ -118,21 +110,6 @@ luci.project(
         ),
         luci.binding(
             roles = "role/analysis.editor",
-            groups = ["project-chromium-committers", "googlers"],
-        ),
-        # Roles for Weetbix.
-        # TODO(b/243488110): Delete when renaming to
-        # LUCI Analysis complete.
-        luci.binding(
-            roles = "role/weetbix.reader",
-            groups = "all",
-        ),
-        luci.binding(
-            roles = "role/weetbix.queryUser",
-            groups = "authenticated-users",
-        ),
-        luci.binding(
-            roles = "role/weetbix.editor",
             groups = ["project-chromium-committers", "googlers"],
         ),
     ],
