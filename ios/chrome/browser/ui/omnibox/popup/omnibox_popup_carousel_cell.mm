@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,6 +58,8 @@ UIStackView* CarouselStackView() {
 @property(nonatomic, strong) UIScrollView* scrollView;
 // Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
+// Indicates whether the view's marginLayoutGuide should be used.
+@property(nonatomic, assign, readonly) BOOL shouldApplyLayoutMarginsGuide;
 
 #pragma mark Dynamic Spacing
 // Number of that that can be fully visible. Apply dynamic spacing only when the
@@ -81,6 +84,8 @@ UIStackView* CarouselStackView() {
     _viewWidth = 0;
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
+    self.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   }
   return self;
 }
@@ -105,18 +110,19 @@ UIStackView* CarouselStackView() {
   [self.contentView addSubview:_scrollView];
   [_scrollView addSubview:_suggestionsStackView];
 
-  AddSameCenterConstraints(_scrollView, self.contentView);
-
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
       ChromeDirectionalEdgeInsetsMake(kStackMargin, kStackMargin, kStackMargin,
                                       kStackMargin));
 
+  id<LayoutGuideProvider> contentGuide =
+      self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide
+                                         : self.contentView;
+  AddSameCenterConstraints(_scrollView, contentGuide);
   [NSLayoutConstraint activateConstraints:@[
-    [self.contentView.heightAnchor
+    [contentGuide.heightAnchor
         constraintEqualToAnchor:_scrollView.heightAnchor],
-    [self.contentView.widthAnchor
-        constraintEqualToAnchor:_scrollView.widthAnchor],
+    [contentGuide.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor],
     [_scrollView.heightAnchor
         constraintEqualToAnchor:_suggestionsStackView.heightAnchor
                        constant:kStackMargin * 2]
@@ -127,6 +133,13 @@ UIStackView* CarouselStackView() {
 
 - (NSUInteger)tileCount {
   return self.suggestionsStackView.arrangedSubviews.count;
+}
+
+- (BOOL)shouldApplyLayoutMarginsGuide {
+  // Apply layoutMarginsGuide in Visual Treatment 1 only on Tablet because there
+  // is a minimum layoutMargin of 8 that we don't want on phones.
+  return IsOmniboxActionsVisualTreatment1() &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 #pragma mark - Accessibility
@@ -310,6 +323,10 @@ UIStackView* CarouselStackView() {
 // spacing.
 - (void)updateDynamicSpacing {
   CGFloat availableWidth = self.bounds.size.width - 2 * kStackMargin;
+  if (self.shouldApplyLayoutMarginsGuide) {
+    availableWidth -= self.contentView.layoutMargins.left +
+                      self.contentView.layoutMargins.right;
+  }
   CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
 
   CGFloat maxVisibleTiles = availableWidth / tileWidth;

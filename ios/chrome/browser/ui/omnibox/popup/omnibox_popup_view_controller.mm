@@ -267,7 +267,7 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  if (IsOmniboxActionsVisualTreatment2()) {
+  if (IsOmniboxActionsEnabled()) {
     [self adjustMarginsToMatchOmniboxWidth];
   }
 
@@ -287,7 +287,7 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   [self.tableView setEditing:NO animated:NO];
   self.shouldUpdateVisibleSuggestionCount = YES;
 
-  if (IsOmniboxActionsVisualTreatment2()) {
+  if (IsOmniboxActionsEnabled()) {
     [coordinator
         animateAlongsideTransition:^(
             id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -314,9 +314,18 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
                                   omniboxFrame.origin.x -
                                   omniboxFrame.size.width
                             : 0;
-  self.tableView.layoutMargins =
-      UIEdgeInsetsMake(self.tableView.layoutMargins.top, leftMargin,
-                       self.tableView.layoutMargins.bottom, rightMargin);
+  if (IsOmniboxActionsVisualTreatment2()) {
+    // Adjust the table view to be aligned with the omnibox textfield.
+    self.tableView.layoutMargins =
+        UIEdgeInsetsMake(self.tableView.layoutMargins.top, leftMargin,
+                         self.tableView.layoutMargins.bottom, rightMargin);
+  } else if (IsOmniboxActionsVisualTreatment1() &&
+             base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+    // Adjust the carousel to be aligned with the omnibox textfield.
+    UIEdgeInsets margins = self.carouselCell.layoutMargins;
+    self.carouselCell.layoutMargins =
+        UIEdgeInsetsMake(margins.top, leftMargin, margins.bottom, rightMargin);
+  }
 }
 
 #pragma mark - AutocompleteResultConsumer
