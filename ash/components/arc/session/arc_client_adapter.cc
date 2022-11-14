@@ -6,9 +6,45 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_container_client_adapter.h"
+#include "ash/components/arc/session/arc_start_params.h"
 #include "ash/components/arc/session/arc_vm_client_adapter.h"
+#include "chromeos/ash/components/dbus/arc/arc.pb.h"
 
 namespace arc {
+
+namespace {
+
+// Converts PlayStoreAutoUpdate into ArcMiniInstanceRequest's.
+StartArcMiniInstanceRequest_PlayStoreAutoUpdate
+ToArcMiniInstanceRequestPlayStoreAutoUpdate(
+    StartParams::PlayStoreAutoUpdate update) {
+  switch (update) {
+    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:
+      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_DEFAULT;
+    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON:
+      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_ON;
+    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_OFF:
+      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_OFF;
+  }
+}
+
+// Converts DalvikMemoryProfile into ArcMiniInstanceRequest's.
+StartArcMiniInstanceRequest_DalvikMemoryProfile
+ToArcMiniInstanceRequestDalvikMemoryProfile(
+    StartParams::DalvikMemoryProfile dalvik_memory_profile) {
+  switch (dalvik_memory_profile) {
+    case StartParams::DalvikMemoryProfile::DEFAULT:
+      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT;
+    case StartParams::DalvikMemoryProfile::M4G:
+      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G;
+    case StartParams::DalvikMemoryProfile::M8G:
+      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G;
+    case StartParams::DalvikMemoryProfile::M16G:
+      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G;
+  }
+}
+
+}  // namespace
 
 ArcClientAdapter::ArcClientAdapter() = default;
 ArcClientAdapter::~ArcClientAdapter() = default;
@@ -25,6 +61,31 @@ void ArcClientAdapter::RemoveObserver(Observer* observer) {
 std::unique_ptr<ArcClientAdapter> ArcClientAdapter::Create() {
   return IsArcVmEnabled() ? CreateArcVmClientAdapter()
                           : CreateArcContainerClientAdapter();
+}
+
+StartArcMiniInstanceRequest
+ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
+    const StartParams& params) {
+  StartArcMiniInstanceRequest request;
+  request.set_native_bridge_experiment(params.native_bridge_experiment);
+  request.set_lcd_density(params.lcd_density);
+  request.set_arc_file_picker_experiment(params.arc_file_picker_experiment);
+  request.set_play_store_auto_update(
+      ToArcMiniInstanceRequestPlayStoreAutoUpdate(
+          params.play_store_auto_update));
+  request.set_dalvik_memory_profile(ToArcMiniInstanceRequestDalvikMemoryProfile(
+      params.dalvik_memory_profile));
+  request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
+  request.set_disable_media_store_maintenance(
+      params.disable_media_store_maintenance);
+  request.set_disable_download_provider(params.disable_download_provider);
+  request.set_disable_ureadahead(params.disable_ureadahead);
+  request.set_arc_generate_pai(params.arc_generate_play_auto_install);
+  request.set_enable_consumer_auto_update_toggle(
+      params.enable_consumer_auto_update_toggle);
+  request.set_enable_notifications_refresh(params.enable_notifications_refresh);
+  request.set_enable_tts_caching(params.enable_tts_caching);
+  return request;
 }
 
 }  // namespace arc

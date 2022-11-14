@@ -20,6 +20,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_client_adapter.h"
 #include "ash/components/arc/session/arc_dlc_installer.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
@@ -178,10 +179,8 @@ std::vector<std::string> GenerateUpgradeProps(
   return result;
 }
 
-std::vector<std::string> GenerateKernelCmdline(
-    const StartParams& start_params,
-    const FileSystemStatus& file_system_status,
-    bool is_host_on_vm) {
+std::vector<std::string> GenerateKernelCmdline(const StartParams& start_params,
+                                               bool is_host_on_vm) {
   std::string native_bridge;
   switch (IdentifyBinaryTranslationType(start_params)) {
     case ArcBinaryTranslationType::NONE:
@@ -336,6 +335,59 @@ std::vector<std::string> GenerateKernelCmdline(
   return result;
 }
 
+void AppendParamsFromStartParams(
+    vm_tools::concierge::StartArcVmRequest& request,
+    const StartParams& start_params) {
+  request.set_enable_keyboard_shortcut_helper_integration(
+      start_params.enable_keyboard_shortcut_helper_integration);
+
+  switch (IdentifyBinaryTranslationType(start_params)) {
+    case ArcBinaryTranslationType::NONE:
+      request.set_native_bridge_experiment(
+          vm_tools::concierge::StartArcVmRequest::BINARY_TRANSLATION_TYPE_NONE);
+      break;
+    case ArcBinaryTranslationType::HOUDINI:
+      request.set_native_bridge_experiment(
+          vm_tools::concierge::StartArcVmRequest::
+              BINARY_TRANSLATION_TYPE_HOUDINI);
+      break;
+    case ArcBinaryTranslationType::NDK_TRANSLATION:
+      request.set_native_bridge_experiment(
+          vm_tools::concierge::StartArcVmRequest::
+              BINARY_TRANSLATION_TYPE_NDK_TRANSLATION);
+      break;
+  }
+
+  std::string log_profile_name;
+  switch (start_params.usap_profile) {
+    case StartParams::UsapProfile::DEFAULT:
+      request.set_usap_profile(
+          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_DEFAULT);
+      log_profile_name = "default low-memory";
+      break;
+    case StartParams::UsapProfile::M4G:
+      request.set_usap_profile(
+          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_4G);
+      log_profile_name = "high-memory 4G";
+      break;
+    case StartParams::UsapProfile::M8G:
+      request.set_usap_profile(
+          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_8G);
+      log_profile_name = "high-memory 8G";
+      break;
+    case StartParams::UsapProfile::M16G:
+      request.set_usap_profile(
+          vm_tools::concierge::StartArcVmRequest::USAP_PROFILE_16G);
+      log_profile_name = "high-memory 16G";
+      break;
+  }
+  VLOG(1) << "Applied " << log_profile_name << " USAP profile";
+
+  *request.mutable_mini_instance_request() =
+      ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
+          start_params);
+}
+
 vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     const std::string& user_id_hash,
     uint32_t cpus,
@@ -343,7 +395,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     const absl::optional<base::FilePath>& data_disk_path,
     const FileSystemStatus& file_system_status,
     bool use_per_vm_core_scheduling,
-    std::vector<std::string> kernel_cmdline,
+    const StartParams& start_params,
+    bool is_host_on_vm,
     ArcVmClientAdapterDelegate* delegate) {
   vm_tools::concierge::StartArcVmRequest request;
 
@@ -356,7 +409,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     request.add_params("rw");
   }
 
-  for (auto& entry : kernel_cmdline)
+  for (auto& entry : GenerateKernelCmdline(start_params, is_host_on_vm))
     request.add_params(std::move(entry));
 
   const bool should_set_blocksize =
@@ -508,8 +561,26 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     VLOG(1) << "Use BalanceAvailableBalloonPolicy";
   }
 
-  if (base::FeatureList::IsEnabled(kGuestZram))
+  AppendParamsFromStartParams(request, start_params);
+
+  auto* mini_instance_request = request.mutable_mini_instance_request();
+  mini_instance_request->set_enable_consumer_auto_update_toggle(
+      base::FeatureList::IsEnabled(
+          ash::features::kConsumerAutoUpdateToggleAllowed));
+
+  request.set_enable_rw(file_system_status.is_host_rootfs_writable() &&
+                        file_system_status.is_system_image_ext_format());
+  request.set_enable_gmscore_lmk_protection(
+      base::FeatureList::IsEnabled(arc::kVmGmsCoreLowMemoryKillerProtection));
+  request.set_enable_broadcast_anr_prenotify(
+      base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
+  request.set_enable_virtio_blk_data(
+      base::FeatureList::IsEnabled(kEnableVirtioBlkForData));
+
+  if (base::FeatureList::IsEnabled(kGuestZram)) {
     request.set_guest_swappiness(kGuestZramSwappiness.Get());
+    request.set_guest_zram_size(kGuestZramSize.Get());
+  }
 
   if (base::FeatureList::IsEnabled(kMglruReclaim)) {
     request.set_mglru_reclaim_interval(kMglruReclaimInterval.Get());
@@ -521,6 +592,10 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed));
+  if (base::FeatureList::IsEnabled(kLogdConfig))
+    request.set_logd_config_size(kLogdConfigSize.Get());
+  else
+    request.set_logd_config_size(-1);
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
     request.set_vm_memory_psi_period(kVmMemoryPSIReportsPeriod.Get());
   else
@@ -542,6 +617,21 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       break;
     case display::Display::ROTATE_270:
       request.set_panel_orientation(StartArcVmRequest::ORIENTATION_270);
+      break;
+  }
+
+  const ArcVmUreadaheadMode mode =
+      GetArcVmUreadaheadMode(base::BindRepeating(&base::GetSystemMemoryInfo));
+  switch (mode) {
+    using StartArcVmRequest = vm_tools::concierge::StartArcVmRequest;
+    case ArcVmUreadaheadMode::READAHEAD:
+      request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_READAHEAD);
+      break;
+    case ArcVmUreadaheadMode::GENERATE:
+      request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_GENERATE);
+      break;
+    case ArcVmUreadaheadMode::DISABLED:
+      request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_DISABLED);
       break;
   }
 
@@ -1085,12 +1175,10 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                                    start_params_.num_cores_disabled;
     DCHECK_LT(0, cpus);
 
-    std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
-        start_params_, file_system_status, is_host_on_vm_);
     auto start_request = CreateStartArcVmRequest(
         user_id_hash_, cpus, demo_session_apps_path, data_disk_path,
-        file_system_status, use_per_vm_core_scheduling,
-        std::move(kernel_cmdline), delegate_.get());
+        file_system_status, use_per_vm_core_scheduling, start_params_,
+        is_host_on_vm_, delegate_.get());
 
     GetConciergeClient()->StartArcVm(
         start_request,

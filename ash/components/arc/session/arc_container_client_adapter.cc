@@ -49,35 +49,6 @@ ToLoginManagerManagementTransition(ArcManagementTransition transition) {
   }
 }
 
-// Converts PlayStoreAutoUpdate into login_manager's.
-StartArcMiniInstanceRequest_PlayStoreAutoUpdate
-ToLoginManagerPlayStoreAutoUpdate(StartParams::PlayStoreAutoUpdate update) {
-  switch (update) {
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_DEFAULT;
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_ON;
-    case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_OFF:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_OFF;
-  }
-}
-
-// Converts DalvikMemoryProfile into login_manager's.
-StartArcMiniInstanceRequest_DalvikMemoryProfile
-ToLoginManagerDalvikMemoryProfile(
-    StartParams::DalvikMemoryProfile dalvik_memory_profile) {
-  switch (dalvik_memory_profile) {
-    case StartParams::DalvikMemoryProfile::DEFAULT:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT;
-    case StartParams::DalvikMemoryProfile::M4G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G;
-    case StartParams::DalvikMemoryProfile::M8G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G;
-    case StartParams::DalvikMemoryProfile::M16G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G;
-  }
-}
-
 }  // namespace
 
 class ArcContainerClientAdapter : public ArcClientAdapter,
@@ -97,31 +68,6 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
       ash::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
-  StartArcMiniInstanceRequest ConvertStartParamsToStartArcMiniInstanceRequest(
-      StartParams params) {
-    StartArcMiniInstanceRequest request;
-    request.set_native_bridge_experiment(params.native_bridge_experiment);
-    request.set_lcd_density(params.lcd_density);
-    request.set_arc_file_picker_experiment(params.arc_file_picker_experiment);
-    request.set_play_store_auto_update(
-        ToLoginManagerPlayStoreAutoUpdate(params.play_store_auto_update));
-    request.set_dalvik_memory_profile(
-        ToLoginManagerDalvikMemoryProfile(params.dalvik_memory_profile));
-    request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
-    request.set_disable_media_store_maintenance(
-        params.disable_media_store_maintenance);
-    request.set_disable_download_provider(params.disable_download_provider);
-    request.set_disable_ureadahead(params.disable_ureadahead);
-    request.set_arc_generate_pai(params.arc_generate_play_auto_install);
-    request.set_enable_consumer_auto_update_toggle(
-        params.enable_consumer_auto_update_toggle);
-    request.set_enable_notifications_refresh(
-        params.enable_notifications_refresh);
-    request.set_enable_tts_caching(params.enable_tts_caching);
-
-    return request;
-  }
-
   // ArcClientAdapter overrides:
   void StartMiniArc(StartParams params,
                     chromeos::VoidDBusMethodCallback callback) override {
@@ -136,7 +82,8 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
     }
 
     auto request =
-        ConvertStartParamsToStartArcMiniInstanceRequest(std::move(params));
+        ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
+            std::move(params));
     ash::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
