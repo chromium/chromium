@@ -398,7 +398,7 @@ Once a histogram has expired, the code that records it becomes dead code and
 should be removed from the codebase. You should also [clean up](#obsolete) the
 corresponding entry in histograms.xml. In _rare_ cases, a histogram may be
 expired intentionally while keeping the code around; such cases must be
-[annotated appropriately](#expired_intentionally) in histograms.xml.
+[annotated appropriately](#Intentionally-expired-histograms) in histograms.xml.
 
 In **rare** cases, the expiry can be set to "never". This is used to denote
 metrics of critical importance that are, typically, used for other reports. For
@@ -485,7 +485,7 @@ to document the period during which the histogram's data is incomplete. To add a
 histogram to the allowlist, see the internal documentation:
 [Histogram Expiry](https://goto.google.com/histogram-expiry-gdoc).
 
-### Intentionally expired histograms {#expired_intentionally}
+### Intentionally expired histograms
 
 In **rare** cases, a histogram may be expired intentionally while keeping the
 code around. For example, this can be useful for diagnostic metrics that are
