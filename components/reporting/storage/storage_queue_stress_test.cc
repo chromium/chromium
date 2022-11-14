@@ -16,9 +16,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/thread_annotations.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
@@ -33,15 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ::testing::_;
-using ::testing::Between;
 using ::testing::Eq;
-using ::testing::Invoke;
-using ::testing::NotNull;
-using ::testing::Return;
-using ::testing::Sequence;
-using ::testing::StrEq;
-using ::testing::WithArg;
 
 namespace reporting {
 namespace {
@@ -61,11 +55,18 @@ class TestUploadClient : public UploaderInterface {
       absl::optional<std::string /*digest*/>>;
 
   explicit TestUploadClient(LastRecordDigestMap* last_record_digest_map)
-      : last_record_digest_map_(last_record_digest_map) {}
+      : last_record_digest_map_(last_record_digest_map) {
+    DETACH_FROM_SEQUENCE(test_uploader_checker_);
+  }
+
+  ~TestUploadClient() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+  }
 
   void ProcessRecord(EncryptedRecord encrypted_record,
                      ScopedReservation scoped_reservation,
                      base::OnceCallback<void(bool)> processed_cb) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
     WrappedRecord wrapped_record;
     ASSERT_TRUE(wrapped_record.ParseFromString(
         encrypted_record.encrypted_wrapped_record()));
@@ -111,21 +112,28 @@ class TestUploadClient : public UploaderInterface {
   void ProcessGap(SequenceInformation sequence_information,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
     ASSERT_TRUE(false) << "There should be no gaps";
   }
 
-  void Completed(Status status) override { ASSERT_OK(status); }
+  void Completed(Status status) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
+    ASSERT_OK(status) << status;
+  }
 
  private:
-  absl::optional<int64_t> generation_id_;
-  const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
+  SEQUENCE_CHECKER(test_uploader_checker_);
 
-  Sequence test_upload_sequence_;
+  absl::optional<int64_t> generation_id_
+      GUARDED_BY_CONTEXT(test_uploader_checker_);
+  const base::raw_ptr<LastRecordDigestMap> last_record_digest_map_
+      GUARDED_BY_CONTEXT(test_uploader_checker_);
 };
 
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
+    // Enable compression.
     scoped_feature_list_.InitAndEnableFeature(kCompressReportingPipeline);
 
     ASSERT_TRUE(location_.CreateUniqueTempDir());
@@ -181,7 +189,17 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   void AsyncStartTestUploader(
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-    // Ignore reason for stress test.
+    // Accept only MANUAL upload.
+    if (reason != UploaderInterface::UploadReason::MANUAL) {
+      LOG(ERROR) << "Upload not expected, reason="
+                 << UploaderInterface::ReasonToString(reason);
+      std::move(start_uploader_cb)
+          .Run(Status(
+              error::CANCELLED,
+              base::StrCat({"Unexpected upload ignored, reason=",
+                            UploaderInterface::ReasonToString(reason)})));
+      return;
+    }
     std::move(start_uploader_cb)
         .Run(std::make_unique<TestUploadClient>(&last_record_digest_map_));
   }
@@ -262,6 +280,7 @@ TEST_P(StorageQueueStressTest,
 
     SCOPED_TRACE(base::StrCat({"Reset ", base::NumberToString(iStart)}));
     ResetTestStorageQueue();
+
     EXPECT_THAT(last_record_digest_map_.size(),
                 Eq((iStart + 1) * kTotalWritesPerStart));
 
