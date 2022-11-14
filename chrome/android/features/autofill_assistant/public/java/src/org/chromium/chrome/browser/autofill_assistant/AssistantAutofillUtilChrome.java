@@ -94,12 +94,14 @@ public class AssistantAutofillUtilChrome {
             AssistantAutofillCreditCard creditCard) {
         return new CreditCard(creditCard.getGUID(), creditCard.getOrigin(), creditCard.getIsLocal(),
                 creditCard.getIsCached(), creditCard.getName(), creditCard.getNumber(),
-                creditCard.getObfuscatedNumber(), creditCard.getMonth(), creditCard.getYear(),
-                creditCard.getBasicCardIssuerNetwork(), creditCard.getIssuerIconDrawableId(),
-                creditCard.getBillingAddressId(), creditCard.getServerId(),
-                creditCard.getInstrumentId(),
+                creditCard.getNetworkAndLastFourDigits(), creditCard.getMonth(),
+                creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
+                creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
+                creditCard.getServerId(), creditCard.getInstrumentId(),
                 /* cardLabel= */ "", creditCard.getNickname(), creditCard.getCardArtUrl(),
-                creditCard.getVirtualCardEnrollmentState(), creditCard.getProductDescription());
+                creditCard.getVirtualCardEnrollmentState(), creditCard.getProductDescription(),
+                creditCard.getCardNameForAutofillDisplay(),
+                creditCard.getObfuscatedLastFourDigits());
     }
 
     /**
@@ -125,12 +127,13 @@ public class AssistantAutofillUtilChrome {
             CreditCard creditCard) {
         return new AssistantAutofillCreditCard(creditCard.getGUID(), creditCard.getOrigin(),
                 creditCard.getIsLocal(), creditCard.getIsCached(), creditCard.getName(),
-                creditCard.getNumber(), creditCard.getObfuscatedNumber(), creditCard.getMonth(),
-                creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
+                creditCard.getNumber(), creditCard.getNetworkAndLastFourDigits(),
+                creditCard.getMonth(), creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
                 creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
                 creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
                 creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState(),
-                creditCard.getProductDescription());
+                creditCard.getProductDescription(), creditCard.getCardNameForAutofillDisplay(),
+                creditCard.getObfuscatedLastFourDigits());
     }
 
     /**

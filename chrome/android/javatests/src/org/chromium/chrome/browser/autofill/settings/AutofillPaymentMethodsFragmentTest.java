@@ -79,7 +79,8 @@ public class AutofillPaymentMethodsFragmentTest {
             /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
             /* cardArtUrl= */ null,
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNENROLLED_AND_ELIGIBLE,
-            /* productDescription= */ "");
+            /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
+            /* obfuscatedLastFourDigits= */ "");
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED = new CreditCard(/* guid= */ "",
             /* origin= */ "",
             /* isLocal= */ false, /* isCached= */ false, /* name= */ "John Doe",
@@ -90,7 +91,8 @@ public class AutofillPaymentMethodsFragmentTest {
             /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
             /* cardArtUrl= */ null,
             /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
-            /* productDescription= */ "");
+            /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
+            /* obfuscatedLastFourDigits= */ "");
 
     private AutofillTestHelper mAutofillTestHelper;
 

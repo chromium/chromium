@@ -77,7 +77,7 @@ public class AutofillPaymentInstrument extends EditableOption
      */
     public AutofillPaymentInstrument(WebContents webContents, CreditCard card,
             @Nullable AutofillProfile billingAddress, @Nullable String methodName) {
-        super(card.getGUID(), card.getObfuscatedNumber(), card.getName(), null);
+        super(card.getGUID(), card.getNetworkAndLastFourDigits(), card.getName(), null);
         mWebContents = webContents;
         mCard = card;
         mBillingAddress = billingAddress;
@@ -240,8 +240,9 @@ public class AutofillPaymentInstrument extends EditableOption
         Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
 
-        updateIdentifierLabelsAndIcon(card.getGUID(), card.getObfuscatedNumber(), card.getName(),
-                null, AppCompatResources.getDrawable(context, card.getIssuerIconDrawableId()));
+        updateIdentifierLabelsAndIcon(card.getGUID(), card.getNetworkAndLastFourDigits(),
+                card.getName(), null,
+                AppCompatResources.getDrawable(context, card.getIssuerIconDrawableId()));
         checkAndUpdateCardCompleteness(context);
         assert mIsComplete;
         assert mHasValidNumberAndName;

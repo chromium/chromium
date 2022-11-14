@@ -53,7 +53,7 @@ public class AssistantAutofillCreditCard {
     private final boolean mIsCached;
     private final String mName;
     private final String mNumber;
-    private final String mObfuscatedNumber;
+    private final String mNetworkAndLastFourDigits;
     private final String mMonth;
     private final String mYear;
     private final String mBasicCardIssuerNetwork;
@@ -65,21 +65,24 @@ public class AssistantAutofillCreditCard {
     private final GURL mCardArtUrl;
     private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
     private final String mProductDescription;
+    private final String mCardNameForAutofillDisplay;
+    private final String mObfuscatedLastFourDigits;
 
     @CalledByNative
     public AssistantAutofillCreditCard(String guid, String origin, boolean isLocal,
-            boolean isCached, String name, String number, String obfuscatedNumber, String month,
-            String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
+            boolean isCached, String name, String number, String networkAndLastFourDigits,
+            String month, String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
             String billingAddressId, String serverId, long instrumentId, String nickname,
             GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState,
-            String productDescription) {
+            String productDescription, String cardNameForAutofillDisplay,
+            String obfuscatedLastFourDigits) {
         mGUID = guid;
         mOrigin = origin;
         mIsLocal = isLocal;
         mIsCached = isCached;
         mName = name;
         mNumber = number;
-        mObfuscatedNumber = obfuscatedNumber;
+        mNetworkAndLastFourDigits = networkAndLastFourDigits;
         mMonth = month;
         mYear = year;
         mBasicCardIssuerNetwork = basicCardIssuerNetwork;
@@ -91,6 +94,8 @@ public class AssistantAutofillCreditCard {
         mCardArtUrl = cardArtUrl;
         mVirtualCardEnrollmentState = virtualCardEnrollmentState;
         mProductDescription = productDescription;
+        mCardNameForAutofillDisplay = cardNameForAutofillDisplay;
+        mObfuscatedLastFourDigits = obfuscatedLastFourDigits;
     }
 
     @CalledByNative
@@ -123,8 +128,8 @@ public class AssistantAutofillCreditCard {
         return mNumber;
     }
 
-    public String getObfuscatedNumber() {
-        return mObfuscatedNumber;
+    public String getNetworkAndLastFourDigits() {
+        return mNetworkAndLastFourDigits;
     }
 
     @CalledByNative
@@ -185,5 +190,13 @@ public class AssistantAutofillCreditCard {
     @CalledByNative
     public String getProductDescription() {
         return mProductDescription;
+    }
+
+    public String getCardNameForAutofillDisplay() {
+        return mCardNameForAutofillDisplay;
+    }
+
+    public String getObfuscatedLastFourDigits() {
+        return mObfuscatedLastFourDigits;
     }
 }

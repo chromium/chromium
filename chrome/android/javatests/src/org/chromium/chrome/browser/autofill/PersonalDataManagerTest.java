@@ -181,7 +181,7 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(
                 "Visa\u0020\u0020\u202A\u2022\u2060\u2006\u2060\u2022\u2060\u2006\u2060\u2022"
                         + "\u2060\u2006\u2060\u2022\u2060\u2006\u20601881\u202C",
-                storedCard.getObfuscatedNumber());
+                storedCard.getNetworkAndLastFourDigits());
         Assert.assertNotNull(mHelper.getCreditCard(cardTwoGUID));
     }
 

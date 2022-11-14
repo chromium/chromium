@@ -247,7 +247,9 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF16ToJavaString(env, card.nickname()),
       url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
       static_cast<jint>(card.virtual_card_enrollment_state()),
-      ConvertUTF16ToJavaString(env, card.product_description()));
+      ConvertUTF16ToJavaString(env, card.product_description()),
+      ConvertUTF16ToJavaString(env, card.CardNameForAutofillDisplay()),
+      ConvertUTF16ToJavaString(env, card.ObfuscatedLastFourDigits()));
 }
 
 // static

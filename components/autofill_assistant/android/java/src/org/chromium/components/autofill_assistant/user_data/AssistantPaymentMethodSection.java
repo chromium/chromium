@@ -112,7 +112,7 @@ public class AssistantPaymentMethodSection
         // By default, the obfuscated number contains the issuer (e.g., 'Visa'). This is needlessly
         // verbose, so we strip it away. See |PersonalDataManagerTest::testAddAndEditCreditCards|
         // for explanation of "\u0020...\u2060".
-        String obfuscatedNumber = method.getCreditCard().getObfuscatedNumber();
+        String obfuscatedNumber = method.getCreditCard().getNetworkAndLastFourDigits();
         int beginningOfObfuscatedNumber =
                 Math.max(obfuscatedNumber.indexOf("\u0020\u202A\u2022\u2060"), 0);
         obfuscatedNumber = obfuscatedNumber.substring(beginningOfObfuscatedNumber);

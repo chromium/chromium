@@ -546,7 +546,7 @@ public class PersonalDataManager {
         private boolean mIsCached;
         private String mName;
         private String mNumber;
-        private String mObfuscatedNumber;
+        private String mNetworkAndLastFourDigits;
         private String mMonth;
         private String mYear;
         private String mBasicCardIssuerNetwork;
@@ -561,47 +561,55 @@ public class PersonalDataManager {
         private String mNickname;
         private GURL mCardArtUrl;
         private final @VirtualCardEnrollmentState int mVirtualCardEnrollmentState;
-        private String mProductDescription;
+        private final String mProductDescription;
+        private final String mCardNameForAutofillDisplay;
+        private final String mObfuscatedLastFourDigits;
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
-                boolean isCached, String name, String number, String mObfuscatedNumber,
+                boolean isCached, String name, String number, String networkAndLastFourDigits,
                 String month, String year, String basicCardIssuerNetwork, int iconId,
                 String billingAddressId, String serverId, long instrumentId, String cardLabel,
                 String nickname, GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
-                String productDescription) {
-            return new CreditCard(guid, origin, isLocal, isCached, name, number, mObfuscatedNumber,
-                    month, year, basicCardIssuerNetwork, iconId, billingAddressId, serverId,
-                    instrumentId, cardLabel, nickname, cardArtUrl, virtualCardEnrollmentState,
-                    productDescription);
+                String productDescription, String cardNameForAutofillDisplay,
+                String obfuscatedLastFourDigits) {
+            return new CreditCard(guid, origin, isLocal, isCached, name, number,
+                    networkAndLastFourDigits, month, year, basicCardIssuerNetwork, iconId,
+                    billingAddressId, serverId, instrumentId, cardLabel, nickname, cardArtUrl,
+                    virtualCardEnrollmentState, productDescription, cardNameForAutofillDisplay,
+                    obfuscatedLastFourDigits);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
-                String name, String number, String obfuscatedNumber, String month, String year,
-                String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
-                String serverId) {
-            this(guid, origin, isLocal, isCached, name, number, obfuscatedNumber, month, year,
-                    basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
-                    /* instrumentId= */ 0, /* cardLabel= */ obfuscatedNumber, /* nickname= */ "",
+                String name, String number, String networkAndLastFourDigits, String month,
+                String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
+                String billingAddressId, String serverId) {
+            this(guid, origin, isLocal, isCached, name, number, networkAndLastFourDigits, month,
+                    year, basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
+                    /* instrumentId= */ 0, /* cardLabel= */ networkAndLastFourDigits,
+                    /* nickname= */ "",
                     /* cardArtUrl= */ null,
                     /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
-                    /* productDescription= */ "");
+                    /* productDescription= */ "", /* cardNameForAutofillDisplay= */ "",
+                    /* obfuscatedLastFourDigits= */ "");
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
-                String name, String number, String obfuscatedNumber, String month, String year,
-                String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
-                String serverId, long instrumentId, String cardLabel, String nickname,
-                GURL cardArtUrl, @VirtualCardEnrollmentState int virtualCardEnrollmentState,
-                String productDescription) {
+                String name, String number, String networkAndLastFourDigits, String month,
+                String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
+                String billingAddressId, String serverId, long instrumentId, String cardLabel,
+                String nickname, GURL cardArtUrl,
+                @VirtualCardEnrollmentState int virtualCardEnrollmentState,
+                String productDescription, String cardNameForAutofillDisplay,
+                String obfuscatedLastFourDigits) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
             mIsCached = isCached;
             mName = name;
             mNumber = number;
-            mObfuscatedNumber = obfuscatedNumber;
+            mNetworkAndLastFourDigits = networkAndLastFourDigits;
             mMonth = month;
             mYear = year;
             mBasicCardIssuerNetwork = basicCardIssuerNetwork;
@@ -614,13 +622,16 @@ public class PersonalDataManager {
             mCardArtUrl = cardArtUrl;
             mVirtualCardEnrollmentState = virtualCardEnrollmentState;
             mProductDescription = productDescription;
+            mCardNameForAutofillDisplay = cardNameForAutofillDisplay;
+            mObfuscatedLastFourDigits = obfuscatedLastFourDigits;
         }
 
         public CreditCard() {
             this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /*origin */, true /* isLocal */,
-                    false /* isCached */, "" /* name */, "" /* number */, "" /* obfuscatedNumber */,
-                    "" /* month */, "" /* year */, "" /* basicCardIssuerNetwork */,
-                    0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
+                    false /* isCached */, "" /* name */, "" /* number */,
+                    "" /* networkAndLastFourDigits */, "" /* month */, "" /* year */,
+                    "" /* basicCardIssuerNetwork */, 0 /* issuerIconDrawableId */,
+                    "" /* billingAddressId */, "" /* serverId */);
         }
 
         @CalledByNative("CreditCard")
@@ -643,8 +654,8 @@ public class PersonalDataManager {
             return mNumber;
         }
 
-        public String getObfuscatedNumber() {
-            return mObfuscatedNumber;
+        public String getNetworkAndLastFourDigits() {
+            return mNetworkAndLastFourDigits;
         }
 
         @CalledByNative("CreditCard")
@@ -721,6 +732,14 @@ public class PersonalDataManager {
             return mProductDescription;
         }
 
+        public String getCardNameForAutofillDisplay() {
+            return mCardNameForAutofillDisplay;
+        }
+
+        public String getObfuscatedLastFourDigits() {
+            return mObfuscatedLastFourDigits;
+        }
+
         public void setGUID(String guid) {
             mGUID = guid;
         }
@@ -737,8 +756,8 @@ public class PersonalDataManager {
             mNumber = number;
         }
 
-        public void setObfuscatedNumber(String obfuscatedNumber) {
-            mObfuscatedNumber = obfuscatedNumber;
+        public void setNetworkAndLastFourDigits(String networkAndLastFourDigits) {
+            mNetworkAndLastFourDigits = networkAndLastFourDigits;
         }
 
         public void setMonth(String month) {

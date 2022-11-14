@@ -144,7 +144,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             return v;
         }
 
-        ((TextView) v.findViewById(R.id.title)).setText(mCard.getObfuscatedNumber());
+        ((TextView) v.findViewById(R.id.title)).setText(mCard.getNetworkAndLastFourDigits());
         ((TextView) v.findViewById(R.id.summary))
                 .setText(mCard.getFormattedExpirationDate(getActivity()));
         v.findViewById(R.id.edit_server_card).setOnClickListener(view -> {

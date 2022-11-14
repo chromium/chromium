@@ -414,10 +414,11 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             addLocalCardInputs(editor, card, calendar);
         } else {
             // Display some information about the server card.
-            editor.addField(EditorFieldModel.createLabel(card.getObfuscatedNumber(), card.getName(),
-                    mContext.getString(R.string.payments_credit_card_expiration_date_abbr,
-                            card.getMonth(), card.getYear()),
-                    card.getIssuerIconDrawableId()));
+            editor.addField(
+                    EditorFieldModel.createLabel(card.getNetworkAndLastFourDigits(), card.getName(),
+                            mContext.getString(R.string.payments_credit_card_expiration_date_abbr,
+                                    card.getMonth(), card.getYear()),
+                            card.getIssuerIconDrawableId()));
         }
 
         // Always show the billing address dropdown.
@@ -828,7 +829,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
         // website. The obfuscated number and the icon are displayed in the user interface.
         CreditCard displayableCard = pdm.getCreditCardForNumber(card.getNumber());
         card.setBasicCardIssuerNetwork(displayableCard.getBasicCardIssuerNetwork());
-        card.setObfuscatedNumber(displayableCard.getObfuscatedNumber());
+        card.setNetworkAndLastFourDigits(displayableCard.getNetworkAndLastFourDigits());
         card.setIssuerIconDrawableId(displayableCard.getIssuerIconDrawableId());
 
         if (!isNewCard) {

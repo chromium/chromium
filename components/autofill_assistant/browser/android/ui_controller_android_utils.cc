@@ -813,7 +813,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillCreditCard(
       ConvertUTF16ToJavaString(env, credit_card.nickname()),
       url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()),
       static_cast<jint>(credit_card.virtual_card_enrollment_state()),
-      ConvertUTF16ToJavaString(env, credit_card.product_description()));
+      ConvertUTF16ToJavaString(env, credit_card.product_description()),
+      ConvertUTF16ToJavaString(env, credit_card.CardNameForAutofillDisplay()),
+      ConvertUTF16ToJavaString(env, credit_card.ObfuscatedLastFourDigits()));
 }
 
 void PopulateAutofillCreditCardFromJava(
