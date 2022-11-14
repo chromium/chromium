@@ -659,6 +659,11 @@ scoped_refptr<const Schema::InternalStorage> Schema::InternalStorage::Wrap(
 scoped_refptr<const Schema::InternalStorage>
 Schema::InternalStorage::ParseSchema(const base::Value& schema,
                                      std::string* error) {
+  if (!schema.is_dict()) {
+    *error = "The schema must be a dictionary type";
+    return nullptr;
+  }
+
   // Determine the sizes of the storage arrays and reserve the capacity before
   // starting to append nodes and strings. This is important to prevent the
   // arrays from being reallocated, which would invalidate the c_str() pointers
@@ -736,6 +741,11 @@ re2::RE2* Schema::InternalStorage::CompileRegex(
 // static
 void Schema::InternalStorage::DetermineStorageSizes(const base::Value& schema,
                                                     StorageSizes* sizes) {
+  if (!schema.is_dict()) {
+    // Schemas need to be a dictionary type.
+    return;
+  }
+
   if (schema.FindStringKey(schema::kRef)) {
     // Schemas with a "$ref" attribute don't take additional storage.
     return;
