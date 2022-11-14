@@ -1,0 +1,25 @@
+<style include="cr-shared-style">
+ul {
+  padding-inline-start: 16px;
+}
+
+b {
+  color: initial;
+  font-weight: 400;
+}
+
+iron-collapse {
+  --iron-collapse-transition-duration: 300ms;
+}
+</style>
+
+<div class="learn-more-section">
+  <cr-expand-button expanded="{{expanded}}">
+    <div class="cr-secondary-text">
+      {{title}}
+    </div>
+  </cr-expand-button>
+  <iron-collapse id="collapse" opened="[[expanded]]">
+    <slot></slot>
+  </iron-collapse>
+</div>

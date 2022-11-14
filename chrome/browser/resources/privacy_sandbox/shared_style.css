@@ -74,17 +74,17 @@
   padding: 0 var(--cr-section-padding);
 }
 
-.fill-content {
+:host(.fill-content) {
   height: 100vh;
 }
 
-.fill-content .content-area {
+:host(.fill-content) .content-area {
   bottom: 64px;
   position: absolute;
   top: 0;
 }
 
-.fill-content .buttons-container {
+:host(.fill-content) .buttons-container {
   bottom: 0;
   box-sizing: border-box;
   position: fixed;

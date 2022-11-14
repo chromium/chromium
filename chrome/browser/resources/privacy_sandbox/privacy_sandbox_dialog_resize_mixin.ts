@@ -31,12 +31,16 @@ export const PrivacySandboxDialogResizeMixin = dedupingMixin(
             await proxy.resizeDialog(document.body.offsetHeight);
 
             // After the content was rendered at size it requires, toggle a
-            // class to fit the content into native dialog bounds.
+            // class to fit the content into native dialog bounds...
             const elements = this.shadowRoot!.querySelectorAll<HTMLElement>(
                 '[fill-content]');
             for (const element of elements) {
               element.classList.toggle('fill-content', true);
             }
+
+            // ...and hide any overflow on the body. 'fill-content' element
+            // fills the dialog and any scrolling will be happening inside it.
+            document.body.style.overflow = 'hidden';
 
             // After the layout is adjusted to fit into the dialog...
             afterNextRender(this, () => {
