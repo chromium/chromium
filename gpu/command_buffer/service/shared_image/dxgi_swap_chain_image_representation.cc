@@ -103,20 +103,22 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
   auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
   if (!promise_texture)
     return nullptr;
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
+      promise_texture};
   return base::WrapUnique(new SkiaGLImageRepresentationDXGISwapChain(
-      std::move(gl_representation), std::move(promise_texture),
+      std::move(gl_representation), std::move(promise_textures),
       std::move(context_state), manager, backing, tracker));
 }
 
 SkiaGLImageRepresentationDXGISwapChain::SkiaGLImageRepresentationDXGISwapChain(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-    sk_sp<SkPromiseImageTexture> promise_texture,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
     : SkiaGLImageRepresentation(std::move(gl_representation),
-                                std::move(promise_texture),
+                                std::move(promise_textures),
                                 std::move(context_state),
                                 manager,
                                 backing,

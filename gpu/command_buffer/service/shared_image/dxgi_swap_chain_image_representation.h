@@ -75,7 +75,7 @@ class SkiaGLImageRepresentationDXGISwapChain
  private:
   SkiaGLImageRepresentationDXGISwapChain(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-      sk_sp<SkPromiseImageTexture> promise_texture,
+      std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,

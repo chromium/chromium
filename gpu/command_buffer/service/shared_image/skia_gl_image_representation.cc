@@ -39,33 +39,37 @@ std::unique_ptr<SkiaGLImageRepresentation> SkiaGLImageRepresentation::Create(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker) {
+  DCHECK(backing->format().is_single_plane());
   GrBackendTexture backend_texture;
+  // TODO(hitawala): Use format/size per plane for multiplanar formats.
   if (!GetGrBackendTexture(
           context_state->feature_info(),
           gl_representation->GetTextureBase()->target(), backing->size(),
           gl_representation->GetTextureBase()->service_id(),
-          (backing->format()).resource_format(),
+          backing->format().resource_format(),
           context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
     return nullptr;
   }
   auto promise_texture = SkPromiseImageTexture::Make(backend_texture);
   if (!promise_texture)
     return nullptr;
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures = {
+      promise_texture};
   return base::WrapUnique(new SkiaGLImageRepresentation(
-      std::move(gl_representation), std::move(promise_texture),
+      std::move(gl_representation), std::move(promise_textures),
       std::move(context_state), manager, backing, tracker));
 }
 
 SkiaGLImageRepresentation::SkiaGLImageRepresentation(
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-    sk_sp<SkPromiseImageTexture> promise_texture,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     scoped_refptr<SharedContextState> context_state,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
     : SkiaImageRepresentation(manager, backing, tracker),
       gl_representation_(std::move(gl_representation)),
-      promise_texture_(std::move(promise_texture)),
+      promise_textures_(std::move(promise_textures)),
       context_state_(std::move(context_state)) {
   DCHECK(gl_representation_);
 #if DCHECK_IS_ON()
@@ -75,7 +79,7 @@ SkiaGLImageRepresentation::SkiaGLImageRepresentation(
 
 SkiaGLImageRepresentation::~SkiaGLImageRepresentation() {
   DCHECK_EQ(RepresentationAccessMode::kNone, mode_);
-  surface_.reset();
+  surfaces_.clear();
 
   DCHECK_EQ(!has_context(), context_state_->context_lost());
   if (!has_context())
@@ -98,21 +102,24 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
   }
 
   mode_ = RepresentationAccessMode::kWrite;
-  if (surface_) {
-    return {surface_};
-  }
+  if (!surfaces_.empty())
+    return surfaces_;
 
+  DCHECK(format().is_single_plane());
+  // TODO(hitawala): Get SkColorType based on plane_idx for multiplanar
+  // formats.
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
   auto surface = SkSurface::MakeFromBackendTexture(
-      context_state_->gr_context(), promise_texture_->backendTexture(),
+      context_state_->gr_context(), promise_textures_[0]->backendTexture(),
       surface_origin(), final_msaa_count, sk_color_type,
       backing()->color_space().ToSkColorSpace(), &surface_props);
-  surface_ = surface;
-
   if (!surface)
     return {};
-  return {surface};
+
+  std::vector<sk_sp<SkSurface>> surfaces = {surface};
+  surfaces_ = surfaces;
+  return surfaces;
 }
 
 std::vector<sk_sp<SkPromiseImageTexture>>
@@ -128,16 +135,13 @@ SkiaGLImageRepresentation::BeginWriteAccess(
     return {};
   }
   mode_ = RepresentationAccessMode::kWrite;
-
-  if (!promise_texture_)
-    return {};
-  return {promise_texture_};
+  return promise_textures_;
 }
 
 void SkiaGLImageRepresentation::EndWriteAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  if (surface_)
-    DCHECK(surface_->unique());
+  for (auto& surface : surfaces_)
+    DCHECK(surface->unique());
 
   gl_representation_->EndAccess();
   mode_ = RepresentationAccessMode::kNone;
@@ -156,10 +160,7 @@ SkiaGLImageRepresentation::BeginReadAccess(
     return {};
   }
   mode_ = RepresentationAccessMode::kRead;
-
-  if (!promise_texture_)
-    return {};
-  return {promise_texture_};
+  return promise_textures_;
 }
 
 void SkiaGLImageRepresentation::EndReadAccess() {

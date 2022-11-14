@@ -51,7 +51,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
  protected:
   SkiaGLImageRepresentation(
       std::unique_ptr<GLTextureImageRepresentationBase> gl_representation,
-      sk_sp<SkPromiseImageTexture> promise_texture,
+      std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
       scoped_refptr<SharedContextState> context_state,
       SharedImageManager* manager,
       SharedImageBacking* backing,
@@ -61,9 +61,9 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
   void CheckContext();
 
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures_;
   scoped_refptr<SharedContextState> context_state_;
-  sk_sp<SkSurface> surface_;
+  std::vector<sk_sp<SkSurface>> surfaces_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 #if DCHECK_IS_ON()
   raw_ptr<gl::GLContext> context_;
