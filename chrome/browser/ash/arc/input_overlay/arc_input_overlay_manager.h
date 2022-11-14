@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -91,29 +92,6 @@ class ArcInputOverlayManager : public KeyedService,
 
   class InputMethodObserver;
 
-  // TODO(djacobo|cuicuiruan): Sort this, functions first, members last.
-  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
-      window_observations_{this};
-  base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
-      input_overlay_enabled_windows_;
-  // To avoid UAF issue reported in crbug.com/1363030. Save the windows which
-  // prepare or start loading the GIO default key mapping data. Once window is
-  // destroying or the GIO data reading is finished, window is removed from this
-  // set.
-  base::flat_set<aura::Window*> loading_data_windows_;
-  bool is_text_input_active_ = false;
-  raw_ptr<ui::InputMethod> input_method_ = nullptr;
-  std::unique_ptr<InputMethodObserver> input_method_observer_;
-  // Only one window is registered since there is only one window can be focused
-  // each time.
-  raw_ptr<aura::Window> registered_top_level_window_ = nullptr;
-  std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
-  std::unique_ptr<input_overlay::DisplayOverlayController>
-      display_overlay_controller_;
-  std::unique_ptr<input_overlay::DataController> data_controller_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // Read all the data including both default data and customized data.
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
@@ -121,6 +99,14 @@ class ArcInputOverlayManager : public KeyedService,
   std::unique_ptr<input_overlay::TouchInjector> ReadDefaultData(
       const std::string& package_name,
       std::unique_ptr<input_overlay::TouchInjector> touch_injector);
+  // Called when finishing reading default data.
+  void OnFinishReadDefaultData(
+      const std::string& package_name,
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector);
+  // Called when receiving app category from ARC.
+  void OnReceiveAppCategory(
+      std::unique_ptr<input_overlay::TouchInjector> touch_injector,
+      arc::mojom::AppCategory category);
   // Read customized data. Customized data will overrides the default data if
   // there is any.
   void ReadCustomizedData(
@@ -154,6 +140,35 @@ class ArcInputOverlayManager : public KeyedService,
   // window destroying.
   void ResetForPendingTouchInjector(
       std::unique_ptr<input_overlay::TouchInjector> touch_injector);
+
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+  base::flat_map<aura::Window*, std::unique_ptr<input_overlay::TouchInjector>>
+      input_overlay_enabled_windows_;
+  // To avoid UAF issue reported in crbug.com/1363030. Save the windows which
+  // prepare or start loading the GIO default key mapping data. Once window is
+  // destroying or the GIO data reading is finished, window is removed from this
+  // set.
+  base::flat_set<aura::Window*> loading_data_windows_;
+  bool is_text_input_active_ = false;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
+  std::unique_ptr<InputMethodObserver> input_method_observer_;
+  // Only one window is registered since there is only one window can be focused
+  // each time.
+  raw_ptr<aura::Window> registered_top_level_window_ = nullptr;
+  std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
+  std::unique_ptr<input_overlay::DisplayOverlayController>
+      display_overlay_controller_;
+  std::unique_ptr<input_overlay::DataController> data_controller_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Point at the ARC mojom connection holder. This manager has the same
+  // lifecycle with ARC session and the |connection_|.
+  arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
+      connection_ = nullptr;
+
+  // TODO(b/253646354): This can be removed when removing the flag.
+  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -11,6 +12,9 @@
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -28,6 +32,8 @@ constexpr base::TimeDelta kIORead = base::Milliseconds(50);
 constexpr char kEnabledPackageName[] = "org.chromium.arc.testapp.inputoverlay";
 constexpr char kRandomPackageName[] =
     "org.chromium.arc.testapp.inputoverlay_no_data";
+constexpr char kRandomGamePackageName[] =
+    "org.chromium.arc.testapp.inputoverlay_game";
 constexpr const float kTolerance = 0.999f;
 
 class MockDisplayOverlayController
@@ -83,7 +89,9 @@ class TestArcInputOverlayManager : public ArcInputOverlayManager {
 class ArcInputOverlayManagerTest : public ash::AshTestBase {
  public:
   ArcInputOverlayManagerTest()
-      : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
 
   bool IsInputOverlayEnabled(const aura::Window* window) const {
     return arc_test_input_overlay_manager_->input_overlay_enabled_windows_
@@ -125,6 +133,8 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   input_overlay::DisplayOverlayController* GetDisplayOverlayController() {
     return arc_test_input_overlay_manager_->display_overlay_controller_.get();
   }
+
+  void EnableBetaFlag() { arc_test_input_overlay_manager_->beta_ = true; }
 
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
@@ -444,6 +454,66 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
   expect_touch_b = injector->rotation_transform()->MapPoint(expect_touch_b);
   EXPECT_POINTF_NEAR(injector->actions()[1]->touch_down_positions()[0],
                      expect_touch_b, kTolerance);
+}
+
+TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
+  std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile.get());
+
+  // Test without enabling beta flag.
+  int task_id = 21;
+  arc_app_test.app_instance()->SetTaskInfo(task_id, kRandomGamePackageName,
+                                           "activity");
+  arc_app_test.app_instance()->set_app_category_of_pkg(
+      kRandomGamePackageName, arc::mojom::AppCategory::kGame);
+  task_environment()->RunUntilIdle();
+  auto game_window = input_overlay::CreateArcWindow(
+      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
+      kRandomGamePackageName);
+  exo::SetShellApplicationId(
+      game_window->GetNativeWindow(),
+      base::StringPrintf("org.chromium.arc.%d", task_id));
+  task_environment()->FastForwardBy(kIORead);
+  auto* injector = GetTouchInjector(game_window->GetNativeWindow());
+  EXPECT_FALSE(injector);
+  game_window.reset();
+
+  // Test when enabling beta flag.
+  EnableBetaFlag();
+  // Create an app with default mapping.
+  task_environment()->RunUntilIdle();
+  auto mapped_window = input_overlay::CreateArcWindow(
+      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
+      kEnabledPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(mapped_window->GetNativeWindow());
+  EXPECT_TRUE(injector);
+  // Create a random non-game app.
+  task_environment()->RunUntilIdle();
+  auto app_window = input_overlay::CreateArcWindow(
+      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
+      kRandomPackageName);
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(app_window->GetNativeWindow());
+  EXPECT_FALSE(injector);
+  // Create an app with game category.
+  task_id = 22;
+  arc_app_test.app_instance()->SetTaskInfo(task_id, kRandomGamePackageName,
+                                           "activity");
+  arc_app_test.app_instance()->set_app_category_of_pkg(
+      kRandomGamePackageName, arc::mojom::AppCategory::kGame);
+  task_environment()->RunUntilIdle();
+  game_window = input_overlay::CreateArcWindow(
+      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
+      kRandomGamePackageName);
+  exo::SetShellApplicationId(
+      game_window->GetNativeWindow(),
+      base::StringPrintf("org.chromium.arc.%d", task_id));
+  task_environment()->FastForwardBy(kIORead);
+  injector = GetTouchInjector(game_window->GetNativeWindow());
+  EXPECT_TRUE(injector);
+  arc_app_test.TearDown();
 }
 
 }  // namespace arc
