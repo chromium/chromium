@@ -16,7 +16,7 @@
  */
 
 import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
-import {IBidiServer} from '../../utils/bidiServer';
+import {BiDiMessageEntry, IBidiServer} from '../../utils/bidiServer';
 import {SubscriptionManager} from './SubscriptionManager';
 import {IdWrapper} from '../../../utils/idWrapper';
 import {Buffer} from '../../../utils/buffer';
@@ -24,10 +24,10 @@ import {BrowsingContextStorage} from '../context/browsingContextStorage';
 
 class EventWrapper extends IdWrapper {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
-  readonly #event: Message.EventMessage;
+  readonly #event: Promise<Message.EventMessage>;
 
   constructor(
-    event: Message.EventMessage,
+    event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
     super();
@@ -39,15 +39,21 @@ class EventWrapper extends IdWrapper {
     return this.#contextId;
   }
 
-  get event(): Message.EventMessage {
+  get event(): Promise<Message.EventMessage> {
     return this.#event;
   }
 }
 
 export interface IEventManager {
-  sendEvent(
+  registerEvent(
     event: Message.EventMessage,
     contextId: CommonDataTypes.BrowsingContext | null
+  ): Promise<void>;
+
+  registerPromiseEvent(
+    event: Promise<Message.EventMessage>,
+    contextId: CommonDataTypes.BrowsingContext | null,
+    eventName: string
   ): Promise<void>;
 
   subscribe(
@@ -109,21 +115,35 @@ export class EventManager implements IEventManager {
     return JSON.stringify({eventName, browsingContext, channel});
   }
 
-  async sendEvent(
+  async registerEvent(
     event: Message.EventMessage,
     contextId: CommonDataTypes.BrowsingContext | null
+  ): Promise<void> {
+    await this.registerPromiseEvent(
+      Promise.resolve(event),
+      contextId,
+      event.method
+    );
+  }
+
+  async registerPromiseEvent(
+    event: Promise<Message.EventMessage>,
+    contextId: CommonDataTypes.BrowsingContext | null,
+    eventName: string
   ): Promise<void> {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
       this.#subscriptionManager.getChannelsSubscribedToEvent(
-        event.method,
+        eventName,
         contextId
       );
-    this.#bufferEvent(eventWrapper);
+    this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
-      await this.#bidiServer.sendMessage(event, channel);
-      this.#markEventSent(eventWrapper, channel);
+      await this.#bidiServer.sendMessage(
+        BiDiMessageEntry.createFromPromise(event, channel)
+      );
+      this.#markEventSent(eventWrapper, channel, eventName);
     }
   }
 
@@ -148,8 +168,10 @@ export class EventManager implements IEventManager {
           channel
         )) {
           // The order of the events is important.
-          await this.#bidiServer.sendMessage(eventWrapper.event, channel);
-          this.#markEventSent(eventWrapper, channel);
+          await this.#bidiServer.sendMessage(
+            BiDiMessageEntry.createFromPromise(eventWrapper.event, channel)
+          );
+          this.#markEventSent(eventWrapper, channel, eventName);
         }
       }
     }
@@ -170,8 +192,7 @@ export class EventManager implements IEventManager {
   /**
    * If the event is buffer-able, put it in the buffer.
    */
-  #bufferEvent(eventWrapper: EventWrapper) {
-    const eventName = eventWrapper.event.method;
+  #bufferEvent(eventWrapper: EventWrapper, eventName: string) {
     if (!EventManager.#eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;
@@ -199,8 +220,11 @@ export class EventManager implements IEventManager {
   /**
    * If the event is buffer-able, mark it as sent to the given contextId and channel.
    */
-  #markEventSent(eventWrapper: EventWrapper, channel: string | null) {
-    const eventName = eventWrapper.event.method;
+  #markEventSent(
+    eventWrapper: EventWrapper,
+    channel: string | null,
+    eventName: string
+  ) {
     if (!EventManager.#eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;

@@ -73,7 +73,7 @@ export class BrowsingContextProcessor {
     this.#setTargetEventListeners(sessionCdpClient);
 
     sessionCdpClient.on('event', async (method, params) => {
-      await this.#eventManager.sendEvent(
+      await this.#eventManager.registerEvent(
         {
           method: 'cdp.eventReceived',
           params: {

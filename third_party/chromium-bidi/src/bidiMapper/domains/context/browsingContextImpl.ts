@@ -105,7 +105,7 @@ export class BrowsingContextImpl {
     );
     context.#targetDefers.targetUnblocked.resolve();
 
-    await eventManager.sendEvent(
+    await eventManager.registerEvent(
       new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
       context.contextId
     );
@@ -134,7 +134,7 @@ export class BrowsingContextImpl {
     // noinspection ES6MissingAwait
     context.#unblockAttachedTarget();
 
-    await eventManager.sendEvent(
+    await eventManager.registerEvent(
       new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
       context.contextId
     );
@@ -163,7 +163,7 @@ export class BrowsingContextImpl {
       parent.#children.delete(this.contextId);
     }
 
-    await this.#eventManager.sendEvent(
+    await this.#eventManager.registerEvent(
       new BrowsingContext.ContextDestroyedEvent(this.serializeToBidiValue()),
       this.contextId
     );
@@ -322,7 +322,7 @@ export class BrowsingContextImpl {
             this.#targetDefers.Page.lifecycleEvent.DOMContentLoaded.resolve(
               params
             );
-            await this.#eventManager.sendEvent(
+            await this.#eventManager.registerEvent(
               new BrowsingContext.DomContentLoadedEvent({
                 context: this.contextId,
                 navigation: this.#loaderId,
@@ -334,7 +334,7 @@ export class BrowsingContextImpl {
 
           case 'load':
             this.#targetDefers.Page.lifecycleEvent.load.resolve(params);
-            await this.#eventManager.sendEvent(
+            await this.#eventManager.registerEvent(
               new LoadEvent({
                 context: this.contextId,
                 navigation: this.#loaderId,

@@ -141,7 +141,7 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
         "params": {
             "events": ["log.entryAdded"]}})
 
-    await execute_command(websocket, {
+    await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "console.log('SOME_MESSAGE')",
@@ -190,7 +190,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
             "cointext": context_id
         }})
 
-    await execute_command(websocket, {
+    await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "channel": "SOME_OTHER_CHANNEL",
         "params": {

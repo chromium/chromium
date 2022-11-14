@@ -12,355 +12,350 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 
 from _helpers import *
 
 
+def _strip_handle(obj):
+    result = copy.deepcopy(obj)
+    result.pop("handle", None)
+    return result
+
+
 # Testing serialization.
-async def assertSerialization(websocket, context_id, js_str_object,
+async def assert_serialization(websocket, context_id, js_str_object,
       expected_serialized_object):
-    result = await execute_command(websocket, {
+    await subscribe(websocket, "log.entryAdded")
+
+    command_id = await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
-            "expression": f"({js_str_object})",
+            "expression": f"(()=>{{"
+                          f"console.log({js_str_object});"
+                          f"return {js_str_object}"
+                          f"}})()",
             "target": {"context": context_id},
             "awaitPromise": False,
             "resultOwnership": "root"
         }})
 
-    # Compare ignoring `handle`.
-    recursive_compare(expected_serialized_object, result["result"])
+    # Assert log event serialized properly.
+    # As log is serialized with "resultOwnership": "none", "handle" should be
+    # removed from the expectation.
+    expected_serialized_object_without_handle = _strip_handle(
+        expected_serialized_object)
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "log.entryAdded"
+    recursive_compare(expected_serialized_object_without_handle,
+                      resp["params"]["args"][0])
+
+    # Assert result serialized properly.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == command_id
+    recursive_compare(expected_serialized_object, resp["result"]["result"])
+
+    resp = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": f"throw {js_str_object}",
+            "target": {"context": context_id},
+            "awaitPromise": False,
+            "resultOwnership": "root"
+        }})
+
+    # Assert exception serialized properly.
+    recursive_compare(expected_serialized_object,
+                      resp["exceptionDetails"]["exception"])
 
 
-# Testing serialization.
-async def assertDeserializationAndSerialization(websocket, context_id,
+async def assert_callFunction_deserialization_serialization(websocket,
+      context_id,
       serialized_object,
       expected_serialized_object=None):
     if expected_serialized_object is None:
         expected_serialized_object = serialized_object
 
-    result = await execute_command(websocket, {
+    await subscribe(websocket, "log.entryAdded")
+
+    command_id = await send_JSON_command(websocket, {
         "method": "script.callFunction",
         "params": {
-            "functionDeclaration": "(arg)=>{return arg}",
+            "functionDeclaration": "(arg)=>{console.log(arg); return arg;}",
             "this": {
                 "type": "undefined"},
             "arguments": [serialized_object],
             "awaitPromise": False,
             "target": {"context": context_id},
             "resultOwnership": "root"}})
-    # Compare ignoring `handle`.
-    recursive_compare(expected_serialized_object, result["result"])
+
+    # Assert log event serialized properly.
+    # As log is serialized with "resultOwnership": "none", "handle" should be
+    # removed from the expectation.
+    expected_serialized_object_without_handle = _strip_handle(
+        expected_serialized_object)
+    resp = await read_JSON_message(websocket)
+    assert resp["method"] == "log.entryAdded"
+    recursive_compare(expected_serialized_object_without_handle,
+                      resp["params"]["args"][0])
+
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == command_id
+    recursive_compare(expected_serialized_object, resp["result"]["result"])
+
+    resp = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(arg)=>{throw arg;}",
+            "this": {
+                "type": "undefined"},
+            "arguments": [serialized_object],
+            "awaitPromise": False,
+            "target": {"context": context_id},
+            "resultOwnership": "root"}})
+    recursive_compare(expected_serialized_object,
+                      resp["exceptionDetails"]["exception"])
 
 
 @pytest.mark.asyncio
-async def test_deserialization_serialization_undefined(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {"type": "undefined"})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_null(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {"type": "null"})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_string(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id, {
+@pytest.mark.parametrize("serialized", [
+    {
+        "type": "undefined"
+    }, {
         "type": "string",
-        "value": "someStr"})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": "someStr"
+    },
+    {
         "type": "string",
-        "value": ""})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_number(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": ""
+    }, {
         "type": "number",
-        "value": 123})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": 123
+    }, {
         "type": "number",
-        "value": 0.56})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_specialNumber(websocket,
-      context_id):
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": 0.56
+    }, {
         "type": "number",
-        "value": "Infinity"})
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "number",
-                                                    "value": "+Infinity"
-                                                }, {
-                                                    "type": "number",
-                                                    "value": "Infinity"})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": "Infinity"
+    }, {
         "type": "number",
-        "value": "-Infinity"})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": "-Infinity"
+    }, {
         "type": "number",
-        "value": "-0"})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": "-0"
+    }, {
         "type": "number",
-        "value": "NaN"})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_bool(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": "NaN"
+    }, {
         "type": "boolean",
-        "value": True})
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": True
+    }, {
         "type": "boolean",
-        "value": False})
-
-
-@pytest.mark.asyncio
-async def test_serialization_function(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "function(){}", {
-                                  "type": "function",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_promise(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "Promise.resolve(1)", {
-                                  "type": "promise",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_weakMap(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new WeakMap()", {
-                                  "type": "weakmap",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_weakSet(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new WeakSet()", {
-                                  "type": "weakset",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-# Not specified yet.
-async def test_serialization_proxy(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new Proxy({}, {})", {
-                                  "type": "proxy",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_typedarray(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new Int32Array()", {
-                                  "type": "typedarray",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_object(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
-                                  "type": "object",
-                                  "handle": any_string,
-                                  "value": [[
-                                      "foo", {
-                                          "type": "object"}], [
-                                      "qux", {
-                                          "type": "string",
-                                          "value": "quux"}]]})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_object(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "object",
-                                                    "value": [[
-                                                        "foo", {
-                                                            "type": "object",
-                                                            "value": []}
-                                                    ], [{
-                                                        "type": "string",
-                                                        "value": "qux"
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "quux"}]]},
-                                                {
-                                                    "type": "object",
-                                                    "handle": any_string,
-                                                    "value": [[
-                                                        "foo", {
-                                                            "type": "object"}
-                                                    ], [
-                                                        "qux", {
-                                                            "type": "string",
-                                                            "value": "quux"}]]})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_map(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "map",
-                                                    "value": [[
-                                                        "foo", {
-                                                            "type": "object",
-                                                            "value": []}
-                                                    ], [{
-                                                        "type": "string",
-                                                        "value": "qux"
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "quux"}]]},
-                                                {
-                                                    "type": "map",
-                                                    "handle": any_string,
-                                                    "value": [[
-                                                        "foo", {
-                                                            "type": "object"}
-                                                    ], [
-                                                        "qux", {
-                                                            "type": "string",
-                                                            "value": "quux"}]]})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_array(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "array",
-                                                    "value": [{
-                                                        "type": "number",
-                                                        "value": 1
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "a"
-                                                    }]}, {
-                                                    "type": "array",
-                                                    "handle": any_string,
-                                                    "value": [{
-                                                        "type": "number",
-                                                        "value": 1
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "a"
-                                                    }]}, )
-
-
-@pytest.mark.asyncio
-async def test_serialization_array(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
-                                  "type": "array",
-                                  "handle": any_string,
-                                  "value": [{
-                                      "type": "number",
-                                      "value": 1
-                                  }, {
-                                      "type": "string",
-                                      "value": "a"
-                                  }, {
-                                      "type": "object"
-                                  }, {
-                                      "type": "array"}]})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_set(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "set",
-                                                    "value": [{
-                                                        "type": "number",
-                                                        "value": 1
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "a"
-                                                    }]}, {
-                                                    "type": "set",
-                                                    "handle": any_string,
-                                                    "value": [{
-                                                        "type": "number",
-                                                        "value": 1
-                                                    }, {
-                                                        "type": "string",
-                                                        "value": "a"
-                                                    }]}, )
-
-
-@pytest.mark.asyncio
-async def test_serialization_set(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
-                                  "type": "set",
-                                  "handle": any_string,
-                                  "value": [{
-                                      "type": "number",
-                                      "value": 1
-                                  }, {
-                                      "type": "string",
-                                      "value": "a"
-                                  }, {
-                                      "type": "object"
-                                  }, {
-                                      "type": "array"}]})
-
-
-@pytest.mark.asyncio
-async def test_deserialization_serialization_bigint(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id, {
+        "value": False
+    }, {
         "type": "bigint",
-        "value": "12345678901234567890"})
+        "value": "12345678901234567890"
+    }])
+async def test_serialization_deserialization(websocket, context_id,
+      serialized):
+    await assert_callFunction_deserialization_serialization(
+        websocket, context_id, serialized)
 
 
 @pytest.mark.asyncio
-async def test_serialization_symbol(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "Symbol('foo')", {
-                                  "type": "symbol",
-                                  "handle": any_string
-                              })
+@pytest.mark.parametrize("jsString, excepted_serialized", [
+    (
+          "function(){}",
+          {
+              "type": "function",
+              "handle": any_string
+          }
+    ), (
+          "Promise.resolve(1)", {
+              "type": "promise",
+              "handle": any_string
+          }
+    ), (
+          "new WeakMap()", {
+              "type": "weakmap",
+              "handle": any_string
+          }
+    ), (
+          "new WeakSet()", {
+              "type": "weakset",
+              "handle": any_string
+          }
+    ), (
+          "new Proxy({}, {})", {
+              "type": "proxy",
+              "handle": any_string
+          }
+    ), (
+          "new Int32Array()", {
+              "type": "typedarray",
+              "handle": any_string
+          }
+    ), (
+          "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
+          {
+              "type": "object",
+              "handle": any_string,
+              "value": [[
+                  "foo", {
+                      "type": "object"}], [
+                  "qux", {
+                      "type": "string",
+                      "value": "quux"}]]}
+    ), (
+          "[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
+              "type": "array",
+              "handle": any_string,
+              "value": [{
+                  "type": "number",
+                  "value": 1
+              }, {
+                  "type": "string",
+                  "value": "a"
+              }, {
+                  "type": "object"
+              }, {
+                  "type": "array"}]}
+    ), (
+          "new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])",
+          {
+              "type": "set",
+              "handle": any_string,
+              "value": [{
+                  "type": "number",
+                  "value": 1
+              }, {
+                  "type": "string",
+                  "value": "a"
+              }, {
+                  "type": "object"
+              }, {
+                  "type": "array"}]}
+    ), (
+          "Symbol('foo')", {
+              "type": "symbol",
+              "handle": any_string
+          }), (
+          "this.window", {
+              "type": "window",
+              "handle": any_string
+          }
+    ), (
+          "new Error('Woops!')", {
+              "type": "error",
+              "handle": any_string
+          })])
+async def test_serialization_function(websocket, context_id, jsString,
+      excepted_serialized):
+    await assert_serialization(websocket, context_id,
+                               jsString, excepted_serialized)
 
 
 @pytest.mark.asyncio
-async def test_deserialization_serialization_regExp(websocket, context_id):
-    await assertDeserializationAndSerialization(websocket, context_id,
-                                                {
-                                                    "type": "regexp",
-                                                    "value": {
-                                                        "pattern": "ab+c",
-                                                        "flags": "i"
-                                                    }
-                                                }, {
-                                                    "type": "regexp",
-                                                    "handle": any_string,
-                                                    "value": {
-                                                        "pattern": "ab+c",
-                                                        "flags": "i"
-                                                    }
-                                                })
+@pytest.mark.parametrize("serialized, excepted_re_serialized", [
+    ({
+         "type": "object",
+         "value": [[
+             "foo", {
+                 "type": "object",
+                 "value": []}
+         ], [{
+             "type": "string",
+             "value": "qux"
+         }, {
+             "type": "string",
+             "value": "quux"}]]
+     }, {
+         "type": "object",
+         "handle": any_string,
+         "value": [[
+             "foo", {
+                 "type": "object"}
+         ], [
+             "qux", {
+                 "type": "string",
+                 "value": "quux"}]]}
+    ), ({
+            "type": "map",
+            "value": [[
+                "foo", {
+                    "type": "object",
+                    "value": []}
+            ], [{
+                "type": "string",
+                "value": "qux"
+            }, {
+                "type": "string",
+                "value": "quux"}]]
+        }, {
+            "type": "map",
+            "handle": any_string,
+            "value": [[
+                "foo", {
+                    "type": "object"}
+            ], [
+                "qux", {
+                    "type": "string",
+                    "value": "quux"}]]}
+    ), ({
+            "type": "array",
+            "value": [{
+                "type": "number",
+                "value": 1
+            }, {
+                "type": "string",
+                "value": "a"}]
+        }, {
+            "type": "array",
+            "handle": any_string,
+            "value": [{
+                "type": "number",
+                "value": 1
+            }, {
+                "type": "string",
+                "value": "a"}]}
+    ), ({
+            "type": "set",
+            "value": [{
+                "type": "number",
+                "value": 1.23
+            }, {
+                "type": "string",
+                "value": "a"}]
+        }, {
+            "type": "set",
+            "handle": any_string,
+            "value": [{
+                "type": "number",
+                "value": 1.23
+            }, {
+                "type": "string",
+                "value": "a"
+            }]}
+    ), ({
+            "type": "regexp",
+            "value": {
+                "pattern": "ab+c",
+                "flags": "i"}
+        }, {
+            "type": "regexp",
+            "handle": any_string,
+            "value": {
+                "pattern": "ab+c",
+                "flags": "i"
+            }})])
+async def test_serialization_deserialization_complex(websocket, context_id,
+      serialized, excepted_re_serialized):
+    await assert_callFunction_deserialization_serialization(
+        websocket, context_id, serialized, excepted_re_serialized)
 
 
 @pytest.mark.asyncio
-async def test_deserialization_serialization_date(websocket, context_id):
+async def test_serialization_deserialization_date(websocket, context_id):
     serialized_date = {
         "type": "date",
         "value": "2020-07-19T07:34:56.789+01:00"}
@@ -378,24 +373,6 @@ async def test_deserialization_serialization_date(websocket, context_id):
     assert result["result"] == {
         "type": "date",
         "value": "2020-07-19T06:34:56.789Z"}
-
-
-@pytest.mark.asyncio
-async def test_serialization_windowProxy(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "this.window", {
-                                  "type": "window",
-                                  "handle": any_string
-                              })
-
-
-@pytest.mark.asyncio
-async def test_serialization_error(websocket, context_id):
-    await assertSerialization(websocket, context_id,
-                              "new Error('Woops!')", {
-                                  "type": "error",
-                                  "handle": any_string
-                              })
 
 
 @pytest.mark.asyncio

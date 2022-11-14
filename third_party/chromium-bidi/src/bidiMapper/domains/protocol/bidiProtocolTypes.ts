@@ -46,7 +46,10 @@ function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
 }
 
 export namespace Message {
-  export type OutgoingMessage = CommandResponse | EventMessage;
+  export type OutgoingMessage =
+    | CommandResponse
+    | EventMessage
+    | {launched: true};
 
   export type RawCommandRequest = {
     id: number;

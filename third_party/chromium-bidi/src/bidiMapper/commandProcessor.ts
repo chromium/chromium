@@ -24,7 +24,7 @@ import {
   Session,
 } from './domains/protocol/bidiProtocolTypes';
 import {CdpConnection} from '../cdp';
-import {IBidiServer} from './utils/bidiServer';
+import {BiDiMessageEntry, IBidiServer} from './utils/bidiServer';
 import {IEventManager} from './domains/events/EventManager';
 import {
   ErrorResponseClass,
@@ -185,22 +185,28 @@ export class CommandProcessor {
         ...result,
       };
 
-      await this.#bidiServer.sendMessage(response, command.channel ?? null);
+      await this.#bidiServer.sendMessage(
+        BiDiMessageEntry.createResolved(response, command.channel ?? null)
+      );
     } catch (e) {
       if (e instanceof ErrorResponseClass) {
         const errorResponse = e as ErrorResponseClass;
 
         await this.#bidiServer.sendMessage(
-          errorResponse.toErrorResponse(command.id),
-          command.channel ?? null
+          BiDiMessageEntry.createResolved(
+            errorResponse.toErrorResponse(command.id),
+            command.channel ?? null
+          )
         );
       } else {
         const error = e as Error;
         console.error(error);
 
         await this.#bidiServer.sendMessage(
-          new UnknownException(error.message).toErrorResponse(command.id),
-          command.channel ?? null
+          BiDiMessageEntry.createResolved(
+            new UnknownException(error.message).toErrorResponse(command.id),
+            command.channel ?? null
+          )
         );
       }
     }

@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import asyncio
 import json
 import os
+
 import pytest
 import websockets
 
@@ -182,6 +182,7 @@ async def send_JSON_command(websocket, command):
         command_id = get_next_command_id()
         command["id"] = command_id
     await websocket.send(json.dumps(command))
+    return command["id"]
 
 
 async def read_JSON_message(websocket):

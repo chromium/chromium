@@ -20,7 +20,7 @@
 import {CommandProcessor} from './commandProcessor';
 
 import {CdpClient, CdpConnection} from '../cdp';
-import {BidiServer} from './utils/bidiServer';
+import {BiDiMessageEntry, BidiServer} from './utils/bidiServer';
 import {ITransport} from '../utils/transport';
 
 import {log, LogType} from '../utils/log';
@@ -73,7 +73,9 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   logSystem('launched');
 
-  bidiServer.sendMessage({launched: true}, null);
+  bidiServer.sendMessage(
+    BiDiMessageEntry.createResolved({launched: true}, null)
+  );
 })();
 
 function _createCdpConnection() {

@@ -20,6 +20,8 @@ import {EventEmitter} from 'events';
 
 import {ITransport} from '../../utils/transport';
 import {Message} from '../domains/protocol/bidiProtocolTypes';
+import {ProcessingQueue} from '../../utils/processingQueue';
+import ErrorCode = Message.ErrorCode;
 
 const logBidi = log(LogType.bidi);
 
@@ -29,16 +31,47 @@ export interface IBidiServer {
     handler: (messageObj: Message.RawCommandRequest) => void
   ): void;
 
-  sendMessage: (
-    messageObj: Message.OutgoingMessage,
-    channel: string | null
-  ) => Promise<void>;
+  sendMessage: (message: Promise<BiDiMessageEntry>) => void;
 
   close(): void;
 }
 
 interface BidiServerEvents {
   message: Message.RawCommandRequest;
+}
+
+export class BiDiMessageEntry {
+  readonly #message: Message.OutgoingMessage;
+  readonly #channel: string | null;
+
+  constructor(message: Message.OutgoingMessage, channel: string | null) {
+    this.#message = message;
+    this.#channel = channel;
+  }
+
+  static createFromPromise(
+    messagePromise: Promise<Message.OutgoingMessage>,
+    channel: string | null
+  ): Promise<BiDiMessageEntry> {
+    return messagePromise.then(
+      (message) => new BiDiMessageEntry(message, channel)
+    );
+  }
+
+  static createResolved(
+    message: Message.OutgoingMessage,
+    channel: string | null
+  ): Promise<BiDiMessageEntry> {
+    return Promise.resolve(new BiDiMessageEntry(message, channel));
+  }
+
+  get message(): Message.OutgoingMessage {
+    return this.#message;
+  }
+
+  get channel(): string | null {
+    return this.#channel;
+  }
 }
 
 export declare interface BidiServer {
@@ -54,24 +87,34 @@ export declare interface BidiServer {
 }
 
 export class BidiServer extends EventEmitter implements IBidiServer {
+  #messageQueue: ProcessingQueue<BiDiMessageEntry>;
+
   constructor(private _transport: ITransport) {
     super();
-
+    this.#messageQueue = new ProcessingQueue<BiDiMessageEntry>((m) =>
+      this.#sendMessage(m)
+    );
     this._transport.setOnMessage(this.#onBidiMessage);
+  }
+
+  async #sendMessage(messageEntry: BiDiMessageEntry) {
+    const message = messageEntry.message as any;
+
+    if (messageEntry.channel !== null) {
+      message['channel'] = messageEntry.channel;
+    }
+
+    const messageStr = JSON.stringify(message);
+    logBidi('sent > ' + messageStr);
+    await this._transport.sendMessage(messageStr);
   }
 
   /**
    * Sends BiDi message.
    */
-  async sendMessage(messageObj: any, channel: string | null): Promise<void> {
-    // Add `channel` to response if needed.
-    if (channel !== null) {
-      messageObj['channel'] = channel;
-    }
-
-    const messageStr = JSON.stringify(messageObj);
-    logBidi('sent > ' + messageStr);
-    this._transport.sendMessage(messageStr);
+  sendMessage(messageEntry: Promise<BiDiMessageEntry>): void {
+    // messageEntry.then((m) => this.#sendMessage(m));
+    this.#messageQueue.add(messageEntry);
   }
 
   close(): void {
@@ -83,7 +126,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
 
     let messageObj;
     try {
-      messageObj = this.#parseBidiMessage(messageStr);
+      messageObj = BidiServer.#parseBidiMessage(messageStr);
     } catch (e: any) {
       // Transport-level error does not provide channel.
       this.#respondWithError(messageStr, 'invalid argument', e.message, null);
@@ -94,19 +137,19 @@ export class BidiServer extends EventEmitter implements IBidiServer {
 
   #respondWithError(
     plainCommandData: string,
-    errorCode: string,
+    errorCode: ErrorCode,
     errorMessage: string,
     channel: string | null
   ) {
-    const errorResponse = this.#getErrorResponse(
+    const errorResponse = BidiServer.#getErrorResponse(
       plainCommandData,
       errorCode,
       errorMessage
     );
-    this.sendMessage(errorResponse, channel);
+    this.sendMessage(BiDiMessageEntry.createResolved(errorResponse, channel));
   }
 
-  #getJsonType(value: any) {
+  static #getJsonType(value: any) {
     if (value === null) {
       return 'null';
     }
@@ -116,17 +159,20 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     return typeof value;
   }
 
-  #getErrorResponse(
+  static #getErrorResponse(
     messageStr: string,
-    errorCode: string,
+    errorCode: ErrorCode,
     errorMessage: string
-  ) {
+  ): Message.OutgoingMessage {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let messageId = undefined;
     try {
       const messageObj = JSON.parse(messageStr);
-      if (this.#getJsonType(messageObj) === 'object' && 'id' in messageObj) {
+      if (
+        BidiServer.#getJsonType(messageObj) === 'object' &&
+        'id' in messageObj
+      ) {
         messageId = messageObj.id;
       }
     } catch {}
@@ -139,7 +185,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     };
   }
 
-  #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
+  static #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
     let messageObj: any;
     try {
       messageObj = JSON.parse(messageStr);
@@ -147,7 +193,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
       throw new Error('Cannot parse data as JSON');
     }
 
-    const parsedType = this.#getJsonType(messageObj);
+    const parsedType = BidiServer.#getJsonType(messageObj);
     if (parsedType !== 'object') {
       throw new Error(`Expected JSON object but got ${parsedType}`);
     }
@@ -155,26 +201,26 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     // Extract amd validate id, method and params.
     const {id, method, params} = messageObj;
 
-    const idType = this.#getJsonType(id);
+    const idType = BidiServer.#getJsonType(id);
     if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
       // TODO: should uint64_t be the upper limit?
       // https://tools.ietf.org/html/rfc7049#section-2.1
       throw new Error(`Expected unsigned integer but got ${idType}`);
     }
 
-    const methodType = this.#getJsonType(method);
+    const methodType = BidiServer.#getJsonType(method);
     if (methodType !== 'string') {
       throw new Error(`Expected string method but got ${methodType}`);
     }
 
-    const paramsType = this.#getJsonType(params);
+    const paramsType = BidiServer.#getJsonType(params);
     if (paramsType !== 'object') {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
     let channel = messageObj.channel;
     if (channel !== undefined) {
-      const channelType = this.#getJsonType(channel);
+      const channelType = BidiServer.#getJsonType(channel);
       if (channelType !== 'string') {
         throw new Error(`Expected string channel but got ${channelType}`);
       }
