@@ -148,13 +148,10 @@ InputMethod* MockIMEInputContextHandler::GetInputMethod() {
   return nullptr;
 }
 
-void MockIMEInputContextHandler::ConfirmCompositionText(bool reset_engine,
-                                                        bool keep_selection) {
-  // TODO(b/134473433) Modify this function so that when keep_selection is
-  // true, the selection is not changed when text committed
-  if (keep_selection) {
-    NOTIMPLEMENTED_LOG_ONCE();
-  }
+void MockIMEInputContextHandler::ConfirmComposition(bool reset_engine) {
+  // TODO(b/134473433) Modify this function so that the selection is unchanged.
+  NOTIMPLEMENTED_LOG_ONCE();
+
   if (!HasCompositionText())
     return;
 

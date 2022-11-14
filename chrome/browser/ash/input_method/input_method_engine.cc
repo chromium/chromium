@@ -164,12 +164,11 @@ bool InputMethodEngine::CommitText(int context_id,
   return true;
 }
 
-void InputMethodEngine::ConfirmCompositionText(bool reset_engine,
-                                               bool keep_selection) {
+void InputMethodEngine::ConfirmComposition(bool reset_engine) {
   ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (input_context)
-    input_context->ConfirmCompositionText(reset_engine, keep_selection);
+    input_context->ConfirmComposition(reset_engine);
 }
 
 bool InputMethodEngine::DeleteSurroundingText(int context_id,
@@ -208,7 +207,7 @@ bool InputMethodEngine::FinishComposingText(int context_id,
         kErrorWrongContext, context_id, context_id_);
     return false;
   }
-  ConfirmCompositionText(/* reset_engine */ false, /* keep_selection */ true);
+  ConfirmComposition(/* reset_engine */ false);
   return true;
 }
 
@@ -342,7 +341,7 @@ bool InputMethodEngine::SetCompositionRange(
 
   // When there is composition text, commit it to the text field first before
   // changing the composition range.
-  ConfirmCompositionText(/* reset_engine */ false, /* keep_selection */ true);
+  ConfirmComposition(/* reset_engine */ false);
 
   std::vector<ui::ImeTextSpan> text_spans;
   for (const auto& segment : segments) {
@@ -406,7 +405,7 @@ bool InputMethodEngine::SetComposingRange(
 
   // When there is composition text, commit it to the text field first before
   // changing the composition range.
-  ConfirmCompositionText(/* reset_engine */ false, /* keep_selection */ true);
+  ConfirmComposition(/* reset_engine */ false);
 
   std::vector<ui::ImeTextSpan> text_spans;
   for (const auto& segment : segments) {
@@ -665,7 +664,7 @@ bool InputMethodEngine::IsActive() const {
 void InputMethodEngine::Disable() {
   std::string last_component_id{active_component_id_};
   active_component_id_.clear();
-  ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
+  ConfirmComposition(/* reset_engine */ true);
   observer_->OnDeactivated(last_component_id);
 }
 

@@ -137,7 +137,7 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
 
   // Notifies InputContextHandler to commit any composition text.
   // Set |reset_engine| to false if the event was from the extension.
-  void ConfirmCompositionText(bool reset_engine, bool keep_selection);
+  void ConfirmComposition(bool reset_engine);
 
   // Deletes |number_of_chars| unicode characters as the basis of |offset| from
   // the surrounding text. The |offset| is relative position based on current

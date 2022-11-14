@@ -1121,8 +1121,7 @@ void NativeInputMethodEngineObserver::FinishComposition() {
   ui::TextInputTarget* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
-  input_context->ConfirmCompositionText(/*reset_engine=*/false,
-                                        /*keep_selection=*/true);
+  input_context->ConfirmComposition(/*reset_engine=*/false);
 
   auto* manager = InputMethodManager::Get();
   if (!manager ||

@@ -90,10 +90,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputTarget {
   // Gets the input method pointer.
   virtual InputMethod* GetInputMethod() = 0;
 
-  // Commits any composition text.
+  // Commits the current composition and keeps the selection unchanged.
   // Set |reset_engine| to false if this was triggered from the extension.
-  virtual void ConfirmCompositionText(bool reset_engine,
-                                      bool keep_selection) = 0;
+  virtual void ConfirmComposition(bool reset_engine) = 0;
 
   // Returns true if there is any composition text.
   virtual bool HasCompositionText() = 0;

@@ -270,11 +270,9 @@ class InputMethodAshTest : public ImeKeyEventDispatcher,
     composition_text_ = composition;
   }
   size_t ConfirmCompositionText(bool keep_selection) override {
-    // TODO(b/134473433) Modify this function so that when keep_selection is
-    // true, the selection is not changed when text committed
-    if (keep_selection) {
-      NOTIMPLEMENTED_LOG_ONCE();
-    }
+    // TODO(b/134473433) Modify this function so that the selection is not
+    // changed when text committed
+    NOTIMPLEMENTED_LOG_ONCE();
     confirmed_text_ = composition_text_;
     composition_text_ = CompositionText();
     return confirmed_text_.text.length();
@@ -948,19 +946,18 @@ TEST_F(InputMethodAshTest,
                                   /*start_offset=*/0, /*end_offset=*/5)));
 }
 
-TEST_F(InputMethodAshTest, ConfirmCompositionText_NoComposition) {
+TEST_F(InputMethodAshTest, ConfirmComposition_NoComposition) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
 
-  input_method_ash_->ConfirmCompositionText(/* reset_engine */ true,
-                                            /* keep_selection */ false);
+  input_method_ash_->ConfirmComposition(/* reset_engine */ true);
 
   EXPECT_TRUE(confirmed_text_.text.empty());
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
-TEST_F(InputMethodAshTest, ConfirmCompositionText_SetComposition) {
+TEST_F(InputMethodAshTest, ConfirmComposition_SetComposition) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
@@ -968,14 +965,13 @@ TEST_F(InputMethodAshTest, ConfirmCompositionText_SetComposition) {
   CompositionText composition_text;
   composition_text.text = u"hello";
   SetCompositionText(composition_text);
-  input_method_ash_->ConfirmCompositionText(/* reset_engine */ true,
-                                            /* keep_selection */ false);
+  input_method_ash_->ConfirmComposition(/* reset_engine */ true);
 
   EXPECT_EQ(u"hello", confirmed_text_.text);
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
-TEST_F(InputMethodAshTest, ConfirmCompositionText_SetCompositionRange) {
+TEST_F(InputMethodAshTest, ConfirmComposition_SetCompositionRange) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   input_method_ash_->OnTextInputTypeChanged(this);
@@ -986,8 +982,7 @@ TEST_F(InputMethodAshTest, ConfirmCompositionText_SetCompositionRange) {
 
   // "abc" is in composition. Put the two characters in composition.
   input_method_ash_->SetCompositionRange(0, 2, {});
-  input_method_ash_->ConfirmCompositionText(/* reset_engine */ true,
-                                            /* keep_selection */ false);
+  input_method_ash_->ConfirmComposition(/* reset_engine */ true);
 
   EXPECT_EQ(u"ab", confirmed_text_.text);
   EXPECT_TRUE(composition_text_.text.empty());

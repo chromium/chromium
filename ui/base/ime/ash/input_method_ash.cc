@@ -48,7 +48,7 @@ InputMethodAsh::InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher)
 }
 
 InputMethodAsh::~InputMethodAsh() {
-  ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
+  ConfirmComposition(/* reset_engine */ true);
   // We are dead, so we need to ask the client to stop relying on us.
   OnInputMethodChanged();
 
@@ -179,8 +179,7 @@ void InputMethodAsh::ProcessKeyEventDone(
         // keys because, for example, if the IME handles Shift+A, then we don't
         // want the Shift key to confirm the composition text. Only confirm the
         // composition text when the IME does not handle the full key combo.
-        ConfirmCompositionText(/* reset_engine */ true,
-                               /* keep_selection */ true);
+        ConfirmComposition(/* reset_engine */ true);
       }
     }
   }
@@ -341,7 +340,7 @@ void InputMethodAsh::OnBlur() {
 
 void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
                                                TextInputClient* focused) {
-  ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
+  ConfirmComposition(/* reset_engine */ true);
 
   // Remove any autocorrect range in the unfocused TextInputClient.
   gfx::Range text_range;
@@ -501,8 +500,7 @@ bool InputMethodAsh::SetSelectionRange(uint32_t start, uint32_t end) {
       gfx::Range(start, end));
 }
 
-void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
-                                            bool keep_selection) {
+void InputMethodAsh::ConfirmComposition(bool reset_engine) {
   TextInputClient* client = GetTextInputClient();
   // TODO(b/223075193): Quick fix for the case where we have a pending commit.
   // Without this, then we would lose the pending commit after confirming the
@@ -523,7 +521,7 @@ void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
   }
   if (client && client->HasCompositionText()) {
     const size_t characters_committed =
-        client->ConfirmCompositionText(keep_selection);
+        client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);
   }
   // See https://crbug.com/984472.
