@@ -1,7 +1,6 @@
 # Chrome OS safelist for network annotator.
 # Please do not add any new safelist.
 #
-missing,chrome/browser/ash/customization/customization_wallpaper_downloader.cc
 missing,ash/wallpaper/wallpaper_controller_impl.cc
 all,chromeos/printing/printer_config_cache.cc
 all,chrome/browser/ash/customization/customization_document.cc
