@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+
 #include <memory>
 #include <string>
 
@@ -12,9 +13,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace {
+constexpr size_t kMaxUpdateManifestLength = 5 * 1024 * 1024;
 
 base::File::Error CreateNonExistingDirectory(const base::FilePath& path) {
   if (base::PathExists(path)) {
@@ -31,23 +37,31 @@ namespace web_app {
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(
     const base::FilePath& context_dir,
-    std::vector<IsolatedWebAppExternalInstallOptions>&& iwa_install_options,
-    base::OnceCallback<void(EphemeralAppInstallResult)> ephemeral_install_cb)
+    std::vector<IsolatedWebAppExternalInstallOptions> iwa_install_options,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
+        ephemeral_install_cb)
     : ephemeral_iwa_install_options_(std::move(iwa_install_options)),
+      current_app_(ephemeral_iwa_install_options_.begin()),
       installation_dir_(context_dir.Append(kEphemeralIwaRootDirectory)),
+      url_loader_factory_(std::move(url_loader_factory)),
+      result_vector_(ephemeral_iwa_install_options_.size(),
+                     EphemeralAppInstallResult::kUnknown),
       ephemeral_install_cb_(std::move(ephemeral_install_cb)) {}
 IsolatedWebAppPolicyManager::~IsolatedWebAppPolicyManager() = default;
 
 void IsolatedWebAppPolicyManager::InstallEphemeralApps() {
   if (!profiles::IsPublicSession()) {
     LOG(ERROR) << "The IWAs should be installed only in managed guest session.";
-    std::move(ephemeral_install_cb_)
-        .Run(EphemeralAppInstallResult::kErrorNotEphemeralSession);
+    SetResultForAllEphemeralApps(
+        EphemeralAppInstallResult::kErrorNotEphemeralSession);
+    std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
 
   if (ephemeral_iwa_install_options_.empty()) {
-    std::move(ephemeral_install_cb_).Run(EphemeralAppInstallResult::kSuccess);
+    SetResultForAllEphemeralApps(EphemeralAppInstallResult::kSuccess);
+    std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
 
@@ -68,14 +82,113 @@ void IsolatedWebAppPolicyManager::OnIwaEphemeralRootDirectoryCreated(
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Error in creating the directory for ephemeral IWAs: "
                << base::File::ErrorToString(error);
-    std::move(ephemeral_install_cb_)
-        .Run(EphemeralAppInstallResult::kErrorCantCreateRootDirectory);
+    SetResultForAllEphemeralApps(
+        EphemeralAppInstallResult::kErrorCantCreateRootDirectory);
+    std::move(ephemeral_install_cb_).Run(result_vector_);
     return;
   }
 
-  LOG(ERROR) << "Next step would be downloading of the update manifest, but it "
-                "is not yet implemented";
-  std::move(ephemeral_install_cb_).Run(EphemeralAppInstallResult::kSuccess);
+  DownloadUpdateManifest();
+}
+
+void IsolatedWebAppPolicyManager::DownloadUpdateManifest() {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("iwa_policy_update_manifest", R"(
+    semantics {
+      sender: "Isolated Web App Update Manifest Downloader"
+      description:
+        "Downloads update manifest of the Isolated Web App that is provided "
+        "in the enterprise policy by the administrator. The update manifest "
+        "contains at least the list of the available versions of the IWA "
+        "and the URL to the Signed Web Bundles that correspond to "
+        "each version."
+      trigger:
+        "Installation/update of a IWA from the enterprise policy requires "
+        "fetching of a IWA Update Manifest"
+      data:
+        "This request does not send any data. It loads update manifest "
+        "by a URL provided by the admin."
+      destination: OTHER
+      contacts {
+        email: "peletskyi@google.com"
+      }
+    }
+    policy {
+      cookies_allowed: NO
+      setting: "This feature cannot be disabled in settings."
+      chrome_policy {
+        IsolatedWebAppInstallForceList {
+          IsolatedWebAppInstallForceList: ""
+        }
+      }
+    })");
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = current_app_->update_manifest_url();
+  // Cookies are not allowed.
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       std::move(traffic_annotation));
+
+  simple_loader->SetRetryOptions(
+      /* max_retries=*/3,
+      network::SimpleURLLoader::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
+  network::SimpleURLLoader* const simple_loader_ptr = simple_loader.get();
+  base::OnceCallback<void(std::unique_ptr<std::string>)> cb =
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnUpdateManifestDownloaded,
+                     weak_factory_.GetWeakPtr(), std::move(simple_loader));
+
+  simple_loader_ptr->DownloadToString(url_loader_factory_.get(), std::move(cb),
+                                      kMaxUpdateManifestLength);
+}
+
+void IsolatedWebAppPolicyManager::OnUpdateManifestDownloaded(
+    std::unique_ptr<network::SimpleURLLoader> simple_loader,
+    std::unique_ptr<std::string> update_manifest_string) {
+  // We may extract some information from the loader about
+  // downloading errors in the future.
+  simple_loader.reset();
+
+  if (!update_manifest_string) {
+    SetResultForCurrentEphemeralApp(
+        EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed);
+    ContinueWithTheNextApp();
+    return;
+  }
+
+  LOG(ERROR) << "We will parse the update manifest for the app "
+             << current_app_->web_bundle_id().id()
+             << " after the feature is complete.";
+  // Even though the app is not installed because the feature is not yet
+  // implemented, let's set the result to kSuccess as for nothing went wrong for
+  // the current app.
+  SetResultForCurrentEphemeralApp(EphemeralAppInstallResult::kSuccess);
+  ContinueWithTheNextApp();
+}
+
+void IsolatedWebAppPolicyManager::ContinueWithTheNextApp() {
+  ++current_app_;
+  if (current_app_ == ephemeral_iwa_install_options_.end()) {
+    std::move(ephemeral_install_cb_).Run(result_vector_);
+    return;
+  }
+
+  DownloadUpdateManifest();
+}
+
+void IsolatedWebAppPolicyManager::SetResultForCurrentEphemeralApp(
+    EphemeralAppInstallResult result) {
+  const auto index =
+      std::distance(ephemeral_iwa_install_options_.begin(), current_app_);
+  result_vector_.at(index) = result;
+}
+
+void IsolatedWebAppPolicyManager::SetResultForAllEphemeralApps(
+    EphemeralAppInstallResult result) {
+  base::ranges::fill(result_vector_, result);
 }
 
 }  // namespace web_app

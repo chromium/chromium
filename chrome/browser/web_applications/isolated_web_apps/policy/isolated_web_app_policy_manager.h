@@ -14,6 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+}  // namespace network
+
 namespace web_app {
 
 // This component is responsible for installing, uninstalling, updating etc.
@@ -24,14 +29,18 @@ class IsolatedWebAppPolicyManager {
     kSuccess,
     kErrorNotEphemeralSession,
     kErrorCantCreateRootDirectory,
+    kErrorUpdateManifestDownloadFailed,
+    kUnknown,
   };
   static constexpr char kEphemeralIwaRootDirectory[] = "EphemeralIWA";
 
   IsolatedWebAppPolicyManager(
       const base::FilePath& context_dir,
-      std::vector<IsolatedWebAppExternalInstallOptions>&&
+      std::vector<IsolatedWebAppExternalInstallOptions>
           ephemeral_iwa_install_options,
-      base::OnceCallback<void(EphemeralAppInstallResult)> ephemeral_install_cb);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
+          ephemeral_install_cb);
   ~IsolatedWebAppPolicyManager();
 
   // Triggers installing of the IWAs in MGS. There is no callback as so far we
@@ -47,12 +56,27 @@ class IsolatedWebAppPolicyManager {
  private:
   void CreateIwaEphemeralRootDirectory();
   void OnIwaEphemeralRootDirectoryCreated(base::File::Error error);
+  void DownloadUpdateManifest();
+  void OnUpdateManifestDownloaded(
+      std::unique_ptr<network::SimpleURLLoader> simple_loader,
+      std::unique_ptr<std::string>);
+  void ContinueWithTheNextApp();
+
+  void SetResultForCurrentEphemeralApp(EphemeralAppInstallResult result);
+  void SetResultForAllEphemeralApps(EphemeralAppInstallResult result);
 
   // Isolated Web Apps for installation in ephemeral managed guest session.
-  const std::vector<IsolatedWebAppExternalInstallOptions>
+  std::vector<IsolatedWebAppExternalInstallOptions>
       ephemeral_iwa_install_options_;
+  std::vector<IsolatedWebAppExternalInstallOptions>::iterator current_app_;
   const base::FilePath installation_dir_;
-  base::OnceCallback<void(EphemeralAppInstallResult)> ephemeral_install_cb_;
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The result vector contains the installation result for each app.
+  std::vector<EphemeralAppInstallResult> result_vector_;
+  base::OnceCallback<void(std::vector<EphemeralAppInstallResult>)>
+      ephemeral_install_cb_;
   base::WeakPtrFactory<IsolatedWebAppPolicyManager> weak_factory_{this};
 };
 
