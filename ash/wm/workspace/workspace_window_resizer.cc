@@ -802,7 +802,10 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
         kSnapTriggerVerticalMoveThreshold;
   }
 
-  const SnapType snap_type = GetSnapType(GetDisplay(), location_in_screen);
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(
+          gfx::ToRoundedPoint(location_in_screen));
+  const SnapType snap_type = GetSnapType(display, location_in_screen);
   // Start dwell countdown if move window to the top of screen.
   if (IsSnapTopOrMaximize(snap_type)) {
     if (can_snap_to_maximize_) {
