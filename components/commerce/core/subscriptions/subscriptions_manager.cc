@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
@@ -199,6 +200,13 @@ void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
              SubscriptionsRequestCallback callback,
              std::unique_ptr<std::vector<CommerceSubscription>>
                  unique_subscriptions) {
+            if (unique_subscriptions->size() == 0) {
+              base::SequencedTaskRunnerHandle::Get()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 SubscriptionsRequestStatus::kSuccess));
+              return;
+            }
             manager->server_proxy_->Create(
                 std::move(unique_subscriptions),
                 base::BindOnce(
@@ -222,6 +230,13 @@ void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
              SubscriptionsRequestCallback callback,
              std::unique_ptr<std::vector<CommerceSubscription>>
                  unique_subscriptions) {
+            if (unique_subscriptions->size() == 0) {
+              base::SequencedTaskRunnerHandle::Get()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 SubscriptionsRequestStatus::kSuccess));
+              return;
+            }
             manager->server_proxy_->Delete(
                 std::move(unique_subscriptions),
                 base::BindOnce(
