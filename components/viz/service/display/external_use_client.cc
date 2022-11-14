@@ -12,12 +12,12 @@ namespace viz {
 ExternalUseClient::ImageContext::ImageContext(
     const gpu::MailboxHolder& mailbox_holder,
     const gfx::Size& size,
-    ResourceFormat resource_format,
+    SharedImageFormat format,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space)
     : mailbox_holder_(mailbox_holder),
       size_(size),
-      resource_format_(resource_format),
+      format_(format),
       color_space_(std::move(color_space)),
       ycbcr_info_(ycbcr_info) {}
 

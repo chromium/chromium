@@ -411,9 +411,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
     return;
 
   SkColorType color_type = ResourceFormatToClosestSkColorType(
-      true /* gpu_compositing */, image_context->resource_format());
+      true /* gpu_compositing */, image_context->format());
   GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-      image_context->resource_format(),
+      image_context->format().resource_format(),
       image_context->mailbox_holder().texture_target,
       image_context->ycbcr_info());
   auto image = SkImage::MakePromiseTexture(
@@ -451,9 +451,10 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   for (size_t i = 0; i < contexts.size(); ++i) {
     auto* context = static_cast<ImageContextImpl*>(contexts[i]);
     DCHECK(context->origin() == kTopLeft_GrSurfaceOrigin);
-    formats[i] = GetGrBackendFormatForTexture(
-        context->resource_format(), context->mailbox_holder().texture_target,
-        /*ycbcr_info=*/absl::nullopt);
+    formats[i] =
+        GetGrBackendFormatForTexture(context->format().resource_format(),
+                                     context->mailbox_holder().texture_target,
+                                     /*ycbcr_info=*/absl::nullopt);
 
     // NOTE: We don't have promises for individual planes, but still need format
     // for fallback
@@ -496,7 +497,7 @@ std::unique_ptr<ExternalUseClient::ImageContext>
 SkiaOutputSurfaceImpl::CreateImageContext(
     const gpu::MailboxHolder& holder,
     const gfx::Size& size,
-    ResourceFormat format,
+    SharedImageFormat format,
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
@@ -701,8 +702,9 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
   auto& image_context = render_pass_image_cache_[id];
   if (!image_context) {
     gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
+    auto si_format = SharedImageFormat::SinglePlane(format);
     image_context = std::make_unique<ImageContextImpl>(
-        mailbox_holder, size, format, /*maybe_concurrent_reads=*/false,
+        mailbox_holder, size, si_format, /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/absl::nullopt, std::move(color_space),
         /*allow_keeping_read_access=*/false);
   }

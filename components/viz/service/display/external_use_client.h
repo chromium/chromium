@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
@@ -40,7 +40,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
    public:
     ImageContext(const gpu::MailboxHolder& mailbox_holder,
                  const gfx::Size& size,
-                 ResourceFormat resource_format,
+                 SharedImageFormat format,
                  const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                  sk_sp<SkColorSpace> color_space);
 
@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     const gpu::MailboxHolder& mailbox_holder() const { return mailbox_holder_; }
     gpu::MailboxHolder* mutable_mailbox_holder() { return &mailbox_holder_; }
     const gfx::Size& size() const { return size_; }
-    ResourceFormat resource_format() const { return resource_format_; }
+    SharedImageFormat format() const { return format_; }
     sk_sp<SkColorSpace> color_space() const;
 
     SkAlphaType alpha_type() const { return alpha_type_; }
@@ -98,7 +98,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     gpu::MailboxHolder mailbox_holder_;
 
     const gfx::Size size_;
-    const ResourceFormat resource_format_;
+    const SharedImageFormat format_;
     const sk_sp<SkColorSpace> color_space_;
 
     SkAlphaType alpha_type_ = kPremul_SkAlphaType;
@@ -120,7 +120,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
   virtual std::unique_ptr<ImageContext> CreateImageContext(
       const gpu::MailboxHolder& holder,
       const gfx::Size& size,
-      ResourceFormat format,
+      SharedImageFormat format,
       bool maybe_concurrent_reads,
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,

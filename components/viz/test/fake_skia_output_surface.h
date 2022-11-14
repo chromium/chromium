@@ -117,7 +117,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   std::unique_ptr<ImageContext> CreateImageContext(
       const gpu::MailboxHolder& holder,
       const gfx::Size& size,
-      ResourceFormat format,
+      SharedImageFormat format,
       bool concurrent_reads,
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,

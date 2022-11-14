@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -48,7 +48,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
   ImageContextImpl(const gpu::MailboxHolder& mailbox_holder,
                    const gfx::Size& size,
-                   ResourceFormat resource_format,
+                   SharedImageFormat format,
                    bool maybe_concurrent_reads,
                    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space,

@@ -24,17 +24,13 @@ namespace viz {
 ImageContextImpl::ImageContextImpl(
     const gpu::MailboxHolder& mailbox_holder,
     const gfx::Size& size,
-    ResourceFormat resource_format,
+    SharedImageFormat format,
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
     bool allow_keeping_read_access,
     bool raw_draw_if_possible)
-    : ImageContext(mailbox_holder,
-                   size,
-                   resource_format,
-                   ycbcr_info,
-                   color_space),
+    : ImageContext(mailbox_holder, size, format, ycbcr_info, color_space),
       maybe_concurrent_reads_(maybe_concurrent_reads),
       allow_keeping_read_access_(allow_keeping_read_access),
       raw_draw_if_possible_(raw_draw_if_possible) {}
@@ -145,7 +141,7 @@ void ImageContextImpl::BeginAccessIfNecessary(
   GrBackendTexture backend_texture;
   gpu::GetGrBackendTexture(
       context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), resource_format(),
+      texture_base->service_id(), format().resource_format(),
       context_state->gr_context()->threadSafeProxy(), &backend_texture);
   if (!backend_texture.isValid()) {
     DLOG(ERROR) << "Failed to fulfill the promise texture.";
