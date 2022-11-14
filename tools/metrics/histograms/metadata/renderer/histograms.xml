@@ -54,6 +54,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
+    units="swaps" expires_after="2023-05-01">
+  <owner>iclelland@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the number of 'swaps' performed when inserting a single new
+    Performance Entry into its respective buffer. Recorded each time a new
+    performance entry is inserted into a sorted PerformanceEntryVector. Note
+    that this does not include singleton entries such as NavigationTiming or
+    PaintTiming.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
     expires_after="2023-05-01">
   <owner>yoavweiss@chromium.org</owner>

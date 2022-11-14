@@ -99,6 +99,9 @@ namespace {
 // level before reporting to UKM to smooth out recorded events over all pages.
 constexpr size_t kLongTaskUkmSampleInterval = 100;
 
+const char kSwapsPerInsertionHistogram[] =
+    "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
+
 const SecurityOrigin* GetSecurityOrigin(ExecutionContext* context) {
   if (context)
     return context->GetSecurityOrigin();
@@ -1114,18 +1117,22 @@ void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
                                               PerformanceEntry& entry) {
   entries.push_back(&entry);
 
-  if (entries.size() == 1)
-    return;
+  int number_of_swaps = 0;
 
-  // Bubble Sort from tail.
-  int left = entries.size() - 2;
-  while (left >= 0 &&
-         entries[left]->startTime() > entries[left + 1]->startTime()) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kPerformanceEntryBufferSwaps);
-    SwapEntries(entries, left, left + 1);
-    left--;
+  if (entries.size() > 1) {
+    // Bubble Sort from tail.
+    int left = entries.size() - 2;
+    while (left >= 0 &&
+           entries[left]->startTime() > entries[left + 1]->startTime()) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kPerformanceEntryBufferSwaps);
+      number_of_swaps++;
+      SwapEntries(entries, left, left + 1);
+      left--;
+    }
   }
+
+  UMA_HISTOGRAM_COUNTS_1000(kSwapsPerInsertionHistogram, number_of_swaps);
 
   return;
 }
