@@ -2345,7 +2345,7 @@
   {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-fenced-frames",
@@ -3002,7 +3002,7 @@
   {
     "name": "enable-search-resumption-module",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-secure-payment-confirmation-android",
@@ -3033,7 +3033,7 @@
   {
     "name": "enable-show-scrollable-mvt-on-ntp",
     "owners": ["clank-start","hanxi"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-site-isolation-for-password-sites",
