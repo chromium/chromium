@@ -440,10 +440,6 @@ BASE_FEATURE(kContextualNudges,
              "ContextualNudges",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Crosh System Web App. When enabled, crosh (ChromeOS
-// Shell) will run as a tabbed System Web App rather than a normal browser tab.
-BASE_FEATURE(kCroshSWA, "CroshSWA", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables upgrading the crostini container to debian bullseye.
 BASE_FEATURE(kCrostiniBullseyeUpgrade,
              "CrostiniBullseyeUpgrade",

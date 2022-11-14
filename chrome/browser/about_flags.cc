@@ -7537,9 +7537,6 @@ const FeatureEntry kFeatureEntries[] = {
          heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"crosh-swa", flag_descriptions::kCroshSWAName,
-     flag_descriptions::kCroshSWADescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCroshSWA)},
     {"crostini-container-install",
      flag_descriptions::kCrostiniContainerInstallName,
      flag_descriptions::kCrostiniContainerInstallDescription, kOsCrOS,

@@ -1190,11 +1190,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "crosh-swa",
-    "owners": [ "joelhockey", "benwells" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "crostini-bullseye-upgrade",
     "owners": [ "sidereal@google.com", "clumptini@google.com" ],
     "expiry_milestone": 110

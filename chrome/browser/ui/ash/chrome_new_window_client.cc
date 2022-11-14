@@ -468,19 +468,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
-    ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
-  } else {
-    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-    Browser* browser = displayer.browser();
-    content::WebContents* page = browser->OpenURL(content::OpenURLParams(
-        GURL(chrome::kChromeUIUntrustedCroshURL), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_GENERATED, false));
-    browser->window()->Show();
-    browser->window()->Activate();
-    page->Focus();
-  }
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
 }
 
 void ChromeNewWindowClient::OpenGetHelp() {

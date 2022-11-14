@@ -4976,11 +4976,6 @@ const char kContextualNudgesDescription[] =
     "Enables contextual nudges, periodically showing the user a label "
     "explaining how to interact with a particular UI element using gestures.";
 
-const char kCroshSWAName[] = "Crosh System Web App";
-const char kCroshSWADescription[] =
-    "When enabled, crosh (ChromeOS Shell) will run as a tabbed System Web App "
-    "rather than a normal browser tab.";
-
 const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";

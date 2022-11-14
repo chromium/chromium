@@ -99,12 +99,8 @@ void ReadFile(const base::FilePath downloads,
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
-  std::string default_file = "html/crosh.html";
-  if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
-    default_file = "html/terminal.html";
-  }
-  return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedCroshURL, default_file, false));
+  return base::WrapUnique(
+      new TerminalSource(profile, chrome::kChromeUIUntrustedCroshURL, false));
 }
 
 // static
@@ -122,7 +118,7 @@ std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
   ash::file_system_provider::Service::Get(profile)->RegisterProvider(
       std::move(provider));
   return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html",
+      profile, chrome::kChromeUIUntrustedTerminalURL,
       profile->GetPrefs()
           ->FindPreference(crostini::prefs::kTerminalSshAllowedByPolicy)
           ->GetValue()
@@ -131,11 +127,9 @@ std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
 
 TerminalSource::TerminalSource(Profile* profile,
                                std::string source,
-                               std::string default_file,
                                bool ssh_allowed)
     : profile_(profile),
       source_(source),
-      default_file_(default_file),
       ssh_allowed_(ssh_allowed),
       downloads_(file_manager::util::GetDownloadsFolderForProfile(profile)) {
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
@@ -165,7 +159,7 @@ void TerminalSource::StartDataRequest(
   // skip first '/' in path.
   std::string path = url.path().substr(1);
   if (path.empty())
-    path = default_file_;
+    path = "html/terminal.html";
 
   // Refresh the $i8n{themeColor} replacement for css files.
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
