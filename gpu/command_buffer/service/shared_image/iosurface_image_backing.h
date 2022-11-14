@@ -23,9 +23,12 @@ namespace gpu {
 // IOSurface backing.
 class GLTextureIOSurfaceRepresentationClient {
  public:
-  virtual bool GLTextureImageRepresentationBeginAccess(bool readonly) = 0;
-  virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
-  virtual void GLTextureImageRepresentationRelease(bool have_context) = 0;
+  virtual bool GLTextureImageRepresentationBeginAccess(EGLDisplay display,
+                                                       bool readonly) = 0;
+  virtual void GLTextureImageRepresentationEndAccess(EGLDisplay display,
+                                                     bool readonly) = 0;
+  virtual void GLTextureImageRepresentationRelease(EGLDisplay display,
+                                                   bool have_context) = 0;
 };
 
 // Representation of a GLTextureImageBacking or
@@ -182,7 +185,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
 
   GLenum GetGLTarget() const;
-  GLuint GetGLServiceId() const;
+  GLuint GetGLServiceId(EGLDisplay display) const;
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
@@ -222,9 +225,12 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // GLTextureIOSurfaceRepresentationClient:
-  bool GLTextureImageRepresentationBeginAccess(bool readonly) override;
-  void GLTextureImageRepresentationEndAccess(bool readonly) override;
-  void GLTextureImageRepresentationRelease(bool have_context) override;
+  bool GLTextureImageRepresentationBeginAccess(EGLDisplay display,
+                                               bool readonly) override;
+  void GLTextureImageRepresentationEndAccess(EGLDisplay display,
+                                             bool readonly) override;
+  void GLTextureImageRepresentationRelease(EGLDisplay display,
+                                           bool have_context) override;
 
   bool IsPassthrough() const { return true; }
 
@@ -237,19 +243,28 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // disallowed concurrent read/write accesses.
   bool ongoing_write_access_ = false;
 
-  void RetainGLTexture();
-  void ReleaseGLTexture(bool have_context);
-  size_t gl_texture_retain_count_ = 0;
-  bool gl_texture_retained_for_legacy_mailbox_ = false;
+  void RetainGLTexture(EGLDisplay display);
+  void ReleaseGLTexture(EGLDisplay display, bool have_context);
+
+  struct TextureInfo {
+    TextureInfo();
+    TextureInfo(const TextureInfo&) = delete;
+    ~TextureInfo();
+
+    size_t gl_texture_retain_count_ = 0;
+    scoped_refptr<gles2::TexturePassthrough> gl_texture_ = nullptr;
+    std::unique_ptr<gl::ScopedEGLSurfaceIOSurface> egl_surface_;
+  };
+
+  TextureInfo& GetTextureInfo(EGLDisplay display);
+
+  std::map<EGLDisplay, TextureInfo> texture_infos_;
 
   const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
 
   // This is the cleared rect used by ClearedRect and SetClearedRect when
   // |texture_| is nullptr.
   gfx::Rect cleared_rect_;
-
-  std::unique_ptr<gl::ScopedEGLSurfaceIOSurface> egl_surface_;
-  scoped_refptr<gles2::TexturePassthrough> gl_texture_;
 
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
   std::unique_ptr<gl::GLFence> last_write_gl_fence_;
