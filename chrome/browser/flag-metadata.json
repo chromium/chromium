@@ -4962,7 +4962,7 @@
   {
     "name": "ntp-tiles-title-wrap-around",
     "owners": [ "ender", "chrome-omnibox-team" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-view-hierarchy-repair",
@@ -4993,8 +4993,8 @@
   },
   {
     "name": "omnibox-adaptive-suggestions-count",
-    "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "owners": [ "stkhapugin", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-assistant-voice-search",
@@ -5052,8 +5052,8 @@
   },
   {
     "name": "omnibox-dynamic-max-autocomplete",
-    "owners": [ "ender", "stkhapugin", "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "owners": [ "stkhapugin", "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-experimental-keyword-mode",
@@ -5093,7 +5093,7 @@
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi", "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-match-toolbar-and-status-bar-color",
@@ -5103,12 +5103,12 @@
   {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-max-zero-suggest-matches",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-max-zps-matches",
@@ -5128,17 +5128,17 @@
   {
     "name": "omnibox-most-visited-tiles-dynamic-spacing",
     "owners": [ "rongtan", "gangwu", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-most-visited-tiles-fading-on-tablet",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-most-visited-tiles-on-srp",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-most-visited-tiles-title-wrap-around",
@@ -5178,12 +5178,12 @@
   {
     "name": "omnibox-on-focus-suggestions-contextual-web",
     "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-on-focus-suggestions-srp",
     "owners": [ "ender", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-paste-button",
@@ -5193,17 +5193,17 @@
   {
     "name": "omnibox-remove-excessive-recycled-view-clear-calls",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-remove-suggestion-header-capitalization",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-remove-suggestion-header-chevron",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-report-assisted-query-stats",
@@ -5283,7 +5283,7 @@
   {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "ender", "stkhapugin", "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-trigger-for-prerender2",
@@ -5293,7 +5293,7 @@
   {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-uniform-suggestion-height",
@@ -5313,17 +5313,17 @@
   {
     "name": "omnibox-zero-suggest-prefetching",
     "owners": [ "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-zero-suggest-prefetching-on-srp",
     "owners": [ "khalidpeer", "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-zero-suggest-prefetching-on-web",
     "owners": [ "khalidpeer", "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "one-group-per-renderer",
@@ -5368,7 +5368,7 @@
   {
     "name": "organic-repeatable-queries",
     "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "origin-agent-cluster-default",
