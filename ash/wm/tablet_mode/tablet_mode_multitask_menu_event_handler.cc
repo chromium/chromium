@@ -95,8 +95,9 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     return;
   }
 
+  aura::Window* target = static_cast<aura::Window*>(event->target());
   gfx::PointF screen_location = event->location_f();
-  wm::ConvertPointToScreen(active_window, &screen_location);
+  wm::ConvertPointToScreen(target, &screen_location);
 
   // If the menu is closed, only handle events inside the target area that might
   // open the menu.
@@ -108,7 +109,10 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     return;
   }
 
-  float y_location = screen_location.y();
+  // Save the window coordinates to pass to the menu.
+  gfx::PointF window_location = event->location_f();
+  aura::Window::ConvertPointToTarget(target, active_window, &window_location);
+
   const ui::GestureEventDetails details = event->details();
   switch (event->type()) {
     case ui::ET_GESTURE_SWIPE:
@@ -124,12 +128,12 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         return;
       }
       MaybeCreateMultitaskMenu(active_window);
-      multitask_menu_->BeginDrag(y_location);
+      multitask_menu_->BeginDrag(window_location.y());
       event->SetHandled();
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (multitask_menu_) {
-        multitask_menu_->UpdateDrag(y_location);
+        multitask_menu_->UpdateDrag(window_location.y());
         event->SetHandled();
       }
       break;

@@ -43,7 +43,8 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
   // Slides the menu down if `show` is true, otherwise slides up.
   void Animate(bool show);
 
-  // Actions called by the event handler.
+  // Actions called by the event handler, where `initial_y` and `current_y` are
+  // in `window_`'s coordinates.
   void BeginDrag(float initial_y);
   void UpdateDrag(float current_y);
   void EndDrag();
