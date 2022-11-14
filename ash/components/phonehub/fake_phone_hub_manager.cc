@@ -84,5 +84,13 @@ void FakePhoneHubManager::GetHostLastSeenTimestamp(
   std::move(callback).Run(host_last_seen_timestamp_);
 }
 
+IconDecoder* FakePhoneHubManager::GetIconDecoder() {
+  return &fake_icon_decoder_;
+}
+
+AppStreamManager* FakePhoneHubManager::GetAppStreamManager() {
+  return &app_stream_manager_;
+}
+
 }  // namespace phonehub
 }  // namespace ash

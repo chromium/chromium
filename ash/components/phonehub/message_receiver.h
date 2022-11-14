@@ -43,6 +43,10 @@ class MessageReceiver {
     // roll item file data is ready to be transferred.
     virtual void OnFetchCameraRollItemDataResponseReceived(
         const proto::FetchCameraRollItemDataResponse& response) {}
+
+    // Called when there is an update in the streamed app.
+    virtual void OnAppStreamUpdateReceived(
+        const proto::AppStreamUpdate app_stream_update) {}
   };
 
   MessageReceiver(const MessageReceiver&) = delete;
@@ -64,6 +68,8 @@ class MessageReceiver {
       const proto::FetchCameraRollItemsResponse& response);
   void NotifyFetchCameraRollItemDataResponseReceived(
       const proto::FetchCameraRollItemDataResponse& response);
+  void NotifyAppStreamUpdateReceived(
+      const proto::AppStreamUpdate app_stream_update);
 
  private:
   base::ObserverList<Observer> observer_list_;

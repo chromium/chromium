@@ -6,6 +6,9 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_TRAY_H_
 
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/app_stream_manager.h"
+#include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
@@ -33,6 +36,9 @@ class TrayBubbleWrapper;
 class SessionControllerImpl;
 
 namespace phonehub {
+namespace proto {
+class AppStreamUpdate;
+}  // namespace proto
 class PhoneHubManager;
 }
 
@@ -43,7 +49,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
                                 public PhoneStatusView::Delegate,
                                 public PhoneHubUiController::Observer,
                                 public SessionObserver,
-                                public ScreenLayoutObserver {
+                                public ScreenLayoutObserver,
+                                public phonehub::AppStreamManager::Observer {
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
@@ -77,6 +84,15 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // ScreenLayoutObserver:
   void OnDisplayConfigurationChanged() override;
+
+  // AppStreamManager::Observer:
+  void OnAppStreamUpdate(
+      const phonehub::proto::AppStreamUpdate app_stream_update) override;
+
+  void OnIconsDecoded(
+      std::string visible_name,
+      std::unique_ptr<std::vector<phonehub::IconDecoder::DecodingData>>
+          decoding_data_list);
 
   // Provides the Eche icon and Eche loading indicator to
   // `EcheTray` in order to let `EcheTray` control the visibiliity
@@ -153,6 +169,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // The main content view of the bubble, which changes depending on the state.
   // Unowned.
   PhoneHubContentView* content_view_ = nullptr;
+
+  phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
   base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};

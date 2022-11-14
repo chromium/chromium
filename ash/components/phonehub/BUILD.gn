@@ -9,6 +9,8 @@ assert(is_chromeos_ash, "Phone Hub is Ash only")
 
 static_library("phonehub") {
   sources = [
+    "app_stream_manager.cc",
+    "app_stream_manager.h",
     "browser_tabs_metadata_fetcher.h",
     "browser_tabs_model.cc",
     "browser_tabs_model.h",
@@ -170,6 +172,8 @@ static_library("debug") {
     "fake_feature_status_provider.h",
     "fake_find_my_device_controller.cc",
     "fake_find_my_device_controller.h",
+    "fake_icon_decoder.cc",
+    "fake_icon_decoder.h",
     "fake_multidevice_feature_access_manager.cc",
     "fake_multidevice_feature_access_manager.h",
     "fake_notification_interaction_handler.cc",

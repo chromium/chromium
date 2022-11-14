@@ -44,6 +44,8 @@ class FakeObserver : public MessageReceiver::Observer {
     return fetch_camera_roll_item_data_response_calls_;
   }
 
+  size_t app_stream_update_calls() const { return app_stream_update_calls_; }
+
   proto::PhoneStatusSnapshot last_snapshot() const { return last_snapshot_; }
 
   proto::PhoneStatusUpdate last_status_update() const {
@@ -52,6 +54,10 @@ class FakeObserver : public MessageReceiver::Observer {
 
   proto::FeatureSetupResponse last_feature_setup_response() const {
     return last_feature_setup_response_;
+  }
+
+  proto::AppStreamUpdate last_app_stream_update() const {
+    return last_app_stream_update_;
   }
 
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response()
@@ -95,15 +101,23 @@ class FakeObserver : public MessageReceiver::Observer {
     ++fetch_camera_roll_item_data_response_calls_;
   }
 
+  void OnAppStreamUpdateReceived(
+      proto::AppStreamUpdate app_stream_update) override {
+    last_app_stream_update_ = app_stream_update;
+    ++app_stream_update_calls_;
+  }
+
  private:
   size_t phone_status_snapshot_updated_num_calls_ = 0;
   size_t phone_status_updated_num_calls_ = 0;
   size_t feature_setup_response_num_calls_ = 0;
   size_t fetch_camera_roll_items_response_calls_ = 0;
   size_t fetch_camera_roll_item_data_response_calls_ = 0;
+  size_t app_stream_update_calls_ = 0;
   proto::PhoneStatusSnapshot last_snapshot_;
   proto::PhoneStatusUpdate last_status_update_;
   proto::FeatureSetupResponse last_feature_setup_response_;
+  proto::AppStreamUpdate last_app_stream_update_;
   proto::FetchCameraRollItemsResponse last_fetch_camera_roll_items_response_;
   proto::FetchCameraRollItemDataResponse
       last_fetch_camera_roll_item_data_response_;
@@ -162,6 +176,10 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.fetch_camera_roll_item_data_response_calls();
   }
 
+  size_t GetNumAppStreamUpdateCalls() const {
+    return fake_observer_.app_stream_update_calls();
+  }
+
   proto::PhoneStatusSnapshot GetLastSnapshot() const {
     return fake_observer_.last_snapshot();
   }
@@ -182,6 +200,10 @@ class MessageReceiverImplTest : public testing::Test {
   proto::FetchCameraRollItemDataResponse
   GetLastFetchCameraRollItemDataResponse() const {
     return fake_observer_.last_fetch_camera_roll_item_data_response();
+  }
+
+  proto::AppStreamUpdate GetLastAppStreamUpdate() const {
+    return fake_observer_.last_app_stream_update();
   }
 
   FakeObserver fake_observer_;
@@ -399,6 +421,31 @@ TEST_F(MessageReceiverImplTest,
   EXPECT_EQ(0u, GetNumFeatureSetupResponseCalls());
   EXPECT_EQ(0u, GetNumFetchCameraRollItemsResponseCalls());
   EXPECT_EQ(0u, GetNumFetchCameraRollItemDataResponseCalls());
+}
+
+TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceieved) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEcheSWA);
+
+  proto::AppStreamUpdate expected_app_stream_update;
+  auto* app = expected_app_stream_update.mutable_foreground_app();
+  app->set_user_id(12);
+  app->set_package_name("package1");
+  app->set_visible_name("visible1");
+
+  // Simulate receiving a message.
+  const std::string expected_message =
+      SerializeMessage(proto::APP_STREAM_UPDATE, &expected_app_stream_update);
+  fake_connection_manager_->NotifyMessageReceived(expected_message);
+
+  proto::AppStreamUpdate actual_app_stream_update = GetLastAppStreamUpdate();
+
+  EXPECT_EQ(1u, GetNumAppStreamUpdateCalls());
+  EXPECT_EQ(12, actual_app_stream_update.foreground_app().user_id());
+  EXPECT_EQ("package1",
+            actual_app_stream_update.foreground_app().package_name());
+  EXPECT_EQ("visible1",
+            actual_app_stream_update.foreground_app().visible_name());
 }
 
 }  // namespace phonehub

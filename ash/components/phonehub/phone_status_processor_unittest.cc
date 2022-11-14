@@ -5,10 +5,12 @@
 #include "ash/components/phonehub/phone_status_processor.h"
 
 #include <google/protobuf/repeated_field.h>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_find_my_device_controller.h"
@@ -68,6 +70,16 @@ class FakeNotificationProcessor : public NotificationProcessor {
   }
 };
 
+class AppStreamManagerObserver : public AppStreamManager::Observer {
+ public:
+  void OnAppStreamUpdate(
+      const proto::AppStreamUpdate app_stream_update) override {
+    last_app_stream_update_ = app_stream_update.foreground_app().package_name();
+  }
+
+  std::string last_app_stream_update_;
+};
+
 class PhoneStatusProcessorTest : public testing::Test {
  protected:
   PhoneStatusProcessorTest()
@@ -77,6 +89,11 @@ class PhoneStatusProcessorTest : public testing::Test {
   ~PhoneStatusProcessorTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEcheSWA,
+                              features::kPhoneHubCameraRoll},
+        /*disabled_features=*/{});
+
     fake_do_not_disturb_controller_ =
         std::make_unique<FakeDoNotDisturbController>();
     fake_feature_status_provider_ =
@@ -97,11 +114,6 @@ class PhoneStatusProcessorTest : public testing::Test {
         std::make_unique<FakeRecentAppsInteractionHandler>();
 
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
-
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kPhoneHubCameraRoll},
-        /*disabled_features=*/{});
   }
 
   void CreatePhoneStatusProcessor() {
@@ -112,7 +124,8 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_multidevice_feature_access_manager_.get(),
         fake_screen_lock_manager_.get(), fake_notification_processor_.get(),
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
-        fake_recent_apps_interaction_handler_.get(), &pref_service_);
+        fake_recent_apps_interaction_handler_.get(), &pref_service_,
+        &app_stream_manager_);
   }
 
   void InitializeNotificationProto(proto::Notification* notification,
@@ -163,6 +176,8 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<FakeRecentAppsInteractionHandler>
       fake_recent_apps_interaction_handler_;
   TestingPrefServiceSimple pref_service_;
+  AppStreamManager app_stream_manager_;
+  AppStreamManagerObserver app_stream_manager_observer_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
 };
 
@@ -685,6 +700,26 @@ TEST_F(PhoneStatusProcessorTest, EcheFeatureStatus) {
   EXPECT_EQ(
       ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSupported,
       GetEcheSupportReceivedFromPhoneHub());
+}
+
+TEST_F(PhoneStatusProcessorTest, OnAppStreamUpdateReceived) {
+  fake_multidevice_setup_client_->SetHostStatusWithDevice(
+      std::make_pair(HostStatus::kHostVerified, test_remote_device_));
+  CreatePhoneStatusProcessor();
+
+  auto app = std::make_unique<proto::App>();
+  app->set_package_name("app1");
+  app->set_visible_name("vis1");
+  app->set_icon("icon1");
+
+  proto::AppStreamUpdate expected_update;
+  expected_update.set_allocated_foreground_app(app.release());
+
+  app_stream_manager_.AddObserver(&app_stream_manager_observer_);
+
+  fake_message_receiver_->NotifyAppStreamUpdateReceived(expected_update);
+
+  EXPECT_EQ("app1", app_stream_manager_observer_.last_app_stream_update_);
 }
 
 }  // namespace phonehub

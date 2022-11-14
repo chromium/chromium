@@ -25,6 +25,7 @@ class MultideviceFeatureAccessManager;
 class NotificationProcessor;
 class ScreenLockManager;
 class RecentAppsInteractionHandler;
+class AppStreamManager;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -44,7 +45,8 @@ class PhoneStatusProcessor
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       MutablePhoneModel* phone_model,
       RecentAppsInteractionHandler* recent_apps_interaction_handler,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      AppStreamManager* app_stream_manager);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -61,6 +63,8 @@ class PhoneStatusProcessor
       proto::PhoneStatusSnapshot phone_status_snapshot) override;
   void OnPhoneStatusUpdateReceived(
       proto::PhoneStatusUpdate phone_status_update) override;
+  void OnAppStreamUpdateReceived(
+      const proto::AppStreamUpdate app_stream_update) override;
 
   // MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(
@@ -92,6 +96,9 @@ class PhoneStatusProcessor
   MutablePhoneModel* phone_model_;
   RecentAppsInteractionHandler* recent_apps_interaction_handler_;
   PrefService* pref_service_;
+  AppStreamManager* app_stream_manager_;
+
+  base::WeakPtrFactory<PhoneStatusProcessor> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::phonehub

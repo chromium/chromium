@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -46,11 +47,12 @@ RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     MultideviceFeatureAccessManager* multidevice_feature_access_manager,
-    std::unique_ptr<IconDecoder> icon_decoder)
+    IconDecoder* icon_decoder)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
-      icon_decoder_(std::move(icon_decoder)) {
+      icon_decoder_(icon_decoder) {
+  DCHECK(icon_decoder);
   multidevice_setup_client_->AddObserver(this);
   multidevice_feature_access_manager_->AddObserver(this);
 }

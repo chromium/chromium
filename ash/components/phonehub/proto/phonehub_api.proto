@@ -39,6 +39,7 @@ enum MessageType {
   HANGUP_ONGOING_CALL_RESPONSE = 23;
   FEATURE_SETUP_REQUEST = 24;
   FEATURE_SETUP_RESPONSE = 25;
+  APP_STREAM_UPDATE = 28;
 }
 
 enum NotificationSetting {
@@ -369,6 +370,11 @@ message FeatureSetupRequest {
 message FeatureSetupResponse {
   FeatureSetupResult notification_setup_result = 1;
   FeatureSetupResult camera_roll_setup_result = 2;
+}
+
+message AppStreamUpdate {
+  // This is optional by design and is set when the streamed app is changed.
+  optional App foreground_app = 1;
 }
 
 // When adding new fields to this message, update CameraRollItem#operator==

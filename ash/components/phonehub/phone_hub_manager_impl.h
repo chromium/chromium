@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/feature_setup_response_processor.h"
+#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "base/callback.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -75,6 +77,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   ScreenLockManager* GetScreenLockManager() override;
   TetherController* GetTetherController() override;
   UserActionRecorder* GetUserActionRecorder() override;
+  IconDecoder* GetIconDecoder() override;
+  AppStreamManager* GetAppStreamManager() override;
 
   void GetHostLastSeenTimestamp(
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
@@ -83,6 +87,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  std::unique_ptr<IconDecoder> icon_decoder_;
   std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<UserActionRecorder> user_action_recorder_;
@@ -103,6 +108,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<NotificationProcessor> notification_processor_;
   std::unique_ptr<RecentAppsInteractionHandler>
       recent_apps_interaction_handler_;
+  std::unique_ptr<AppStreamManager> app_stream_manager_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;

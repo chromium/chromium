@@ -42,6 +42,8 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
       return "FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE";
     case proto::MessageType::FEATURE_SETUP_RESPONSE:
       return "FEATURE_SETUP_RESPONSE";
+    case proto::MessageType::APP_STREAM_UPDATE:
+      return "APP_STREAM_UPDATE";
     default:
       return "UNKOWN_MESSAGE";
   }
@@ -136,6 +138,19 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
       return;
     }
     NotifyFetchCameraRollItemDataResponseReceived(response);
+    return;
+  }
+
+  if (features::IsEcheSWAEnabled() &&
+      message_type == proto::MessageType::APP_STREAM_UPDATE) {
+    proto::AppStreamUpdate app_stream_update;
+    // Serialized proto is after the first two bytes of |payload|.
+    if (!app_stream_update.ParseFromString(payload.substr(2))) {
+      PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
+                    << "AppStreamUpdate proto message.";
+      return;
+    }
+    NotifyAppStreamUpdateReceived(app_stream_update);
     return;
   }
 }

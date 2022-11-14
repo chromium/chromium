@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
+#include "ash/components/phonehub/app_stream_manager.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,6 +28,8 @@ class RecentAppsInteractionHandler;
 class ScreenLockManager;
 class TetherController;
 class UserActionRecorder;
+class IconDecoder;
+class AppStreamManager;
 
 // Responsible for the core logic of the Phone Hub feature and exposes
 // interfaces via its public API. This class is intended to be a singleton.
@@ -55,6 +58,8 @@ class PhoneHubManager {
   virtual ScreenLockManager* GetScreenLockManager() = 0;
   virtual TetherController* GetTetherController() = 0;
   virtual UserActionRecorder* GetUserActionRecorder() = 0;
+  virtual IconDecoder* GetIconDecoder() = 0;
+  virtual AppStreamManager* GetAppStreamManager() = 0;
 
   // Retrieves the timestamp of the last successful discovery for active host,
   // or nullopt if it hasn't been seen in the current Chrome session.

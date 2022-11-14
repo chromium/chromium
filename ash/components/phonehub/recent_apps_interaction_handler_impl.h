@@ -39,7 +39,7 @@ class RecentAppsInteractionHandlerImpl
       PrefService* pref_service,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       MultideviceFeatureAccessManager* multidevice_feature_access_manager,
-      std::unique_ptr<IconDecoder> icon_decoder);
+      IconDecoder* icon_decoder);
   ~RecentAppsInteractionHandlerImpl() override;
 
   // RecentAppsInteractionHandler:
@@ -92,7 +92,7 @@ class RecentAppsInteractionHandlerImpl
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
-  std::unique_ptr<IconDecoder> icon_decoder_;
+  IconDecoder* icon_decoder_;
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{
       this};

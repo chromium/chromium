@@ -102,14 +102,14 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
-    auto icon_decoder = std::make_unique<IconDecoderImpl>();
-    icon_decoder.get()->decoder_delegate_ =
+    icon_decoder_ = std::make_unique<IconDecoderImpl>();
+    icon_decoder_.get()->decoder_delegate_ =
         std::make_unique<TestDecoderDelegate>();
     decoder_delegate_ = static_cast<TestDecoderDelegate*>(
-        icon_decoder.get()->decoder_delegate_.get());
+        icon_decoder_.get()->decoder_delegate_.get());
     interaction_handler_ = std::make_unique<RecentAppsInteractionHandlerImpl>(
         &pref_service_, fake_multidevice_setup_client_.get(),
-        &fake_multidevice_feature_access_manager_, std::move(icon_decoder));
+        &fake_multidevice_feature_access_manager_, icon_decoder_.get());
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -281,6 +281,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
   base::test::ScopedFeatureList feature_list_;
   TestDecoderDelegate* decoder_delegate_;
+  std::unique_ptr<IconDecoderImpl> icon_decoder_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {

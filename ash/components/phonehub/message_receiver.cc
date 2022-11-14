@@ -49,5 +49,11 @@ void MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived(
     observer.OnFetchCameraRollItemDataResponseReceived(response);
 }
 
+void MessageReceiver::NotifyAppStreamUpdateReceived(
+    const proto::AppStreamUpdate app_stream_update) {
+  for (auto& observer : observer_list_)
+    observer.OnAppStreamUpdateReceived(app_stream_update);
+}
+
 }  // namespace phonehub
 }  // namespace ash

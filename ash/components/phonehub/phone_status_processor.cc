@@ -5,10 +5,13 @@
 #include "ash/components/phonehub/phone_status_processor.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
+#include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 #include "ash/components/phonehub/find_my_device_controller.h"
+#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
@@ -16,6 +19,7 @@
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -195,7 +199,8 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     MultiDeviceSetupClient* multidevice_setup_client,
     MutablePhoneModel* phone_model,
     RecentAppsInteractionHandler* recent_apps_interaction_handler,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    AppStreamManager* app_stream_manager)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
@@ -206,7 +211,8 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model),
       recent_apps_interaction_handler_(recent_apps_interaction_handler),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      app_stream_manager_(app_stream_manager) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
@@ -216,6 +222,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(multidevice_setup_client_);
   DCHECK(phone_model_);
   DCHECK(pref_service_);
+  DCHECK(app_stream_manager_);
 
   message_receiver_->AddObserver(this);
   feature_status_provider_->AddObserver(this);
@@ -377,6 +384,16 @@ void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
 
     notification_processor_->RemoveNotifications(removed_notification_ids);
   }
+}
+
+void PhoneStatusProcessor::OnAppStreamUpdateReceived(
+    const proto::AppStreamUpdate app_stream_update) {
+  if (!app_stream_update.has_foreground_app())
+    return;
+  auto* app = &app_stream_update.foreground_app();
+  if (app->icon().empty())
+    return;
+  app_stream_manager_->NotifyAppStreamUpdate(app_stream_update);
 }
 
 void PhoneStatusProcessor::OnHostStatusChanged(

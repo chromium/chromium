@@ -208,6 +208,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // Test helpers
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
   AshWebView* get_web_view_for_test() { return web_view_; }
+  views::ImageButton* GetIcon();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);
@@ -244,7 +245,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // close, and minimize buttons.
   std::unique_ptr<views::View> CreateBubbleHeaderView();
 
-  views::ImageButton* GetIcon();
   void StopLoadingAnimation();
   void StartLoadingAnimation();
   void SetIconVisibility(bool visibility);

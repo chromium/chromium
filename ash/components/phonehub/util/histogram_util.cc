@@ -66,6 +66,9 @@ std::string GetMessageResultHistogramName(proto::MessageType message_type) {
     case proto::MessageType::FEATURE_SETUP_RESPONSE:
       return "PhoneHub.TaskCompletion.FeatureSetup.Result";
 
+    case proto::MessageType::APP_STREAM_UPDATE:
+      return "PhoneHub.TaskCompletion.AppStreamUpdate.Result";
+
     default:
       // Note that PROVIDE_CROS_STATE, PHONE_STATUS_SNAPSHOT and
       // PHONE_STATUS_UPDATE message types are not logged as part of these

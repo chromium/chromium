@@ -5,12 +5,14 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
+#include "ash/components/phonehub/app_stream_manager.h"
 #include "ash/components/phonehub/fake_browser_tabs_model_provider.h"
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_connection_scheduler.h"
 #include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_find_my_device_controller.h"
+#include "ash/components/phonehub/fake_icon_decoder.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/fake_notification_interaction_handler.h"
 #include "ash/components/phonehub/fake_notification_manager.h"
@@ -19,6 +21,7 @@
 #include "ash/components/phonehub/fake_screen_lock_manager.h"
 #include "ash/components/phonehub/fake_tether_controller.h"
 #include "ash/components/phonehub/fake_user_action_recorder.h"
+#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 
@@ -114,6 +117,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   UserActionRecorder* GetUserActionRecorder() override;
   void GetHostLastSeenTimestamp(
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
+  IconDecoder* GetIconDecoder() override;
+  AppStreamManager* GetAppStreamManager() override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -130,6 +135,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeUserActionRecorder fake_user_action_recorder_;
   FakeBrowserTabsModelProvider fake_browser_tabs_model_provider_;
   FakeCameraRollManager fake_camera_roll_manager_;
+  FakeIconDecoder fake_icon_decoder_;
+  AppStreamManager app_stream_manager_;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 

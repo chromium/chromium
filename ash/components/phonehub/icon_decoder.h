@@ -12,7 +12,7 @@ namespace ash {
 namespace phonehub {
 
 // Decodes icons in batches.
-// TODO(b/233279034): s2e are three decoders now: `CameraRollThumbnailDecoder`
+// TODO(b/233279034): There are three decoders now: `CameraRollThumbnailDecoder`
 // `IconDecoder`, and `NotificationProcessor`. It may makes sense
 // to abstract out the redundant logic in a single place.
 class IconDecoder {
