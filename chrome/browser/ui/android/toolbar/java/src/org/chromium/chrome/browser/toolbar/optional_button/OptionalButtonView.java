@@ -34,6 +34,7 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -69,6 +70,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     private int mBackgroundColorFilter;
     private Runnable mOnBeforeHideTransitionCallback;
     private Callback<Transition> mFakeBeginTransitionForTesting;
+    private Handler mHandler;
     private Handler mHandlerForTesting;
 
     private @State int mState;
@@ -283,7 +285,11 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
             return mHandlerForTesting;
         }
 
-        return super.getHandler();
+        if (mHandler == null) {
+            mHandler = new Handler(ThreadUtils.getUiThreadLooper());
+        }
+
+        return mHandler;
     }
 
     @Override
