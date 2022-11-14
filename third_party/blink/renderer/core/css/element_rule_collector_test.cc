@@ -57,9 +57,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
-    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
-                                   result, style.get(), InsideLink(element));
+                                   result, InsideLink(element));
 
     String rule = selector + " { color: green }";
     RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
@@ -89,9 +88,8 @@ class ElementRuleCollectorTest : public PageTestBase {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
-    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
-                                   result, style.get(), InsideLink(element));
+                                   result, InsideLink(element));
 
     MatchRequest request(rule_set, {});
 
@@ -308,10 +306,9 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     rules.AddStyleRule(rule, *medium, kRuleHasNoSpecialState);
 
     MatchResult result;
-    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     ElementResolveContext context{element};
     ElementRuleCollector collector(context, StyleRecalcContext(),
-                                   SelectorFilter(), result, style.get(),
+                                   SelectorFilter(), result,
                                    EInsideLink::kNotInsideLink);
     collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr});
 

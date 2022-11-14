@@ -134,8 +134,13 @@ TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
   for (uint8_t pseudo_id_int = kFirstPublicPseudoId;
        pseudo_id_int <= kLastTrackedPublicPseudoId; pseudo_id_int++) {
     PseudoId pseudo_id = static_cast<PseudoId>(pseudo_id_int);
-    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-    style->SetHasPseudoElementStyle(pseudo_id);
+    MatchResult match_result;
+    match_result.SetHasPseudoElementStyle(pseudo_id);
+
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    builder.SetPseudoElementStyles(match_result.PseudoElementStyles());
+    scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+
     EXPECT_TRUE(style->HasPseudoElementStyle(pseudo_id));
     EXPECT_TRUE(style->HasAnyPseudoElementStyles());
   }

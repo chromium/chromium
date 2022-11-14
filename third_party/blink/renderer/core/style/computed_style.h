@@ -2090,7 +2090,6 @@ class ComputedStyle : public ComputedStyleBase,
   // Pseudo element styles.
   bool HasAnyPseudoElementStyles() const;
   bool HasPseudoElementStyle(PseudoId) const;
-  void SetHasPseudoElementStyle(PseudoId);
 
   // Note: CanContainAbsolutePositionObjects should return true if
   // CanContainFixedPositionObjects.  We currently never use this value
@@ -2648,21 +2647,13 @@ class ComputedStyle : public ComputedStyleBase,
 };
 
 inline bool ComputedStyle::HasAnyPseudoElementStyles() const {
-  return !!PseudoBitsInternal();
+  return !!PseudoElementStylesInternal();
 }
 
 inline bool ComputedStyle::HasPseudoElementStyle(PseudoId pseudo) const {
   DCHECK(pseudo >= kFirstPublicPseudoId);
   DCHECK(pseudo <= kLastTrackedPublicPseudoId);
-  return (1 << (pseudo - kFirstPublicPseudoId)) & PseudoBitsInternal();
-}
-
-inline void ComputedStyle::SetHasPseudoElementStyle(PseudoId pseudo) {
-  DCHECK(pseudo >= kFirstPublicPseudoId);
-  DCHECK(pseudo <= kLastTrackedPublicPseudoId);
-  // TODO: Fix up this code. It is hard to understand.
-  SetPseudoBitsInternal(PseudoBitsInternal() |
-                        1 << (pseudo - kFirstPublicPseudoId));
+  return (1 << (pseudo - kFirstPublicPseudoId)) & PseudoElementStylesInternal();
 }
 
 class ComputedStyleBuilder final : public ComputedStyleBuilderBase {

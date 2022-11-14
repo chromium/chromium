@@ -254,12 +254,10 @@ ElementRuleCollector::ElementRuleCollector(
     const StyleRecalcContext& style_recalc_context,
     const SelectorFilter& filter,
     MatchResult& result,
-    ComputedStyle* style,
     EInsideLink inside_link)
     : context_(context),
       style_recalc_context_(style_recalc_context),
       selector_filter_(filter),
-      style_(style),
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
@@ -850,8 +848,7 @@ void ElementRuleCollector::DidMatchRule(
     if (mode_ == SelectorChecker::kCollectingCSSRules ||
         mode_ == SelectorChecker::kCollectingStyleRules)
       return;
-    // FIXME: Matching should not modify the style directly.
-    if (!style_ || dynamic_pseudo > kLastTrackedPublicPseudoId)
+    if (dynamic_pseudo > kLastTrackedPublicPseudoId)
       return;
     if ((dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter) &&
@@ -860,7 +857,7 @@ void ElementRuleCollector::DidMatchRule(
     if (rule_data->Rule()->Properties().IsEmpty())
       return;
 
-    style_->SetHasPseudoElementStyle(dynamic_pseudo);
+    result_.SetHasPseudoElementStyle(dynamic_pseudo);
 
     if (IsHighlightPseudoElement(dynamic_pseudo)) {
       // Determine whether the selector definitely matches the highlight pseudo

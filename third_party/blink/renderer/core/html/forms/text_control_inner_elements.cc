@@ -198,7 +198,8 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
     text_block_style->AddCachedPseudoElementStyle(
         no_scrollbar_style_builder.TakeStyle(), kPseudoIdScrollbar,
         g_null_atom);
-    text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
+    text_block_style_builder.SetPseudoElementStyles(
+        1 << (kPseudoIdScrollbar - kFirstPublicPseudoId));
 
     text_block_style_builder.SetDisplay(EDisplay::kFlowRoot);
     if (parentNode()->IsShadowRoot())

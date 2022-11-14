@@ -1001,7 +1001,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     SelectorFilter filter;
     MatchResult match_result;
     ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                   filter, match_result, state.Style(),
+                                   filter, match_result,
                                    EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
@@ -1028,7 +1028,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     SelectorFilter filter;
     MatchResult match_result;
     ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                   filter, match_result, state.Style(),
+                                   filter, match_result,
                                    EInsideLink::kNotInsideLink);
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
@@ -1428,7 +1428,7 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
+                                 filter, match_result,
                                  EInsideLink::kNotInsideLink);
   MatchAllRules(state, collector);
   const auto& properties = match_result.GetMatchedProperties();
@@ -1475,7 +1475,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
+                                 filter, match_result,
                                  EInsideLink::kNotInsideLink);
   MatchAllRules(state, collector);
   const auto& properties = match_result.GetMatchedProperties();
@@ -1534,7 +1534,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
+                                 filter, match_result,
                                  EInsideLink::kNotInsideLink);
   MatchAllRules(state, collector);
   const auto& properties = match_result.GetMatchedProperties();
@@ -1588,7 +1588,7 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
+                                 filter, match_result,
                                  EInsideLink::kNotInsideLink);
   MatchAllRules(state, collector);
   const auto& properties = match_result.GetMatchedProperties();
@@ -1631,7 +1631,7 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 filter, match_result, state.Style(),
+                                 filter, match_result,
                                  EInsideLink::kNotInsideLink);
   MatchAllRules(state, collector);
   const auto& properties = match_result.GetMatchedProperties();

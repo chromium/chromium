@@ -1231,7 +1231,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, cascade.MutableMatchResult(),
-                                 state.Style(), state.Style()->InsideLink());
+                                 state.Style()->InsideLink());
 
   if (style_request.IsPseudoStyleRequest()) {
     collector.SetPseudoElementStyleRequest(style_request);
@@ -1301,6 +1301,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.StyleBuilder().SetCustomHighlightNames(
         match_result.CustomHighlightNames());
   }
+  state.StyleBuilder().SetPseudoElementStyles(
+      match_result.PseudoElementStyles());
 
   ApplyCallbackSelectors(state);
 
@@ -1582,10 +1584,9 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
   DCHECK(element);
   StyleResolverState state(GetDocument(), *element);
   MatchResult match_result;
-  ElementRuleCollector collector(state.ElementContext(),
-                                 StyleRecalcContext::FromAncestors(*element),
-                                 selector_filter_, match_result, state.Style(),
-                                 EInsideLink::kNotInsideLink);
+  ElementRuleCollector collector(
+      state.ElementContext(), StyleRecalcContext::FromAncestors(*element),
+      selector_filter_, match_result, EInsideLink::kNotInsideLink);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
   CollectPseudoRulesForElement(*element, collector, kPseudoIdNone, g_null_atom,
                                rules_to_include);
@@ -1601,7 +1602,7 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   ElementRuleCollector collector(state.ElementContext(),
                                  StyleRecalcContext::FromAncestors(*element),
                                  selector_filter_, cascade.MutableMatchResult(),
-                                 state.Style(), EInsideLink::kNotInsideLink);
+                                 EInsideLink::kNotInsideLink);
   collector.SetPseudoElementStyleRequest(StyleRequest(pseudo_id, nullptr));
   MatchAllRules(state, collector, false /* include_smil_properties */);
 
@@ -1628,7 +1629,7 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(*element);
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
-                                 selector_filter_, match_result, state.Style(),
+                                 selector_filter_, match_result,
                                  state.ElementLinkState());
   collector.SetMode(SelectorChecker::kCollectingCSSRules);
   // TODO(obrufau): support collecting rules for nested ::marker
@@ -2137,7 +2138,7 @@ void StyleResolver::ApplyCallbackSelectors(StyleResolverState& state) {
 
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
-                                 selector_filter_, match_result, state.Style(),
+                                 selector_filter_, match_result,
                                  state.Style()->InsideLink());
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
 

@@ -215,6 +215,13 @@ class CORE_EXPORT MatchResult {
   }
   void AddFlags(MatchFlags flags) { flags_ |= flags; }
 
+  void SetHasPseudoElementStyle(PseudoId pseudo) {
+    DCHECK(pseudo >= kFirstPublicPseudoId);
+    DCHECK(pseudo <= kLastTrackedPublicPseudoId);
+    pseudo_element_styles_ |= 1 << (pseudo - kFirstPublicPseudoId);
+  }
+  unsigned PseudoElementStyles() const { return pseudo_element_styles_; }
+
   const MatchedPropertiesVector& GetMatchedProperties() const {
     return matched_properties_;
   }
@@ -244,6 +251,7 @@ class CORE_EXPORT MatchResult {
   MatchFlags flags_{0};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};
+  uint16_t pseudo_element_styles_{kPseudoIdNone};
 };
 
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {

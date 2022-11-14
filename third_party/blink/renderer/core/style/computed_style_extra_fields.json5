@@ -245,15 +245,14 @@
       custom_compare: true,
     },
     {
-      name: "PseudoBits",
+      name: "PseudoElementStyles",
       field_template: "primitive",
       field_size: 12,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       custom_copy: true,
       custom_compare: true,
-      computed_style_custom_functions: ["getter", "setter"],
-      writable: true,
+      computed_style_custom_functions: ["getter"],
     },
     // Whether any non-universal highlight selectors were found when collecting
     // rules for the originating element. Stored in the *originating* style, and
