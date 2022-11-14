@@ -173,6 +173,11 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
         profile()));
   }
 
+  void CreateFactoryForServiceWorker() {
+    factory_.Bind(
+        IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(profile()));
+  }
+
   int CreateLoaderAndRun(std::unique_ptr<network::ResourceRequest> request) {
     auto loader = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -791,6 +796,24 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return is_dev_mode.param ? "DevModeBundle"
                                                     : "InstalledBundle";
                          });
+
+using IsolatedWebAppURLLoaderFactoryForServiceWorkerTest =
+    IsolatedWebAppURLLoaderFactoryTest;
+
+TEST_F(IsolatedWebAppURLLoaderFactoryForServiceWorkerTest, GetRequestsSucceed) {
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}}));
+
+  CreateFactoryForServiceWorker();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->method = net::HttpRequestHeaders::kGetMethod;
+  request->url = kDevAppStartUrl;
+  int status = CreateLoaderAndRun(std::move(request));
+
+  EXPECT_THAT(status, IsNetError(net::OK));
+}
 
 class IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest
     : public IsolatedWebAppURLLoaderFactorySignedWebBundleTest {

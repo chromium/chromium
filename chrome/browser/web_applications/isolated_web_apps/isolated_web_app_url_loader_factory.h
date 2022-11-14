@@ -53,14 +53,22 @@ class IsolatedWebAppURLLoaderFactory
       int frame_tree_node_id,
       content::BrowserContext* browser_context);
 
+  // The same as `Create`, but doesn't have access to the frame tree.
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateForServiceWorker(content::BrowserContext* browser_context);
+
   IsolatedWebAppURLLoaderFactory(const IsolatedWebAppURLLoaderFactory&) =
       delete;
   IsolatedWebAppURLLoaderFactory& operator=(
       const IsolatedWebAppURLLoaderFactory&) = delete;
 
  private:
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
+      absl::optional<int> frame_tree_node_id,
+      content::BrowserContext* browser_context);
+
   IsolatedWebAppURLLoaderFactory(
-      int frame_tree_node_id,
+      absl::optional<int> frame_tree_node_id,
       Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
@@ -97,7 +105,7 @@ class IsolatedWebAppURLLoaderFactory
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  const int frame_tree_node_id_;
+  const absl::optional<int> frame_tree_node_id_;
   // It is safe to store a pointer to a `Profile` here, since `this` is freed
   // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;

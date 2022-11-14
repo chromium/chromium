@@ -125,8 +125,12 @@ void CompleteWithGeneratedHtmlResponse(
   loader_client->OnComplete(status);
 }
 
-void LogErrorMessageToConsole(int frame_tree_node_id,
+void LogErrorMessageToConsole(absl::optional<int> frame_tree_node_id,
                               const std::string& error_message) {
+  if (!frame_tree_node_id.has_value()) {
+    LOG(ERROR) << error_message;
+    return;
+  }
   // TODO(crbug.com/1365850): The console message will vanish from the console
   // if the user does not have the `Preserve Log` option enabled, since it is
   // triggered before the navigation commits. We should try to use a similar
@@ -136,7 +140,7 @@ void LogErrorMessageToConsole(int frame_tree_node_id,
   // Find the `RenderFrameHost` associated with the `FrameTreeNode`
   // corresponding to the `frame_tree_node_id`, and then log the message.
   content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+      content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id);
   if (!web_contents) {
     // Log to the terminal if we can't log to the console.
     LOG(ERROR) << error_message;
@@ -185,7 +189,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       web_package::SignedWebBundleId web_bundle_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const network::ResourceRequest& resource_request,
-      int frame_tree_node_id)
+      absl::optional<int> frame_tree_node_id)
       : loader_client_(std::move(loader_client)),
         resource_request_(resource_request),
         frame_tree_node_id_(frame_tree_node_id) {
@@ -307,7 +311,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
   int64_t header_length_;
   int64_t body_length_;
   const network::ResourceRequest resource_request_;
-  const int frame_tree_node_id_;
+  absl::optional<int> frame_tree_node_id_;
 
   base::WeakPtrFactory<IsolatedWebAppURLLoader> weak_factory_{this};
 };
@@ -315,7 +319,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
 }  // namespace
 
 IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
-    int frame_tree_node_id,
+    absl::optional<int> frame_tree_node_id,
     Profile* profile,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
@@ -389,10 +393,15 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
             isolation_data.content);
       };
 
-  absl::optional<IsolationData> pending_install_isolation_data =
-      IsolatedWebAppPendingInstallInfo::FromWebContents(
-          *content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_))
-          .isolation_data();
+  absl::optional<IsolationData> pending_install_isolation_data = absl::nullopt;
+
+  if (frame_tree_node_id_.has_value()) {
+    pending_install_isolation_data =
+        IsolatedWebAppPendingInstallInfo::FromWebContents(
+            *content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_))
+            .isolation_data();
+  }
+
   if (pending_install_isolation_data.has_value()) {
     if (resource_request.url.path() == kInstallPagePath &&
         IsSupportedHttpMethod(resource_request.method)) {
@@ -498,6 +507,21 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 IsolatedWebAppURLLoaderFactory::Create(
     int frame_tree_node_id,
     content::BrowserContext* browser_context) {
+  return CreateInternal(frame_tree_node_id, browser_context);
+}
+
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
+    content::BrowserContext* browser_context) {
+  return CreateInternal(/*frame_tree_node_id=*/absl::nullopt, browser_context);
+}
+
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+IsolatedWebAppURLLoaderFactory::CreateInternal(
+    absl::optional<int> frame_tree_node_id,
+    content::BrowserContext* browser_context) {
   DCHECK(browser_context);
   DCHECK(!browser_context->ShutdownStarted());
 
@@ -507,7 +531,8 @@ IsolatedWebAppURLLoaderFactory::Create(
   // more receivers - see the
   // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   new IsolatedWebAppURLLoaderFactory(
-      frame_tree_node_id, Profile::FromBrowserContext(browser_context),
+      /*frame_tree_node_id=*/frame_tree_node_id,
+      Profile::FromBrowserContext(browser_context),
       pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
