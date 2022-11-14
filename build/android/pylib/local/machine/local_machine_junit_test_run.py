@@ -89,7 +89,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return jar_args_list
 
-  def _CreateJvmArgsList(self):
+  def _CreateJvmArgsList(self, for_listing=False):
     # Creates a list of jvm_args (robolectric, code coverage, etc...)
     jvm_args = [
         '-Drobolectric.dependency.dir=%s' %
@@ -101,13 +101,13 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         '-Drobolectric.logging=stdout',
         '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
     ]
-    if self._test_instance.debug_socket:
+    if self._test_instance.debug_socket and not for_listing:
       jvm_args += [
           '-agentlib:jdwp=transport=dt_socket'
           ',server=y,suspend=y,address=%s' % self._test_instance.debug_socket
       ]
 
-    if self._test_instance.coverage_dir:
+    if self._test_instance.coverage_dir and not for_listing:
       if not os.path.exists(self._test_instance.coverage_dir):
         os.makedirs(self._test_instance.coverage_dir)
       elif not os.path.isdir(self._test_instance.coverage_dir):
@@ -138,8 +138,13 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
   #override
   def GetTestsForListing(self):
-    cmd = [self._wrapper_path, '--list-tests'] + self._GetFilterArgs()
-    lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      cmd = [self._wrapper_path, '--list-tests'] + self._GetFilterArgs()
+      jvm_args = self._CreateJvmArgsList(for_listing=True)
+      if jvm_args:
+        cmd += ['--jvm-args', '"%s"' % ' '.join(jvm_args)]
+      AddPropertiesJar([cmd], temp_dir, self._test_instance.resource_apk)
+      lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
 
     PREFIX = '#TEST# '
     prefix_len = len(PREFIX)

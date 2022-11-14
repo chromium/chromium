@@ -85,6 +85,8 @@ public final class JunitTestMain {
 
         Computer computer;
         if (parser.isListTests()) {
+            // Causes test names to have the sdk version as a [suffix].
+            System.setProperty("robolectric.alwaysIncludeVariantMarkersInTestName", "true");
             computer = new TestListComputer(System.out);
         } else {
             GtestLogger gtestLogger = new GtestLogger(System.out);
