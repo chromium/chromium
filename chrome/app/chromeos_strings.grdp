@@ -6291,4 +6291,23 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_THEME_AUTO_DESCRIPTION" desc="Description of the auto theme button">
     Switch themes at sunrise and sunset
   </message>
+
+  <!-- CHOOBE Screen -->
+  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_CHOOBE_TITLE" desc="Title of the CHOOBE screen." translateable="false">
+    Select features you want to set up next
+  </message>
+  <message name="IDS_OOBE_CHOOBE_DESCRIPTION" desc="Subitle of the CHOOBE screen." translateable="false">
+    Or you can click Done for now and find them later in system Settings
+  </message>
+  <message name="IDS_OOBE_CHOOBE_SKIP_BUTTON" desc="Skip button for the CHOOBE screen" translateable="false">
+    Remind me later
+  </message>
+
+  <!-- CHOOBE Tiles -->
+  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
+  <message name="IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE" desc="Title of the theme selection tile in the CHOOBE screen." translateable="false">
+    Select dark/light theme
+  </message>
+
 </grit-part>
