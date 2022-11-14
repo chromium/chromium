@@ -7,8 +7,6 @@
 
 #include "base/files/file_path.h"
 
-class Profile;
-
 namespace apps {
 
 // A bitwise-or of icon post-processing effects.
@@ -62,9 +60,13 @@ inline IconEffects operator&=(IconEffects& a, uint32_t b) {
 }
 
 // Constructs path to app icon for specific scale factor.
-base::FilePath GetIconPath(Profile* profile,
+base::FilePath GetIconPath(const base::FilePath& base_path,
                            const std::string& app_id,
                            int32_t icon_size_in_px);
+
+std::vector<uint8_t> ReadOnBackgroundThread(const base::FilePath& base_path,
+                                            const std::string& app_id,
+                                            int32_t icon_size_in_px);
 
 }  // namespace apps
 

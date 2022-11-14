@@ -4,30 +4,9 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 
-#include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/profiles/profile.h"
-
-namespace {
-
-std::vector<uint8_t> ReadOnBackgroundThread(Profile* profile,
-                                            const std::string& app_id,
-                                            int32_t icon_size_in_px) {
-  const auto icon_path = apps::GetIconPath(profile, app_id, icon_size_in_px);
-  if (icon_path.empty() || !base::PathExists(icon_path)) {
-    return std::vector<uint8_t>{};
-  }
-
-  std::string unsafe_icon_data;
-  if (!base::ReadFileToString(icon_path, &unsafe_icon_data)) {
-    return std::vector<uint8_t>{};
-  }
-
-  return {unsafe_icon_data.begin(), unsafe_icon_data.end()};
-}
-
-}  // namespace
 
 namespace apps {
 
@@ -40,6 +19,8 @@ void AppIconReader::ReadIcons(const std::string& app_id,
                               IconEffects icon_effects,
                               IconType icon_type,
                               LoadIconCallback callback) {
+  const base::FilePath& base_path = profile_->GetPath();
+
   switch (icon_type) {
     case IconType::kUnknown: {
       std::move(callback).Run(std::make_unique<apps::IconValue>());
@@ -49,7 +30,7 @@ void AppIconReader::ReadIcons(const std::string& app_id,
       if (icon_effects == apps::IconEffects::kNone) {
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            base::BindOnce(&ReadOnBackgroundThread, profile_, app_id,
+            base::BindOnce(&ReadOnBackgroundThread, base_path, app_id,
                            apps_util::ConvertDipToPx(
                                size_hint_in_dip,
                                /*quantize_to_supported_scale_factor=*/true)),
