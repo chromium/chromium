@@ -222,6 +222,11 @@ void UseCounterImpl::Count(CSSPropertyID property,
 }
 
 void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
+  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
+  // is accessed for reporting to the recorder.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
   if (!source_frame)
     return;
   RecordMeasurement(feature, *source_frame);
