@@ -84,6 +84,7 @@ namespace enterprise.reportingPrivate {
     boolean? thirdPartyBlockingEnabled;
     SettingValue osFirewall;
     DOMString[] systemDnsServers;
+    DOMString? enterpriseProfileId;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.

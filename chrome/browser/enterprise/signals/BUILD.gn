@@ -13,8 +13,10 @@ source_set("utils") {
   ]
 
   deps = [
+    "//chrome/browser/enterprise/identifiers",
     "//chrome/common:constants",
     "//components/component_updater",
+    "//components/enterprise/browser/identifiers",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
