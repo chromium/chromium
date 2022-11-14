@@ -16,11 +16,10 @@
 class SkPath;
 
 namespace base {
-class Value;
 namespace trace_event {
 class TracedValue;
 }
-}
+}  // namespace base
 
 namespace gfx {
 class Vector2d;
@@ -76,7 +75,6 @@ class CC_BASE_EXPORT Region {
   }
 
   std::string ToString() const;
-  std::unique_ptr<base::Value> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* array) const;
 
   // Iterator for iterating through the gfx::Rects contained in this Region.

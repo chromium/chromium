@@ -9,7 +9,6 @@
 
 #include "base/no_destructor.h"
 #include "base/trace_event/traced_value.h"
-#include "base/values.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -134,17 +133,6 @@ std::string Region::ToString() const {
     result += rect.ToString();
   }
   return result;
-}
-
-std::unique_ptr<base::Value> Region::AsValue() const {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (gfx::Rect rect : *this) {
-    result->Append(rect.x());
-    result->Append(rect.y());
-    result->Append(rect.width());
-    result->Append(rect.height());
-  }
-  return std::move(result);
 }
 
 void Region::AsValueInto(base::trace_event::TracedValue* result) const {
