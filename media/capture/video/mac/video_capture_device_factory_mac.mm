@@ -38,7 +38,32 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
 media::VideoCaptureFormats GetDeviceSupportedFormats(
     const media::VideoCaptureDeviceDescriptor& descriptor) {
   media::VideoCaptureFormats formats;
-  NSArray* devices = [AVCaptureDevice devices];
+
+  NSArray<AVCaptureDevice*>* devices = nil;
+  // The awkward repeated if statements are required for the compiler to
+  // recognise that the contained code is protected by an API version check.
+  if (@available(macOS 10.15, *)) {
+    if (base::FeatureList::IsEnabled(
+            media::kUseAVCaptureDeviceDiscoverySession)) {
+      // Query for all camera device types available on macOS. The others in the
+      // enum are only supported on iOS/iPadOS.
+      NSArray* captureDeviceType = @[
+        AVCaptureDeviceTypeBuiltInWideAngleCamera,
+        AVCaptureDeviceTypeExternalUnknown
+      ];
+      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
+          [AVCaptureDeviceDiscoverySession
+              discoverySessionWithDeviceTypes:captureDeviceType
+                                    mediaType:AVMediaTypeVideo
+                                     position:
+                                         AVCaptureDevicePositionUnspecified];
+      devices = deviceDescoverySession.devices;
+    }
+  }
+  if (!devices) {
+    devices = [AVCaptureDevice devices];
+  }
+
   AVCaptureDevice* device = nil;
   for (device in devices) {
     if (base::SysNSStringToUTF8([device uniqueID]) == descriptor.device_id)

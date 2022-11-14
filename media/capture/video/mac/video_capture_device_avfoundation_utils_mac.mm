@@ -140,7 +140,34 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
   // At this stage we already know that AVFoundation is supported and the whole
   // library is loaded and initialised, by the device monitoring.
   NSMutableDictionary* deviceNames = [[NSMutableDictionary alloc] init];
-  NSArray* devices = [AVCaptureDevice devices];
+
+  NSArray<AVCaptureDevice*>* devices = nil;
+  // The awkward repeated if statements are required for the compiler to
+  // recognise that the contained code is protected by an API version check.
+  if (@available(macOS 10.15, *)) {
+    if (base::FeatureList::IsEnabled(
+            media::kUseAVCaptureDeviceDiscoverySession)) {
+      // Query for all camera device types available on macOS. The others in the
+      // enum are only supported on iOS/iPadOS.
+      NSArray* captureDeviceType = @[
+        AVCaptureDeviceTypeBuiltInWideAngleCamera,
+        AVCaptureDeviceTypeExternalUnknown
+      ];
+
+      AVCaptureDeviceDiscoverySession* deviceDescoverySession =
+          [AVCaptureDeviceDiscoverySession
+              discoverySessionWithDeviceTypes:captureDeviceType
+                                    mediaType:AVMediaTypeVideo
+                                     position:
+                                         AVCaptureDevicePositionUnspecified];
+      devices = deviceDescoverySession.devices;
+    }
+  }
+
+  if (!devices) {
+    devices = [AVCaptureDevice devices];
+  }
+
   int number_of_suspended_devices = 0;
   for (AVCaptureDevice* device in devices) {
     if ([device hasMediaType:AVMediaTypeVideo] ||
@@ -208,5 +235,9 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
       CMVideoFormatDescriptionGetDimensions(format_description);
   return gfx::Size(dimensions.width, dimensions.height);
 }
+
+BASE_FEATURE(kUseAVCaptureDeviceDiscoverySession,
+             "UseAVCaptureDeviceDiscoverySession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace media
