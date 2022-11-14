@@ -81,11 +81,6 @@ class ImeService : public mojom::ImeService,
       mojo::PendingRemote<mojom::InputChannel> from_engine,
       const std::vector<uint8_t>& extra,
       ConnectToImeEngineCallback callback) override;
-  void ConnectToInputMethod(
-      const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> input_method,
-      mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
-      ConnectToInputMethodCallback callback) override;
   void InitializeConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
       mojom::ConnectionTarget connection_target,

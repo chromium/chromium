@@ -107,16 +107,6 @@ void ImeService::ConnectToImeEngine(
   std::move(callback).Run(bound);
 }
 
-void ImeService::ConnectToInputMethod(
-    const std::string& ime_spec,
-    mojo::PendingReceiver<mojom::InputMethod> input_method,
-    mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
-    ConnectToInputMethodCallback callback) {
-  // This method is now deprecated and should not be used to connect to an
-  // input method.
-  std::move(callback).Run(/*bound=*/false);
-}
-
 void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
     mojom::ConnectionTarget connection_target,

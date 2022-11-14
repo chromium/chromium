@@ -188,15 +188,6 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
     std::move(callback).Run(/*bound=*/false);
   }
 
-  void ConnectToInputMethod(
-      const std::string& ime_spec,
-      mojo::PendingReceiver<ime::mojom::InputMethod> input_method,
-      mojo::PendingRemote<ime::mojom::InputMethodHost> host,
-      ConnectToInputMethodCallback callback) override {
-    // Not used by NativeInputMethodEngine.
-    std::move(callback).Run(/*bound=*/false);
-  }
-
   void InitializeConnectionFactory(
       mojo::PendingReceiver<ime::mojom::ConnectionFactory> connection_factory,
       ime::mojom::ConnectionTarget connection_target,
