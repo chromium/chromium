@@ -86,7 +86,7 @@ suite('URL preload', function() {
    * given |url| to trigger routing initialization code.
    */
   function setupWithUrl(url) {
-    document.body.innerHTML = '';
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     Store.setInstance(undefined);
     window.history.replaceState({}, '', url);
 
