@@ -249,22 +249,18 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
   if (pref_name == prefs::kLanguagePreloadEngines ||
       pref_name == prefs::kLanguageEnabledImes) {
     InputMethodManager* manager = InputMethodManager::Get();
-    std::unique_ptr<InputMethodDescriptors> supported_descriptors =
-        std::make_unique<InputMethodDescriptors>();
+    InputMethodDescriptors supported_descriptors;
 
     if (pref_name == prefs::kLanguagePreloadEngines) {
       // Add the available component extension IMEs.
       ComponentExtensionIMEManager* component_extension_manager =
           manager->GetComponentExtensionIMEManager();
-      InputMethodDescriptors component_descriptors =
+      supported_descriptors =
           component_extension_manager->GetAllIMEAsInputMethodDescriptor();
-      supported_descriptors->insert(supported_descriptors->end(),
-                                    component_descriptors.begin(),
-                                    component_descriptors.end());
     } else {
-      ime_state_->GetInputMethodExtensions(supported_descriptors.get());
+      ime_state_->GetInputMethodExtensions(&supported_descriptors);
     }
-    CheckAndResolveInputMethodIDs(*supported_descriptors, &new_token_values);
+    CheckAndResolveInputMethodIDs(supported_descriptors, &new_token_values);
   } else if (pref_name != language::prefs::kPreferredLanguages) {
     NOTREACHED() << "Attempting to merge an invalid preference.";
     // kPreferredLanguages is checked in CheckAndResolveLocales().
