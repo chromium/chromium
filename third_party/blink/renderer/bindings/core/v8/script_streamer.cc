@@ -782,8 +782,11 @@ void ScriptStreamer::Prefinalize() {
   // https://crbug.com/905975#c34 for more details.
   watcher_.reset();
 
-  // Cancel any on-going streaming.
-  Cancel();
+  // Cancel any on-going streaming. This isn't supported at non-deterministic
+  // points while replaying as it will affect the streaming thread's behavior.
+  if (!recordreplay::AreEventsDisallowed()) {
+    Cancel();
+  }
 }
 
 void ScriptStreamer::Trace(Visitor* visitor) const {
