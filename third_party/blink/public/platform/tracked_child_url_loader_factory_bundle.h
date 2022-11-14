@@ -101,7 +101,8 @@ class BLINK_PLATFORM_EXPORT TrackedChildURLLoaderFactoryBundle
   void RemoveObserverOnMainThread();
 
   // Callback method to receive updates from the host bundle.
-  void OnUpdate(std::unique_ptr<network::PendingSharedURLLoaderFactory> info);
+  void OnUpdate(std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                    pending_factories);
 
   // |WeakPtr| and |TaskRunner| of the host bundle. Can be copied and passed
   // across sequences.
@@ -135,7 +136,8 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override;
   bool IsHostChildURLLoaderFactoryBundle() const override;
 
-  // Update this bundle with |info|, and post cloned |info| to tracked bundles.
+  // Update this bundle with `pending_factories`, and post cloned
+  // `pending_factories` to tracked bundles.
   void UpdateThisAndAllClones(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> pending_factories);
 
@@ -160,7 +162,8 @@ class BLINK_PLATFORM_EXPORT HostChildURLLoaderFactoryBundle
   // tracked bundle has been destroyed.
   void NotifyUpdateOnMainOrWorkerThread(
       ObserverPtrAndTaskRunner* observer_bundle,
-      std::unique_ptr<network::PendingSharedURLLoaderFactory> update_info);
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_factories);
 
   // Contains |WeakPtr| and |TaskRunner| to tracked bundles.
   std::unique_ptr<ObserverList> observer_list_;

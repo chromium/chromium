@@ -272,12 +272,12 @@ ChildURLLoaderFactoryBundle::PassInterface() {
 }
 
 void ChildURLLoaderFactoryBundle::Update(
-    std::unique_ptr<ChildPendingURLLoaderFactoryBundle> info) {
-  if (info->pending_prefetch_loader_factory()) {
+    std::unique_ptr<ChildPendingURLLoaderFactoryBundle> pending_factories) {
+  if (pending_factories->pending_prefetch_loader_factory()) {
     prefetch_loader_factory_.Bind(
-        std::move(info->pending_prefetch_loader_factory()));
+        std::move(pending_factories->pending_prefetch_loader_factory()));
   }
-  URLLoaderFactoryBundle::Update(std::move(info));
+  URLLoaderFactoryBundle::Update(std::move(pending_factories));
 }
 
 void ChildURLLoaderFactoryBundle::UpdateSubresourceOverrides(

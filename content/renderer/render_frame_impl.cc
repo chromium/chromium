@@ -6117,11 +6117,11 @@ void RenderFrameImpl::SetWebURLLoaderFactoryOverrideForTest(
 
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
 RenderFrameImpl::CloneLoaderFactories() {
-  auto bundle_info = base::WrapUnique(
+  auto pending_bundle = base::WrapUnique(
       static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
           GetLoaderFactoryBundle()->Clone().release()));
   return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
-      std::move(bundle_info));
+      std::move(pending_bundle));
 }
 
 blink::scheduler::WebAgentGroupScheduler&
