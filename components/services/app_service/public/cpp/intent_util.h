@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -85,35 +84,8 @@ apps::IntentPtr CreateStartOnLockScreenIntent();
 bool ConditionValueMatches(const std::string& value,
                            const apps::ConditionValuePtr& condition_value);
 
-// Return true if |value| matches with the |condition_value|, based on the
-// pattern match type in the |condition_value|.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool ConditionValueMatches(
-    const std::string& value,
-    const apps::mojom::ConditionValuePtr& condition_value);
-
-// Return true if |intent| matches with any of the values in |condition|.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
-                            const apps::mojom::ConditionPtr& condition);
-
-// Return true if |filter| only contains file extension pattern matches.
-bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter);
-
 bool IsGenericFileHandler(const apps::IntentPtr& intent,
                           const apps::IntentFilterPtr& filter);
-
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
-                          const apps::mojom::IntentFilterPtr& filter);
-
-// Return true if `intent` corresponds to a share intent.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool IsShareIntent(const apps::mojom::IntentPtr& intent);
 
 // Return true if |value| matches |pattern| with simple glob syntax.
 // In this syntax, you can use the '*' character to match against zero or
@@ -139,16 +111,6 @@ bool MimeTypeMatched(const std::string& intent_mime_type,
 
 bool ExtensionMatched(const std::string& file_name,
                       const std::string& filter_extension);
-
-// Check if the intent only mean to share to Google Drive.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent);
-
-// Check the if the intent is valid, e.g. action matches content.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-bool IsIntentValid(const apps::mojom::IntentPtr& intent);
 
 // Converts |intent| to base::Value, e.g.:
 // {
@@ -206,8 +168,7 @@ std::string CalculateCommonMimeType(const std::vector<std::string>& mime_types);
 
 // Extracts the text from |share_text| to populate the SharedText struct. If
 // |SharedText.url| is populated, the value will always be a valid parsed URL.
-// The |share_text| passed in here should be the share_text field from
-// apps::mojom::IntentPtr.
+// The |share_text| passed in here should be the share_text field from Intent.
 //
 // Testing covered by share_target_utils_unittest.cc as this function was
 // migrated out from web_app::ShareTargetUtils.

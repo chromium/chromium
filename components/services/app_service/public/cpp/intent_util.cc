@@ -17,8 +17,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
@@ -42,39 +40,6 @@ const char kDataKey[] = "data";
 const char kUiBypassedKey[] = "ui_bypassed";
 const char kExtrasKey[] = "extras";
 const char kMimeTypeInodeDirectory[] = "inode/directory";
-
-// Get the field from the |intent| that need to be checked/matched based on
-// |condition_type|.
-// TODO(crbug.com/1253250): Remove this function after migrating to non-mojo
-// AppService.
-absl::optional<std::string> GetIntentConditionValueByType(
-    apps::mojom::ConditionType condition_type,
-    const apps::mojom::IntentPtr& intent) {
-  switch (condition_type) {
-    case apps::mojom::ConditionType::kAction:
-      return intent->action;
-    case apps::mojom::ConditionType::kScheme:
-      return intent->url.has_value()
-                 ? absl::optional<std::string>(intent->url->scheme())
-                 : absl::nullopt;
-    case apps::mojom::ConditionType::kHost:
-      return intent->url.has_value()
-                 ? absl::optional<std::string>(intent->url->host())
-                 : absl::nullopt;
-    case apps::mojom::ConditionType::kPath:
-      return intent->url.has_value()
-                 ? absl::optional<std::string>(intent->url->path())
-                 : absl::nullopt;
-    case apps::mojom::ConditionType::kMimeType: {
-      return intent->mime_type;
-    }
-    case apps::mojom::ConditionType::kFile: {
-      // Handled in IntentMatchesFileCondition.
-      NOTREACHED();
-      return {};
-    }
-  }
-}
 
 bool ComponentMatched(const std::string& intent_component,
                       const std::string& filter_component) {
@@ -211,138 +176,6 @@ bool ConditionValueMatches(const std::string& value,
   }
 }
 
-bool ConditionValueMatches(
-    const std::string& value,
-    const apps::mojom::ConditionValuePtr& condition_value) {
-  switch (condition_value->match_type) {
-    case apps::mojom::PatternMatchType::kLiteral:
-      return value == condition_value->value;
-    case apps::mojom::PatternMatchType::kPrefix:
-      return base::StartsWith(value, condition_value->value,
-                              base::CompareCase::INSENSITIVE_ASCII);
-    case apps::mojom::PatternMatchType::kSuffix:
-      return base::EndsWith(value, condition_value->value,
-                            base::CompareCase::INSENSITIVE_ASCII);
-    case apps::mojom::PatternMatchType::kGlob:
-      return MatchGlob(value, condition_value->value);
-    case apps::mojom::PatternMatchType::kMimeType:
-      // kMimeType as a match for kFile is handled in FileMatchesConditionValue.
-      return MimeTypeMatched(value, condition_value->value);
-    case apps::mojom::PatternMatchType::kFileExtension:
-    case apps::mojom::PatternMatchType::kIsDirectory: {
-      // Handled in FileMatchesConditionValue.
-      NOTREACHED();
-      return false;
-    }
-  }
-}
-
-bool FileMatchesConditionValue(
-    const apps::mojom::IntentFilePtr& file,
-    const apps::mojom::ConditionValuePtr& condition_value) {
-  switch (condition_value->match_type) {
-    case apps::mojom::PatternMatchType::kLiteral:
-    case apps::mojom::PatternMatchType::kPrefix:
-    case apps::mojom::PatternMatchType::kSuffix:
-      NOTREACHED();
-      return false;
-    case apps::mojom::PatternMatchType::kGlob:
-      return MatchGlob(file->url.spec(), condition_value->value);
-    case apps::mojom::PatternMatchType::kMimeType:
-      return file->mime_type.has_value() &&
-             MimeTypeMatched(file->mime_type.value(), condition_value->value);
-    case apps::mojom::PatternMatchType::kFileExtension: {
-      return ExtensionMatched(file->url.ExtractFileName(),
-                              condition_value->value);
-    }
-    case apps::mojom::PatternMatchType::kIsDirectory:
-      return file->is_directory == apps::mojom::OptionalBool::kTrue;
-  }
-}
-
-bool FileMatchesAnyConditionValue(
-    const apps::mojom::IntentFilePtr& file,
-    const std::vector<apps::mojom::ConditionValuePtr>& condition_values) {
-  return base::ranges::any_of(
-      condition_values,
-      [&file](const apps::mojom::ConditionValuePtr& condition_value) {
-        return FileMatchesConditionValue(file, condition_value);
-      });
-}
-
-bool IntentMatchesFileCondition(const apps::mojom::IntentPtr& intent,
-                                const apps::mojom::ConditionPtr& condition) {
-  DCHECK_EQ(condition->condition_type, apps::mojom::ConditionType::kFile);
-
-  if (!intent->files.has_value() || intent->files->empty()) {
-    return false;
-  }
-
-  return base::ranges::all_of(
-      *intent->files, [&condition](const apps::mojom::IntentFilePtr& file) {
-        return FileMatchesAnyConditionValue(file, condition->condition_values);
-      });
-}
-
-bool IntentMatchesCondition(const apps::mojom::IntentPtr& intent,
-                            const apps::mojom::ConditionPtr& condition) {
-  if (condition->condition_type == apps::mojom::ConditionType::kFile) {
-    return IntentMatchesFileCondition(intent, condition);
-  }
-
-  absl::optional<std::string> value_to_match =
-      GetIntentConditionValueByType(condition->condition_type, intent);
-  return value_to_match.has_value() &&
-         base::ranges::any_of(condition->condition_values,
-                              [&value_to_match](const auto& condition_value) {
-                                return ConditionValueMatches(
-                                    value_to_match.value(), condition_value);
-                              });
-}
-
-bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter) {
-  for (const auto& condition : filter->conditions) {
-    // We expect action conditions to be paired with file conditions.
-    if (condition->condition_type == apps::mojom::ConditionType::kAction) {
-      continue;
-    }
-    if (condition->condition_type != apps::mojom::ConditionType::kFile) {
-      return false;
-    }
-    for (const auto& condition_value : condition->condition_values) {
-      if (condition_value->match_type !=
-          apps::mojom::PatternMatchType::kFileExtension) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-namespace {
-
-void GetMimeTypesAndExtensions(const apps::mojom::IntentFilterPtr& filter,
-                               std::set<std::string>& mime_types,
-                               std::set<std::string>& file_extensions) {
-  for (const auto& condition : filter->conditions) {
-    if (condition->condition_type != apps::mojom::ConditionType::kFile) {
-      continue;
-    }
-    for (const auto& condition_value : condition->condition_values) {
-      if (condition_value->match_type ==
-          apps::mojom::PatternMatchType::kFileExtension) {
-        file_extensions.insert(condition_value->value);
-      }
-      if (condition_value->match_type ==
-          apps::mojom::PatternMatchType::kMimeType) {
-        mime_types.insert(condition_value->value);
-      }
-    }
-  }
-}
-
-}  // namespace
-
 bool IsGenericFileHandler(const apps::IntentPtr& intent,
                           const apps::IntentFilterPtr& filter) {
   if (!intent || !filter || intent->files.empty()) {
@@ -378,43 +211,6 @@ bool IsGenericFileHandler(const apps::IntentPtr& intent,
     }
   }
   return false;
-}
-
-bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
-                          const apps::mojom::IntentFilterPtr& filter) {
-  if (!intent->files.has_value())
-    return false;
-
-  std::set<std::string> mime_types;
-  std::set<std::string> file_extensions;
-  GetMimeTypesAndExtensions(filter, mime_types, file_extensions);
-  if (file_extensions.count("*") > 0 || mime_types.count("*") > 0 ||
-      mime_types.count("*/*") > 0)
-    return true;
-
-  // If a text/* file handler matches with an unsupported text mime type, we
-  // regard it as a generic match.
-  if (mime_types.count("text/*")) {
-    for (const auto& file : intent->files.value()) {
-      if (file->mime_type.has_value() &&
-          blink::IsUnsupportedTextMimeType(file->mime_type.value())) {
-        return true;
-      }
-    }
-  }
-
-  // If directory is selected, it is generic unless mime_types included
-  // 'inode/directory'.
-  for (const auto& file : intent->files.value()) {
-    if (file->is_directory == apps::mojom::OptionalBool::kTrue)
-      return mime_types.count(kMimeTypeInodeDirectory) == 0;
-  }
-  return false;
-}
-
-bool IsShareIntent(const apps::mojom::IntentPtr& intent) {
-  return intent->action == kIntentActionSend ||
-         intent->action == kIntentActionSendMultiple;
 }
 
 bool MatchGlob(const std::string& value, const std::string& pattern) {
@@ -556,18 +352,6 @@ bool ExtensionMatched(const std::string& file_name,
                                                 file_path.Extension()) ||
          base::FilePath::CompareEqualIgnoreCase(handler_extension,
                                                 file_path.FinalExtension());
-}
-
-bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
-  return IsShareIntent(intent) && intent->drive_share_url &&
-         !intent->share_text && !intent->files;
-}
-
-bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
-  if (IsShareIntent(intent))
-    return intent->share_text || intent->files;
-
-  return true;
 }
 
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
