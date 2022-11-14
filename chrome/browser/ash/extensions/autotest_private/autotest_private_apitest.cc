@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_public_test_util.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -16,8 +18,10 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -33,6 +37,10 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/test/app_list_search_test_helper.h"
+#include "chrome/browser/ui/app_list/search/test/search_results_changed_waiter.h"
+#include "chrome/browser/ui/app_list/search/test/test_result.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,6 +64,45 @@ using testing::_;
 using testing::Return;
 
 namespace extensions {
+
+namespace {
+
+class TestSearchProvider : public app_list::SearchProvider {
+ public:
+  explicit TestSearchProvider(ash::AppListSearchResultType result_type)
+      : result_type_(result_type) {}
+
+  ~TestSearchProvider() override = default;
+
+  void SetNextResults(
+      std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+    results_ = std::move(results);
+  }
+
+  ash::AppListSearchResultType ResultType() const override {
+    return result_type_;
+  }
+
+  void Start(const std::u16string& query) override {
+    DCHECK(!ash::IsZeroStateResultType(result_type_));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&TestSearchProvider::SetResults,
+                                  query_weak_factory_.GetWeakPtr()));
+  }
+
+  void StopQuery() override { query_weak_factory_.InvalidateWeakPtrs(); }
+
+  void StartZeroState() override {}
+
+ private:
+  void SetResults() { SwapResults(&results_); }
+
+  std::vector<std::unique_ptr<ChromeSearchResult>> results_;
+  ash::AppListSearchResultType result_type_;
+  base::WeakPtrFactory<TestSearchProvider> query_weak_factory_{this};
+};
+
+}  // namespace
 
 class AutotestPrivateApiTest : public ExtensionApiTest {
  public:
@@ -457,6 +504,98 @@ class AutotestPrivateLacrosTest : public AutotestPrivateApiTest {
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateLacrosTest, Lacros) {
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("lacrosEnabled")) << message_;
+}
+
+class AutotestPrivateSearchTest
+    : public AutotestPrivateApiTest,
+      public ::testing::WithParamInterface</* tablet_mode =*/bool> {
+ public:
+  AutotestPrivateSearchTest() {
+    feature_list.InitAndEnableFeature(
+        ash::features::kAutocompleteExtendedSuggestions);
+  }
+
+  ~AutotestPrivateSearchTest() override = default;
+  AutotestPrivateSearchTest(const AutotestPrivateSearchTest&) = delete;
+  AutotestPrivateSearchTest& operator=(const AutotestPrivateSearchTest&) =
+      delete;
+
+  std::vector<ChromeSearchResult*> PublishedResults() {
+    return AppListClientImpl::GetInstance()
+        ->GetModelUpdaterForTest()
+        ->GetPublishedSearchResultsForTest();
+  }
+
+  void SetUpSearchResults() {
+    auto search_provider_ = std::make_unique<TestSearchProvider>(
+        ash::AppListSearchResultType::kOmnibox);
+    search_provider_->SetNextResults(
+        MakeResults({"youtube"}, {ash::SearchResultDisplayType::kList},
+                    {ash::AppListSearchResultCategory::kWeb}, {1}, {0.8}));
+
+    app_list::SearchController* search_controller =
+        AppListClientImpl::GetInstance()->search_controller();
+    EXPECT_EQ(1u, search_controller->ReplaceProvidersForResultTypeForTest(
+                      ash::AppListSearchResultType::kOmnibox,
+                      std::move(search_provider_)));
+  }
+
+ protected:
+  std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
+      const std::vector<std::string>& ids,
+      const std::vector<ash::SearchResultDisplayType>& display_types,
+      const std::vector<ash::AppListSearchResultCategory>& categories,
+      const std::vector<int>& best_match_ranks,
+      const std::vector<double>& scores) {
+    std::vector<std::unique_ptr<ChromeSearchResult>> results;
+    for (size_t i = 0; i < ids.size(); ++i) {
+      results.emplace_back(std::make_unique<app_list::TestResult>(
+          ids[i], display_types[i], categories[i], best_match_ranks[i],
+          /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]));
+    }
+    return results;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutotestPrivateSearchTest,
+                         /* tablet_mode= */ ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
+                       LauncherSearchBoxStateAPITest) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
+  test::GetAppListClient()->ShowAppList();
+  if (!GetParam()) {
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
+  }
+
+  ui::test::EventGenerator generator(
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+  generator.GestureTapAt(
+      ash::GetSearchBoxView()->GetBoundsInScreen().CenterPoint());
+
+  app_list::SearchResultsChangedWaiter results_changed_waiter(
+      AppListClientImpl::GetInstance()->search_controller(),
+      {app_list::ResultType::kOmnibox});
+  app_list::ResultsWaiter results_waiter(u"outube");
+
+  SetUpSearchResults();
+  ash::AppListTestApi().SimulateSearch(u"outube");
+
+  results_changed_waiter.Wait();
+  results_waiter.Wait();
+
+  const auto results = PublishedResults();
+  ASSERT_EQ(results.size(), 1u);
+  ASSERT_TRUE(results[0]);
+  EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "youtube");
+
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("launcherSearchBoxState"))
+      << message_;
 }
 
 }  // namespace extensions

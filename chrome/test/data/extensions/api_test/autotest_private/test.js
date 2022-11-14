@@ -1497,6 +1497,13 @@ var shelfTests = [function fetchShelfUIInfo() {
       }));
 }];
 
+var launcherSearchBoxStateTests = [ function verifyGhostText(){
+  chrome.autotestPrivate.getLauncherSearchBoxState(
+      chrome.test.callbackPass(info => {
+        chrome.test.assertEq('youtube - Websites', info.ghostText);
+      }));
+}];
+
 var holdingSpaceTests = [
   function resetHoldingSpace(options) {
     // State after this call is checked in C++ test code.
@@ -1585,6 +1592,7 @@ var systemWebAppsTests = [
       'holdingSpace': holdingSpaceTests,
       'systemWebApps': systemWebAppsTests,
       'lacrosEnabled': lacrosEnabledTests,
+      'launcherSearchBoxState' : launcherSearchBoxStateTests,
     };
 
 chrome.test.getConfig(function(config) {

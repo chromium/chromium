@@ -98,6 +98,8 @@ class SearchBoxViewBase : public views::View,
   void MaybeSetAutocompleteGhostText(const std::u16string& title,
                                      const std::u16string& category);
 
+  std::string GetSearchBoxGhostTextForTest();
+
   // Setting the search box active left aligns the placeholder text, changes
   // the color of the placeholder text, and enables cursor blink. Setting the
   // search box inactive center aligns the placeholder text, sets the color, and

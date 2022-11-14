@@ -966,6 +966,19 @@ class AutotestPrivateGetShelfItemsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Returns launcher's search box state.
+class AutotestPrivateGetLauncherSearchBoxStateFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateGetLauncherSearchBoxStateFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getLauncherSearchBoxState",
+                             AUTOTESTPRIVATE_GETLAUNCHERSSEARCHBOXSTATE)
+
+ private:
+  ~AutotestPrivateGetLauncherSearchBoxStateFunction() override;
+  ResponseAction Run() override;
+};
+
 // Returns the shelf auto hide behavior.
 class AutotestPrivateGetShelfAutoHideBehaviorFunction
     : public ExtensionFunction {

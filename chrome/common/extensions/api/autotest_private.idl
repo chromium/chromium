@@ -617,11 +617,19 @@ namespace autotestPrivate {
     DOMString[] deskContainers;
   };
 
+  // Information about launcher's search box.
+  dictionary LauncherSearchBoxState {
+    DOMString ghostText;
+  };
+
   callback GetShelfItemsCallback = void (ShelfItem[] items);
 
   callback GetDefaultPinnedAppIdsCallback = void (DOMString[] items);
 
   callback GetShelfAutoHideBehaviorCallback = void (DOMString behavior);
+
+  callback GetLauncherSearchBoxStateCallback = void (
+      LauncherSearchBoxState state);
 
   callback GetShelfAlignmentCallback = void (ShelfAlignmentType alignment);
 
@@ -1148,6 +1156,10 @@ namespace autotestPrivate {
     // Get the list of all shelf items
     [supportsPromises] static void getShelfItems(
         GetShelfItemsCallback callback);
+
+    // Get the launcher search box search state.
+    [supportsPromises] static void getLauncherSearchBoxState(
+        GetLauncherSearchBoxStateCallback callback);
 
     // Get the shelf auto hide behavior.
     // |displayId|: display that contains the shelf.
