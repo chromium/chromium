@@ -6,6 +6,7 @@
 
 #include <fuchsia/component/cpp/fidl.h>
 #include <fuchsia/component/decl/cpp/fidl.h>
+#include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <lib/fdio/directory.h>
@@ -67,9 +68,12 @@ class CastComponentV1 : public fuchsia::sys::ComponentController {
         SvcForCfv2Dir()->AddEntry(child_id_, std::move(child_svc));
     ZX_CHECK(status == ZX_OK, status);
 
-    // TODO(crbug.com/1332972): Migrate the CFv2 code not to need these routed
+    // TODO(crbug.com/1332972): Migrate the CFv2 code not to need this routed
     // via the Cast activity's incoming services.
     OfferFromStartupContext<chromium::cast::ApplicationConfigManager>();
+
+    // Offer the Cast component its own LogSink.
+    OfferFromStartupContext<fuchsia::logger::LogSink>();
 
     // Offer services from the associated Agent to the CFv2 component.
     OfferFromAgent<chromium::cast::ApiBindings>();
