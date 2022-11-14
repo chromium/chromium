@@ -22,6 +22,22 @@ namespace metrics {
 
 namespace {
 
+constexpr base::FeatureState kSamplingProfilerReportingDefaultState =
+    base::FEATURE_ENABLED_BY_DEFAULT;
+
+bool SamplingProfilerReportingEnabled() {
+  // TODO(crbug.com/1384179): Do not call this function before the FeatureList
+  // is registered.
+  if (!base::FeatureList::GetInstance()) {
+    // The FeatureList is not registered: use the feature's default state. This
+    // means that any override from the command line or variations service is
+    // ignored.
+    return kSamplingProfilerReportingDefaultState ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(kSamplingProfilerReporting);
+}
+
 // Cap the number of pending profiles to avoid excessive performance overhead
 // due to profile deserialization when profile uploads are delayed (e.g. due to
 // being offline). Capping at this threshold loses approximately 0.5% of
@@ -354,7 +370,7 @@ void ReceivedProfileCounter::ResetToDefaultStateForTesting() {
 
 BASE_FEATURE(kSamplingProfilerReporting,
              "SamplingProfilerReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             kSamplingProfilerReportingDefaultState);
 
 CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;
 CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() = default;
@@ -371,7 +387,7 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
   }
 
   if (profile.trigger_event() != SampledProfile::PERIODIC_HEAP_COLLECTION &&
-      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
+      !SamplingProfilerReportingEnabled()) {
     return;
   }
   PendingProfiles::GetInstance()->MaybeCollectProfile(profile_start_time,
@@ -401,8 +417,7 @@ void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
   // If an attacker spoofs `is_heap_profile` or `profile_start_time`, the worst
   // they can do is cause `serialized_profile` to be sent to UMA when profile
   // reporting should be disabled.
-  if (!is_heap_profile &&
-      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
+  if (!is_heap_profile && !SamplingProfilerReportingEnabled()) {
     return;
   }
   PendingProfiles::GetInstance()->MaybeCollectSerializedProfile(
@@ -443,7 +458,7 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
   for (auto& profile : profiles) {
     // Only heap samples should ever be received if SamplingProfilerReporting is
     // disabled.
-    DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
+    DCHECK(SamplingProfilerReportingEnabled() ||
            profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION);
     *uma_proto->add_sampled_profile() = std::move(profile);
   }
