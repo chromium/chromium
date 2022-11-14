@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1869497990620230175">Брзи датотеки</translation>
+<translation id="1871703283152909317">Вклучете ги давата пристапи</translation>
 <translation id="1879018240766558464">Прозорците „Инкогнито“ не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@
 <translation id="6095008505822982596">Брзина на говор</translation>
 <translation id="6099678161144790572">Изменето во изминатиот месец</translation>
 <translation id="6103838137565245112">систем</translation>
+<translation id="6107292179555508368">Пристапите до микрофонот и камерата се исклучени на уредов</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6116825164611323644">Пристапот до камерата е исклучен на уредов</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@
 <translation id="6259254695169772643">Користете го пенкалото за да изберете</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Се активира...</translation>
 <translation id="6274202259872570803">Снимка на екран</translation>
+<translation id="6282694724099204652">Вклучете ги пристапите за да дозволите апликациите и веб-страниците со дозвола да ги користат микрофоните и камерите на уредов.</translation>
 <translation id="6283712521836204486">„Не вознемирувај“ е исклучено.</translation>
 <translation id="6284232397434400372">Резолуцијата е променета</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> може повторно да се додаде подоцна со дозвола од родителот.</translation>

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Ќе добиете известување ако има пониска цена во некоја отворена картичка</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Сликичка за преглед на лист за споделување</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="3882834874697329510">За да добиете известување ако има пониска цена во некоја отворена картичка, вклучете ги известувањата во „Поставки“.</translation>
 <translation id="3940195383040445971">Следете ги цените на картичките</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Прикажи информации за продавница, опција достапна во горниот дел од екранот</translation>
 <translation id="5558362125926932819">Затвори ја групата со <ph name="NUMBER_OF_TABS" /> картички</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> картички се групирани</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк од Chrome}one{<ph name="TABS_COUNT_MANY" /> линк од Chrome}other{<ph name="TABS_COUNT_MANY" /> линка од Chrome}}</translation>
 <translation id="575494663145460764">Дали сакате да добивате известувања за попусти?</translation>
 <translation id="58326064309361797">Повлечете ги картичките за ги групирате</translation>
 <translation id="5846292395804797011">Затвори ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="NUMBER_OF_TABS" /> картички</translation>

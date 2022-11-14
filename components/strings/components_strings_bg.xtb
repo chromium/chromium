@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Възможни са няколко действия. Натискайте Tab, за да преминавате циклично между тях</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Подробности на виртуалната карта</translation>
 <translation id="1803020234906945288">Здравословно хранене</translation>
 <translation id="1803264062614276815">Име на титуляря на картата</translation>
 <translation id="1803351196216024260">Може да поиска разрешение да използва микрофона ви</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 инча</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 предложение}other{# предложения}}</translation>
 <translation id="2066915425250589881">заявите изтриването ѝ</translation>
+<translation id="2066969741541525119">Сайтът е блокиран от организацията ви</translation>
 <translation id="2068528718802935086">Бебета и прохождащи деца</translation>
 <translation id="2071156619270205202">Тази карта не отговаря на условията за номер на виртуална карта.</translation>
 <translation id="2071692954027939183">Известията бяха блокирани автоматично, защото обикновено не ги разрешавате</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Няколко перфорации в долната част</translation>
 <translation id="219906046732893612">Подобрение на дома</translation>
 <translation id="2202020181578195191">Въведете валидна година на изтичане</translation>
+<translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="22081806969704220">Тава 3</translation>
 <translation id="2210794033760923560">Качване на отчет</translation>
 <translation id="2212735316055980242">Правилото не е намерено</translation>
@@ -984,6 +987,7 @@
 <translation id="350069200438440499">Име на файла:</translation>
 <translation id="3507936815618196901">Създаване на триизмерна карта на заобикалящата ви среда и следене на позицията на камерата</translation>
 <translation id="3512163584740124171">Това правило е пренебрегнато, защото друго правило от същата група е с по-висок приоритет.</translation>
+<translation id="3515972145999192222">Организацията ви е блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, защото нарушава правилата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Бутон „Управление на адресите“. Натиснете Enter, за да добавяте адреси и да ги управлявате от настройките на Chrome</translation>
 <translation id="3518941727116570328">Обработване на няколко обекта</translation>
 <translation id="3525130752944427905">10 x 14 инча</translation>
@@ -1058,6 +1062,7 @@
 <translation id="3678342917559046352">Невалидно разширение: стойността се очаква да е в една от следните форми: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Отворете страницата в нов прозорец в режим „инкогнито“ (Ctrl-Shift-N).</translation>
 <translation id="3681007416295224113">Информация за сертификата</translation>
+<translation id="3693327506115126094">Изберете как да потвърдите, че сте вие</translation>
 <translation id="3699374065820972102">Функцията TouchID е включена за попълване на паролите</translation>
 <translation id="3701427423622901115">Нулирането е потвърдено.</translation>
 <translation id="3704162925118123524">Използваната от вас мрежа може да изисква да посетите страницата й за вход.</translation>
@@ -1142,6 +1147,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> иска разрешение за възпроизвеждане на защитено съдържание. Идентичността на устройството ви ще бъде потвърдена от Google и този сайт може да осъществи достъп до нея.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Въведете кода си за сигурност</translation>
 <translation id="3927932062596804919">Отказ</translation>
 <translation id="393316646445601645">Интернет и телекомуникации</translation>
 <translation id="3939773374150895049">Искате ли да използвате WebAuthn вместо код за проверка?</translation>
@@ -1388,6 +1394,7 @@
 <translation id="4524805452350978254">Управление на картите</translation>
 <translation id="4526465106919207193">Хора и общество</translation>
 <translation id="4530347922939905757">SMS съобщение</translation>
+<translation id="4531477351494678589">Номер на виртуалната карта:</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="4541810033354695636">обогатена реалност</translation>
 <translation id="4542971377163063093">Тава 6</translation>
@@ -1397,6 +1404,7 @@
 <translation id="4567686777917670400">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Бърза доставка</translation>
 <translation id="4582204425268416675">Премахване на картата</translation>
+<translation id="4582595824823167856">Получаване на SMS</translation>
 <translation id="4587425331216688090">Адресът да се премахне ли от Chrome?</translation>
 <translation id="459089498662672729">Според администраторско правило поставянето на информация от <ph name="ORIGIN_NAME" /> на това място не е препоръчително</translation>
 <translation id="4592951414987517459">Връзката ви с/ъс <ph name="DOMAIN" /> е шифрована със съвременен криптографски пакет.</translation>
@@ -1408,6 +1416,7 @@
 <translation id="4606870351894164739">Въздействащо</translation>
 <translation id="4607603470419975064">Бутон за преглед на съветите за Chrome. Натиснете Enter, за да научите повече за функциите на браузъра</translation>
 <translation id="4607608436550361748">Вижте съветите за Chrome</translation>
+<translation id="460848736049414407">Блокирано от администратора</translation>
 <translation id="4610279718074907952">Този сайт е в група, дефинирана от <ph name="SET_OWNER" />, която може да вижда активността ви</translation>
 <translation id="4617273035598175554">Софтуер за графика и анимация</translation>
 <translation id="4622292761762557753">Прехвърляне въпреки това</translation>
@@ -1874,6 +1883,7 @@
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5772086939108830423">Използване на код за достъп на друго устройство</translation>
 <translation id="5776313857861697733">Приоритет</translation>
+<translation id="5776574724412881956">Виртуалната карта не е попълнена? Кликнете върху данните за нея, за да ги копирате в буферната памет. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Експериментът е активиран</translation>
 <translation id="578305955206182703">кехлибарено</translation>
 <translation id="57838592816432529">Заглушаване</translation>
@@ -2003,6 +2013,7 @@
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6118782133429281336">Списъкът с източници е празен.</translation>
 <translation id="6120179357481664955">Помните ли идентификационния си номер за UPI?</translation>
+<translation id="6122181661879998141">предната страна на картата ви</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6126565365696310362">Плик, китайски №2</translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
@@ -2369,6 +2380,7 @@
 <translation id="7108634116785509031"><ph name="HOST" /> иска да използва камерата ви</translation>
 <translation id="7108819624672055576">Разрешено от разширение</translation>
 <translation id="7111012039238467737">(валиден)</translation>
+<translation id="7112327784801341716">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
 <translation id="7118618213916969306">Търсене на URL адреса от буферната памет, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Затворете другите раздели или програми.</translation>
 <translation id="7129355289156517987">Когато затворите всички раздели на Chromium в режим „инкогнито“, активността ви в тях се изчиства от устройството. Това включва:
@@ -2672,6 +2684,7 @@
 <translation id="7798389633136518089">Правилото бе пренебрегнато, защото не е зададено от източник в облака.</translation>
 <translation id="7800304661137206267">Връзката е шифрована посредством <ph name="CIPHER" />, с/ъс <ph name="MAC" /> за удостоверяване за съобщения и <ph name="KX" /> като механизъм за обмен на ключове.</translation>
 <translation id="7802523362929240268">Сайтът е легитимен</translation>
+<translation id="7802989406998618639">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за сигурност, който се намира на <ph name="SIDE_OF_CARD" />, за да може банката ви да потвърди, че това сте вие</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7805571567667010077">Управлява се от организацията ви</translation>
 <translation id="7805768142964895445">Състояние</translation>
@@ -2999,6 +3012,7 @@
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8726549941689275341">Размер на страниците:</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731268612289859741">Код за сигурност</translation>
 <translation id="8731544501227493793">Бутон „Управление на паролите“. Натиснете Enter, за да прегледате и управлявате паролите в настройките на Chrome</translation>
 <translation id="8734529307927223492">Вашият <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 инча</translation>
@@ -3104,6 +3118,7 @@
 <translation id="9005998258318286617">Зареждането на PDF документа не бе успешно.</translation>
 <translation id="9008178007718859630">Домашен и вътрешен декор</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
+<translation id="9018120810758822233">Въведете кода си за сигурност за <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имейл</translation>
 <translation id="9020200922353704812">Свързаният с картата адрес за фактуриране е задължителен</translation>
 <translation id="9020542370529661692">Тази страница е преведена на <ph name="TARGET_LANGUAGE" /></translation>
