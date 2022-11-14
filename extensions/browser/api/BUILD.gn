@@ -66,16 +66,6 @@ source_set("bulk_api_implementation") {
 
   if (is_chromeos_ash) {
     sources += [
-      "lock_screen_data/data_item.cc",
-      "lock_screen_data/data_item.h",
-      "lock_screen_data/lock_screen_data_api.cc",
-      "lock_screen_data/lock_screen_data_api.h",
-      "lock_screen_data/lock_screen_item_storage.cc",
-      "lock_screen_data/lock_screen_item_storage.h",
-      "lock_screen_data/lock_screen_value_store_migrator.h",
-      "lock_screen_data/lock_screen_value_store_migrator_impl.cc",
-      "lock_screen_data/lock_screen_value_store_migrator_impl.h",
-      "lock_screen_data/operation_result.h",
       "media_perception_private/conversion_utils.cc",
       "media_perception_private/conversion_utils.h",
       "media_perception_private/media_perception_api_delegate.h",
@@ -151,6 +141,7 @@ group("api_implementations") {
     public_deps += [
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
+      "//extensions/browser/api/lock_screen_data",
       "//extensions/browser/api/webcam_private",
     ]
   }

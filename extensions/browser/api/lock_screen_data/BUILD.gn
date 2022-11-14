@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("lock_screen_data") {
+  sources = [
+    "data_item.cc",
+    "data_item.h",
+    "lock_screen_data_api.cc",
+    "lock_screen_data_api.h",
+    "lock_screen_item_storage.cc",
+    "lock_screen_item_storage.h",
+    "lock_screen_value_store_migrator.h",
+    "lock_screen_value_store_migrator_impl.cc",
+    "lock_screen_value_store_migrator_impl.h",
+    "operation_result.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+    "//components/prefs",
+    "//components/value_store",
+    "//crypto",
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api/storage",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+}
