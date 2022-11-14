@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {

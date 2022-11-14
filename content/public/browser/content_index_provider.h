@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"

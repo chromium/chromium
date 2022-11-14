@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_certificate_chain.h"
 #include "content/browser/web_package/signed_exchange_error.h"

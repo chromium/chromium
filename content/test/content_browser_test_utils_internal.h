@@ -16,7 +16,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"

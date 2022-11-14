@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/content_index_provider.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"

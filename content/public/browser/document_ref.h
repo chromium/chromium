@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_REF_H_
 
 #include "base/memory/safe_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {

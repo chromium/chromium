@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"

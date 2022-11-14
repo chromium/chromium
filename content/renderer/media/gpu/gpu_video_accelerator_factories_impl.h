@@ -13,7 +13,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"

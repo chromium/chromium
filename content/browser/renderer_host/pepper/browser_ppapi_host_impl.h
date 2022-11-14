@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"

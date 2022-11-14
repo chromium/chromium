@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/base/audio_capturer_source.h"

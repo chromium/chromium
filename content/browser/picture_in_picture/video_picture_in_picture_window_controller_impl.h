@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 
-#include "base/memory/weak_ptr.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"

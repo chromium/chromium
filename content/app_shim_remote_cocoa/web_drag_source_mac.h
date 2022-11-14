@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 

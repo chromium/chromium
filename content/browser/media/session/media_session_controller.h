@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/common/content_export.h"
