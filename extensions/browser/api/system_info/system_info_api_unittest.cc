@@ -141,7 +141,7 @@ const storage_monitor::StorageInfo& GetFakeStorageInfo() {
 base::Value::List GetStorageAttachedArgs() {
   // Because of the use of GetTransientIdForDeviceId() in
   // BuildStorageUnitInfo(), we cannot use a static variable and cache the
-  // returned ListValue.
+  // returned value.
   api::system_storage::StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(GetFakeStorageInfo(), &unit);
   base::Value::List args;
@@ -151,7 +151,7 @@ base::Value::List GetStorageAttachedArgs() {
 
 base::Value::List GetStorageDetachedArgs() {
   // Because of the use of GetTransientIdForDeviceId(), we cannot use a static
-  // variable and cache the returned ListValue.
+  // variable and cache the returned value.
   base::Value::List args;
   args.Append(
       storage_monitor::StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
