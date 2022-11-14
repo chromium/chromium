@@ -705,7 +705,8 @@ void CertBuilder::SetKeyUsages(const std::vector<KeyUsageBit>& usages) {
   ASSERT_TRUE(CBB_add_asn1(cbb.get(), &ku_cbb, CBS_ASN1_BITSTRING));
   ASSERT_TRUE(CBB_add_u8(&ku_cbb, number_of_unused_bits));
   ASSERT_TRUE(CBB_add_bytes(&ku_cbb, bytes.data(), bytes.size()));
-  SetExtension(der::Input(kKeyUsageOid), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kKeyUsageOid), FinishCBB(cbb.get()),
+               /*critical=*/true);
 }
 
 void CertBuilder::SetExtendedKeyUsages(
