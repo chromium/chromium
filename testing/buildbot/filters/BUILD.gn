@@ -71,7 +71,7 @@ source_set("browser_tests_filters") {
 source_set("chrome_junit_tests_filters") {
   testonly = true
 
-  data = []
+  data = [ "//testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter" ]
 }
 
 source_set("chrome_public_test_apk_filters") {

@@ -443,7 +443,7 @@
   },
   "chrome_junit_tests": {
     "label": "//chrome/android:chrome_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "chrome_modern_public_bundle_smoke_test": {
     "label": "//chrome/android:chrome_modern_public_bundle_smoke_test",

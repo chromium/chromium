@@ -1,0 +1,6 @@
+# crbug.com/1378315
+-org.chromium.chrome.browser.subscriptions.ImplicitPriceDropSubscriptionsManagerUnitTest*
+
+# crbug.com/1378779
+-org.chromium.chrome.browser.share.link_to_text.LinkToTextHelperTest.hasTextFragment
+-org.chromium.chrome.browser.share.link_to_text.LinkToTextHelperTest.hasTextFragment_URLWithNoTextSelector
