@@ -6270,7 +6270,7 @@
   {
     "name": "shopping-list",
     "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "show-autofill-type-predictions",
