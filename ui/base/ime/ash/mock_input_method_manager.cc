@@ -234,11 +234,6 @@ bool MockInputMethodManager::GetImeMenuFeatureEnabled(
 
 void MockInputMethodManager::NotifyObserversImeExtraInputStateChange() {}
 
-ui::VirtualKeyboardController*
-MockInputMethodManager::GetVirtualKeyboardController() {
-  return virtual_keyboard_enabled_ ? this : nullptr;
-}
-
 void MockInputMethodManager::NotifyInputMethodExtensionAdded(
     const std::string& extension_id) {}
 

@@ -1422,14 +1422,6 @@ void InputMethodManagerImpl::NotifyObserversImeExtraInputStateChange() {
   }
 }
 
-ui::VirtualKeyboardController*
-InputMethodManagerImpl::GetVirtualKeyboardController() {
-  ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
-  if (!engine)
-    return nullptr;
-  return engine->GetVirtualKeyboardController();
-}
-
 void InputMethodManagerImpl::ReloadKeyboard() {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (keyboard_client->is_keyboard_enabled())

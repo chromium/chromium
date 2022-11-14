@@ -23,7 +23,6 @@ class Profile;
 
 namespace ui {
 class TextInputMethod;
-class VirtualKeyboardController;
 }  // namespace ui
 
 namespace ash {
@@ -379,9 +378,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
   // Notifies when any of the extra inputs (emoji, handwriting, voice) enabled
   // status has changed.
   virtual void NotifyObserversImeExtraInputStateChange() = 0;
-
-  // Gets the implementation of the keyboard controller.
-  virtual ui::VirtualKeyboardController* GetVirtualKeyboardController() = 0;
 
   // Notifies an input method extension is added or removed.
   virtual void NotifyInputMethodExtensionAdded(

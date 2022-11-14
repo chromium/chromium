@@ -308,9 +308,8 @@ bool InputMethodAsh::IsCandidatePopupOpen() const {
 }
 
 VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
-  auto* manager = ash::input_method::InputMethodManager::Get();
-  if (manager) {
-    if (auto* controller = manager->GetVirtualKeyboardController())
+  if (auto* engine = GetEngine()) {
+    if (auto* controller = engine->GetVirtualKeyboardController())
       return controller;
   }
   return InputMethodBase::GetVirtualKeyboardController();
