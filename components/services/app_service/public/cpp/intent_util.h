@@ -74,58 +74,11 @@ apps::IntentPtr MakeIntentForActivity(const std::string& activity,
                                       const std::string& start_type,
                                       const std::string& category);
 
-// TODO(crbug.com/1253250): Remove below functions after migrating to non-mojo
-// AppService.
-
-// Create an intent struct from URL.
-apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url);
-
 // Create an intent struct for a Create Note action.
 apps::IntentPtr CreateCreateNoteIntent();
 
 // Create an intent struct for a "Start On Lock Screen" action.
 apps::IntentPtr CreateStartOnLockScreenIntent();
-
-// Create an intent struct with the list of files with action kIntentActionView.
-apps::mojom::IntentPtr CreateViewIntentFromFiles(
-    std::vector<apps::mojom::IntentFilePtr> files);
-
-// Create an intent struct from the filesystem urls and mime types
-// of a list of files with action kIntentActionSend{Multiple}.
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    const std::vector<GURL>& filesystem_urls,
-    const std::vector<std::string>& mime_types);
-
-// Create an intent struct from the filesystem urls, mime types
-// of a list of files, and the share text and title.
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    const std::vector<GURL>& filesystem_urls,
-    const std::vector<std::string>& mime_types,
-    const std::string& share_text,
-    const std::string& share_title);
-
-// Create an intent struct from the filesystem url, mime type
-// and the drive share url for a Google Drive file.
-apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
-    const GURL& filesystem_url,
-    const std::string& mime_type,
-    const GURL& drive_share_url,
-    bool is_directory);
-
-// Create an intent struct from share text and title.
-apps::mojom::IntentPtr CreateShareIntentFromText(
-    const std::string& share_text,
-    const std::string& share_title);
-
-// Create an edit intent struct for the file with a given filesystem:// URL and
-// mime type.
-apps::mojom::IntentPtr CreateEditIntentFromFile(const GURL& filesystem_url,
-                                                const std::string& mime_type);
-
-// Create an intent struct from activity and start type.
-apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
-                                               const std::string& start_type,
-                                               const std::string& category);
 
 // Return true if |value| matches with the |condition_value|, based on the
 // pattern match type in the |condition_value|.

@@ -155,29 +155,12 @@ TEST_F(IntentUtilTest, IntentDoesNotHaveValueToMatch) {
 }
 
 // Test ConditionMatch with more then one condition values.
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, OneMojomConditionValueMatch) {
-  auto condition = CreateMultiMojomConditionValuesCondition();
-  GURL test_url = GURL("https://www.google.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  EXPECT_TRUE(apps_util::IntentMatchesCondition(intent, condition));
-}
-
 TEST_F(IntentUtilTest, OneConditionValueMatch) {
   auto condition = CreateMultiConditionValuesCondition();
   GURL test_url("https://www.google.com/");
   auto intent =
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, test_url);
   EXPECT_TRUE(intent->MatchCondition(condition));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, NoneMojomConditionValueMatch) {
-  auto condition = CreateMultiMojomConditionValuesCondition();
-  GURL test_url = GURL("tel://www.google.com/");
-  auto intent = apps_util::CreateIntentFromUrl(test_url);
-  EXPECT_FALSE(apps_util::IntentMatchesCondition(intent, condition));
 }
 
 TEST_F(IntentUtilTest, NoneConditionValueMatch) {
@@ -986,116 +969,6 @@ TEST_F(IntentUtilTest, CalculateCommonMimeType) {
             apps_util::CalculateCommonMimeType({"image/png", "text/plain"}));
   EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType(
                        {"image/png", "image/jpeg", "text/plain"}));
-}
-
-// TODO(crbug.com/1253250): Remove after migrating to non-mojo AppService.
-TEST_F(IntentUtilTest, IsGenericFileHandlerMojom) {
-  using apps::mojom::IntentFile;
-  using apps::mojom::IntentFilePtr;
-  using apps::mojom::IntentFilterPtr;
-  using apps::mojom::IntentPtr;
-  using apps::mojom::OptionalBool;
-
-  std::vector<IntentFilePtr> intent_files;
-  IntentFilePtr foo = IntentFile::New();
-  foo->url = test_url("foo.jpg");
-  foo->mime_type = "image/jpeg";
-  foo->is_directory = OptionalBool::kFalse;
-  intent_files.push_back(std::move(foo));
-
-  IntentFilePtr bar = IntentFile::New();
-  bar->url = test_url("bar.txt");
-  bar->mime_type = "text/plain";
-  bar->is_directory = OptionalBool::kFalse;
-  intent_files.push_back(std::move(bar));
-
-  std::vector<IntentFilePtr> intent_files2;
-  IntentFilePtr foo2 = IntentFile::New();
-  foo2->url = test_url("foo.ics");
-  foo2->mime_type = "text/calendar";
-  foo2->is_directory = OptionalBool::kFalse;
-  intent_files2.push_back(std::move(foo2));
-
-  std::vector<IntentFilePtr> intent_files3;
-  IntentFilePtr foo_dir = IntentFile::New();
-  foo_dir->url = test_url("foo/");
-  foo_dir->mime_type = "";
-  foo_dir->is_directory = OptionalBool::kTrue;
-  intent_files3.push_back(std::move(foo_dir));
-
-  IntentPtr intent =
-      apps_util::CreateViewIntentFromFiles(std::move(intent_files));
-  IntentPtr intent2 =
-      apps_util::CreateViewIntentFromFiles(std::move(intent_files2));
-  IntentPtr intent3 =
-      apps_util::CreateViewIntentFromFiles(std::move(intent_files3));
-
-  const std::string kLabel = "";
-
-  // extensions: ["*"]
-  IntentFilterPtr filter1 = apps_util::CreateFileFilterForView("", "*", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter1));
-
-  // extensions: ["*", "jpg"]
-  IntentFilterPtr filter2 = apps_util::CreateFileFilterForView("", "*", kLabel);
-  apps_util::AddConditionValue(apps::mojom::ConditionType::kFile, "jpg",
-                               apps::mojom::PatternMatchType::kFileExtension,
-                               filter2);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter2));
-
-  // extensions: ["jpg"]
-  IntentFilterPtr filter3 =
-      apps_util::CreateFileFilterForView("", "jpg", kLabel);
-  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter3));
-
-  // types: ["*"]
-  IntentFilterPtr filter4 = apps_util::CreateFileFilterForView("*", "", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter4));
-
-  // types: ["*/*"]
-  IntentFilterPtr filter5 =
-      apps_util::CreateFileFilterForView("*/*", "", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter5));
-
-  // types: ["image/*"]
-  IntentFilterPtr filter6 =
-      apps_util::CreateFileFilterForView("image/*", "", kLabel);
-  // Partial wild card is not generic.
-  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter6));
-
-  // types: ["*", "image/*"]
-  IntentFilterPtr filter7 = apps_util::CreateFileFilterForView("*", "", kLabel);
-  apps_util::AddConditionValue(apps::mojom::ConditionType::kFile, "image/*",
-                               apps::mojom::PatternMatchType::kMimeType,
-                               filter7);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter7));
-
-  // extensions: ["*"], types: ["image/*"]
-  IntentFilterPtr filter8 =
-      apps_util::CreateFileFilterForView("image/*", "*", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent, filter8));
-
-  // types: ["text/*"] and target files contain unsupported text mime type, e.g.
-  // text/calendar.
-  IntentFilterPtr filter9 =
-      apps_util::CreateFileFilterForView("text/*", "", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent2, filter9));
-
-  // types: ["text/*"] and target files don't contain unsupported text mime
-  // type.
-  IntentFilterPtr filter10 =
-      apps_util::CreateFileFilterForView("text/*", "", kLabel);
-  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent, filter10));
-
-  // File is a directory.
-  IntentFilterPtr filter11 =
-      apps_util::CreateFileFilterForView("text/*", "", kLabel);
-  EXPECT_TRUE(apps_util::IsGenericFileHandler(intent3, filter11));
-
-  // File is a directory, but filter is inode/directory.
-  IntentFilterPtr filter12 =
-      apps_util::CreateFileFilterForView("inode/directory", "", kLabel);
-  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
 }
 
 TEST_F(IntentUtilTest, IsGenericFileHandler) {

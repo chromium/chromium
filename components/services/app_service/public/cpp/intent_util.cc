@@ -178,115 +178,12 @@ apps::IntentPtr MakeIntentForActivity(const std::string& activity,
   return intent;
 }
 
-apps::mojom::IntentPtr CreateIntentFromUrl(const GURL& url) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionView;
-  intent->url = url;
-  return intent;
-}
-
 apps::IntentPtr CreateCreateNoteIntent() {
   return std::make_unique<apps::Intent>(kIntentActionCreateNote);
 }
 
 apps::IntentPtr CreateStartOnLockScreenIntent() {
   return std::make_unique<apps::Intent>(kIntentActionStartOnLockScreen);
-}
-
-apps::mojom::IntentPtr CreateViewIntentFromFiles(
-    std::vector<apps::mojom::IntentFilePtr> files) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionView;
-  intent->files = std::move(files);
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    const std::vector<GURL>& filesystem_urls,
-    const std::vector<std::string>& mime_types) {
-  DCHECK_EQ(filesystem_urls.size(), mime_types.size());
-  auto intent = apps::mojom::Intent::New();
-  intent->mime_type = CalculateCommonMimeType(mime_types);
-  intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-  for (size_t i = 0; i < filesystem_urls.size(); i++) {
-    auto file = apps::mojom::IntentFile::New();
-    file->url = filesystem_urls[i];
-    file->mime_type = mime_types.at(i);
-    intent->files->push_back(std::move(file));
-  }
-  intent->action = filesystem_urls.size() == 1 ? kIntentActionSend
-                                               : kIntentActionSendMultiple;
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    const std::vector<GURL>& filesystem_urls,
-    const std::vector<std::string>& mime_types,
-    const std::string& share_text,
-    const std::string& share_title) {
-  auto intent = CreateShareIntentFromFiles(filesystem_urls, mime_types);
-  if (!share_text.empty())
-    intent->share_text = share_text;
-  if (!share_title.empty())
-    intent->share_title = share_title;
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
-    const GURL& filesystem_url,
-    const std::string& mime_type,
-    const GURL& drive_share_url,
-    bool is_directory) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionSend;
-  if (!is_directory) {
-    intent->mime_type = mime_type;
-    intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-    auto file = apps::mojom::IntentFile::New();
-    file->url = filesystem_url;
-    intent->files->push_back(std::move(file));
-  }
-  if (!drive_share_url.is_empty()) {
-    intent->drive_share_url = drive_share_url;
-  }
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateShareIntentFromText(
-    const std::string& share_text,
-    const std::string& share_title) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionSend;
-  intent->mime_type = "text/plain";
-  intent->share_text = share_text;
-  if (!share_title.empty())
-    intent->share_title = share_title;
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateEditIntentFromFile(const GURL& filesystem_url,
-                                                const std::string& mime_type) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionEdit;
-  intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-  intent->mime_type = mime_type;
-
-  auto file = apps::mojom::IntentFile::New();
-  file->url = filesystem_url;
-  file->mime_type = mime_type;
-  intent->files->push_back(std::move(file));
-  return intent;
-}
-
-apps::mojom::IntentPtr CreateIntentForActivity(const std::string& activity,
-                                               const std::string& start_type,
-                                               const std::string& category) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = kIntentActionMain;
-  intent->activity_name = activity;
-  intent->start_type = start_type;
-  intent->categories = std::vector<std::string>{category};
-  return intent;
 }
 
 bool ConditionValueMatches(const std::string& value,
