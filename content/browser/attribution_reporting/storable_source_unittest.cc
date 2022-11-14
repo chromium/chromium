@@ -12,19 +12,17 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
+
 TEST(StorableSourceTest, ReportWindows) {
-  const auto destination =
-      *attribution_reporting::SuitableOrigin::Deserialize("https://dest.test");
+  const auto destination = *SuitableOrigin::Deserialize("https://dest.test");
 
   const auto reporting_origin =
-      *attribution_reporting::SuitableOrigin::Deserialize(
-          "https://report.test");
+      *SuitableOrigin::Deserialize("https://report.test");
 
   const base::Time kSourceTime = base::Time::Now();
 
@@ -106,7 +104,7 @@ TEST(StorableSourceTest, ReportWindows) {
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
     StorableSource actual(std::move(reg), kSourceTime,
-                          url::Origin::Create(GURL("https://source.test")),
+                          *SuitableOrigin::Deserialize("https://source.test"),
                           AttributionSourceType::kNavigation,
                           /*is_within_fenced_frame=*/false);
 

@@ -13,7 +13,8 @@
 
 namespace attribution_reporting {
 
-TriggerRegistration::TriggerRegistration() = default;
+TriggerRegistration::TriggerRegistration(SuitableOrigin reporting_origin)
+    : reporting_origin_(std::move(reporting_origin)) {}
 
 TriggerRegistration::~TriggerRegistration() = default;
 
@@ -29,7 +30,7 @@ TriggerRegistration& TriggerRegistration::operator=(TriggerRegistration&&) =
 
 // static
 absl::optional<TriggerRegistration> TriggerRegistration::Create(
-    url::Origin reporting_origin,
+    SuitableOrigin reporting_origin,
     Filters filters,
     Filters not_filters,
     absl::optional<uint64_t> debug_key,
@@ -38,11 +39,7 @@ absl::optional<TriggerRegistration> TriggerRegistration::Create(
     std::vector<AggregatableTriggerData> aggregatable_trigger_data,
     AggregatableValues aggregatable_values,
     bool debug_reporting) {
-  if (!SuitableOrigin::IsSuitable(reporting_origin))
-    return absl::nullopt;
-
-  TriggerRegistration result;
-  result.reporting_origin_ = std::move(reporting_origin);
+  TriggerRegistration result(std::move(reporting_origin));
   result.filters_ = std::move(filters);
   result.not_filters_ = std::move(not_filters);
   result.debug_key_ = debug_key;

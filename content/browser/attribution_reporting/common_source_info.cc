@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
-#include "base/ranges/algorithm.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
 
@@ -19,8 +19,8 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-base::flat_set<url::Origin> DestinationSet(url::Origin destination) {
-  base::flat_set<url::Origin> set;
+base::flat_set<SuitableOrigin> DestinationSet(SuitableOrigin destination) {
+  base::flat_set<SuitableOrigin> set;
   set.reserve(1);
   set.insert(std::move(destination));
   return set;
@@ -60,9 +60,9 @@ base::Time CommonSourceInfo::GetExpiryTime(
 
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,
-    url::Origin source_origin,
-    url::Origin destination_origin,
-    url::Origin reporting_origin,
+    SuitableOrigin source_origin,
+    SuitableOrigin destination_origin,
+    SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
     absl::optional<base::Time> event_report_window_time,
@@ -88,9 +88,9 @@ CommonSourceInfo::CommonSourceInfo(
 
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,
-    url::Origin source_origin,
-    base::flat_set<url::Origin> destination_origins,
-    url::Origin reporting_origin,
+    SuitableOrigin source_origin,
+    base::flat_set<SuitableOrigin> destination_origins,
+    SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
     absl::optional<base::Time> event_report_window_time,
@@ -127,14 +127,7 @@ CommonSourceInfo::CommonSourceInfo(
   DCHECK_GT(event_report_window_time_, source_time);
   DCHECK_GT(aggregatable_report_window_time_, source_time);
 
-  DCHECK(SuitableOrigin::IsSuitable(source_origin_));
-  DCHECK(SuitableOrigin::IsSuitable(reporting_origin_));
-
   DCHECK(!destination_origins_.empty());
-  DCHECK(
-      base::ranges::all_of(destination_origins_, [](const url::Origin& origin) {
-        return SuitableOrigin::IsSuitable(origin);
-      }));
 }
 
 CommonSourceInfo::~CommonSourceInfo() = default;

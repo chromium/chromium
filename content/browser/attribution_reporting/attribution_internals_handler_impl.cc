@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -373,7 +374,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
     const std::string& header_value,
     base::Time source_time,
-    const url::Origin& reporting_origin,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
     attribution_reporting::mojom::SourceRegistrationError error) {
   auto web_ui_log =
       attribution_internals::mojom::FailedSourceRegistration::New();

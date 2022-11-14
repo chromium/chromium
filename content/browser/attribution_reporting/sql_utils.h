@@ -30,8 +30,6 @@ class Origin;
 
 namespace content {
 
-std::string SerializeOrigin(const url::Origin& origin);
-
 url::Origin DeserializeOrigin(const std::string& origin);
 
 }  // namespace content

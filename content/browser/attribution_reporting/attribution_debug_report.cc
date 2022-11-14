@@ -400,11 +400,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 AttributionDebugReport::AttributionDebugReport(
     std::vector<ReportData> report_data,
-    url::Origin reporting_origin)
+    attribution_reporting::SuitableOrigin reporting_origin)
     : report_data_(std::move(report_data)),
       reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!report_data_.empty());
-  DCHECK(attribution_reporting::SuitableOrigin::IsSuitable(reporting_origin_));
 }
 
 AttributionDebugReport::~AttributionDebugReport() = default;
@@ -429,7 +428,7 @@ GURL AttributionDebugReport::ReportURL() const {
 
   GURL::Replacements replacements;
   replacements.SetPathStr(kPath);
-  return reporting_origin_.GetURL().ReplaceComponents(replacements);
+  return reporting_origin_->GetURL().ReplaceComponents(replacements);
 }
 
 }  // namespace content

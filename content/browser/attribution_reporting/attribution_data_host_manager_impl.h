@@ -19,6 +19,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class TimeDelta;
 class TimeTicks;
@@ -91,7 +95,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   void OnRedirectSourceParsed(
       const blink::AttributionSrcToken& attribution_src_token,
-      url::Origin reporting_origin,
+      attribution_reporting::SuitableOrigin reporting_origin,
       std::string header_value,
       data_decoder::DataDecoder::ValueOrError result);
 

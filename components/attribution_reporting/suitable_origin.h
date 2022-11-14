@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_SUITABLE_ORIGIN_H_
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -58,6 +59,24 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
     DCHECK(IsValid());
     return std::move(origin_);
   }
+
+  const url::Origin* operator->() const& {
+    DCHECK(IsValid());
+    return &origin_;
+  }
+
+  // This implicit "widening" conversion is allowed to ease drop-in use of
+  // this type in places currently requiring `url::Origin`s with
+  // guaranteed preconditions.
+  operator const url::Origin&() const {  // NOLINT
+    DCHECK(IsValid());
+    return origin_;
+  }
+
+  // Allows this type to be used as a key in a set or map.
+  bool operator<(const SuitableOrigin&) const;
+
+  std::string Serialize() const;
 
  private:
   explicit SuitableOrigin(url::Origin);

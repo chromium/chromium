@@ -11,13 +11,13 @@
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -28,8 +28,8 @@ base::expected<StorableSource,
                attribution_reporting::mojom::SourceRegistrationError>
 ParseSourceRegistration(base::Value::Dict registration,
                         base::Time source_time,
-                        url::Origin reporting_origin,
-                        url::Origin source_origin,
+                        attribution_reporting::SuitableOrigin reporting_origin,
+                        attribution_reporting::SuitableOrigin source_origin,
                         AttributionSourceType source_type,
                         bool is_within_fenced_frame);
 

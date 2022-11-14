@@ -26,6 +26,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -390,8 +391,8 @@ bool AttributionManagerImpl::IsReportAllowed(
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::AttributionReportingOperation::kReport,
-      &common_info.source_origin(), &common_info.destination_origin(),
-      &common_info.reporting_origin());
+      &*common_info.source_origin(), &*common_info.destination_origin(),
+      &*common_info.reporting_origin());
 }
 
 // static
@@ -576,7 +577,7 @@ void AttributionManagerImpl::ProcessEvents() {
   // possible. Once reaching the first to require a cookie check, start the
   // async check and stop processing further events.
   while (!pending_events_.empty()) {
-    const url::Origin* cookie_origin = absl::visit(
+    const attribution_reporting::SuitableOrigin* cookie_origin = absl::visit(
         base::Overloaded{
             [](const StorableSource& source) {
               return source.common_info().debug_key().has_value() ||
@@ -627,9 +628,9 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kSource,
-                &common_info.source_origin(),
+                &*common_info.source_origin(),
                 /*destination_origin=*/nullptr,
-                &common_info.reporting_origin());
+                &*common_info.reporting_origin());
             RecordRegisterImpressionAllowed(allowed);
             if (!allowed) {
               this->OnSourceStored(
@@ -656,8 +657,8 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kTrigger,
-                /*source_origin=*/nullptr, &trigger.destination_origin(),
-                &registration.reporting_origin());
+                /*source_origin=*/nullptr, &*trigger.destination_origin(),
+                &*registration.reporting_origin());
             RecordRegisterConversionAllowed(allowed);
             if (!allowed) {
               this->OnReportStored(
@@ -1016,7 +1017,7 @@ void AttributionManagerImpl::NotifyReportsChanged(
 
 void AttributionManagerImpl::NotifyFailedSourceRegistration(
     const std::string& header_value,
-    const url::Origin& reporting_origin,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
     attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {

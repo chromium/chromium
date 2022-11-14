@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -151,10 +152,10 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindInt64(1, *source.source_id());
   statement.BindString(2, common_info.SourceSite().Serialize());
-  statement.BindString(3, SerializeOrigin(common_info.source_origin()));
+  statement.BindString(3, common_info.source_origin().Serialize());
   statement.BindString(4, common_info.DestinationSite().Serialize());
-  statement.BindString(5, SerializeOrigin(common_info.destination_origin()));
-  statement.BindString(6, SerializeOrigin(common_info.reporting_origin()));
+  statement.BindString(5, common_info.destination_origin().Serialize());
+  statement.BindString(6, common_info.reporting_origin().Serialize());
   statement.BindTime(7, time);
   statement.BindTime(8, expiry_time);
 
@@ -190,7 +191,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
   statement.BindString(0, common_info.DestinationSite().Serialize());
   statement.BindString(1, common_info.SourceSite().Serialize());
-  statement.BindString(2, SerializeOrigin(common_info.reporting_origin()));
+  statement.BindString(2, common_info.reporting_origin().Serialize());
   statement.BindTime(3, min_timestamp);
 
   if (!statement.Step())
@@ -233,7 +234,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
 
   const CommonSourceInfo& common_info = source.common_info();
   statement.BindString(0, common_info.SourceSite().Serialize());
-  statement.BindString(1, SerializeOrigin(common_info.reporting_origin()));
+  statement.BindString(1, common_info.reporting_origin().Serialize());
   statement.BindTime(2, common_info.source_time());
 
   const std::string serialized_destination_site =
@@ -294,7 +295,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   DCHECK_GT(max, 0);
 
   const std::string serialized_reporting_origin =
-      SerializeOrigin(common_info.reporting_origin());
+      common_info.reporting_origin().Serialize();
 
   base::Time min_timestamp = time - rate_limits.time_window;
 

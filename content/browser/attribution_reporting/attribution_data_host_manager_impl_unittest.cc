@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -46,6 +47,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using AttributionFilters = ::attribution_reporting::Filters;
@@ -180,10 +182,11 @@ MATCHER_P(SourceDebugReportingIs, matcher, "") {
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   base::HistogramTester histograms;
 
-  auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
   EXPECT_CALL(
       mock_manager_,
       HandleSource(AllOf(
@@ -547,8 +550,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   base::HistogramTester histograms;
 
   auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(
@@ -1147,11 +1151,11 @@ TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHost_NavigationSourceRegistered) {
   base::HistogramTester histograms;
 
-  const auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  const auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   const auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
   const auto reporting_origin =
-      url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://reporter.example");
 
   Checkpoint checkpoint;
   {
@@ -1460,7 +1464,7 @@ TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectSource_ParsingFailsBeforeAndSucceedsAfterNav) {
   EXPECT_CALL(mock_manager_, HandleSource).Times(1);
 
-  auto reporter = url::Origin::Create(GURL("https://report.test"));
+  auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
@@ -1756,9 +1760,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   base::HistogramTester histograms;
 
   const auto reporting_origin1 =
-      url::Origin::Create(GURL("https://report1.test"));
+      *SuitableOrigin::Deserialize("https://report1.test");
   const auto reporting_origin2 =
-      url::Origin::Create(GURL("https://report2.test"));
+      *SuitableOrigin::Deserialize("https://report2.test");
 
   Checkpoint checkpoint;
   {
@@ -1791,9 +1795,9 @@ TEST_F(AttributionDataHostManagerImplTest,
       url::Origin::Create(GURL("https://page2.example")),
       /*is_within_fenced_frame=*/false);
 
-  auto send_trigger = [&](url::Origin reporting_origin) {
+  auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = std::move(reporting_origin);
+    trigger_data->reporting_origin = reporting_origin;
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
     trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
@@ -1882,17 +1886,17 @@ TEST_F(AttributionDataHostManagerImplTest,
       url::Origin::Create(GURL("https://page2.example")),
       /*is_within_fenced_frame=*/false);
 
-  auto send_trigger = [&](url::Origin reporting_origin) {
+  auto send_trigger = [&](const SuitableOrigin& reporting_origin) {
     auto trigger_data = blink::mojom::AttributionTriggerData::New();
-    trigger_data->reporting_origin = std::move(reporting_origin);
+    trigger_data->reporting_origin = reporting_origin;
     trigger_data->filters = blink::mojom::AttributionFilters::New();
     trigger_data->not_filters = blink::mojom::AttributionFilters::New();
     trigger_data_host_remote->TriggerDataAvailable(std::move(trigger_data));
   };
 
   for (size_t i = 0; i < kMaxDelayedTriggers; i++) {
-    url::Origin reporting_origin = url::Origin::Create(GURL(
-        base::StrCat({"https://report", base::NumberToString(i), ".test"})));
+    auto reporting_origin = *SuitableOrigin::Deserialize(
+        base::StrCat({"https://report", base::NumberToString(i), ".test"}));
 
     EXPECT_CALL(mock_manager_,
                 HandleTrigger(AttributionTriggerMatches(
@@ -1900,11 +1904,11 @@ TEST_F(AttributionDataHostManagerImplTest,
                         TriggerRegistrationMatcherConfig(reporting_origin))))))
         .WillOnce([&](AttributionTrigger trigger) { barrier.Run(); });
 
-    send_trigger(std::move(reporting_origin));
+    send_trigger(reporting_origin);
   }
 
   // This one should be dropped.
-  send_trigger(url::Origin::Create(GURL("https://excessive.test")));
+  send_trigger(*SuitableOrigin::Deserialize("https://excessive.test"));
 
   trigger_data_host_remote.FlushForTesting();
   source_data_host_remote.reset();
@@ -2194,10 +2198,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        SourceDataHostWithinFencedFrame_SourceRegistered) {
-  auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  auto page_origin = *SuitableOrigin::Deserialize("https://page.example");
   auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
 
   EXPECT_CALL(
       mock_manager_,
@@ -2227,8 +2232,9 @@ TEST_F(AttributionDataHostManagerImplTest,
 TEST_F(AttributionDataHostManagerImplTest,
        TriggerDataHostWithinFencedFrame_TriggerRegistered) {
   auto destination_origin =
-      url::Origin::Create(GURL("https://trigger.example"));
-  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+      *SuitableOrigin::Deserialize("https://trigger.example");
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(AttributionTriggerMatches(AttributionTriggerMatcherConfig(

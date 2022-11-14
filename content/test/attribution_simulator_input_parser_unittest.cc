@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -92,6 +93,8 @@ using ::testing::Pair;
 using ::testing::SizeIs;
 
 using AttributionFilters = ::attribution_reporting::Filters;
+
+using ::attribution_reporting::SuitableOrigin;
 
 // Pick an arbitrary offset time to test correct handling.
 constexpr base::Time kOffsetTime = base::Time::UnixEpoch() + base::Days(5);
@@ -376,7 +379,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                   .trigger = AttributionTrigger(
                       *attribution_reporting::TriggerRegistration::Create(
                           /*reporting_origin=*/
-                          url::Origin::Create(GURL("https://a.r.test")),
+                          *SuitableOrigin::Deserialize("https://a.r.test"),
                           /*filters=*/
                           *AttributionFilters::Create({
                               {"a", {"b", "c"}},
@@ -413,7 +416,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           attribution_reporting::AggregatableValues(),
                           /*debug_reporting=*/false),
                       /*destination_origin=*/
-                      url::Origin::Create(GURL("https://a.d1.test")),
+                      *SuitableOrigin::Deserialize("https://a.d1.test"),
                       /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235576123),
               },
@@ -423,7 +426,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                   .trigger = AttributionTrigger(
                       *attribution_reporting::TriggerRegistration::Create(
                           /*reporting_origin=*/
-                          url::Origin::Create(GURL("https://b.r.test")),
+                          *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,
@@ -434,7 +437,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           attribution_reporting::AggregatableValues(),
                           /*debug_reporting=*/false),
                       /*destination_origin=*/
-                      url::Origin::Create(GURL("https://a.d2.test")),
+                      *SuitableOrigin::Deserialize("https://a.d2.test"),
                       /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235575123),
               },
@@ -444,7 +447,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                   .trigger = AttributionTrigger(
                       *attribution_reporting::TriggerRegistration::Create(
                           /*reporting_origin=*/
-                          url::Origin::Create(GURL("https://b.r.test")),
+                          *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,
@@ -460,7 +463,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               {{"a", 1}}),
                           /*debug_reporting=*/true),
                       /*destination_origin=*/
-                      url::Origin::Create(GURL("https://a.d2.test")),
+                      *SuitableOrigin::Deserialize("https://a.d2.test"),
                       /*is_within_fenced_frame=*/false),
                   .time = kOffsetTime + base::Milliseconds(1643235574123),
               },

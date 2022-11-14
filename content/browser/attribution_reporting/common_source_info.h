@@ -12,10 +12,10 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 namespace net {
 class SchemefulSite;
@@ -36,9 +36,9 @@ class CONTENT_EXPORT CommonSourceInfo {
   // TODO(crbug.com/1382389): Remove this constructor once all callers pass
   // a destination set.
   CommonSourceInfo(uint64_t source_event_id,
-                   url::Origin source_origin,
-                   url::Origin destination_origin,
-                   url::Origin reporting_origin,
+                   attribution_reporting::SuitableOrigin source_origin,
+                   attribution_reporting::SuitableOrigin destination_origin,
+                   attribution_reporting::SuitableOrigin reporting_origin,
                    base::Time source_time,
                    base::Time expiry_time,
                    absl::optional<base::Time> event_report_window_time,
@@ -49,19 +49,20 @@ class CONTENT_EXPORT CommonSourceInfo {
                    absl::optional<uint64_t> debug_key,
                    attribution_reporting::AggregationKeys aggregation_keys);
 
-  CommonSourceInfo(uint64_t source_event_id,
-                   url::Origin source_origin,
-                   base::flat_set<url::Origin> destination_origins,
-                   url::Origin reporting_origin,
-                   base::Time source_time,
-                   base::Time expiry_time,
-                   absl::optional<base::Time> event_report_window_time,
-                   absl::optional<base::Time> aggregatable_report_window_time,
-                   AttributionSourceType source_type,
-                   int64_t priority,
-                   attribution_reporting::FilterData filter_data,
-                   absl::optional<uint64_t> debug_key,
-                   attribution_reporting::AggregationKeys aggregation_keys);
+  CommonSourceInfo(
+      uint64_t source_event_id,
+      attribution_reporting::SuitableOrigin source_origin,
+      base::flat_set<attribution_reporting::SuitableOrigin> destination_origins,
+      attribution_reporting::SuitableOrigin reporting_origin,
+      base::Time source_time,
+      base::Time expiry_time,
+      absl::optional<base::Time> event_report_window_time,
+      absl::optional<base::Time> aggregatable_report_window_time,
+      AttributionSourceType source_type,
+      int64_t priority,
+      attribution_reporting::FilterData filter_data,
+      absl::optional<uint64_t> debug_key,
+      attribution_reporting::AggregationKeys aggregation_keys);
 
   ~CommonSourceInfo();
 
@@ -73,18 +74,23 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   uint64_t source_event_id() const { return source_event_id_; }
 
-  const url::Origin& source_origin() const { return source_origin_; }
+  const attribution_reporting::SuitableOrigin& source_origin() const {
+    return source_origin_;
+  }
 
-  const base::flat_set<url::Origin>& destination_origins() const {
+  const base::flat_set<attribution_reporting::SuitableOrigin>&
+  destination_origins() const {
     return destination_origins_;
   }
 
-  const url::Origin& destination_origin() const {
+  const attribution_reporting::SuitableOrigin& destination_origin() const {
     DCHECK_EQ(destination_origins_.size(), 1u);
     return *destination_origins_.begin();
   }
 
-  const url::Origin& reporting_origin() const { return reporting_origin_; }
+  const attribution_reporting::SuitableOrigin& reporting_origin() const {
+    return reporting_origin_;
+  }
 
   base::Time source_time() const { return source_time_; }
 
@@ -128,9 +134,9 @@ class CONTENT_EXPORT CommonSourceInfo {
 
  private:
   uint64_t source_event_id_;
-  url::Origin source_origin_;
-  base::flat_set<url::Origin> destination_origins_;
-  url::Origin reporting_origin_;
+  attribution_reporting::SuitableOrigin source_origin_;
+  base::flat_set<attribution_reporting::SuitableOrigin> destination_origins_;
+  attribution_reporting::SuitableOrigin reporting_origin_;
   base::Time source_time_;
   base::Time expiry_time_;
   base::Time event_report_window_time_;

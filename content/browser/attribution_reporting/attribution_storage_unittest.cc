@@ -30,6 +30,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -67,6 +68,8 @@ using ::testing::UnorderedElementsAre;
 
 using AttributionFilterData = ::attribution_reporting::FilterData;
 using AttributionFilters = ::attribution_reporting::Filters;
+
+using ::attribution_reporting::SuitableOrigin;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -2616,7 +2619,7 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
 }
 
 TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
-  const auto origin = url::Origin::Create(GURL("https://r.test"));
+  const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
   storage()->StoreSource(SourceBuilder()
                              .SetSourceType(AttributionSourceType::kNavigation)
@@ -2654,7 +2657,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
 }
 
 TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
-  const auto origin = url::Origin::Create(GURL("https://r.test"));
+  const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
   storage()->StoreSource(
       SourceBuilder()
@@ -2744,7 +2747,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 }
 
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
-  const auto origin = url::Origin::Create(GURL("https://r.test"));
+  const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
   std::vector<attribution_reporting::AggregatableTriggerData>
       aggregatable_trigger_data{

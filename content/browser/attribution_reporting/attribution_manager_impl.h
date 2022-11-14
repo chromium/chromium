@@ -30,6 +30,10 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class FilePath;
 class TimeDelta;
@@ -38,10 +42,6 @@ class TimeDelta;
 namespace storage {
 class SpecialStoragePolicy;
 }  // namespace storage
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -155,7 +155,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                  base::OnceClosure done) override;
   void NotifyFailedSourceRegistration(
       const std::string& header_value,
-      const url::Origin& reporting_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
  private:

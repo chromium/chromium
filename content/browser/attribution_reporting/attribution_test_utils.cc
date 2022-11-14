@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -28,6 +29,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -46,6 +48,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::AllOf;
 using ::testing::Field;
@@ -395,7 +399,7 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 
 void MockAttributionManager::NotifySourceRegistrationFailure(
     const std::string& header_value,
-    const url::Origin& reporting_origin,
+    const SuitableOrigin& reporting_origin,
     attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {
@@ -461,10 +465,10 @@ bool SourceObserver::WaitForNavigationWithNoImpression() {
 SourceBuilder::SourceBuilder(base::Time time)
     : source_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
-      source_origin_(url::Origin::Create(GURL(kDefaultSourceOrigin))),
+      source_origin_(*SuitableOrigin::Deserialize(kDefaultSourceOrigin)),
       destination_origins_(
-          {url::Origin::Create(GURL(kDefaultDestinationOrigin))}),
-      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
+          {*SuitableOrigin::Deserialize(kDefaultDestinationOrigin)}),
+      reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {}
 
 SourceBuilder::~SourceBuilder() = default;
 
@@ -498,22 +502,40 @@ SourceBuilder& SourceBuilder::SetSourceEventId(uint64_t source_event_id) {
 }
 
 SourceBuilder& SourceBuilder::SetSourceOrigin(url::Origin origin) {
+  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
+  CHECK(suitable_origin);
+  return SetSourceOrigin(std::move(*suitable_origin));
+}
+
+SourceBuilder& SourceBuilder::SetSourceOrigin(SuitableOrigin origin) {
   source_origin_ = std::move(origin);
   return *this;
 }
 
 SourceBuilder& SourceBuilder::SetDestinationOrigin(url::Origin origin) {
+  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
+  CHECK(suitable_origin);
+  return SetDestinationOrigin(std::move(*suitable_origin));
+}
+
+SourceBuilder& SourceBuilder::SetDestinationOrigin(SuitableOrigin origin) {
   return SetDestinationOrigins({std::move(origin)});
 }
 
 SourceBuilder& SourceBuilder::SetDestinationOrigins(
-    base::flat_set<url::Origin> origins) {
+    base::flat_set<SuitableOrigin> origins) {
   DCHECK(!origins.empty());
   destination_origins_ = std::move(origins);
   return *this;
 }
 
 SourceBuilder& SourceBuilder::SetReportingOrigin(url::Origin origin) {
+  auto suitable_origin = SuitableOrigin::Create(std::move(origin));
+  CHECK(suitable_origin);
+  return SetReportingOrigin(std::move(*suitable_origin));
+}
+
+SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
   reporting_origin_ = std::move(origin);
   return *this;
 }
@@ -624,8 +646,9 @@ AttributionTrigger DefaultTrigger() {
 }
 
 TriggerBuilder::TriggerBuilder()
-    : destination_origin_(url::Origin::Create(GURL(kDefaultDestinationOrigin))),
-      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
+    : destination_origin_(
+          *SuitableOrigin::Deserialize(kDefaultDestinationOrigin)),
+      reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {}
 
 TriggerBuilder::~TriggerBuilder() = default;
 
@@ -650,13 +673,25 @@ TriggerBuilder& TriggerBuilder::SetEventSourceTriggerData(
 
 TriggerBuilder& TriggerBuilder::SetDestinationOrigin(
     url::Origin destination_origin) {
-  destination_origin_ = std::move(destination_origin);
+  auto suitable_origin = SuitableOrigin::Create(std::move(destination_origin));
+  CHECK(suitable_origin);
+  return SetDestinationOrigin(std::move(*suitable_origin));
+}
+
+TriggerBuilder& TriggerBuilder::SetDestinationOrigin(SuitableOrigin origin) {
+  destination_origin_ = std::move(origin);
   return *this;
 }
 
 TriggerBuilder& TriggerBuilder::SetReportingOrigin(
     url::Origin reporting_origin) {
-  reporting_origin_ = std::move(reporting_origin);
+  auto suitable_origin = SuitableOrigin::Create(std::move(reporting_origin));
+  CHECK(suitable_origin);
+  return SetReportingOrigin(std::move(*suitable_origin));
+}
+
+TriggerBuilder& TriggerBuilder::SetReportingOrigin(SuitableOrigin origin) {
+  reporting_origin_ = std::move(origin);
   return *this;
 }
 
@@ -1296,7 +1331,7 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 }
 
 TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
-    ::testing::Matcher<const url::Origin&> reporting_origin,
+    ::testing::Matcher<const SuitableOrigin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<
@@ -1339,7 +1374,7 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
     ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
         registration,
-    ::testing::Matcher<const url::Origin&> destination_origin,
+    ::testing::Matcher<const SuitableOrigin&> destination_origin,
     ::testing::Matcher<bool> is_within_fenced_frame)
     : registration(std::move(registration)),
       destination_origin(std::move(destination_origin)),

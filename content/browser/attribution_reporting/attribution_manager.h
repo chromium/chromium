@@ -14,13 +14,13 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-forward.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace base {
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -84,7 +84,7 @@ class AttributionManager {
   // Called by `AttributionDataHostManagerImpl`.
   virtual void NotifyFailedSourceRegistration(
       const std::string& header_value,
-      const url::Origin& reporting_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) = 0;
 
   // Deletes all data in storage for storage keys matching `filter`, between

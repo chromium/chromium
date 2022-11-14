@@ -46,6 +46,8 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
+
 constexpr char kTimestampKey[] = "timestamp";
 
 class AttributionSimulatorInputParser {
@@ -246,8 +248,10 @@ class AttributionSimulatorInputParser {
     const base::Value::Dict& source_dict = source.GetDict();
 
     base::Time source_time = ParseTime(source_dict, kTimestampKey);
-    url::Origin source_origin = ParseOrigin(source_dict, "source_origin");
-    url::Origin reporting_origin = ParseOrigin(source_dict, "reporting_origin");
+    absl::optional<SuitableOrigin> source_origin =
+        ParseOrigin(source_dict, "source_origin");
+    absl::optional<SuitableOrigin> reporting_origin =
+        ParseOrigin(source_dict, "reporting_origin");
     absl::optional<AttributionSourceType> source_type =
         ParseSourceType(source_dict);
 
@@ -260,8 +264,8 @@ class AttributionSimulatorInputParser {
           base::expected<StorableSource,
                          attribution_reporting::mojom::SourceRegistrationError>
               storable_source = ParseSourceRegistration(
-                  dict.Clone(), source_time, std::move(reporting_origin),
-                  std::move(source_origin), *source_type,
+                  dict.Clone(), source_time, std::move(*reporting_origin),
+                  std::move(*source_origin), *source_type,
                   /*is_within_fenced_frame=*/false);
 
           if (!storable_source.has_value()) {
@@ -280,9 +284,9 @@ class AttributionSimulatorInputParser {
     const base::Value::Dict& trigger_dict = trigger.GetDict();
 
     base::Time trigger_time = ParseTime(trigger_dict, kTimestampKey);
-    url::Origin reporting_origin =
+    absl::optional<SuitableOrigin> reporting_origin =
         ParseOrigin(trigger_dict, "reporting_origin");
-    url::Origin destination_origin =
+    absl::optional<SuitableOrigin> destination_origin =
         ParseOrigin(trigger_dict, "destination_origin");
 
     absl::optional<uint64_t> debug_key;
@@ -323,7 +327,7 @@ class AttributionSimulatorInputParser {
 
     absl::optional<attribution_reporting::TriggerRegistration> registration =
         attribution_reporting::TriggerRegistration::Create(
-            std::move(reporting_origin), std::move(filters),
+            std::move(*reporting_origin), std::move(filters),
             std::move(not_filters), debug_key, aggregatable_dedup_key,
             std::move(event_triggers), std::move(aggregatable_trigger_data),
             std::move(aggregatable_values), debug_reporting);
@@ -332,7 +336,7 @@ class AttributionSimulatorInputParser {
     events_.emplace_back(
         AttributionTriggerAndTime{
             .trigger = AttributionTrigger(std::move(*registration),
-                                          std::move(destination_origin),
+                                          std::move(*destination_origin),
                                           /*is_within_fenced_frame=*/false),
             .time = trigger_time,
         },
@@ -391,13 +395,15 @@ class AttributionSimulatorInputParser {
     return GURL();
   }
 
-  url::Origin ParseOrigin(const base::Value::Dict& dict,
-                          base::StringPiece key) {
+  absl::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
+                                             base::StringPiece key) {
     auto context = PushContext(key);
 
-    auto origin = url::Origin::Create(ParseURL(dict, key));
+    absl::optional<SuitableOrigin> origin;
+    if (const std::string* s = dict.FindString(key))
+      origin = SuitableOrigin::Deserialize(*s);
 
-    if (!attribution_reporting::SuitableOrigin::IsSuitable(origin))
+    if (!origin.has_value())
       *Error() << "must be a valid, secure origin";
 
     return origin;

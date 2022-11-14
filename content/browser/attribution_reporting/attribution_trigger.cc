@@ -6,21 +6,17 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "components/attribution_reporting/suitable_origin.h"
 
 namespace content {
 
 AttributionTrigger::AttributionTrigger(
     attribution_reporting::TriggerRegistration registration,
-    url::Origin destination_origin,
+    attribution_reporting::SuitableOrigin destination_origin,
     bool is_within_fenced_frame)
     : registration_(std::move(registration)),
       destination_origin_(std::move(destination_origin)),
-      is_within_fenced_frame_(is_within_fenced_frame) {
-  DCHECK(
-      attribution_reporting::SuitableOrigin::IsSuitable(destination_origin_));
-}
+      is_within_fenced_frame_(is_within_fenced_frame) {}
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger&) = default;
 

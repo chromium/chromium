@@ -4,6 +4,7 @@
 
 #include "components/attribution_reporting/suitable_origin.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -48,6 +49,17 @@ SuitableOrigin& SuitableOrigin::operator=(const SuitableOrigin&) = default;
 SuitableOrigin::SuitableOrigin(SuitableOrigin&&) = default;
 
 SuitableOrigin& SuitableOrigin::operator=(SuitableOrigin&&) = default;
+
+bool SuitableOrigin::operator<(const SuitableOrigin& other) const {
+  DCHECK(IsValid());
+  DCHECK(other.IsValid());
+  return origin_ < other.origin_;
+}
+
+std::string SuitableOrigin::Serialize() const {
+  DCHECK(IsValid());
+  return origin_.Serialize();
+}
 
 bool SuitableOrigin::IsValid() const {
   return IsSuitable(origin_);

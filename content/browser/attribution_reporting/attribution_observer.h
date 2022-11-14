@@ -13,9 +13,9 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
 
 namespace content {
 
@@ -56,7 +56,7 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnFailedSourceRegistration(
       const std::string& header_value,
       base::Time source_time,
-      const url::Origin& reporting_origin,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceRegistrationError) {}
 };
 

@@ -12,10 +12,10 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -26,17 +26,18 @@ StorableSource::StorableSource(CommonSourceInfo common_info,
       is_within_fenced_frame_(is_within_fenced_frame),
       debug_reporting_(debug_reporting) {}
 
-StorableSource::StorableSource(attribution_reporting::SourceRegistration reg,
-                               base::Time source_time,
-                               url::Origin source_origin,
-                               AttributionSourceType source_type,
-                               bool is_within_fenced_frame)
+StorableSource::StorableSource(
+    attribution_reporting::SourceRegistration reg,
+    base::Time source_time,
+    attribution_reporting::SuitableOrigin source_origin,
+    AttributionSourceType source_type,
+    bool is_within_fenced_frame)
     : StorableSource(
           CommonSourceInfo(
               reg.source_event_id,
               std::move(source_origin),
-              *std::move(reg.destination),
-              *std::move(reg.reporting_origin),
+              std::move(reg.destination),
+              std::move(reg.reporting_origin),
               source_time,
               CommonSourceInfo::GetExpiryTime(reg.expiry,
                                               source_time,

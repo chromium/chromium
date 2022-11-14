@@ -154,7 +154,7 @@ enum class RegistrationType {
 struct AttributionDataHostManagerImpl::FrozenContext {
   // Top-level origin the data host was created in.
   // Logically const.
-  url::Origin context_origin;
+  SuitableOrigin context_origin;
 
   // Source type of this context. Note that data hosts which result in
   // triggers still have a source type of` kEvent` as they share the same web
@@ -203,7 +203,7 @@ struct AttributionDataHostManagerImpl::NavigationDataHost {
 struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
   // Source origin to use for all registrations on a redirect chain. Will not
   // change over the course of the redirect chain.
-  url::Origin source_origin;
+  SuitableOrigin source_origin;
 
   // Number of source data we are waiting to be decoded/received.
   size_t pending_source_data = 0;
@@ -237,11 +237,13 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     url::Origin context_origin,
     bool is_within_fenced_frame) {
-  DCHECK(SuitableOrigin::IsSuitable(context_origin));
+  auto suitable_context_origin =
+      SuitableOrigin::Create(std::move(context_origin));
+  DCHECK(suitable_context_origin);
 
   receivers_.Add(
       this, std::move(data_host),
-      FrozenContext{.context_origin = std::move(context_origin),
+      FrozenContext{.context_origin = std::move(*suitable_context_origin),
                     .source_type = AttributionSourceType::kEvent,
                     .register_time = base::TimeTicks::Now(),
                     .is_within_fenced_frame = is_within_fenced_frame});
@@ -273,24 +275,28 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     url::Origin reporting_origin,
     const url::Origin& source_origin,
     AttributionInputEvent input_event) {
-  if (!SuitableOrigin::IsSuitable(source_origin) ||
-      !SuitableOrigin::IsSuitable(reporting_origin)) {
+  auto suitable_source_origin = SuitableOrigin::Create(source_origin);
+  auto suitable_reporting_origin =
+      SuitableOrigin::Create(std::move(reporting_origin));
+
+  if (!suitable_source_origin || !suitable_reporting_origin)
     return;
-  }
 
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, reporting_origin, SourceRegistrationError::kInvalidJson);
+        header_value, *suitable_reporting_origin,
+        SourceRegistrationError::kInvalidJson);
     return;
   }
 
   auto [it, inserted] = redirect_registrations_.try_emplace(
-      attribution_src_token, NavigationRedirectSourceRegistrations{
-                                 .source_origin = source_origin,
-                                 .register_time = base::TimeTicks::Now(),
-                                 .input_event = input_event});
+      attribution_src_token,
+      NavigationRedirectSourceRegistrations{
+          .source_origin = std::move(*suitable_source_origin),
+          .register_time = base::TimeTicks::Now(),
+          .input_event = input_event});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -306,14 +312,16 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin), header_value));
+                     std::move(*suitable_reporting_origin), header_value));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const url::Origin& source_origin,
     const url::Origin& destination_origin) {
-  if (!SuitableOrigin::IsSuitable(source_origin) ||
+  auto suitable_source_origin = SuitableOrigin::Create(source_origin);
+
+  if (!suitable_source_origin ||
       !SuitableOrigin::IsSuitable(destination_origin)) {
     NotifyNavigationFailure(attribution_src_token);
     return;
@@ -325,7 +333,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     // Source navigations need to navigate the primary main frame to be valid.
     receivers_.Add(
         this, std::move(it->second.data_host),
-        FrozenContext{.context_origin = source_origin,
+        FrozenContext{.context_origin = std::move(*suitable_source_origin),
                       .source_type = AttributionSourceType::kNavigation,
                       .register_time = it->second.register_time,
                       .is_within_fenced_frame = false,
@@ -382,13 +390,16 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
-  if (!SuitableOrigin::IsSuitable(data->reporting_origin)) {
+  auto reporting_origin =
+      SuitableOrigin::Create(std::move(data->reporting_origin));
+  if (!reporting_origin) {
     RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     ReportBadMessageInsecureReportingOrigin();
     return;
   }
 
-  if (!SuitableOrigin::IsSuitable(data->destination)) {
+  auto destination = SuitableOrigin::Create(std::move(data->destination));
+  if (!destination) {
     RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     mojo::ReportBadMessage(
         "AttributionDataHost: Destination origin must be secure.");
@@ -396,7 +407,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   FrozenContext& context = receivers_.current_context();
-  DCHECK(SuitableOrigin::IsSuitable(context.context_origin));
 
   if (context.registration_type == RegistrationType::kTrigger) {
     RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
@@ -439,8 +449,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   StorableSource storable_source(
       CommonSourceInfo(
           data->source_event_id, context.context_origin,
-          std::move(data->destination), std::move(data->reporting_origin),
-          source_time,
+          std::move(*destination), std::move(*reporting_origin), source_time,
           CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
                                           context.source_type),
           data->event_report_window
@@ -462,14 +471,15 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  if (!SuitableOrigin::IsSuitable(data->reporting_origin)) {
+  auto reporting_origin =
+      SuitableOrigin::Create(std::move(data->reporting_origin));
+  if (!reporting_origin) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     ReportBadMessageInsecureReportingOrigin();
     return;
   }
 
   FrozenContext& context = receivers_.current_context();
-  DCHECK(SuitableOrigin::IsSuitable(context.context_origin));
 
   if (context.source_type == AttributionSourceType::kNavigation) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
@@ -572,7 +582,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   absl::optional<attribution_reporting::TriggerRegistration> registration =
       attribution_reporting::TriggerRegistration::Create(
-          std::move(data->reporting_origin), std::move(*filters),
+          std::move(*reporting_origin), std::move(*filters),
           std::move(*not_filters), data->debug_key,
           data->aggregatable_dedup_key, std::move(event_triggers),
           std::move(*aggregatable_trigger_data),
@@ -706,7 +716,7 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
 
 void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const blink::AttributionSrcToken& attribution_src_token,
-    url::Origin reporting_origin,
+    SuitableOrigin reporting_origin,
     std::string header_value,
     data_decoder::DataDecoder::ValueOrError result) {
   // TODO(johnidel): Add metrics regarding parsing failures / misconfigured

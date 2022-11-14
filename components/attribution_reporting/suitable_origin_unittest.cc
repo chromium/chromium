@@ -52,30 +52,36 @@ TEST(SuitableOriginTest, Create) {
   }
 }
 
-TEST(SuitableOriginTest, Deserialize) {
+TEST(SuitableOriginTest, Deserialize_Serialize) {
   const struct {
     base::StringPiece str;
     absl::optional<url::Origin> expected;
+    const char* expected_serialization;
   } kTestCases[] = {
       {
           "",
           absl::nullopt,
+          nullptr,
       },
       {
           "http://a.test",
           absl::nullopt,
+          nullptr,
       },
       {
           "https://a.test",
           url::Origin::Create(GURL("https://a.test")),
+          "https://a.test",
       },
       {
           "http://localhost",
           url::Origin::Create(GURL("http://localhost")),
+          "http://localhost",
       },
       {
           "https://a.test/path?x=y#z",
           url::Origin::Create(GURL("https://a.test")),
+          "https://a.test",
       },
   };
 
@@ -86,9 +92,21 @@ TEST(SuitableOriginTest, Deserialize) {
     EXPECT_EQ(test_case.expected.has_value(), actual.has_value())
         << test_case.str;
 
-    if (test_case.expected.has_value())
+    if (test_case.expected.has_value()) {
       EXPECT_EQ(test_case.expected, *actual.value()) << test_case.str;
+      EXPECT_EQ(test_case.expected_serialization, actual->Serialize())
+          << test_case.str;
+    }
   }
+}
+
+TEST(SuitableOriginTest, OperatorLt) {
+  const auto origin_a = SuitableOrigin::Deserialize("https://a.test");
+  const auto origin_b = SuitableOrigin::Deserialize("https://b.test");
+
+  EXPECT_TRUE(origin_a < origin_b);
+  EXPECT_FALSE(origin_b < origin_a);
+  EXPECT_FALSE(origin_a < origin_a);
 }
 
 }  // namespace

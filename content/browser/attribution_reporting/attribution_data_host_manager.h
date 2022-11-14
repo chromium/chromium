@@ -24,6 +24,9 @@ struct AttributionInputEvent;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
+//
+// TODO(crbug.com/1383580): Replace `url::Origin` with
+// `attribution_reporting::SuitableOrigin`.
 class AttributionDataHostManager {
  public:
   virtual ~AttributionDataHostManager() = default;

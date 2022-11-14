@@ -12,8 +12,8 @@
 #include "base/component_export.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 namespace attribution_reporting {
 
@@ -23,7 +23,7 @@ struct EventTriggerData;
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
  public:
   static absl::optional<TriggerRegistration> Create(
-      url::Origin reporting_origin,
+      SuitableOrigin reporting_origin,
       Filters filters,
       Filters not_filters,
       absl::optional<uint64_t> debug_key,
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   TriggerRegistration(TriggerRegistration&&);
   TriggerRegistration& operator=(TriggerRegistration&&);
 
-  const url::Origin& reporting_origin() const { return reporting_origin_; }
+  const SuitableOrigin& reporting_origin() const { return reporting_origin_; }
 
   const Filters& filters() const { return filters_; }
 
@@ -71,9 +71,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
  private:
-  TriggerRegistration();
+  explicit TriggerRegistration(SuitableOrigin reporting_origin);
 
-  url::Origin reporting_origin_;
+  SuitableOrigin reporting_origin_;
   Filters filters_;
   Filters not_filters_;
   absl::optional<uint64_t> debug_key_;

@@ -20,6 +20,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
@@ -48,6 +49,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using AttributionFilters = ::attribution_reporting::Filters;
@@ -382,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifySourceRegistrationFailure(
-      "!", url::Origin::Create(GURL("https://a.test")),
+      "!", *SuitableOrigin::Deserialize("https://a.test"),
       SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
@@ -1018,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const AttributionTrigger trigger(
       *attribution_reporting::TriggerRegistration::Create(
-          url::Origin::Create(GURL("https://r.test")),
+          *SuitableOrigin::Deserialize("https://r.test"),
           /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
           /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
           /*debug_key=*/1,
@@ -1055,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           *attribution_reporting::AggregatableValues::Create(
               {{"a", 123}, {"b", 456}}),
           /*debug_reporting=*/false),
-      url::Origin::Create(GURL("https://d.test")),
+      *SuitableOrigin::Deserialize("https://d.test"),
       /*is_within_fenced_frame=*/false);
 
   static constexpr char kWantEventTriggerJSON[] =

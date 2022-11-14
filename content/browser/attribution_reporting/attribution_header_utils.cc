@@ -6,15 +6,14 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -22,20 +21,14 @@ base::expected<StorableSource,
                attribution_reporting::mojom::SourceRegistrationError>
 ParseSourceRegistration(base::Value::Dict registration,
                         base::Time source_time,
-                        url::Origin reporting_origin,
-                        url::Origin source_origin,
+                        attribution_reporting::SuitableOrigin reporting_origin,
+                        attribution_reporting::SuitableOrigin source_origin,
                         AttributionSourceType source_type,
                         bool is_within_fenced_frame) {
-  // TODO(apaseltiner): Change `reporting_origin`'s type to `SuitableOrigin`.
-  auto suitable_reporting_origin =
-      attribution_reporting::SuitableOrigin::Create(
-          std::move(reporting_origin));
-  DCHECK(suitable_reporting_origin.has_value());
-
   base::expected<attribution_reporting::SourceRegistration,
                  attribution_reporting::mojom::SourceRegistrationError>
       reg = attribution_reporting::SourceRegistration::Parse(
-          std::move(registration), std::move(*suitable_reporting_origin));
+          std::move(registration), std::move(reporting_origin));
   if (!reg.has_value())
     return base::unexpected(reg.error());
 

@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -39,6 +40,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using ::testing::Field;
 using ::testing::InSequence;
@@ -191,14 +194,14 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
 TEST_F(AttributionReportNetworkSenderTest,
        MultiDestination_ReportBodySetCorrectly) {
   const struct {
-    base::flat_set<url::Origin> destination_origins;
+    base::flat_set<SuitableOrigin> destination_origins;
     const char* expected_report;
   } kTestCases[] = {
       {
           {
-              url::Origin::Create(GURL("https://a.b.test")),
-              url::Origin::Create(GURL("https://c1.d.test")),
-              url::Origin::Create(GURL("https://c2.d.test")),
+              *SuitableOrigin::Deserialize("https://a.b.test"),
+              *SuitableOrigin::Deserialize("https://c1.d.test"),
+              *SuitableOrigin::Deserialize("https://c2.d.test"),
           },
           R"({"attribution_destination":["https://b.test","https://d.test"],)"
           R"("randomized_trigger_rate":0.0,)"
@@ -209,8 +212,8 @@ TEST_F(AttributionReportNetworkSenderTest,
       },
       {
           {
-              url::Origin::Create(GURL("https://c1.d.test")),
-              url::Origin::Create(GURL("https://c2.d.test")),
+              *SuitableOrigin::Deserialize("https://c1.d.test"),
+              *SuitableOrigin::Deserialize("https://c2.d.test"),
           },
           R"({"attribution_destination":"https://d.test",)"
           R"("randomized_trigger_rate":0.0,)"

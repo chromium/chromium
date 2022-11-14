@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "base/values.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 class GURL;
 
@@ -72,11 +72,12 @@ class CONTENT_EXPORT AttributionDebugReport {
  private:
   class ReportData;
 
-  AttributionDebugReport(std::vector<ReportData> report_data,
-                         url::Origin reporting_origin);
+  AttributionDebugReport(
+      std::vector<ReportData> report_data,
+      attribution_reporting::SuitableOrigin reporting_origin);
 
   std::vector<ReportData> report_data_;
-  url::Origin reporting_origin_;
+  attribution_reporting::SuitableOrigin reporting_origin_;
 };
 
 }  // namespace content
