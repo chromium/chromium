@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":file_access",
     "//base",
     "//base/test:test_support",
+    "//storage/browser:browser",
     "//testing/gmock",
     "//testing/gtest",
   ]
