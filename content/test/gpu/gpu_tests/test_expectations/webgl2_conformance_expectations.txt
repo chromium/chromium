@@ -355,7 +355,6 @@ crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/tr
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ mac passthrough angle-metal intel ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
-crbug.com/angleproject/7397 [ mac passthrough angle-metal intel ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
 
 # Metal M1
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
