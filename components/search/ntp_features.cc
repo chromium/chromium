@@ -226,7 +226,7 @@ BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,
-        "NtpElementLuminosityChangeForLightBackgroundParam", 0.03};
+        "NtpElementLuminosityChangeForLightBackgroundParam", 0.1};
 
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForDarkBackgroundParam{
