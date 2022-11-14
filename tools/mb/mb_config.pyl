@@ -2308,7 +2308,7 @@
     ],
 
     'clang_code_coverage_reclient': [
-      'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols',
+      'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols', 'chrome_with_codecs',
     ],
 
     'clang_code_coverage_with_js_coverage': [
