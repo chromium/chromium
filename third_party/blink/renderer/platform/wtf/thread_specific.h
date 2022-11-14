@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SPECIFIC_H_
 
 #include "base/macros.h"
+#include "base/record_replay.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
