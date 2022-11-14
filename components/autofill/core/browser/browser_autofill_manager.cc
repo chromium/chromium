@@ -901,10 +901,9 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   PreProcessStateMatchingTypes(copied_profiles, form_structure.get());
 
-  // Note that ownership of |form_structure| is passed to the second task,
-  // using |base::Owned|. We MUST temporarily hang on to the raw form pointer
-  // so that we can safely pass the address to the first callback regardless of
-  // the (undefined) order in which the callback parameters are computed.
+  // Ownership of |form_structure| is passed to the second task so that
+  // DeterminePossibleFieldTypesForUpload() can safely modify it before the
+  // callback.
   FormStructure* raw_form = form_structure.get();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
@@ -922,8 +921,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
           copied_profiles, copied_credit_cards, last_unlocked_credit_card_cvc_,
           app_locale_, raw_form),
       base::BindOnce(&BrowserAutofillManager::UploadFormDataAsyncCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Owned(form_structure.release()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
                      initial_interaction_timestamp_,
                      AutofillTickClock::NowTicks(), observed_submission));
   return true;
@@ -1859,14 +1857,12 @@ void BrowserAutofillManager::UploadFormData(const FormStructure& submitted_form,
       client()->GetPrefs());
 }
 
-// Note that |submitted_form| is passed as a pointer rather than as a reference
-// so that we can get memory management right across threads.  Note also that we
-// explicitly pass in all the time stamps of interest, as the cached ones might
-// get reset before this method executes.
+// We explicitly pass in all the time stamps of interest, as the cached ones
+// might get reset before this method executes.
 void BrowserAutofillManager::UploadFormDataAsyncCallback(
-    const FormStructure* submitted_form,
-    const TimeTicks& interaction_time,
-    const TimeTicks& submission_time,
+    std::unique_ptr<FormStructure> submitted_form,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
     bool observed_submission) {
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||

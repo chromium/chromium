@@ -151,9 +151,9 @@ bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
 }
 
 void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
-    const FormStructure* submitted_form,
-    const base::TimeTicks& interaction_time,
-    const base::TimeTicks& submission_time,
+    std::unique_ptr<FormStructure> submitted_form,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
     bool observed_submission) {
   run_loop_->Quit();
 
@@ -180,7 +180,8 @@ void TestBrowserAutofillManager::UploadFormDataAsyncCallback(
   }
 
   BrowserAutofillManager::UploadFormDataAsyncCallback(
-      submitted_form, interaction_time, submission_time, observed_submission);
+      std::move(submitted_form), interaction_time, submission_time,
+      observed_submission);
 }
 
 int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {

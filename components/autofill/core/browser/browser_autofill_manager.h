@@ -421,9 +421,9 @@ class BrowserAutofillManager : public AutofillManager,
   // to the crowdsourcing server, if appropriate. |observed_submission|
   // indicates whether the upload is a result of an observed submission event.
   virtual void UploadFormDataAsyncCallback(
-      const FormStructure* submitted_form,
-      const base::TimeTicks& interaction_time,
-      const base::TimeTicks& submission_time,
+      std::unique_ptr<FormStructure> submitted_form,
+      base::TimeTicks interaction_time,
+      base::TimeTicks submission_time,
       bool observed_submission);
 
   // Returns the card image for `credit_card`. If the `credit_card` has a card

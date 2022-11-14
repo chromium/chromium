@@ -75,10 +75,11 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   bool MaybeStartVoteUploadProcess(
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission) override;
-  void UploadFormDataAsyncCallback(const FormStructure* submitted_form,
-                                   const base::TimeTicks& interaction_time,
-                                   const base::TimeTicks& submission_time,
-                                   bool observed_submission) override;
+  void UploadFormDataAsyncCallback(
+      std::unique_ptr<FormStructure> submitted_form,
+      base::TimeTicks interaction_time,
+      base::TimeTicks submission_time,
+      bool observed_submission) override;
   // Immediately triggers the refill.
   void ScheduleRefill(const FormData& form) override;
 
