@@ -9,6 +9,10 @@ namespace privacy_sandbox {
 BASE_FEATURE(kPrivacySandboxSettings4,
              "PrivacySandboxSettings4",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired{
+    &kPrivacySandboxSettings4, "consent-required", false};
+const base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired{
+    &kPrivacySandboxSettings4, "notice-required", false};
 
 BASE_FEATURE(kPrivacySandboxSettings3,
              "PrivacySandboxSettings3",

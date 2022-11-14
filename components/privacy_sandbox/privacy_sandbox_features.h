@@ -12,6 +12,14 @@ namespace privacy_sandbox {
 
 // Enables the fourth release of the Privacy Sandbox settings.
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings4);
+// When true, the user will be shown a consent to enable the Privacy Sandbox
+// release 4, if they accept the APIs will become active. Only one of this and
+// the below notice feature should be enabled at any one time.
+extern const base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired;
+// When true, the user will be shown a notice, after which the Privacy Sandbox
+// 4 APIs will become active. Only one of this and the above consent feature
+// should be enabled at any one time.
+extern const base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired;
 
 // Enables the third release of the Privacy Sandbox settings.
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);
