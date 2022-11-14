@@ -26,7 +26,7 @@
 class AvatarMenuObserver;
 class Browser;
 class ProfileAttributesStorage;
-class ProfileList;
+class ProfileListDesktop;
 
 // This class represents the menu-like interface used to select profiles,
 // such as the bubble that appears when the avatar icon is clicked in the
@@ -132,7 +132,8 @@ class AvatarMenu :
   const Item& GetItemAt(size_t index) const;
 
   // Gets the index in this menu for which profile_path is equal to |path|.
-  size_t GetIndexOfItemWithProfilePath(const base::FilePath& path) const;
+  size_t GetIndexOfItemWithProfilePathForTesting(
+      const base::FilePath& path) const;
 
   // Returns the index of the active profile or `absl::nullopt` if there is no
   // active profile.
@@ -178,7 +179,7 @@ class AvatarMenu :
   void Update();
 
   // The model that provides the list of menu items.
-  std::unique_ptr<ProfileList> profile_list_;
+  std::unique_ptr<ProfileListDesktop> profile_list_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Observes changes to a supervised user's custodian info.

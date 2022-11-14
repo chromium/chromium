@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_list.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/grit/generated_resources.h"
@@ -124,9 +123,8 @@ TEST_F(ProfileListDesktopTest, InitialCreation) {
 }
 
 TEST_F(ProfileListDesktopTest, NoOmittedProfiles) {
-  ProfileListDesktop
-      profile_list_desktop(manager()->profile_attributes_storage());
-  ProfileList* profile_list = &profile_list_desktop;
+  ProfileListDesktop profile_list_desktop(
+      manager()->profile_attributes_storage());
 
   // Profiles are stored and listed alphabetically.
   std::vector<std::string> profile_names = {"0 included",
@@ -140,22 +138,35 @@ TEST_F(ProfileListDesktopTest, NoOmittedProfiles) {
     CreateTestingProfile(profile_name);
 
   // Rebuild avatar menu.
-  profile_list->RebuildMenu();
-  ASSERT_EQ(profile_count, profile_list->GetNumberOfItems());
+  profile_list_desktop.RebuildMenu();
+  ASSERT_EQ(profile_count, profile_list_desktop.GetNumberOfItems());
 
   // Verify contents in avatar menu.
   for (size_t i = 0u; i < profile_count; ++i) {
-    const AvatarMenu::Item& item = profile_list->GetItemAt(i);
+    const AvatarMenu::Item& item = profile_list_desktop.GetItemAt(i);
     EXPECT_EQ(i, item.menu_index);
     EXPECT_EQ(ASCIIToUTF16(profile_names[i]), item.name);
-    EXPECT_EQ(i, profile_list->MenuIndexFromProfilePath(item.profile_path));
+    EXPECT_EQ(i,
+              profile_list_desktop.MenuIndexFromProfilePath(item.profile_path));
   }
 }
 
+TEST_F(ProfileListDesktopTest, GuestProfile) {
+  ProfileListDesktop profile_list_desktop(
+      manager()->profile_attributes_storage());
+  CreateTestingProfile("Default profile");
+  Profile* guest_profile = manager()->CreateGuestProfile();
+  profile_list_desktop.RebuildMenu();
+  // Only the default profile is in the menu.
+  EXPECT_EQ(1u, profile_list_desktop.GetNumberOfItems());
+  EXPECT_FALSE(
+      profile_list_desktop.MenuIndexFromProfilePath(guest_profile->GetPath())
+          .has_value());
+}
+
 TEST_F(ProfileListDesktopTest, WithOmittedProfiles) {
-  ProfileListDesktop
-      profile_list_desktop(manager()->profile_attributes_storage());
-  ProfileList* profile_list = &profile_list_desktop;
+  ProfileListDesktop profile_list_desktop(
+      manager()->profile_attributes_storage());
 
   // Profiles are stored and listed alphabetically.
   std::vector<std::string> profile_names = {"0 omitted",
@@ -180,16 +191,17 @@ TEST_F(ProfileListDesktopTest, WithOmittedProfiles) {
 
   // Rebuild avatar menu.
   size_t included_profile_count = included_profile_indices.size();
-  profile_list->RebuildMenu();
-  ASSERT_EQ(included_profile_count, profile_list->GetNumberOfItems());
+  profile_list_desktop.RebuildMenu();
+  ASSERT_EQ(included_profile_count, profile_list_desktop.GetNumberOfItems());
 
   // Verify contents in avatar menu.
   for (size_t i = 0u; i < included_profile_count; ++i) {
-    const AvatarMenu::Item& item = profile_list->GetItemAt(i);
+    const AvatarMenu::Item& item = profile_list_desktop.GetItemAt(i);
     EXPECT_EQ(i, item.menu_index);
     EXPECT_EQ(ASCIIToUTF16(profile_names[included_profile_indices[i]]),
               item.name);
-    EXPECT_EQ(i, profile_list->MenuIndexFromProfilePath(item.profile_path));
+    EXPECT_EQ(i,
+              profile_list_desktop.MenuIndexFromProfilePath(item.profile_path));
   }
 }
 

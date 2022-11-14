@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
-#include "chrome/browser/profiles/profile_list.h"
+#include "chrome/browser/profiles/profile_list_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -60,7 +60,7 @@ bool CanOpenBrowserForProfile(const AvatarMenu::Item& profile_item) {
 AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
                        AvatarMenuObserver* observer,
                        Browser* browser)
-    : profile_list_(ProfileList::Create(profile_storage)),
+    : profile_list_(std::make_unique<ProfileListDesktop>(profile_storage)),
       profile_storage_(profile_storage->AsWeakPtr()),
       observer_(observer),
       browser_(browser) {
@@ -149,9 +149,11 @@ const AvatarMenu::Item& AvatarMenu::GetItemAt(size_t index) const {
   return profile_list_->GetItemAt(index);
 }
 
-size_t AvatarMenu::GetIndexOfItemWithProfilePath(
+size_t AvatarMenu::GetIndexOfItemWithProfilePathForTesting(
     const base::FilePath& path) const {
-  return profile_list_->MenuIndexFromProfilePath(path);
+  absl::optional<size_t> index = profile_list_->MenuIndexFromProfilePath(path);
+  DCHECK(index.has_value());
+  return index.value();
 }
 
 absl::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
@@ -167,9 +169,12 @@ absl::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
   if (!active_profile)
     return absl::nullopt;
 
-  size_t index =
+  // The profile may be missing from the menu (e.g. omitted profile, guest).
+  absl::optional<size_t> index =
       profile_list_->MenuIndexFromProfilePath(active_profile->GetPath());
-  DCHECK_LT(index, profile_list_->GetNumberOfItems());
+
+  DCHECK(!index.has_value() ||
+         index.value() < profile_list_->GetNumberOfItems());
   return index;
 }
 

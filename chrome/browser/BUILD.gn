@@ -4602,7 +4602,6 @@ static_library("browser") {
         "profiles/avatar_menu_observer.h",
         "profiles/profile_activity_metrics_recorder.cc",
         "profiles/profile_activity_metrics_recorder.h",
-        "profiles/profile_list.h",
         "profiles/profile_list_desktop.cc",
         "profiles/profile_list_desktop.h",
         "profiles/profile_statistics.cc",
