@@ -7,7 +7,7 @@ desc: |-
 
         If this policy is set to Disabled, the built-in DNS client will only be used when DNS-over-HTTPS is in use.
 
-        If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+        If this policy is left unset, the built-in DNS client will be enabled by default on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph>, <ph name="ANDROID_NAME">Android</ph> (when neither Private DNS nor VPN are enabled) and <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 example_value: true
 features:
   dynamic_refresh: true
@@ -19,7 +19,7 @@ items:
   value: true
 - caption: Never use the built-in DNS client
   value: false
-- caption: Use the built-in DNS client on macOS, Android and ChromeOS
+- caption: Use the built-in DNS client on Windows, macOS, Android and ChromeOS
   value: null
 owners:
 - ericorth@chromium.org
