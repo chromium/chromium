@@ -5,14 +5,18 @@
 import {NoteAppLockScreenSupport} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * @implements {DevicePageBrowserProxy}
  */
-export class TestDevicePageBrowserProxy {
+export class TestDevicePageBrowserProxy extends TestBrowserProxy {
   constructor() {
+    super([
+      'showPlayStore',
+    ]);
+
     this.keyboardShortcutViewerShown_ = 0;
     this.updatePowerStatusCalled_ = 0;
     this.requestPowerManagementSettingsCalled_ = 0;
@@ -192,5 +196,9 @@ export class TestDevicePageBrowserProxy {
           return Object.assign({}, app);
         }),
         !this.androidAppsReceived_);
+  }
+
+  showPlayStore(url) {
+    this.methodCalled(this.showPlayStore.name, url);
   }
 }

@@ -36,6 +36,13 @@ const TestNames = {
 
 function getFakePrefs() {
   return {
+    arc: {
+      enabled: {
+        key: 'arc.enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    },
     ash: {
       ambient_color: {
         enabled: {
@@ -2658,6 +2665,22 @@ suite('SettingsDevicePage', function() {
             assertTrue(keepLastNoteOnLockScreenToggle().checked);
           });
     });
+
+    test(
+        'Clicking "Find more stylus apps" button should open Google Play',
+        async () => {
+          const findMoreAppsLink =
+              stylusPage.shadowRoot.querySelector('#findMoreAppsLink');
+          assertTrue(
+              !!findMoreAppsLink, 'Find more apps link element does not exist');
+          assertFalse(findMoreAppsLink.hidden, 'Find more apps link is hidden');
+
+          findMoreAppsLink.click();
+          const url = await browserProxy.whenCalled('showPlayStore');
+          const expectedUrl =
+              'https://play.google.com/store/apps/collection/promotion_30023cb_stylus_apps';
+          assertEquals(expectedUrl, url);
+        });
   });
 
   suite(assert(TestNames.Storage), function() {
