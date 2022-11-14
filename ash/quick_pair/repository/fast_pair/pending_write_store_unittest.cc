@@ -13,7 +13,6 @@ namespace {
 
 constexpr char kSavedMacAddress1[] = "00:11:22:33:44";
 constexpr char kSavedMacAddress2[] = "00:11:22:33:99";
-constexpr char kHexModelId[] = "aabb11";
 const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                         0xCC, 0xDD, 0xEE, 0xFF};
@@ -22,6 +21,10 @@ const std::vector<uint8_t> kAccountKey2{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                         0xCC, 0xDD, 0xEE, 0x22};
 constexpr char kHexAccountKey2[] = "11223344556677889900AABBCCDDEE22";
+
+const std::vector<uint8_t> kFastPairInfoBytes1{
+    0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88,
+    0x99, 0x00, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0x33};
 
 }  // namespace
 
@@ -49,12 +52,37 @@ class PendingWriteStoreTest : public testing::Test {
 
 TEST_F(PendingWriteStoreTest, WriteDevice) {
   ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
-  pending_write_store_->WritePairedDevice(kSavedMacAddress1, kHexModelId);
+
+  // Initialize fake FastPairInfo to pass to PendingWrite constructor.
+  nearby::fastpair::FastPairInfo kFastPairInfo1;
+  kFastPairInfo1.ParseFromArray(&kFastPairInfoBytes1[0],
+                                kFastPairInfoBytes1.size());
+
+  pending_write_store_->WritePairedDevice(kSavedMacAddress1, kFastPairInfo1);
 
   auto pending_writes = pending_write_store_->GetPendingWrites();
   ASSERT_EQ(1u, pending_writes.size());
   ASSERT_EQ(kSavedMacAddress1, pending_writes[0].mac_address);
-  ASSERT_EQ(kHexModelId, pending_writes[0].hex_model_id);
+  ASSERT_EQ(kFastPairInfo1.SerializeAsString(),
+            pending_writes[0].fast_pair_info.SerializeAsString());
+
+  pending_write_store_->OnPairedDeviceSaved(kSavedMacAddress1);
+  ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
+}
+
+TEST_F(PendingWriteStoreTest, WriteDeviceWithEmptyFastPairInfo) {
+  ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
+
+  // Initialize fake empty FastPairInfo to pass to PendingWrite constructor.
+  nearby::fastpair::FastPairInfo kFastPairInfo1;
+  kFastPairInfo1.ParseFromString(std::string());
+
+  pending_write_store_->WritePairedDevice(kSavedMacAddress1, kFastPairInfo1);
+
+  auto pending_writes = pending_write_store_->GetPendingWrites();
+  ASSERT_EQ(1u, pending_writes.size());
+  ASSERT_EQ(kSavedMacAddress1, pending_writes[0].mac_address);
+  ASSERT_TRUE(pending_writes[0].fast_pair_info.SerializeAsString().empty());
 
   pending_write_store_->OnPairedDeviceSaved(kSavedMacAddress1);
   ASSERT_TRUE(pending_write_store_->GetPendingWrites().empty());
