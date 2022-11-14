@@ -82436,6 +82436,11 @@ Called by update_net_trust_anchors.py.-->
       label="sec-required-document-policy: missing in activation request's
              headers"/>
   <int value="294645675" label="sec-required-document-policy: value mismatch"/>
+  <int value="308191605"
+      label="x-geo: missing in prerendering request's headers"/>
+  <int value="308191606"
+      label="x-geo: missing in activation request's headers"/>
+  <int value="308191607" label="x-geo: value mismatch"/>
   <int value="312295641"
       label="trace: missing in prerendering request's headers"/>
   <int value="312295642"
