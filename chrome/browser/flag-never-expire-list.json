@@ -110,6 +110,7 @@
   "show-taps",
   "show-touch-hud",
   "smooth-scrolling",
+  "strict-origin-isolation",
   "system-keyboard-lock",
   "terminal-dev",
   "tint-composited-content",

@@ -6439,7 +6439,9 @@
     // therefore unlikely to ship anytime soon, but this allows experimenting
     // with a stronger isolation policy for users who may not care about
     // breaking compatibility with document.domain.
-    "expiry_milestone": 110
+    // This flag is useful for developers testing origin isolation, so it
+    // doesn't expire.
+    "expiry_milestone": -1
   },
   {
     "name": "stylus-battery-status",
