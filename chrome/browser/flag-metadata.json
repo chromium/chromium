@@ -5013,11 +5013,10 @@
   {
     "name": "omnibox-assistant-voice-search",
     "owners": [
-      "jds@google.com",
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "omnibox-blur-with-escape",
