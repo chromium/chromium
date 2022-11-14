@@ -19,7 +19,13 @@ const char kAutoFramingOverride[] = "auto-framing-override";
 namespace features {
 
 // Controls if the camera frame is rotated to the upright display orientation in
-// the Chrome OS VideoCaptureDevice implementation.
+// the Chrome OS VideoCaptureDevice implementation. The feature is disabled by
+// default, namely that VCD will rotate the frames to match the UI orientation
+// before passing to camera clients.
+//
+// The built-in ChromeOS Camera App disables the frame rotation through the
+// private CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource() call
+// to achieve zero-copy video encoding when the device is rotated.
 BASE_FEATURE(kDisableCameraFrameRotationAtSource,
              "DisableCameraFrameRotationAtSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
