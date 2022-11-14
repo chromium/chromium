@@ -207,7 +207,8 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
       error.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
       std::move(callback).Run(
-          base::unexpected(ReadResponseError::ForOtherError(*error)));
+          base::unexpected(ReadResponseError::ForOtherError(base::StringPrintf(
+              "Failed to validate metadata: %s", error->c_str()))));
     }
     reader_cache_.Erase(cache_entry_it);
     return;

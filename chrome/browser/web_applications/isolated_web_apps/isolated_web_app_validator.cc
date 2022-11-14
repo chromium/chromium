@@ -53,9 +53,9 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
                             url::kStandardSchemeSeparator + web_bundle_id.id());
   DCHECK(expected_primary_url.is_valid());
   if (primary_url != expected_primary_url) {
-    return base::StringPrintf(
-        "Invalid metadata: Primary URL must be %s, but was %s",
-        expected_primary_url.spec().c_str(), primary_url.spec().c_str());
+    return base::StringPrintf("Primary URL must be %s, but was %s",
+                              expected_primary_url.spec().c_str(),
+                              primary_url.spec().c_str());
   }
 
   // Verify that the bundle only contains isolated-app:// URLs using the
@@ -64,28 +64,26 @@ absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
         IsolatedWebAppUrlInfo::Create(entry);
     if (!url_info.has_value()) {
-      return base::StringPrintf(
-          "Invalid metadata: The URL of an exchange is invalid: %s",
-          url_info.error().c_str());
+      return base::StringPrintf("The URL of an exchange is invalid: %s",
+                                url_info.error().c_str());
     }
 
     const web_package::SignedWebBundleId& entry_web_bundle_id =
         url_info->web_bundle_id();
     if (entry_web_bundle_id != web_bundle_id) {
       return base::StringPrintf(
-          "Invalid metadata: The URL of an exchange contains the wrong Signed "
-          "Web Bundle ID: %s",
+          "The URL of an exchange contains the wrong Signed Web Bundle ID: %s",
           entry_web_bundle_id.id().c_str());
     }
     if (entry.has_ref()) {
       return base::StringPrintf(
-          "Invalid metadata: The URL of an exchange is invalid: URLs must not "
-          "have a fragment part.");
+          "The URL of an exchange is invalid: URLs must not have a fragment "
+          "part.");
     }
     if (entry.has_query()) {
       return base::StringPrintf(
-          "Invalid metadata: The URL of an exchange is invalid: URLs must not "
-          "have a query part.");
+          "The URL of an exchange is invalid: URLs must not have a query "
+          "part.");
     }
   }
 

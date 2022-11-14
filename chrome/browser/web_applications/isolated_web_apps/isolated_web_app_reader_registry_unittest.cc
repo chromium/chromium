@@ -551,11 +551,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            base::StringPrintf("Invalid metadata: Primary URL must be %s, but "
-                               "was %s",
-                               kPrimaryUrl.spec().c_str(),
-                               kInvalidIsolatedWebAppUrl));
+  EXPECT_EQ(
+      result.error().message,
+      base::StringPrintf(
+          "Failed to validate metadata: Primary URL must be %s, but was %s",
+          kPrimaryUrl.spec().c_str(), kInvalidIsolatedWebAppUrl));
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
@@ -579,10 +579,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
-            "Invalid metadata: The URL of an exchange is invalid: The host of "
-            "isolated-app:// URLs must be a valid Signed Web Bundle ID (got "
-            "foo): The signed web bundle ID must be exactly 56 characters "
-            "long, but was 3 characters long.");
+            "Failed to validate metadata: The URL of an exchange is invalid: "
+            "The host of isolated-app:// URLs must be a valid Signed Web "
+            "Bundle ID (got foo): The signed web bundle ID must be exactly 56 "
+            "characters long, but was 3 characters long.");
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidResponse) {

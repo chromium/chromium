@@ -144,17 +144,17 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(kPrimaryUrl,
                         std::vector<std::string>({kPrimaryUrl,
                                                   kPrimaryUrl + "/foo#bar"}),
-                        "Invalid metadata: The URL of an exchange is invalid: "
-                        "URLs must not have a fragment part."),
+                        "The URL of an exchange is invalid: URLs must not have "
+                        "a fragment part."),
         std::make_tuple(kPrimaryUrl,
                         std::vector<std::string>({kPrimaryUrl,
                                                   kPrimaryUrl + "/foo?bar"}),
-                        "Invalid metadata: The URL of an exchange is invalid: "
-                        "URLs must not have a query part."),
+                        "The URL of an exchange is invalid: URLs must not have "
+                        "a query part."),
         std::make_tuple(
             kPrimaryUrl + "/foo",
             std::vector<std::string>({kPrimaryUrl}),
-            "Invalid metadata: Primary URL must be "
+            "Primary URL must be "
             "isolated-app://"
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/, but "
             "was "
@@ -162,14 +162,13 @@ INSTANTIATE_TEST_SUITE_P(
             "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/foo"),
         std::make_tuple(kPrimaryUrl,
                         std::vector<std::string>({kPrimaryUrl, "https://foo/"}),
-                        "Invalid metadata: The URL of an exchange is invalid: "
-                        "The URL scheme must be isolated-app, but was https"),
+                        "The URL of an exchange is invalid: The URL scheme "
+                        "must be isolated-app, but was https"),
         std::make_tuple(
             kPrimaryUrl,
             std::vector<std::string>({kPrimaryUrl,
                                       kUrlFromAnotherIsolatedWebApp}),
-            "Invalid metadata: The URL of an exchange contains the wrong "
-            "Signed Web Bundle ID: "
+            "The URL of an exchange contains the wrong Signed Web Bundle ID: "
             "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic")));
 
 }  // namespace web_app
