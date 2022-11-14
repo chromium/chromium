@@ -2267,9 +2267,12 @@ class ComputedStyle : public ComputedStyleBase,
   // Load the images of CSS properties that were deferred by LazyLoad.
   void LoadDeferredImages(Document&) const;
 
+  static mojom::blink::ColorScheme UsedColorScheme(bool is_dark_color_scheme) {
+    return is_dark_color_scheme ? mojom::blink::ColorScheme::kDark
+                                : mojom::blink::ColorScheme::kLight;
+  }
   mojom::blink::ColorScheme UsedColorScheme() const {
-    return DarkColorScheme() ? mojom::blink::ColorScheme::kDark
-                             : mojom::blink::ColorScheme::kLight;
+    return UsedColorScheme(DarkColorScheme());
   }
 
   bool GeneratesMarkerImage() const {
@@ -3145,6 +3148,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       ColorSchemeFlags flags,
       mojom::blink::PreferredColorScheme preferred_color_scheme,
       bool force_dark);
+
+  mojom::blink::ColorScheme UsedColorScheme() const {
+    return ComputedStyle::UsedColorScheme(DarkColorScheme());
+  }
 
   // Variables
   CORE_EXPORT StyleInheritedVariables& MutableInheritedVariables();

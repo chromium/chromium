@@ -236,7 +236,7 @@ PseudoElement* StyleResolverState::GetPseudoElement() const {
 const CSSValue& StyleResolverState::ResolveLightDarkPair(
     const CSSValue& value) {
   if (const auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
-    if (Style()->UsedColorScheme() == mojom::blink::ColorScheme::kLight)
+    if (StyleBuilder().UsedColorScheme() == mojom::blink::ColorScheme::kLight)
       return pair->First();
     return pair->Second();
   }

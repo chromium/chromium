@@ -1810,7 +1810,7 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       return StyleColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-              value, Color(), state.Style()->UsedColorScheme(),
+              value, Color(), state.StyleBuilder().UsedColorScheme(),
               for_visited_link),
           value_id);
     }
@@ -1818,7 +1818,8 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
   // TODO(crbug.com/1362022): We will need to store an unresolved color-mix
   // value in order to account for currentColor.
   return StyleColor(state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-      value, Color(), state.Style()->UsedColorScheme(), for_visited_link));
+      value, Color(), state.StyleBuilder().UsedColorScheme(),
+      for_visited_link));
 }
 
 StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
@@ -1834,14 +1835,15 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       return StyleAutoColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-              value, Color(), state.Style()->UsedColorScheme(),
+              value, Color(), state.StyleBuilder().UsedColorScheme(),
               for_visited_link),
           value_id);
     }
   }
   return StyleAutoColor(
       state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
-          value, Color(), state.Style()->UsedColorScheme(), for_visited_link));
+          value, Color(), state.StyleBuilder().UsedColorScheme(),
+          for_visited_link));
 }
 
 SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
@@ -2234,7 +2236,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       return value;
     if (StyleColor::IsColorKeyword(value_id)) {
       mojom::blink::ColorScheme scheme =
-          state ? state->Style()->UsedColorScheme()
+          state ? state->StyleBuilder().UsedColorScheme()
                 : mojom::blink::ColorScheme::kLight;
       Color color = document.GetTextLinkColors().ColorFromCSSValue(
           value, Color(), scheme, false);
