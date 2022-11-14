@@ -210,12 +210,12 @@
   {
     "name": "arc-enable-virtio-blk-for-data",
     "owners": [ "niwa" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "arc-file-picker-experiment",
-    "owners": [ "youkichihosoi", "risan", "niwa" ],
-    "expiry_milestone": 110
+    "owners": [ "youkichihosoi", "niwa" ],
+    "expiry_milestone": 120
   },
   {
     "name": "arc-fixup-window",
