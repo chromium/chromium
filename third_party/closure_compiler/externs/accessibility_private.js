@@ -333,7 +333,13 @@ chrome.accessibilityPrivate.DictationBubbleProperties;
  * @enum {string}
  */
 chrome.accessibilityPrivate.DlcType = {
+  TTS_ES_ES: 'ttsEsEs',
   TTS_ES_US: 'ttsEsUs',
+  TTS_FR_FR: 'ttsFrFr',
+  TTS_HI_IN: 'ttsHiIn',
+  TTS_NL_NL: 'ttsNlNl',
+  TTS_PT_BR: 'ttsPtBr',
+  TTS_SV_SE: 'ttsSvSe',
 };
 
 /**

@@ -132,10 +132,6 @@ const char kUserBluetoothBrailleDisplayAddress[] =
 // The name of the Brltty upstart job.
 constexpr char kBrlttyUpstartJobName[] = "brltty";
 
-// The path to the tts-es-us DLC.
-constexpr char kTtsEsUsDlcPath[] =
-    "/run/imageloader/tts-es-us/package/root/voice.zvoice";
-
 // The path to the pumpkin DLC directory.
 constexpr char kPumpkinDlcRootPath[] = "/run/imageloader/pumpkin/package/root/";
 
@@ -2460,22 +2456,40 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
 
 void AccessibilityManager::GetDlcContents(DlcType dlc,
                                           GetDlcContentsCallback callback) {
-  base::FilePath path = DlcTypeToPath(dlc);
+  // This API currently only supports TTS DLCs.
+  base::FilePath path = TtsDlcTypeToPath(dlc);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&ReadDlcFile, path),
       base::BindOnce(&OnReadDlcFile, std::move(callback)));
 }
 
-base::FilePath AccessibilityManager::DlcTypeToPath(DlcType dlc) {
-  bool use_test_dlc_path = !dlc_path_for_test_.empty();
-  switch (dlc) {
-    case DlcType::DLC_TYPE_TTSESUS:
-      return use_test_dlc_path ? dlc_path_for_test_.Append("voice.zvoice")
-                               : base::FilePath(kTtsEsUsDlcPath);
-    case DlcType::DLC_TYPE_NONE:
-      NOTREACHED();
-      return base::FilePath();
+base::FilePath AccessibilityManager::TtsDlcTypeToPath(DlcType dlc) {
+  if (!dlc_path_for_test_.empty())
+    return dlc_path_for_test_.Append("voice.zvoice");
+
+  // Paths to TTS DLCs.
+  static constexpr auto kTtsDlcTypeToSubDir =
+      base::MakeFixedFlatMap<DlcType, base::StringPiece>(
+          {{DlcType::DLC_TYPE_TTSESES, "tts-es-es/"},
+           {DlcType::DLC_TYPE_TTSESUS, "tts-es-us/"},
+           {DlcType::DLC_TYPE_TTSFRFR, "tts-fr-fr/"},
+           {DlcType::DLC_TYPE_TTSHIIN, "tts-hi-in/"},
+           {DlcType::DLC_TYPE_TTSNLNL, "tts-nl-nl/"},
+           {DlcType::DLC_TYPE_TTSPTBR, "tts-pt-br/"},
+           {DlcType::DLC_TYPE_TTSSVSE, "tts-sv-se/"}});
+
+  if (!base::Contains(kTtsDlcTypeToSubDir, dlc)) {
+    NOTREACHED();
+    return base::FilePath();
   }
+
+  // TODO(akihiroota): Add these to a DLC constants file.
+  static constexpr char kDlcRootDir[] = "/run/imageloader/";
+  static constexpr char kVoicePath[] = "package/root/voice.zvoice";
+  // Example final path: /run/imageloader/tts-fr-fr/package/root/voice.zvoice.
+  return base::FilePath(kDlcRootDir)
+      .Append(kTtsDlcTypeToSubDir.find(dlc)->second)
+      .Append(kVoicePath);
 }
 
 void AccessibilityManager::SetDlcPathForTest(base::FilePath path) {

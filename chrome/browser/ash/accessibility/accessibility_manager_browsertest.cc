@@ -56,6 +56,7 @@ namespace ash {
 
 namespace {
 
+using ::extensions::api::accessibility_private::DlcType;
 using ::extensions::api::braille_display_private::KeyEvent;
 using ::extensions::api::braille_display_private::MockBrailleController;
 using input_method::InputMethodDescriptors;
@@ -422,6 +423,10 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   bool IsChromeVoxPanelActive() {
     return AccessibilityManager::Get()->chromevox_panel_ != nullptr;
+  }
+
+  base::FilePath TtsDlcTypeToPath(DlcType dlc) {
+    return AccessibilityManager::Get()->TtsDlcTypeToPath(dlc);
   }
 
  protected:
@@ -829,6 +834,30 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
   SetSpokenFeedbackEnabled(false);
   ASSERT_FALSE(IsSpokenFeedbackEnabled());
   ASSERT_FALSE(IsChromeVoxPanelActive());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-es-es/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-es-us/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESUS));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-fr-fr/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSFRFR));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-hi-in/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-nl-nl/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-pt-br/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSPTBR));
+  EXPECT_EQ(
+      base::FilePath("/run/imageloader/tts-sv-se/package/root/voice.zvoice"),
+      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
 }
 
 class AccessibilityManagerSodaTest : public AccessibilityManagerTest {

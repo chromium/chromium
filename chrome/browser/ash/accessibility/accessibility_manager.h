@@ -535,7 +535,7 @@ class AccessibilityManager
   void OnAppTerminating();
 
   // Returns a full file path given a DLC.
-  base::FilePath DlcTypeToPath(
+  base::FilePath TtsDlcTypeToPath(
       ::extensions::api::accessibility_private::DlcType dlc);
 
   // Profile which has the current a11y context.
