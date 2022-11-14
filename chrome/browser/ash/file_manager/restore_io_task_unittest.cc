@@ -13,7 +13,6 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/file_manager/restore_io_task.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
