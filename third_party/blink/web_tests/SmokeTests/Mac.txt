@@ -1600,7 +1600,6 @@ virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseu
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-with-incomplete-style.html
 external/wpt/speculation-rules/prerender/local-storage.html
 external/wpt/speculation-rules/prerender/media-autoplay.html
-external/wpt/speculation-rules/prerender/opt-out.html
 external/wpt/speculation-rules/prerender/restriction-encrypted-media.https.html
 external/wpt/speculation-rules/prerender/service-workers.https.html
 wpt_internal/prerender/csp-prefetch-src-allow.html

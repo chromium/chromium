@@ -12684,19 +12684,19 @@ const std::string CalculateMethod(
 
 int CalculateHTTPStatusCode(NavigationRequest* request,
                             int last_http_status_code) {
-  // Same-document navigations should retain the HTTP status code from the last
-  // committed navigation.
-  if (request->IsSameDocument())
+  // Same-document navigations or prerender activation navigation should retain
+  // the HTTP status code from the last committed navigation.
+  if (request->IsSameDocument() || request->IsPrerenderedPageActivation())
     return last_http_status_code;
-  // Navigations that are served from the back/forward cache or that are
-  // prerendered will always have the HTTP status code set to 200.
+
+  // Navigations that are served from the back/forward cache will always have
+  // the HTTP status code set to 200.
   //
   // TODO(https://crbug.com/1199699): Navigations should actually return the
   // last HTTP status code of the RenderFrameHost.
-  if (request->IsServedFromBackForwardCache() ||
-      request->IsPrerenderedPageActivation()) {
+  if (request->IsServedFromBackForwardCache())
     return 200;
-  }
+
   // The HTTP status code is not set if we never received any HTTP response for
   // the navigation.
   const int request_response_code = request->commit_params().http_response_code;

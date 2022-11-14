@@ -6117,11 +6117,6 @@ crbug.com/1318929 http/tests/devtools/console/console-uncaught-promise.js [ Fail
 crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.html [ Failure Pass ]
 crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
-# Imported WPT crashes on desktop platforms
-crbug.com/1318456 [ Linux ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-crbug.com/1318456 [ Mac ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-crbug.com/1318456 [ Win ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 

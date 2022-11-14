@@ -6879,7 +6879,19 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   // navigated.
   CHECK(params);
 
-  DCHECK_EQ(params->http_status_code, net::HTTP_OK);
+  if (IsPrerenderedPageActivation()) {
+    switch (params->http_status_code) {
+      case net::HTTP_OK:
+      case net::HTTP_CREATED:
+      case net::HTTP_ACCEPTED:
+      case net::HTTP_NON_AUTHORITATIVE_INFORMATION:
+        break;
+      default:
+        NOTREACHED();
+    }
+  } else {
+    DCHECK_EQ(params->http_status_code, net::HTTP_OK);
+  }
   DCHECK_EQ(params->url_is_unreachable, false);
 
   params->should_replace_current_entry =
