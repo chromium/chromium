@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extension_removal_watcher.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -17,7 +17,8 @@ class Browser;
 
 // ExtensionInstalledWaiter is used to wait for a given extension to be
 // installed in a given browser's profile.
-class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
+class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver,
+                                 public BrowserListObserver {
  public:
   // Wait until both:
   // 1. |extension| is installed into |browser|
@@ -57,8 +58,12 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
 
-  void OnExtensionRemovedOrBrowserClosed();
+  // BrowserListObserver:
+  void OnBrowserClosing(Browser* browser) override;
 
   const scoped_refptr<const extensions::Extension> extension_;
   const raw_ptr<const Browser> browser_;
@@ -67,8 +72,6 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  std::unique_ptr<ExtensionRemovalWatcher> removal_watcher_;
 
   base::WeakPtrFactory<ExtensionInstalledWaiter> weak_factory_{this};
 };
