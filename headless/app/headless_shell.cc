@@ -242,8 +242,6 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   }
 #endif
 
-  devtools_client_.InitBrowserMainThread();
-
   file_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 

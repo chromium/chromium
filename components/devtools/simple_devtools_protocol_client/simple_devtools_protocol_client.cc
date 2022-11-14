@@ -35,6 +35,7 @@ int g_next_message_id = 0;
 }  // namespace
 
 SimpleDevToolsProtocolClient::SimpleDevToolsProtocolClient() = default;
+
 SimpleDevToolsProtocolClient::SimpleDevToolsProtocolClient(
     const std::string& session_id)
     : session_id_(session_id) {}
@@ -42,10 +43,6 @@ SimpleDevToolsProtocolClient::SimpleDevToolsProtocolClient(
 SimpleDevToolsProtocolClient::~SimpleDevToolsProtocolClient() {
   if (parent_client_)
     parent_client_->sessions_.erase(session_id_);
-}
-
-void SimpleDevToolsProtocolClient::InitBrowserMainThread() {
-  browser_main_thread_ = content::GetUIThreadTaskRunner({});
 }
 
 void SimpleDevToolsProtocolClient::AttachClient(
@@ -94,12 +91,19 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
   if (const std::string* session_id = message.FindString("sessionId")) {
     auto it = sessions_.find(*session_id);
     if (it != sessions_.cend()) {
-      it->second->DispatchProtocolMessage(std::move(message));
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &SimpleDevToolsProtocolClient::DispatchProtocolMessageTask,
+              base::Unretained(it->second), std::move(message)));
       return;
     }
   }
 
-  DispatchProtocolMessage(std::move(message));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SimpleDevToolsProtocolClient::DispatchProtocolMessageTask,
+                     base::Unretained(this), std::move(message)));
 }
 
 void SimpleDevToolsProtocolClient::AgentHostClosed(
@@ -110,7 +114,7 @@ void SimpleDevToolsProtocolClient::AgentHostClosed(
   }
 }
 
-void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
+void SimpleDevToolsProtocolClient::DispatchProtocolMessageTask(
     base::Value::Dict message) {
   // Handle response message shutting down the host if it's unexpected.
   if (absl::optional<int> id = message.FindInt(kId)) {
@@ -127,12 +131,7 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
     ResponseCallback callback(std::move(it->second));
     pending_response_map_.erase(it);
 
-    if (browser_main_thread_) {
-      browser_main_thread_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), std::move(message)));
-    } else {
-      std::move(callback).Run(std::move(message));
-    }
+    std::move(callback).Run(std::move(message));
     return;
   }
 
@@ -154,12 +153,7 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
   for (auto& callback : handlers) {
     if (first_callback || HasEventHandler(*event_name, callback)) {
       first_callback = false;
-      if (browser_main_thread_) {
-        browser_main_thread_->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), std::move(message)));
-      } else {
-        callback.Run(std::move(message));
-      }
+      callback.Run(message);
     }
   }
 }
