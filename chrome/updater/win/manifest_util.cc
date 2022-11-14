@@ -197,8 +197,11 @@ bool IsArchitectureCompatible(const std::string& arch_list,
     return false;
   }
 
-  std::erase_if(architectures,
-                [](const std::string& arch) { return arch[0] == '-'; });
+  architectures.erase(base::ranges::remove_if(architectures,
+                                              [](const std::string& arch) {
+                                                return arch[0] == '-';
+                                              }),
+                      architectures.end());
 
   return architectures.empty() ||
          base::ranges::find_if(
