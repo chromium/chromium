@@ -8,7 +8,7 @@
 
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
@@ -38,7 +38,7 @@ absl::optional<TriggerRegistration> TriggerRegistration::Create(
     std::vector<AggregatableTriggerData> aggregatable_trigger_data,
     AggregatableValues aggregatable_values,
     bool debug_reporting) {
-  if (!network::IsOriginPotentiallyTrustworthy(reporting_origin))
+  if (!SuitableOrigin::IsSuitable(reporting_origin))
     return absl::nullopt;
 
   TriggerRegistration result;

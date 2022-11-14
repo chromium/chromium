@@ -11,13 +11,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -404,7 +404,7 @@ AttributionDebugReport::AttributionDebugReport(
     : report_data_(std::move(report_data)),
       reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!report_data_.empty());
-  DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
+  DCHECK(attribution_reporting::SuitableOrigin::IsSuitable(reporting_origin_));
 }
 
 AttributionDebugReport::~AttributionDebugReport() = default;

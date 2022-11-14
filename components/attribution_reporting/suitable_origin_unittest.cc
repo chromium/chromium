@@ -37,6 +37,10 @@ TEST(SuitableOriginTest, Create) {
   };
 
   for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected_suitable,
+              SuitableOrigin::IsSuitable(test_case.origin))
+        << test_case.origin;
+
     absl::optional<SuitableOrigin> actual =
         SuitableOrigin::Create(test_case.origin);
 

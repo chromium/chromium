@@ -28,6 +28,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
@@ -35,7 +36,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/cookies/canonical_cookie.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -397,7 +397,7 @@ class AttributionSimulatorInputParser {
 
     auto origin = url::Origin::Create(ParseURL(dict, key));
 
-    if (!network::IsOriginPotentiallyTrustworthy(origin))
+    if (!attribution_reporting::SuitableOrigin::IsSuitable(origin))
       *Error() << "must be a valid, secure origin";
 
     return origin;

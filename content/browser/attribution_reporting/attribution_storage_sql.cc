@@ -30,6 +30,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -48,7 +49,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
@@ -247,14 +247,14 @@ int SerializeReportType(AttributionReport::Type val) {
 }
 
 std::string SerializePotentiallyTrustworthyOrigin(const url::Origin& origin) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK(attribution_reporting::SuitableOrigin::IsSuitable(origin));
   return SerializeOrigin(origin);
 }
 
 url::Origin DeserializePotentiallyTrustworthyOrigin(const std::string& string) {
   url::Origin origin = DeserializeOrigin(string);
 
-  if (!network::IsOriginPotentiallyTrustworthy(origin))
+  if (!attribution_reporting::SuitableOrigin::IsSuitable(origin))
     return url::Origin();
 
   return origin;

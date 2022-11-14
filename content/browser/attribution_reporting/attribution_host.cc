@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
@@ -293,7 +293,7 @@ const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
 
   // TODO(crbug.com/1378749): Invoke mojo::ReportBadMessage here when we can be
   // sure honest renderers won't hit this path.
-  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
+  if (!attribution_reporting::SuitableOrigin::IsSuitable(top_frame_origin)) {
     dump_without_crashing();
     return nullptr;
   }

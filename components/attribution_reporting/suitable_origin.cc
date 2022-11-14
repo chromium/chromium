@@ -15,13 +15,10 @@
 
 namespace attribution_reporting {
 
-namespace {
-
-bool IsSuitable(const url::Origin& origin) {
+// static
+bool SuitableOrigin::IsSuitable(const url::Origin& origin) {
   return network::IsOriginPotentiallyTrustworthy(origin);
 }
-
-}  // namespace
 
 // static
 absl::optional<SuitableOrigin> SuitableOrigin::Create(url::Origin origin) {

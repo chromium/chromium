@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "components/attribution_reporting/suitable_origin.h"
 
 namespace content {
 
@@ -18,7 +18,8 @@ AttributionTrigger::AttributionTrigger(
     : registration_(std::move(registration)),
       destination_origin_(std::move(destination_origin)),
       is_within_fenced_frame_(is_within_fenced_frame) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));
+  DCHECK(
+      attribution_reporting::SuitableOrigin::IsSuitable(destination_origin_));
 }
 
 AttributionTrigger::AttributionTrigger(const AttributionTrigger&) = default;

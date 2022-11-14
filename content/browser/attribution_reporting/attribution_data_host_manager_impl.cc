@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
@@ -30,7 +31,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -40,6 +40,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -236,7 +237,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     url::Origin context_origin,
     bool is_within_fenced_frame) {
-  DCHECK(network::IsOriginPotentiallyTrustworthy(context_origin));
+  DCHECK(SuitableOrigin::IsSuitable(context_origin));
 
   receivers_.Add(
       this, std::move(data_host),
@@ -272,8 +273,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     url::Origin reporting_origin,
     const url::Origin& source_origin,
     AttributionInputEvent input_event) {
-  if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
+  if (!SuitableOrigin::IsSuitable(source_origin) ||
+      !SuitableOrigin::IsSuitable(reporting_origin)) {
     return;
   }
 
@@ -312,8 +313,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
     const url::Origin& source_origin,
     const url::Origin& destination_origin) {
-  if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(destination_origin)) {
+  if (!SuitableOrigin::IsSuitable(source_origin) ||
+      !SuitableOrigin::IsSuitable(destination_origin)) {
     NotifyNavigationFailure(attribution_src_token);
     return;
   }
@@ -381,13 +382,13 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
-  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin)) {
+  if (!SuitableOrigin::IsSuitable(data->reporting_origin)) {
     RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     ReportBadMessageInsecureReportingOrigin();
     return;
   }
 
-  if (!network::IsOriginPotentiallyTrustworthy(data->destination)) {
+  if (!SuitableOrigin::IsSuitable(data->destination)) {
     RecordSourceDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     mojo::ReportBadMessage(
         "AttributionDataHost: Destination origin must be secure.");
@@ -395,7 +396,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   FrozenContext& context = receivers_.current_context();
-  DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+  DCHECK(SuitableOrigin::IsSuitable(context.context_origin));
 
   if (context.registration_type == RegistrationType::kTrigger) {
     RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
@@ -461,14 +462,14 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
     blink::mojom::AttributionTriggerDataPtr data) {
-  if (!network::IsOriginPotentiallyTrustworthy(data->reporting_origin)) {
+  if (!SuitableOrigin::IsSuitable(data->reporting_origin)) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kUntrustworthyOrigin);
     ReportBadMessageInsecureReportingOrigin();
     return;
   }
 
   FrozenContext& context = receivers_.current_context();
-  DCHECK(network::IsOriginPotentiallyTrustworthy(context.context_origin));
+  DCHECK(SuitableOrigin::IsSuitable(context.context_origin));
 
   if (context.source_type == AttributionSourceType::kNavigation) {
     RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);

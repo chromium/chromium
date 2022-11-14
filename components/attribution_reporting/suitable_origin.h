@@ -28,6 +28,8 @@ namespace attribution_reporting {
 // It is an error to use instances of this type after moving.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
  public:
+  static bool IsSuitable(const url::Origin&);
+
   static absl::optional<SuitableOrigin> Create(url::Origin);
 
   // Creates a `SuitableOrigin` from the given string, which is first converted
