@@ -3421,6 +3421,31 @@ TEST_F(InputMethodControllerTest, AutocapitalizeTextInputFlags) {
   }
 }
 
+TEST_F(InputMethodControllerTest, VerticalTextInputFlags) {
+  if (!RuntimeEnabledFeatures::ImeVerticalFlagEnabled())
+    return;
+  Vector<std::pair<String, int>> element_html_and_expected_flags = {
+      {"<div contenteditable='true'></div>", 0},
+      {"<div contenteditable='true' style='writing-mode:vertical-rl;'></div>",
+       kWebTextInputFlagVertical},
+      {"<div contenteditable='true' style='writing-mode:vertical-lr;'></div>",
+       kWebTextInputFlagVertical},
+  };
+
+  for (const std::pair<String, int>& html_and_flags :
+       element_html_and_expected_flags) {
+    const String& element_html = html_and_flags.first;
+    const int expected_flags = html_and_flags.second;
+
+    GetDocument().write(element_html);
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    To<Element>(GetDocument().body()->lastChild())->Focus();
+
+    EXPECT_EQ(expected_flags,
+              Controller().TextInputInfo().flags & kWebTextInputFlagVertical);
+  }
+}
+
 TEST_F(InputMethodControllerTest, ExecCommandDuringComposition) {
   Element* div =
       InsertHTMLElement("<div id='sample' contenteditable></div>", "sample");

@@ -11,6 +11,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/linux/composition_text_util_pango.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -289,7 +290,12 @@ void InputMethodContextImplGtk::SetContentType(ui::TextInputType type,
                                                ui::TextInputMode mode,
                                                uint32_t flags,
                                                bool should_do_learning) {
-  // Do nothing.
+  if (flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
+    g_object_set(gtk_context_, "input-hints", GTK_INPUT_HINT_VERTICAL_WRITING,
+                 nullptr);
+    g_object_set(gtk_simple_context_, "input-hints",
+                 GTK_INPUT_HINT_VERTICAL_WRITING, nullptr);
+  }
 }
 
 ui::VirtualKeyboardController*

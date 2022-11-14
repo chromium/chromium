@@ -8,6 +8,7 @@
 
 #include <InputScope.h>
 #include <OleCtl.h>
+#include <tsattrs.h>
 #include <wrl/client.h>
 
 #include <vector>
@@ -20,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1594,6 +1596,34 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
       // we do not break here to clean up all the retrieved VARIANTs.
     }
   }
+
+  {
+    SCOPED_TRACE("Verify TSATTRID_Text_VerticalWriting support");
+    TS_ATTRVAL buffer[2] = {};
+    num_copied = 0xfffffff;
+    const TS_ATTRID attributes[] = {TSATTRID_Text_VerticalWriting};
+
+    ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(0, std::size(attributes),
+                                                       attributes));
+
+    EXPECT_CALL(text_input_client_, GetTextInputFlags()).WillOnce(Return(0));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
+                                                        buffer, &num_copied));
+    EXPECT_EQ(num_copied, 1U);
+    EXPECT_TRUE(IsEqualGUID(buffer[0].idAttr, TSATTRID_Text_VerticalWriting));
+    EXPECT_EQ(VT_BOOL, buffer[0].varValue.vt);
+    EXPECT_FALSE(buffer[0].varValue.boolVal);
+
+    EXPECT_CALL(text_input_client_, GetTextInputFlags())
+        .WillOnce(Return(ui::TEXT_INPUT_FLAG_VERTICAL));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
+                                                        buffer, &num_copied));
+    EXPECT_EQ(num_copied, 1U);
+    EXPECT_TRUE(IsEqualGUID(buffer[0].idAttr, TSATTRID_Text_VerticalWriting));
+    EXPECT_EQ(VT_BOOL, buffer[0].varValue.vt);
+    EXPECT_TRUE(buffer[0].varValue.boolVal);
+  }
+
   {
     SCOPED_TRACE("Check if RetrieveRequestedAttrs fails while focus is lost");
     // Emulate focus lost

@@ -7,6 +7,7 @@
 
 #include <InputScope.h>
 #include <OleCtl.h>
+#include <tsattrs.h>
 #include <wrl/client.h>
 
 #include <algorithm>
@@ -15,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/win/tsf_input_scope.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/event_dispatcher.h"
@@ -754,7 +756,8 @@ HRESULT TSFTextStore::RequestSupportedAttrs(
   for (size_t i = 0; i < attribute_buffer_size; ++i) {
     const auto& attribute = attribute_buffer[i];
     if (IsEqualGUID(GUID_PROP_INPUTSCOPE, attribute) ||
-        IsEqualGUID(GUID_PROP_URL, attribute)) {
+        IsEqualGUID(GUID_PROP_URL, attribute) ||
+        IsEqualGUID(TSATTRID_Text_VerticalWriting, attribute)) {
       supported_attrs_.push_back(attribute);
     }
   }
@@ -805,6 +808,12 @@ HRESULT TSFTextStore::RetrieveRequestedAttrs(ULONG attribute_buffer_size,
       }
       attribute_buffer[i].varValue.bstrVal =
           SysAllocStringLen(wide_url.c_str(), wide_url.length());
+    } else if (IsEqualGUID(TSATTRID_Text_VerticalWriting,
+                           supported_attrs_[i])) {
+      attribute_buffer[i].varValue.vt = VT_BOOL;
+      attribute_buffer[i].varValue.boolVal =
+          !!(text_input_client_->GetTextInputFlags() &
+             ui::TEXT_INPUT_FLAG_VERTICAL);
     }
   }
   return S_OK;
