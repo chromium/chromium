@@ -1314,7 +1314,7 @@
   {
     "name": "deferred-font-shaping",
     "owners": [ "tkent", "layout-dev" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 122
   },
   {
     "name": "deprecate-alt-based-six-pack",
