@@ -5,8 +5,6 @@
 source_set("bookmarks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bookmark_empty_background.h",
-    "bookmark_empty_background.mm",
     "bookmark_home_consumer.h",
     "bookmark_home_mediator.h",
     "bookmark_home_mediator.mm",

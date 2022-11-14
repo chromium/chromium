@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_empty_background.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
@@ -196,10 +195,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Scrim when search box in focused.
 @property(nonatomic, strong) UIControl* scrimView;
-
-// Background shown when there is no bookmarks or folders at the current root
-// node.
-@property(nonatomic, strong) BookmarkEmptyBackground* emptyTableBackgroundView;
 
 // Illustrated View displayed when the current root node is empty.
 @property(nonatomic, strong) TableViewIllustratedEmptyView* emptyViewBackground;
