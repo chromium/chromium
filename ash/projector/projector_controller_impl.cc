@@ -227,6 +227,9 @@ void ProjectorControllerImpl::OnSpeechRecognitionStopped() {
 NewScreencastPrecondition
 ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   NewScreencastPrecondition result;
+  // Make the default reason to be `kEnabledBySoda`.
+  result.reasons = {NewScreencastPreconditionReason::kEnabledBySoda};
+
   // For development purposes on the x11 simulator, on-device speech recognition
   // and DriveFS are not supported.
   if (!ProjectorController::AreExtendedProjectorFeaturesDisabled()) {

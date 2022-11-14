@@ -219,7 +219,8 @@ TEST_F(ProjectorSodaInstallationControllerTest,
       .WillByDefault(testing::Return(true));
   EXPECT_CALL(projector_client(),
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                  NewScreencastPreconditionState::kEnabled, {})));
+                  NewScreencastPreconditionState::kEnabled,
+                  {NewScreencastPreconditionReason::kEnabledBySoda})));
 
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());

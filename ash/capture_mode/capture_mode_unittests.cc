@@ -5471,7 +5471,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   // down.
   EXPECT_CALL(*projector_client(),
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                  NewScreencastPreconditionState::kEnabled, {})));
+                  NewScreencastPreconditionState::kEnabled,
+                  {NewScreencastPreconditionReason::kEnabledBySoda})));
 }
 
 // Tests that the capture mode configurations in normal capture mode session

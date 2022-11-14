@@ -224,7 +224,8 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
   InitFakeMic(/*mic_present=*/true);
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                  NewScreencastPreconditionState::kEnabled, {})));
+                  NewScreencastPreconditionState::kEnabled,
+                  {NewScreencastPreconditionReason::kEnabledBySoda})));
   controller_->OnAudioNodesChanged();
 
   InitFakeMic(/*mic_present=*/false);
@@ -249,7 +250,8 @@ TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
 
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                  NewScreencastPreconditionState::kEnabled, {})));
+                  NewScreencastPreconditionState::kEnabled,
+                  {NewScreencastPreconditionReason::kEnabledBySoda})));
   controller_->OnSpeechRecognitionAvailabilityChanged(
       SpeechRecognitionAvailability::kAvailable);
 }
@@ -315,7 +317,8 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
         EXPECT_CALL(
             mock_client_,
             OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                NewScreencastPreconditionState::kEnabled, {})))
+                NewScreencastPreconditionState::kEnabled,
+                {NewScreencastPreconditionReason::kEnabledBySoda})))
             .Times(0);
         EXPECT_CALL(mock_client_, StopSpeechRecognition())
             .WillOnce(testing::Invoke(
@@ -385,7 +388,8 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
         EXPECT_CALL(
             mock_client_,
             OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
-                NewScreencastPreconditionState::kEnabled, {})));
+                NewScreencastPreconditionState::kEnabled,
+                {NewScreencastPreconditionReason::kEnabledBySoda})));
 
         const std::string expected_screencast_name =
             "Screencast 2021-01-02 20.02.10";
