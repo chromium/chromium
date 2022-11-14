@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "ui/base/models/image_model.h"
