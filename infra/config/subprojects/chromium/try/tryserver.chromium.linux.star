@@ -285,10 +285,8 @@ try_.compilator_builder(
     name = "linux-wayland-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    # TODO(crbug.com/1287228): Set to 16 once compilator bots are moved
-    cores = "8|16",
-    # TODO (crbug.com/1287228): Set to True once compilator bots are moved
-    ssd = None,
+    cores = 16,
+    ssd = True,
 )
 
 try_.builder(

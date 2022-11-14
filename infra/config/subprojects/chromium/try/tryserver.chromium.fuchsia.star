@@ -14,7 +14,7 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.fuchsia",
     cores = 8,
     orchestrator_cores = 2,
-    compilator_cores = 32,
+    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
@@ -168,10 +168,8 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "fuchsia-x64-cast-receiver-rel-compilator",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    # TODO(crbug.com/1298111): Set to 16 once compilator bots are moved
-    cores = "8|16",
-    # TODO(crbug.com/1298111): Set to True once compilator bots are moved
-    ssd = None,
+    cores = 16,
+    ssd = True,
     main_list_view = "try",
 )
 
