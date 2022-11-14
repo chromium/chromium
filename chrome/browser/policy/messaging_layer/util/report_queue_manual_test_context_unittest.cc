@@ -73,8 +73,15 @@ class ReportQueueManualTestContextTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+// TODO(crbug.com/1383860) Disabled due to flake on Mac.
+#if BUILDFLAG(IS_MAC)
+TEST_F(
+    ReportQueueManualTestContextTest,
+    DISABLED_BuildsReportQueueManualTestContextAndUploadsDeviceEventMessages) {
+#else
 TEST_F(ReportQueueManualTestContextTest,
        BuildsReportQueueManualTestContextAndUploadsDeviceEventMessages) {
+#endif
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .Times(kNumberOfMessagesToEnqueue)
       .WillRepeatedly(
