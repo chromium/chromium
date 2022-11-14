@@ -524,6 +524,12 @@
       dark: "rgba($white.rgb, 0.12)",
     },
 
+    /* color palette swatch */
+    swatch_border: {
+      light: "rgba($google_grey_900.rgb, 0.5)",
+      dark: "rgba($white.rgb, 0.38)",
+    },
+
     /* Taken from go/ea-asset-palette. */
     illustration_color_1: {
       light: "$google_blue_500",
