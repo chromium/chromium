@@ -102,7 +102,7 @@ struct PLATFORM_EXPORT ResourceLoaderOptions {
 
   // If not null, this URLLoaderFactory should be used to load this resource
   // rather than whatever factory the system might otherwise use.
-  // Used for example for loading blob: URLs and for prefetch loading.
+  // Used for example for loading blob: URLs.
   scoped_refptr<base::RefCountedData<
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>>
       url_loader_factory;
