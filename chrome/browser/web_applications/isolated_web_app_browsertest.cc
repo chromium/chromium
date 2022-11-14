@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -53,7 +54,6 @@ namespace web_app {
 namespace {
 
 const char kAppHost[] = "app.com";
-const char kApp2Host[] = "app2.com";
 const char kNonAppHost[] = "nonapp.com";
 
 const int32_t kApplicationServerKeyLength = 65;
@@ -181,6 +181,8 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  public:
   IsolatedWebAppBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    isolated_web_app_dev_server_ =
+        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
   }
 
   IsolatedWebAppBrowserTest(const IsolatedWebAppBrowserTest&) = delete;
@@ -190,8 +192,7 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
 
-    std::string isolated_web_app_origins =
-        std::string("https://") + kAppHost + ",https://" + kApp2Host;
+    std::string isolated_web_app_origins = std::string("https://") + kAppHost;
     command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     isolated_web_app_origins);
   }
@@ -207,23 +208,42 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
         ->GetPrimaryMainFrame();
   }
 
+  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
+    return *isolated_web_app_dev_server_.get();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppBrowserTest,
+    CanInstallAppWithManifestFieldAndIsolatedAppOriginsFlag) {
+  AppId app_id = InstallIsolatedWebApp(kAppHost);
+  content::RenderFrameHost* app_frame = OpenApp(app_id);
+
+  EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
+  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
+                kMaybeIsolatedApplication,
+            app_frame->GetWebExposedIsolationLevel());
+}
+
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
-  AppId app1_id = InstallIsolatedWebApp(kAppHost);
-  AppId app2_id = InstallIsolatedWebApp(kApp2Host);
+  web_app::IsolatedWebAppUrlInfo url_info1 = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  web_app::IsolatedWebAppUrlInfo url_info2 = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
 
   auto* non_app_frame = ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/banners/isolated/simple.html"));
+      browser(), https_server()->GetURL("/simple.html"));
   EXPECT_TRUE(non_app_frame);
   EXPECT_EQ(default_storage_partition(), non_app_frame->GetStoragePartition());
 
-  auto* app_frame = OpenApp(app1_id);
+  auto* app_frame = OpenApp(url_info1.app_id());
   EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
 
-  auto* app2_frame = OpenApp(app2_id);
+  auto* app2_frame = OpenApp(url_info2.app_id());
   EXPECT_NE(default_storage_partition(), app2_frame->GetStoragePartition());
 
   EXPECT_NE(app_frame->GetStoragePartition(),
@@ -232,10 +252,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
                        OmniboxNavigationOpensNewPwaWindow) {
-  AppId app_id = InstallIsolatedWebApp(kAppHost);
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
 
-  GURL app_url =
-      https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
+  GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
   auto* app_frame =
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
@@ -245,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   // The app's frame should belong to an isolated PWA browser window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
   EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
                 kMaybeIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
@@ -254,15 +275,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserTest,
     OmniboxNavigationOpensNewPwaWindowEvenIfUserDisplayModeIsBrowser) {
-  AppId app_id = InstallIsolatedWebApp(kAppHost);
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
 
   WebAppProvider::GetForTest(browser()->profile())
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, UserDisplayMode::kBrowser,
+      .SetAppUserDisplayMode(url_info.app_id(), UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
-  GURL app_url =
-      https_server()->GetURL(kAppHost, "/banners/isolated/simple.html");
+  GURL app_url = url_info.origin().GetURL().Resolve("/index.html");
   auto* app_frame =
       NavigateToURLInNewTab(browser(), app_url, WindowOpenDisposition::UNKNOWN);
 
@@ -272,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(
   // The app's frame should belong to an isolated PWA browser window.
   Browser* app_browser = GetBrowserFromFrame(app_frame);
   EXPECT_NE(app_browser, browser());
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
   EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
                 kMaybeIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
@@ -280,9 +302,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that the app menu doesn't have an 'Open in Chrome' option.
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
-  AppId app_id = InstallIsolatedWebApp(kAppHost);
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
 
   EXPECT_FALSE(
       app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
@@ -306,16 +329,20 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
         base::BindRepeating(&IsolatedWebAppBrowserCookieTest::MonitorRequest,
                             base::Unretained(this)));
 
+    base::FilePath isolated_web_app_dev_server_root =
+        GetChromeTestDataDir().Append(
+            FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+    isolated_web_app_dev_server_ = std::make_unique<net::EmbeddedTestServer>();
+    isolated_web_app_dev_server_->AddDefaultHandlers(
+        isolated_web_app_dev_server_root);
+    isolated_web_app_dev_server_->RegisterRequestMonitor(
+        base::BindRepeating(&IsolatedWebAppBrowserCookieTest::MonitorRequest,
+                            base::Unretained(this)));
+    CHECK(isolated_web_app_dev_server_->Start());
+
     IsolatedWebAppBrowserTest::SetUpOnMainThread();
   }
 
- protected:
-  // Returns the "Cookie" headers that were received for the given URL.
-  const CookieHeaders& GetCookieHeadersForUrl(const GURL& url) {
-    return cookie_map_[url.spec()];
-  }
-
- private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Replace the host in |request.GetURL()| with the value from the Host
     // header, as GetURL()'s host will be 127.0.0.1.
@@ -326,6 +353,17 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
     cookie_map_[url.spec()].push_back(GetHeader(request, "cookie"));
   }
 
+ protected:
+  // Returns the "Cookie" headers that were received for the given URL.
+  const CookieHeaders& GetCookieHeadersForUrl(const GURL& url) {
+    return cookie_map_[url.spec()];
+  }
+
+  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
+    return *isolated_web_app_dev_server_.get();
+  }
+
+ private:
   std::string GetHeader(const net::test_server::HttpRequest& request,
                         const std::string& header_name) {
     auto header = request.headers.find(header_name);
@@ -336,38 +374,43 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
   // contain the contents of the "Cookies" header for the nth request to the
   // given GURL.
   std::unordered_map<std::string, CookieHeaders> cookie_map_;
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
-  AppId app_id = InstallIsolatedWebApp(kAppHost);
+  web_app::IsolatedWebAppUrlInfo url_info =
+      InstallDevModeProxyIsolatedWebApp(url::Origin::Create(
+          isolated_web_app_dev_server().GetURL("localhost", "/")));
 
-  GURL app_url =
-      https_server()->GetURL(kAppHost, "/banners/isolated/cookie.html");
-  GURL non_app_url =
-      https_server()->GetURL(kNonAppHost, "/banners/isolated/cookie.html");
+  GURL app_url = url_info.origin().GetURL().Resolve("/cookie.html");
+  GURL app_proxy_url =
+      isolated_web_app_dev_server().GetURL("localhost", "/cookie.html");
+  GURL non_app_url = https_server()->GetURL(
+      kNonAppHost, "/web_apps/simple_isolated_app/cookie.html");
 
   // Load a page that sets a cookie, then create a cross-origin iframe that
   // loads the same page.
-  auto* app_frame = OpenApp(app_id);
-  auto* app_browser = GetBrowserFromFrame(app_frame);
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  Browser* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
   CreateIframe(app_frame, "child", non_app_url, "");
 
-  const auto& app_cookies = GetCookieHeadersForUrl(app_url);
+  const auto& app_cookies = GetCookieHeadersForUrl(app_proxy_url);
   EXPECT_EQ(1u, app_cookies.size());
   EXPECT_TRUE(app_cookies[0].empty());
   const auto& non_app_cookies = GetCookieHeadersForUrl(non_app_url);
   EXPECT_EQ(1u, non_app_cookies.size());
   EXPECT_TRUE(non_app_cookies[0].empty());
 
-  // Load the pages again. Both frames should send the cookie in their requests.
-  auto* app_frame2 = OpenApp(app_id);
-  auto* app_browser2 = GetBrowserFromFrame(app_frame2);
+  // Load the pages again. The non-app page should send the cookie, but the
+  // app won't because the proxy disables cookies (CredentialsMode::kOmit).
+  content::RenderFrameHost* app_frame2 = OpenApp(url_info.app_id());
+  Browser* app_browser2 = GetBrowserFromFrame(app_frame2);
   app_frame2 = ui_test_utils::NavigateToURL(app_browser2, app_url);
   CreateIframe(app_frame2, "child", non_app_url, "");
 
   EXPECT_EQ(2u, app_cookies.size());
-  EXPECT_EQ("foo=bar", app_cookies[1]);
+  EXPECT_TRUE(app_cookies[1].empty());
   EXPECT_EQ(2u, non_app_cookies.size());
   EXPECT_EQ("foo=bar", non_app_cookies[1]);
 
