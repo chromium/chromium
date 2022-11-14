@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/widget/sublevel_manager.h"
+
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "ui/views/widget/native_widget_private.h"
-#include "ui/views/widget/sublevel_manager.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -39,8 +40,15 @@ int SublevelManager::GetSublevel() const {
 }
 
 void SublevelManager::EnsureOwnerSublevel() {
-  if (owner_->parent()) {
-    owner_->parent()->GetSublevelManager()->OrderChildWidget(owner_);
+  // Walk through the path to the root and ensure sublevel on every widget
+  // on the path. This is to work around the behavior on some platforms
+  // where showing an activatable widget brings its ancestors to the front.
+  Widget* parent = owner_->parent();
+  Widget* child = owner_;
+  while (parent) {
+    parent->GetSublevelManager()->OrderChildWidget(child);
+    child = parent;
+    parent = parent->parent();
   }
 }
 

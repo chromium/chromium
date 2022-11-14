@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 
@@ -54,6 +55,40 @@ class SublevelManagerTest : public ViewsTestBase,
       widget->Show();
     else
       widget->ShowInactive();
+  }
+
+  static std::string PrintTestName(
+      const ::testing::TestParamInfo<SublevelManagerTest::ParamType>& info) {
+    std::string test_name;
+    switch (std::get<ViewsTestBase::NativeWidgetType>(info.param)) {
+      case ViewsTestBase::NativeWidgetType::kDefault:
+        test_name += "DefaultWidget";
+        break;
+      case ViewsTestBase::NativeWidgetType::kDesktop:
+        test_name += "DesktopWidget";
+        break;
+    }
+    test_name += "_";
+    switch (std::get<WidgetShowType>(info.param)) {
+      case WidgetShowType::kShowActive:
+        test_name += "ShowActive";
+        break;
+      case WidgetShowType::kShowInactive:
+        test_name += "ShowInactive";
+        break;
+    }
+    test_name += "_";
+    switch (std::get<Widget::InitParams::Activatable>(info.param)) {
+      case Widget::InitParams::Activatable::kNo:
+        test_name += "Inactivatable";
+        break;
+      case Widget::InitParams::Activatable::kYes:
+        test_name += "Activatable";
+        break;
+      default:
+        NOTREACHED();
+    }
+    return test_name;
   }
 
  protected:
@@ -250,6 +285,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(WidgetShowType::kShowActive,
                           WidgetShowType::kShowInactive),
         ::testing::Values(Widget::InitParams::Activatable::kNo,
-                          Widget::InitParams::Activatable::kNo)));
+                          Widget::InitParams::Activatable::kYes)),
+    SublevelManagerTest::PrintTestName);
 
 }  // namespace views
