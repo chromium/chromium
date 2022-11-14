@@ -1252,8 +1252,10 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (tracker_)
     AddMatchedRulesToTracker(collector);
 
+  const MatchResult& match_result = collector.MatchedResult();
+
   if (style_request.IsPseudoStyleRequest()) {
-    if (!collector.MatchedResult().HasMatchedProperties()) {
+    if (!match_result.HasMatchedProperties()) {
       StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
       state.SetHadNoMatchedProperties();
       return;
@@ -1266,9 +1268,12 @@ void StyleResolver::ApplyBaseStyleNoCache(
   // computation of font-relative lengths.
   PreserveTextAutosizingMultiplierIfNeeded(state, style_request);
 
-  CascadeAndApplyMatchedProperties(state, cascade);
+  if (match_result.HasNonUniversalHighlightPseudoStyles())
+    state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(true);
+  if (match_result.HasNonUaHighlightPseudoStyles())
+    state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(true);
 
-  const MatchResult& match_result = collector.MatchedResult();
+  CascadeAndApplyMatchedProperties(state, cascade);
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag))
     state.StyleBuilder().SetAffectedByDrag();
@@ -1292,10 +1297,6 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.Style()->SetHasRemUnits();
   if (match_result.ConditionallyAffectsAnimations())
     state.SetCanAffectAnimations();
-  if (match_result.HasNonUniversalHighlightPseudoStyles())
-    state.StyleBuilder().SetHasNonUniversalHighlightPseudoStyles(true);
-  if (match_result.HasNonUaHighlightPseudoStyles())
-    state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(true);
   if (!match_result.CustomHighlightNames().empty()) {
     state.StyleBuilder().SetCustomHighlightNames(
         match_result.CustomHighlightNames());
