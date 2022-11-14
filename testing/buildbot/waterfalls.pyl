@@ -735,8 +735,8 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
+          'pie_fleet',
+          'walleye',
         ],
         'test_suites': {
           'gtest_tests': 'android_marshmallow_gtests',
