@@ -200,13 +200,6 @@ class CSSProperties(object):
             Property(**x) for x in css_properties_file.name_dictionaries
         ]
 
-        self._properties_by_name = {p.name.original: p for p in properties}
-
-        self.add_properties(properties)
-
-        self._last_unresolved_property_id = max(property_.enum_value
-                                                for property_ in self._aliases)
-
         # Process extra fields, if any.
         self._extra_fields = []
         if computed_style_extra_fields_path:
@@ -216,17 +209,19 @@ class CSSProperties(object):
             self._extra_fields = [
                 Property(**x) for x in fields.name_dictionaries
             ]
-        for field in self._extra_fields:
-            self.set_derived_attributes(field)
-            validate_property(field, self._properties_by_name)
 
-    def add_properties(self, properties):
-        for property_ in properties:
+        self._properties_by_name = {p.name.original: p for p in properties}
+
+        for property_ in properties + self._extra_fields:
             self.set_derived_attributes(property_)
-            self.set_derived_visited_attributes(property_)
-            self.set_derived_surrogate_attributes(property_)
             validate_property(property_, self._properties_by_name)
 
+        self.add_properties(properties)
+
+        self._last_unresolved_property_id = max(property_.enum_value
+                                                for property_ in self._aliases)
+
+    def add_properties(self, properties):
         self._aliases = [
             property_ for property_ in properties if property_.alias_for
         ]
@@ -450,6 +445,9 @@ class CSSProperties(object):
 
         property_.in_origin_trial = property_.runtime_flag and \
             property_.runtime_flag in self._origin_trial_features
+
+        self.set_derived_visited_attributes(property_)
+        self.set_derived_surrogate_attributes(property_)
 
     @property
     def default_parameters(self):
