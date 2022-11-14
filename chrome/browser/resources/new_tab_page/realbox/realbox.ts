@@ -83,9 +83,10 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** Whether to display themed icons for the current background color. */
-      themedIcons: {
+      /** Whether to display single-colored icons or not. */
+      singleColoredIcons: {
         type: Boolean,
+        value: false,
         reflectToAttribute: true,
       },
 
@@ -199,7 +200,7 @@ export class RealboxElement extends PolymerElement {
   matchesAreVisible: boolean;
   matchSearchbox: boolean;
   realboxLensSearchEnabled: boolean;
-  themedIcons: boolean;
+  singleColoredIcons: boolean;
   private charTypedTime_: number;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;

@@ -41,14 +41,6 @@
     position: relative;
   }
 
-  :host([themed-icons]) #voiceSearchButton {
-    --iron-icon-fill-color: var(--color-new-tab-page-primary-foreground);
-  }
-
-  :host(:not([themed-icons])) #voiceSearchButton {
-    background-image: url(chrome://new-tab-page/icons/googlemic_clr_24px.svg);
-  }
-
   input {
     background-color: var(--color-realbox-background);
     border: none;
@@ -129,7 +121,27 @@
     width: 26px;
   }
 
-  :host #lensSearchButton {
+  :host([single-colored-icons]) #voiceSearchButton,
+  :host([single-colored-icons]) #lensSearchButton {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 21px 21px;
+    background-color: var(--color-new-tab-page-primary-foreground);
+  }
+
+  :host([single-colored-icons]) #voiceSearchButton {
+    -webkit-mask-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host(:not([single-colored-icons])) #voiceSearchButton {
+    background-image: url(icons/googlemic_clr_24px.svg);
+  }
+
+  :host([single-colored-icons]) #lensSearchButton {
+    -webkit-mask-image: url(chrome://new-tab-page/icons/lens_icon.svg);
+  }
+
+  :host(:not([single-colored-icons])) #lensSearchButton {
     background-image: url(chrome://new-tab-page/icons/lens_icon.svg);
   }
 
@@ -179,9 +191,6 @@
     class="realbox-icon-button"
     on-click="onVoiceSearchClick_"
     title="$i18n{voiceSearchButtonLabel}">
-    <template is="dom-if" if="[[themedIcons]]">
-      <iron-icon class="realbox-icon-button-icon" icon="cr:mic"></iron-icon>
-    </template>
   </button>
   <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
     <button id="lensSearchButton"
