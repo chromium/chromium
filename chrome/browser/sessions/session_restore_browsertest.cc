@@ -1195,7 +1195,13 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, RecentlyClosedGroup) {
+// Flaky (https://crbug.com/1383903)
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RecentlyClosedGroup DISABLED_RecentlyClosedGroup
+#else
+#define MAYBE_RecentlyClosedGroup RecentlyClosedGroup
+#endif
+IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, MAYBE_RecentlyClosedGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   constexpr int kNumTabs = 2;
