@@ -732,24 +732,35 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
   if (!IsRegularProfile(profile_type))
     return PromptType::kNone;
 
-  // If the release 3 feature is not enabled, no prompt is required.
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
-    return PromptType::kNone;
-
   // Forced testing feature parameters override everything.
-  if (privacy_sandbox::kPrivacySandboxSettings3DisablePromptForTesting.Get())
-    return PromptType::kNone;
-
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kDisablePrivacySandboxPrompts)) {
     return PromptType::kNone;
   }
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting.Get())
+    return PromptType::kM1Consent;
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeRowForTesting
+          .Get())
+    return PromptType::kM1NoticeROW;
+
+  if (privacy_sandbox::kPrivacySandboxSettings4ForceShowNoticeEeaForTesting
+          .Get())
+    return PromptType::kM1NoticeEEA;
+
+  if (privacy_sandbox::kPrivacySandboxSettings3DisablePromptForTesting.Get())
+    return PromptType::kNone;
 
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowConsentForTesting.Get())
     return PromptType::kConsent;
 
   if (privacy_sandbox::kPrivacySandboxSettings3ForceShowNoticeForTesting.Get())
     return PromptType::kNotice;
+
+  // If the release 3 feature is not enabled, no prompt is required.
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
+    return PromptType::kNone;
 
   // If neither consent or notice is required, no prompt is required.
   if (!privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get() &&

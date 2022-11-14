@@ -21,6 +21,17 @@ extern const base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired;
 // should be enabled at any one time.
 extern const base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired;
 
+// Feature parameters which should exclusively be used for testing purposes.
+// Enabling any of these parameters may result in the Privacy Sandbox prefs
+// (unsynced) entering an unexpected state, requiring profile deletion to
+// resolve.
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowConsentForTesting;
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeRowForTesting;
+extern const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeEeaForTesting;
+
 // Enables the third release of the Privacy Sandbox settings.
 BASE_DECLARE_FEATURE(kPrivacySandboxSettings3);
 // When true, the user will be shown a consent to enable the Privacy Sandbox

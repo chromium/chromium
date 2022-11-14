@@ -14,6 +14,16 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ConsentRequired{
 const base::FeatureParam<bool> kPrivacySandboxSettings4NoticeRequired{
     &kPrivacySandboxSettings4, "notice-required", false};
 
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowConsentForTesting{
+        &kPrivacySandboxSettings4, "force-show-consent-for-testing", false};
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeRowForTesting{
+        &kPrivacySandboxSettings4, "force-show-notice-row-for-testing", false};
+const base::FeatureParam<bool>
+    kPrivacySandboxSettings4ForceShowNoticeEeaForTesting{
+        &kPrivacySandboxSettings4, "force-show-notice-eea-for-testing", false};
+
 BASE_FEATURE(kPrivacySandboxSettings3,
              "PrivacySandboxSettings3",
              base::FEATURE_ENABLED_BY_DEFAULT);
