@@ -25709,6 +25709,16 @@ Called by update_debug_scenarios.py.-->
   </int>
 </enum>
 
+<enum name="DeviceActiveClientPreservedFileState">
+<!-- This must be kept current with DeviceActivityClient::PreservedFileState
+located in chromeos/ash/components/device_activity/device_activity_client.h -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success read file and empty local state"/>
+  <int value="2" label="Success read file but local state already set"/>
+  <int value="3" label="Fail read file and local state is either set or unset"/>
+</enum>
+
 <enum name="DeviceActiveClientPsmResponse">
 <!-- This must be kept current with DeviceActivityClient::PsmResponse
 located in chromeos/ash/components/device_activity/device_activity_client.h -->
@@ -25758,6 +25768,13 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="19" label="DeviceActivityClientTransitionToCheckIn"/>
   <int value="20" label="DeviceActivityClientOnCheckInDone"/>
   <int value="21" label="DeviceActivityClientTransitionToIdle"/>
+  <int value="22" label="DeviceActivityClientOnSystemClockSyncResult"/>
+  <int value="23" label="DeviceActivityClientReportingTriggeredByTimer"/>
+  <int value="24" label="DeviceActivityClientSaveLastPingDatesStatus"/>
+  <int value="25"
+      label="DeviceActivityClientOnSaveLastPingDatesStatusComplete"/>
+  <int value="26" label="DeviceActivityClientGetLastPingDatesStatus"/>
+  <int value="27" label="DeviceActivityClientOnGetLastPingDatesStatusFetched"/>
 </enum>
 
 <enum name="DeviceIdMismatch">
