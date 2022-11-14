@@ -116,6 +116,255 @@ class QuerySelectorHandler {
   // Handles sending IPCs for a single querySelector request.
   mojo::AssociatedRemote<extensions::mojom::AutomationQuery> automation_query_;
 };
+
+// Helper function to convert extension action to ax action.
+// |extension_id| can be the empty string.
+// |data| is an out param.
+AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
+    const ui::AXTreeID& tree_id,
+    int32_t automation_node_id,
+    const std::string& action_type_string,
+    int request_id,
+    const base::Value& additional_properties,
+    const std::string& extension_id,
+    ui::AXActionData* action) {
+  AutomationInternalPerformActionFunction::Result validation_error_result;
+  validation_error_result.validation_success = false;
+  AutomationInternalPerformActionFunction::Result success_result;
+  success_result.validation_success = true;
+  action->target_tree_id = tree_id;
+  action->source_extension_id = extension_id;
+  action->target_node_id = automation_node_id;
+  action->request_id = request_id;
+  api::automation::ActionType action_type =
+      api::automation::ParseActionType(action_type_string);
+  switch (action_type) {
+    case api::automation::ACTION_TYPE_BLUR:
+      action->action = ax::mojom::Action::kBlur;
+      break;
+    case api::automation::ACTION_TYPE_CLEARACCESSIBILITYFOCUS:
+      action->action = ax::mojom::Action::kClearAccessibilityFocus;
+      break;
+    case api::automation::ACTION_TYPE_DECREMENT:
+      action->action = ax::mojom::Action::kDecrement;
+      break;
+    case api::automation::ACTION_TYPE_DODEFAULT:
+      action->action = ax::mojom::Action::kDoDefault;
+      break;
+    case api::automation::ACTION_TYPE_INCREMENT:
+      action->action = ax::mojom::Action::kIncrement;
+      break;
+    case api::automation::ACTION_TYPE_FOCUS:
+      action->action = ax::mojom::Action::kFocus;
+      break;
+    case api::automation::ACTION_TYPE_GETIMAGEDATA: {
+      api::automation_internal::GetImageDataParams get_image_data_params;
+      bool result = api::automation_internal::GetImageDataParams::Populate(
+          additional_properties, &get_image_data_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kGetImageData;
+      action->target_rect = gfx::Rect(0, 0, get_image_data_params.max_width,
+                                      get_image_data_params.max_height);
+      break;
+    }
+    case api::automation::ACTION_TYPE_HITTEST: {
+      api::automation_internal::HitTestParams hit_test_params;
+      bool result = api::automation_internal::HitTestParams::Populate(
+          additional_properties, &hit_test_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kHitTest;
+      action->target_point = gfx::Point(hit_test_params.x, hit_test_params.y);
+      action->hit_test_event_to_fire = ui::ParseAXEnum<ax::mojom::Event>(
+          hit_test_params.event_to_fire.c_str());
+      if (action->hit_test_event_to_fire == ax::mojom::Event::kNone) {
+        return success_result;
+      }
+      break;
+    }
+    case api::automation::ACTION_TYPE_LOADINLINETEXTBOXES:
+      action->action = ax::mojom::Action::kLoadInlineTextBoxes;
+      break;
+    case api::automation::ACTION_TYPE_SETACCESSIBILITYFOCUS:
+      action->action = ax::mojom::Action::kSetAccessibilityFocus;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLTOMAKEVISIBLE:
+      action->action = ax::mojom::Action::kScrollToMakeVisible;
+      action->horizontal_scroll_alignment =
+          ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
+      action->vertical_scroll_alignment =
+          ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
+      action->scroll_behavior =
+          ax::mojom::ScrollBehavior::kDoNotScrollIfVisible;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLBACKWARD:
+      action->action = ax::mojom::Action::kScrollBackward;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLFORWARD:
+      action->action = ax::mojom::Action::kScrollForward;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLUP:
+      action->action = ax::mojom::Action::kScrollUp;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLDOWN:
+      action->action = ax::mojom::Action::kScrollDown;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLLEFT:
+      action->action = ax::mojom::Action::kScrollLeft;
+      break;
+    case api::automation::ACTION_TYPE_SCROLLRIGHT:
+      action->action = ax::mojom::Action::kScrollRight;
+      break;
+    case api::automation::ACTION_TYPE_SETSELECTION: {
+      api::automation_internal::SetSelectionParams selection_params;
+      bool result = api::automation_internal::SetSelectionParams::Populate(
+          additional_properties, &selection_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->anchor_node_id = automation_node_id;
+      action->anchor_offset = selection_params.anchor_offset;
+      action->focus_node_id = selection_params.focus_node_id;
+      action->focus_offset = selection_params.focus_offset;
+      action->action = ax::mojom::Action::kSetSelection;
+      break;
+    }
+    case api::automation::ACTION_TYPE_SHOWCONTEXTMENU: {
+      action->action = ax::mojom::Action::kShowContextMenu;
+      break;
+    }
+    case api::automation::
+        ACTION_TYPE_SETSEQUENTIALFOCUSNAVIGATIONSTARTINGPOINT: {
+      action->action =
+          ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
+      break;
+    }
+    case api::automation::ACTION_TYPE_CUSTOMACTION: {
+      api::automation_internal::PerformCustomActionParams
+          perform_custom_action_params;
+      bool result =
+          api::automation_internal::PerformCustomActionParams::Populate(
+              additional_properties, &perform_custom_action_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kCustomAction;
+      action->custom_action_id = perform_custom_action_params.custom_action_id;
+      break;
+    }
+    case api::automation::ACTION_TYPE_REPLACESELECTEDTEXT: {
+      api::automation_internal::ReplaceSelectedTextParams
+          replace_selected_text_params;
+      bool result =
+          api::automation_internal::ReplaceSelectedTextParams::Populate(
+              additional_properties, &replace_selected_text_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kReplaceSelectedText;
+      action->value = replace_selected_text_params.value;
+      break;
+    }
+    case api::automation::ACTION_TYPE_SETVALUE: {
+      api::automation_internal::SetValueParams set_value_params;
+      bool result = api::automation_internal::SetValueParams::Populate(
+          additional_properties, &set_value_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kSetValue;
+      action->value = set_value_params.value;
+      break;
+    }
+    case api::automation::ACTION_TYPE_SCROLLTOPOINT: {
+      api::automation_internal::ScrollToPointParams scroll_to_point_params;
+      bool result = api::automation_internal::ScrollToPointParams::Populate(
+          additional_properties, &scroll_to_point_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kScrollToPoint;
+      action->target_point =
+          gfx::Point(scroll_to_point_params.x, scroll_to_point_params.y);
+      break;
+    }
+    case api::automation::ACTION_TYPE_SCROLLTOPOSITIONATROWCOLUMN: {
+      api::automation_internal::ScrollToPositionAtRowColumnParams params;
+      bool result =
+          api::automation_internal::ScrollToPositionAtRowColumnParams::Populate(
+              additional_properties, &params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kScrollToPositionAtRowColumn;
+      action->row_column = std::pair(params.row, params.column);
+      break;
+    }
+    case api::automation::ACTION_TYPE_SETSCROLLOFFSET: {
+      api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
+      bool result = api::automation_internal::SetScrollOffsetParams::Populate(
+          additional_properties, &set_scroll_offset_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kSetScrollOffset;
+      action->target_point =
+          gfx::Point(set_scroll_offset_params.x, set_scroll_offset_params.y);
+      break;
+    }
+    case api::automation::ACTION_TYPE_GETTEXTLOCATION: {
+      api::automation_internal::GetTextLocationDataParams
+          get_text_location_params;
+      bool result =
+          api::automation_internal::GetTextLocationDataParams::Populate(
+              additional_properties, &get_text_location_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->action = ax::mojom::Action::kGetTextLocation;
+      action->start_index = get_text_location_params.start_index;
+      action->end_index = get_text_location_params.end_index;
+      break;
+    }
+    case api::automation::ACTION_TYPE_SHOWTOOLTIP:
+      action->action = ax::mojom::Action::kShowTooltip;
+      break;
+    case api::automation::ACTION_TYPE_HIDETOOLTIP:
+      action->action = ax::mojom::Action::kHideTooltip;
+      break;
+    case api::automation::ACTION_TYPE_COLLAPSE:
+      action->action = ax::mojom::Action::kCollapse;
+      break;
+    case api::automation::ACTION_TYPE_EXPAND:
+      action->action = ax::mojom::Action::kExpand;
+      break;
+    case api::automation::ACTION_TYPE_RESUMEMEDIA:
+      action->action = ax::mojom::Action::kResumeMedia;
+      break;
+    case api::automation::ACTION_TYPE_STARTDUCKINGMEDIA:
+      action->action = ax::mojom::Action::kStartDuckingMedia;
+      break;
+    case api::automation::ACTION_TYPE_STOPDUCKINGMEDIA:
+      action->action = ax::mojom::Action::kStopDuckingMedia;
+      break;
+    case api::automation::ACTION_TYPE_SUSPENDMEDIA:
+      action->action = ax::mojom::Action::kSuspendMedia;
+      break;
+    case api::automation::ACTION_TYPE_LONGCLICK:
+      action->action = ax::mojom::Action::kLongClick;
+      break;
+    case api::automation::ACTION_TYPE_ANNOTATEPAGEIMAGES:
+    case api::automation::ACTION_TYPE_SIGNALENDOFTEST:
+    case api::automation::ACTION_TYPE_INTERNALINVALIDATETREE:
+    case api::automation::ACTION_TYPE_NONE:
+      break;
+  }
+  return success_result;
+}
+
 }  // namespace
 
 // Helper class that receives accessibility data from |WebContents|.
@@ -374,252 +623,6 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   }
 }
 
-AutomationInternalPerformActionFunction::Result
-AutomationInternalPerformActionFunction::ConvertToAXActionData(
-    const ui::AXTreeID& tree_id,
-    int32_t automation_node_id,
-    const std::string& action_type_string,
-    int request_id,
-    const base::DictionaryValue& additional_properties,
-    const std::string& extension_id,
-    ui::AXActionData* action) {
-  AutomationInternalPerformActionFunction::Result validation_error_result;
-  validation_error_result.validation_success = false;
-  AutomationInternalPerformActionFunction::Result success_result;
-  success_result.validation_success = true;
-  action->target_tree_id = tree_id;
-  action->source_extension_id = extension_id;
-  action->target_node_id = automation_node_id;
-  action->request_id = request_id;
-  api::automation::ActionType action_type =
-      api::automation::ParseActionType(action_type_string);
-  switch (action_type) {
-    case api::automation::ACTION_TYPE_BLUR:
-      action->action = ax::mojom::Action::kBlur;
-      break;
-    case api::automation::ACTION_TYPE_CLEARACCESSIBILITYFOCUS:
-      action->action = ax::mojom::Action::kClearAccessibilityFocus;
-      break;
-    case api::automation::ACTION_TYPE_DECREMENT:
-      action->action = ax::mojom::Action::kDecrement;
-      break;
-    case api::automation::ACTION_TYPE_DODEFAULT:
-      action->action = ax::mojom::Action::kDoDefault;
-      break;
-    case api::automation::ACTION_TYPE_INCREMENT:
-      action->action = ax::mojom::Action::kIncrement;
-      break;
-    case api::automation::ACTION_TYPE_FOCUS:
-      action->action = ax::mojom::Action::kFocus;
-      break;
-    case api::automation::ACTION_TYPE_GETIMAGEDATA: {
-      api::automation_internal::GetImageDataParams get_image_data_params;
-      bool result = api::automation_internal::GetImageDataParams::Populate(
-          additional_properties, &get_image_data_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kGetImageData;
-      action->target_rect = gfx::Rect(0, 0, get_image_data_params.max_width,
-                                      get_image_data_params.max_height);
-      break;
-    }
-    case api::automation::ACTION_TYPE_HITTEST: {
-      api::automation_internal::HitTestParams hit_test_params;
-      bool result = api::automation_internal::HitTestParams::Populate(
-          additional_properties, &hit_test_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kHitTest;
-      action->target_point = gfx::Point(hit_test_params.x, hit_test_params.y);
-      action->hit_test_event_to_fire = ui::ParseAXEnum<ax::mojom::Event>(
-          hit_test_params.event_to_fire.c_str());
-      if (action->hit_test_event_to_fire == ax::mojom::Event::kNone) {
-        return success_result;
-      }
-      break;
-    }
-    case api::automation::ACTION_TYPE_LOADINLINETEXTBOXES:
-      action->action = ax::mojom::Action::kLoadInlineTextBoxes;
-      break;
-    case api::automation::ACTION_TYPE_SETACCESSIBILITYFOCUS:
-      action->action = ax::mojom::Action::kSetAccessibilityFocus;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLTOMAKEVISIBLE:
-      action->action = ax::mojom::Action::kScrollToMakeVisible;
-      action->horizontal_scroll_alignment =
-          ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
-      action->vertical_scroll_alignment =
-          ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
-      action->scroll_behavior =
-          ax::mojom::ScrollBehavior::kDoNotScrollIfVisible;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLBACKWARD:
-      action->action = ax::mojom::Action::kScrollBackward;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLFORWARD:
-      action->action = ax::mojom::Action::kScrollForward;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLUP:
-      action->action = ax::mojom::Action::kScrollUp;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLDOWN:
-      action->action = ax::mojom::Action::kScrollDown;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLLEFT:
-      action->action = ax::mojom::Action::kScrollLeft;
-      break;
-    case api::automation::ACTION_TYPE_SCROLLRIGHT:
-      action->action = ax::mojom::Action::kScrollRight;
-      break;
-    case api::automation::ACTION_TYPE_SETSELECTION: {
-      api::automation_internal::SetSelectionParams selection_params;
-      bool result = api::automation_internal::SetSelectionParams::Populate(
-          additional_properties, &selection_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->anchor_node_id = automation_node_id;
-      action->anchor_offset = selection_params.anchor_offset;
-      action->focus_node_id = selection_params.focus_node_id;
-      action->focus_offset = selection_params.focus_offset;
-      action->action = ax::mojom::Action::kSetSelection;
-      break;
-    }
-    case api::automation::ACTION_TYPE_SHOWCONTEXTMENU: {
-      action->action = ax::mojom::Action::kShowContextMenu;
-      break;
-    }
-    case api::automation::
-        ACTION_TYPE_SETSEQUENTIALFOCUSNAVIGATIONSTARTINGPOINT: {
-      action->action =
-          ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
-      break;
-    }
-    case api::automation::ACTION_TYPE_CUSTOMACTION: {
-      api::automation_internal::PerformCustomActionParams
-          perform_custom_action_params;
-      bool result =
-          api::automation_internal::PerformCustomActionParams::Populate(
-              additional_properties, &perform_custom_action_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kCustomAction;
-      action->custom_action_id = perform_custom_action_params.custom_action_id;
-      break;
-    }
-    case api::automation::ACTION_TYPE_REPLACESELECTEDTEXT: {
-      api::automation_internal::ReplaceSelectedTextParams
-          replace_selected_text_params;
-      bool result =
-          api::automation_internal::ReplaceSelectedTextParams::Populate(
-              additional_properties, &replace_selected_text_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kReplaceSelectedText;
-      action->value = replace_selected_text_params.value;
-      break;
-    }
-    case api::automation::ACTION_TYPE_SETVALUE: {
-      api::automation_internal::SetValueParams set_value_params;
-      bool result = api::automation_internal::SetValueParams::Populate(
-          additional_properties, &set_value_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kSetValue;
-      action->value = set_value_params.value;
-      break;
-    }
-    case api::automation::ACTION_TYPE_SCROLLTOPOINT: {
-      api::automation_internal::ScrollToPointParams scroll_to_point_params;
-      bool result = api::automation_internal::ScrollToPointParams::Populate(
-          additional_properties, &scroll_to_point_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kScrollToPoint;
-      action->target_point =
-          gfx::Point(scroll_to_point_params.x, scroll_to_point_params.y);
-      break;
-    }
-    case api::automation::ACTION_TYPE_SCROLLTOPOSITIONATROWCOLUMN: {
-      api::automation_internal::ScrollToPositionAtRowColumnParams params;
-      bool result =
-          api::automation_internal::ScrollToPositionAtRowColumnParams::Populate(
-              additional_properties, &params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kScrollToPositionAtRowColumn;
-      action->row_column = std::pair(params.row, params.column);
-      break;
-    }
-    case api::automation::ACTION_TYPE_SETSCROLLOFFSET: {
-      api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
-      bool result = api::automation_internal::SetScrollOffsetParams::Populate(
-          additional_properties, &set_scroll_offset_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kSetScrollOffset;
-      action->target_point =
-          gfx::Point(set_scroll_offset_params.x, set_scroll_offset_params.y);
-      break;
-    }
-    case api::automation::ACTION_TYPE_GETTEXTLOCATION: {
-      api::automation_internal::GetTextLocationDataParams
-          get_text_location_params;
-      bool result =
-          api::automation_internal::GetTextLocationDataParams::Populate(
-              additional_properties, &get_text_location_params);
-      if (!result) {
-        return validation_error_result;
-      }
-      action->action = ax::mojom::Action::kGetTextLocation;
-      action->start_index = get_text_location_params.start_index;
-      action->end_index = get_text_location_params.end_index;
-      break;
-    }
-    case api::automation::ACTION_TYPE_SHOWTOOLTIP:
-      action->action = ax::mojom::Action::kShowTooltip;
-      break;
-    case api::automation::ACTION_TYPE_HIDETOOLTIP:
-      action->action = ax::mojom::Action::kHideTooltip;
-      break;
-    case api::automation::ACTION_TYPE_COLLAPSE:
-      action->action = ax::mojom::Action::kCollapse;
-      break;
-    case api::automation::ACTION_TYPE_EXPAND:
-      action->action = ax::mojom::Action::kExpand;
-      break;
-    case api::automation::ACTION_TYPE_RESUMEMEDIA:
-      action->action = ax::mojom::Action::kResumeMedia;
-      break;
-    case api::automation::ACTION_TYPE_STARTDUCKINGMEDIA:
-      action->action = ax::mojom::Action::kStartDuckingMedia;
-      break;
-    case api::automation::ACTION_TYPE_STOPDUCKINGMEDIA:
-      action->action = ax::mojom::Action::kStopDuckingMedia;
-      break;
-    case api::automation::ACTION_TYPE_SUSPENDMEDIA:
-      action->action = ax::mojom::Action::kSuspendMedia;
-      break;
-    case api::automation::ACTION_TYPE_LONGCLICK:
-      action->action = ax::mojom::Action::kLongClick;
-      break;
-    case api::automation::ACTION_TYPE_ANNOTATEPAGEIMAGES:
-    case api::automation::ACTION_TYPE_SIGNALENDOFTEST:
-    case api::automation::ACTION_TYPE_INTERNALINVALIDATETREE:
-    case api::automation::ACTION_TYPE_NONE:
-      break;
-  }
-  return success_result;
-}
-
 AutomationInternalPerformActionFunction::Result::Result() = default;
 AutomationInternalPerformActionFunction::Result::Result(const Result&) =
     default;
@@ -707,8 +710,7 @@ AutomationInternalPerformActionFunction::Run() {
   Result result = ConvertToAXActionData(
       ui::AXTreeID::FromString(params->args.tree_id),
       params->args.automation_node_id, params->args.action_type, request_id,
-      base::Value::AsDictionaryValue(
-          base::Value(std::move(params->opt_args.additional_properties))),
+      base::Value(std::move(params->opt_args.additional_properties)),
       extension_id(), &data);
 
   if (!result.validation_success) {
