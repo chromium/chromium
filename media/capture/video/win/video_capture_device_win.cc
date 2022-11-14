@@ -872,34 +872,35 @@ void VideoCaptureDeviceWin::FrameReceived(const uint8_t* buffer,
                                           const VideoCaptureFormat& format,
                                           base::TimeDelta timestamp,
                                           bool flip_y) {
+  // We always calculate camera rotation for the first frame. We also cache
+  // the latest value to use when AutoRotation is turned off.
+  // To avoid potential deadlock, do this without holding a lock.
+  if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
+    camera_rotation_ = GetCameraRotation(device_descriptor_.facing);
+
   {
     base::AutoLock lock(lock_);
     if (state_ != kCapturing)
       return;
+
+    if (first_ref_time_.is_null())
+      first_ref_time_ = base::TimeTicks::Now();
+
+    // There is a chance that the platform does not provide us with the
+    // timestamp, in which case, we use reference time to calculate a timestamp.
+    if (timestamp == kNoTimestamp)
+      timestamp = base::TimeTicks::Now() - first_ref_time_;
+
+    // TODO(julien.isorce): retrieve the color space information using the
+    // DirectShow api, AM_MEDIA_TYPE::VIDEOINFOHEADER2::dwControlFlags. If
+    // AMCONTROL_COLORINFO_PRESENT, then reinterpret dwControlFlags as a
+    // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
+    // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
+    // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
+    client_->OnIncomingCapturedData(buffer, length, format, gfx::ColorSpace(),
+                                    camera_rotation_.value(), flip_y,
+                                    base::TimeTicks::Now(), timestamp);
   }
-
-  if (first_ref_time_.is_null())
-    first_ref_time_ = base::TimeTicks::Now();
-
-  // There is a chance that the platform does not provide us with the timestamp,
-  // in which case, we use reference time to calculate a timestamp.
-  if (timestamp == kNoTimestamp)
-    timestamp = base::TimeTicks::Now() - first_ref_time_;
-
-  // We always calculate camera rotation for the first frame. We also cache the
-  // latest value to use when AutoRotation is turned off.
-  if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
-    camera_rotation_ = GetCameraRotation(device_descriptor_.facing);
-
-  // TODO(julien.isorce): retrieve the color space information using the
-  // DirectShow api, AM_MEDIA_TYPE::VIDEOINFOHEADER2::dwControlFlags. If
-  // AMCONTROL_COLORINFO_PRESENT, then reinterpret dwControlFlags as a
-  // DXVA_ExtendedFormat. Then use its fields DXVA_VideoPrimaries,
-  // DXVA_VideoTransferMatrix, DXVA_VideoTransferFunction and
-  // DXVA_NominalRangeto build a gfx::ColorSpace. See http://crbug.com/959992.
-  client_->OnIncomingCapturedData(buffer, length, format, gfx::ColorSpace(),
-                                  camera_rotation_.value(), flip_y,
-                                  base::TimeTicks::Now(), timestamp);
 
   while (!take_photo_callbacks_.empty()) {
     TakePhotoCallback cb = std::move(take_photo_callbacks_.front());
