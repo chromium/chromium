@@ -104,7 +104,7 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
   base::Time most_recent_timestamp;
   bool found_match = false;
 
-  for (const auto& include_path_dict : include_paths.GetListDeprecated()) {
+  for (const auto& include_path_dict : include_paths.GetList()) {
     if (!include_path_dict.is_dict())
       continue;
     const std::string* include_path = include_path_dict.FindStringKey(kPath);
@@ -155,7 +155,7 @@ bool ExcludePathMatches(const std::string& url_path,
   if (!exclude_paths.is_list())
     return false;
 
-  for (const auto& exclude_path : exclude_paths.GetListDeprecated()) {
+  for (const auto& exclude_path : exclude_paths.GetList()) {
     if (!exclude_path.is_string())
       continue;
     if (PathMatchesPathPattern(url_path, exclude_path.GetString()))
@@ -174,7 +174,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
   if (!all_handlers.is_list())
     return;
 
-  for (const base::Value& handler : all_handlers.GetListDeprecated()) {
+  for (const base::Value& handler : all_handlers.GetList()) {
     absl::optional<const HandlerView> handler_view =
         GetConstHandlerView(handler);
     if (!handler_view)
@@ -187,8 +187,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
       continue;
 
     const std::string& url_path = url.path();
-    bool include_paths_exist =
-        !handler_view->include_paths->GetListDeprecated().empty();
+    bool include_paths_exist = !handler_view->include_paths->GetList().empty();
     UrlHandlerSavedChoice best_choice = UrlHandlerSavedChoice::kNone;
     base::Time latest_timestamp = base::Time::Min();
     if (include_paths_exist && !FindBestMatchingIncludePathChoice(
@@ -197,8 +196,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
       continue;
     }
 
-    bool exclude_paths_exist =
-        !handler_view->exclude_paths->GetListDeprecated().empty();
+    bool exclude_paths_exist = !handler_view->exclude_paths->GetList().empty();
     if (exclude_paths_exist &&
         ExcludePathMatches(url_path, *handler_view->exclude_paths)) {
       continue;
@@ -600,10 +598,8 @@ bool ShouldUpdateIncludePaths(const base::Value& current_handler,
   if (!include_paths_lh || !include_paths_rh)
     return true;
 
-  base::Value::ConstListView include_paths_list_lh =
-      include_paths_lh->GetListDeprecated();
-  base::Value::ConstListView include_paths_list_rh =
-      include_paths_rh->GetListDeprecated();
+  const base::Value::List& include_paths_list_lh = include_paths_lh->GetList();
+  const base::Value::List& include_paths_list_rh = include_paths_rh->GetList();
   if (include_paths_list_lh.size() != include_paths_list_rh.size())
     return true;
 
@@ -862,7 +858,7 @@ bool ProfileHasUrlHandlers(PrefService* local_state,
     return false;
 
   for (const auto origin_value : pref_value.DictItems()) {
-    for (const auto& handler : origin_value.second.GetListDeprecated()) {
+    for (const auto& handler : origin_value.second.GetList()) {
       if (IsHandlerForProfile(handler, profile_path))
         return true;
     }

@@ -148,12 +148,11 @@ std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
   std::set<std::string> result;
   const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
   for (const auto iter_app : app_shims) {
-    const base::Value* installed_profiles_list =
-        iter_app.second.FindListKey(kInstalledProfiles);
+    const base::Value::List* installed_profiles_list =
+        iter_app.second.GetDict().FindList(kInstalledProfiles);
     if (!installed_profiles_list)
       continue;
-    for (const auto& profile_path_value :
-         installed_profiles_list->GetListDeprecated()) {
+    for (const auto& profile_path_value : *installed_profiles_list) {
       if (!profile_path_value.is_string())
         continue;
       if (profile == GetFullProfilePath(profile_path_value.GetString())) {
