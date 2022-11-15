@@ -37,19 +37,6 @@ MockInputMethodManagerImpl::State::GetEnabledInputMethods() const {
   return result;
 }
 
-const InputMethodDescriptor*
-MockInputMethodManagerImpl::State::GetInputMethodFromId(
-    const std::string& input_method_id) const {
-  static const InputMethodDescriptor defaultInputMethod =
-      InputMethodUtil::GetFallbackInputMethodDescriptor();
-  for (const auto& enabled_input_method_id : enabled_input_method_ids) {
-    if (input_method_id == enabled_input_method_id) {
-      return &defaultInputMethod;
-    }
-  }
-  return nullptr;
-}
-
 InputMethodDescriptor MockInputMethodManagerImpl::State::GetCurrentInputMethod()
     const {
   InputMethodDescriptor descriptor =

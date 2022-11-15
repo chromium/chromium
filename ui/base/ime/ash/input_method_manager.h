@@ -201,12 +201,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // methods.
     virtual size_t GetNumEnabledInputMethods() const = 0;
 
-    // Returns the input method descriptor from the given input method id
-    // string.
-    // If the given input method id is invalid, returns nullptr.
-    virtual const InputMethodDescriptor* GetInputMethodFromId(
-        const std::string& input_method_id) const = 0;
-
     // Sets the list of extension IME ids which should be enabled.
     virtual void SetEnabledExtensionImes(std::vector<std::string>* ids) = 0;
 

@@ -233,19 +233,6 @@ size_t InputMethodManagerImpl::StateImpl::GetNumEnabledInputMethods() const {
   return enabled_input_method_ids_.size();
 }
 
-const InputMethodDescriptor*
-InputMethodManagerImpl::StateImpl::GetInputMethodFromId(
-    const std::string& input_method_id) const {
-  const InputMethodDescriptor* ime =
-      manager_->util_.GetInputMethodDescriptorFromId(input_method_id);
-  if (!ime) {
-    const auto ix = available_input_methods_.find(input_method_id);
-    if (ix != available_input_methods_.end())
-      ime = &ix->second;
-  }
-  return ime;
-}
-
 void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
     const std::string& language_code,
     const std::vector<std::string>& initial_layouts) {

@@ -63,12 +63,6 @@ MockInputMethodManager::State::GetEnabledInputMethodIds() const {
   return enabled_input_method_ids;
 }
 
-const InputMethodDescriptor*
-MockInputMethodManager::State::GetInputMethodFromId(
-    const std::string& input_method_id) const {
-  return nullptr;
-}
-
 size_t MockInputMethodManager::State::GetNumEnabledInputMethods() const {
   return enabled_input_method_ids.size();
 }

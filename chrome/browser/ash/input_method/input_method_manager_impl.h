@@ -93,8 +93,6 @@ class InputMethodManagerImpl : public InputMethodManager,
     std::unique_ptr<InputMethodDescriptors> GetEnabledInputMethods()
         const override;
     const std::vector<std::string>& GetEnabledInputMethodIds() const override;
-    const InputMethodDescriptor* GetInputMethodFromId(
-        const std::string& input_method_id) const override;
     size_t GetNumEnabledInputMethods() const override;
     void SetEnabledExtensionImes(std::vector<std::string>* ids) override;
     void SetInputMethodLoginDefault() override;

@@ -72,14 +72,6 @@ class TestInputMethodManager : public MockInputMethodManager {
       return std::make_unique<std::vector<InputMethodDescriptor>>(
           input_methods_);
     }
-    const InputMethodDescriptor* GetInputMethodFromId(
-        const std::string& input_method_id) const override {
-      for (const InputMethodDescriptor& descriptor : input_methods_) {
-        if (input_method_id == descriptor.id())
-          return &descriptor;
-      }
-      return nullptr;
-    }
     InputMethodDescriptor GetCurrentInputMethod() const override {
       for (const InputMethodDescriptor& descriptor : input_methods_) {
         if (current_ime_id_ == descriptor.id())
