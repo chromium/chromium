@@ -335,7 +335,6 @@ class MockAttributionManager : public AttributionManager {
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;
-  OsLevelAttributionManager* GetOsLevelManager() override;
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::Type report_type);

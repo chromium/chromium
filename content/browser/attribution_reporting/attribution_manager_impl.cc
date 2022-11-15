@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
@@ -49,7 +48,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "content/browser/attribution_reporting/os_level_attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -64,7 +62,6 @@
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/gurl.h"
@@ -413,8 +410,7 @@ AttributionManagerImpl::CreateForTesting(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(storage_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      /*data_host_manager=*/nullptr,
-      /*os_level_manager=*/nullptr));
+      /*data_host_manager=*/nullptr));
 }
 
 // static
@@ -441,11 +437,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
-          std::make_unique<AttributionDataHostManagerImpl>(this),
-          base::FeatureList::IsEnabled(
-              blink::features::kAttributionReportingCrossAppWeb)
-              ? std::make_unique<OsLevelAttributionManagerImpl>()
-              : nullptr) {}
+          std::make_unique<AttributionDataHostManagerImpl>(this)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
@@ -455,8 +447,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
-    std::unique_ptr<AttributionDataHostManager> data_host_manager,
-    std::unique_ptr<OsLevelAttributionManager> os_level_manager)
+    std::unique_ptr<AttributionDataHostManager> data_host_manager)
     : storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -468,7 +459,6 @@ AttributionManagerImpl::AttributionManagerImpl(
                               base::Unretained(this)),
           attribution_storage_)),
       data_host_manager_(std::move(data_host_manager)),
-      os_level_manager_(std::move(os_level_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)) {
@@ -506,10 +496,6 @@ void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
 
 AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
   return data_host_manager_.get();
-}
-
-OsLevelAttributionManager* AttributionManagerImpl::GetOsLevelManager() {
-  return os_level_manager_.get();
 }
 
 void AttributionManagerImpl::HandleSource(StorableSource source) {
