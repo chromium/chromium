@@ -1570,13 +1570,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private CaptureReadinessResult getReadinessStateWithSuppression() {
-        ToolbarSnapshotState newSnapshotState = generateToolbarSnapshotState();
-        @ToolbarSnapshotDifference
-        int snapshotDifference = newSnapshotState.getAnyDifference(mToolbarSnapshotState);
-
-        if (snapshotDifference == ToolbarSnapshotDifference.NONE) {
-            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
-        } else if (urlHasFocus()) {
+        if (urlHasFocus()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
         } else if (mUrlFocusChangeInProgress) {
             return CaptureReadinessResult.notReady(
@@ -1592,7 +1586,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
         } else {
-            return CaptureReadinessResult.readyWithSnapshotDifference(snapshotDifference);
+            ToolbarSnapshotState newSnapshotState = generateToolbarSnapshotState();
+            @ToolbarSnapshotDifference
+            int snapshotDifference = newSnapshotState.getAnyDifference(mToolbarSnapshotState);
+            if (snapshotDifference == ToolbarSnapshotDifference.NONE) {
+                return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
+            } else {
+                return CaptureReadinessResult.readyWithSnapshotDifference(snapshotDifference);
+            }
         }
     }
 
