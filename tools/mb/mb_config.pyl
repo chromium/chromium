@@ -364,8 +364,8 @@
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Builder (reclient compare)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
-      'Linux ChromiumOS MSan Focal': 'chromeos_msan_release_bot_reclient',
-      'Linux MSan Focal': 'msan_release_bot_reclient',
+      'Linux ChromiumOS MSan Focal': 'chromeos_msan_focal_release_bot_reclient',
+      'Linux MSan Focal': 'msan_focal_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
@@ -1177,7 +1177,7 @@
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
-      'linux_chromium_chromeos_msan_focal': 'chromeos_msan_release_bot',
+      'linux_chromium_chromeos_msan_focal': 'chromeos_msan_focal_release_bot',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
@@ -1188,7 +1188,7 @@
       # This is intentionally a release_bot and not a release_trybot;
       # enabling DCHECKs seems to cause flaky failures that don't show up
       # on the continuous builder.
-      'linux_chromium_msan_focal': 'msan_release_bot_reclient',
+      'linux_chromium_msan_focal': 'msan_focal_release_bot_reclient',
       'linux_chromium_msan_rel_ng': 'msan_release_bot_reclient',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
@@ -2187,6 +2187,14 @@
       'also_build_lacros_chrome_for_architecture_arm',
     ],
 
+    'chromeos_msan_focal_release_bot': [
+      'chromeos', 'msan_focal', 'release_bot',
+    ],
+
+    'chromeos_msan_focal_release_bot_reclient': [
+      'chromeos', 'msan_focal', 'release_bot_reclient',
+    ],
+
     'chromeos_msan_release_bot': [
       'chromeos', 'msan', 'release_bot',
     ],
@@ -3152,6 +3160,10 @@
 
     'mac_clang_tot_official': [
       'clang_tot', 'official', 'no_widevine_cdm_host_verification',
+    ],
+
+    'msan_focal_release_bot_reclient': [
+      'msan_focal', 'release_bot_reclient',
     ],
 
     'msan_no_origins_release_bot_reclient': [
@@ -4343,7 +4355,11 @@
     },
 
     'msan': {
-      'gn_args': 'is_msan=true msan_track_origins=2',
+      'gn_args': 'is_msan=true msan_track_origins=2 instrumented_libraries_release = "xenial"',
+    },
+
+    'msan_focal': {
+      'gn_args': 'is_msan=true msan_track_origins=2 instrumented_libraries_release = "focal"',
     },
 
     'msan_no_origins': {

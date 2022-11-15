@@ -334,6 +334,7 @@
       "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
+      "instrumented_libraries_release": "xenial",
       "is_component_build": true,
       "is_debug": false,
       "is_msan": true,
@@ -428,6 +429,7 @@
   "Linux ChromiumOS MSan Focal": {
     "gn_args": {
       "dcheck_always_on": false,
+      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -439,6 +441,7 @@
   "Linux MSan Focal": {
     "gn_args": {
       "dcheck_always_on": false,
+      "instrumented_libraries_release": "focal",
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,

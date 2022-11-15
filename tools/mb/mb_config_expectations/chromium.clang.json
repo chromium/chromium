@@ -255,6 +255,7 @@
   "ToTLinuxMSan": {
     "gn_args": {
       "dcheck_always_on": false,
+      "instrumented_libraries_release": "xenial",
       "is_clang": true,
       "is_debug": false,
       "is_msan": true,
