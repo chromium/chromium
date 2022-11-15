@@ -58,6 +58,11 @@ class BookmarkBridge {
     private SubscriptionsManager mSubscriptionManager;
     private SubscriptionsManager.SubscriptionObserver mSubscriptionsObserver;
 
+    public static BookmarkModel getForProfile(Profile profile) {
+        // TODO(crbug.com/1150129): Make this a singleton owned by native.
+        return new BookmarkModel(profile);
+    }
+
     /**
      * Handler to fetch the bookmarks, titles, urls and folder hierarchy.
      * @param profile Profile instance corresponding to the active profile.

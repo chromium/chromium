@@ -38,6 +38,10 @@ public class BookmarkModel extends BookmarkBridge {
 
     private ObserverList<BookmarkDeleteObserver> mDeleteObservers = new ObserverList<>();
 
+    public static BookmarkModel getForProfile(Profile profile) {
+        return BookmarkBridge.getForProfile(profile);
+    }
+
     /**
      * Initialize bookmark model for last used non-incognito profile.
      */
