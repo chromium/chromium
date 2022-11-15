@@ -247,20 +247,9 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("optional_utils_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/OptionalUtils.java",
-  ]
-  deps = [
-    "//base:base_java",
-    "//third_party/android_deps:guava_android_java",
-  ]
-}
-
 android_library("settings_interface_java") {
   deps = [
     ":backend_interface_java",
-    ":optional_utils_java",
     "//base:base_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:guava_android_java",
@@ -294,7 +283,6 @@ android_library("settings_interface_java") {
 android_library("backend_interface_java") {
   deps = [
     ":android_backend_java_enums",
-    ":optional_utils_java",
     "//base:base_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/android_deps:guava_android_java",

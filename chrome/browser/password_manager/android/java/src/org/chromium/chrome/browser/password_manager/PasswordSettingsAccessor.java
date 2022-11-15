@@ -22,17 +22,8 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    default void getOfferToSavePasswords(com.google.common.base.Optional<Account> account,
-            Callback<com.google.common.base.Optional<Boolean>> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getOfferToSavePasswords(Optional<Account> account,
-            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback) {
-        getOfferToSavePasswords(OptionalUtils.toGuavaOptional(account),
-                OptionalUtils.toGuavaOptionalCallback(successCallback), failureCallback);
-    }
+    void getOfferToSavePasswords(Optional<Account> account,
+            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback);
 
     /**
      * Asynchronously sets the value of the "Offer to save passwords" setting.
@@ -43,18 +34,8 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    default void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled,
-            com.google.common.base.Optional<Account> account, Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled,
-            Optional<Account> account, Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        setOfferToSavePasswords(offerToSavePasswordsEnabled, OptionalUtils.toGuavaOptional(account),
-                successCallback, failureCallback);
-    }
+    void setOfferToSavePasswords(boolean offerToSavePasswordsEnabled, Optional<Account> account,
+            Callback<Void> successCallback, Callback<Exception> failureCallback);
 
     /**
      * Asynchronously retrieves the value of the "Auto Sign In" setting.
@@ -65,17 +46,8 @@ public interface PasswordSettingsAccessor {
      *        or no value if none was set
      * @param failureCallback called with an error if the retrieval did not succeed
      */
-    default void getAutoSignIn(com.google.common.base.Optional<Account> account,
-            Callback<com.google.common.base.Optional<Boolean>> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void getAutoSignIn(Optional<Account> account,
-            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback) {
-        getAutoSignIn(OptionalUtils.toGuavaOptional(account),
-                OptionalUtils.toGuavaOptionalCallback(successCallback), failureCallback);
-    }
+    void getAutoSignIn(Optional<Account> account, Callback<Optional<Boolean>> successCallback,
+            Callback<Exception> failureCallback);
 
     /**
      * Asynchronously sets the value of the "Auto Sign In" setting.
@@ -86,15 +58,6 @@ public interface PasswordSettingsAccessor {
      * @param successCallback called if the modification was successful
      * @param failureCallback called with an error if the modification did not succeed
      */
-    default void setAutoSignIn(boolean autoSignInEnabled,
-            com.google.common.base.Optional<Account> account, Callback<Void> successCallback,
-            Callback<Exception> failureCallback) {
-        assert false;
-    }
-
-    default void setAutoSignIn(boolean autoSignInEnabled, Optional<Account> account,
-            Callback<Void> successCallback, Callback<Exception> failureCallback) {
-        setAutoSignIn(autoSignInEnabled, OptionalUtils.toGuavaOptional(account), successCallback,
-                failureCallback);
-    }
+    void setAutoSignIn(boolean autoSignInEnabled, Optional<Account> account,
+            Callback<Void> successCallback, Callback<Exception> failureCallback);
 }

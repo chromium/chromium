@@ -212,8 +212,7 @@ public class SafetyCheckMediatorTest {
                 return null;
             })
                     .when(mPasswordCheckupHelper)
-                    .getBreachedCredentialsCount(
-                            anyInt(), any(java.util.Optional.class), any(Callback.class), any());
+                    .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
             when(mPasswordStoreBridge.getPasswordStoreCredentialsCount()).thenReturn(passwordCount);
         } else {
             doAnswer(invocation -> {
@@ -238,8 +237,8 @@ public class SafetyCheckMediatorTest {
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .getBreachedCredentialsCount(anyInt(), any(java.util.Optional.class),
-                        any(Callback.class), any(Callback.class));
+                .getBreachedCredentialsCount(
+                        anyInt(), any(), any(Callback.class), any(Callback.class));
     }
 
     private void captureRunPasswordCheckCallback() {
@@ -250,8 +249,8 @@ public class SafetyCheckMediatorTest {
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .runPasswordCheckupInBackground(anyInt(), any(java.util.Optional.class),
-                        any(Callback.class), any(Callback.class));
+                .runPasswordCheckupInBackground(
+                        anyInt(), any(), any(Callback.class), any(Callback.class));
     }
 
     private void configureMockSyncService() {
