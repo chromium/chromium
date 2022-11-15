@@ -5,7 +5,10 @@
 import("//build/config/arm.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/mips.gni")
-import("//testing/libfuzzer/fuzzer_test.gni")
+
+if (build_with_chromium) {
+  import("//testing/libfuzzer/fuzzer_test.gni")
+}
 
 config("libpng_config") {
   include_dirs = [ "." ]
@@ -120,15 +123,17 @@ if (is_win) {
   }
 }
 
-libpng_ossfuzz_seed_corpuses = [
-  "//components/viz/test/data",
-  "//third_party/blink/web_tests/images/png-suite/samples",
-  "//third_party/blink/web_tests/images/resources/pngfuzz",
-]
+if (build_with_chromium) {
+  libpng_ossfuzz_seed_corpuses = [
+    "//components/viz/test/data",
+    "//third_party/blink/web_tests/images/png-suite/samples",
+    "//third_party/blink/web_tests/images/resources/pngfuzz",
+  ]
 
-fuzzer_test("libpng_read_fuzzer") {
-  sources = [ "contrib/oss-fuzz/libpng_read_fuzzer.cc" ]
-  deps = [ ":libpng" ]
-  dict = "contrib/oss-fuzz/png.dict"
-  seed_corpuses = libpng_ossfuzz_seed_corpuses
+  fuzzer_test("libpng_read_fuzzer") {
+    sources = [ "contrib/oss-fuzz/libpng_read_fuzzer.cc" ]
+    deps = [ ":libpng" ]
+    dict = "contrib/oss-fuzz/png.dict"
+    seed_corpuses = libpng_ossfuzz_seed_corpuses
+  }
 }
