@@ -19,8 +19,11 @@ try_.defaults.set(
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     compilator_goma_jobs = goma.jobs.J300,
+    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     os = os.WINDOWS_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -166,6 +169,7 @@ try_.builder(
     goma_backend = None,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
+    reclient_instance = None,
 )
 
 try_.builder(
