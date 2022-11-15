@@ -67,6 +67,30 @@ ApplyUpdateResult InMemoryHashPrefixMap::IsValid() const {
   return APPLY_UPDATE_SUCCESS;
 }
 
+HashPrefixMap::MigrateResult InMemoryHashPrefixMap::MigrateFileFormat(
+    const base::FilePath& store_path,
+    V4StoreFileFormat* file_format) {
+  if (file_format->hash_files().empty())
+    return MigrateResult::kNotNeeded;
+
+  ListUpdateResponse* lur = file_format->mutable_list_update_response();
+  for (const auto& hash_file : file_format->hash_files()) {
+    std::string contents;
+    base::FilePath hashes_path =
+        MmapHashPrefixMap::GetPath(store_path, hash_file.extension());
+    if (!base::ReadFileToStringWithMaxSize(hashes_path, &contents,
+                                           kMaxStoreSizeBytes)) {
+      return MigrateResult::kFailure;
+    }
+    auto* additions = lur->add_additions();
+    additions->set_compression_type(RAW);
+    additions->mutable_raw_hashes()->set_prefix_size(hash_file.prefix_size());
+    additions->mutable_raw_hashes()->set_raw_hashes(std::move(contents));
+  }
+  file_format->clear_hash_files();
+  return MigrateResult::kSuccess;
+}
+
 // Writes a hash prefix file, and buffers writes to avoid a write call for each
 // hash prefix. The file will be deleted if Finish() is never called.
 class MmapHashPrefixMap::BufferedFileWriter {
@@ -190,6 +214,21 @@ ApplyUpdateResult MmapHashPrefixMap::IsValid() const {
       return MMAP_FAILURE;
   }
   return APPLY_UPDATE_SUCCESS;
+}
+
+HashPrefixMap::MigrateResult MmapHashPrefixMap::MigrateFileFormat(
+    const base::FilePath& store_path,
+    V4StoreFileFormat* file_format) {
+  ListUpdateResponse* lur = file_format->mutable_list_update_response();
+  if (lur->additions().empty())
+    return MigrateResult::kNotNeeded;
+
+  for (auto& addition : *lur->mutable_additions()) {
+    Append(addition.raw_hashes().prefix_size(),
+           addition.raw_hashes().raw_hashes());
+  }
+  lur->clear_additions();
+  return MigrateResult::kSuccess;
 }
 
 // static

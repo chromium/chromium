@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -88,6 +89,13 @@ class V4StoreTest : public PlatformTest {
     }
 
     updated_store_ = std::move(store);
+  }
+
+  base::Time GetLastModifiedTime(const base::FilePath& path) {
+    base::File::Info info;
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    EXPECT_TRUE(file.GetInfo(&info));
+    return info.last_modified;
   }
 
   base::ScopedTempDir temp_dir_;
@@ -915,7 +923,7 @@ TEST_F(V4StoreTest, VerifyChecksumMmapFile) {
                      &expected_checksum);
   list_update_response.mutable_checksum()->set_sha256(expected_checksum);
 
-  base::WriteFile(store_path_.AddExtensionASCII("foo"), "abcde");
+  base::WriteFile(MmapHashPrefixMap::GetPath(store_path_, "foo"), "abcde");
 
   V4StoreFileFormat file_format;
   auto* hash_file = file_format.add_hash_files();
@@ -955,6 +963,116 @@ TEST_F(V4StoreTest, FailedMmapOnRead) {
                 std::make_unique<MmapHashPrefixMap>(store_path_));
 
   EXPECT_EQ(HASH_PREFIX_MAP_GENERATION_FAILURE, store.ReadFromDisk());
+}
+
+TEST_F(V4StoreTest, MigrateToMmap) {
+  InMemoryV4Store write_store(task_runner_, store_path_);
+  write_store.state_ = "test_client_state";
+  write_store.hash_prefix_map_->Append(5, "abcde");
+  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+
+  // Make sure an in-memory store can read correctly.
+  InMemoryV4Store in_memory_store(task_runner_, store_path_);
+  EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
+  EXPECT_EQ("test_client_state", in_memory_store.state());
+  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], "abcde");
+
+  // Migrate to a mmap store.
+  V4Store mmap_store(task_runner_, store_path_,
+                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
+  EXPECT_EQ("test_client_state", mmap_store.state());
+  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], "abcde");
+
+  std::string proto_contents;
+  EXPECT_TRUE(base::ReadFileToString(store_path_, &proto_contents));
+  V4StoreFileFormat file_format;
+  EXPECT_TRUE(file_format.ParseFromString(proto_contents));
+
+  EXPECT_EQ(file_format.hash_files().size(), 1);
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(
+      MmapHashPrefixMap::GetPath(store_path_,
+                                 file_format.hash_files(0).extension()),
+      &contents));
+  EXPECT_EQ(contents, "abcde");
+
+  // Reading again should not migrate.
+  base::Time last_modified = GetLastModifiedTime(store_path_);
+  V4Store mmap_store2(task_runner_, store_path_,
+                      std::make_unique<MmapHashPrefixMap>(store_path_));
+  EXPECT_EQ(READ_SUCCESS, mmap_store2.ReadFromDisk());
+  EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
+}
+
+TEST_F(V4StoreTest, MigrateToInMemory) {
+  auto mmap_map = std::make_unique<MmapHashPrefixMap>(store_path_);
+  auto* mmap_map_raw = mmap_map.get();
+  V4Store write_store(task_runner_, store_path_, std::move(mmap_map));
+  write_store.state_ = "test_client_state";
+  write_store.hash_prefix_map_->Append(5, "abcde");
+  base::FilePath hashes_path = MmapHashPrefixMap::GetPath(
+      store_path_, mmap_map_raw->GetExtensionForTesting(5));
+  EXPECT_EQ(WRITE_SUCCESS, write_store.WriteToDisk(Checksum()));
+
+  // Make sure a mmap store can read correctly.
+  V4Store mmap_store(task_runner_, store_path_,
+                     std::make_unique<MmapHashPrefixMap>(store_path_));
+  EXPECT_EQ(READ_SUCCESS, mmap_store.ReadFromDisk());
+  EXPECT_EQ("test_client_state", mmap_store.state());
+  EXPECT_EQ(mmap_store.hash_prefix_map_->view()[5], "abcde");
+  EXPECT_TRUE(base::PathExists(hashes_path));
+
+  write_store.Reset();
+  mmap_store.Reset();
+
+  // Migrate to an in-memory store.
+  InMemoryV4Store in_memory_store(task_runner_, store_path_);
+  EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
+  EXPECT_EQ("test_client_state", in_memory_store.state());
+  EXPECT_EQ(in_memory_store.hash_prefix_map_->view()[5], "abcde");
+
+  EXPECT_FALSE(base::PathExists(hashes_path));
+
+  // Reading again should not migrate.
+  base::Time last_modified = GetLastModifiedTime(store_path_);
+  InMemoryV4Store in_memory_store2(task_runner_, store_path_);
+  EXPECT_EQ(READ_SUCCESS, in_memory_store.ReadFromDisk());
+  EXPECT_EQ(GetLastModifiedTime(store_path_), last_modified);
+}
+
+TEST_F(V4StoreTest, MigrateToInMemoryFails) {
+  ListUpdateResponse list_update_response;
+  list_update_response.set_platform_type(LINUX_PLATFORM);
+  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(5);
+  // File has not been created.
+  hash_file->set_extension("foo");
+
+  WriteFileFormatProtoToFile(&file_format, 0x600D71FE, 9,
+                             &list_update_response);
+
+  // Migrate to an in-memory store.
+  InMemoryV4Store in_memory_store(task_runner_, store_path_);
+  EXPECT_EQ(MIGRATION_FAILURE, in_memory_store.ReadFromDisk());
+}
+
+TEST_F(V4StoreTest, CleanUpOldFiles) {
+  base::FilePath old_hashes_path =
+      MmapHashPrefixMap::GetPath(store_path_, "foo");
+  base::WriteFile(old_hashes_path, "abcde");
+
+  base::FilePath other_path = temp_dir_.GetPath().AppendASCII("SomePath");
+  base::WriteFile(other_path, "stuff");
+
+  InMemoryV4Store store(task_runner_, store_path_);
+  EXPECT_EQ(WRITE_SUCCESS, store.WriteToDisk(Checksum()));
+
+  EXPECT_FALSE(base::PathExists(old_hashes_path));
+  EXPECT_TRUE(base::PathExists(other_path));
 }
 
 }  // namespace safe_browsing

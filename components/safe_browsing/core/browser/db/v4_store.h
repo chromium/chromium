@@ -69,6 +69,9 @@ enum StoreReadResult {
   // Unable to generate the hash prefix map from the updates on disk.
   HASH_PREFIX_MAP_GENERATION_FAILURE = 8,
 
+  // There was a failure migrating between in-memory and mmap file formats.
+  MIGRATION_FAILURE = 9,
+
   // Memory space for histograms is determined by the max.  ALWAYS
   // ADD NEW VALUES BEFORE THIS ONE.
   STORE_READ_RESULT_MAX
@@ -245,6 +248,10 @@ class V4Store {
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FullUpdateFailsChecksumSynchronously);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, VerifyChecksumMmapFile);
   FRIEND_TEST_ALL_PREFIXES(V4StoreTest, FailedMmapOnRead);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToMmap);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemory);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, MigrateToInMemoryFails);
+  FRIEND_TEST_ALL_PREFIXES(V4StoreTest, CleanUpOldFiles);
   FRIEND_TEST_ALL_PREFIXES(V4StorePerftest, StressTest);
 
   friend class V4StoreTest;
@@ -367,6 +374,13 @@ class V4Store {
   // Writes the hash_prefix_map_ to disk as a V4StoreFileFormat proto.
   // |checksum| is used to set the |checksum| field in the final proto.
   StoreWriteResult WriteToDisk(const Checksum& checksum);
+
+  // Same as above but uses a pre-populated |file_format|.
+  StoreWriteResult WriteToDisk(V4StoreFileFormat* file_format);
+
+  // Migrates between in-memory and on-disk file formats.
+  HashPrefixMap::MigrateResult MigrateFileFormatIfNeeded(
+      V4StoreFileFormat* file_format);
 
   // Records the status of the update being applied to the database.
   ApplyUpdateResult last_apply_update_result_ = APPLY_UPDATE_RESULT_MAX;

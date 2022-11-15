@@ -71,6 +71,10 @@ using HashPrefixes = std::string;
 using HashPrefixesView = base::StringPiece;
 using HashPrefixMapView = std::unordered_map<PrefixSize, HashPrefixesView>;
 
+// Set a common sense limit on the store file size we try to read.
+// The maximum store file size, as of today, is about 6MB.
+constexpr size_t kMaxStoreSizeBytes = 50 * 1000 * 1000;
+
 // Stores the list of sorted hash prefixes, by size.
 // For instance: {4: ["abcd", "bcde", "cdef", "gggg"], 5: ["fffff"]}
 class HashPrefixMap {
@@ -96,6 +100,11 @@ class HashPrefixMap {
 
   // Returns true if the data in this map is valid and can be used.
   virtual ApplyUpdateResult IsValid() const = 0;
+
+  // Migrates the file format between the different types of HashPrefixMap.
+  enum class MigrateResult { kSuccess, kFailure, kNotNeeded };
+  virtual MigrateResult MigrateFileFormat(const base::FilePath& store_path,
+                                          V4StoreFileFormat* file_format) = 0;
 };
 
 // An in-memory implementation of HashPrefixMap.
@@ -112,6 +121,8 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
+  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
+                                  V4StoreFileFormat* file_format) override;
 
  private:
   std::unordered_map<PrefixSize, HashPrefixes> map_;
@@ -133,6 +144,8 @@ class MmapHashPrefixMap : public HashPrefixMap {
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
   bool WriteToDisk(V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
+  MigrateResult MigrateFileFormat(const base::FilePath& store_path,
+                                  V4StoreFileFormat* file_format) override;
 
   static base::FilePath GetPath(const base::FilePath& store_path,
                                 const std::string& extension);

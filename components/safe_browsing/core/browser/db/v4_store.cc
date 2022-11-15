@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/cpu_reduction_experiment.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -61,10 +62,6 @@ const char kUrlSocengUmaSuffix[] = ".UrlSoceng";
 
 const uint32_t kFileMagic = 0x600D71FE;
 const uint32_t kFileVersion = 9;
-
-// Set a common sense limit on the store file size we try to read.
-// The maximum store file size, as of today, is about 6MB.
-constexpr size_t kMaxStoreSizeBytes = 50 * 1000 * 1000;
 
 // The maximum size of additions hashes in a single update response.
 const int32_t ADDITIONS_HASHES_COUNT_PARTIAL_UPDATE_MAX = 10000;
@@ -186,6 +183,28 @@ std::unique_ptr<HashPrefixMap> CreateHashPrefixMap(
   if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase))
     return std::make_unique<MmapHashPrefixMap>(store_path);
   return std::make_unique<InMemoryHashPrefixMap>();
+}
+
+// Cleans up files that are no longer needed after a successful write. These are
+// hash files that may be left behind in the event of a crash or other failure
+// which fails to clean up.
+void CleanupExtraFiles(const base::FilePath& store_path,
+                       const V4StoreFileFormat& file_format) {
+  std::set<base::FilePath> paths_in_use{store_path};
+  for (const auto& hash_file : file_format.hash_files()) {
+    paths_in_use.insert(
+        MmapHashPrefixMap::GetPath(store_path, hash_file.extension()));
+  }
+
+  // Iterate through all files that start with the store path name. All hash
+  // files will be the store path plus an extension.
+  base::FileEnumerator e(
+      store_path.DirName(), false, base::FileEnumerator::FILES,
+      store_path.BaseName().value() + FILE_PATH_LITERAL(".*"));
+  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    if (paths_in_use.find(name) == paths_in_use.end())
+      base::DeleteFile(name);
+  }
 }
 
 }  // namespace
@@ -700,6 +719,17 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
   return APPLY_UPDATE_SUCCESS;
 }
 
+HashPrefixMap::MigrateResult V4Store::MigrateFileFormatIfNeeded(
+    V4StoreFileFormat* file_format) {
+  HashPrefixMap::MigrateResult result =
+      hash_prefix_map_->MigrateFileFormat(store_path_, file_format);
+  if (result != HashPrefixMap::MigrateResult::kSuccess)
+    return result;
+  if (WriteToDisk(file_format) == WRITE_SUCCESS)
+    return HashPrefixMap::MigrateResult::kSuccess;
+  return HashPrefixMap::MigrateResult::kFailure;
+}
+
 StoreReadResult V4Store::ReadFromDisk() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -736,14 +766,23 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_INFO_MISSING_FAILURE;
   }
 
-  ApplyUpdateResult apply_update_result =
-      hash_prefix_map_->ReadFromDisk(file_format);
+  HashPrefixMap::MigrateResult migrate_result =
+      MigrateFileFormatIfNeeded(&file_format);
+  if (migrate_result == HashPrefixMap::MigrateResult::kFailure)
+    return MIGRATION_FAILURE;
+
+  ApplyUpdateResult apply_update_result = APPLY_UPDATE_SUCCESS;
+  // If the migration was not needed, read the file from the disk like normal.
+  if (migrate_result == HashPrefixMap::MigrateResult::kNotNeeded)
+    apply_update_result = hash_prefix_map_->ReadFromDisk(file_format);
+
   if (apply_update_result == APPLY_UPDATE_SUCCESS) {
     std::unique_ptr<ListUpdateResponse> response(new ListUpdateResponse);
     response->Swap(file_format.mutable_list_update_response());
     apply_update_result = ProcessFullUpdate(kReadFromDisk, response,
                                             true /* delay_checksum check */);
   }
+
   RecordApplyUpdateResult(kReadFromDisk, apply_update_result, store_path_);
   last_apply_update_result_ = apply_update_result;
   if (apply_update_result != APPLY_UPDATE_SUCCESS) {
@@ -763,7 +802,10 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
   *(lur->mutable_checksum()) = checksum;
   lur->set_new_client_state(state_);
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
+  return WriteToDisk(&file_format);
+}
 
+StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
   // Attempt writing to a temporary file first and at the end, swap the files.
   const base::FilePath new_filename = TemporaryFileForFilename(store_path_);
 
@@ -776,15 +818,15 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
               MmapHashPrefixMap::GetPath(store_path, hash_file.extension()));
         }
       },
-      new_filename, store_path_, base::Unretained(&file_format)));
+      new_filename, store_path_, base::Unretained(file_format)));
 
-  if (!hash_prefix_map_->WriteToDisk(&file_format))
+  if (!hash_prefix_map_->WriteToDisk(file_format))
     return UNEXPECTED_WRITE_FAILURE;
 
-  file_format.set_magic_number(kFileMagic);
-  file_format.set_version_number(kFileVersion);
+  file_format->set_magic_number(kFileMagic);
+  file_format->set_version_number(kFileVersion);
   std::string file_format_string;
-  file_format.SerializeToString(&file_format_string);
+  file_format->SerializeToString(&file_format_string);
   size_t written = base::WriteFile(new_filename, file_format_string.data(),
                                    file_format_string.size());
 
@@ -799,6 +841,7 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
 
   // No cleanup needed, reset the closure.
   std::ignore = cleanup_on_error.Release();
+  CleanupExtraFiles(store_path_, *file_format);
 
   return WRITE_SUCCESS;
 }
