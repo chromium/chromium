@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -242,14 +242,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.NoteShared" enum="BooleanShared"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>Records whether the created note was shared or not.</summary>
 </histogram>
 
 <histogram name="NoteCreation.NumberOfTemplateChanges"
-    units="Number of changes" expires_after="2022-12-04">
+    units="Number of changes" expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedDynamicTemplateID" units="count"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedDynamicTemplateIndex" units="count"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
-    expires_after="2023-02-19">
+    expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.TemplateFetchSuccess" enum="BooleanSuccess"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>graysonlafleur@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.TimeTo{action}" units="ms"
-    expires_after="2022-12-04">
+    expires_after="2023-04-23">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
