@@ -5338,11 +5338,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAutofillRefreshStyleName,
      flag_descriptions::kEnableAutofillRefreshStyleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillRefreshStyleAndroid)},
-
-    {"enable-family-info-feedback",
-     flag_descriptions::kEnableFamilyInfoFeedbackName,
-     flag_descriptions::kEnableFamilyInfoFeedbackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(kEnableFamilyInfoFeedback)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

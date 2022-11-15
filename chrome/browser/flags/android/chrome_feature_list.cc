@@ -239,7 +239,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDownloadNotificationBadge,
     &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
-    &kEnableFamilyInfoFeedback,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFixedUmaSessionResumeOrder,

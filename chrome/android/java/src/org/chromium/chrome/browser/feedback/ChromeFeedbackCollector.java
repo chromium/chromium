@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.AutoDarkFeedbackSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -79,8 +78,7 @@ public class ChromeFeedbackCollector
 
         // FamilyInfoFeedbackSource relies on IdentityManager which is not available for the
         // incognito profile.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_FAMILY_INFO_FEEDBACK)
-                && !initParams.profile.isOffTheRecord()) {
+        if (!initParams.profile.isOffTheRecord()) {
             sources.add(new FamilyInfoFeedbackSource(initParams.profile));
         }
 

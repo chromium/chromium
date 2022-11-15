@@ -7,10 +7,6 @@
 
 #include "base/feature_list.h"
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnableFamilyInfoFeedback);
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kForYouFre);
 #endif

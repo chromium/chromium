@@ -3583,11 +3583,6 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-const char kEnableFamilyInfoFeedbackName[] =
-    "Enable feedback from FamilyLink (Android)";
-const char kEnableFamilyInfoFeedbackDescription[] =
-    "Enable FamilyLink feedback source in Chrome Settings feedback";
-
 const char kEnablePasswordsAccountStorageName[] =
     "Enable the account data storage for passwords";
 const char kEnablePasswordsAccountStorageDescription[] =

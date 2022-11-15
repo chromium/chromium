@@ -2040,9 +2040,6 @@ extern const char kEnableAutofillRefreshStyleDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
-extern const char kEnableFamilyInfoFeedbackName[];
-extern const char kEnableFamilyInfoFeedbackDescription[];
-
 extern const char kEnablePasswordsAccountStorageName[];
 extern const char kEnablePasswordsAccountStorageDescription[];
 
