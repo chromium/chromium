@@ -923,14 +923,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void showTabSelectionEditor(List<Tab> tabs) {
-        if (mTabSelectionEditorController == null) {
-            return;
-        }
-        mTabSelectionEditorController.show(tabs);
-    }
-
-    @Override
     public void enableRecordingFirstMeaningfulPaint(long activityCreateTimeMs) {
         mFirstMeaningfulPaintRecorder = new FirstMeaningfulPaintRecorder(activityCreateTimeMs);
     }

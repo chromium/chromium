@@ -132,7 +132,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
         for (int id : tabIds) {
             verify(mGroupFilter).moveTabOutOfGroup(id);
         }
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
@@ -141,7 +141,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
         for (int id : tabIds) {
             verify(mGroupFilter, times(2)).moveTabOutOfGroup(id);
         }
-        verify(mDelegate, times(2)).hide();
+        verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
     }
 }

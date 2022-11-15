@@ -130,7 +130,7 @@ public class TabSelectionEditorCloseActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
         verify(mTabModel).closeTab(tabs.get(1), false, false, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 
     @Test
@@ -165,14 +165,14 @@ public class TabSelectionEditorCloseActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
         verify(mTabModel).closeMultipleTabs(tabs, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
         verify(mTabModel, times(2)).closeMultipleTabs(tabs, true);
-        verify(mDelegate, times(2)).hide();
+        verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
     }
 
@@ -209,7 +209,7 @@ public class TabSelectionEditorCloseActionUnitTest {
         Assert.assertEquals(1, holder.getSelectedAndRelatedTabs().get(5).getId());
         Assert.assertTrue(mAction.perform());
         verify(mTabModel).closeMultipleTabs(holder.getSelectedAndRelatedTabs(), true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 
     @Test
@@ -238,6 +238,6 @@ public class TabSelectionEditorCloseActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
         verify(mTabModel).closeMultipleTabs(holder.getSelectedTabs(), true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 }

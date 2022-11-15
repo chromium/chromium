@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -59,6 +61,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -135,6 +138,8 @@ public class TabGridDialogMediatorUnitTest {
     ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     SnackbarManager mSnackbarManager;
+    @Mock
+    Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -183,6 +188,7 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
+        doReturn(null).when(mRecyclerViewPositionSupplier).get();
 
         if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                     ContextUtils.getApplicationContext())
@@ -192,9 +198,10 @@ public class TabGridDialogMediatorUnitTest {
         }
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
-        mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
-                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
-                mAnimationSourceViewProvider, mShareDelegateSupplier, mSnackbarManager, "");
+        mMediator =
+                new TabGridDialogMediator(mActivity, mDialogController, mModel, mTabModelSelector,
+                        mTabCreatorManager, mTabSwitcherResetHandler, mRecyclerViewPositionSupplier,
+                        mAnimationSourceViewProvider, mShareDelegateSupplier, mSnackbarManager, "");
 
         // TabModelObserver is registered when native is ready.
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(true));
@@ -234,7 +241,8 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabSelectionEditorController)
                 .configureToolbar(eq(REMOVE_BUTTON_STRING), anyInt(),
                         any(TabSelectionEditorActionProvider.class), eq(1), eq(null));
-        verify(mTabSelectionEditorController).show(any());
+        verify(mRecyclerViewPositionSupplier, never()).get();
+        verify(mTabSelectionEditorController).show(any(), eq(0), eq(null));
     }
 
     @Test
@@ -257,7 +265,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.getToolbarMenuCallbackForTesting().onResult(R.id.select_tabs);
         verify(mTabSelectionEditorController)
                 .configureToolbarWithMenuItems(captor.capture(), eq(null));
-        verify(mTabSelectionEditorController).show(any());
+        verify(mRecyclerViewPositionSupplier, times(1)).get();
+        verify(mTabSelectionEditorController).show(any(), eq(0), eq(null));
         List<TabSelectionEditorAction> actions = captor.getValue();
         assertThat(actions.get(0), instanceOf(TabSelectionEditorSelectionAction.class));
         assertThat(actions.get(1), instanceOf(TabSelectionEditorCloseAction.class));
@@ -1063,8 +1072,8 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
-                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, mSnackbarManager, "");
+                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
+                mRecyclerViewPositionSupplier, null, mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(
                 () -> { return mTabSelectionEditorController; }, mTabGroupTitleEditor);
 
@@ -1097,8 +1106,8 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
-                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, mSnackbarManager, "");
+                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
+                mRecyclerViewPositionSupplier, null, mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(
                 () -> { return mTabSelectionEditorController; }, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
@@ -1132,8 +1141,8 @@ public class TabGridDialogMediatorUnitTest {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
-                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, mSnackbarManager, "");
+                mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
+                mRecyclerViewPositionSupplier, null, mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(
                 () -> { return mTabSelectionEditorController; }, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for
@@ -1167,7 +1176,30 @@ public class TabGridDialogMediatorUnitTest {
 
         assertThat(mModel.get(TabGridPanelProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
         assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        verify(mTabSelectionEditorController).show(eq(tabgroup));
+        verify(mRecyclerViewPositionSupplier, never()).get();
+        verify(mTabSelectionEditorController).show(eq(tabgroup), eq(0), eq(null));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void
+    testDialogToolbarMenu_SelectionModeV2() {
+        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
+        // Mock that currently the title text is focused and the keyboard is showing. The current
+        // tab is tab1 which is in a group of {tab1, tab2}.
+        mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, true);
+        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabgroup, TAB1_ID);
+
+        callback.onResult(R.id.select_tabs);
+
+        assertThat(mModel.get(TabGridPanelProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
+        assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
+        verify(mRecyclerViewPositionSupplier, times(1)).get();
+        verify(mTabSelectionEditorController).show(eq(tabgroup), eq(0), eq(null));
     }
 
     @Test

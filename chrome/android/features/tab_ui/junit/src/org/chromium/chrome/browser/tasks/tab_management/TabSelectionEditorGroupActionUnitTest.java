@@ -145,14 +145,14 @@ public class TabSelectionEditorGroupActionUnitTest {
 
         Assert.assertTrue(mAction.perform());
         verify(mGroupFilter).mergeListOfTabsToGroup(tabs, tabs.get(2), true, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
         verify(mGroupFilter, times(2)).mergeListOfTabsToGroup(tabs, tabs.get(2), true, true);
-        verify(mDelegate, times(2)).hide();
+        verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
     }
 
@@ -195,7 +195,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         expectedTabs.add(0, tab8);
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), true, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 
     @Test
@@ -231,7 +231,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 
     @Test
@@ -274,6 +274,6 @@ public class TabSelectionEditorGroupActionUnitTest {
         List<Tab> expectedTabs = holder.getSelectedAndRelatedTabs();
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true, true);
-        verify(mDelegate).hide();
+        verify(mDelegate).hideByAction();
     }
 }

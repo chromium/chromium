@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -80,8 +81,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
 
             mMediator = new TabGridDialogMediator(activity, this, mModel, tabModelSelector,
-                    tabCreatorManager, resetHandler, animationSourceViewProvider,
-                    shareDelegateSupplier, snackbarManager, mComponentName);
+                    tabCreatorManager, resetHandler, this::getRecyclerViewPosition,
+                    animationSourceViewProvider, shareDelegateSupplier, snackbarManager,
+                    mComponentName);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
@@ -131,6 +133,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         }
     }
 
+    @NonNull
+    RecyclerViewPosition getRecyclerViewPosition() {
+        return mTabListCoordinator.getRecyclerViewPosition();
+    }
+
     @Nullable
     private TabSelectionEditorController getTabSelectionEditorController() {
         if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)
@@ -144,7 +151,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                                  : TabListCoordinator.TabListMode.GRID;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mContext,
                     mDialogView.findViewById(R.id.dialog_container_view), mTabModelSelector,
-                    mTabContentManager, mode, mRootView, /*displayGroups=*/false);
+                    mTabContentManager, mTabListCoordinator::setRecyclerViewPosition, mode,
+                    mRootView,
+                    /*displayGroups=*/false);
         }
 
         return mTabSelectionEditorCoordinator.getController();
