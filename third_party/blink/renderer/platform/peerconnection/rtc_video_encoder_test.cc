@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -77,6 +78,148 @@ class EncodedImageCallbackWrapper : public webrtc::EncodedImageCallback {
 
  private:
   EncodedCallback encoded_callback_;
+};
+
+class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
+ public:
+  static std::unique_ptr<RTCVideoEncoderWrapper> Create(
+      media::VideoCodecProfile profile,
+      bool is_constrained_h264,
+      media::GpuVideoAcceleratorFactories* gpu_factories) {
+    auto wrapper = base::WrapUnique(new RTCVideoEncoderWrapper);
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    wrapper->task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<RTCVideoEncoder>* rtc_video_encoder,
+               media::VideoCodecProfile profile, bool is_constrained_h264,
+               media::GpuVideoAcceleratorFactories* gpu_factories,
+               base::WaitableEvent* waiter) {
+              *rtc_video_encoder = std::make_unique<RTCVideoEncoder>(
+                  profile, is_constrained_h264, gpu_factories);
+              waiter->Signal();
+            },
+            &wrapper->rtc_video_encoder_, profile, is_constrained_h264,
+            gpu_factories, &waiter));
+    waiter.Wait();
+    return wrapper;
+  }
+
+  int InitEncode(const webrtc::VideoCodec* codec_settings,
+                 const webrtc::VideoEncoder::Settings& settings) override {
+    int result = 0;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoEncoder* rtc_video_encoder,
+               const webrtc::VideoCodec* codec_settings,
+               const webrtc::VideoEncoder::Settings& settings,
+               base::WaitableEvent* waiter, int* result) {
+              *result = rtc_video_encoder->InitEncode(codec_settings, settings);
+              waiter->Signal();
+            },
+            rtc_video_encoder_.get(), codec_settings, settings, &waiter,
+            &result));
+    waiter.Wait();
+    return result;
+  }
+  int32_t Encode(
+      const webrtc::VideoFrame& input_image,
+      const std::vector<webrtc::VideoFrameType>* frame_types) override {
+    int32_t result = 0;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoEncoder* rtc_video_encoder,
+               const webrtc::VideoFrame& input_image,
+               const std::vector<webrtc::VideoFrameType>* frame_types,
+               base::WaitableEvent* waiter, int32_t* result) {
+              *result = rtc_video_encoder->Encode(input_image, frame_types);
+              waiter->Signal();
+            },
+            rtc_video_encoder_.get(), input_image, frame_types, &waiter,
+            &result));
+    waiter.Wait();
+    return result;
+  }
+  int32_t RegisterEncodeCompleteCallback(
+      webrtc::EncodedImageCallback* callback) override {
+    int32_t result = 0;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoEncoder* rtc_video_encoder,
+               webrtc::EncodedImageCallback* callback,
+               base::WaitableEvent* waiter, int32_t* result) {
+              *result =
+                  rtc_video_encoder->RegisterEncodeCompleteCallback(callback);
+              waiter->Signal();
+            },
+            rtc_video_encoder_.get(), callback, &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+  int32_t Release() override {
+    int32_t result = 0;
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](RTCVideoEncoder* rtc_video_encoder,
+                          base::WaitableEvent* waiter, int32_t* result) {
+                         *result = rtc_video_encoder->Release();
+                         waiter->Signal();
+                       },
+                       rtc_video_encoder_.get(), &waiter, &result));
+    waiter.Wait();
+    return result;
+  }
+  void SetRates(
+      const webrtc::VideoEncoder::RateControlParameters& parameters) override {
+    base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](RTCVideoEncoder* rtc_video_encoder,
+               const webrtc::VideoEncoder::RateControlParameters& parameters,
+               base::WaitableEvent* waiter) {
+              rtc_video_encoder->SetRates(parameters);
+              waiter->Signal();
+            },
+            rtc_video_encoder_.get(), parameters, &waiter));
+    waiter.Wait();
+  }
+  EncoderInfo GetEncoderInfo() const override {
+    NOTIMPLEMENTED();
+    return EncoderInfo();
+  }
+
+  ~RTCVideoEncoderWrapper() override {
+    if (task_runner_) {
+      task_runner_->DeleteSoon(FROM_HERE, std::move(rtc_video_encoder_));
+    }
+    webrtc_encoder_thread_.FlushForTesting();
+  }
+
+ private:
+  RTCVideoEncoderWrapper() : webrtc_encoder_thread_("WebRTC encoder thread") {
+    webrtc_encoder_thread_.Start();
+    task_runner_ = webrtc_encoder_thread_.task_runner();
+  }
+
+  base::Thread webrtc_encoder_thread_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // |webrtc_encoder_thread_| members.
+  std::unique_ptr<RTCVideoEncoder> rtc_video_encoder_;
 };
 }  // anonymous namespace
 
@@ -158,8 +301,8 @@ class RTCVideoEncoderTest
     }
 
     mock_vea_ = ExpectCreateInitAndDestroyVEA(vea_used);
-    rtc_encoder_ = std::make_unique<RTCVideoEncoder>(media_profile, false,
-                                                     mock_gpu_factories_.get());
+    rtc_encoder_ = RTCVideoEncoderWrapper::Create(media_profile, false,
+                                                  mock_gpu_factories_.get());
   }
 
   void CreateEncoderWithoutVea(webrtc::VideoCodecType codec_type) {
@@ -180,8 +323,8 @@ class RTCVideoEncoderTest
         media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
     }
 
-    rtc_encoder_ = std::make_unique<RTCVideoEncoder>(media_profile, false,
-                                                     mock_gpu_factories_.get());
+    rtc_encoder_ = RTCVideoEncoderWrapper::Create(media_profile, false,
+                                                  mock_gpu_factories_.get());
   }
 
   // media::VideoEncodeAccelerator implementation.
@@ -387,7 +530,7 @@ class RTCVideoEncoderTest
 
  protected:
   media::MockVideoEncodeAccelerator* mock_vea_;
-  std::unique_ptr<RTCVideoEncoder> rtc_encoder_;
+  std::unique_ptr<RTCVideoEncoderWrapper> rtc_encoder_;
   absl::optional<media::VideoEncodeAccelerator::Config> config_;
   media::VideoEncodeAccelerator::Client* client_;
   base::Thread encoder_thread_;
