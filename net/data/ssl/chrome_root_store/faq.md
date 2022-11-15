@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-Last updated: September 1, 2022
+Last updated: November 11, 2022
 
 - [What is the Chrome Root Store?](#what-is-the-chrome-root-store)
 - [Where is the Chrome Root Store source code located?](#where-is-the-chrome-root-store-source-code-located)
@@ -35,6 +35,12 @@ applications what certificates to trust. The
 [Chrome Root Store](https://g.co/chrome/root-store) contains the set of
 certificates Chrome trusts by default.
 
+In Chrome 105, we began rolling out the Chrome Root Store to apply a common
+certificate verification process on Windows and macOS. The rollout of the
+Chrome Root Store on Android, Chrome OS, and Linux  will be announced at a later
+date. Apple policies prevent the Chrome Root Store and corresponding Chrome
+Certificate Verifier from being used on Chrome for iOS.
+
 ## Where is the Chrome Root Store source code located?
 Source locations include
 [//net/data/ssl/chrome_root_store](/net/data/ssl/chrome_root_store),
@@ -45,14 +51,19 @@ and [//chrome/browser/component_updater/](/chrome/browser/component_updater/).
 Historically, Chrome integrated certificate verification processes with the
 platform on which it was running. This resulted in inconsistent user experiences
 across platforms, while also making it difficult for developers to understand
-Chrome's expected behavior. Beginning in Chrome 105, we'll begin rolling out the
-Chrome Certificate Verifier to apply a common certificate verification process
-on Windows and macOS. The rollout of the Chrome Certificate Verifier on Chrome
-OS, Linux, and Android will be announced at a later date. The launch of the
-Chrome Certificate Verifier will ensure users have a consistent experience
-across platforms, that developers have a consistent understanding of Chrome's
-behavior, and that Chrome better protects the security and privacy of users'
-connections to websites.
+Chrome's expected behavior.
+
+In Chrome 105, we began rolling out the Chrome Certificate Verifier to apply a
+common certificate verification process on Windows and macOS. The rollout of the
+Chrome Certificate Verifier on Android will be announced at a later date. The 
+Chrome Certificate Verifier launched on Chrome OS in Chrome 77 and Linux in
+Chrome 79. Apple policies prevent the Chrome Certificate Verifier and
+corresponding Chrome Root Store from being used on Chrome for iOS.
+
+Once complete, the launch of the Chrome Certificate Verifier will ensure users
+have a consistent experience across platforms, that developers have a consistent
+understanding of Chrome's behavior, and that Chrome better protects the security
+and privacy of users' connections to websites.
 
 ## Where is Chrome Certificate Verifier source code?
 Source locations include
@@ -131,7 +142,7 @@ A “rollout” is a gradual launch of a new feature. Sometimes, to ensure it go
 smoothly, we don’t enable a new feature for all of our users at once. Instead,
 we start with a small percentage of users and increase that percentage over time
 to ensure we minimize unanticipated compatibility issues. The Chrome Root Store
-and Certificate Verifier will begin rolling out on Windows and macOS in Chrome
+and Certificate Verifier began rolling out on Windows and macOS in Chrome
 105, with other platforms to follow.
 
 ## Given the rollout is gradual, how can I tell if these features are in use on my system?
@@ -142,8 +153,7 @@ and Certificate Verifier will begin rolling out on Windows and macOS in Chrome
 - **Expected outcome with Chrome Root Store disabled:** Page loads
 
 **If on macOS:** Navigate to https://valid-ctrca.certificates.certum.pl/ …
-- **Expected outcome with Chrome Root Store enabled:** Page does not load
-(NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED)
+- **Expected outcome with Chrome Root Store enabled:** Page loads
 - **Expected outcome with Chrome Root Store disabled:** Page does not load
 (NET::ERR_CERT_AUTHORITY_INVALID)
 
@@ -173,18 +183,21 @@ the Chrome Root Store and Certificate Verifier are in use.
      more about common connection errors
      [here](https://support.google.com/chrome/answer/6098869?hl=en).
 2. Choose to *either* add the website’s corresponding root CA certificate to
-your platform root store *or* temporarily use these Chrome Enterprise Policies
+your platform root store *or* temporarily use a Chrome Enterprise Policy
 to disable the use of the Chrome Root Store and Certificate Verifier.
 
-    * **Adding a CA certificate to the platform root store:** Refer to your
+    * **Add a CA certificate to the platform root store:** Refer to your
     operating system instructions for managing certificates. <br><br>*Warning*:
     You should **never** install a root certificate without careful
     consideration to the impact this might have on your privacy and security.
     *Only* install a root certificate after obtaining it from a trusted source
     and verifying its authenticity (e.g., verifying its SHA-256 thumbprint).
 
-    * **Use Chrome Enterprise Policies:** See
+    * **Use the Chrome Enterprise Policy:** See
     [below](#can-you-help_i_m-experiencing-problems).
+
+If you believe the Chrome Certificate Verifier is not working as intended,
+submit a [bug](https://bugs.chromium.org/p/chromium/issues/entry).
 
 ## Can I revert to the platform root store and verifier?
 The Chrome Certificate Verifier evaluates certificate profile conformance
@@ -195,7 +208,7 @@ enterprise policy will be temporarily available to revert to the platform root
 store and verifier.
 
 This enterprise policy is planned to be removed from Windows and macOS beginning
-in Chrome 111, and should only be used as a temporary solution while
+in Chrome 113, and should only be used as a temporary solution while
 troubleshooting and remediating instances of certificate profile conformance
 issues.
 
@@ -233,8 +246,7 @@ component updates, end-points will only receive updated versions of the Chrome
 Root Store during Chrome browser application updates.
 
 ## Why does the certificate viewer look different?
-Beginning in Chrome 105, Chrome on Windows and macOS transitioned from using the
+In Chrome 105, Chrome on Windows and macOS transitioned from using the
 native platform certificate viewer to the Chrome Certificate Viewer. This
-transition is intended to promote a consistent experience across platforms
-as we begin the [rollout](#when-are-these-changes-taking-place) of the Chrome
-Root Store.
+transition promotes a consistent experience across platforms as we begin the
+[rollout](#when-are-these-changes-taking-place) of the Chrome Root Store.
