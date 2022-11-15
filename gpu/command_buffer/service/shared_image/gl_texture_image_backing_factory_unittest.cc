@@ -493,7 +493,14 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
   }
 }
 
-TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
+// TODO(crbug.com/1383911): Flaky on Asan/Lsan builds.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_InitialDataWrongSize DISABLED_InitialDataWrongSize
+#else
+#define MAYBE_InitialDataWrongSize InitialDataWrongSize
+#endif
+TEST_P(GLTextureImageBackingFactoryInitialDataTest,
+       MAYBE_InitialDataWrongSize) {
   viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
