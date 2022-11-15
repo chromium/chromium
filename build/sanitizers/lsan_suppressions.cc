@@ -37,6 +37,7 @@ char kLSanDefaultSuppressions[] =
     "leak:libnvidia-fatbinaryloader.so\n"
     "leak:libnvidia-glcore.so\n"
     "leak:libnvidia-rtcore.so\n"
+    "leak:nvidia0\n"
     "leak:nvidiactl\n"
 
     // XRandR has several one time leaks.
