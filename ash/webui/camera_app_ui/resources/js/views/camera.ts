@@ -996,7 +996,7 @@ export class Camera extends View implements CameraViewUI {
   }
 
   override handlingKey(key: util.KeyboardShortcut): boolean {
-    if (key === 'Ctrl-R') {
+    if (key === 'Ctrl-Alt-R') {
       toast.showDebugMessage(
           this.cameraManager.getPreviewResolution().toString());
       return true;
