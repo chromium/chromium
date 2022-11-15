@@ -106,6 +106,9 @@ cast_receiver::Status RuntimeServiceImpl::Stop() {
 
   if (heartbeat_reactor_) {
     heartbeat_timer_.Stop();
+    // Reset the writes callback as we're not expecting any more responses from
+    // gRPC framework.
+    heartbeat_reactor_->SetWritesAvailableCallback(base::DoNothing());
     heartbeat_reactor_->Write(grpc::Status::OK);
     heartbeat_reactor_ = nullptr;
   }
@@ -246,6 +249,7 @@ void RuntimeServiceImpl::HandleHeartbeat(
 
   if (!request.has_heartbeat_period() ||
       request.heartbeat_period().seconds() <= 0) {
+    LOG(ERROR) << "Failed to create a heartbeat as period is not valid";
     reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                                 "Incorrect heartbeat period"));
     return;
@@ -253,6 +257,7 @@ void RuntimeServiceImpl::HandleHeartbeat(
 
   heartbeat_period_ = base::Seconds(request.heartbeat_period().seconds());
   heartbeat_reactor_ = reactor;
+  // Set the write callback once for all future calls from gRPC framework.
   heartbeat_reactor_->SetWritesAvailableCallback(base::BindPostTask(
       task_runner_, base::BindRepeating(&RuntimeServiceImpl::OnHeartbeatSent,
                                         weak_factory_.GetWeakPtr())));
@@ -370,7 +375,11 @@ void RuntimeServiceImpl::OnApplicationStopping(
 
 void RuntimeServiceImpl::SendHeartbeat() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(heartbeat_reactor_);
+  if (!heartbeat_reactor_) {
+    LOG(WARNING) << "Heartbeat reactor has been destroyed";
+    return;
+  }
+
   DVLOG(2) << "Sending heartbeat";
   heartbeat_reactor_->Write(cast::runtime::HeartbeatResponse());
 }
@@ -379,13 +388,16 @@ void RuntimeServiceImpl::OnHeartbeatSent(
     cast::utils::GrpcStatusOr<
         cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor*> reactor_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(heartbeat_reactor_);
   if (!reactor_or.ok()) {
+    heartbeat_timer_.Stop();
     heartbeat_reactor_ = nullptr;
     LOG(ERROR) << "Failed to send heartbeats: " << reactor_or.ToString();
     return;
   }
 
-  heartbeat_reactor_ = std::move(reactor_or).value();
+  // Server streaming reactor never changes.
+  CHECK(heartbeat_reactor_ == *reactor_or);
   heartbeat_timer_.Start(
       FROM_HERE, heartbeat_period_,
       base::BindPostTask(task_runner_,
