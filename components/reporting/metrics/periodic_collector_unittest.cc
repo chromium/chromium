@@ -20,11 +20,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::testing::Eq;
+
 namespace reporting {
 namespace {
 
 constexpr char kEnableSettingPath[] = "enable_path";
 constexpr char kRateSettingPath[] = "rate_path";
+
+constexpr base::TimeDelta interval = base::Milliseconds(10000);
 
 class PeriodicCollectorTest : public ::testing::Test {
  protected:
@@ -43,9 +47,8 @@ class PeriodicCollectorTest : public ::testing::Test {
 };
 
 TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
-  constexpr int interval = 10000;
   settings_->SetBoolean(kEnableSettingPath, true);
-  settings_->SetInteger(kRateSettingPath, interval);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data_list[5];
   metric_data_list[0].mutable_telemetry_data();
@@ -57,108 +60,146 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
   metric_data_list[4].mutable_event_data();
 
   sampler_->SetMetricData(metric_data_list[0]);
-  PeriodicCollector collector(
-      sampler_.get(), metric_report_queue_.get(), settings_.get(),
-      kEnableSettingPath, /*setting_enabled_default_value=*/false,
-      kRateSettingPath, base::Milliseconds(interval / 2));
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), kEnableSettingPath,
+                              /*setting_enabled_default_value=*/false,
+                              kRateSettingPath, interval / 2);
 
   // One initial collection at startup.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
   // Expected calls count initialized to 1 to reflect the initial collection.
   int expected_collect_calls = 1;
   for (int i = 0; i < 2; ++i) {
     sampler_->SetMetricData(metric_data_list[i + 1]);
     // 5 secs elapsed, no new data collected.
-    task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
-    EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+    task_environment_.FastForwardBy(interval / 2);
+    EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
 
     ++expected_collect_calls;
     // 10 secs elapsed, data should be collected.
-    task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
-    EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+    task_environment_.FastForwardBy(interval / 2);
+    EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
     ;
   }
 
   sampler_->SetMetricData(metric_data_list[3]);
   settings_->SetBoolean(kEnableSettingPath, false);
   // Setting disabled, no data should be collected.
-  task_environment_.FastForwardBy(base::Milliseconds(interval));
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+  task_environment_.FastForwardBy(interval);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
 
   settings_->SetBoolean(kEnableSettingPath, true);
   // Initial collection at policy enablement.
   ++expected_collect_calls;
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
 
   sampler_->SetMetricData(metric_data_list[4]);
   // Setting enabled, data should be collected after interval.
-  task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+  task_environment_.FastForwardBy(interval / 2);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
   ++expected_collect_calls;
-  task_environment_.FastForwardBy(base::Milliseconds(interval / 2));
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), expected_collect_calls);
+  task_environment_.FastForwardBy(interval / 2);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
 
   for (const auto& metric_data : metric_data_list) {
     MetricData metric_data_reported =
         metric_report_queue_->GetMetricDataReported();
     EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
-    EXPECT_EQ(metric_data_reported.has_telemetry_data(),
-              metric_data.has_telemetry_data());
-    EXPECT_EQ(metric_data_reported.has_info_data(),
-              metric_data.has_info_data());
-    EXPECT_EQ(metric_data_reported.has_event_data(),
-              metric_data.has_event_data());
+    EXPECT_THAT(metric_data_reported.has_telemetry_data(),
+                Eq(metric_data.has_telemetry_data()));
+    EXPECT_THAT(metric_data_reported.has_info_data(),
+                Eq(metric_data.has_info_data()));
+    EXPECT_THAT(metric_data_reported.has_event_data(),
+                Eq(metric_data.has_event_data()));
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 
-TEST_F(PeriodicCollectorTest, NoMetricData) {
-  constexpr int interval = 10000;
+TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
+  constexpr base::TimeDelta init_delay = base::Minutes(1);
+
   settings_->SetBoolean(kEnableSettingPath, true);
-  settings_->SetInteger(kRateSettingPath, interval);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
+
+  MetricData metric_data;
+  metric_data.mutable_telemetry_data();
+
+  sampler_->SetMetricData(metric_data);
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), kEnableSettingPath,
+                              /*setting_enabled_default_value=*/false,
+                              kRateSettingPath, interval / 2,
+                              /*rate_unit_to_ms=*/1, init_delay);
+
+  // No collection since the init delay is not elapsed.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
+
+  task_environment_.FastForwardBy(interval);
+
+  // Only interval is elapsed which is less than init delay so still no
+  // collection.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
+
+  task_environment_.FastForwardBy(init_delay - interval);
+
+  // One initial collection when the init delay is elapsed.
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
+
+  MetricData metric_data_reported =
+      metric_report_queue_->GetMetricDataReported();
+  EXPECT_TRUE(metric_data_reported.has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported.has_telemetry_data());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(metric_report_queue_->IsEmpty());
+
+  sampler_->SetMetricData(absl::nullopt);
+}
+
+TEST_F(PeriodicCollectorTest, NoMetricData) {
+  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   sampler_->SetMetricData(absl::nullopt);
 
-  PeriodicCollector collector(
-      sampler_.get(), metric_report_queue_.get(), settings_.get(),
-      kEnableSettingPath, /*setting_enabled_default_value=*/false,
-      kRateSettingPath, base::Milliseconds(interval / 2));
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), kEnableSettingPath,
+                              /*setting_enabled_default_value=*/false,
+                              kRateSettingPath, interval / 2);
 
   // One initial collection at startup.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(metric_report_queue_->IsEmpty());
 }
 
 TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
-  constexpr int interval = 10000;
   settings_->SetBoolean(kEnableSettingPath, false);
-  settings_->SetInteger(kRateSettingPath, interval);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
 
   sampler_->SetMetricData(std::move(metric_data));
 
-  PeriodicCollector collector(
-      sampler_.get(), metric_report_queue_.get(), settings_.get(),
-      kEnableSettingPath, /*setting_enabled_default_value=*/false,
-      kRateSettingPath, base::Milliseconds(interval / 2));
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), kEnableSettingPath,
+                              /*setting_enabled_default_value=*/false,
+                              kRateSettingPath, interval / 2);
 
-  task_environment_.FastForwardBy(base::Milliseconds(interval));
+  task_environment_.FastForwardBy(interval);
   // Setting is disabled, no data collected.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 0);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
   settings_->SetBoolean(kEnableSettingPath, true);
   // One initial collection at policy enablement.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
-  task_environment_.FastForwardBy(base::Milliseconds(interval));
+  task_environment_.FastForwardBy(interval);
   // 1 collection at policy enablement + 1 collection after interval.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 2);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
 
   MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
@@ -173,28 +214,27 @@ TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
 }
 
 TEST_F(PeriodicCollectorTest, DefaultEnabled) {
-  constexpr int interval = 10000;
-  settings_->SetInteger(kRateSettingPath, interval);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
 
   sampler_->SetMetricData(std::move(metric_data));
-  PeriodicCollector collector(
-      sampler_.get(), metric_report_queue_.get(), settings_.get(),
-      "invalid/path", /*setting_enabled_default_value=*/true, kRateSettingPath,
-      base::Milliseconds(interval / 2));
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), "invalid/path",
+                              /*setting_enabled_default_value=*/true,
+                              kRateSettingPath, interval / 2);
 
   // One initial collection at startup.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
   metric_data.Clear();
   metric_data.mutable_event_data();
   sampler_->SetMetricData(std::move(metric_data));
   // 10 secs elapsed, data should be collected.
-  task_environment_.FastForwardBy(base::Milliseconds(interval));
+  task_environment_.FastForwardBy(interval);
   // 1 collection at startup + 1 collection after interval.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 2);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
 
   MetricData metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
@@ -210,23 +250,22 @@ TEST_F(PeriodicCollectorTest, DefaultEnabled) {
 }
 
 TEST_F(PeriodicCollectorTest, DefaultDisabled) {
-  constexpr int interval = 10000;
-  settings_->SetInteger(kRateSettingPath, interval);
+  settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
 
-  PeriodicCollector collector(
-      sampler_.get(), metric_report_queue_.get(), settings_.get(),
-      "invalid/path", /*setting_enabled_default_value=*/false, kRateSettingPath,
-      base::Milliseconds(interval / 2));
+  PeriodicCollector collector(sampler_.get(), metric_report_queue_.get(),
+                              settings_.get(), "invalid/path",
+                              /*setting_enabled_default_value=*/false,
+                              kRateSettingPath, interval / 2);
 
   sampler_->SetMetricData(std::move(metric_data));
-  task_environment_.FastForwardBy(base::Milliseconds(interval));
+  task_environment_.FastForwardBy(interval);
   base::RunLoop().RunUntilIdle();
 
   // Setting is disabled by default, no data collected.
-  EXPECT_EQ(sampler_->GetNumCollectCalls(), 0);
+  EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 }
 }  // namespace

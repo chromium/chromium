@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/reporting/client/report_queue.h"
@@ -28,7 +29,8 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
                                      bool setting_enabled_default_value,
                                      const std::string& rate_setting_path,
                                      base::TimeDelta default_rate,
-                                     int rate_unit_to_ms)
+                                     int rate_unit_to_ms,
+                                     base::TimeDelta init_delay)
     : CollectorBase(sampler),
       metric_report_queue_(metric_report_queue),
       rate_controller_(std::make_unique<MetricRateController>(
@@ -42,12 +44,35 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
           reporting_settings,
           enable_setting_path,
           setting_enabled_default_value)) {
-  reporting_controller_->SetSettingUpdateCb(
-      base::BindRepeating(&PeriodicCollector::StartPeriodicCollection,
-                          base::Unretained(this)),
-      base::BindRepeating(&PeriodicCollector::StopPeriodicCollection,
-                          base::Unretained(this)));
+  if (init_delay.is_zero()) {
+    SetReportingControllerCb();
+    return;
+  }
+  CHECK(base::SequencedTaskRunner::HasCurrentDefault());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PeriodicCollector::SetReportingControllerCb,
+                     weak_ptr_factory_.GetWeakPtr()),
+      init_delay);
 }
+
+PeriodicCollector::PeriodicCollector(Sampler* sampler,
+                                     MetricReportQueue* metric_report_queue,
+                                     ReportingSettings* reporting_settings,
+                                     const std::string& enable_setting_path,
+                                     bool setting_enabled_default_value,
+                                     const std::string& rate_setting_path,
+                                     base::TimeDelta default_rate,
+                                     int rate_unit_to_ms)
+    : PeriodicCollector(sampler,
+                        metric_report_queue,
+                        reporting_settings,
+                        enable_setting_path,
+                        setting_enabled_default_value,
+                        rate_setting_path,
+                        default_rate,
+                        rate_unit_to_ms,
+                        base::TimeDelta()) {}
 
 PeriodicCollector::~PeriodicCollector() = default;
 
@@ -72,5 +97,13 @@ void PeriodicCollector::StartPeriodicCollection() {
 void PeriodicCollector::StopPeriodicCollection() {
   CheckOnSequence();
   rate_controller_->Stop();
+}
+
+void PeriodicCollector::SetReportingControllerCb() {
+  reporting_controller_->SetSettingUpdateCb(
+      base::BindRepeating(&PeriodicCollector::StartPeriodicCollection,
+                          base::Unretained(this)),
+      base::BindRepeating(&PeriodicCollector::StopPeriodicCollection,
+                          base::Unretained(this)));
 }
 }  // namespace reporting
