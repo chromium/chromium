@@ -29,7 +29,7 @@
 
 #include <pthread.h>
 
-#if defined(__has_feature) && __has_feature(thread_sanitizer)
+#if HAS_FEATURE(thread_sanitizer)
 #define DISABLE_TSAN_INSTRUMENTATION __attribute__((no_sanitize("thread")))
 #else
 #define DISABLE_TSAN_INSTRUMENTATION
