@@ -102,6 +102,8 @@ EmojiSuggester::EmojiSuggester(SuggestionHandlerInterface* suggestion_handler,
   LoadEmojiMap();
 
   properties_.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties_.suggestion_type =
+      ash::ime::AssistiveSuggestionType::kAssistiveEmoji;
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
       ash::ime::AssistiveWindowType::kEmojiSuggestion;

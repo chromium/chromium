@@ -365,6 +365,7 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
   bool show_accept_annotation =
       GetPrefValue(kPersonalInfoSuggesterAcceptanceCount) < kMaxAcceptanceCount;
   ui::ime::SuggestionDetails details;
+  details.type = ash::ime::AssistiveSuggestionType::kAssistivePersonalInfo;
   details.text = text;
   details.confirmed_length = confirmed_length;
   details.show_accept_annotation = show_accept_annotation;

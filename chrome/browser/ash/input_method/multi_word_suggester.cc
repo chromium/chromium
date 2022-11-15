@@ -350,6 +350,7 @@ void MultiWordSuggester::DisplaySuggestion(
     return;
   }
   ui::ime::SuggestionDetails details;
+  details.type = ash::ime::AssistiveSuggestionType::kMultiWord;
   details.text = suggestion.text;
   details.show_accept_annotation = false;
   details.show_quick_accept_annotation = ShouldShowTabGuide(profile_);

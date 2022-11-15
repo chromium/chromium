@@ -47,8 +47,9 @@ class AssistiveWindowController : public views::WidgetObserver,
 
   ~AssistiveWindowController() override;
 
-  ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting();
+  ui::ime::SuggestionWindowView* GetSuggestionWindowViewForTesting() const;
   ui::ime::UndoWindow* GetUndoWindowForTesting() const;
+  ui::ime::GrammarSuggestionWindow* GetGrammarWindowForTesting() const;
 
   // IMEAssistiveWindowHandlerInterface implementation.
   void SetBounds(const Bounds& bounds) override;
@@ -81,6 +82,10 @@ class AssistiveWindowController : public views::WidgetObserver,
   void InitAccessibilityView();
   void DisplayCompletionSuggestion(const ui::ime::SuggestionDetails& details);
   void ClearPendingSuggestionTimer();
+  // This method will update the current AssistiveWindow state, and complete
+  // any necessary side effects when transitioning from the previously saved
+  // AssistiveWindow to the one given.
+  void SetAssistiveWindow(const ash::ime::AssistiveWindow& window);
 
   const AssistiveWindowControllerDelegate* delegate_;
   AssistiveWindowProperties window_;
@@ -92,6 +97,8 @@ class AssistiveWindowController : public views::WidgetObserver,
   size_t confirmed_length_ = 0;
   Bounds bounds_;
   std::unique_ptr<base::OneShotTimer> pending_suggestion_timer_;
+  // Holds the current state of the assistive window.
+  ash::ime::AssistiveWindow assistive_window_;
 
   base::WeakPtrFactory<AssistiveWindowController> weak_ptr_factory_{this};
 };

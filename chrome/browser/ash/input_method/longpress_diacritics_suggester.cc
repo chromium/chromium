@@ -83,6 +83,8 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
     AssistiveWindowProperties properties;
     properties.type =
         ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+    properties.suggestion_type =
+        ash::ime::AssistiveSuggestionType::kLongpressDiacritic;
     properties.visible = true;
     properties.candidates = SplitDiacritics(it->second);
     properties.announce_string =

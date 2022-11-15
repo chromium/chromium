@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
@@ -23,12 +24,17 @@
 namespace ash {
 namespace input_method {
 
+using ::ash::ime::AssistiveSuggestion;
+using ::ash::ime::AssistiveSuggestionType;
+using ::ash::ime::AssistiveWindow;
+using ::ash::ime::AssistiveWindowType;
+
 constexpr base::TimeDelta kShowSuggestionDelayMs = base::Milliseconds(5);
 
 namespace {
+
 gfx::NativeView GetParentView() {
   gfx::NativeView parent = nullptr;
-
   aura::Window* active_window = ash::window_util::GetActiveWindow();
   // Use MenuContainer so that it works even with a system modal dialog.
   parent = ash::Shell::GetContainer(
@@ -36,6 +42,65 @@ gfx::NativeView GetParentView() {
                     : ash::Shell::GetRootWindowForNewWindows(),
       ash::kShellWindowId_MenuContainer);
   return parent;
+}
+
+AssistiveWindowType ToAssistiveWindowType(
+    const AssistiveSuggestionType& suggestion_type) {
+  switch (suggestion_type) {
+    case AssistiveSuggestionType::kAssistiveEmoji:
+      return AssistiveWindowType::kEmojiSuggestion;
+    case AssistiveSuggestionType::kAssistivePersonalInfo:
+      return AssistiveWindowType::kPersonalInfoSuggestion;
+    case AssistiveSuggestionType::kMultiWord:
+      return AssistiveWindowType::kMultiWordSuggestion;
+    case AssistiveSuggestionType::kGrammar:
+      return AssistiveWindowType::kGrammarSuggestion;
+    case AssistiveSuggestionType::kLongpressDiacritic:
+      return AssistiveWindowType::kLongpressDiacriticsSuggestion;
+    default:
+      return AssistiveWindowType::kNone;
+  }
+}
+
+AssistiveWindow SingleCandidateAssistiveWindow(
+    const AssistiveWindowType& window_type,
+    const AssistiveSuggestionType& suggestion_type,
+    const std::u16string& candidate,
+    size_t confirmed_length) {
+  return AssistiveWindow(/*type=*/window_type,
+                         /*candidates=*/std::vector<AssistiveSuggestion>{
+                             AssistiveSuggestion{
+                                 .type = suggestion_type,
+                                 .text = base::UTF16ToUTF8(candidate),
+                                 .confirmed_length = confirmed_length,
+                             },
+                         });
+}
+
+AssistiveWindow MultiCandidateAssistiveWindow(
+    const AssistiveWindowType& window_type,
+    const AssistiveSuggestionType& suggestion_type,
+    const std::vector<std::u16string>& candidates) {
+  std::vector<AssistiveSuggestion> suggestions;
+  for (const auto& candidate : candidates) {
+    suggestions.push_back(AssistiveSuggestion{
+        .type = suggestion_type,
+        .text = base::UTF16ToUTF8(candidate),
+        .confirmed_length = 0,
+    });
+  }
+  return AssistiveWindow(/*type=*/window_type,
+                         /*candidates=*/suggestions);
+}
+
+AssistiveWindow UndoAssistiveWindow() {
+  return AssistiveWindow(/*type=*/AssistiveWindowType::kUndoWindow,
+                         /*suggestions=*/{});
+}
+
+AssistiveWindow HiddenAssistiveWindow() {
+  return AssistiveWindow(/*type=*/AssistiveWindowType::kNone,
+                         /*suggestions=*/{});
 }
 
 }  // namespace
@@ -105,6 +170,14 @@ void AssistiveWindowController::InitAccessibilityView() {
 
 void AssistiveWindowController::OnWidgetDestroying(views::Widget* widget) {
   ClearPendingSuggestionTimer();
+  // Ensure we capture any AssistiveWindow state changes.
+  if ((suggestion_window_view_ &&
+       widget == suggestion_window_view_->GetWidget()) ||
+      (undo_window_ && widget == undo_window_->GetWidget()) ||
+      (grammar_suggestion_window_ &&
+       widget == grammar_suggestion_window_->GetWidget())) {
+    SetAssistiveWindow(HiddenAssistiveWindow());
+  }
   if (suggestion_window_view_ &&
       widget == suggestion_window_view_->GetWidget()) {
     widget->RemoveObserver(this);
@@ -151,6 +224,7 @@ void AssistiveWindowController::HideSuggestion() {
     suggestion_window_view_->GetWidget()->Close();
   if (grammar_suggestion_window_)
     grammar_suggestion_window_->GetWidget()->Close();
+  SetAssistiveWindow(HiddenAssistiveWindow());
 }
 
 void AssistiveWindowController::SetBounds(const Bounds& bounds) {
@@ -271,8 +345,10 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         anchor_rect.Inset(-4);
         undo_window_->SetAnchorRect(anchor_rect);
         undo_window_->Show();
+        SetAssistiveWindow(UndoAssistiveWindow());
       } else {
         undo_window_->Hide();
+        SetAssistiveWindow(HiddenAssistiveWindow());
       }
       break;
     case ash::ime::AssistiveWindowType::kEmojiSuggestion:
@@ -285,6 +361,11 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         suggestion_window_view_->SetAnchorRect(bounds_.caret);
         suggestion_window_view_->ShowMultipleCandidates(
             window, WindowOrientationFor(window.type));
+        if (window.suggestion_type)
+          SetAssistiveWindow(MultiCandidateAssistiveWindow(
+              /*window_type=*/window.type,
+              /*suggestion_type=*/*window.suggestion_type,
+              /*candidates=*/window.candidates));
       } else {
         HideSuggestion();
       }
@@ -298,11 +379,18 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
         grammar_suggestion_window_->SetBounds(bounds_.caret);
         grammar_suggestion_window_->SetSuggestion(window.candidates[0]);
         grammar_suggestion_window_->Show();
+        SetAssistiveWindow(SingleCandidateAssistiveWindow(
+            /*window_type=*/AssistiveWindowType::kGrammarSuggestion,
+            /*suggestion_type=*/AssistiveSuggestionType::kGrammar,
+            /*candidate=*/window.candidates[0],
+            /*confirmed_length=*/0));
       } else {
         grammar_suggestion_window_->Hide();
+        SetAssistiveWindow(HiddenAssistiveWindow());
       }
       break;
     case ash::ime::AssistiveWindowType::kNone:
+    default:
       break;
   }
   Announce(window.announce_string);
@@ -314,6 +402,11 @@ void AssistiveWindowController::DisplayCompletionSuggestion(
     InitSuggestionWindow(ui::ime::SuggestionWindowView::Orientation::kVertical);
   suggestion_window_view_->SetAnchorRect(bounds_.caret);
   suggestion_window_view_->Show(details);
+  SetAssistiveWindow(SingleCandidateAssistiveWindow(
+      /*window_type=*/ToAssistiveWindowType(details.type),
+      /*suggestion_type=*/details.type,
+      /*candidate=*/details.text,
+      /*confirmed_length=*/details.confirmed_length));
 }
 
 void AssistiveWindowController::ClearPendingSuggestionTimer() {
@@ -322,6 +415,13 @@ void AssistiveWindowController::ClearPendingSuggestionTimer() {
       pending_suggestion_timer_->Stop();
     pending_suggestion_timer_ = nullptr;
   }
+}
+
+void AssistiveWindowController::SetAssistiveWindow(
+    const AssistiveWindow& window) {
+  if (assistive_window_ != window)
+    AssistiveWindowChanged(window);
+  assistive_window_ = window;
 }
 
 void AssistiveWindowController::AssistiveWindowButtonClicked(
@@ -335,13 +435,18 @@ void AssistiveWindowController::AssistiveWindowChanged(
 }
 
 ui::ime::SuggestionWindowView*
-AssistiveWindowController::GetSuggestionWindowViewForTesting() {
+AssistiveWindowController::GetSuggestionWindowViewForTesting() const {
   return suggestion_window_view_;
 }
 
 ui::ime::UndoWindow* AssistiveWindowController::GetUndoWindowForTesting()
     const {
   return undo_window_;
+}
+
+ui::ime::GrammarSuggestionWindow*
+AssistiveWindowController::GetGrammarWindowForTesting() const {
+  return grammar_suggestion_window_;
 }
 
 }  // namespace input_method

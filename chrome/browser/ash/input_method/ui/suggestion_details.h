@@ -7,10 +7,13 @@
 
 #include <string>
 
+#include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
+
 namespace ui {
 namespace ime {
 
 struct SuggestionDetails {
+  ash::ime::AssistiveSuggestionType type;
   std::u16string text;
   size_t confirmed_length = 0;
   bool show_accept_annotation = false;
@@ -18,7 +21,8 @@ struct SuggestionDetails {
   bool show_setting_link = false;
 
   bool operator==(const SuggestionDetails& other) const {
-    return text == other.text && confirmed_length == other.confirmed_length &&
+    return type == other.type && text == other.text &&
+           confirmed_length == other.confirmed_length &&
            show_accept_annotation == other.show_accept_annotation &&
            show_quick_accept_annotation == other.show_quick_accept_annotation &&
            show_setting_link == other.show_setting_link;

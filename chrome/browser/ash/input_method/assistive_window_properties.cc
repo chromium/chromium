@@ -11,6 +11,22 @@ AssistiveWindowProperties::AssistiveWindowProperties() = default;
 AssistiveWindowProperties::~AssistiveWindowProperties() = default;
 
 AssistiveWindowProperties::AssistiveWindowProperties(
+    const ime::AssistiveWindowType& type,
+    const ime::AssistiveSuggestionType& suggestion_type,
+    bool visible,
+    const std::vector<std::u16string>& candidates)
+    : type(type),
+      suggestion_type(suggestion_type),
+      visible(visible),
+      candidates(candidates) {}
+
+AssistiveWindowProperties::AssistiveWindowProperties(
+    const ime::AssistiveWindowType& type,
+    bool visible,
+    const std::vector<std::u16string>& candidates)
+    : type(type), visible(visible), candidates(candidates) {}
+
+AssistiveWindowProperties::AssistiveWindowProperties(
     const AssistiveWindowProperties& other) = default;
 AssistiveWindowProperties& AssistiveWindowProperties::operator=(
     const AssistiveWindowProperties& other) = default;

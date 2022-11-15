@@ -223,6 +223,7 @@ bool GrammarManager::HandleSurroundingTextChange(const std::u16string& text,
   std::string error;
   AssistiveWindowProperties properties;
   properties.type = ash::ime::AssistiveWindowType::kGrammarSuggestion;
+  properties.suggestion_type = ash::ime::AssistiveSuggestionType::kGrammar;
   properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
   properties.visible = true;
   properties.announce_string = kShowGrammarSuggestionMessage;

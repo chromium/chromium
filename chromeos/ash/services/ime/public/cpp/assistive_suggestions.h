@@ -63,6 +63,9 @@ enum class AssistiveWindowType {
 // Represents the current state of suggestions in the assistive window.
 struct AssistiveWindow {
   AssistiveWindow();
+  AssistiveWindow(const AssistiveWindowType& type,
+                  const std::vector<AssistiveSuggestion>& candidates);
+  AssistiveWindow(const AssistiveWindow& window);
   ~AssistiveWindow();
 
   AssistiveWindowType type;
@@ -71,6 +74,12 @@ struct AssistiveWindow {
   // item, when multiple candidates are shown in the window it will contain
   // multiple items.
   std::vector<AssistiveSuggestion> candidates;
+
+  bool operator==(const AssistiveWindow& rhs) const {
+    return type == rhs.type && candidates == rhs.candidates;
+  }
+
+  bool operator!=(const AssistiveWindow& rhs) const { return !(*this == rhs); }
 };
 
 }  // namespace ime
