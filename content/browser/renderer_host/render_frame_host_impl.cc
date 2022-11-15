@@ -4919,7 +4919,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     base::UmaHistogramTimes("Navigation.OnBeforeUnloadOverheadTime",
                             on_before_unload_overhead_time);
 
-    frame_tree_node_->navigator().LogBeforeUnloadTime(
+    owner_->GetCurrentNavigator().LogBeforeUnloadTime(
         renderer_before_unload_start_time, renderer_before_unload_end_time,
         send_before_unload_start_time_, for_legacy);
   }
