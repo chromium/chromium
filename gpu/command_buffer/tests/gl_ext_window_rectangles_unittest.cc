@@ -69,7 +69,8 @@ class GLEXTWindowRectanglesTest : public testing::Test {
     EXPECT_NEAR((a), pixel[3], 2);                                  \
   } while (0)
 
-TEST_F(GLEXTWindowRectanglesTest, Defaults) {
+// TODO(crbug.com/1384328): Re-enable this test
+TEST_F(GLEXTWindowRectanglesTest, DISABLED_Defaults) {
   if (!IsApplicable()) {
     return;
   }

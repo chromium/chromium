@@ -1277,7 +1277,8 @@ class GLHelperPixelTest : public GLHelperTest {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
 };
 
-TEST_F(GLHelperTest, RGBAASyncReadbackTest) {
+// TODO(crbug.com/1384328): Re-enable this test
+TEST_F(GLHelperTest, DISABLED_RGBAASyncReadbackTest) {
   const int kTestSize = 64;
   bool result = TestTextureFormatReadback(gfx::Size(kTestSize, kTestSize),
                                           kRGBA_8888_SkColorType);
