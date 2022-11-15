@@ -72,6 +72,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
+  [self.navigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
   self.navigationController.delegate = self;
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
