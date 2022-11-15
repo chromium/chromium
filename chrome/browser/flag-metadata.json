@@ -3550,11 +3550,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "extensions-fsp-in-service-workers",
-    "owners": [ "alexbn", "petermarshall" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz" ],
     "expiry_milestone":  112

@@ -1441,11 +1441,6 @@ const char kExtensionsMenuAccessControlName[] =
 const char kExtensionsMenuAccessControlDescription[] =
     "Enables a redesigned extensions menu that allows the user to control "
     "extensions site access.";
-
-const char kExtensionsFSPInServiceWorkersName[] =
-    "fileSystemProvider API in Service Workers";
-const char kExtensionsFSPInServiceWorkersDescription[] =
-    "Enables fileSystemProvider extension API in service workers.";
 #endif
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";

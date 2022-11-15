@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -156,17 +154,7 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   ash::FakeChromeUserManager user_manager_;
 };
 
-class FileSystemProviderServiceWorkerApiTest
-    : public FileSystemProviderApiTest {
- public:
-  FileSystemProviderServiceWorkerApiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsFSPInServiceWorkers);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using FileSystemProviderServiceWorkerApiTest = FileSystemProviderApiTest;
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/mount",

@@ -42,8 +42,6 @@ BASE_DECLARE_FEATURE(kNewWebstoreDomain);
 
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 
-BASE_DECLARE_FEATURE(kExtensionsFSPInServiceWorkers);
-
 BASE_DECLARE_FEATURE(kFileHandlersMV3);
 
 BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
