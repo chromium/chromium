@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "testing/gtest_mac.h"
@@ -45,11 +46,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_NSEQ(title, whats_new_cell.textLabel.text);
   EXPECT_EQ(NO,
             whats_new_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
-  UIFontMetrics* fontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
-  EXPECT_EQ([fontMetrics scaledFontForFont:font],
-            whats_new_cell.textLabel.font);
+  UIFont* font = CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+  EXPECT_EQ(font, whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(2, whats_new_cell.textLabel.numberOfLines);
 
@@ -58,11 +56,9 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* detailFont = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
-  UIFontMetrics* detailFontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
-  EXPECT_EQ([detailFontMetrics scaledFontForFont:detailFont],
-            whats_new_cell.detailTextLabel.font);
+  UIFont* detailFont =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+  EXPECT_EQ(detailFont, whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
@@ -113,11 +109,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
 
   EXPECT_EQ(NO,
             whats_new_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
-  UIFontMetrics* fontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
-  EXPECT_EQ([fontMetrics scaledFontForFont:font],
-            whats_new_cell.textLabel.font);
+  UIFont* font = CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+  EXPECT_EQ(font, whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(2, whats_new_cell.textLabel.numberOfLines);
 
@@ -126,11 +119,9 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  UIFont* detailFont = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
-  UIFontMetrics* detailFontMetrics =
-      [UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote];
-  EXPECT_EQ([detailFontMetrics scaledFontForFont:detailFont],
-            whats_new_cell.detailTextLabel.font);
+  UIFont* detailFont =
+      CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+  EXPECT_EQ(detailFont, whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(3, whats_new_cell.detailTextLabel.numberOfLines);
@@ -153,5 +144,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
 
   // Check that icon view is set properly .
   UIImageView* icon_view = whats_new_cell.iconView;
-  EXPECT_NSEQ([ChromeIcon searchIcon], icon_view.image);
+
+  CGSize expectedSize = CGSizeMake(30, 30);
+  EXPECT_EQ(expectedSize.height, [icon_view.image size].height);
+  EXPECT_EQ(expectedSize.width, [icon_view.image size].width);
 }
