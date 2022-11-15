@@ -252,23 +252,24 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
 
         if (currentFront == null) {
             // No message is being displayed now: trigger #onStartShowing.
+            mCurrentDisplayedMessages = new ArrayList<>(candidates);
             mMessageQueueDelegate.onStartShowing(
                     () -> { triggerStackingAnimation(candidates, onFinished); });
         } else if (nextFront == null) {
             // All messages will be hidden: trigger #onFinishHiding.
             Runnable runnable = () -> {
                 mMessageQueueDelegate.onFinishHiding();
-                mCurrentDisplayedMessage = mLastShownMessage = null;
+                mCurrentDisplayedMessages = new ArrayList<>(candidates);
                 onFinished.run();
             };
             triggerStackingAnimation(candidates, runnable);
         } else {
+            mCurrentDisplayedMessages = new ArrayList<>(candidates);
             triggerStackingAnimation(candidates, onFinished);
         }
     }
 
     private void triggerStackingAnimation(List<MessageState> candidates, Runnable onFinished) {
-        mCurrentDisplayedMessages = new ArrayList<>(candidates);
         Runnable runnable = () -> {
             mAnimatorSet.cancel();
             mAnimatorSet.removeAllListeners();
