@@ -375,6 +375,10 @@ ci.gpu.linux_builder(
         short_name = "kvn",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    # Kevin is a busy board in OS lab. As this is an FYI builder,
+    # we try to avoid peak hours and run it from 8PM TO 4AM PST.
+    # It is 3 AM to 11 AM UTC.
+    schedule = "0 3,6,9 * * *",
 )
 
 ci.gpu.linux_builder(
