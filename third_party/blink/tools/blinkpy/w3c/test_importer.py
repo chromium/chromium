@@ -11,9 +11,11 @@ If this script is given the argument --auto-update, it will also:
 """
 
 import argparse
+import datetime
 import json
 import logging
 import re
+from typing import Collection, Set
 
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
@@ -168,25 +170,31 @@ class TestImporter(object):
         # TODO(crbug.com/800570 robertma): Re-enable it once we fix the bug.
         # self._delete_orphaned_baselines()
 
-        if not self.chromium_git.has_working_directory_changes():
-            _log.info('Done: no changes to import.')
-            return 0
-
-        if not self._has_wpt_changes():
-            _log.info('Only manifest or expectations was updated; skipping the import.')
-            return 0
-
-        self._commit_changes(commit_message)
-        _log.info('Changes imported and committed.')
+        if self.chromium_git.has_working_directory_changes():
+            self._commit_changes(commit_message)
+            _log.info('Changes imported and committed.')
+        else:
+            _log.info('No tests to import.')
 
         if not options.auto_upload and not options.auto_update:
+            return 0
+
+        builders = self.builders_to_trigger()
+        if not builders:
+            _log.info('No builders to trigger (no new tests '
+                      'and not scheduled to update metadata).')
             return 0
 
         self._upload_cl()
         _log.info('Issue: %s', self.git_cl.run(['issue']).strip())
 
-        if not self.update_expectations_for_cl():
+        if not self.update_expectations_for_cl(builders):
             return 1
+
+        if not self._has_wpt_changes():
+            _log.info('Only manifest or expectations was updated; '
+                      'skipping CQ.')
+            return 0
 
         if not options.auto_update:
             return 0
@@ -200,18 +208,21 @@ class TestImporter(object):
 
         return 0
 
-    def update_expectations_for_cl(self):
+    def update_expectations_for_cl(self, builders: Collection[str]) -> bool:
         """Performs the expectation-updating part of an auto-import job.
 
         This includes triggering try jobs and waiting; then, if applicable,
-        writing new baselines and TestExpectation lines, committing, and
-        uploading a new patchset.
+        writing new baselines, metadata, and TestExpectation lines, committing,
+        and uploading a new patchset.
 
-        This assumes that there is CL associated with the current branch.
+        This assumes that there is CL associated with the current branch. The
+        current CL may be empty (i.e., contain no new tests) because this method
+        may still need to update stale metadata.
 
         Returns True if everything is OK to continue, or False on failure.
         """
-        self._trigger_try_jobs()
+        _log.info('Triggering try jobs for updating expectations.')
+        self.git_cl.trigger_try_jobs(builders)
         cl_status = self.git_cl.wait_for_try_jobs(
             poll_delay_seconds=POLL_DELAY_SECONDS,
             timeout_seconds=TIMEOUT_SECONDS)
@@ -230,6 +241,8 @@ class TestImporter(object):
 
         if try_results and self.git_cl.some_failed(try_results):
             self.fetch_new_expectations_and_baselines()
+            # If no wptrunner builders were triggered, this call is a no-op.
+            self._expectations_updater.update_metadata()
             if self.chromium_git.has_working_directory_changes():
                 # Skip slow and timeout tests so that presubmit check passes
                 port = self.host.port_factory.get()
@@ -243,24 +256,32 @@ class TestImporter(object):
                 self._upload_patchset(message)
         return True
 
-    def _trigger_try_jobs(self):
-        _log.info('Triggering try jobs for updating expectations.')
-        try_bots = set(self.blink_try_bots())
+    def builders_to_trigger(self) -> Set[str]:
+        builders = set(self.host.builders.filter_builders(is_try=True))
         wptrunner_builders = {
             builder
-            for builder in try_bots
+            for builder in builders
             if self.host.builders.is_wpt_builder(builder)
         }
-        rebaselining_builders = try_bots - wptrunner_builders
-        if rebaselining_builders:
+        rebaselining_builders = builders - wptrunner_builders
+
+        if not self._has_wpt_changes():
+            builders -= rebaselining_builders
+        else:
             _log.info('For rebaselining:')
             for builder in sorted(rebaselining_builders):
                 _log.info('  %s', builder)
-        if wptrunner_builders:
+
+        # Due to limited infra capacity, only update metadata during off-peak
+        # hours (12am - 6am PST).
+        if datetime.datetime.now().time() > datetime.time(hour=6):
+            builders -= wptrunner_builders
+        elif wptrunner_builders:
             _log.info('For updating WPT metadata:')
             for builder in sorted(wptrunner_builders):
                 _log.info('  %s', builder)
-        self.git_cl.trigger_try_jobs(try_bots)
+
+        return builders
 
     def run_commit_queue_for_cl(self):
         """Triggers CQ and either commits or aborts; returns True on success."""
@@ -333,10 +354,6 @@ class TestImporter(object):
             else:
                 raise e
         return False
-
-    def blink_try_bots(self):
-        """Returns the collection of builders used for updating expectations."""
-        return self.host.builders.filter_builders(is_try=True)
 
     def parse_args(self, argv):
         parser = argparse.ArgumentParser()
@@ -480,10 +497,13 @@ class TestImporter(object):
 
     def _has_wpt_changes(self):
         changed_files = self.chromium_git.changed_files()
-        rel_dest_path = self.fs.relpath(self.dest_path,
-                                        self.finder.chromium_base())
-        for cf in changed_files:
-            if cf.startswith(rel_dest_path):
+        test_roots = [
+            self.fs.relpath(self.finder.path_from_web_tests(subdir),
+                            self.finder.chromium_base())
+            for subdir in Port.WPT_DIRS
+        ]
+        for changed_file in changed_files:
+            if any(changed_file.startswith(root) for root in test_roots):
                 return True
         return False
 
@@ -567,15 +587,12 @@ class TestImporter(object):
         temp_file.write(description)
         temp_file.close()
 
-        self.git_cl.run([
-            'upload',
-            '--bypass-hooks',
-            '-f',
-            '--message-file',
-            temp_path
-        ])
-
-        self.fs.remove(temp_path)
+        try:
+            self.git_cl.run([
+                'upload', '--bypass-hooks', '-f', '--message-file', temp_path
+            ])
+        finally:
+            self.fs.remove(temp_path)
 
     def get_directory_owners(self):
         """Returns a mapping of email addresses to owners of changed tests."""

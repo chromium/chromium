@@ -12,8 +12,8 @@ import argparse
 import copy
 import logging
 import re
-import sys
 from collections import defaultdict, namedtuple
+from typing import List
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import GitCL
@@ -1190,22 +1190,34 @@ class WPTExpectationsUpdater(object):
         for test in tests_to_rebaseline:
             _log.info('  %s', test)
 
-        blink_tool = self.finder.path_from_blink_tools('blink_tool.py')
-        command = [
-            sys.executable,
-            blink_tool,
-            'rebaseline-cl',
-            '--no-trigger-jobs',
-        ]
+        args = ['--no-trigger-jobs']
         if self.options.verbose:
-            command.append('--verbose')
+            args.append('--verbose')
         if self.patchset:
-            command.append('--patchset=' + str(self.patchset))
-        command += tests_to_rebaseline
-        rebaseline_output = self.host.executive.run_command(command)
-        _log.info(
-            "Output of rebaseline-cl:\n%s\n--end of rebaseline-cl output --" %
-            rebaseline_output)
+            args.append('--patchset=%d' % self.patchset)
+        args += tests_to_rebaseline
+        self._run_blink_tool('rebaseline-cl', args)
+
+    def update_metadata(self):
+        """Update WPT metadata for all tests with unexpected results."""
+        args = ['--no-trigger-jobs']
+        if self.options.verbose:
+            args.append('--verbose')
+        if self.patchset:
+            args.append('--patchset=%d', self.patchset)
+        self._run_blink_tool('update-metadata', args)
+
+    def _run_blink_tool(self, subcommand: str, args: List[str]):
+        output = self.host.executive.run_command([
+            self.host.executable,
+            self.finder.path_from_blink_tools('blink_tool.py'),
+            subcommand,
+            *args,
+        ])
+        _log.info('Output of %s:', subcommand)
+        for line in output.splitlines():
+            _log.info('  %s: %s', subcommand, line)
+        _log.info('-- end of %s output --', subcommand)
 
     def get_tests_to_rebaseline(self, test_results):
         """Filters failing tests that can be rebaselined.

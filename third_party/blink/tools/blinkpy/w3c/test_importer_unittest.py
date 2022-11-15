@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
+import datetime
 import json
 import six
 import unittest
+from unittest.mock import Mock, patch
 
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
@@ -34,6 +34,15 @@ MANIFEST_INSTALL_CMD = [
 ]
 
 
+_datetime_mock = Mock()
+_datetime_mock.datetime.now.return_value = datetime.datetime(2022, 1, 1, 3)
+
+
+# `datetime` is a natively compiled library, so patch the module in the
+# importer's namespace instead of patching individual methods. See also:
+#   https://docs.python.org/3/library/unittest.mock-examples.html#partial-mocking
+@patch('blinkpy.w3c.test_importer.datetime.time', new=datetime.time)
+@patch('blinkpy.w3c.test_importer.datetime', new=_datetime_mock)
 class TestImporterTest(LoggingTestCase):
 
     def mock_host(self):
@@ -78,15 +87,22 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
         importer.git_cl = MockGitCL(host, time_out=True)
-        success = importer.update_expectations_for_cl()
+        with patch.object(
+                importer.chromium_git,
+                'changed_files',
+                return_value=[
+                    'third_party/blink/web_tests/external/wpt/new-test.html'
+                ]):
+            success = importer.update_expectations_for_cl(
+                importer.builders_to_trigger())
         self.assertFalse(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: For rebaselining:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
             'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
+            'INFO: Triggering try jobs for updating expectations.\n',
             'ERROR: No initial try job results, aborting.\n',
         ])
         self.assertEqual(importer.git_cl.calls[-1], ['git', 'cl', 'set-close'])
@@ -102,15 +118,22 @@ class TestImporterTest(LoggingTestCase):
             try_job_results={
                 Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
             })
-        success = importer.update_expectations_for_cl()
+        with patch.object(
+                importer.chromium_git,
+                'changed_files',
+                return_value=[
+                    'third_party/blink/web_tests/external/wpt/new-test.html'
+                ]):
+            success = importer.update_expectations_for_cl(
+                importer.builders_to_trigger())
         self.assertFalse(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: For rebaselining:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
             'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
+            'INFO: Triggering try jobs for updating expectations.\n',
             'ERROR: The CL was closed, aborting.\n',
         ])
 
@@ -125,14 +148,21 @@ class TestImporterTest(LoggingTestCase):
             try_job_results={
                 Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
             })
-        success = importer.update_expectations_for_cl()
+        with patch.object(
+                importer.chromium_git,
+                'changed_files',
+                return_value=[
+                    'third_party/blink/web_tests/external/wpt/new-test.html'
+                ]):
+            success = importer.update_expectations_for_cl(
+                importer.builders_to_trigger())
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: For rebaselining:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
             'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
+            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: All jobs finished.\n',
         ])
         self.assertTrue(success)
@@ -150,17 +180,31 @@ class TestImporterTest(LoggingTestCase):
             })
         importer.fetch_new_expectations_and_baselines = lambda: None
         importer.fetch_wpt_override_expectations = lambda: None
-        success = importer.update_expectations_for_cl()
+        with patch.object(
+                importer.chromium_git,
+                'changed_files',
+                return_value=[
+                    'third_party/blink/web_tests/external/wpt/new-test.html'
+                ]):
+            success = importer.update_expectations_for_cl(
+                importer.builders_to_trigger())
         self.assertTrue(success)
         self.assertLog([
-            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: For rebaselining:\n',
             'INFO:   cq-builder-a\n',
             'INFO:   cq-builder-b\n',
             'INFO: For updating WPT metadata:\n',
             'INFO:   cq-wpt-builder-c\n',
+            'INFO: Triggering try jobs for updating expectations.\n',
             'INFO: All jobs finished.\n',
+            'INFO: Output of update-metadata:\n',
+            'INFO:   update-metadata: MOCK output of child process\n',
+            'INFO: -- end of update-metadata output --\n',
         ])
+        self.assertIn([
+            'python', '/mock-checkout/third_party/blink/tools/blink_tool.py',
+            'update-metadata', '--no-trigger-jobs'
+        ], host.executive.calls)
 
     def test_run_commit_queue_for_cl_pass(self):
         host = self.mock_host()
