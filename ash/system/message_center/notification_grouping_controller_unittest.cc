@@ -461,4 +461,23 @@ TEST_F(NotificationGroupingControllerTest, DuplicateAddNotificationNotGrouped) {
   EXPECT_FALSE(message_center->FindNotificationById(id)->group_child());
 }
 
+TEST_F(NotificationGroupingControllerTest, ChildNotificationUpdate) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1, id2;
+  const GURL url(u"http://test-url.com/");
+  id0 = AddNotificationWithOriginUrl(url);
+  id1 = AddNotificationWithOriginUrl(url);
+
+  EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
+
+  // Update the notification.
+  auto notification = MakeNotification(id2, url);
+  auto updated_notification =
+      std::make_unique<Notification>(id0, *notification.get());
+  message_center->UpdateNotification(id0, std::move(updated_notification));
+
+  // Make sure the updated notification is still a group child.
+  EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
+}
+
 }  // namespace ash

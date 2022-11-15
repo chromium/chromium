@@ -609,6 +609,9 @@ TEST_F(NotificationViewTest, InkDropClipRect) {
 }
 
 TEST_F(NotificationViewTest, AppIconWebAppNotification) {
+  MessageCenter::Get()->RemoveAllNotifications(/*by_user=*/false,
+                                               MessageCenter::RemoveType::ALL);
+
   const GURL web_app_url(kWebAppUrl);
 
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title");

@@ -822,6 +822,9 @@ TEST_F(NotificationViewBaseTest, FixedViewMode) {
 }
 
 TEST_F(NotificationViewBaseTest, SnoozeButton) {
+  MessageCenter::Get()->RemoveAllNotifications(/*by_user=*/false,
+                                               MessageCenter::RemoveType::ALL);
+
   // Create notification to replace the current one with itself.
   message_center::RichNotificationData rich_data;
   rich_data.settings_button_handler = SettingsButtonHandler::INLINE;
@@ -1074,8 +1077,11 @@ TEST_F(NotificationViewBaseTest, AppNameExtension) {
 }
 
 TEST_F(NotificationViewBaseTest, AppNameSystemNotification) {
+  MessageCenter::Get()->RemoveAllNotifications(/*by_user=*/false,
+                                               MessageCenter::RemoveType::ALL);
+
   std::u16string app_name = u"system notification";
-  message_center::MessageCenter::Get()->SetSystemNotificationAppName(app_name);
+  MessageCenter::Get()->SetSystemNotificationAppName(app_name);
   RichNotificationData data;
   data.settings_button_handler = SettingsButtonHandler::INLINE;
   auto notification = std::make_unique<Notification>(
@@ -1105,6 +1111,9 @@ TEST_F(NotificationViewBaseTest, AppNameWebNotification) {
 }
 
 TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
+  MessageCenter::Get()->RemoveAllNotifications(/*by_user=*/false,
+                                               MessageCenter::RemoveType::ALL);
+
   const GURL web_app_url("http://example.com");
 
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title");

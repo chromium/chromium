@@ -281,6 +281,17 @@ void MessageCenterImpl::UpdateNotification(
   for (NotificationBlocker* blocker : blockers_)
     blocker->CheckState();
 
+  auto* old_notification = notification_list_->GetNotificationById(old_id);
+  if (old_notification) {
+    DCHECK(old_notification->notifier_id() == new_notification->notifier_id());
+
+    // Copy grouping metadata to the new notification.
+    if (old_notification->group_parent())
+      new_notification->SetGroupParent();
+    if (old_notification->group_child())
+      new_notification->SetGroupChild();
+  }
+
   std::string new_id = new_notification->id();
   notification_list_->UpdateNotificationMessage(old_id,
                                                 std::move(new_notification));
