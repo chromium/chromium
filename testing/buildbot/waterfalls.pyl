@@ -1013,6 +1013,9 @@
         'additional_compile_targets': [
           'monochrome_static_initializers',
         ],
+        'args': [
+          '--use-persistent-shell',
+        ],
         'test_suites': {
           'gtest_tests': 'android_pie_rel_gtests',
           # TODO(crbug.com/1111436): Re-enable this if/when additional capacity

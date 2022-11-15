@@ -35247,6 +35247,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode"
@@ -35294,6 +35295,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35338,6 +35340,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35382,6 +35385,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35426,6 +35430,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35470,6 +35475,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--git-revision=${got_revision}",
@@ -35524,6 +35530,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--git-revision=${got_revision}"
@@ -35575,6 +35582,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
@@ -35630,6 +35638,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35674,6 +35683,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35720,6 +35730,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -35769,6 +35780,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35813,6 +35825,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35857,6 +35870,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35901,6 +35915,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35945,6 +35960,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -35997,6 +36013,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-persistent-shell"
@@ -36044,6 +36061,7 @@
       },
       {
         "args": [
+          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
