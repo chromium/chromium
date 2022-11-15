@@ -746,6 +746,18 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.SignatureVerificationDuration" units="ms"
+    expires_after="2023-11-08">
+  <owner>cmfcmf@chromium.org</owner>
+  <owner>peletskyi@chromium.org</owner>
+  <summary>
+    Records how long it takes to verify signatures of Signed Web Bundles used
+    for Isolated Web Apps every time their signatures are verified. Signatures
+    are verified during installation (all platforms) and when an Isolated Web
+    App is first accessed during a Chrome session (non-ChromeOS platforms only).
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Launcher.LaunchResult"
     enum="WebAppLauncherLaunchResult" expires_after="2023-04-16">
   <owner>davidbienvenu@chromium.org</owner>

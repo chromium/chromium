@@ -12,12 +12,14 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -198,15 +200,21 @@ void SignedWebBundleReader::VerifySignatures(
   signature_verifier_->VerifySignatures(
       file_, std::move(integrity_block),
       base::BindOnce(&SignedWebBundleReader::OnSignaturesVerified,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     std::move(callback)));
 }
 
 void SignedWebBundleReader::OnSignaturesVerified(
+    const base::TimeTicks& verification_start_time,
     ReadErrorCallback callback,
     absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
         verification_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
+
+  base::UmaHistogramMediumTimes(
+      "WebApp.Isolated.SignatureVerificationDuration",
+      base::TimeTicks::Now() - verification_start_time);
 
   if (verification_error.has_value()) {
     FulfillWithError(std::move(callback), *verification_error);

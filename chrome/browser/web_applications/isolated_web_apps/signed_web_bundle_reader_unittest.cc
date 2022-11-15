@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -191,6 +192,7 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
   base::test::TestFuture<
       absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
       parse_error_future;
+  base::HistogramTester histogram_tester;
   auto reader = CreateReaderAndInitialize(parse_error_future.GetCallback());
 
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
@@ -204,6 +206,9 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
   EXPECT_EQ(reader->GetPrimaryURL(), metadata_->primary_url);
   EXPECT_EQ(reader->GetEntries().size(), 1ul);
   EXPECT_EQ(reader->GetEntries()[0], metadata_->primary_url);
+
+  histogram_tester.ExpectTotalCount(
+      "WebApp.Isolated.SignatureVerificationDuration", 1);
 }
 
 TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockError) {

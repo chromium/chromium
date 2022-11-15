@@ -252,6 +252,7 @@ class SignedWebBundleReader {
       ReadErrorCallback callback);
 
   void OnSignaturesVerified(
+      const base::TimeTicks& verification_start_time,
       ReadErrorCallback callback,
       absl::optional<web_package::SignedWebBundleSignatureVerifier::Error>
           verification_error);
