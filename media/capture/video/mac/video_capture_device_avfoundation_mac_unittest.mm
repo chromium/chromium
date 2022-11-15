@@ -28,8 +28,9 @@ using testing::_;
 
 namespace media {
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     OutputsNv12WithoutScalingByDefault) {
+     DISABLED_OutputsNv12WithoutScalingByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
@@ -74,8 +75,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     SpecifiedScalingIsIgnoredWhenInCapturerScalingIsNotEnabled) {
+     DISABLED_SpecifiedScalingIsIgnoredWhenInCapturerScalingIsNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   // By default, kInCapturerScaling is false.
   EXPECT_FALSE(base::FeatureList::IsEnabled(kInCapturerScaling));
@@ -125,7 +127,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_SpecifiedScalingOutputsNv12) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
@@ -179,8 +183,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
   }));
 }
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     SpecifiedScalingCanChangeDuringCapture) {
+     DISABLED_SpecifiedScalingCanChangeDuringCapture) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
@@ -249,8 +254,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     SpecifiedScalingUsesGoodSizesButNotBadSizes) {
+     DISABLED_SpecifiedScalingUsesGoodSizesButNotBadSizes) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
@@ -339,9 +345,11 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
 // This is approximately the same test as the one above except it does not rely
 // on having a camera. Instead we mock-invoke processPixelBufferNV12IOSurface
-// from the test as-if a camera had produced a frame.
+
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.// from the
+// test as-if a camera had produced a frame.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     ProcessPixelBufferNV12IOSurfaceWithGoodAndBadScaling) {
+     DISABLED_ProcessPixelBufferNV12IOSurfaceWithGoodAndBadScaling) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
@@ -411,7 +419,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -438,7 +447,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_StopCaptureWhileTakingPhoto) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -469,7 +480,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_MultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -504,8 +517,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
   }));
 }
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopCaptureWhileMultiplePendingTakePhotos) {
+     DISABLED_StopCaptureWhileMultiplePendingTakePhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -544,8 +558,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopStillImageOutputWhenNoLongerTakingPhotos) {
+     DISABLED_StopStillImageOutputWhenNoLongerTakingPhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -580,9 +595,10 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-// This test ensures we don't crash even if we leave operations pending.
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.// This test
+// ensures we don't crash even if we leave operations pending.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     TakePhotoAndShutDownWithoutWaiting) {
+     DISABLED_TakePhotoAndShutDownWithoutWaiting) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -605,7 +621,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_ForwardsOddPixelBufferResolution) {
   // See crbug/1168112.
   RunTestCase(base::BindOnce([] {
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
@@ -630,7 +648,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, FrameRateFloatInaccuracyIsHandled) {
+// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_FrameRateFloatInaccuracyIsHandled) {
   // See crbug/1299812.
   RunTestCase(base::BindOnce([] {
     double max_frame_rate = 30.000030;
