@@ -180,5 +180,12 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Launching an ActivityScenario manually is error prone for any test run in a batch. Failing to #close will cause the Activity to leak into the next test. Consider replacing with ActivityScenarioRule. (https://crbug.com/1338271)"/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="GuavaOptional"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="import\ com.google.common.base.Optional;"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use java.util.Optional instead of com.google.common.base.Optional unless required to interact with external libraries."/>
+    </module>
   </module>
 </module>
