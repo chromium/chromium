@@ -252,6 +252,10 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
     use_orchestrator_pool = True,
 
     # TODO(crbug.com/1366987): remove this.
