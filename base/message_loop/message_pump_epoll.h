@@ -70,6 +70,10 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     EpollEventEntry& operator=(const EpollEventEntry&) = delete;
     ~EpollEventEntry();
 
+    static EpollEventEntry& FromEpollEvent(epoll_event& e) {
+      return *static_cast<EpollEventEntry*>(e.data.ptr);
+    }
+
     // Returns the combined set of epoll event flags which should be monitored
     // by the epoll instance for `fd`. This is based on a combination of the
     // parameters of all currently active elements in `interests`. Namely:
@@ -91,6 +95,12 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
     // than two controllers (e.g. one reader and one writer) watch the same
     // descriptor on the same thread.
     StackVector<scoped_refptr<Interest>, 2> interests;
+
+    // Temporary pointer to an active epoll_event structure which refers to
+    // this entry. This is set immediately upon returning from epoll_wait() and
+    // cleared again immediately before dispatching to any registered interests,
+    // so long as this entry isn't destroyed in the interim.
+    epoll_event* active_event = nullptr;
   };
 
   // State which lives on the stack within Run(), to support nested run loops.
@@ -108,8 +118,8 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   void AddEpollEvent(EpollEventEntry& entry);
   void UpdateEpollEvent(EpollEventEntry& entry);
   void UnregisterInterest(const scoped_refptr<Interest>& interest);
-  bool WaitForEpollEvent(TimeDelta timeout);
-  void OnEpollEvent(const epoll_event& e);
+  bool WaitForEpollEvents(TimeDelta timeout);
+  void OnEpollEvent(EpollEventEntry& entry, uint32_t events);
   void HandleEvent(int fd,
                    bool can_read,
                    bool can_write,
