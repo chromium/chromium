@@ -43,7 +43,7 @@ class TestMultiEvent {
   TestMultiEvent(const TestMultiEvent& other) = delete;
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
 
-  using TupleType = std::tuple<ResType...>;
+  using TupleType = std::tuple<std::remove_reference_t<ResType>...>;
 
   [[nodiscard]] const TupleType& ref_result() {
     static_assert(
@@ -53,7 +53,6 @@ class TestMultiEvent {
     return result_.value();
   }
 
-  template <typename T = TupleType>
   [[nodiscard]] TupleType result() {
     static_assert(
         IsMovable<TupleType>(),
