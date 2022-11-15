@@ -7,8 +7,8 @@
  * the same time.
  *
  */
-
-import {QueueMode, TtsInterface, TtsSpeechProperties} from './tts_interface.js';
+import {TtsInterface} from './tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 /**
  * A Composite Tts

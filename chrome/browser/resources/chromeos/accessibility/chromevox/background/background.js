@@ -14,7 +14,7 @@ import {ExtensionBridge} from '../common/extension_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {QueueMode, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';

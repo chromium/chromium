@@ -18,7 +18,7 @@ import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
 import {Spannable} from '../common/spannable.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 /**
  * Class to manage the keyboard explorer.

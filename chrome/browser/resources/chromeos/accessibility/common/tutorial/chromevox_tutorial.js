@@ -10,7 +10,7 @@
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EarconDescription} from '../../../chromevox/common/abstract_earcons.js';
-import {QueueMode} from '../../../chromevox/common/tts_interface.js';
+import {QueueMode} from '../../../chromevox/common/tts_types.js';
 
 import {Curriculum, InteractionMedium, LessonData, MainMenuButtonData, Screen} from './constants.js';
 import {LessonContainer} from './lesson_container.js';

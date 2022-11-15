@@ -10,7 +10,7 @@ import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
-import {TtsSpeechProperties} from '../common/tts_interface.js';
+import {TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';

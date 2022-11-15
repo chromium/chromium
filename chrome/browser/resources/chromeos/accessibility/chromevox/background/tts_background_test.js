@@ -19,8 +19,7 @@ ChromeVoxBackgroundTtsTest = class extends ChromeVoxE2ETest {
         '/chromevox/background/command_handler_interface.js');
     await importModule('PrimaryTts', '/chromevox/background/tts_background.js');
     await importModule(
-        ['QueueMode', 'TtsSpeechProperties'],
-        '/chromevox/common/tts_interface.js');
+        ['QueueMode', 'TtsSpeechProperties'], '/chromevox/common/tts_types.js');
 
     window.tts = new PrimaryTts();
   }

@@ -18,7 +18,7 @@ import {LogType} from '../../common/log_types.js';
 import {Msgs} from '../../common/msgs.js';
 import {CustomRole} from '../../common/role_type.js';
 import {Spannable} from '../../common/spannable.js';
-import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_interface.js';
+import {QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
 import {EventSourceState} from '../event_source.js';

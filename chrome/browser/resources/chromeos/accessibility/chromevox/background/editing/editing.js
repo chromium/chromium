@@ -16,7 +16,7 @@ import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
 import {MultiSpannable, Spannable} from '../../common/spannable.js';
-import {QueueMode} from '../../common/tts_interface.js';
+import {QueueMode} from '../../common/tts_types.js';
 import {BrailleBackground} from '../braille/braille_background.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';

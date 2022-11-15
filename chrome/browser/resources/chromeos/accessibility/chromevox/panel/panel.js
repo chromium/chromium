@@ -21,7 +21,7 @@ import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ALL_PANEL_MENU_NODE_DATA, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
-import {QueueMode} from '../common/tts_interface.js';
+import {QueueMode} from '../common/tts_types.js';
 
 import {ISearchUI} from './i_search_ui.js';
 import {PanelInterface} from './panel_interface.js';

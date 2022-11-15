@@ -6,7 +6,7 @@
  * @fileoverview Script that runs on the background page.
  */
 import {ExtensionBridge} from '../common/extension_bridge.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {InjectedScriptLoader} from './injected_script_loader.js';

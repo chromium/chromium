@@ -55,7 +55,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/common/custom_automation_event.js');
     await importModule(
         ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
-    await importModule('QueueMode', '/chromevox/common/tts_interface.js');
+    await importModule('QueueMode', '/chromevox/common/tts_types.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
     await importModule('AutomationUtil', '/common/automation_util.js');

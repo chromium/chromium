@@ -6,7 +6,7 @@
  * @fileoverview Class to handle access to the clipboard data.
  */
 import {Msgs} from '../common/msgs.js';
-import {QueueMode} from '../common/tts_interface.js';
+import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';

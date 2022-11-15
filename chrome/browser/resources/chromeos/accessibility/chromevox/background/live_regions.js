@@ -7,7 +7,7 @@
  */
 import {AutomationUtil} from '../../common/automation_util.js';
 import {CursorRange} from '../../common/cursors/range.js';
-import {QueueMode, TtsCategory} from '../common/tts_interface.js';
+import {QueueMode, TtsCategory} from '../common/tts_types.js';
 
 import {ChromeVoxState} from './chromevox_state.js';
 import {Output} from './output/output.js';

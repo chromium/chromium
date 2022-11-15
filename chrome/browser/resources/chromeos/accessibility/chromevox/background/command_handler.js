@@ -27,7 +27,7 @@ import {LogType} from '../common/log_types.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {TreeDumper} from '../common/tree_dumper.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {BrailleBackground} from './braille/braille_background.js';

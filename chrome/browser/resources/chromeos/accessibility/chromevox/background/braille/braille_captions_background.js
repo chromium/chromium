@@ -11,7 +11,7 @@ import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
-import {QueueMode} from '../../common/tts_interface.js';
+import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 

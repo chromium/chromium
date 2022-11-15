@@ -13,7 +13,7 @@ import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../../common/panel_menu_data.js';
-import {QueueMode} from '../../common/tts_interface.js';
+import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Output} from '../output/output.js';

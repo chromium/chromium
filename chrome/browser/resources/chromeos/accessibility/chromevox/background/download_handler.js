@@ -7,7 +7,7 @@
  * notifications in ChromeVox.
  */
 import {Msgs} from '../common/msgs.js';
-import {QueueMode} from '../common/tts_interface.js';
+import {QueueMode} from '../common/tts_types.js';
 
 import {Output} from './output/output.js';
 

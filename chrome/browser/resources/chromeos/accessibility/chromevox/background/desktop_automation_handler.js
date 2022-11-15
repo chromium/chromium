@@ -14,7 +14,7 @@ import {Command} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {Msgs} from '../common/msgs.js';
-import {QueueMode, TtsCategory} from '../common/tts_interface.js';
+import {QueueMode, TtsCategory} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from './automation_object_constructor_installer.js';

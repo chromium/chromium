@@ -14,7 +14,7 @@ import {BridgeHelper} from './bridge_helper.js';
 import {Command} from './command_store.js';
 import {BaseLog, SerializableLog} from './log_types.js';
 import {PanelTabMenuItemData} from './panel_menu_data.js';
-import {QueueMode, TtsSpeechProperties} from './tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 export const BackgroundBridge = {};
 

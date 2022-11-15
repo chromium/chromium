@@ -9,7 +9,7 @@ import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVoxState} from './chromevox_state.js';

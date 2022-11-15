@@ -10,7 +10,7 @@ import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {Earcon} from '../common/abstract_earcons.js';
 import {CustomAutomationEvent} from '../common/custom_automation_event.js';
-import {QueueMode} from '../common/tts_interface.js';
+import {QueueMode} from '../common/tts_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';

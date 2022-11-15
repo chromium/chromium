@@ -114,7 +114,7 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'EventSourceType', '/chromevox/common/event_source_type.js');
     await importModule('Msgs', '/chromevox/common/msgs.js');
-    await importModule('TtsCategory', '/chromevox/common/tts_interface.js');
+    await importModule('TtsCategory', '/chromevox/common/tts_types.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
     await importModule('AutomationUtil', '/common/automation_util.js');

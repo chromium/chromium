@@ -15,7 +15,8 @@ import {CompositeTts} from '../common/composite_tts.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
-import {QueueMode, TtsCapturingEventListener, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
+import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
 import {ConsoleTts} from './console_tts.js';

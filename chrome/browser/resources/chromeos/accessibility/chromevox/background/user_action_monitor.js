@@ -12,7 +12,7 @@ import {Command} from '../common/command_store.js';
 import {KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {QueueMode} from '../common/tts_interface.js';
+import {QueueMode} from '../common/tts_types.js';
 
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {Output} from './output/output.js';

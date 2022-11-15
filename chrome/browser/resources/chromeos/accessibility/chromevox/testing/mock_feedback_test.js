@@ -39,8 +39,7 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
     await importModule('Spannable', '/chromevox/common/spannable.js');
-    await importModule(
-        ['QueueMode', 'TtsInterface'], '/chromevox/common/tts_interface.js');
+    await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
 
   /** @override */
