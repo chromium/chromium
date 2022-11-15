@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/element/cpp/fidl.h>
+#include <fuchsia/ui/policy/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
-#include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
-#include <zircon/rights.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -85,18 +83,8 @@ fuchsia::web::CreateContextParams GetCreateContextParams(
   return create_context_params;
 }
 
-::fuchsia::ui::views::ViewRef CloneViewRef(
-    const ::fuchsia::ui::views::ViewRef& view_ref) {
-  ::fuchsia::ui::views::ViewRef dup;
-  zx_status_t status =
-      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
-  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
-  return dup;
-}
-
 // Set autoplay, enable all logging, and present fullscreen view of `frame`.
-void ConfigureFrame(fuchsia::web::Frame* frame,
-                    ::fuchsia::element::GraphicalPresenter* presenter) {
+void ConfigureFrame(fuchsia::web::Frame* frame) {
   fuchsia::web::ContentAreaSettings settings;
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
@@ -104,17 +92,12 @@ void ConfigureFrame(fuchsia::web::Frame* frame,
   frame->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
 
   auto view_tokens = scenic::ViewTokenPair::New();
-  auto view_ref_pair = scenic::ViewRefPair::New();
-  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
-                               std::move(view_ref_pair.control_ref),
-                               CloneViewRef(view_ref_pair.view_ref));
-
-  ::fuchsia::element::ViewControllerPtr view_controller;
-  ::fuchsia::element::ViewSpec view_spec;
-  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
-  view_spec.set_view_ref(CloneViewRef(view_ref_pair.view_ref));
-  presenter->PresentView(std::move(view_spec), nullptr,
-                         view_controller.NewRequest(), [](auto) {});
+  frame->CreateView(std::move(view_tokens.view_token));
+  auto presenter = base::ComponentContextForProcess()
+                       ->svc()
+                       ->Connect<fuchsia::ui::policy::Presenter>();
+  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
+                                  nullptr);
 }
 
 }  // namespace
@@ -174,16 +157,7 @@ int main(int argc, char** argv) {
         quit_run_loop.Run();
       });
 
-  ::fuchsia::element::GraphicalPresenterPtr presenter =
-      base::ComponentContextForProcess()
-          ->svc()
-          ->Connect<::fuchsia::element::GraphicalPresenter>();
-  presenter.set_error_handler(
-      [quit_run_loop = run_loop.QuitClosure()](zx_status_t status) {
-        ZX_LOG(ERROR, status) << "GraphicalPresenter disconnected.";
-        quit_run_loop.Run();
-      });
-  ConfigureFrame(frame.get(), presenter.get());
+  ConfigureFrame(frame.get());
 
   // Register the MessagePort for the Cast Streaming Receiver.
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
