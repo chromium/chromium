@@ -10,8 +10,8 @@
 
 namespace ash {
 
+class ManagedNetworkConfigurationHandler;
 class NetworkStateHandler;
-class NetworkConfigurationHandler;
 class NetworkMetadataStore;
 
 // This class is responsible for removing wrongly hidden networks by
@@ -27,8 +27,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HiddenNetworkHandler {
   HiddenNetworkHandler& operator=(const HiddenNetworkHandler&) = delete;
   ~HiddenNetworkHandler() = default;
 
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler);
+  void Init(
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      NetworkStateHandler* network_state_handler);
   // This method will update the NetworkMetadataStore used when querying for
   // metadata about the network, and will result in immediately checking
   // for any hidden and wrongly configured networks.
@@ -40,8 +41,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HiddenNetworkHandler {
   // Timer ensures that wrongly configured networks are searched for on
   // a daily basis.
   base::RepeatingTimer daily_event_timer_;
+  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
+      nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
-  NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkMetadataStore* network_metadata_store_ = nullptr;
 };
 

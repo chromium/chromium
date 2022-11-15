@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,9 +32,10 @@ namespace {
 
 // kTwoWeeks set to 15 days due to edge case where creating network while
 // internal timer is running results in network creation timestamp not being
-// initialized until the next time the timer fires, eg. the next day.
+// initialized until the next time the timer fires, e.g. the next day.
 constexpr base::TimeDelta kTwoWeeks = base::Days(15);
 constexpr base::TimeDelta kArbitraryTime = base::Days(11686);
+constexpr base::TimeDelta kForcedMigrationTime = base::Minutes(2);
 const char* kWiFiGuid1 = "wifi_guid1";
 const char* kWiFiGuid2 = "wifi_guid2";
 const char* kWiFiGuid3 = "wifi_guid3";
@@ -205,7 +208,7 @@ TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemove) {
   MaybeRegisterAndInitializePrefs();
 
   const std::string path = CreateDefaultHiddenWiFiNetwork();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   task_environment()->FastForwardBy(kTwoWeeks);
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/path,
@@ -219,6 +222,27 @@ TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemove) {
       /*failure_count=*/0);
 }
 
+TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemoveForcedMigration) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceHiddenNetworkMigration);
+
+  MaybeRegisterAndInitializePrefs();
+
+  const std::string path = CreateDefaultHiddenWiFiNetwork();
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
+  task_environment()->FastForwardBy(kForcedMigrationTime);
+  base::RunLoop().RunUntilIdle();
+  ExpectNetworksRemoved(/*service_path=*/path,
+                        /*total_removed_count=*/1);
+  ExpectRemovalAttemptHistogram(/*bucket=*/1,
+                                /*frequency=*/1,
+                                /*total=*/3,
+                                /*sum=*/1);
+  ExpectRemovalAttemptResultHistogram(
+      /*success_count=*/1,
+      /*failure_count=*/0);
+}
+
 TEST_F(HiddenNetworkHandlerTest, RemoveTwoNetworks) {
   MaybeRegisterAndInitializePrefs();
 
@@ -226,7 +250,7 @@ TEST_F(HiddenNetworkHandlerTest, RemoveTwoNetworks) {
       /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid1);
   const std::string path2 = CreateWiFiNetwork(
       /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid2);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   task_environment()->FastForwardBy(kTwoWeeks);
   base::RunLoop().RunUntilIdle();
@@ -257,7 +281,7 @@ TEST_F(HiddenNetworkHandlerTest, ChecksForNetworksToRemoveDaily) {
   const std::string path3 = CreateWiFiNetwork(
       /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid3);
 
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   const base::TimeDelta kTimeSinceFirstNetworkWasCreated =
       kTwoWeeks - base::Days(2);
@@ -294,7 +318,7 @@ TEST_F(HiddenNetworkHandlerTest, ChecksForNetworksToRemoveDaily) {
 }
 
 TEST_F(HiddenNetworkHandlerTest, NetworksAreCheckedWhenPrefsAreInitialized) {
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   const std::string path = CreateDefaultHiddenWiFiNetwork();
   MaybeRegisterAndInitializePrefs();
@@ -305,7 +329,7 @@ TEST_F(HiddenNetworkHandlerTest, NetworksAreCheckedWhenPrefsAreInitialized) {
   // immediately check for wrongly configured networks.
   NetworkHandler::Get()->ShutdownPrefServices();
   base::RunLoop().RunUntilIdle();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   task_environment()->FastForwardBy(kTwoWeeks);
   MaybeRegisterAndInitializePrefs(/*should_register=*/false);
@@ -325,10 +349,10 @@ TEST_F(HiddenNetworkHandlerTest, LessThanTwoWeeks) {
   MaybeRegisterAndInitializePrefs();
 
   CreateDefaultHiddenWiFiNetwork();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   task_environment()->FastForwardBy(kTwoWeeks - base::Hours(5));
   base::RunLoop().RunUntilIdle();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
                                 /*total=*/15,
@@ -342,10 +366,10 @@ TEST_F(HiddenNetworkHandlerTest, OnlyRemovesNetworksInCurrentProfile) {
   MaybeRegisterAndInitializePrefs();
 
   CreateWiFiNetwork(true, false, kWiFiGuid1);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   task_environment()->FastForwardBy(kTwoWeeks);
   base::RunLoop().RunUntilIdle();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
                                 /*total=*/16,
@@ -359,10 +383,10 @@ TEST_F(HiddenNetworkHandlerTest, ConnectedNetworkNotRemoved) {
   MaybeRegisterAndInitializePrefs();
 
   const std::string path = CreateDefaultHiddenWiFiNetwork();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ConnectToNetwork(path);
   task_environment()->FastForwardBy(kTwoWeeks);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
                                 /*total=*/16,
@@ -375,10 +399,10 @@ TEST_F(HiddenNetworkHandlerTest, ConnectedNetworkNotRemoved) {
 TEST_F(HiddenNetworkHandlerTest, ManagedNetworkNotRemoved) {
   MaybeRegisterAndInitializePrefs();
   const std::string path = CreateDefaultHiddenWiFiNetwork();
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   MakeNetworkManaged(path);
   task_environment()->FastForwardBy(kTwoWeeks);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
                                 /*total=*/16,
@@ -392,9 +416,9 @@ TEST_F(HiddenNetworkHandlerTest, UnhiddenNetworkNotRemoved) {
   MaybeRegisterAndInitializePrefs();
 
   CreateWiFiNetwork(false, true, kWiFiGuid1);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   task_environment()->FastForwardBy(kTwoWeeks);
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
                                 /*total=*/16,
@@ -415,7 +439,7 @@ TEST_F(HiddenNetworkHandlerTest, EmitsCorrectResultHistogram) {
       /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid2);
   task_environment()->FastForwardBy(base::Days(1));
 
-  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   const base::TimeDelta kTimeSinceFirstNetworkWasCreated =
       kTwoWeeks - base::Days(2);

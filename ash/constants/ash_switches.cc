@@ -769,6 +769,11 @@ const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 
+// Removes the condition that a network has had to existed for at least two
+// weeks and increase the frequency at which the HiddenNetworkHandler class
+// checks for and removes wrongly hidden networks.
+const char kForceHiddenNetworkMigration[] = "force-hidden-network-migration";
+
 // If set to "true", the profile requires policy during restart (policy load
 // must succeed, otherwise session restart should fail).
 const char kProfileRequiresPolicy[] = "profile-requires-policy";

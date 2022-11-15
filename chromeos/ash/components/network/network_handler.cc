@@ -132,8 +132,8 @@ void NetworkHandler::Init() {
       managed_cellular_pref_handler_.get(),
       managed_network_configuration_handler_.get());
   if (base::FeatureList::IsEnabled(features::kHiddenNetworkMigration)) {
-    hidden_network_handler_->Init(network_state_handler_.get(),
-                                  network_configuration_handler_.get());
+    hidden_network_handler_->Init(managed_network_configuration_handler_.get(),
+                                  network_state_handler_.get());
   }
   if (ash::features::IsHotspotEnabled()) {
     hotspot_state_handler_->Init(network_state_handler_.get());
