@@ -15,28 +15,14 @@
 export class ExtensionBridge {
   /** @private */
   constructor() {
-    /** @private {!Array<!function(Object, Port)>} */
-    this.messageListeners_ = [];
     /** @private {!Array<!function()>} */
     this.disconnectListeners_ = [];
-    /** @private {number} */
-    this.id_ = -1;
-
-    // Used in the background context.
-    /** @private {!Array<!Port>} */
-    this.portCache_ = [];
+    /** @private {!Array<!function(Object, Port)>} */
+    this.messageListeners_ = [];
     /** @private {number} */
     this.nextPongId_ = 1;
-
-    // Used in the content script context.
-    /** @private {boolean} */
-    this.connected_ = false;
-    /** @private {number} */
-    this.pingAttempts_ = 0;
-    /** @private {!Array<Object>} */
-    this.queuedMessages_ = [];
-    /** @private {?Port} */
-    this.backgroundPort_ = null;
+    /** @private {!Array<!Port>} */
+    this.portCache_ = [];
 
     this.init_();
   }
@@ -77,20 +63,11 @@ export class ExtensionBridge {
   }
 
   /**
-   * Returns a unique id for this instance of the script.
-   * @return {number}
-   */
-  static uniqueId() {
-    return ExtensionBridge.instance.id_;
-  }
-
-  /**
    * Initialize the extension bridge in a background page context by registering
    * a listener for connections from the content script.
    * @private
    */
   init_() {
-    this.id_ = 0;
     chrome.extension.onConnect.addListener(
         port => this.onConnectHandler_(port));
   }
