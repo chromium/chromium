@@ -22,12 +22,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -1219,31 +1221,41 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
       FILE_PATH_LITERAL("/dummy/device/location2"), u"label2", u"vendor2",
       u"model2", 12345 /* size */);
 
-  // Attach.
-  //
-  // There should be two events: one each for the Fusebox and non-Fusebox MTP
-  // volumes.
+  // Attach: expect mount events for the MTP and fusebox MTP volumes.
   volume_manager()->OnRemovableStorageAttached(info);
   ASSERT_EQ(2u, observer.events().size());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[0].type);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, observer.events()[1].type);
 
+  // The MTP volume should be mounted.
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("mtp:model");
   ASSERT_TRUE(volume);
+  EXPECT_EQ("", volume->file_system_type());
   EXPECT_EQ(VOLUME_TYPE_MTP, volume->type());
 
-  // Non MTP events from storage monitor are ignored.
+  // The fusebox MTP volume should be mounted.
+  const auto fusebox_volume_id = base::StrCat({util::kFuseBox, "mtp:model"});
+  base::WeakPtr<Volume> fusebox_volume =
+      volume_manager()->FindVolumeById(fusebox_volume_id);
+  ASSERT_TRUE(fusebox_volume);
+  EXPECT_EQ(util::kFuseBox, fusebox_volume->file_system_type());
+  EXPECT_EQ(VOLUME_TYPE_MTP, fusebox_volume->type());
+
+  // Non MTP attach events from storage monitor are ignored.
   volume_manager()->OnRemovableStorageAttached(non_mtp_info);
   EXPECT_EQ(2u, observer.events().size());
 
-  // Detach.
-  //
-  // There should be two more events, bringing the total to four.
+  // Detach: there should be two more events, bringing the total to four.
   volume_manager()->OnRemovableStorageDetached(info);
   ASSERT_EQ(4u, observer.events().size());
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
             observer.events()[2].type);
+  EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED,
+            observer.events()[3].type);
 
+  // The unmount events should remove the MTP and fusebox MTP volumes.
   EXPECT_FALSE(volume);
+  EXPECT_FALSE(fusebox_volume);
 
   volume_manager()->RemoveObserver(&observer);
 }
