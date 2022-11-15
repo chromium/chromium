@@ -200,7 +200,6 @@
 <translation id="528192093759286357">სრულეკრანიანი რეჟიმიდან გამოსასვლელად, გაუსვით ეკრანს თითი ზემოდან ქვემოთ და შეეხეთ ღილაკს „უკან“.</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
 <translation id="5301954838959518834">კარგი, გასაგებია</translation>
-<translation id="5313967007315987356">საიტის დამატება</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5335288049665977812">საიტებისთვის JavaScript-ის გაშვების დაშვება (რეკომენდებული)</translation>
 <translation id="534295439873310000">NFC მოწყობილობები</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378">არჩეულია <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /> დაშვებულია</translation>
 <translation id="7302486331832100261">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. დასაშვებად შეხებით აირჩიეთ „დეტალები“.</translation>
+<translation id="7366415735885268578">საიტის დამატება</translation>
 <translation id="7383715096023715447">პარამეტრები <ph name="DOMAIN" />-ისთვის</translation>
 <translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
 <translation id="7423538860840206698">გაცვლის ბუფერზე წვდომა დაბლოკილია</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC გამორთულია ამ მოწყობილობისთვის. მისი ჩართვა შეგიძლიათ <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">აეკრძალოს საიტებს ინფორმაციაზე წვდომა და მისი შეცვლა NFC მოწყობილობებზე</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ქუქი-ჩანაწერების დაბლოკვა კონკრეტული საიტისთვის.</translation>
 <translation id="8959122750345127698">ნავიგაცია მიუწვდომელია: <ph name="URL" /></translation>
 <translation id="8986362086234534611">დავიწყება</translation>

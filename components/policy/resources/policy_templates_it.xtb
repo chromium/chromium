@@ -508,6 +508,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
 <translation id="1494138678487405397">Disattiva l'alto contrasto nella schermata di accesso</translation>
+<translation id="1499129134689253257">Gestisci il nuovo comportamento di <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Applica in modo forzato gli accessi online soltanto nella schermata di accesso</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
 <translation id="1503969899251962413">La configurazione del criterio consente di specificare il codice licenza <ph name="PLUGIN_VM_NAME" /> per il dispositivo.
@@ -2336,6 +2337,17 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> carica tutti gli host di messaggistica nativi installati.</translation>
 <translation id="3211426942294667684">Impostazioni di accesso al browser</translation>
+<translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> verrà modificata in <ph name="PRODUCT_NAME" /> per conformarla alle modifiche apportate in <ph name="FIREFOX_PRODUCT_NAME" /> e <ph name="SAFARI_PRODUCT_NAME" />. Questo criterio ripristina il comportamento precedente fino alla versione M120.
+
+Il nuovo comportamento potrebbe rendere inaccessibili alcuni siti web solo di <ph name="PRODUCT_NAME" /> che usano <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> in combinazione con il DOM Shadow.
+
+All'indirizzo https://github.com/josepharhar/offsetparent-polyfills puoi trovare alcuni polyfill che ripristinano il comportamento precedente per facilitare la migrazione.
+
+Se questo criterio viene attivato, verrà utilizzato il nuovo comportamento.
+
+Se viene disattivato, verrà utilizzato il comportamento precedente.
+
+Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
 <translation id="3219421230122020860">Modalità di navigazione in incognito disponibile</translation>
 <translation id="3220624000494482595">Se l'app kiosk è un'app Android, non avrà controllo sulla versione di <ph name="PRODUCT_OS_NAME" />, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
 <translation id="3222088741899353813">Il pulsante sinistro è il principale nella schermata di accesso</translation>
@@ -2739,6 +2751,7 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 <translation id="3589193811812796052">Impedisci che i moduli WebAssembly vengano inviati tra origini</translation>
 <translation id="3591527072193107424">Attiva la funzionalità Supporto dei browser precedenti.</translation>
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
+<translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
 
@@ -3038,6 +3051,7 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 <translation id="3891357445869647828">Abilita JavaScript</translation>
 <translation id="3891769546914233112">Stampa PDF come immagine disponibile</translation>
 <translation id="3897218615484393758">Limita il tempo per cui un utente autenticato tramite SAML può accedere offline nella schermata di blocco</translation>
+<translation id="3897860452756794695">Verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
 <translation id="3898795800259311780">Consenti o nega acquisizione schermo</translation>
 <translation id="3903313632842363082">Disattiva i report sugli utenti del dispositivo</translation>
@@ -4820,6 +4834,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Gli utenti non possono modificare questa impostazione.</translation>
 <translation id="5838452040629810808">Attiva l'evidenziazione del puntatore</translation>
+<translation id="5842283830553218200">Per impostazione predefinita verrà utilizzato il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="5848438019586925019">L'algoritmo per la generazione di coppie di chiavi.</translation>
 <translation id="5851248808417680865">Usa il tema scuro</translation>
 <translation id="585270638818921943">Impedisci all'utente di usare app Android di fonti non attendibili</translation>
@@ -5305,6 +5320,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno scegliere se usare o meno <ph name="CHROME_SYNC_NAME" />.
 
       Nota: non attivare questo criterio se il criterio <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> è impostato su Attivato perché quest'ultimo ha la stessa funzione lato client. La sincronizzazione ospitata su Google viene disattivata completamente in questo caso.</translation>
+<translation id="6320935916601887506">Per impostazione predefinita verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="6327643515544933974">Impostazioni USB web</translation>
 <translation id="6330882599388782338">Consenti ai siti di accedere ai sensori</translation>
 <translation id="6331167725613770725">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -5443,6 +5459,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
 <translation id="6473623140202114570">Configura l'elenco di domini sui quali Navigazione sicura non attiverà avvisi.</translation>
+<translation id="6474194795370862403">Verrà utilizzato il comportamento offsetParent precedente.</translation>
 <translation id="647645276885673708">Attiva <ph name="LACROS_NAME" /> e impostalo come browser principale</translation>
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
 <translation id="6477685422297715670">Colore della retroilluminazione della tastiera verde</translation>
@@ -7441,17 +7458,12 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
 <translation id="841977920223099909">Attivazione dell'avviso di protezione tramite password</translation>
 <translation id="8420426128163801949">Consenti agli utenti di attivare o disattivare il Bluetooth</translation>
+<translation id="8422658829373743789">Gestisci il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati</translation>
 <translation id="8422866312638683210">La configurazione del criterio significa che <ph name="PRODUCT_NAME" /> cerca di registrarsi con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Il valore del criterio è un token di registrazione che puoi recuperare da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Imposta la rotazione predefinita dello schermo, riapplicata a ogni riavvio</translation>
 <translation id="8426231401662877819">Ruota lo schermo in senso orario di 90°</translation>
-<translation id="8426819027631706846">Come descritto all'indirizzo https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
-       Questo criterio consente di eseguire l'override di tale modifica.
-       Se il criterio viene impostato su Attivato o se non viene configurato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa verranno bloccate.
-       Se il criterio viene impostato su Disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non verranno bloccate.
-
-       Questo criterio verrà rimosso nella versione 95 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8427466947904008809">Consenti a CRD di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
 <translation id="8428295225823548121">Attiva i report sulle informazioni relative alla memoria del dispositivo</translation>
 <translation id="8428635849021776523">Disattiva la generazione di report Android</translation>
@@ -7986,6 +7998,19 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8947415621777543415">Segnala posizione del dispositivo</translation>
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
+<translation id="8952611478149810182">L'esecuzione di eventi sui controlli dei moduli disattivati cambierà in Chromium per migliorare la compatibilità con altri browser e l'esperienza per gli sviluppatori.
+
+A causa di questa modifica, gli eventi MouseEvent vengono eseguiti sugli elementi di controllo dei moduli disattivati, ad eccezione di click, mouseup e mousedown. I nuovi eventi includeranno, ad esempio, mousemove, mouseenter e mouseleave.
+
+Questa modifica tronca anche il percorso degli eventi click, mouseup e mousedown quando vengono eseguiti su elementi secondari dei controlli dei moduli disattivati affinché non vengano eseguiti sul controllo del modulo disattivato o su uno qualsiasi dei predecessori.
+
+Il nuovo comportamento potrebbe rendere inaccessibili alcuni siti web.
+
+Se questo criterio viene attivato, verrà utilizzato il nuovo comportamento.
+
+Se viene disattivato, verrà utilizzato il comportamento precedente.
+
+Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -8171,6 +8196,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="9135033364005346124">Attiva proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136212796239682721">Disattiva l'UI del fumetto dei download</translation>
 <translation id="9136399279941091445">Intervalli di orari di minore attività quando vengono rilasciati i criteri del dispositivo specificati</translation>
+<translation id="9142561920976791097">Verrà utilizzato il nuovo comportamento per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="9148720248753722892">Non consentire i certificati con firma SHA-1</translation>
 <translation id="9149678135092892302">Disattiva la generazione di report sulle informazioni di versione</translation>
 <translation id="9150416707757015439">Questa norma è obsoleta. Utilizza IncognitoModeAvailability. Consente di attivare la modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />. Se questa impostazione viene attivata o non viene configurata, gli utenti potranno aprire le pagine web in modalità di navigazione in incognito. Se l'impostazione viene disattivata, gli utenti non potranno aprire le pagine web in modalità di navigazione in incognito. Se questa norma non viene impostata, l'impostazione verrà attivata e gli utenti potranno utilizzare la modalità di navigazione in incognito.</translation>

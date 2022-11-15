@@ -232,6 +232,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2815198996063984598">2. Touchez Navigateur par défaut</translation>
 <translation id="2820289420301699633">L'administrateur peut gérer Chrome et accéder à ses données</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
+<translation id="2834399722155632105">3. Appuyez sur Options de mot de passe</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Réinit. param. Traduction</translation>
 <translation id="2848086008667475748">Définir par défaut dans Paramètres…</translation>
@@ -632,6 +633,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5899314093904173337">Pour partager du contenu avec des personnes à proximité, faites-leur numériser ce code QR avec leur appareil photo ou une application de numérisation de code QR</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5913600720976431809">Options pour traduire la page</translation>
+<translation id="5933515656458364246">Synchronisez vos données sur tous les appareils.</translation>
 <translation id="5938160824633642847">Votre appareil est presque plein. Libérez de l'espace et réessayez.</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
 <translation id="5951816930277761335">Partager le lien</translation>
@@ -713,6 +715,7 @@ La fonction de transfert doit également être activée dans la section Généra
 
 Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="6418346271604475326">Prép. du PDF</translation>
+<translation id="6429213933892582367">Ouvrez les options de mot de passe</translation>
 <translation id="6434591244308415567">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6435236283694032571">Ajouter à la liste de lecture</translation>
 <translation id="6439338047467462846">Tout autoriser</translation>
@@ -828,6 +831,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7203585745079012652">Réponses vocales</translation>
 <translation id="7207023858769244910">Activez la synchronisation pour voir du contenu en fonction de vos centres d'intérêt.</translation>
 <translation id="721597782417389033">Pseudo de carte incorrect</translation>
+<translation id="7221173315674413369">Explorez les nouvelles fonctionnalités et astuces dans Nouveautés</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
 <translation id="7272437679830969316">Impossible de vérifier votre identité. Le mot de passe n'a pas été copié.</translation>
@@ -861,6 +865,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7531345132340165516">Site actuel</translation>
 <translation id="7537586195939242955">Imposs. d'install. votre pass. pour Passbook pour le moment.</translation>
+<translation id="7553234618121028547">Pour désactiver cette fonctionnalité, ouvrez <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" /> et accédez à Options de mot de passe.</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7583004045319035904">Utiliser <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pour déverrouiller vos onglets de navigation privée.</translation>
@@ -942,6 +947,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applications. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
+<translation id="81313319706244542">2. Appuyez sur Mots de passe</translation>
 <translation id="8132598642024322408">Prix actuel : <ph name="PRICE" />; ancien prix : <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Cela sera utilisé pour créer des événements dans votre agenda Apple à partir de Chrome et de la lentille Google.</translation>
 <translation id="8156478151976189188">La synchronisation de mots de passe ne fonctionne pas</translation>
@@ -964,6 +970,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
+<translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
 <translation id="8407669440184693619">Aucun mot de passé trouvé pour ce site</translation>

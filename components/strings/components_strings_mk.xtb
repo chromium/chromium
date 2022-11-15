@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622571349153632031">Вегетаријанска кујна</translation>
 <translation id="1623104350909869708">Спречете ја страницата да направи дополнителни дијалози</translation>
+<translation id="1633137413609266904">{0,plural, =1{Отворањето на датотекава е блокирано со правило на администраторот}one{Отворањето на # датотека е блокирано со правило на администраторот}other{Отворањето на # датотеки е блокирано со правило на администраторот}}</translation>
 <translation id="1634828734222219955">Вкупно</translation>
 <translation id="163669211644121865">Подготовка и планирање даноци</translation>
 <translation id="1638780421120290329">Не може да се зачува картичката</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;Врати Преуредување</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> сака да се поврзе</translation>
 <translation id="3272091146646336650">Супер Б</translation>
+<translation id="3281350579597955952">{0,plural, =1{Администраторското правило не препорачува да се отвори датотекава во <ph name="DESTINATION_NAME" />}one{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}other{Администраторското правило не препорачува да се отворат датотекиве во <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Вашата организација, <ph name="ENROLLMENT_DOMAIN" />, испратила одредени информации на следниве веб-сајтови, како поставки или правила.</translation>
 <translation id="3282497668470633863">Додајте име на картичка</translation>
 <translation id="3286372614333682499">портрет</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4277028893293644418">Ресетирај ја лозинката</translation>
 <translation id="4278390842282768270">Дозволено</translation>
+<translation id="4281998142035485137">{0,plural, =1{Да се отвори доверливата датотека?}one{Да се отворат доверливите датотеки?}other{Да се отворат доверливите датотеки?}}</translation>
 <translation id="4282346679996504092">Известувањата за овој производ се исклучени, а обележувачот е отстранет</translation>
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Картичкава е зачувана во вашата сметка на Google}one{Картичкиве се зачувани во вашата сметка на Google}other{Картичкиве се зачувани во вашата сметка на Google}}</translation>
@@ -1929,6 +1932,7 @@
 <translation id="5903264686717710770">Наслов:</translation>
 <translation id="5904360430676679685">Семејство и односи</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (синхронизирани)</translation>
+<translation id="5911110632211230665">Отворањето е блокирано</translation>
 <translation id="59174027418879706">Овозможено</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 е во употреба}one{# е во употреба}other{# се во употреба}}</translation>

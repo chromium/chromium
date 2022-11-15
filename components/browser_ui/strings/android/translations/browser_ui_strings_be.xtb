@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Каб выйсці з поўнаэкраннага рэжыму, правядзіце зверху ўніз і націсніце кнопку "Назад".</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5301954838959518834">OK</translation>
-<translation id="5313967007315987356">Дадаванне сайта</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5335288049665977812">Дазволіць сайтам запускаць JavaScript (рэкамендавана)</translation>
 <translation id="534295439873310000">Прылады NFC</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378">Выбрана: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Дазволены <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" /></translation>
 <translation id="7302486331832100261">Звычайна вы блакіруеце апавяшчэнні. Каб дазволіць іх, націсніце "Падрабязнасці".</translation>
+<translation id="7366415735885268578">Дадаванне сайта</translation>
 <translation id="7383715096023715447">Налады для дамена <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Спачатку запытваць</translation>
 <translation id="7423538860840206698">Чытанне буфера абмену заблакіравана</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
 <translation id="8394832520002899662">Каб вярнуцца на сайт, націсніце тут</translation>
 <translation id="8409345997656833551">Апавяшчаць, калі артыкул можна адкрыць у спрошчаным выглядзе</translation>
+<translation id="8423565414844018592">Зададзены маштаб тэксту: <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Налады</translation>
 <translation id="8441146129660941386">Перайсці назад</translation>
 <translation id="8444433999583714703">Каб даць праграме "<ph name="APP_NAME" />" доступ да даных пра ваша месцазнаходжанне, уключыце апошнія ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функцыя NFC выключана на гэтай прыладзе. Уключыце яе ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Забараніць сайтам праглядаць і змяняць інфармацыю на прыладах NFC</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блакіраваць файлы cookie для пэўнага сайта.</translation>
 <translation id="8959122750345127698">Пераход па наступным адрасе недаступны: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Забыць</translation>

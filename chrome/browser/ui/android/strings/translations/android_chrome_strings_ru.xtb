@@ -454,6 +454,7 @@
 <translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт.</translation>
 <translation id="3429160811076349561">Функции отключены</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
+<translation id="3435738964857648380">Безопасность</translation>
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
 <translation id="3452832259067974318">Чтобы обеспечить конфиденциальность ваших данных, мы просим ввести пароль вручную.</translation>
@@ -552,6 +553,7 @@
 <translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4035877632587724847">Запретить</translation>
+<translation id="4036177530563778041">Легко продолжайте с того места, где остановились.</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -744,6 +746,7 @@
 <translation id="5016205925109358554">С засечками</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
+<translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="504456571576643789">Важная информация</translation>
 <translation id="5054455334322721892">Сведения о <ph name="BEGIN_LINK1" />других действиях<ph name="END_LINK1" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любое время.</translation>
 <translation id="506254248375231072">Нет вкладок</translation>
@@ -1123,6 +1126,7 @@
 <translation id="7029390216614421513">Поместите QR-код или штрихкод в эту рамку.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030304022046916278">Обеспечивает отправку URL на проверку по критериям Безопасного просмотра.</translation>
+<translation id="7030585293819777123">Восстановить последний сеанс?</translation>
 <translation id="7037830628447527439">Войдите в Chrome, используя аккаунт Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>

@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5301954838959518834">OK, het dit</translation>
-<translation id="5313967007315987356">Voeg werf by</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5335288049665977812">Laat werwe toe om JavaScript te gebruik (aanbeveel)</translation>
 <translation id="534295439873310000">NFC-toestelle</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> gekies</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word toegelaat</translation>
 <translation id="7302486331832100261">Jy blokkeer gewoonlik kennisgewings. Tik op Besonderhede om toe te laat.</translation>
+<translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7383715096023715447">Instellings vir <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Vra eers</translation>
 <translation id="7423538860840206698">Geblokkeer om knipbord te lees</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Hierdie werf wys indringerige of misleidende advertensies</translation>
 <translation id="8394832520002899662">Tik om na werf terug te keer</translation>
 <translation id="8409345997656833551">Word in kennis gestel wanneer ’n artikel in vereenvoudigde aansig gewys kan word</translation>
+<translation id="8423565414844018592">Teksskalering is gestel op <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8441146129660941386">Soek agtertoe</translation>
 <translation id="8444433999583714703">Om <ph name="APP_NAME" /> toegang tot jou ligging te gee, moet jy ligging ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC is af vir hierdie toestel. Skakel dit aan in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Blokkeer werwe om inligting op NFC-toestelle te sien en te verander</translation>
-<translation id="8941729603749328384">www.voorbeeld.com</translation>
 <translation id="8958424370300090006">Blokkeer webkoekies vir 'n spesifieke werf.</translation>
 <translation id="8959122750345127698">Navigasie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeet</translation>

@@ -508,6 +508,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="1488724823347505879">Delen van Android-apps naar web-apps aanzetten</translation>
 <translation id="1494138678487405397">Hoog contrast op het inlogscherm uitzetten</translation>
+<translation id="1499129134689253257">Het nieuwe <ph name="OFFSET_PARENT" />-gedrag beheren</translation>
 <translation id="1501644502684303995">Online inloggen alleen afdwingen op het inlogscherm</translation>
 <translation id="1502843533062797703">Injectie van software van derden blokkeren</translation>
 <translation id="1503969899251962413">Als je het beleid instelt, kun je de <ph name="PLUGIN_VM_NAME" />-licentiecode voor dit apparaat opgeven.
@@ -2336,6 +2337,17 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 
       Als je het beleid niet instelt, laadt <ph name="PRODUCT_NAME" /> alle geïnstalleerde hosts voor systeemeigen berichten.</translation>
 <translation id="3211426942294667684">Instellingen voor inloggen bij browser</translation>
+<translation id="3217774577897351942">De <ph name="OFFSET_PARENT" /> API wordt gewijzigd in <ph name="PRODUCT_NAME" /> om te voldoen aan wijzigingen die zijn aangebracht in <ph name="FIREFOX_PRODUCT_NAME" /> en <ph name="SAFARI_PRODUCT_NAME" />. Met dit beleid wordt het oude gedrag hersteld tot M120.
+
+Het nieuwe gedrag kan tot gevolg hebben dat sommige websites die alleen voor <ph name="PRODUCT_NAME" /> werken en die <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> of <ph name="OFFSET_LEFT" /> gebruiken in combinatie met Shadow DOM, niet meer werken.
+
+Hier volgen enkele polyfills die het oude gedrag terughalen om te helpen bij de migratie: https://github.com/josepharhar/offsetparent-polyfills.
+
+Als je dit beleid toepast, wordt het nieuwe gedrag gebruikt.
+
+Als je dit beleid niet toepast, wordt het oude gedrag gebruikt.
+
+Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de rest van de Chromium-gebruikers.</translation>
 <translation id="3219421230122020860">Incognitomodus beschikbaar</translation>
 <translation id="3220624000494482595">Als de kiosk-app een Android-app is, heeft deze geen controle over de <ph name="PRODUCT_OS_NAME" />-versie, zelfs niet als het beleid is ingesteld op <ph name="TRUE" /> (Waar).</translation>
 <translation id="3222088741899353813">Linkerknop is primair op het inlogscherm</translation>
@@ -2735,6 +2747,7 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
 <translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>
+<translation id="3593905652755912452">Het oude gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
 <translation id="3596112486106491038">Opdrachtregeltoegang tot virtuele machines aanzetten</translation>
 <translation id="3603469950773500315">Zet <ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aan, waardoor extensies geschikt gedrag kunnen behouden en <ph name="PRODUCT_NAME" /> toestemming heeft om opgegeven headers te sturen zonder <ph name="CORS" />-controle.
 
@@ -3034,6 +3047,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
 <translation id="3891357445869647828">JavaScript aanzetten</translation>
 <translation id="3891769546914233112">'Pdf afdrukken als afbeelding' beschikbaar</translation>
 <translation id="3897218615484393758">Beperken hoelang een gebruiker die via SAML is geverifieerd offline kan inloggen op het vergrendelscherm</translation>
+<translation id="3897860452756794695">Het nieuwe offsetParent-gedrag wordt gebruikt.</translation>
 <translation id="3898345958122666461">NTLMv2 uitzetten</translation>
 <translation id="3898795800259311780">Screenshots toestaan of weigeren</translation>
 <translation id="3903313632842363082">Rapportage voor gebruikers van apparaat uitzetten</translation>
@@ -4054,6 +4068,7 @@ Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_
 <translation id="5025239932007658691">Als je het beleid toepast of niet instelt, stuurt <ph name="PRODUCT_NAME" /> af en toe query's naar een Google-server om een nauwkeurig tijdstempel op te halen.
 
       Als je het beleid niet toepast, stopt <ph name="PRODUCT_NAME" /> met het sturen van deze query's.</translation>
+<translation id="5033070732967197381">WebAuthn API-verzoeken toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="5034504101537897433">Rapportage voor informatie over crashrapporten van apparaat aanzetten</translation>
 <translation id="5039110755072335605">Ondersteuning voor CORS-verzoekheaders zonder jokertekens</translation>
 <translation id="504116558738617678">Waarschuwingen voor weinig schijfruimte alleen tonen als het apparaat onbeheerd is of er slechts 1 gebruiker is</translation>
@@ -4792,6 +4807,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 
 Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5838452040629810808">Cursormarkering aanzetten</translation>
+<translation id="5842283830553218200">Standaard wordt het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren gebruikt.</translation>
 <translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>
 <translation id="5851248808417680865">Donker thema gebruiken</translation>
 <translation id="585270638818921943">Voorkomen dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
@@ -5272,6 +5288,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers kiezen of ze gebruikmaken van <ph name="CHROME_SYNC_NAME" />.
 
       Opmerking: Pas dit beleid niet toe als <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> aanstaat, want die functie heeft dezelfde functionaliteit aan de clientzijde. In dit geval staat de door Google gehoste synchronisatie helemaal uit.</translation>
+<translation id="6320935916601887506">Standaard wordt het nieuwe offsetParent-gedrag gebruikt.</translation>
 <translation id="6327643515544933974">Web-USB-instellingen</translation>
 <translation id="6330882599388782338">Toestaan dat sites toegang hebben tot sensoren</translation>
 <translation id="6331167725613770725">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -5408,6 +5425,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="6464074037294098618">Automatisch invullen voor adressen aanzetten</translation>
 <translation id="6467613372414922590">Hosts voor native berichten op gebruikersniveau toestaan (geïnstalleerd zonder beheerdersrechten)</translation>
 <translation id="6473623140202114570">Configureer de lijst met domeinen waar Safe Browsing geen waarschuwingen activeert.</translation>
+<translation id="6474194795370862403">Het oude offsetParent-gedrag wordt gebruikt.</translation>
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> aanzetten en instellen als primaire browser</translation>
 <translation id="647698599569353771">Sta toe dat Dichtbij delen wordt aangezet.</translation>
 <translation id="6477685422297715670">Groene achtergrondverlichting van toetsenbord</translation>
@@ -5594,6 +5612,7 @@ Als je ervoor kiest het volgende te gebruiken:
       - Als je dit beleid niet toepast, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="6609867253856597039">Gebruikerservaring voor uitgezette functies instellen</translation>
 <translation id="6614557704487944013">Toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
+<translation id="661610294649586421">WebAuthn API-verzoeken niet toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="6617589895942747919">Begintijd van het interval (inclusief).</translation>
 <translation id="6621830999036927230">Als je dit beleid instelt, gebruikt de host voor externe toegang deze URL om verificatietokens van clients voor externe toegang te valideren om zo verbindingen te accepteren. De functie wordt uitgezet als je deze leeg laat of niet instelt.
 
@@ -5894,6 +5913,9 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6907778402784621686">Niet-beveiligde content op deze sites blokkeren</translation>
 <translation id="6908640907898649429">Hiermee wordt de standaard zoekprovider ingesteld. Je kunt de standaard zoekprovider opgeven die de gebruiker gaat gebruiken, of je kunt ervoor kiezen de standaard zoekfunctie uit te zetten.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> toestaan om verbinding te maken met Cast-apparaten op alle IP-adressen.</translation>
+<translation id="6915493311660114995">Als je dit beleid toepast, staat <ph name="PRODUCT_NAME" /> verzoeken voor webverificatie toe op websites met TLS-certificaten met fouten (dat wil zeggen, websites die niet als beveiligd worden beschouwd).
+
+Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepassing, waarbij dergelijke verzoeken worden geblokkeerd.</translation>
 <translation id="6919819553978815392">Als dit beleid is ingesteld op True of niet is ingesteld, zetten <ph name="PRODUCT_NAME" /> en<ph name="LACROS_NAME" /> gastlogins aan. Gastlogins zijn <ph name="PRODUCT_NAME" />-profielen waarbij alle vensters in de incognitomodus zijn.
 
       Als dit beleid is ingesteld op False, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er gastprofielen worden gestart.
@@ -6804,6 +6826,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="782661371433719637">Geen sites toestemming geven om leestoegang tot bestanden of directory's te vragen via de File System API</translation>
 <translation id="7827127381981620448">Platform-app</translation>
 <translation id="7829436838673974723">Toestaan dat pagina's synchrone XHR-verzoeken sturen tijdens het sluiten van pagina's</translation>
+<translation id="782978857350824974">Verzoeken voor webverificatie toestaan op sites met niet-werkende TLS-certificaten.</translation>
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>
@@ -7198,6 +7221,7 @@ Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de table
 <translation id="8250048892729838843">Dit beleid is beëindigd. Als je dit beleid toepast of niet instelt, kan het apparaat opties voor gedetailleerde rapportage krijgen.
       Als je het beleid niet toepast, kunnen ingeschreven apparaten geen opties voor gedetailleerde rapportage krijgen.</translation>
 <translation id="82530263956734297">Extensie-ID's die zijn vrijgesteld van de blokkeringslijst</translation>
+<translation id="8256006033157034334">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Hiermee wordt de weergave van de accountnaam in <ph name="PRODUCT_OS_NAME" /> op het aanmeldscherm beheerd voor het bijbehorende lokale account van het apparaat.
 
       Als dit beleid is ingesteld, gebruikt het aanmeldscherm de opgegeven tekenreeks in de afbeeldinggebaseerde aanmeldkiezer voor het bijbehorende lokale account van het apparaat.
@@ -7402,17 +7426,12 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
 <translation id="841977920223099909">Waarschuwingstrigger voor wachtwoordbeveiliging</translation>
 <translation id="8420426128163801949">Gebruikers toestaan bluetooth aan of uit te zetten</translation>
+<translation id="8422658829373743789">Het nieuwe gedrag beheren voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren</translation>
 <translation id="8422866312638683210">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf aan te melden bij <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
 <translation id="8424255554404582727">Standaard displayrotatie instellen, wordt telkens toegepast na opnieuw opstarten</translation>
 <translation id="8426231401662877819">Scherm 90 graden met de klok mee draaien</translation>
-<translation id="8426819027631706846">Zoals wordt beschreven in https://www.chromestatus.com/feature/5148698084376576, worden modulaire JavaScript-dialoogvensters die worden geactiveerd door <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> en <ph name="JS_PROMPT" />, geblokkeerd in <ph name="PRODUCT_NAME" /> als ze worden geactiveerd vanuit een subframe waarvan de oorsprong verschilt van de oorsprong van de hoofdframe.
-       Met dit beleid kun je die wijziging overschrijven.
-       Als je het beleid toepast of niet instelt, worden JavaScript-dialoogvensters geblokkeerd als ze afkomstig zijn van een subframe met een andere oorsprong.
-       Als je het beleid niet toepast, worden JavaScript-dialoogvensters niet geblokkeerd, zelfs niet als ze afkomstig zijn van een subframe met een andere oorsprong.
-
-       Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" />-versie 95.</translation>
 <translation id="8427466947904008809">Toestaan dat CRD WebAuthn API-verzoeken uitvoert die afkomstig zijn van een externe host.</translation>
 <translation id="8428295225823548121">Rapportage van geheugeninformatie van apparaat aanzetten</translation>
 <translation id="8428635849021776523">Android-rapporten uitzetten</translation>
@@ -7946,6 +7965,19 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8947415621777543415">Apparaatlocatie rapporteren</translation>
 <translation id="8948062138228904066">Toelatingslijst voor verificatieserver</translation>
 <translation id="8951350807133946005">Directory voor schijfcache instellen</translation>
+<translation id="8952611478149810182">De verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gewijzigd in Chromium om de compatibiliteit met andere browsers en de functionaliteit voor ontwikkelaars te verbeteren.
+
+Deze wijziging zorgt ervoor dat muisgebeurtenissen (MouseEvents) worden verstuurd voor uitgezette bedieningselementen op formulieren, behalve click, mouseup en mousedown. De nieuwe gebeurtenissen omvatten bijvoorbeeld mousemove, mouseenter en mouseleave.
+
+Door deze wijziging wordt ook het gebeurtenispad van click, mouseup en mousedown afgekapt als ze worden verstuurd naar onderliggende elementen van uitgezette bedieningselementen op formulieren, zodat ze niet worden verstuurd naar het uitgezette bedieningselement van het formulier of naar een van de bovenliggende entiteiten.
+
+Het nieuwe gedrag kan tot gevolg hebben dat sommige websites niet meer werken.
+
+Als je dit beleid toepast, wordt het nieuwe gedrag gebruikt.
+
+Als je dit beleid niet toepast, wordt het oude gedrag gebruikt.
+
+Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de rest van de Chromium-gebruikers.</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
 <translation id="8970205333161758602">De prompt <ph name="PRODUCT_FRAME_NAME" /> negeren</translation>
@@ -8131,6 +8163,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="9135033364005346124">Proxy voor <ph name="CLOUD_PRINT_NAME" /> gebruiken</translation>
 <translation id="9136212796239682721">Ballon-UI voor downloaden uitzetten</translation>
 <translation id="9136399279941091445">Intervallen buiten gebruikstijd wanneer het gespecificeerde apparaatbeleid wordt vrijgegeven</translation>
+<translation id="9142561920976791097">Het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
 <translation id="9148720248753722892">SHA-1-ondertekende certificaten niet toestaan</translation>
 <translation id="9149678135092892302">Rapportage van versiegegevens uitzetten</translation>
 <translation id="9150416707757015439">Dit beleid is verouderd. Gebruik in plaats hiervan IncognitoModeAvailability.

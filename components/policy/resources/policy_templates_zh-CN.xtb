@@ -7394,12 +7394,6 @@
       如需了解详情，请访问 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
 <translation id="8424255554404582727">设置显示屏默认旋转角度，每次重新启动后都重新应用设置的角度</translation>
 <translation id="8426231401662877819">将屏幕顺时针旋转 90 度</translation>
-<translation id="8426819027631706846">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架来源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
-       此政策让您可以覆盖这项变更。
-       如果此政策已启用或未设置，系统将会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
-       如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
-
-       在 <ph name="PRODUCT_NAME" /> 95 版中，此政策将被移除。</translation>
 <translation id="8427466947904008809">允许 CRD 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="8428295225823548121">启用设备内存信息报告功能</translation>
 <translation id="8428635849021776523">停用 Android 报告</translation>

@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">به‌روزرسانی و خروج از سیستم</translation>
 <translation id="1864454756846565995">‏دستگاه USB-C (درگاه عقب)</translation>
 <translation id="1869497990620230175">فایل‌های سریع</translation>
+<translation id="1871703283152909317">روشن کردن هردو دسترسی</translation>
 <translation id="1879018240766558464">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
@@ -667,6 +668,7 @@
 <translation id="4659419629803378708">‏ChromeVox فعال شد</translation>
 <translation id="4665114317261903604">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">برای اینکه همه دوربین‌ها همیشه مسدود شوند، دسترسی دوربین را در این دستگاه خاموش کنید.</translation>
+<translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
@@ -922,6 +924,7 @@
 <translation id="6095008505822982596">سرعت گفتار</translation>
 <translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6103838137565245112">سیستم</translation>
+<translation id="6107292179555508368">دسترسی میکروفون و دوربین در این دستگاه خاموش است</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6116825164611323644">دسترسی به دوربین در این دستگاه خاموش است</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -950,6 +953,7 @@
 <translation id="6259254695169772643">برای انتخاب از قلم استفاده کنید</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: در حال فعال‌سازی…</translation>
 <translation id="6274202259872570803">ضبط ویدیویی از صفحه</translation>
+<translation id="6282694724099204652">این دسترسی‌ها را روشن کنید تا برنامه‌ها و صفحه‌های وب دارای اجازه بتوانند از میکروفون‌(ها) و دوربین‌(های) این دستگاه استفاده کنند.</translation>
 <translation id="6283712521836204486">«مزاحم نشوید» خاموش است.</translation>
 <translation id="6284232397434400372">وضوح تغییر کرد</translation>
 <translation id="6288235558961782912">بعداً می‌توانید <ph name="USER_EMAIL_ADDRESS" /> را با اجازه ولی دوباره اضافه کنید.</translation>

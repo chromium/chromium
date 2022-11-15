@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Σύρετε από το επάνω τμήμα και αγγίξτε το κουμπί επιστροφής για έξοδο από την πλήρη οθόνη.</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5301954838959518834">OK, το κατάλαβα</translation>
-<translation id="5313967007315987356">Προσθήκη ιστότοπου</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5335288049665977812">Να επιτρέπεται στους ιστότοπους να εκτελούν JavaScript (συνιστάται)</translation>
 <translation id="534295439873310000">Συσκευές NFC</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378">Επιλέχθηκαν <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> επιτράπηκαν.</translation>
 <translation id="7302486331832100261">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να τις επιτρέψετε, πατήστε Λεπτομέρειες.</translation>
+<translation id="7366415735885268578">Προσθήκη ιστοτόπου</translation>
 <translation id="7383715096023715447">Ρυθμίσεις για τον τομέα <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Να γίνεται ερώτηση πρώτα</translation>
 <translation id="7423538860840206698">Αποκλεισμός από ανάγνωση πρόχειρου</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Αυτός ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις</translation>
 <translation id="8394832520002899662">Πατήστε για επιστροφή στον ιστότοπο</translation>
 <translation id="8409345997656833551">Λάβετε ειδοποίηση όταν ένα άρθρο μπορεί να εμφανιστεί σε απλοποιημένη προβολή.</translation>
+<translation id="8423565414844018592">Η κλιμάκωση κειμένου ορίστηκε σε <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8441146129660941386">Αναζήτηση προς τα πίσω</translation>
 <translation id="8444433999583714703">Για να επιτρέψετε στην εφαρμογή <ph name="APP_NAME" /> να αποκτήσει πρόσβαση στην τοποθεσία σας, ενεργοποιήστε επίσης την τοποθεσία στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Το NFC είναι ανενεργό για αυτήν τη συσκευή. Ενεργοποιήστε το στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Αποκλεισμός ιστοτόπων από την εμφάνιση και την αλλαγή πληροφοριών σε συσκευές NFC</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>

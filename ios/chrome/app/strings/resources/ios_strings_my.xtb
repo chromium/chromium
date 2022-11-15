@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">လိုက်မကြည့်တော့ရန်</translation>
 <translation id="3863769054730344136">‘သင့်စက်များ’ သို့ ပို့ရန်</translation>
 <translation id="387280738075653372">ဤနေရာတွင် Chrome ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
+<translation id="3888863481921783344">သင့်အစီအစဉ်သို့ ဖိတ်ကြားနိုင်ဖွယ်ရှိသူများ ပြရန် ၎င်းကိုသုံးမည်။</translation>
 <translation id="3892144330757387737">သင့်မှတ်တမ်းကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
 <translation id="3904829425754749514">သင့်အဖွဲ့အစည်းက စင့်ခ်လုပ်ခြင်း ပိတ်ထားသည်။ ဤစက်ပေါ်တွင် သင့်လိပ်စာ၊ မှတ်တမ်း၊ စကားဝှက်နှင့် အခြားဆက်တင်များကို ကြည့်နိုင်ပါသေးသည်။ အပြောင်းအလဲများ ပြုလုပ်ပါက ၎င်းတို့ကို သင်၏အကောင့်နှင့် စင့်ခ်လုပ်မည်မဟုတ်ပါ။</translation>
@@ -941,6 +942,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8105368624971345109">ပိတ်ပါ</translation>
 <translation id="8114753159095730575">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နိုင်ပါပြီ။ မျက်နှာပြင်အောက်ခြေနားတွင် ရွေးချယ်စရာများ ရှိပါသည်။</translation>
 <translation id="8132598642024322408">ယခင် <ph name="PREVIOUS_PRICE" /> ယခု <ph name="PRICE" />။</translation>
+<translation id="8136856065410661948">Apple Calendar တွင် Chrome နှင့် Google Lens မှ အစီအစဉ်များ ပြုလုပ်ရန် ၎င်းကိုသုံးမည်။</translation>
 <translation id="8156478151976189188">‘စကားဝှက်စင့်ခ်လုပ်ခြင်း’ ကို သုံး၍မရပါ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> အကောင့်များ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

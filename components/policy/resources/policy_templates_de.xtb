@@ -7453,12 +7453,6 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
       Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Standarddrehung des Bildschirms festlegen, die bei jedem Neustart erneut angewendet wird</translation>
 <translation id="8426231401662877819">Bildschirm um 90 Grad im Uhrzeigersinn drehen</translation>
-<translation id="8426819027631706846">Wie unter https://www.chromestatus.com/feature/5148698084376576 beschrieben, werden von <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> und <ph name="JS_PROMPT" /> ausgelöste modale JavaScript-Dialogfelder in <ph name="PRODUCT_NAME" /> blockiert, wenn sie von einem Subframe ausgelöst werden, dessen Quelle sich von der Quelle des Hauptframes unterscheidet.
-       Mit dieser Richtlinie kann diese Änderung überschrieben werden.
-       Ist die Richtlinie aktiviert oder nicht konfiguriert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, blockiert.
-       Ist die Richtlinie deaktiviert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, nicht blockiert.
-
-       Diese Richtlinie wird in Version 95 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="8427466947904008809">Zulassen, dass CRD WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="8428295225823548121">Melden der Informationen zum Arbeitsspeicher auf Geräten aktivieren</translation>
 <translation id="8428635849021776523">Android-Berichterstellung deaktivieren</translation>

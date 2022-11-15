@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Drag from top and touch the back button to exit full screen.</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5301954838959518834">OK, got it</translation>
-<translation id="5313967007315987356">Add site</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> selected</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> allowed</translation>
 <translation id="7302486331832100261">You usually block notifications. To allow, tap Details.</translation>
+<translation id="7366415735885268578">Add a site</translation>
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
@@ -384,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Block sites from seeing and changing information on NFC devices</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Block cookies for a specific site.</translation>
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Forget</translation>

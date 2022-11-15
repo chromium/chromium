@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">更新並登出</translation>
 <translation id="1864454756846565995">USB-C 裝置 (背面連接埠)</translation>
 <translation id="1869497990620230175">快速檔案</translation>
+<translation id="1871703283152909317">啟用這兩項存取權</translation>
 <translation id="1879018240766558464">目前不支援無痕式視窗。系統將儲存其他應用程式。</translation>
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
@@ -667,6 +668,7 @@
 <translation id="4659419629803378708">ChromeVox 已啟用</translation>
 <translation id="4665114317261903604">切換零打擾模式。<ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">關閉這部裝置的相機存取權，一律封鎖所有相機。</translation>
+<translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4667099493359681081">正在下載 <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
@@ -922,6 +924,7 @@
 <translation id="6095008505822982596">語音速率</translation>
 <translation id="6099678161144790572">過去一個月內編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
+<translation id="6107292179555508368">這部裝置已停用麥克風和相機的存取權</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6116825164611323644">這部裝置的相機存取權已關閉</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -950,6 +953,7 @@
 <translation id="6259254695169772643">請使用觸控筆選取</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用...</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
+<translation id="6282694724099204652">啟用這兩項存取權，允許具有權限的應用程式和網頁使用這部裝置的麥克風和相機。</translation>
 <translation id="6283712521836204486">零打擾模式已關閉。</translation>
 <translation id="6284232397434400372">解析度已變更</translation>
 <translation id="6288235558961782912">取得家長同意後即可再次新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>

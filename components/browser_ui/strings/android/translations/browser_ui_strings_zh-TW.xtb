@@ -200,7 +200,6 @@
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
-<translation id="5313967007315987356">新增網站</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378">已選取 <ph name="ITEM_COUNT" /> 個項目</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7302486331832100261">你通常會封鎖通知。如要允許通知，請輕觸 [詳細資料]。</translation>
+<translation id="7366415735885268578">新增網站</translation>
 <translation id="7383715096023715447">「<ph name="DOMAIN" />」的設定</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">這個網站會顯示干擾性或誤導性的廣告</translation>
 <translation id="8394832520002899662">輕觸即可返回網站</translation>
 <translation id="8409345997656833551">在文章能以簡易檢視模式顯示時通知我</translation>
+<translation id="8423565414844018592">文字縮放已設為 <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">倒轉到特定的播放時間點</translation>
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">這部裝置的 NFC 功能已關閉。請前往 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />開啟這項功能。</translation>
 <translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資訊</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">封鎖特定網站的 Cookie。</translation>
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>

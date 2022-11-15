@@ -200,7 +200,6 @@
 <translation id="528192093759286357">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि शीर्षबाट तानेर पछाडि बटनलाई छुनुहोस्।</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
-<translation id="5313967007315987356">साइट थप्नुहोस्</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5335288049665977812">साइटहरूलाई JavaScript सञ्चालन गर्न अनुमति दिने (सिफारिस गरिएको)</translation>
 <translation id="534295439873310000">NFC यन्त्रहरू</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चयन गरिए</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="7302486331832100261">तपाईं सामान्यतया सूचनाहरूमाथि रोक लगाउनुहुन्छ। अनुमति दिन विवरणहरूमा ट्याप गर्नुहोस्।</translation>
+<translation id="7366415735885268578">कुनै साइट थप्नुहोस्</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> का सेटिङ</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
 <translation id="7423538860840206698">क्लिपबोर्डका सामग्री पढ्नबाट रोक लगाइयो</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="8928445016601307354">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्न र ती जानकारी परिवर्तन गर्नबाट ब्लक गरियोस्</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>
 <translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>

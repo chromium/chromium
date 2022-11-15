@@ -200,7 +200,6 @@
 <translation id="528192093759286357">फ़ुल स्क्रीन से बाहर निकलने के लिए ऊपर से खींचें और वापस जाएं स्पर्श करें.</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
-<translation id="5313967007315987356">साइट जोड़ें</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5335288049665977812">साइटों को JavaScript चलाने की अनुमति दें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="534295439873310000">एनएफ़सी डिवाइस</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> चुने गए</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="7302486331832100261">आप आम तौर पर, सूचनाओंं पर रोक लगाते हैं. अनुमति देने के लिए, 'जानकारी' पर टैप करें.</translation>
+<translation id="7366415735885268578">साइट जोड़ें</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> की सेटिंग</translation>
 <translation id="7423098979219808738">पहले पूछें</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड पढ़ने से ब्लॉक किया गया है</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">इस डिवाइस पर NFC बंद है. <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में इसे चालू करें.</translation>
 <translation id="8928445016601307354">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर जानकारी देखने और उसमें बदलाव करने से रोकें</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">किसी खास साइट के लिए कुकी ब्लॉक करें.</translation>
 <translation id="8959122750345127698">मार्गदर्शक तक नहीं पहुंचा जा सकता: <ph name="URL" /></translation>
 <translation id="8986362086234534611">भूल जाएं</translation>

@@ -501,6 +501,7 @@
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1488724823347505879">允許從 Android 應用程式分享內容到網頁應用程式</translation>
 <translation id="1494138678487405397">在登入畫面上停用高對比模式</translation>
+<translation id="1499129134689253257">控制 <ph name="OFFSET_PARENT" /> 的新行為</translation>
 <translation id="1501644502684303995">僅強制在登入畫面執行線上登入</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
 <translation id="1503969899251962413">你可以透過這項政策，指定這部裝置的 <ph name="PLUGIN_VM_NAME" /> 授權金鑰。
@@ -2325,6 +2326,14 @@
 <translation id="3210408472559816322">你可以透過這項政策，指定拒絕載入的原生訊息傳遞主機。如果將拒絕清單的值設為 <ph name="WILDCARD_VALUE" />，系統會拒絕所有原生訊息傳遞主機，但政策明確允許使用的主機除外。
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會載入所有已安裝的原生訊息傳遞主機。</translation>
 <translation id="3211426942294667684">瀏覽器登入設定</translation>
+<translation id="3217774577897351942">為符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中的變更，我們也正在變更 <ph name="PRODUCT_NAME" /> 中的 <ph name="OFFSET_PARENT" /> API。這項政策會恢復舊行為，直到 M120 版本推出為止。
+
+如果某些網站僅支援 <ph name="PRODUCT_NAME" /> 且將 <ph name="OFFSET_PARENT" />、<ph name="OFFSET_TOP" /> 或 <ph name="OFFSET_LEFT" /> 與 Shadow DOM 搭配使用，則新行為可能會導致這些網站無法正常運作。
+
+以下提供幾項可恢復舊行為的補充功能，以協助遷移作業：https://github.com/josepharhar/offsetparent-polyfills。
+如果停用這項政策，系統將使用舊行為。
+
+如果不設定這項政策，系統將如同其他 Chromium 使用者一樣使用新行為。</translation>
 <translation id="3219421230122020860">可使用無痕模式</translation>
 <translation id="3220624000494482595">如果資訊站應用程式是 Android 應用程式，即使將這項政策設為 <ph name="TRUE" />，仍無法控制 <ph name="PRODUCT_OS_NAME" />版本。</translation>
 <translation id="3222088741899353813">在登入畫面上使用左鍵做為主要按鈕</translation>
@@ -2714,6 +2723,7 @@
 <translation id="3589193811812796052">禁止跨來源傳送 WebAssembly 模組</translation>
 <translation id="3591527072193107424">啟用「舊版瀏覽器支援」功能。</translation>
 <translation id="3591584750136265240">設定登入驗證行為</translation>
+<translation id="3593905652755912452">系統將使用在已停用表單控制項上傳送事件的舊行為。</translation>
 <translation id="3596112486106491038">啟用虛擬機器指令列存取權</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用寬鬆檢查機制來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
 
@@ -3012,6 +3022,7 @@
 <translation id="3891357445869647828">啟用 JavaScript</translation>
 <translation id="3891769546914233112">提供「以圖片形式列印 PDF」</translation>
 <translation id="3897218615484393758">限制透過 SAML 驗證的使用者可以在螢幕鎖定畫面離線登入的時間</translation>
+<translation id="3897860452756794695">系統將使用新的 offsetParent 行為。</translation>
 <translation id="3898345958122666461">停用 NTLMv2</translation>
 <translation id="3898795800259311780">允許或拒絕螢幕擷取</translation>
 <translation id="3903313632842363082">停用裝置使用者回報功能</translation>
@@ -4032,6 +4043,7 @@
 <translation id="5025239932007658691">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會不定時向 Google 伺服器傳送查詢，以擷取準確的時間戳記。
 
       如果將這項政策設為停用，系統會禁止 <ph name="PRODUCT_NAME" /> 傳送這類查詢。</translation>
+<translation id="5033070732967197381">允許來自 TLS 憑證無效網站的 WebAuthn API 要求。</translation>
 <translation id="5034504101537897433">啟用裝置當機報告資訊回報功能</translation>
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
@@ -4755,6 +4767,7 @@
 
       使用者無法變更這項設定。</translation>
 <translation id="5838452040629810808">啟用游標醒目顯示功能</translation>
+<translation id="5842283830553218200">根據預設，系統將使用在已停用的表單控制項上傳送事件的新行為。</translation>
 <translation id="5848438019586925019">用於產生金鑰組的演算法。</translation>
 <translation id="5851248808417680865">使用深色主題</translation>
 <translation id="585270638818921943">禁止使用者使用來源不受信任的 Android 應用程式</translation>
@@ -5236,6 +5249,7 @@
       如果停用這項政策或不去設定它，使用者就可以選擇是否要使用 <ph name="CHROME_SYNC_NAME" />。
 
       注意：若已啟用 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />，請不要啟用這項政策，因為兩者具備相同的用戶端功能。如果發生這種情況，Google 代管的同步功能會完全關閉。</translation>
+<translation id="6320935916601887506">根據預設，系統會使用新的 offsetParent 行為。</translation>
 <translation id="6327643515544933974">網路 USB 設定</translation>
 <translation id="6330882599388782338">允許網站存取感應器</translation>
 <translation id="6331167725613770725">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
@@ -5371,6 +5385,7 @@
 <translation id="6464074037294098618">啟用地址的自動填入功能</translation>
 <translation id="6467613372414922590">允許使用者層級的內建訊息傳遞主機 (在無管理員權限的情況下安裝)。</translation>
 <translation id="6473623140202114570">設定安全瀏覽功能在哪些網域中不會觸發警告。</translation>
+<translation id="6474194795370862403">系統將使用舊的 offsetParent 行為。</translation>
 <translation id="647645276885673708">啟用 <ph name="LACROS_NAME" /> 並設為主要瀏覽器</translation>
 <translation id="647698599569353771">允許啟用鄰近分享功能。</translation>
 <translation id="6477685422297715670">綠色鍵盤背光顏色</translation>
@@ -5556,6 +5571,7 @@
       - 如果停用這項政策，管理員必須告知裝置使用者。</translation>
 <translation id="6609867253856597039">設定已停用功能的使用者體驗</translation>
 <translation id="6614557704487944013">允許使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
+<translation id="661610294649586421">不允許來自 TLS 憑證無效網站的 WebAuthn API 要求。</translation>
 <translation id="6617589895942747919">限制時段的開始時間 (包含在內)。</translation>
 <translation id="6621830999036927230">如果設定這項政策，遠端存取主機會使用這個網址驗證遠端存取用戶端提供的驗證權杖，據此決定是否要接受連線。如果設為空白或不設定，系統會停用這項功能。
 
@@ -5858,6 +5874,8 @@
 <translation id="6907778402784621686">封鎖這些網站上的不安全內容</translation>
 <translation id="6908640907898649429">設定預設搜尋引擎。你可以指定使用者要使用的預設搜尋引擎或選擇停用預設搜尋。</translation>
 <translation id="6913068954484253496">允許 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置。</translation>
+<translation id="6915493311660114995">如果設為啟用，即使網站的 TLS 憑證有問題 (即系統認定網站不安全)，<ph name="PRODUCT_NAME" /> 仍允許來自這類網站的網路驗證要求。
+如果將這項政策設為停用或不設定，系統將套用封鎖這類要求的預設行為。</translation>
 <translation id="6919819553978815392">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將啟用訪客登入。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，所有視窗都會以無痕模式開啟。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。
@@ -6761,6 +6779,7 @@
 <translation id="782661371433719637">不允許任何網站透過 File System API 要求讀取檔案及目錄</translation>
 <translation id="7827127381981620448">平台應用程式</translation>
 <translation id="7829436838673974723">允許網頁在關閉時傳送同步 XHR 要求</translation>
+<translation id="782978857350824974">允許來自 TLS 憑證無效網站的網路驗證要求。</translation>
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期執行系統掃描，並停用手動掃描</translation>
 <translation id="7833148823006528332">Android 應用程式的 ID，例如 Gmail 的 ID 為「com.google.android.gm」</translation>
 <translation id="7835218570504220753">停用自動點擊功能</translation>
@@ -7148,6 +7167,7 @@
 <translation id="8250048892729838843">這項政策已淘汰。如果將這項政策設為 Enabled 或不設定，裝置就能取得精細回報控制項。
       如果將這項政策設為 Disabled，表示已註冊的裝置不會取得精細回報控制項。</translation>
 <translation id="82530263956734297">要從封鎖清單中排除的擴充功能 ID</translation>
+<translation id="8256006033157034334">這項政策已淘汰，因此系統不再支援，請改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" /> 在登入畫面上顯示的帳戶名稱，以表示相對應的裝置本機帳戶。
 
       如果你設定這項政策，登入畫面就會使用指定的字串，在圖像化的登入選擇器中表示相對應的裝置本機帳戶。
@@ -7348,17 +7368,12 @@
 <translation id="8417305981081876834">設定螢幕鎖定 PIN 碼的長度上限</translation>
 <translation id="841977920223099909">密碼保護警告觸發條件</translation>
 <translation id="8420426128163801949">允許使用者開啟或關閉藍牙功能</translation>
+<translation id="8422658829373743789">控制在已停用的表單控制項上傳送事件的新行為</translation>
 <translation id="8422866312638683210">如果設定這項政策，<ph name="PRODUCT_NAME" /> 會嘗試註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。這項政策的值是可從 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />擷取的註冊權杖。
 
       詳情請參閱 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
 <translation id="8424255554404582727">設定畫面旋轉預設值 (每次重新啟動皆重新套用)</translation>
 <translation id="8426231401662877819">將畫面以順時針方向旋轉 90 度</translation>
-<translation id="8426819027631706846">如 https://www.chromestatus.com/feature/5148698084376576 所述，<ph name="PRODUCT_NAME" /> 會封鎖 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 所觸發的 JavaScript 強制回應對話方塊 (如果是從與主頁框不同來源的子頁框觸發的話)。
-       這項政策可讓你覆寫此變更。
-       如果將這項政策設為啟用或不予設定，系統會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
-       如果將這項政策設為停用，系統就不會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
-
-       這項政策將在 <ph name="PRODUCT_NAME" /> 第 95 版中移除。</translation>
 <translation id="8427466947904008809">允許 CRD 執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="8428295225823548121">啟用裝置記憶體資訊回報功能</translation>
 <translation id="8428635849021776523">停用 Android 報告功能</translation>
@@ -7886,6 +7901,19 @@
 <translation id="8947415621777543415">回報裝置位置</translation>
 <translation id="8948062138228904066">驗證伺服器許可清單</translation>
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
+<translation id="8952611478149810182">為了改善與其他瀏覽器的相容性及提升開發人員體驗，我們正著手變更 Chromium 中在已停用的表單控制項上傳送事件的行為。
+
+這項變更會讓系統傳送已停用的表單控制元素上的 MouseEvent，但 click、mouseup 和 mousedown 除外。這些新事件將包括滑鼠移動、滑鼠進入和滑鼠離開等。
+
+這項變更也會截斷在已停用的表單控制項子項上傳送的 click、mouseup 和 mousedown 的事件路徑，這樣一來，系統就不會在已停用表單控制項或其任何祖系上傳送這些事件。
+
+這個新行為可能會導致某些網站無法正常運作。
+
+如果啟用這項政策，系統將使用新行為。
+
+如果停用這項政策，系統將使用舊行為。
+
+如果不設定這項政策，系統將如同其他 Chromium 使用者一樣使用新行為。</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8970205333161758602">隱藏停止支援 <ph name="PRODUCT_FRAME_NAME" />的提示</translation>
@@ -8070,6 +8098,7 @@
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
+<translation id="9142561920976791097">系統將使用在已停用表單控制項上傳送事件的新行為。</translation>
 <translation id="9148720248753722892">停用 SHA-1 簽署的憑證</translation>
 <translation id="9149678135092892302">停用版本資訊報告功能</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>

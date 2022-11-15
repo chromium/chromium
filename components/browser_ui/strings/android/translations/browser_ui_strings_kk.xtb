@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Толық экраннан шығу үшін үстіңгі жақтан сүйреп, "Артқа" түймесін түртіңіз.</translation>
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5301954838959518834">Жарайды, түсінікті</translation>
-<translation id="5313967007315987356">Сайт қосу</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5335288049665977812">Сайттарға JavaScript тілін іске қосуға рұқсат беру (ұсынылады)</translation>
 <translation id="534295439873310000">NFC функциясы бар құрылғылар</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> таңдалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін рұқсат етілген.</translation>
 <translation id="7302486331832100261">Әдетте хабарландыруларға тыйым саласыз. Рұқсат беру үшін "Мәліметтер" түймесін түртіңіз.</translation>
+<translation id="7366415735885268578">Сайтты енгізу</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> параметрлері</translation>
 <translation id="7423098979219808738">Алдымен сұрау</translation>
 <translation id="7423538860840206698">Буфердегі мазмұнды оқуға тыйым салынған</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="8394832520002899662">Сайтқа оралу үшін түртіңіз.</translation>
 <translation id="8409345997656833551">Мақала үшін қарапайым көрініс қолжетімді болған кезде хабарлау</translation>
+<translation id="8423565414844018592">Мәтін масштабы <ph name="TEXT_SCALING" /> күйіне орнатылған</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8441146129660941386">Артқа</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> браузері геодерегіңізді пайдалануы үшін, <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> оны да қосыңыз.</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Бұл құрылғыда NFC функциясы өшірілген. Оны <ph name="BEGIN_LINK" />Android параметрлерінен<ph name="END_LINK" /> қосыңыз.</translation>
 <translation id="8928445016601307354">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне тыйым салу</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Белгілі бір сайт үшін cookie файлдарына тыйым салыңыз.</translation>
 <translation id="8959122750345127698"><ph name="URL" /> мекенжайына өту мүмкін емес</translation>
 <translation id="8986362086234534611">Ұмыту</translation>

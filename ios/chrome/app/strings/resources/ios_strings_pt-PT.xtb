@@ -573,6 +573,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5489208564673669003">Para gerir cookies de todos os sites, veja <ph name="BEGIN_LINK" />Definições de cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="5513681519188741830">Há <ph name="TIME" /> h</translation>
+<translation id="5520466080178053306">Toque em Gestor de Palavras-passe e, de seguida, em Adicionar</translation>
 <translation id="5525095647255982834">Para enviar este separador para outro dispositivo, inicie sessão no Chrome nesse dispositivo.</translation>
 <translation id="5525269841082836315">Criar Frase de Acesso</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> encontrado(s)</translation>
@@ -884,6 +885,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7726702057919861819">Menu → Histórico → Limpar dados de navegação</translation>
 <translation id="7738120385185846461">Comunicar um problema…</translation>
 <translation id="7741325291586284254">Página Novo separador anónimo</translation>
+<translation id="7744394900930577716">Palavras-passe noutras apps</translation>
 <translation id="7756478488453921771">Menu → Definições → Métodos de pagamento</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
@@ -1063,6 +1065,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9081058212938299310">Pretende atualizar a palavra-passe de <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Para sincronizar e personalizar dados entre dispositivos, ative a sincronização.</translation>
 <translation id="9087108903408689779">Palavra-passe sugerida do Chrome:</translation>
+<translation id="9093271241977565440">Na parte superior do ecrã, toque no ícone de pesquisa</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>
 <translation id="9097506547406246598">Não é possível deixar de seguir. Algo correu mal.</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>

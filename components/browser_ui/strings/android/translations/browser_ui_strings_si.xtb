@@ -200,7 +200,6 @@
 <translation id="528192093759286357">ඉහළින් ඇද, පූර්ණ තිරයෙන් ඉවත් වීමට පිටුපස බොත්තම ස්පර්ශ කරන්න.</translation>
 <translation id="5300589172476337783">පෙන්වන්න</translation>
 <translation id="5301954838959518834">හරි, එය තේරුණා</translation>
-<translation id="5313967007315987356">අඩවිය එක් කරන්න</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5335288049665977812">ජාවාස්ක්‍රිප්ට් ධාවනය කිරීමට අඩවි වලට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="534295439873310000">NFC උපාංග</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ක් තෝරන ලදී</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> සහ <ph name="PERMISSION_2" /> ඉඩ දෙන ලදි</translation>
 <translation id="7302486331832100261">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. අවසර දීමට, විස්තර තට්ටු කරන්න.</translation>
+<translation id="7366415735885268578">අඩවියක් එක් කරන්න</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> සඳහා සැකසීම්</translation>
 <translation id="7423098979219808738">පළමුව අසන්න</translation>
 <translation id="7423538860840206698">පසුරු පුවරුව කියවීමෙන් අවහිරයි</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">මෙම උපාංගය සඳහා NFC අක්‍රියයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළින් එය සක්‍රීය කරන්න.</translation>
 <translation id="8928445016601307354">NFC උපාංගවල තොරතුරු බැලීමෙන් සහ වෙනස් කිරීමෙන් අඩවි අවහිර කරන්න</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">නිශ්චිත අඩවියක් සඳහා කුකී අවහිර කරන්න.</translation>
 <translation id="8959122750345127698">සංචාලනය වෙත ළඟා විය නොහැකිය: <ph name="URL" /></translation>
 <translation id="8986362086234534611">අමතක</translation>

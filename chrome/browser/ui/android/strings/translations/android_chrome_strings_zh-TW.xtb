@@ -453,6 +453,7 @@
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3435465986463792564">開啟了多個視窗嗎？你可以在這裡進行管理</translation>
+<translation id="3435738964857648380">安全性</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要針對網站的深色主題提供意見嗎？</translation>
 <translation id="3452832259067974318">為保護個人隱私，Chrome 不會在這個欄位中自動填入密碼。</translation>
@@ -681,6 +682,7 @@
 <translation id="4763480195061959176">影片</translation>
 <translation id="4766313118839197559">密碼會儲存至這部裝置上的密碼管理工具。</translation>
 <translation id="4766678251456904326">在裝置上新增帳戶</translation>
+<translation id="4769095993849849966">新檔名</translation>
 <translation id="4787736314074622408">要刪除 <ph name="ITEM_TITLE" /> 嗎？</translation>
 <translation id="4791358705705538979">協助你在網路上完成工作 (例如結帳)</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -744,6 +746,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">無法建立 QR 圖碼</translation>
 <translation id="5039804452771397117">允許</translation>
+<translation id="5040262127954254034">隱私權</translation>
 <translation id="504456571576643789">注意事項</translation>
 <translation id="5054455334322721892">在你登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>

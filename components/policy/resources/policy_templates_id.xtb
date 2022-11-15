@@ -509,6 +509,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="1488724823347505879">Mengaktifkan berbagi dari aplikasi Android ke aplikasi Web</translation>
 <translation id="1494138678487405397">Nonaktifkan kontras tinggi di layar login</translation>
+<translation id="1499129134689253257">Mengontrol perilaku baru <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Hanya terapkan login online di layar login</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
 <translation id="1503969899251962413">Menyetel kebijakan akan menentukan kunci lisensi <ph name="PLUGIN_VM_NAME" /> untuk perangkat ini.
@@ -2378,6 +2379,17 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
 <translation id="3211426942294667684">Setelan login browser</translation>
+<translation id="3217774577897351942"><ph name="OFFSET_PARENT" /> API diubah di <ph name="PRODUCT_NAME" /> untuk mematuhi perubahan yang telah dibuat di <ph name="FIREFOX_PRODUCT_NAME" /> dan <ph name="SAFARI_PRODUCT_NAME" />. Kebijakan ini mengembalikan perilaku lama hingga M120.
+
+Perilaku baru dapat menyebabkan error pada beberapa situs khusus <ph name="PRODUCT_NAME" /> yang menggunakan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" />, atau <ph name="OFFSET_LEFT" /> bersama Shadow DOM.
+
+Berikut adalah beberapa polyfill yang mengembalikan perilaku lama untuk membantu migrasi https://github.com/josepharhar/offsetparent-polyfills
+
+Jika kebijakan ini diaktifkan, perilaku baru akan digunakan.
+
+Jika kebijakan ini dinonaktifkan, perilaku lama akan digunakan.
+
+Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna Chromium lainnya.</translation>
 <translation id="3219421230122020860">Mode samaran tersedia</translation>
 <translation id="3220624000494482595">Jika aplikasi kios adalah aplikasi Android, aplikasi tersebut tidak akan memiliki kontrol terhadap versi <ph name="PRODUCT_OS_NAME" />, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
 <translation id="3222088741899353813">Tombol kiri menjadi tombol utama di layar login</translation>
@@ -2784,6 +2796,7 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
+<translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
 
@@ -3084,6 +3097,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="3891357445869647828">Mengaktifkan JavaScript</translation>
 <translation id="3891769546914233112">Mencetak PDF sebagai Gambar Tersedia</translation>
 <translation id="3897218615484393758">Membatasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat login secara offline di layar kunci</translation>
+<translation id="3897860452756794695">Perilaku baru offsetParent akan digunakan.</translation>
 <translation id="3898345958122666461">Nonaktifkan NTLMv2</translation>
 <translation id="3898795800259311780">Mengizinkan atau menolak tangkapan layar</translation>
 <translation id="3903313632842363082">Nonaktifkan pelaporan pengguna perangkat</translation>
@@ -4900,6 +4914,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="5838452040629810808">Aktifkan sorotan kursor</translation>
+<translation id="5842283830553218200">Perilaku baru pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan secara default.</translation>
 <translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
 <translation id="5851248808417680865">Gunakan Tema gelap</translation>
 <translation id="585270638818921943">Cegah pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
@@ -5397,6 +5412,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan diizinkan memilih apakah akan menggunakan <ph name="CHROME_SYNC_NAME" />.
 
       Catatan: Jangan aktifkan kebijakan ini jika <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> disetel ke Aktif, karena fitur tersebut berbagi fungsi sisi klien yang sama. Dalam hal ini, sinkronisasi yang dihosting oleh Google akan nonaktif sepenuhnya.</translation>
+<translation id="6320935916601887506">Perilaku baru offsetParent akan digunakan secara default.</translation>
 <translation id="6327643515544933974">Setelan Web USB</translation>
 <translation id="6330882599388782338">Izinkan situs mengakses sensor</translation>
 <translation id="6331167725613770725">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -5534,6 +5550,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6464074037294098618">Mengaktifkan IsiOtomatis untuk alamat</translation>
 <translation id="6467613372414922590">Mengizinkan host Native Messaging level pengguna (diinstal tanpa izin admin)</translation>
 <translation id="6473623140202114570">Mengonfigurasi daftar domain tempat Safe Browsing tidak akan memicu peringatan.</translation>
+<translation id="6474194795370862403">Perilaku lama offsetParent akan digunakan.</translation>
 <translation id="647645276885673708">Aktifkan <ph name="LACROS_NAME" /> dan jadikan sebagai browser utama</translation>
 <translation id="647698599569353771">Mengizinkan pengaktifan Berbagi Langsung.</translation>
 <translation id="6477685422297715670">Warna lampu latar keyboard hijau</translation>
@@ -7537,17 +7554,12 @@ perangkat akan digunakan selama pengguna login.</translation>
 <translation id="8417305981081876834">Setel panjang maksimal PIN layar kunci</translation>
 <translation id="841977920223099909">Pemicu peringatan perlindungan sandi</translation>
 <translation id="8420426128163801949">Izinkan pengguna mengaktifkan atau menonaktifkan Bluetooth</translation>
+<translation id="8422658829373743789">Mengontrol perilaku baru untuk pengiriman peristiwa pada kontrol formulir yang dinonaktifkan</translation>
 <translation id="8422866312638683210">Jika kebijakan disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendaftarkan diri ke <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Nilai kebijakan ini adalah token pendaftaran yang dapat Anda ambil dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="8424255554404582727">Setel pemutaran layar default, diterapkan kembali setiap kali melakukan boot ulang</translation>
 <translation id="8426231401662877819">Putar layar searah jarum jam sebesar 90 derajat</translation>
-<translation id="8426819027631706846">Sebagaimana dijelaskan di https://www.chromestatus.com/feature/5148698084376576, dialog modal JavaScript, yang dipicu oleh <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, dan <ph name="JS_PROMPT" />, akan diblokir di <ph name="PRODUCT_NAME" /> jika dipicu dari subframe yang memiliki asal berbeda dari asal frame utama.
-       Kebijakan ini memungkinkan penggantian perubahan tersebut.
-       Jika kebijakan disetel ke aktif atau tidak disetel, dialog JavaScript yang dipicu dari subframe asal yang berbeda akan diblokir.
-       Jika kebijakan disetel ke nonaktif, dialog JavaScript yang dipicu dari subframe asal yang berbeda tidak akan diblokir.
-
-       Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> versi 95.</translation>
 <translation id="8427466947904008809">Izinkan CRD mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="8428295225823548121">Aktifkan pelaporan info memori perangkat</translation>
 <translation id="8428635849021776523">Nonaktifkan pelaporan Android</translation>
@@ -8084,6 +8096,19 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8947415621777543415">Laporkan lokasi perangkat</translation>
 <translation id="8948062138228904066">Daftar server autentikasi yang diizinkan</translation>
 <translation id="8951350807133946005">Setel direktori cache disk</translation>
+<translation id="8952611478149810182">Pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan diubah di Chromium untuk meningkatkan kompatibilitas dengan browser lain dan untuk meningkatkan pengalaman developer.
+
+Perubahan ini membuat MouseEvents dikirim pada elemen kontrol formulir yang dinonaktifkan, kecuali click, mouseup, dan mousedown. Misalnya, peristiwa baru akan menyertakan mousemove, mouseenter, dan mouseleave.
+
+Perubahan ini juga akan memotong jalur peristiwa click, mouseup, dan mousedown saat dikirim ke turunan kontrol formulir yang dinonaktifkan sehingga tidak dikirim pada kontrol formulir yang dinonaktifkan atau ancestornya.
+
+Perilaku baru dapat menyebabkan error pada beberapa situs.
+
+Jika kebijakan ini diaktifkan, perilaku baru akan digunakan.
+
+Jika kebijakan ini dinonaktifkan, perilaku lama akan digunakan.
+
+Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna Chromium lainnya.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
 <translation id="8970205333161758602">Tindas permintaan penghentian <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -8269,6 +8294,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="9135033364005346124">Mengaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136212796239682721">Nonaktifkan UI balon download</translation>
 <translation id="9136399279941091445">Interval di luar jam kerja saat kebijakan perangkat yang ditentukan dirilis</translation>
+<translation id="9142561920976791097">Perilaku baru pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="9148720248753722892">Larang sertifikat yang ditandatangani SHA-1</translation>
 <translation id="9149678135092892302">Nonaktifkan pelaporan informasi versi</translation>
 <translation id="9150416707757015439">Kebijakan ini sudah tidak digunakan lagi. Gunakan IncognitoModeAvailability sebagai gantinya. Aktifkan mode Samaran di <ph name="PRODUCT_NAME" />. Jika setelan ini diaktifkan atau tidak dikonfigurasi, pengguna dapat membuka halaman web dalam mode samaran. Jika setelan ini dinonaktifkan, pengguna tidak dapat membuka halaman web dalam mode samaran. Jika kebijakan ini dibiarkan tanpa disetel, kebijakan ini akan diaktifkan dan pengguna akan dapat menggunakan mode samaran.</translation>

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Primit ćete obavještenje kada bude niža cijena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Minijatura za pregled lista za dijeljenje.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sužavanje <ph name="TABS_COUNT_ONE" /> kartice.}one{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karticom.}few{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartice.}other{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da dobijete obavještenje kada je niža cijena na otvorenoj kartici, uključite obavještenja u Postavkama.</translation>
 <translation id="3940195383040445971">Pratite cijene na karticama</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Prikaz informacija o trgovini. Opcija je dostupna pri vrhu ekrana</translation>
 <translation id="5558362125926932819">Zatvaranje grupe kartica sa sljedećim brojem kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Grupisan je sljedeći broj kartica: <ph name="TAB_COUNT" /></translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> veza iz Chromea}one{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}few{<ph name="TABS_COUNT_MANY" /> veze iz Chromea}other{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}}</translation>
 <translation id="575494663145460764">Slati obavještenja o padu cijena?</translation>
 <translation id="58326064309361797">Prevucite kartice da ih grupišete</translation>
 <translation id="5846292395804797011">Zatvaranje grupe kartica <ph name="TITLE_OF_GROUP" /> sa sljedećim brojem kartica: <ph name="NUMBER_OF_TABS" /></translation>

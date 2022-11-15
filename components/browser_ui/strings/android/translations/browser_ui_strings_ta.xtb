@@ -200,7 +200,6 @@
 <translation id="528192093759286357">முழுத்திரையிலிருந்து வெளியேற, மேலிருந்து இழுத்து "முந்தையது" பட்டனைத் தொடவும்.</translation>
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5301954838959518834">சரி, புரிந்தது</translation>
-<translation id="5313967007315987356">தளத்தைச் சேர்</translation>
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5335288049665977812">JavaScriptஐ இயக்குவதற்கு, தளங்களை அனுமதி (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="534295439873310000">NFC சாதனங்கள்</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகியவற்றுக்கான அனுமதிகள் வழங்கப்பட்டன</translation>
 <translation id="7302486331832100261">பொதுவாக அறிவிப்புகளைத் தடுத்துள்ளீர்கள். அவற்றை அனுமதிக்க 'விவரங்கள்' என்பதைத் தட்டவும்.</translation>
+<translation id="7366415735885268578">தளத்தைச் சேர்</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> தளத்திற்கான அமைப்புகள்</translation>
 <translation id="7423098979219808738">முதலில் கேள்</translation>
 <translation id="7423538860840206698">கிளிப்போர்டைப் படிப்பது தடுக்கப்பட்டுள்ளது</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">இந்தச் சாதனத்தில் NFC ஆஃப் செய்யப்பட்டுள்ளது. அதை <ph name="BEGIN_LINK" />Android அமைப்புகளில்<ph name="END_LINK" /> ஆன் செய்யவும்.</translation>
 <translation id="8928445016601307354">NFC சாதனங்களின் தகவல்களைத் தளங்கள் பார்ப்பதும் மாற்றுவதும் தடுக்கப்படும்</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">குறிப்பிட்ட தளத்திற்கான குக்கீகளைத் தடுக்கும்.</translation>
 <translation id="8959122750345127698">செல்ல முடியவில்லை: <ph name="URL" /></translation>
 <translation id="8986362086234534611">மற</translation>

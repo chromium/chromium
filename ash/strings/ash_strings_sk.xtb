@@ -175,6 +175,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1862380676329487333">Aktualizovať a odhlásiť sa</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
 <translation id="1869497990620230175">Rýchle súbory</translation>
+<translation id="1871703283152909317">Zapnúť oba prístupy</translation>
 <translation id="1879018240766558464">Okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="1882814835921407042">Žiadna mobilná sieť</translation>
 <translation id="1882897271359938046">Zrkadlenie na displej <ph name="DISPLAY_NAME" /></translation>
@@ -668,6 +669,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4659419629803378708">Funkcia ChromeVox je povolená</translation>
 <translation id="4665114317261903604">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">Ak chcete, aby boli všetky kamery stále blokované, vypnite v tomto zariadení prístup ku kamere.</translation>
+<translation id="4666911709726371538">Ďalšie aplikácie</translation>
 <translation id="4667099493359681081">Sťahuje sa <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Polička dolu</translation>
 <translation id="4696813013609194136">Odomknutie zariadenia kódom rodiča</translation>
@@ -923,6 +925,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6095008505822982596">Rýchlosť reči</translation>
 <translation id="6099678161144790572">Upravené za posledný mesiac</translation>
 <translation id="6103838137565245112">systém</translation>
+<translation id="6107292179555508368">Prístupy k mikrofónu a kamere sú v tomto zariadení vypnuté</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6116825164611323644">Prístup ku kamere je v tomto zariadení vypnutý</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +954,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6259254695169772643">Vyberte pomocou dotykového pera</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktivuje sa...</translation>
 <translation id="6274202259872570803">Záznam z obrazovky</translation>
+<translation id="6282694724099204652">Zapnite prístupy a umožnite tak aplikáciám a webovým stránkam s daným povolením používať mikrofóny a kamery v tomto zariadení.</translation>
 <translation id="6283712521836204486">Režim bez vyrušení je vypnutý.</translation>
 <translation id="6284232397434400372">Rozlíšenie sa zmenilo</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> môžete znova pridať neskôr s povolením rodiča.</translation>

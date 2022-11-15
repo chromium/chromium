@@ -175,6 +175,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi se</translation>
 <translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
 <translation id="1869497990620230175">Brz pristup datotekama</translation>
+<translation id="1871703283152909317">Uključi oba pristupa</translation>
 <translation id="1879018240766558464">Anonimni prozori trenutačno nisu podržani. Ostale će se aplikacije spremiti.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Zrcaljenje na zaslon <ph name="DISPLAY_NAME" /></translation>
@@ -667,6 +668,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4659419629803378708">ChromeVox omogućen</translation>
 <translation id="4665114317261903604">Prebacivanje načina Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">Isključite pristup kameri na ovom uređaju da biste blokirali sve kamere cijelo vrijeme.</translation>
+<translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4667099493359681081">Preuzima se <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Polica pri dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj roditeljskim kodom</translation>
@@ -922,6 +924,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6095008505822982596">Brzina govora</translation>
 <translation id="6099678161144790572">Uređivano prošli mjesec</translation>
 <translation id="6103838137565245112">sustav</translation>
+<translation id="6107292179555508368">Na ovom je uređaju isključen pristup mikrofonu i kameri</translation>
 <translation id="6114505516289286752">Preuzete su govorne datoteke za <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Pristup fotoaparatu isključen je na ovom uređaju</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -950,6 +953,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6259254695169772643">Odaberite pomoću pisaljke</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiviranje...</translation>
 <translation id="6274202259872570803">Zaslonska prezentacija</translation>
+<translation id="6282694724099204652">Uključite pristup da biste aplikacijama i web-stranicama s dopuštenjem omogućili upotrebu mikrofona i kamere na ovom uređaju.</translation>
 <translation id="6283712521836204486">Način Ne uznemiravaj je isključen.</translation>
 <translation id="6284232397434400372">Razlučivost je promijenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> može se kasnije ponovno dodati uz dopuštenje roditelja.</translation>

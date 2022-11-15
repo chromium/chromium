@@ -7484,12 +7484,6 @@ cihazın klavye arka ışığı rengi varsayılan olarak ayarlanır.</translatio
       Ayrıntılar için https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 adresine bakın.</translation>
 <translation id="8424255554404582727">Her yeniden başlatmada tekrar uygulanacak varsayılan ekran döndürmesini ayarla</translation>
 <translation id="8426231401662877819">Ekranı saat yönünde 90 derece döndür</translation>
-<translation id="8426819027631706846">https://www.chromestatus.com/feature/5148698084376576 adresinde açıklandığı üzere; kaynağı ana çerçevenin kaynağından farklı olan bir alt çerçeveden tetiklenmeleri halinde <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> ve <ph name="JS_PROMPT" /> tarafından tetiklenen JavaScript kalıcı iletişim kutuları <ph name="PRODUCT_NAME" /> içinde engellenir.
-       Bu politika söz konusu değişikliğin geçersiz kılınmasına izin verir.
-       Politika etkin olarak ayarlanır veya ayarlanmadan bırakılırsa farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenir.
-       Politika devre dışı olarak ayarlanırsa farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenmez.
-
-       Bu politika, <ph name="PRODUCT_NAME" /> 95 sürümünde kaldırılacaktır.</translation>
 <translation id="8427466947904008809">CRD'nin uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
 <translation id="8428295225823548121">Cihazın bellek bilgileri raporlamasını etkinleştir</translation>
 <translation id="8428635849021776523">Android raporlamasını devre dışı bırak</translation>

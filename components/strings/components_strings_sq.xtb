@@ -354,6 +354,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp butonin Tab pastaj Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Detajet e kartës virtuale</translation>
 <translation id="1803020234906945288">Ushqyerja e shëndetshme</translation>
 <translation id="1803264062614276815">Emri i mbajtësit të kartës</translation>
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
@@ -447,6 +448,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2059202684901022309">22 x 34 inç</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
 <translation id="2066915425250589881">të kërkosh që të fshihen</translation>
+<translation id="2066969741541525119">Sajti ku je drejtuar është bllokuar nga organizata jote</translation>
 <translation id="2068528718802935086">Foshnjat dhe fëmijët e vegjël</translation>
 <translation id="2071156619270205202">Kjo kartë nuk është e përshtatshme për numrin e kartës virtuale.</translation>
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
@@ -501,6 +503,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="219906046732893612">Përmirësimi i shtëpisë</translation>
 <translation id="2202020181578195191">Fut një vit të vlefshëm skadimi</translation>
+<translation id="2202627062836089804">pjesën e pasme e kartës</translation>
 <translation id="22081806969704220">Tabakaja 3</translation>
 <translation id="2210794033760923560">Ngarko raportin</translation>
 <translation id="2212735316055980242">Politika nuk u gjet</translation>
@@ -985,6 +988,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="350069200438440499">Emri i dosjes:</translation>
 <translation id="3507936815618196901">Të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="3512163584740124171">Kjo politikë shpërfillet pasi një politikë tjetër nga i njëjti grup politikash ka përparësi më të lartë.</translation>
+<translation id="3515972145999192222">Organizata jote e ka bllokuar <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sepse ai shkel një politikë. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Butoni "Menaxho adresat". Shtyp "Enter" për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="3518941727116570328">Menaxhimi i shumë objekteve</translation>
 <translation id="3525130752944427905">10 x 14 inç</translation>
@@ -1059,6 +1063,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3678342917559046352">Shtesë e pavlefshme: Pritej që vlera të ishte në një nga format e mëposhtme: &lt;extension_id&gt; ose &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Hape faqen në një dritare të re "të fshehtë" (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informacioni i certifikatës</translation>
+<translation id="3693327506115126094">Zgjidh se si do të verifikosh që je ti</translation>
 <translation id="3699374065820972102">TouchID është aktiv për plotësimin e fjalëkalimeve</translation>
 <translation id="3701427423622901115">Rivendosja u pranua.</translation>
 <translation id="3704162925118123524">Rrjeti që po përdor mund të kërkojë që të vizitosh faqen e tij të lidhjes.</translation>
@@ -1143,6 +1148,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> dëshiron të luajë përmbajtjen e mbrojtur. Identiteti i pajisjes sate do të verifikohet nga Google dhe mund të qaset nga ky sajt.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3921869355029467742">Fut kodin e sigurisë</translation>
 <translation id="3927932062596804919">Refuzo</translation>
 <translation id="393316646445601645">Interneti dhe telekomunikacioni</translation>
 <translation id="3939773374150895049">Të përdoret WebAuthn në vend të CVC?</translation>
@@ -1389,6 +1395,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4524805452350978254">Menaxho kartat</translation>
 <translation id="4526465106919207193">Njerëzit dhe shoqëria</translation>
 <translation id="4530347922939905757">Mesazhi me tekst</translation>
+<translation id="4531477351494678589">Numri i kartës virtuale:</translation>
 <translation id="4540780316273593836">Ndodhi një gabim</translation>
 <translation id="4541810033354695636">realiteti i zgjeruar</translation>
 <translation id="4542971377163063093">Tabakaja 6</translation>
@@ -1398,6 +1405,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4567686777917670400">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chromium. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Dorëzimi</translation>
 <translation id="4582204425268416675">Hiq kartën</translation>
+<translation id="4582595824823167856">Merr një mesazh me tekst</translation>
 <translation id="4587425331216688090">Të hiqet adresa nga Chrome?</translation>
 <translation id="459089498662672729">Ngjitja nga <ph name="ORIGIN_NAME" /> në këtë vendndodhje nuk rekomandohet nga politika e administratorit</translation>
 <translation id="4592951414987517459">Lidhja jote me <ph name="DOMAIN" /> është enkriptuar duke përdorur një paketë moderne shifrimi.</translation>
@@ -1409,6 +1417,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4606870351894164739">Me impakt</translation>
 <translation id="4607603470419975064">Butoni "Shiko këshilla për Chrome", shtyp Enter për të mësuar për veçoritë e Chrome</translation>
 <translation id="4607608436550361748">Shiko këshillat për Chrome</translation>
+<translation id="460848736049414407">Bllokuar nga administratori</translation>
 <translation id="4610279718074907952">Ky sajt është në një grup, i përcaktuar nga <ph name="SET_OWNER" />, që mund ta shikojë aktivitetin tënd</translation>
 <translation id="4617273035598175554">Softuerët për grafika dhe animim</translation>
 <translation id="4622292761762557753">Transfero gjithsesi</translation>
@@ -1875,6 +1884,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
 <translation id="5772086939108830423">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="5776313857861697733">Përparësia</translation>
+<translation id="5776574724412881956">Karta virtuale nuk është plotësuar? Kliko te detajet e kartës virtuale për t'i kopjuar në kujtesën e fragmenteve. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Eksperimenti u aktivizua</translation>
 <translation id="578305955206182703">E verdhë portokalli</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
@@ -2004,6 +2014,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6116338172782435947">Shiko tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="6118782133429281336">Lista e origjinave është bosh.</translation>
 <translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
+<translation id="6122181661879998141">pjesën e përparme të kartës</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Zarf kinez nr. 2</translation>
 <translation id="6127379762771434464">Artikulli u hoq</translation>
@@ -2369,6 +2380,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7108634116785509031"><ph name="HOST" /> kërkon të përdorë kamerën</translation>
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
 <translation id="7111012039238467737">(E vlefshme)</translation>
+<translation id="7112327784801341716">Nuk shfaqen informacionet aktuale? Kontakto bankën për t'i përditësuar ato.</translation>
 <translation id="7118618213916969306">Kërko për URL-në e kujtesës së fragmenteve, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Mbyll skedat ose programet e tjera</translation>
 <translation id="7129355289156517987">Kur mbyll të gjitha skedat "e fshehta" në Chromium, aktiviteti yt në këto skeda fshihet nga kjo pajisje:
@@ -2672,6 +2684,7 @@ Detaje shtesë:
 <translation id="7798389633136518089">U shpërfill sepse politika nuk është caktuar nga një burim në renë kompjuterike.</translation>
 <translation id="7800304661137206267">Lidhja është e enkriptuar me <ph name="CIPHER" />, me <ph name="MAC" /> për vërtetimin e mesazhit dhe <ph name="KX" /> si mekanizmi i shkëmbimit të çelësit.</translation>
 <translation id="7802523362929240268">Sajti është i ligjshëm</translation>
+<translation id="7802989406998618639">Fut kodin e sigurisë me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /> që banka të mund të verifikojë që je ti</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7805571567667010077">Menaxhohet nga organizata jote</translation>
 <translation id="7805768142964895445">Statusi</translation>
@@ -2999,6 +3012,7 @@ Detaje shtesë:
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8726549941689275341">Madhësia e faqes:</translation>
 <translation id="8730621377337864115">U krye</translation>
+<translation id="8731268612289859741">Kodi i sigurisë</translation>
 <translation id="8731544501227493793">Menaxho butonin e fjalëkalimeve, shtyp "Enter" për të parë dhe menaxhuar fjalëkalimet e tua në cilësimet e Chrome</translation>
 <translation id="8734529307927223492">Pajisja jote <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 inç</translation>
@@ -3104,6 +3118,7 @@ Detaje shtesë:
 <translation id="9005998258318286617">Ngarkimi i dokumentit PDF dështoi.</translation>
 <translation id="9008178007718859630">Shtëpia dhe dekori i brendshëm</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
+<translation id="9018120810758822233">Fut kodin tënd të sigurisë për <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">mail</translation>
 <translation id="9020200922353704812">Adresa e faturimit të kartës është e detyrueshme</translation>
 <translation id="9020542370529661692">Kjo faqe është përkthyer në <ph name="TARGET_LANGUAGE" /></translation>

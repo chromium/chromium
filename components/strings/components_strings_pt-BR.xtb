@@ -1432,6 +1432,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4646534391647090355">Acessar agora</translation>
 <translation id="4648262692072505866">O hash precisa estar no formato SHA-256.</translation>
 <translation id="4652266463001779298">Sem permissão</translation>
+<translation id="4652440160515225514">Sua organização bloqueou este site porque ele viola uma política.</translation>
 <translation id="4653167719759882810">Fusões e aquisições</translation>
 <translation id="4658638640878098064">Grampo na parte superior direita</translation>
 <translation id="4660119392514473465">Agora você pode navegar com privacidade, e as outras pessoas que usarem este dispositivo não verão suas atividades. No entanto, os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
@@ -2920,6 +2921,7 @@ Mais detalhes:
 <translation id="8437238597147034694">&amp;Desfazer mover</translation>
 <translation id="8438476240229491014">Lembrar esta configuração</translation>
 <translation id="8438786541497918448">Usar a câmera e o microfone?</translation>
+<translation id="8438923942245957911">Este site foi sinalizado pela sua organização</translation>
 <translation id="8443613539889492016">Rap e hip-hop</translation>
 <translation id="8444543005280733648">Redes de computadores</translation>
 <translation id="8446884382197647889">Saiba mais</translation>

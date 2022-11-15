@@ -510,6 +510,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Nota: Los nombres de los servidores se separan con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1488724823347505879">Habilitar el uso compartido de apps para Android a aplicaciones web</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de acceso</translation>
+<translation id="1499129134689253257">Controlar el comportamiento nuevo de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Solo aplicar de manera forzosa accesos en línea a la pantalla de acceso</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1503969899251962413">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.
@@ -2374,6 +2375,17 @@ Esta política es temporal y se quitará en el futuro.</translation>
 
       Si no estableces la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajería nativa instalados.</translation>
 <translation id="3211426942294667684">Configuración de acceso en el navegador</translation>
+<translation id="3217774577897351942">La API de <ph name="OFFSET_PARENT" /> se modificará en <ph name="PRODUCT_NAME" /> a fin de cumplir con los cambios realizados en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política recupera el comportamiento anterior hasta la versión M120.
+
+El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
+
+Estos son algunos polyfills que recuperan el comportamiento anterior para ayudarte a migrar https://github.com/josepharhar/offsetparent-polyfills
+
+Si se habilita esta política, se utilizará el comportamiento nuevo.
+
+Si se inhabilita, se utilizará el comportamiento anterior.
+
+Si no se establece, se usará el comportamiento nuevo al igual que en el resto de los usuarios de Chromium.</translation>
 <translation id="3219421230122020860">Modo incógnito disponible</translation>
 <translation id="3220624000494482595">Si la Aplicación de kiosko es una app de Android, esta no tendrá control sobre la versión de <ph name="PRODUCT_OS_NAME" />, incluso si esta política se establece como <ph name="TRUE" />.</translation>
 <translation id="3222088741899353813">El botón principal en la pantalla de acceso es el izquierdo</translation>
@@ -2778,6 +2790,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
+<translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de la máquina virtual</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />, lo que permite que las extensiones mantengan su compatibilidad y que <ph name="PRODUCT_NAME" /> envíe encabezados específicos sin las comprobaciones de <ph name="CORS" />.
 
@@ -3077,6 +3090,7 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
 <translation id="3891769546914233112">Imprimir PDF como imagen disponible</translation>
 <translation id="3897218615484393758">Limita el tiempo durante el cual un usuario que se autenticó mediante SAML puede acceder sin conexión a través de la pantalla de bloqueo</translation>
+<translation id="3897860452756794695">Usar el comportamiento nuevo de offsetParent</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permite o rechaza la captura de pantalla</translation>
 <translation id="3903313632842363082">Inhabilitar los informes de los usuarios del dispositivo</translation>
@@ -4888,6 +4902,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="5838452040629810808">Habilitar la función para destacar el cursor</translation>
+<translation id="5842283830553218200">Usar el comportamiento nuevo de envío de eventos en los controles de formulario inhabilitados de forma predeterminada</translation>
 <translation id="5848438019586925019">El algoritmo para la generación del par de claves.</translation>
 <translation id="5851248808417680865">Usar el Tema oscuro</translation>
 <translation id="585270638818921943">Impide que el usuario use apps para Android de fuentes no confiables</translation>
@@ -5385,6 +5400,7 @@ principal del string usuario-agente en 99.
       Si inhabilitas la política o no la estableces, los usuarios podrán elegir usar o no <ph name="CHROME_SYNC_NAME" />.
 
       Nota: No desactives esta política cuando está habilitada <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, porque esa función comparte la misma funcionalidad del cliente. En ese caso, se desactivará por completo la sincronización alojada en Google.</translation>
+<translation id="6320935916601887506">Usar el comportamiento nuevo de offsetParent de forma predeterminada</translation>
 <translation id="6327643515544933974">Configuración de USB Web</translation>
 <translation id="6330882599388782338">Permite que los sitios accedan a los sensores</translation>
 <translation id="6331167725613770725">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -5522,6 +5538,7 @@ principal del string usuario-agente en 99.
 <translation id="6464074037294098618">Habilitar "Autocompletar" para las direcciones</translation>
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
 <translation id="6473623140202114570">Configura la lista de dominios donde la Navegación segura no activa advertencias.</translation>
+<translation id="6474194795370862403">Usar el comportamiento anterior de offsetParent</translation>
 <translation id="647645276885673708">Habilitar <ph name="LACROS_NAME" /> y seleccionarlo como navegador predeterminado</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6477685422297715670">Color verde para la retroiluminación del teclado</translation>
@@ -7533,17 +7550,12 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8417305981081876834">Establecer la longitud máxima del PIN de pantalla bloqueada</translation>
 <translation id="841977920223099909">Activador de advertencia de la protección de la contraseña</translation>
 <translation id="8420426128163801949">Permitir que los usuarios activen o desactiven la conexión Bluetooth</translation>
+<translation id="8422658829373743789">Controlar el comportamiento nuevo de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="8422866312638683210">Si estableces la política, <ph name="PRODUCT_NAME" /> intentará registrarse con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. El valor de esta política es un token de inscripción que puedes recuperar de la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Establecer la rotación predeterminada de la pantalla que se volverá a aplicar en cada reinicio</translation>
 <translation id="8426231401662877819">Rotar la pantalla hacia la derecha 90 grados</translation>
-<translation id="8426819027631706846">Como se describe en https://www.chromestatus.com/feature/5148698084376576 , los diálogos modales de JavaScript, activados por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> y <ph name="JS_PROMPT" />, se bloquearán en <ph name="PRODUCT_NAME" /> si se activan desde un submarco con un origen diferente al del marco principal.
-       Esta política permite anular ese cambio.
-       Si habilitas la política o no la estableces, se bloquearán los diálogos de JavaScript activados desde un submarco de origen diferente.
-       Si inhabilitas la política, no se bloquearán los diálogos de JavaScript activados desde un submarco de origen diferente.
-
-       En la versión 95 de <ph name="PRODUCT_NAME" />, se quitará esta política.</translation>
 <translation id="8427466947904008809">Permitir que CRD realice solicitudes a la API de WebAuthn que se envíen al proxy a través de un host remoto</translation>
 <translation id="8428295225823548121">Habilitar los informes de la memoria del dispositivo</translation>
 <translation id="8428635849021776523">Inhabilitar los informes de Android</translation>
@@ -8092,6 +8104,19 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8947415621777543415">Informar la ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de servidores de autenticación habilitados</translation>
 <translation id="8951350807133946005">Configurar el directorio de caché de disco</translation>
+<translation id="8952611478149810182">Se modificará el envío de eventos en los controles de formularios inhabilitados en Chromium a fin de mejorar la compatibilidad con otros navegadores y la experiencia de los desarrolladores.
+
+Este cambio hace que los MouseEvents se envíen en los elementos de control de formularios inhabilitados, excepto los clics, el mouseup y el mousedown. Los nuevos eventos incluirán mousemove, mouseenter y mouseleave, por ejemplo.
+
+Este cambio también trunca la ruta de acceso de los eventos de clic, mouseup y mousedown cuando se envían a elementos secundarios de los controles de formularios inhabilitados, de modo que no se envían al control de formularios inhabilitados ni a ninguno de sus elementos principales.
+
+El comportamiento nuevo puede hacer fallar algunos sitios web.
+
+Si se habilita esta política, se utilizará el comportamiento nuevo.
+
+Si se inhabilita, se utilizará el comportamiento anterior.
+
+Si no se establece, se usará el comportamiento nuevo al igual que en el resto de los usuarios de Chromium.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
 <translation id="8970205333161758602">Elimina el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" />.</translation>
@@ -8277,6 +8302,7 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136212796239682721">Inhabilitar la IU del cuadro de descarga</translation>
 <translation id="9136399279941091445">Intervalos de horas inactivas cuando se ejecutan las políticas de dispositivo especificadas</translation>
+<translation id="9142561920976791097">Usar el comportamiento nuevo de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="9148720248753722892">No permitir los certificados firmados por SHA-1</translation>
 <translation id="9149678135092892302">Inhabilitar la generación de informes sobre la versión</translation>
 <translation id="9150416707757015439">Esta política no está aprobada. Usa IncognitoModeAvailability en su lugar. Esto habilita el modo incógnito en <ph name="PRODUCT_NAME" />. Si se habilita esta opción o si no se configura, los usuarios podrán abrir páginas web en modo incógnito. Si se inhabilita esta configuración, los usuarios no podrán abrir páginas web en modo incógnito. Si esta política no se configura, se habilitará esta opción y el usuario podrá usar el modo incógnito.</translation>

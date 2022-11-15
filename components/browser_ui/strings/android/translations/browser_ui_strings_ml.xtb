@@ -200,7 +200,6 @@
 <translation id="528192093759286357">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ, മുകളിൽ നിന്ന് വലിച്ചിട്ട് ബാക്ക് ബട്ടണിൽ സ്‌പർശിക്കുക.</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5301954838959518834">മനസ്സിലായി</translation>
-<translation id="5313967007315987356">സൈറ്റ് ചേർക്കുക</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5335288049665977812">JavaScript റൺ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="534295439873310000">NFC ഉപകരണങ്ങൾ</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവ അനുവദിച്ചു</translation>
 <translation id="7302486331832100261">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്യാറുണ്ട്. അനുവദിക്കാൻ, വിശദാംശങ്ങൾ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="7366415735885268578">ഒരു സൈറ്റ് ചേർക്കുക</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> -ന്റെ ക്രമീകരണം</translation>
 <translation id="7423098979219808738">ആദ്യതവണ ചോദിക്കുക</translation>
 <translation id="7423538860840206698">ക്ലിപ്പ്ബോർഡ് റീഡ് ചെയ്യുന്നതിൽ നിന്ന് ബ്ലോക്ക് ചെയ്‌തു</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ഈ ഉപകരണത്തിനുള്ള NFC ഓഫാണ്. ഇത് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> ഓണാക്കുക.</translation>
 <translation id="8928445016601307354">NFC ഉപകരണങ്ങളിലെ വിവരങ്ങൾ കാണുന്നതിലും അവയിൽ മാറ്റം വരുത്തുന്നതിലും നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ഒരു പ്രത്യേക സൈറ്റിനായി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക.</translation>
 <translation id="8959122750345127698">നാവിഗേഷൻ ലഭ്യമല്ല: <ph name="URL" /></translation>
 <translation id="8986362086234534611">മറന്നു</translation>

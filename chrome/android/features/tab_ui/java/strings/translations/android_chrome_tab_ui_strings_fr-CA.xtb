@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Vous recevrez une alerte si un meilleur prix est détecté dans un onglet ouvert</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Min. aper. feuille partage.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Réduire <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="3882834874697329510">Pour recevoir une alerte si un meilleur prix est détecté dans un onglet ouvert, accédez aux paramètres, puis activez les notifications.</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
 <translation id="5558362125926932819">Fermer le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets groupés</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="575494663145460764">Recevoir des alertes pour les baisses de prix?</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5846292395804797011">Fermer le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>

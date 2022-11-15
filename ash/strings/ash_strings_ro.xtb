@@ -175,6 +175,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1862380676329487333">Actualizează și deconectează-te</translation>
 <translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1869497990620230175">Fișiere rapide</translation>
+<translation id="1871703283152909317">Activează ambele accesuri</translation>
 <translation id="1879018240766558464">Ferestrele incognito nu sunt acceptate. Alte aplicații se vor salva.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
 <translation id="1882897271359938046">Se oglindește pe <ph name="DISPLAY_NAME" /></translation>
@@ -668,6 +669,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4659419629803378708">ChromeVox este activat</translation>
 <translation id="4665114317261903604">Comută Nu deranja. <ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">Dezactivează accesul la camera foto al acestui dispozitiv pentru a bloca întotdeauna toate camerele.</translation>
+<translation id="4666911709726371538">Mai multe aplicații</translation>
 <translation id="4667099493359681081">Se descarcă <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
@@ -923,6 +925,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6095008505822982596">Ritmul vorbirii</translation>
 <translation id="6099678161144790572">Editat în ultima lună</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="6107292179555508368">Accesul la microfon și la camera foto este dezactivat pe acest dispozitiv</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6116825164611323644">Accesul la camera foto este dezactivat pe acest dispozitiv</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +954,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6259254695169772643">Folosește creionul pentru a selecta</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: se activează...</translation>
 <translation id="6274202259872570803">Înregistrare de pe ecran</translation>
+<translation id="6282694724099204652">Activează accesul pentru a permite aplicațiilor și paginilor web cu permisiunea respectivă să folosească microfoanele și camerele video de pe acest dispozitiv.</translation>
 <translation id="6283712521836204486">Funcția Nu deranja este dezactivată.</translation>
 <translation id="6284232397434400372">Rezoluția a fost schimbată</translation>
 <translation id="6288235558961782912">Utilizatorul <ph name="USER_EMAIL_ADDRESS" /> poate fi adăugat din nou mai târziu, cu permisiunea părintelui.</translation>

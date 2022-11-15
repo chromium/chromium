@@ -454,6 +454,7 @@
 <translation id="3428747202529429621">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താനും ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
 <translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? അവ നിങ്ങൾക്ക് ഇവിടെ മാനേജ് ചെയ്യാം</translation>
+<translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3444179773590444986">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീമുകൾ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് പങ്കിടണോ?</translation>
 <translation id="3452832259067974318">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡിൽ പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കില്ല.</translation>
@@ -552,6 +553,7 @@
 <translation id="4016425174436051808">പിന്തുടരാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# മണിക്കൂർ}other{# മണിക്കൂർ}}</translation>
 <translation id="4035877632587724847">അനുവദിക്കരുത്</translation>
+<translation id="4036177530563778041">നിങ്ങൾ നിർത്തിയ ഇടത്തുനിന്നും എളുപ്പത്തിൽ തുടരുക</translation>
 <translation id="4045764304651014138">ഉപയോഗ ഡാറ്റ</translation>
 <translation id="405399507749852140">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
@@ -744,6 +746,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
+<translation id="5040262127954254034">സ്വകാര്യത</translation>
 <translation id="504456571576643789">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="5054455334322721892">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK1" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റി<ph name="END_LINK1" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. അവ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇല്ലാതാക്കാം.</translation>
 <translation id="506254248375231072">ടാബുകളൊന്നും ഇല്ല</translation>
@@ -1123,6 +1126,7 @@
 <translation id="7029390216614421513">ഈ ഫ്രെയിമിൽ QR കോഡ്/ബാർ‌കോഡ് സ്ഥാപിക്കുക.</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7030304022046916278">URL-കൾ പരിശോധിക്കുന്നതിന് അവ സുരക്ഷിത ബ്രൗസിംഗിലേക്ക് അയയ്‌ക്കുന്നു</translation>
+<translation id="7030585293819777123">നിങ്ങളുടെ അവസാനത്തെ ടാസ്‌ക് പുനരാരംഭിക്കണോ?</translation>
 <translation id="7037830628447527439">നിങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ചിത്ര വിവരണങ്ങൾ നേടണോ?</translation>

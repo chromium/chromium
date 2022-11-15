@@ -175,6 +175,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
 <translation id="1869497990620230175">Accès rapide aux fichiers</translation>
+<translation id="1871703283152909317">Activer les deux accès</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
@@ -668,6 +669,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4665114317261903604">Basculer le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="4666082839192943839">Désactivez l'accès à l'appareil photo sur cet appareil pour bloquer tous les appareils en permanence.</translation>
+<translation id="4666911709726371538">Autres applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours…</translation>
 <translation id="4690510401873698237">Étagère dans le bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
@@ -923,6 +925,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6095008505822982596">Vitesse de la voix</translation>
 <translation id="6099678161144790572">Modifié au cours du dernier mois</translation>
 <translation id="6103838137565245112">système</translation>
+<translation id="6107292179555508368">L'accès au micro et à la caméra est désactivé sur cet appareil</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6116825164611323644">L'accès à l'appareil photo est désactivé sur cet appareil</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +954,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6259254695169772643">Utilisez votre stylet pour effectuer une sélection</translation>
 <translation id="6267036997247669271"><ph name="NAME" /> : activation en cours…</translation>
 <translation id="6274202259872570803">Vidéocapture d'écran</translation>
+<translation id="6282694724099204652">Activer les accès pour accorder aux applications et aux pages Web l'autorisation d'utiliser le(s) microphone(s) et la ou les caméra(s) sur cet appareil.</translation>
 <translation id="6283712521836204486">Le mode Ne pas déranger est désactivé.</translation>
 <translation id="6284232397434400372">Résolution modifiée</translation>
 <translation id="6288235558961782912">L'utilisateur <ph name="USER_EMAIL_ADDRESS" /> peut être ajouté de nouveau plus tard, avec l'autorisation d'un parent.</translation>

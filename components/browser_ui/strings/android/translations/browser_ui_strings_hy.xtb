@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Լիաէկրան ռեժիմից դուրս գալու համար քաշեք վերևից և հպեք «Հետ» կոճակին:</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
 <translation id="5301954838959518834">Պարզ է</translation>
-<translation id="5313967007315987356">Ավելացնել կայք</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5335288049665977812">Թույլ տալ կայքերին գործարկել JavaScript-ը (խորհուրդ է տրվում)</translation>
 <translation id="534295439873310000">NFC սարքեր</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378">Ընտրված է <ph name="ITEM_COUNT" /> տարր</translation>
 <translation id="7260727271532453612">Թույլատրված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="7302486331832100261">Դուք սովորաբար արգելափակում եք ծանուցումները։ Թույլատրելու համար սեղմեք «Մանրամասներ»։</translation>
+<translation id="7366415735885268578">Ավելացրեք կայք</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> տիրույթի կարգավորումներ</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
 <translation id="7423538860840206698">Սեղմատախտակի հասանելիությունն արգելափակված է</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
 <translation id="8394832520002899662">Հպեք՝ կայք վերադառնալու համար</translation>
 <translation id="8409345997656833551">Ստանալ ծանուցում, երբ հոդվածը հնարավոր լինի դիտել պարզեցված տեսքով</translation>
+<translation id="8423565414844018592">Տեքստի մասշտաբը սահմանված է <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8441146129660941386">Որոնել դեպի հետ</translation>
 <translation id="8444433999583714703">Որպեսզի ձեր տեղադրությունը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Սարքի NFC-ն անջատված է։ Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8928445016601307354">Արգելել կայքերին տեսնել և փոփոխել տեղեկությունները NFC սարքերում</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավիգացիան անհասանելի է՝ <ph name="URL" /></translation>
 <translation id="8986362086234534611">Հեռացնել</translation>

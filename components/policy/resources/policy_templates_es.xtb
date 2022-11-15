@@ -7525,12 +7525,6 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Establecer rotación de pantalla predeterminada y volver a aplicarla cada vez que se reinicie el dispositivo</translation>
 <translation id="8426231401662877819">Rotar la pantalla 90 grados hacia la derecha</translation>
-<translation id="8426819027631706846">Tal como se describe en la página https://www.chromestatus.com/feature/5148698084376576, los cuadros de diálogo modales de JavaScript, activados por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> y <ph name="JS_PROMPT" />, se bloquearán en <ph name="PRODUCT_NAME" /> si se activan desde un submarco cuyo origen sea diferente al del marco principal.
-       Esta política permite anular ese cambio.
-       Si se habilita esta política o no se establece, se bloquearán los cuadros de diálogo de JavaScript activados desde un submarco de origen diferente.
-       Si se inhabilita esta política, no se bloquearán.
-
-       Esta política se eliminará en la versión 95 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8427466947904008809">Permitir que CRD ejecute las solicitudes a la API WebAuthn mediante un proxy desde un host remoto.</translation>
 <translation id="8428295225823548121">Habilitar los informes sobre la memoria del dispositivo</translation>
 <translation id="8428635849021776523">Inhabilitar los informes de Android</translation>

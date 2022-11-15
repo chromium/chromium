@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Толук экрандан чыгуу үчүн жогорудан ылдый сүйрөп келип, "Артка" деген баскычка тийип коюңуз.</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
 <translation id="5301954838959518834">Жарайт, түшүндүм</translation>
-<translation id="5313967007315987356">Сайт кошуу</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5335288049665977812">Сайттарга JavaScript'ти иштетүүгө уруксат берилсин (сунушталат)</translation>
 <translation id="534295439873310000">NFC түзмөктөрү</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> нерсе тандалды</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> дайындарын колдонууга уруксат берилди</translation>
 <translation id="7302486331832100261">Адатта билдирмелерди өчүрөсүз. Уруксат берүү үчүн "Чоо-жайын" таптап коюңуз.</translation>
+<translation id="7366415735885268578">Сайт кошуу</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> параметрлери</translation>
 <translation id="7423098979219808738">Адегенде сура</translation>
 <translation id="7423538860840206698">Алмашуу буферин окуу бөгөттөлгөн</translation>
@@ -383,7 +383,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC бул түзмөктө өчүрүлгөн. <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, аны күйгүзүңүз.</translation>
 <translation id="8928445016601307354">Сайттардын NFC түзмөктөрүндөгү маалыматты көрүү жана өзгөртүү мүмкүнчүлүгүн бөгөттөө</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Белгилүү бир сайттын cookie файлдарын бөгөттөө.</translation>
 <translation id="8959122750345127698">Чабыттоо жеткиликсиз: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Унутуу</translation>

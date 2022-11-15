@@ -200,7 +200,6 @@
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
 <translation id="5300589172476337783">Tonen</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
-<translation id="5313967007315987356">Site toevoegen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5335288049665977812">Sites toestaan JavaScript uit te voeren (aanbevolen)</translation>
 <translation id="534295439873310000">NFC-apparaten</translation>
@@ -299,6 +298,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="7302486331832100261">Meestal blokkeer je meldingen. Tik op Details om meldingen toe te staan.</translation>
+<translation id="7366415735885268578">Een site toevoegen</translation>
 <translation id="7383715096023715447">Instellingen voor <ph name="DOMAIN" /></translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7423538860840206698">Lezen van het klembord geblokkeerd</translation>
@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">Deze site toont opdringerige of misleidende advertenties</translation>
 <translation id="8394832520002899662">Tik hier om terug te gaan naar de site</translation>
 <translation id="8409345997656833551">Melding krijgen als een artikel in de vereenvoudigde weergave kan worden getoond</translation>
+<translation id="8423565414844018592">Tekstgrootte ingesteld op <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8441146129660941386">Achteruit zoeken</translation>
 <translation id="8444433999583714703">Als je <ph name="APP_NAME" /> toegang wilt geven tot je locatie, moet je je locatie ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -383,7 +384,6 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC staat uit voor dit apparaat. Zet deze functie aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Voorkomen dat sites informatie op NFC-apparaten kunnen zien en wijzigen</translation>
-<translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Cookies voor een specifieke site blokkeren.</translation>
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeten</translation>

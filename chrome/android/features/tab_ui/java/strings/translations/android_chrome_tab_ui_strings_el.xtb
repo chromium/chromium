@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="3882834874697329510">Για να λαμβάνετε μια ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα, ενεργοποιήστε τις ειδοποιήσεις στις Ρυθμίσεις.</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
 <translation id="5558362125926932819">Κλείσιμο της ομάδας καρτελών με τις <ph name="NUMBER_OF_TABS" /> καρτέλες</translation>
 <translation id="5580090775658607195">Ομαδοποιήθηκαν <ph name="TAB_COUNT" /> καρτέλες</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
 <translation id="575494663145460764">Θέλετε να λαμβάνετε ειδοποιήσεις για πτώσεις τιμών;</translation>
 <translation id="58326064309361797">Σύρετε καρτέλες για να τις ομαδοποιήσετε.</translation>
 <translation id="5846292395804797011">Κλείσιμο της ομάδας <ph name="TITLE_OF_GROUP" /> με τις <ph name="NUMBER_OF_TABS" /> καρτέλες</translation>
