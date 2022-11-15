@@ -211,7 +211,7 @@ class TopControlsSlideTabObserver
                    const GURL& validated_url,
                    int error_code) override {
     if (render_frame_host->IsActive() &&
-        (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
+        render_frame_host->IsInPrimaryMainFrame()) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }
