@@ -29,40 +29,45 @@ export class DlpMetadataProvider extends MetadataProvider {
       return [];
     }
 
-    const entries = requests.map(_request => {
-      return _request.entry;
-    });
+    // Filter out fake entries before fetching the metadata.
+    const entries =
+        requests.map(r => r.entry).filter(e => !util.isFakeEntry(e));
+
+    if (!entries.length) {
+      return requests.map(() => new MetadataItem());
+    }
 
     try {
       const dlpMetadataList = await getDlpMetadata(entries);
       if (dlpMetadataList.length != entries.length) {
         console.warn(`Requested ${entries.length} entries, got ${
             dlpMetadataList.length}.`);
-        return requests.map(() => {
-          return new MetadataItem();
-        });
+        return requests.map(() => new MetadataItem());
       }
 
       const results = [];
-      for (let i = 0; i < dlpMetadataList.length; i++) {
+      let j = 0;
+      for (let i = 0; i < requests.length; i++) {
         const item = new MetadataItem();
-        item.isDlpRestricted = dlpMetadataList[i].isDlpRestricted;
-        item.sourceUrl = dlpMetadataList[i].sourceUrl;
+        // Check if this entry was filtered, and if not, add the retrieved
+        // metadata.
+        if (!util.isFakeEntry(requests[i].entry)) {
+          item.isDlpRestricted = dlpMetadataList[j].isDlpRestricted;
+          item.sourceUrl = dlpMetadataList[j].sourceUrl;
+          j++;
+        }
         results.push(item);
       }
       return results;
     } catch (error) {
       console.warn(error);
-      return requests.map(() => {
-        return new MetadataItem();
-      });
+      return requests.map(() => new MetadataItem());
     }
   }
 }
 
 /** @const {!Array<string>} */
 DlpMetadataProvider.PROPERTY_NAMES = [
-  // TODO(crbug.com/1329770): Consider using an enum for this property.
   'isDlpRestricted',
   'sourceUrl',
 ];

@@ -1,0 +1,84 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
+import {installMockChrome} from '../../../common/js/mock_chrome.js';
+import {MockFileEntry, MockFileSystem} from '../../../common/js/mock_entry.js';
+import {util} from '../../../common/js/util.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+
+import {DlpMetadataProvider} from './dlp_metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
+
+let mockChrome: object;
+let fakeEntry: FakeEntryImpl;
+let realEntry: any;
+
+export function setUp() {
+  loadTimeData.overrideValues({
+    DLP_ENABLED: true,
+  });
+
+  // Setup mock chrome APIs.
+  mockChrome = {
+    fileManagerPrivate: {
+      getDlpMetadata: function(
+          entries: Entry[],
+          callback: (metadata: chrome.fileManagerPrivate.DlpMetadata[]) =>
+              void) {
+        assertEquals(1, entries.length);
+        callback([
+          {
+            isDlpRestricted: true,
+            sourceUrl: 'https://example.com',
+          },
+        ]);
+      },
+    },
+    runtime: {
+      lastError: null,
+    },
+  };
+
+  installMockChrome(mockChrome);
+
+  fakeEntry = new FakeEntryImpl(
+      'fakeEntry', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+  assertTrue(util.isFakeEntry(fakeEntry as unknown as FilesAppEntry));
+
+  const mockFileSystem = new MockFileSystem('volumeId');
+  realEntry = MockFileEntry.create(mockFileSystem, '/test.tiff');
+  assertFalse(util.isFakeEntry(realEntry as unknown as FilesAppEntry));
+}
+
+/**
+ * Tests that DlpMetadataProvider filters out fake entries before calling
+ * `getDlpMetadata()` because the private API fails with entries that aren't
+ * from FileSystem API. For fake entries the provider should return an empty
+ * metadata object.
+ */
+export async function testDlpMetadataProviderIgnoresFakeEntries(
+    done: () => void) {
+  const provider = new DlpMetadataProvider();
+  const results = await provider.get([
+    new MetadataRequest(
+        fakeEntry as unknown as FileSystemEntry,
+        ['sourceUrl', 'isDlpRestricted']),
+    new MetadataRequest(
+        realEntry as unknown as FileSystemEntry,
+        ['sourceUrl', 'isDlpRestricted']),
+  ]);
+
+  assertEquals(2, results.length);
+  assertEquals(results[0].isDlpRestricted, undefined);
+  assertEquals(results[0].sourceUrl, undefined);
+  assertEquals(results[1].isDlpRestricted, true);
+  assertEquals(results[1].sourceUrl, 'https://example.com');
+
+  done();
+}

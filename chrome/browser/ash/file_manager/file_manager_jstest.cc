@@ -56,6 +56,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
   RunTestURL("foreground/js/metadata/content_metadata_provider_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DlpMetadataProvider) {
+  RunTestURL("foreground/js/metadata/dlp_metadata_provider_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContextMenuHandler) {
   RunTestURL("foreground/js/ui/context_menu_handler_unittest.js");
 }
