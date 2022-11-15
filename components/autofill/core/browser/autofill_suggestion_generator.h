@@ -20,10 +20,6 @@ class Time;
 
 namespace autofill {
 
-namespace autofill_metrics {
-struct CardMetadataLoggingContext;
-}
-
 class AutofillClient;
 class AutofillField;
 class AutofillOfferData;
@@ -61,15 +57,12 @@ class AutofillSuggestionGenerator {
   // application. `should_display_gpay_logo` will be set to true if there are no
   // credit card suggestions, or all suggestions come from Payments server.
   // `with_offer` is set to true if ANY card has card-linked offers.
-  // `metadata_logging_context` contains card metadata related information used
-  // for metrics logging.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
       const FormFieldData& field,
       const AutofillType& type,
       const std::string& app_locale,
-      bool& should_display_gpay_logo,
-      bool& with_offer,
-      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+      bool* should_display_gpay_logo,
+      bool* with_offer);
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIBANs(
@@ -156,11 +149,6 @@ class AutofillSuggestionGenerator {
   void SetCardArtURL(Suggestion& suggestion,
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
-
-  // Return the CardMetadataLoggingContext based on the credit cards
-  // to be shown in the suggestion.
-  autofill_metrics::CardMetadataLoggingContext GetMetadataLoggingContext(
-      const std::vector<CreditCard*>& cards_to_suggest) const;
 
   // Maps suggestion backend ID to and from an internal ID identifying it. Two
   // of these intermediate internal IDs are packed by MakeFrontendID to make the

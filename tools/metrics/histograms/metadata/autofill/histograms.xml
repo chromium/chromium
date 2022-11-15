@@ -982,28 +982,6 @@ chromium-metrics-reviews@google.com.
       variants="AutofillSeamlessnessVisibility"/>
 </histogram>
 
-<histogram
-    name="Autofill.CreditCard.SuggestionAcceptanceLatencySinceShown.{CardMetadataVisible}"
-    units="ms" expires_after="2023-05-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The latency between an Autofill credit card suggestion being shown, and when
-    it was selected, in milliseconds. Logged immediately when a card is selected
-    by the user, on the condition that any card (not necessarily the selected
-    card) in the suggestion list has card metadata available (even if the
-    metadata is not shown).
-  </summary>
-  <token key="CardMetadataVisible">
-    <variant name="ArtImageShown" summary="Only art image was visible"/>
-    <variant name="MetadataNotShown" summary="No metadata was visible"/>
-    <variant name="ProductDescriptionAndArtImageShown"
-        summary="Both product description and art image were visible"/>
-    <variant name="ProductDescriptionShown"
-        summary="Only product description was visible"/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.CreditCardFillingInfoBar"
     enum="AutofillCreditCardInfoBar" expires_after="2023-09-30">
   <owner>jsaul@google.com</owner>

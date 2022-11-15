@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
-#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -373,13 +372,17 @@ TEST_F(AutofillSuggestionGeneratorTest,
       GURL("http://www.example1.com"));
   personal_data()->AddAutofillOfferData(offer_data);
 
-  bool should_display_gpay_logo;
-  bool with_offer;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  // Create a credit card form.
+  FormData credit_card_form;
+  test::CreateTestCreditCardFormData(&credit_card_form, true, false);
+  FormStructure form_structure(credit_card_form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+
+  bool should_display_gpay_logo = false;
+  bool with_offer = false;
   auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
       FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-      /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-      metadata_logging_context);
+      /*app_locale=*/"en", &should_display_gpay_logo, &with_offer);
 
   EXPECT_TRUE(with_offer);
   ASSERT_EQ(suggestions.size(), 3U);
@@ -392,102 +395,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
             Suggestion::BackendId("00000000-0000-0000-0000-000000000003"));
   EXPECT_EQ(suggestions[2].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
-}
-
-// Verifies that the `should_display_gpay_logo` is set correctly.
-TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
-  // `should_display_gpay_logo` should be true if suggestions were all for
-  // server cards.
-  {
-    // Create two server cards.
-    personal_data()->AddServerCreditCard(CreateServerCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000001",
-        /*server_id=*/"server_id1", /*instrument_id=*/1));
-    personal_data()->AddServerCreditCard(CreateServerCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000002",
-        /*server_id=*/"server_id2", /*instrument_id=*/2));
-
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_EQ(suggestions.size(), 2U);
-    EXPECT_TRUE(should_display_gpay_logo);
-  }
-
-  personal_data()->ClearCreditCards();
-
-  // `should_display_gpay_logo` should be false if at least one local card was
-  // in the suggestions.
-  {
-    // Create one server card and one local card.
-    auto local_card = CreateLocalCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000001");
-    local_card.SetNumber(u"5454545454545454");
-    personal_data()->AddCreditCard(local_card);
-    personal_data()->AddServerCreditCard(CreateServerCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000002",
-        /*server_id=*/"server_id2", /*instrument_id=*/2));
-
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_EQ(suggestions.size(), 2U);
-    EXPECT_FALSE(should_display_gpay_logo);
-  }
-
-  personal_data()->ClearCreditCards();
-
-  // `should_display_gpay_logo` should be true if there was an unused expired
-  // local card in the suggestions.
-  {
-    // Create one server card and one unused expired local card.
-    auto local_card = CreateLocalCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000001");
-    local_card.SetNumber(u"5454545454545454");
-    local_card.SetExpirationYear(2020);
-    local_card.set_use_date(AutofillClock::Now() - base::Days(365));
-    personal_data()->AddCreditCard(local_card);
-    personal_data()->AddServerCreditCard(CreateServerCard(
-        /*guid=*/"00000000-0000-0000-0000-000000000002",
-        /*server_id=*/"server_id2", /*instrument_id=*/2));
-
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_EQ(suggestions.size(), 1U);
-    EXPECT_TRUE(should_display_gpay_logo);
-  }
-
-  personal_data()->ClearCreditCards();
-
-  // `should_display_gpay_logo` should be true if there was no card at all.
-  {
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_TRUE(suggestions.empty());
-    EXPECT_TRUE(should_display_gpay_logo);
-  }
 }
 
 // Verify that the suggestion's texts are populated correctly for a virtual card
@@ -934,42 +841,25 @@ TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndInternalIdMappings) {
 
 class AutofillSuggestionGeneratorTestForMetadata
     : public AutofillSuggestionGeneratorTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   AutofillSuggestionGeneratorTestForMetadata()
-      : card_product_description_enabled_(std::get<0>(GetParam())),
-        card_art_image_enabled_(std::get<1>(GetParam())),
-        card_has_linked_virtual_card_(std::get<2>(GetParam())) {
-    feature_list_card_product_description_.InitWithFeatureState(
-        features::kAutofillEnableCardProductName,
-        card_product_description_enabled_);
-    feature_list_card_art_image_.InitWithFeatureState(
-        features::kAutofillEnableCardArtImage, card_art_image_enabled_);
+      : card_metadata_enabled_(GetParam()) {
+    scoped_feature_list_metadata_.InitWithFeatureState(
+        features::kAutofillEnableCardArtImage, card_metadata_enabled_);
   }
-
   ~AutofillSuggestionGeneratorTestForMetadata() override = default;
 
-  bool card_product_description_enabled() const {
-    return card_product_description_enabled_;
-  }
-  bool card_art_image_enabled() const { return card_art_image_enabled_; }
-  bool card_has_linked_virtual_card() const {
-    return card_has_linked_virtual_card_;
-  }
+  bool card_metadata_enabled() { return card_metadata_enabled_; }
 
  private:
-  const bool card_product_description_enabled_;
-  const bool card_art_image_enabled_;
-  const bool card_has_linked_virtual_card_;
-  base::test::ScopedFeatureList feature_list_card_product_description_;
-  base::test::ScopedFeatureList feature_list_card_art_image_;
+  const bool card_metadata_enabled_;
+  base::test::ScopedFeatureList scoped_feature_list_metadata_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AutofillSuggestionGeneratorTestForMetadata,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+                         testing::Bool());
 
 TEST_P(AutofillSuggestionGeneratorTestForMetadata,
        CreateCreditCardSuggestion_ServerCard) {
@@ -1004,7 +894,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
                                           fake_image),
-            card_art_image_enabled());
+            card_metadata_enabled());
 }
 
 TEST_P(AutofillSuggestionGeneratorTestForMetadata,
@@ -1065,62 +955,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
             Suggestion::BackendId("00000000-0000-0000-0000-000000000002"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
                                           fake_image),
-            card_art_image_enabled());
-}
-
-// Verifies that the `metadata_logging_context` is correctly set.
-TEST_P(AutofillSuggestionGeneratorTestForMetadata,
-       GetSuggestionsForCreditCards_MetadataLoggingContext) {
-  {
-    // Create one server card with no metadata.
-    CreditCard server_card = CreateServerCard();
-    if (card_has_linked_virtual_card()) {
-      server_card.set_virtual_card_enrollment_state(
-          CreditCard::VirtualCardEnrollmentState::ENROLLED);
-    }
-    personal_data()->AddServerCreditCard(server_card);
-
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_FALSE(metadata_logging_context.card_metadata_available);
-    EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
-    EXPECT_FALSE(metadata_logging_context.card_art_image_shown);
-  }
-
-  personal_data()->ClearCreditCards();
-
-  {
-    // Create a server card with card product description & card art image.
-    CreditCard server_card_with_metadata = CreateServerCard();
-    server_card_with_metadata.set_product_description(u"product_description");
-    server_card_with_metadata.set_card_art_url(
-        GURL("https://www.example.com/card-art.png"));
-    if (card_has_linked_virtual_card()) {
-      server_card_with_metadata.set_virtual_card_enrollment_state(
-          CreditCard::VirtualCardEnrollmentState::ENROLLED);
-    }
-    personal_data()->AddServerCreditCard(server_card_with_metadata);
-
-    bool should_display_gpay_logo;
-    bool with_offer;
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), AutofillType(CREDIT_CARD_NUMBER),
-        /*app_locale=*/"en", should_display_gpay_logo, with_offer,
-        metadata_logging_context);
-
-    EXPECT_TRUE(metadata_logging_context.card_metadata_available);
-    EXPECT_EQ(metadata_logging_context.card_product_description_shown,
-              card_product_description_enabled());
-    EXPECT_EQ(metadata_logging_context.card_art_image_shown,
-              card_art_image_enabled() || card_has_linked_virtual_card());
-  }
+            card_metadata_enabled());
 }
 
 class AutofillSuggestionGeneratorTestForOffer
