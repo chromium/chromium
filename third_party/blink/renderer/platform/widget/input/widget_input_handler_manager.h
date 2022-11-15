@@ -335,6 +335,30 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // we definitely don't have a compositor thread.
   bool uses_input_handler_ = false;
 
+  struct UmaData {
+    // Saves the number of events that would be dropped by the
+    // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+    // presentation of content). This is important because it shows how many
+    // times user tried to interact with page but the event was dropped.
+    int suppressed_events_count_ = 0;
+
+    // Saves most recent input event time that would be dropped by the
+    // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+    // presentation of content). If this is after the first paint timestamp,
+    // we log the difference to track the worst dropped event experienced.
+    base::TimeTicks most_recent_suppressed_event_time_;
+
+    // Control of UMA. We emit one UMA metric per navigation telling us
+    // whether any non-move input arrived before we starting updating the page
+    // or displaying content to the user. It must be atomic because navigation
+    // can occur on the renderer thread (resetting this) coincident with the UMA
+    // being sent on the compositor thread.
+    bool have_emitted_uma_{false};
+  };
+
+  base::Lock uma_data_lock_;
+  UmaData uma_data_;
+
   // State tracking why we should keep suppressing input events, keeps track of
   // which parts of the rendering pipeline are currently deferred, or whether
   // we are waiting for the first non empty paint. We use this state to suppress
@@ -349,30 +373,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // status of deferrals changes, so it needs to be thread safe.
   std::atomic<uint16_t> suppressing_input_events_state_;
 
-  // Saves most recent input event time that would be dropped by the
-  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
-  // presentation of content). If this is after the first paint timestamp,
-  // we log the difference to track the worst dropped event experienced.
-  base::TimeTicks most_recent_suppressed_event_time_;
-
-  // Saves the number of events that would be dropped by the
-  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
-  // presentation of content). This is important because it shows how many times
-  // user tried to interact with page but the event was dropped.
-  int suppressed_events_count_ = 0;
-
   // Allow input suppression to be disabled for tests and non-browser uses
   // of chromium that do not wait for the first commit, or that may never
   // commit. Over time, tests should be fixed so they provide additional
   // coverage for input suppression: crbug.com/987626
   bool allow_pre_commit_input_ = false;
-
-  // Control of UMA. We emit one UMA metric per navigation telling us
-  // whether any non-move input arrived before we starting updating the page or
-  // displaying content to the user. It must be atomic because navigation can
-  // occur on the renderer thread (resetting this) coincident with the UMA
-  // being sent on the compositor thread.
-  std::atomic<bool> have_emitted_uma_{false};
 
   // Specifies weather the renderer has received a scroll-update event after the
   // last scroll-begin or not, It is used to determine whether a scroll-update
