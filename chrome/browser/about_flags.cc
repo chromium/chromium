@@ -1344,14 +1344,6 @@ const FeatureEntry::FeatureVariation kJourneysVisitDedupingVariations[] = {
      std::size(kJourneysVisitDedupingUseHostParams), nullptr},
 };
 
-const FeatureEntry::FeatureParam kTabGroupsSaveWithSyncIntegration[] = {
-    {"sync_integration", "true"},
-};
-const FeatureEntry::FeatureVariation kTabGroupsSaveVariations[] = {
-    {" with sync integration", kTabGroupsSaveWithSyncIntegration,
-     std::size(kTabGroupsSaveWithSyncIntegration), nullptr},
-};
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 const FeatureEntry::FeatureParam kOmniboxDocumentProviderServerScoring[] = {
@@ -6010,9 +6002,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
      flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabGroupsSave,
-                                    kTabGroupsSaveVariations,
-                                    "TabGroupsSave")},
+     FEATURE_VALUE_TYPE(features::kTabGroupsSave)},
 
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,

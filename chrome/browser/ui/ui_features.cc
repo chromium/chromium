@@ -199,6 +199,8 @@ BASE_FEATURE(kTabGroupsNewBadgePromo,
 BASE_FEATURE(kTabGroupsSave,
              "TabGroupsSave",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kTabGroupsSaveSyncIntegration{
+    &kTabGroupsSave, "TabGroupsSaveSyncIntegration", false};
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
