@@ -33,13 +33,13 @@ export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
 export const HELP_BUBBLE_TIMED_OUT_EVENT = 'help-bubble-timed-out';
 
 export type HelpBubbleDismissedEvent = CustomEvent<{
-  anchorId: string,
+  nativeId: any,
   fromActionButton: boolean,
   buttonIndex?: number,
 }>;
 
 export type HelpBubbleTimedOutEvent = CustomEvent<{
-  anchorId: string,
+  nativeId: any,
 }>;
 
 export interface HelpBubbleElement {
@@ -68,7 +68,7 @@ export class HelpBubbleElement extends PolymerElement {
 
   static get properties() {
     return {
-      anchorId: {
+      nativeId: {
         type: String,
         value: '',
         reflectToAttribute: true,
@@ -81,7 +81,7 @@ export class HelpBubbleElement extends PolymerElement {
     };
   }
 
-  anchorId: string;
+  nativeId: any;
   bodyText: string;
   titleText: string;
   closeButtonAltText: string;
@@ -96,7 +96,7 @@ export class HelpBubbleElement extends PolymerElement {
   timeoutTimerId: number|null = null;
 
   /**
-   * HTMLElement corresponding to |this.anchorId|.
+   * HTMLElement corresponding to |this.nativeId|.
    */
   private anchorElement_: HTMLElement|null = null;
 
@@ -109,7 +109,9 @@ export class HelpBubbleElement extends PolymerElement {
   /**
    * Shows the bubble.
    */
-  show() {
+  show(anchorElement: HTMLElement) {
+    this.anchorElement_ = anchorElement;
+
     // Set up the progress track.
     if (this.progress) {
       this.progressData_ = new Array(this.progress.total);
@@ -120,12 +122,9 @@ export class HelpBubbleElement extends PolymerElement {
     this.closeButtonTabIndex =
         this.buttons.length ? this.buttons.length + 2 : 1;
 
-    this.anchorElement_ =
-        this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
     assert(
         this.anchorElement_,
-        'Tried to show a help bubble but couldn\'t find element with id ' +
-            this.anchorId);
+        'Tried to show a help bubble but anchorElement does not exist');
 
     // Reset the aria-hidden attribute as screen readers need to access the
     // contents of an opened bubble.
@@ -138,7 +137,7 @@ export class HelpBubbleElement extends PolymerElement {
       const timedOutCallback = () => {
         this.dispatchEvent(new CustomEvent(HELP_BUBBLE_TIMED_OUT_EVENT, {
           detail: {
-            anchorId: this.anchorId,
+            nativeId: this.nativeId,
           },
         }));
       };
@@ -190,10 +189,10 @@ export class HelpBubbleElement extends PolymerElement {
   }
 
   private dismiss_() {
-    assert(this.anchorId, 'Dismiss: expected help bubble to have an anchor.');
+    assert(this.nativeId, 'Dismiss: expected help bubble to have a native id.');
     this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
       detail: {
-        anchorId: this.anchorId,
+        nativeId: this.nativeId,
         fromActionButton: false,
       },
     }));
@@ -230,15 +229,15 @@ export class HelpBubbleElement extends PolymerElement {
 
   private onButtonClick_(e: DomRepeatEvent<HelpBubbleButtonParams>) {
     assert(
-        this.anchorId,
-        'Action button clicked: expected help bubble to have an anchor.');
+        this.nativeId,
+        'Action button clicked: expected help bubble to have a native ID.');
     // There is no access to the model index here due to limitations of
     // dom-repeat. However, the index is stored in the node's identifier.
     const index: number = parseInt(
         (e.target as Element).id.substring(ACTION_BUTTON_ID_PREFIX.length));
     this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
       detail: {
-        anchorId: this.anchorId,
+        nativeId: this.nativeId,
         fromActionButton: true,
         buttonIndex: index,
       },

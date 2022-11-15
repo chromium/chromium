@@ -22,6 +22,7 @@ foreach(f, html_files) {
 _non_web_component_files = [
   "help_bubble_mixin.ts",
   "help_bubble_proxy.ts",
+  "help_bubble_controller.ts",
 ]
 
 mojo_files = [ "help_bubble.mojom-webui.js" ]

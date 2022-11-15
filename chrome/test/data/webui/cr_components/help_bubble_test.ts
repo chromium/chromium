@@ -19,6 +19,11 @@ interface WaitForSuccessParams {
   assertionFn: () => void;
 }
 
+let counter = 0;
+function getMockId() {
+  return ++counter;
+}
+
 suite('CrComponentsHelpBubbleTest', () => {
   let helpBubble: HelpBubbleElement;
 
@@ -164,10 +169,10 @@ suite('CrComponentsHelpBubbleTest', () => {
   const HELP_BUBBLE_TITLE = 'help bubble title';
 
   test('help bubble shows and anchors correctly', () => {
-    helpBubble.anchorId = 'p1';
+    const el = document.getElementById('p1')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertEquals(
         document.querySelector<HTMLElement>('#p1'),
@@ -181,11 +186,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble titles shows', () => {
-    helpBubble.anchorId = 'p1';
+    const el = document.getElementById('p1')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.titleText = HELP_BUBBLE_TITLE;
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
     const titleElement = helpBubble.$.title;
@@ -198,10 +203,10 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble titles hides when no title set', () => {
-    helpBubble.anchorId = 'p1';
+    const el = document.getElementById('p1')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
     const titleElement = helpBubble.$.title;
@@ -210,12 +215,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble body icon shows when set', () => {
-    helpBubble.anchorId = 'p1';
+    const el = document.getElementById('p1')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.bodyIconName = 'icon_name';
     helpBubble.bodyIconAltText = '';
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
     const bodyIcon = helpBubble.$.bodyIcon;
@@ -229,12 +234,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble body icon is hidden when null', () => {
-    helpBubble.anchorId = 'p1';
+    const el = document.getElementById('p1')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.bodyIconName = null;
     helpBubble.bodyIconAltText = '';
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
     const bodyIcon = helpBubble.$.bodyIcon;
@@ -244,10 +249,10 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble closes', () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
@@ -262,12 +267,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble open close open', () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
     helpBubble.hide();
-    helpBubble.show();
+    helpBubble.show(el);
     assertEquals(
         document.querySelector<HTMLElement>('#title'),
         helpBubble.getAnchorElement(),
@@ -282,10 +287,10 @@ suite('CrComponentsHelpBubbleTest', () => {
   test('help bubble close button has correct alt text', () => {
     const CLOSE_TEXT: string = 'Close button text.';
     const ICON_TEXT: string = 'Body icon text.';
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.closeButtonAltText = CLOSE_TEXT;
     helpBubble.bodyIconAltText = ICON_TEXT;
-    helpBubble.show();
+    helpBubble.show(el);
 
     assertEquals(
         CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'),
@@ -300,19 +305,21 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble click close button generates event', async () => {
     let clicked: number = 0;
+    const nativeId = getMockId();
     const callback = (e: HelpBubbleDismissedEvent) => {
       assertEquals(
-          'title', e.detail.anchorId, 'dismiss event anchorId should match');
+          nativeId, e.detail.nativeId, 'dismiss event anchorId should match');
       assertFalse(
           e.detail.fromActionButton,
           'dismiss event should not be from action button');
       ++clicked;
     };
     helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
+    helpBubble.nativeId = nativeId;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     const closeButton = helpBubble.$.close;
     assertEquals(0, clicked, 'close button should not be clicked');
@@ -322,17 +329,19 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble with timeout does not immediately emit event', async () => {
     let timedOut: number = 0;
+    const nativeId = getMockId();
     const callback = (e: HelpBubbleTimedOutEvent) => {
       assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
+          nativeId, e.detail.nativeId, 'timeout event anchorId should match');
       ++timedOut;
     };
     helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
+    helpBubble.nativeId = nativeId;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.timeoutMs = 10 * 1000;  // 10s
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     assertEquals(0, timedOut, 'timeout should not be triggered');
   });
@@ -340,17 +349,19 @@ suite('CrComponentsHelpBubbleTest', () => {
   test('help bubble with timeout generates event', async () => {
     const timeoutMs: number = 100;
     let timedOut: number = 0;
+    const nativeId = getMockId();
     const callback = (e: HelpBubbleTimedOutEvent) => {
       assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
+          nativeId, e.detail.nativeId, 'timeout event anchorId should match');
       ++timedOut;
     };
     helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
+    helpBubble.nativeId = nativeId;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.timeoutMs = timeoutMs;  // 100ms
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     await waitForSuccess({
       retryIntervalMs: 50,
@@ -361,16 +372,18 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble without timeout does not generate event', async () => {
     let timedOut: number = 0;
+    const nativeId = getMockId();
     const callback = (e: HelpBubbleTimedOutEvent) => {
       assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
+          nativeId, e.detail.nativeId, 'timeout event anchorId should match');
       ++timedOut;
     };
     helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
+    helpBubble.nativeId = nativeId;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.show();
+    helpBubble.show(el);
     assertEquals(0, timedOut, 'timeout should not be triggered');
     await waitAfterNextRender(helpBubble);
     await sleep(100);  // 100ms
@@ -378,11 +391,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble adds one button', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [{text: 'button1', isDefault: false}];
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     assertEquals(1, getNumButtons(), 'there should be one button');
     const button = helpBubble.getButtonForTesting(0);
@@ -396,7 +409,7 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble adds several buttons', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [
@@ -404,7 +417,7 @@ suite('CrComponentsHelpBubbleTest', () => {
       {text: 'button2', isDefault: false},
       {text: 'button3', isDefault: false},
     ];
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     assertEquals(3, getNumButtons(), 'there should be three buttons');
     for (let i: number = 0; i < 3; ++i) {
@@ -420,11 +433,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble adds default button', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = [{text: 'button1', isDefault: true}];
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     const button = helpBubble.getButtonForTesting(0);
     assertTrue(!!button, 'button should exist');
@@ -440,12 +453,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   ];
 
   test('help bubble adds default button among several', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
     helpBubble.forceCloseButton = true;
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
     assertEquals(3, getNumButtons(), 'there should be three buttons');
 
@@ -499,15 +512,17 @@ suite('CrComponentsHelpBubbleTest', () => {
   test('help bubble click action button generates event', async () => {
     let clicked: boolean;
     let buttonIndex: number;
+    const nativeId = getMockId();
     const callback = (e: HelpBubbleDismissedEvent) => {
-      assertEquals('title', e.detail.anchorId, 'Check anchor.');
+      assertEquals(nativeId, e.detail.nativeId, 'Check anchor.');
       assertTrue(e.detail.fromActionButton, 'Check fromActionButton.');
       assertTrue(e.detail.buttonIndex !== undefined, 'Check buttonIndex.');
       clicked = true;
       buttonIndex = e.detail.buttonIndex;
     };
     helpBubble.addEventListener(HELP_BUBBLE_DISMISSED_EVENT, callback);
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
+    helpBubble.nativeId = nativeId;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
@@ -515,7 +530,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     for (let i: number = 0; i < 3; ++i) {
       clicked = false;
       buttonIndex = -1;
-      helpBubble.show();
+      helpBubble.show(el);
       await waitAfterNextRender(helpBubble);
       const button = helpBubble.getButtonForTesting(i);
       assertTrue(!!button, 'button should exist');
@@ -527,12 +542,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble with no progress doesn\'t show progress', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     assertEquals(
@@ -544,13 +559,13 @@ suite('CrComponentsHelpBubbleTest', () => {
   test(
       'help bubble with no progress and title doesn\'t show progress',
       async () => {
-        helpBubble.anchorId = 'title';
+        const el = document.getElementById('title')!;
         helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
         helpBubble.bodyText = HELP_BUBBLE_BODY;
         helpBubble.titleText = HELP_BUBBLE_TITLE;
         helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
-        helpBubble.show();
+        helpBubble.show(el);
         await waitAfterNextRender(helpBubble);
 
         assertEquals(
@@ -563,13 +578,13 @@ suite('CrComponentsHelpBubbleTest', () => {
       });
 
   test('help bubble with progress shows progress', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 1, total: 3};
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
@@ -597,14 +612,14 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble with progress and title shows progress', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.titleText = HELP_BUBBLE_TITLE;
     helpBubble.progress = {current: 1, total: 2};
     helpBubble.buttons = THREE_BUTTONS_MIDDLE_DEFAULT;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
@@ -623,12 +638,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble with full progress', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 2, total: 2};
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
@@ -642,12 +657,12 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble with empty progress', async () => {
-    helpBubble.anchorId = 'title';
+    const el = document.getElementById('title')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
     helpBubble.progress = {current: 0, total: 2};
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const elements = getProgressIndicators();
@@ -661,11 +676,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble does not left-align with small anchor', async () => {
-    helpBubble.anchorId = 'short-button';
+    const el = document.getElementById('short-button')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_LEFT;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
@@ -690,11 +705,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble left-aligns with large anchor', async () => {
-    helpBubble.anchorId = 'long-button';
+    const el = document.getElementById('long-button')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_LEFT;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
@@ -718,11 +733,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble does not right-align with small anchor', async () => {
-    helpBubble.anchorId = 'short-button';
+    const el = document.getElementById('short-button')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_RIGHT;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
@@ -747,11 +762,11 @@ suite('CrComponentsHelpBubbleTest', () => {
   });
 
   test('help bubble right-aligns with large anchor', async () => {
-    helpBubble.anchorId = 'long-button';
+    const el = document.getElementById('long-button')!;
     helpBubble.position = HelpBubbleArrowPosition.TOP_RIGHT;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
 
-    helpBubble.show();
+    helpBubble.show(el);
     await waitAfterNextRender(helpBubble);
 
     const anchorRect = helpBubble.getAnchorElement()!.getBoundingClientRect();
