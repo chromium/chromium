@@ -10,6 +10,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -25,12 +28,24 @@ class ReportingSettings;
 // setting is enabled.
 class OneShotCollector : public CollectorBase {
  public:
+  // Start observing the reporting setting immediately to start collection.
   OneShotCollector(
       Sampler* sampler,
       MetricReportQueue* metric_report_queue,
       ReportingSettings* reporting_settings,
       const std::string& setting_path,
       bool setting_enabled_default_value,
+      ReportQueue::EnqueueCallback on_data_reported = base::DoNothing());
+
+  // Start observing the reporting setting after `init_delay` to start
+  // collection.
+  OneShotCollector(
+      Sampler* sampler,
+      MetricReportQueue* metric_report_queue,
+      ReportingSettings* reporting_settings,
+      const std::string& setting_path,
+      bool setting_enabled_default_value,
+      base::TimeDelta init_delay,
       ReportQueue::EnqueueCallback on_data_reported = base::DoNothing());
 
   OneShotCollector(const OneShotCollector& other) = delete;
@@ -44,6 +59,8 @@ class OneShotCollector : public CollectorBase {
   void OnMetricDataCollected(absl::optional<MetricData> metric_data) override;
 
  private:
+  void SetReportingControllerCb();
+
   const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
@@ -51,6 +68,8 @@ class OneShotCollector : public CollectorBase {
   ReportQueue::EnqueueCallback on_data_reported_;
 
   bool data_collected_ = false;
+
+  base::WeakPtrFactory<OneShotCollector> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
