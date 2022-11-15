@@ -343,8 +343,8 @@ template <typename T>
 const DBusTypeInfo& GetDBusTypeInfo(const absl::optional<T>*) {
   static base::NoDestructor<DBusTypeInfo> elem_info(
       GetDBusTypeInfo(static_cast<T*>(nullptr)));
-  static base::NoDestructor<DBusTypeInfo> info(
-      {"a{sv}", "optional<" + elem_info->type_name + ">"});
+  static base::NoDestructor<DBusTypeInfo> info{
+      {"a{sv}", "optional<" + elem_info->type_name + ">"}};
   return *info;
 }
 
