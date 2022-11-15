@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -162,6 +163,11 @@ class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
     mock_input_method_->Bind(std::move(input_method),
                              std::move(input_method_host));
     std::move(callback).Run(/*bound=*/true);
+  }
+
+  void ConnectToMozc(mojo::PendingAssociatedReceiver<ime::mojom::Mozc> mozc,
+                     ConnectToMozcCallback callback) override {
+    std::move(callback).Run(false);
   }
 
   void Bind(mojo::PendingReceiver<ime::mojom::ConnectionFactory> receiver) {

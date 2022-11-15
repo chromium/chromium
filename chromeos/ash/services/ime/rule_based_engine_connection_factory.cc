@@ -29,6 +29,15 @@ void RuleBasedEngineConnectionFactory::ConnectToInputMethod(
   std::move(callback).Run(/*bound=*/true);
 }
 
+void RuleBasedEngineConnectionFactory::ConnectToMozc(
+    mojo::PendingAssociatedReceiver<mojom::Mozc> pending_reciever,
+    ConnectToMozcCallback callback) {
+  // Connecting to the Mozc engine with the Rulebased connection
+  // engine is not supported.
+  NOTIMPLEMENTED_LOG_ONCE();
+  std::move(callback).Run(false);
+}
+
 bool RuleBasedEngineConnectionFactory::IsConnected() {
   return rule_based_engine_ && rule_based_engine_->IsConnected();
 }

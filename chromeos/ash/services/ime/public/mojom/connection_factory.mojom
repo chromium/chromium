@@ -6,12 +6,13 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 2
+// Next MinVersion: 4
 
 module ash.ime.mojom;
 
 import "chromeos/ash/services/ime/public/mojom/input_method.mojom";
 import "chromeos/ash/services/ime/public/mojom/input_method_host.mojom";
+import "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom";
 
 // Responsible for instantiating the connection between the shared library
 // and Chromium over an associated Mojo pipe.
@@ -31,5 +32,12 @@ interface ConnectionFactory {
     pending_associated_receiver<InputMethod> input_method,
     pending_associated_remote<InputMethodHost> input_method_host,
     [MinVersion=2] InputMethodSettings? settings)
+    => (bool success);
+  // Sets up a connection to a mozc interface which allows access to
+  // Mozc settings information.
+  // The implementation of this will be located inside of the ImeShared lib.
+  // Once the data has been migrated, we can deprecate / delete this interface.
+  [MinVersion=3] ConnectToMozc@1(
+    pending_associated_receiver<Mozc> mozc)
     => (bool success);
 };

@@ -1,0 +1,99 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Updates to this file must be backwards-compatible, as it is used outside of
+// the Chromium repo. This file should be updated first, before syncing in the
+// other repos.
+
+// Next MinVersion: 2
+
+module ash.ime.mojom;
+
+// The following enums refer to the config options used for the
+// Japanese decoder Mozc.
+// More information about this interface is documented publicly at
+// https://github.com/google/mozc/blob/master/src/protocol/config.proto
+
+[Stable, Extensible]
+enum InputMode {
+    [Default] ROMAJI = 0,
+    KANA = 1
+};
+
+[Stable, Extensible]
+enum PunctuationStyle {
+    [Default] KUTEN_TOUTEN = 0,
+    COMMA_PERIOD = 1,
+    KUTEN_PERIOD = 2,
+    COMMA_TOUTEN = 3
+};
+
+[Stable, Extensible]
+enum SymbolStyle {
+    [Default] CORNER_BRACKET_MIDDLE_DOT = 0,
+    SQUARE_BRACKET_SLASH = 1,
+    CORNER_BRACKET_SLASH = 2,
+    SQUARE_BRACKET_MIDDLE_DOT = 3
+};
+
+[Stable, Extensible]
+enum SpaceInputStyle {
+    [Default] INPUT_MODE = 0,
+    FULLWIDTH = 1,
+    HALFWIDTH = 2
+};
+
+[Stable, Extensible]
+enum SelectionShortcut {
+    NO_SHORTCUT = 0,
+    [Default] DIGITS_123456789 = 1,
+    ASDFGHJKL = 2
+};
+
+[Stable, Extensible]
+enum KeymapStyle {
+    [Default] CUSTOM = 0,
+    ATOK = 1,
+    MS_IME = 2,
+    KOTOERI = 3,
+    MOBILE = 4,
+    CHROME_OS = 5
+};
+
+[Stable, Extensible]
+enum ShiftKeyModeSwitch {
+    OFF = 0,
+    [Default] ALPHANUMERIC = 1,
+    KATAKANA = 2,
+};
+
+[Stable]
+struct MozcConfig {
+    InputMode input_mode;
+    PunctuationStyle punctuation_style;
+    SymbolStyle symbol_style;
+    SpaceInputStyle space_input_style;
+    SelectionShortcut selection_shortcut;
+    KeymapStyle keymap_style;
+    bool automatically_switch_to_halfwidth;
+    ShiftKeyModeSwitch shift_key_mode_switch;
+    bool use_input_history;
+    bool use_system_dictionary;
+    int64 number_of_suggestions;
+    bool disable_personalized_suggestions;
+    bool send_statistics_to_google;
+};
+
+// Mozc is the interface used for communicating with the Mozc decoder for
+// Japanese input, which is hosted inside of ImeService.
+// It is just going to allow access to the user's settings and user dictionary
+// for migrating the code to settings.
+// Once the settings migration is done, this interface can be deleted.
+[Stable]
+interface Mozc {
+    // Retrieve the config used for Mozc which is stored as a file internally.
+    // If this file does not exist, this should just return the default config.
+    FetchMozcConfig@0() => (MozcConfig config);
+};
+

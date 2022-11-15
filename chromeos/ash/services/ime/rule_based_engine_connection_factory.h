@@ -11,6 +11,7 @@
 #include "chromeos/ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "chromeos/ash/services/ime/rule_based_engine.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -37,6 +38,8 @@ class RuleBasedEngineConnectionFactory : public mojom::ConnectionFactory {
           pending_input_method_host,
       mojom::InputMethodSettingsPtr settings,
       ConnectToInputMethodCallback callback) override;
+  void ConnectToMozc(mojo::PendingAssociatedReceiver<mojom::Mozc> pending_mozc,
+                     ConnectToMozcCallback callback) override;
 
   // Is the current connection factory connected to a rule based engine?
   bool IsConnected();
