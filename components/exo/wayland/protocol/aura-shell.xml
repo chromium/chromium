@@ -744,8 +744,8 @@
 	coordinates.  The size will be applied to visible bounds used
 	in set_geometry.  The output is a hint for the compositor to
 	determine which output the window should move to. If the
-	output is null, the compositor should make decision sololy by
-	the given boudns. These parameters are just a request and the
+	output is null, the compositor should make decision solely by
+	the given bounds. These parameters are just a request and the
 	compositor may ignore, adjust the size and position based on
 	the rule imposed by the window manager, or may preserve it for
 	future operations. For example, the compositor will not allow
