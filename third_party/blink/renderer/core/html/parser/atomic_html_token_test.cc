@@ -11,16 +11,8 @@ namespace blink {
 TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
   HTMLToken token;
   token.BeginStartTag('a');
-  token.AddNewAttribute();
-  token.BeginAttributeName(3);
-  token.AppendToAttributeName('b');
-  token.EndAttributeName(4);
-  token.AddNewAttribute();
-  token.BeginAttributeName(5);
-  token.AppendToAttributeName('c');
-  token.EndAttributeName(6);
-  token.BeginAttributeValue(8);
-  token.EndAttributeValue(8);
+  token.AddNewAttribute('b');
+  token.AddNewAttribute('c');
 
   AtomicHTMLToken atoken(token);
 

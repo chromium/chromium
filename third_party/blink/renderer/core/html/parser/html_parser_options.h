@@ -37,6 +37,8 @@ class CORE_EXPORT HTMLParserOptions {
   DISALLOW_NEW();
 
  public:
+  explicit HTMLParserOptions(Document* = nullptr);
+
   // https://html.spec.whatwg.org/C/#scripting-flag
   bool scripting_flag = false;
 
@@ -47,7 +49,8 @@ class CORE_EXPORT HTMLParserOptions {
   // access to an ExecutionContext*, but HTMLParserOptions does.
   bool priority_hints_origin_trial_enabled = false;
 
-  explicit HTMLParserOptions(Document* = nullptr);
+  // If set, the ranges (offsets) of the attribute name and value are tracked.
+  bool track_attributes_ranges = false;
 };
 
 }  // namespace blink

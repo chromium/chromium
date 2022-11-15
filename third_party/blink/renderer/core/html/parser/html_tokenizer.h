@@ -31,6 +31,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/parser/html_attributes_ranges.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
@@ -211,6 +212,17 @@ class CORE_EXPORT HTMLTokenizer {
     }
   }
 
+  // Returns the ranges of the attributes for the current token. This is only
+  // updated if `HTMLParserOptions::track_attributes_ranges` was set.
+  // Additionally, if attributes are tracked HTMLAttributesRanges::Clear()
+  // must be called after every token.
+  HTMLAttributesRanges& attributes_ranges() {
+    // If `track_attributes_ranges_` is is false, `attributes_ranges_` is not
+    // updated.
+    DCHECK(track_attributes_ranges_);
+    return attributes_ranges_;
+  }
+
  private:
   friend class HTMLTokenizerTest;
 
@@ -285,6 +297,9 @@ class CORE_EXPORT HTMLTokenizer {
   State state_;
   bool force_null_character_replacement_;
   bool should_allow_cdata_;
+  // This value is also stored in `options_`, but it's kept as a member as doing
+  // so gives a slight performance boost.
+  const bool track_attributes_ranges_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#additional-allowed-character
   UChar additional_allowed_character_;
@@ -302,7 +317,10 @@ class CORE_EXPORT HTMLTokenizer {
   // token here so we remember it next time we re-enter the tokenizer.
   LCharLiteralBuffer<32> buffered_end_tag_name_;
 
-  HTMLParserOptions options_;
+  const HTMLParserOptions options_;
+
+  // This is only updated if `track_attributes_ranges_` is true.
+  HTMLAttributesRanges attributes_ranges_;
 
 #if DCHECK_IS_ON()
   bool token_should_be_in_uninitialized_state_ = true;

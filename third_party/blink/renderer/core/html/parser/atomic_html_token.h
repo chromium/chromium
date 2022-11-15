@@ -336,11 +336,6 @@ void AtomicHTMLToken::InitializeAttributes(
     if (attribute.NameIsEmpty())
       continue;
 
-#if DCHECK_IS_ON()
-    attribute.NameRange().CheckValid();
-    attribute.ValueRange().CheckValid();
-#endif
-
     QualifiedName name = g_null_name;
 #if !BUILDFLAG(IS_ANDROID)
     if (g_use_html_attribute_name_lookup) {

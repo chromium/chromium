@@ -80,40 +80,7 @@ class HTMLToken {
   };
 
   class Attribute {
-    DISALLOW_NEW();
-
    public:
-    class Range {
-      DISALLOW_NEW();
-
-     public:
-      static constexpr int kInvalidOffset = -1;
-
-      inline void Clear() {
-#if DCHECK_IS_ON()
-        start = kInvalidOffset;
-        end = kInvalidOffset;
-#endif
-      }
-
-      // Check Range instance that is actively being parsed.
-      inline void CheckValidStart() const {
-        DCHECK_NE(start, kInvalidOffset);
-        DCHECK_GE(start, 0);
-      }
-
-      // Check Range instance which finished parse.
-      inline void CheckValid() const {
-        CheckValidStart();
-        DCHECK_NE(end, kInvalidOffset);
-        DCHECK_GE(end, 0);
-        DCHECK_LE(start, end);
-      }
-
-      int start;
-      int end;
-    };
-
     AtomicString GetName() const { return name_.AsAtomicString(); }
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
@@ -138,18 +105,11 @@ class HTMLToken {
     void AppendToValue(UChar c) { value_.AddChar(c); }
     void ClearValue() { value_.clear(); }
 
-    const Range& NameRange() const { return name_range_; }
-    const Range& ValueRange() const { return value_range_; }
-    Range& MutableNameRange() { return name_range_; }
-    Range& MutableValueRange() { return value_range_; }
-
    private:
     // TODO(chromium:1204030): Do a more rigorous study and select a
     // better-informed inline capacity.
     UCharLiteralBuffer<32> name_;
     UCharLiteralBuffer<32> value_;
-    Range name_range_;
-    Range value_range_;
   };
 
   typedef Vector<Attribute, kAttributePrealloc> AttributeList;
@@ -161,10 +121,7 @@ class HTMLToken {
   // better-informed inline capacity.
   using DataVector = UCharLiteralBuffer<256>;
 
-  HTMLToken() {
-    range_.Clear();
-    range_.start = 0;
-  }
+  HTMLToken() = default;
 
   HTMLToken(const HTMLToken&) = delete;
   HTMLToken& operator=(const HTMLToken&) = delete;
@@ -176,22 +133,21 @@ class HTMLToken {
     copy->doctype_data_ = std::move(doctype_data_);
     copy->type_ = type_;
     copy->self_closing_ = self_closing_;
-    copy->range_ = range_;
-    copy->base_offset_ = base_offset_;
     // Reset to uninitialized.
     Clear();
     return copy;
   }
 
-  void Clear() {
+  ALWAYS_INLINE void Clear() {
     if (type_ == kUninitialized)
       return;
 
     type_ = kUninitialized;
-    range_.Clear();
-    range_.start = 0;
-    base_offset_ = 0;
     data_.clear();
+    if (current_attribute_) {
+      current_attribute_ = nullptr;
+      attributes_.clear();
+    }
   }
 
   bool IsUninitialized() { return type_ == kUninitialized; }
@@ -201,15 +157,6 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndOfFile;
   }
-
-  // Range and offset methods exposed for HTMLSourceTracker and
-  // HTMLViewSourceParser.
-  int StartIndex() const { return range_.start; }
-  int EndIndex() const { return range_.end; }
-
-  void SetBaseOffset(int offset) { base_offset_ = offset; }
-
-  void end(int end_offset) { range_.end = end_offset - base_offset_; }
 
   const DataVector& Data() const {
     DCHECK(type_ == kCharacter || type_ == kComment || type_ == kStartTag ||
@@ -224,7 +171,7 @@ class HTMLToken {
     return data_;
   }
 
-  void AppendToName(UChar character) {
+  ALWAYS_INLINE void AppendToName(UChar character) {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
     DCHECK(character);
     data_.AddChar(character);
@@ -308,80 +255,53 @@ class HTMLToken {
     self_closing_ = true;
   }
 
-  void BeginStartTag(UChar character) {
+  ALWAYS_INLINE void BeginStartTag(LChar character) {
     DCHECK(character);
     DCHECK_EQ(type_, kUninitialized);
     type_ = kStartTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(!current_attribute_);
+    DCHECK(attributes_.empty());
 
     data_.AddChar(character);
   }
 
-  void BeginEndTag(LChar character) {
+  ALWAYS_INLINE void BeginEndTag(LChar character) {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(!current_attribute_);
+    DCHECK(attributes_.empty());
 
     data_.AddChar(character);
   }
 
-  void BeginEndTag(const LCharLiteralBuffer<32>& characters) {
+  ALWAYS_INLINE void BeginEndTag(const LCharLiteralBuffer<32>& characters) {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(!current_attribute_);
+    DCHECK(attributes_.empty());
 
     data_.AppendLiteral(characters);
   }
 
-  void AddNewAttribute() {
+  ALWAYS_INLINE void AddNewAttribute(UChar character) {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     attributes_.Grow(attributes_.size() + 1);
     current_attribute_ = &attributes_.back();
-    current_attribute_->MutableNameRange().Clear();
-    current_attribute_->MutableValueRange().Clear();
-  }
-
-  void BeginAttributeName(int offset) {
-    current_attribute_->MutableNameRange().start = offset - base_offset_;
-    current_attribute_->NameRange().CheckValidStart();
-  }
-
-  void EndAttributeName(int offset) {
-    int index = offset - base_offset_;
-    current_attribute_->MutableNameRange().end = index;
-    current_attribute_->NameRange().CheckValid();
-    current_attribute_->MutableValueRange().start = index;
-    current_attribute_->MutableValueRange().end = index;
-  }
-
-  void BeginAttributeValue(int offset) {
-    current_attribute_->MutableValueRange().Clear();
-    current_attribute_->MutableValueRange().start = offset - base_offset_;
-    current_attribute_->ValueRange().CheckValidStart();
-  }
-
-  void EndAttributeValue(int offset) {
-    current_attribute_->MutableValueRange().end = offset - base_offset_;
-    current_attribute_->ValueRange().CheckValid();
-  }
-
-  void AppendToAttributeName(UChar character) {
-    DCHECK(character);
-    DCHECK(type_ == kStartTag || type_ == kEndTag);
-    current_attribute_->NameRange().CheckValidStart();
     current_attribute_->AppendToName(character);
   }
 
-  void AppendToAttributeValue(UChar character) {
+  ALWAYS_INLINE void AppendToAttributeName(UChar character) {
     DCHECK(character);
     DCHECK(type_ == kStartTag || type_ == kEndTag);
-    current_attribute_->ValueRange().CheckValidStart();
+    current_attribute_->AppendToName(character);
+  }
+
+  ALWAYS_INLINE void AppendToAttributeValue(UChar character) {
+    DCHECK(character);
+    DCHECK(type_ == kStartTag || type_ == kEndTag);
     current_attribute_->AppendToValue(character);
   }
 
@@ -402,7 +322,7 @@ class HTMLToken {
 
   // Starting a character token works slightly differently than starting
   // other types of tokens because we want to save a per-character branch.
-  void EnsureIsCharacterToken() {
+  ALWAYS_INLINE void EnsureIsCharacterToken() {
     DCHECK(type_ == kUninitialized || type_ == kCharacter);
     type_ = kCharacter;
   }
@@ -412,17 +332,18 @@ class HTMLToken {
     return data_;
   }
 
-  void AppendToCharacter(char character) {
+  ALWAYS_INLINE void AppendToCharacter(char character) {
     DCHECK_EQ(type_, kCharacter);
     data_.AddChar(character);
   }
 
-  void AppendToCharacter(UChar character) {
+  ALWAYS_INLINE void AppendToCharacter(UChar character) {
     DCHECK_EQ(type_, kCharacter);
     data_.AddChar(character);
   }
 
-  void AppendToCharacter(const LCharLiteralBuffer<32>& characters) {
+  ALWAYS_INLINE void AppendToCharacter(
+      const LCharLiteralBuffer<32>& characters) {
     DCHECK_EQ(type_, kCharacter);
     data_.AppendLiteral(characters);
   }
@@ -434,32 +355,32 @@ class HTMLToken {
     return data_;
   }
 
-  void BeginComment() {
+  ALWAYS_INLINE void BeginComment() {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kComment;
   }
 
-  void AppendToComment(UChar character) {
+  ALWAYS_INLINE void AppendToComment(UChar character) {
     DCHECK(character);
     DCHECK_EQ(type_, kComment);
     data_.AddChar(character);
   }
 
  private:
-  TokenType type_ = kUninitialized;
-  Attribute::Range range_;  // Always starts at zero.
-  int base_offset_ = 0;
   DataVector data_;
 
-  // For StartTag and EndTag
-  bool self_closing_;
   AttributeList attributes_;
 
   // A pointer into attributes_ used during lexing.
-  Attribute* current_attribute_;
+  Attribute* current_attribute_ = nullptr;
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
+
+  TokenType type_ = kUninitialized;
+
+  // For StartTag and EndTag
+  bool self_closing_;
 };
 
 #ifndef NDEBUG

@@ -57,7 +57,7 @@ class CORE_EXPORT HTMLViewSourceParser final
   void UpdateTokenizerState();
 
   void StartTracker(SegmentedString&, HTMLTokenizer*, HTMLToken*);
-  void EndTracker(SegmentedString&, HTMLTokenizer*, HTMLToken&);
+  void EndTracker(SegmentedString&, HTMLTokenizer*);
   String SourceForToken(const HTMLToken&);
   bool NeedToCheckTokenizerBuffer(HTMLTokenizer*);
 
@@ -71,6 +71,12 @@ class CORE_EXPORT HTMLViewSourceParser final
   SegmentedString current_source_;
 
   String cached_source_for_token_;
+
+  // Offset into `current_source_` that the current token starts at.
+  int token_start_ = 0;
+
+  // Offset into `current_source_` that the current token ends at.
+  int token_end_ = 0;
 };
 
 }  // namespace blink
