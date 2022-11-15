@@ -7237,38 +7237,6 @@
             ]
         }
     ],
-    "NtpRealboxDesignUpdates": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "RealboxMatchSearchboxThemeParam": "0"
-                    },
-                    "enable_features": [
-                        "NtpRealboxMatchSearchboxTheme"
-                    ]
-                },
-                {
-                    "name": "Enabled_Rounded_Corners",
-                    "params": {
-                        "RealboxMatchSearchboxThemeParam": "1"
-                    },
-                    "enable_features": [
-                        "NtpRealboxMatchSearchboxTheme"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpRealboxPedals": [
         {
             "platforms": [
@@ -7284,6 +7252,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NtpRealboxPedals"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NtpRealboxRundedCorners": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpRealboxRoundedCorners"
                     ]
                 }
             ]
