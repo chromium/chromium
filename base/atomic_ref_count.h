@@ -12,6 +12,10 @@
 
 namespace base {
 
+namespace subtle {
+class RefCountedOverflowTest;
+}  // namespace subtle
+
 class AtomicRefCount {
  public:
   constexpr AtomicRefCount() : ref_count_(0) {}
@@ -61,6 +65,8 @@ class AtomicRefCount {
   }
 
  private:
+  friend subtle::RefCountedOverflowTest;
+
   std::atomic_int ref_count_;
 };
 

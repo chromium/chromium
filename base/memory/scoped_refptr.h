@@ -43,6 +43,24 @@ enum AdoptRefTag { kAdoptRefTag };
 enum StartRefCountFromZeroTag { kStartRefCountFromZeroTag };
 enum StartRefCountFromOneTag { kStartRefCountFromOneTag };
 
+template <typename TagType>
+struct RefCountPreferenceTagTraits;
+
+template <>
+struct RefCountPreferenceTagTraits<StartRefCountFromZeroTag> {
+  static constexpr StartRefCountFromZeroTag kTag = kStartRefCountFromZeroTag;
+};
+
+template <>
+struct RefCountPreferenceTagTraits<StartRefCountFromOneTag> {
+  static constexpr StartRefCountFromOneTag kTag = kStartRefCountFromOneTag;
+};
+
+template <typename T, typename Tag = typename T::RefCountPreferenceTag>
+constexpr Tag GetRefCountPreference() {
+  return RefCountPreferenceTagTraits<Tag>::kTag;
+}
+
 // scoped_refptr<T> is typically used with one of several RefCounted<T> base
 // classes or with custom AddRef and Release methods. These overloads dispatch
 // on which was used.
@@ -50,24 +68,24 @@ enum StartRefCountFromOneTag { kStartRefCountFromOneTag };
 template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(const T*,
                                               const RefCounted<U, V>*) {
-  return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
-                       std::decay_t<decltype(U::kRefCountPreference)>>::value;
+  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 template <typename T, typename U, typename V>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
     const RefCountedThreadSafe<U, V>*) {
-  return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
-                       std::decay_t<decltype(U::kRefCountPreference)>>::value;
+  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 template <typename T, typename U>
 constexpr bool IsRefCountPreferenceOverridden(
     const T*,
     const RefCountedDeleteOnSequence<U>*) {
-  return !std::is_same<std::decay_t<decltype(T::kRefCountPreference)>,
-                       std::decay_t<decltype(U::kRefCountPreference)>>::value;
+  return !std::is_same_v<std::decay_t<decltype(GetRefCountPreference<T>())>,
+                         std::decay_t<decltype(GetRefCountPreference<U>())>>;
 }
 
 constexpr bool IsRefCountPreferenceOverridden(...) {
@@ -105,7 +123,7 @@ constexpr void AssertRefCountBaseMatches(...) {}
 // from 1 instead of 0.
 template <typename T>
 scoped_refptr<T> AdoptRef(T* obj) {
-  using Tag = std::decay_t<decltype(T::kRefCountPreference)>;
+  using Tag = std::decay_t<decltype(subtle::GetRefCountPreference<T>())>;
   static_assert(std::is_same<subtle::StartRefCountFromOneTag, Tag>::value,
                 "Use AdoptRef only if the reference count starts from one.");
 
@@ -134,7 +152,7 @@ scoped_refptr<T> AdoptRefIfNeeded(T* obj, StartRefCountFromOneTag) {
 template <typename T, typename... Args>
 scoped_refptr<T> MakeRefCounted(Args&&... args) {
   T* obj = new T(std::forward<Args>(args)...);
-  return subtle::AdoptRefIfNeeded(obj, T::kRefCountPreference);
+  return subtle::AdoptRefIfNeeded(obj, subtle::GetRefCountPreference<T>());
 }
 
 // Takes an instance of T, which is a ref counted type, and wraps the object

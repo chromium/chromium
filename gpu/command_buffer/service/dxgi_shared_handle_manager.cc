@@ -49,7 +49,8 @@ DXGISharedHandleState::DXGISharedHandleState(
     gfx::DXGIHandleToken token,
     base::win::ScopedHandle shared_handle,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture)
-    : base::subtle::RefCountedThreadSafeBase(kRefCountPreference),
+    : base::subtle::RefCountedThreadSafeBase(
+          base::subtle::GetRefCountPreference<DXGISharedHandleState>()),
       manager_(std::move(manager)),
       token_(std::move(token)),
       shared_handle_(std::move(shared_handle)),
