@@ -57,7 +57,6 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_isolate_uses_emulator": false,
-      "use_cfv2_script": true,
       "use_goma": true
     }
   },
@@ -71,7 +70,6 @@
       "target_cpu": "x64",
       "target_os": "fuchsia",
       "test_isolate_uses_emulator": false,
-      "use_cfv2_script": true,
       "use_goma": true
     }
   }

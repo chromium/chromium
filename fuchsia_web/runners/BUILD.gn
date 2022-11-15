@@ -340,6 +340,9 @@ fuchsia_package_installer("web_runner") {
 }
 
 test("web_runner_integration_tests") {
+  # TODO(crbug/1383262): Remove when tests can be migrated.
+  fuchsia_legacy_script_required = true
+
   sources = [ "web/web_runner_smoke_test.cc" ]
   deps = [
     "//base",

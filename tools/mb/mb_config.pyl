@@ -271,8 +271,8 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
       'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia_reclient',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
-      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome_reclient',
-      'fuchsia-x64-workstation': 'release_bot_fuchsia_workstation_reclient',
+      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_chrome_reclient',
+      'fuchsia-x64-workstation': 'release_bot_fuchsia_chrome_reclient',
     },
 
     'chromium.fuzz': {
@@ -397,8 +397,8 @@
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
-      'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64_reclient',
-      'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script_reclient',
+      'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_arm64_reclient',
+      'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
@@ -1114,9 +1114,9 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
-      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script_chrome',
+      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
-      'fuchsia-x64-workstation': 'release_trybot_fuchsia_workstation',
+      'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
     },
 
     'tryserver.chromium.linux': {
@@ -2496,7 +2496,7 @@
 
     'fuchsia_clang_code_coverage_reclient': [
       'clang', 'fuchsia', 'fuchsia_code_coverage', 'no_symbols', 'release_bot_reclient',
-      'use_clang_coverage'
+      'use_clang_coverage', 'fuchsia_legacy_script',
     ],
 
     'fuchsia_clang_tot_official_arm64': [
@@ -3212,11 +3212,11 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'cast_receiver_size_optimized_internal', 'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+      'cast_receiver_size_optimized_internal', 'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
 
     'official_goma_fuchsia_x64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'x64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
 
     'official_goma_linux_perf': [
@@ -3451,24 +3451,12 @@
       'release_bot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
-    'release_bot_fuchsia_cfv2_script_arm64_reclient': [
-      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
-    ],
-
-    'release_bot_fuchsia_cfv2_script_chrome_reclient': [
-      'release_bot_reclient', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
-    ],
-
-    'release_bot_fuchsia_cfv2_script_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_cfv2_script',
+    'release_bot_fuchsia_chrome_reclient': [
+      'release_bot_reclient', 'fuchsia', 'fuchsia_chrome'
     ],
 
     'release_bot_fuchsia_reclient': [
       'release_bot_reclient', 'fuchsia',
-    ],
-
-    'release_bot_fuchsia_workstation_reclient': [
-      'release_bot_reclient', 'fuchsia', 'fuchsia_chrome'
     ],
 
     'release_bot_mac_strip_minimal_symbols': [
@@ -3599,11 +3587,7 @@
       'release_trybot', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
-    'release_trybot_fuchsia_cfv2_script_chrome': [
-      'release_trybot', 'fuchsia', 'fuchsia_cfv2_script', 'fuchsia_chrome',
-    ],
-
-    'release_trybot_fuchsia_workstation': [
+    'release_trybot_fuchsia_chrome': [
       'release_trybot', 'fuchsia', 'fuchsia_chrome'
     ],
 
@@ -4187,10 +4171,6 @@
       'gn_args': 'target_os="fuchsia"',
     },
 
-    'fuchsia_cfv2_script': {
-      'gn_args': 'use_cfv2_script=true',
-    },
-
     'fuchsia_chrome': {
       'gn_args': 'fuchsia_browser_type="chrome"',
     },
@@ -4201,6 +4181,11 @@
 
     'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/"]',
+    },
+
+    # TODO(crbug/1336775): Remove when --ram-size-mb is added in new scripts
+    'fuchsia_legacy_script': {
+      'gn_args': 'use_v2_script_default=false',
     },
 
     'full_symbols': {

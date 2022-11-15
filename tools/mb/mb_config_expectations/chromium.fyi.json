@@ -780,7 +780,8 @@
       "symbol_level": 0,
       "target_os": "fuchsia",
       "use_clang_coverage": true,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_v2_script_default": false
     }
   },
   "fuchsia-fyi-arm64-cfv2-script": {
@@ -791,7 +792,6 @@
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
-      "use_cfv2_script": true,
       "use_remoteexec": true
     }
   },
@@ -801,7 +801,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_cfv2_script": true,
       "use_remoteexec": true
     }
   },

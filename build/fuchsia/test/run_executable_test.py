@@ -177,7 +177,7 @@ class ExecutableTestRunner(TestRunner):
         if self._isolated_script_test_output:
             _copy_custom_output_file(
                 test_runner,
-                os.path.basename(self._test_launcher_summary_output),
+                os.path.basename(self._isolated_script_test_output),
                 self._isolated_script_test_output)
         if self._code_coverage_dir:
             _copy_coverage_files(test_runner,

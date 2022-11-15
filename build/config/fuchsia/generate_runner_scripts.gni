@@ -35,9 +35,11 @@ declare_args() {
   # targets.
   fuchsia_browser_type = "web_engine_shell"
 
-  # This variable controls which version of the testing scripts to use.
+  # This variable controls which default version of the testing scripts to use.
+  # Individual tests can override this via setting |legacy_script_required| to
+  # true.
   # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
-  use_cfv2_script = false
+  use_v2_script_default = true
 }
 
 # Generates a wrapper script under root_build_dir/bin that performs an
@@ -69,11 +71,17 @@ declare_args() {
 #   include_fuchsia_build_dir: If true, adds
 #                              |default_fuchsia_build_dir_for_installation|
 #                              to executable_args (when set in GN args).
+#   use_v2_script: Whether to use the the ssh based v1 or ffx based v2 scripts.
 template("fuchsia_run_script_with_packages") {
   if (defined(invoker.package_name)) {
     _pkg_shortname = invoker.package_name
   } else {
     _pkg_shortname = get_label_info(invoker.package, "name")
+  }
+  if (!defined(invoker.use_v2_script)) {
+    use_v2_script = use_v2_script_default
+  } else {
+    use_v2_script = invoker.use_v2_script
   }
 
   _generated_script_path =
@@ -118,7 +126,7 @@ template("fuchsia_run_script_with_packages") {
     }
 
     # Compute the list of full paths to package files, including dependencies.
-    if (!use_cfv2_script) {
+    if (!use_v2_script) {
       _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
                  "/" + _pkg_shortname
       package_paths =
@@ -129,7 +137,7 @@ template("fuchsia_run_script_with_packages") {
         package_dep_target = package_dep[0]
         deps += [ package_dep_target ]
         data_deps += [ package_dep_target ]
-        if (!use_cfv2_script) {
+        if (!use_v2_script) {
           package_dep_name = package_dep[1]
           package_dep_path = rebase_path(
                   get_label_info(package_dep_target, "target_gen_dir") + "/" +
@@ -145,7 +153,7 @@ template("fuchsia_run_script_with_packages") {
       executable_args = []
     }
 
-    if (!use_cfv2_script) {
+    if (!use_v2_script) {
       foreach(package_path, package_paths) {
         executable_args += [
           "--package",
@@ -209,6 +217,12 @@ template("fuchsia_test_runner") {
   _run_target = "${target_name}__runner"
   _install_target = "${target_name}__installer"
 
+  if (!defined(invoker.use_v2_script)) {
+    use_v2_script = use_v2_script_default
+  } else {
+    use_v2_script = invoker.use_v2_script
+  }
+
   fuchsia_run_script_with_packages(_run_target) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
@@ -219,7 +233,7 @@ template("fuchsia_test_runner") {
                                  "package_deps",
                                ])
 
-    if (use_cfv2_script) {
+    if (use_v2_script) {
       _test_runner_py = "//build/fuchsia/test/run_test.py"
     } else {
       _test_runner_py = "//build/fuchsia/test_runner.py"
@@ -239,7 +253,7 @@ template("fuchsia_test_runner") {
       "@WrappedPath(.)",
     ]
 
-    if (use_cfv2_script) {
+    if (use_v2_script) {
       executable_args += [ package_name ]
     } else {
       executable_args += [
@@ -253,7 +267,7 @@ template("fuchsia_test_runner") {
     }
 
     if (default_fuchsia_device_node_name != "") {
-      if (use_cfv2_script) {
+      if (use_v2_script) {
         executable_args += [
           "--target-id",
           default_fuchsia_device_node_name,
@@ -273,7 +287,7 @@ template("fuchsia_test_runner") {
     }
     data += [ _test_runner_py ]
 
-    if (use_cfv2_script) {
+    if (use_v2_script) {
       data += [ "$root_gen_dir/package_metadata/${invoker.package_name}.meta" ]
     }
 
@@ -290,27 +304,5 @@ template("fuchsia_test_runner") {
                                  "package_name",
                                  "package_deps",
                                ])
-  }
-}
-
-# Transitional target that aliases "fuchsia_package_runner" to an installer
-# target. Used for migrating out-of-tree users of fuchsia_package_runner.
-template("fuchsia_package_runner") {
-  if (defined(invoker.install_only) && invoker.install_only) {
-    fuchsia_package_installer(target_name) {
-      forward_variables_from(invoker, "*", [ "install_only" ])
-
-      if (defined(invoker.package_name_override)) {
-        package_name = invoker.package_name_override
-      }
-    }
-  } else {
-    fuchsia_test_runner(target_name) {
-      forward_variables_from(invoker, "*", [ "package_name_override" ])
-
-      if (defined(invoker.package_name_override)) {
-        package_name = invoker.package_name_override
-      }
-    }
   }
 }

@@ -4170,7 +4170,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter",
           "--test-arg=--test-launcher-timeout=60000",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "merge": {
           "args": [],
@@ -4195,7 +4195,7 @@
           "--test-arg=--disable-gpu",
           "--test-arg=--headless",
           "--test-arg=--ozone-platform=headless",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "merge": {
           "args": [],
@@ -4217,7 +4217,7 @@
       },
       {
         "args": [
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "merge": {
           "args": [],
@@ -4239,7 +4239,7 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "merge": {
           "args": [],
@@ -4271,7 +4271,7 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
           "1ae0",
-          "--custom-image=workstation_eng.qemu-x64-release",
+          "--custom-image=workstation_eng.qemu-x64",
           "--expected-device-id",
           "c0de"
         ],
@@ -4308,7 +4308,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
@@ -4346,7 +4346,7 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--custom-image=workstation_eng.qemu-x64-release",
+          "--custom-image=workstation_eng.qemu-x64",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -4388,7 +4388,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
@@ -4423,7 +4423,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
@@ -4458,7 +4458,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--custom-image=workstation_eng.qemu-x64-release"
+          "--custom-image=workstation_eng.qemu-x64"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {

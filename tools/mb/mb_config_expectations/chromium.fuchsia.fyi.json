@@ -48,7 +48,6 @@
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
-      "use_cfv2_script": true,
       "use_remoteexec": true
     }
   },

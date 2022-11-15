@@ -508,7 +508,7 @@
   'fuchsia-test-workstation': {
     '$mixin_append': {
       'args': [
-        '--custom-image=workstation_eng.qemu-x64-release',
+        '--custom-image=workstation_eng.qemu-x64',
       ],
     }
   },

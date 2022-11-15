@@ -116,7 +116,6 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
-      "use_cfv2_script": true,
       "use_goma": true
     }
   },
