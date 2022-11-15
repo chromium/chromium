@@ -1354,7 +1354,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
                      JsReplace(kAddIframeScript, iframe_url)));
   RenderFrameHostImpl* iframe = static_cast<RenderFrameHostImpl*>(
       ChildFrameAt(primary_main_frame_host(), 1));
-  ASSERT_TRUE(iframe && iframe->GetParent() == primary_main_frame_host());
+  ASSERT_TRUE(iframe && iframe->GetParent()->IsInPrimaryMainFrame());
   EXPECT_EQ(iframe->GetProcess(), ff_rfh->GetProcess());
 }
 
