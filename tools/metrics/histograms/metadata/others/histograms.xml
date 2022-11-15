@@ -4699,6 +4699,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrashReport.BreakpadIOSUploadOutcome"
     enum="FoundationPopularErrorCode" expires_after="2022-12-25">
+  <obsolete>
+    Removed 11/2022.
+  </obsolete>
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

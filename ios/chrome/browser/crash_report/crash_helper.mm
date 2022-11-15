@@ -145,11 +145,6 @@ void ProcessIntermediateDumps() {
   });
 }
 
-// Called after Breakpad finishes uploading each report.
-void UploadResultHandler(NSString* report_id, NSError* error) {
-  base::UmaHistogramSparse("CrashReport.BreakpadIOSUploadOutcome", error.code);
-}
-
 // Returns the uptime, the difference between now and start time.
 int64_t GetUptimeMilliseconds() {
   struct timeval tv;
@@ -271,9 +266,6 @@ void UploadCrashReports() {
   if (crash_reporter::IsBreakpadRunning()) {
     static dispatch_once_t once_token;
     dispatch_once(&once_token, ^{
-      [[BreakpadController sharedInstance]
-          setUploadCallback:UploadResultHandler];
-
       // Clean old breakpad files here. Breakpad-only as Crashpad has it's own
       // database cleaner.
       base::FilePath crash_directory;
