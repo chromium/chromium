@@ -117,6 +117,8 @@ ci.builder(
             "tools/android/avd/proto/creation/generic_android33.textpb",
             "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
         ],
+        "gclient_config": "chromium",
+        "gclient_apply_config": ["android"],
     },
     # Triggered manually through the scheduler UI
     # https://luci-scheduler.appspot.com/jobs/chromium/android-avd-packager
