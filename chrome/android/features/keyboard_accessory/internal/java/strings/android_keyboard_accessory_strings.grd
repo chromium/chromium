@@ -208,8 +208,11 @@
       <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the password suggestions are shown.">
         Passwords available
       </message>
-      <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_MODERN_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the autofill suggestions and fallbacks are shown.">
+      <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_MODERN_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when there are autofill suggestions are shown.">
         Autofill suggestions available above the keyboard
+      </message>
+      <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_MODERN_CONTENT_FALLBACK_DESCRIPTION" desc="The text announced by the screen reader when the fallback buttons are shown.">
+        Alternative filling options available above the keyboard
       </message>
       <message name="IDS_KEYBOARD_ACCESSORY_SHEET_HIDE" desc="Description for the active icon button that closes an accessory sheet and brings back the keyboard.">
           Show keyboard

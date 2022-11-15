@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
@@ -566,6 +567,22 @@ public class KeyboardAccessoryControllerTest {
                                 new Action("Dos", GENERATE_PASSWORD_AUTOMATIC, null))});
         assertThat(getShownMetricsCount(AccessoryBarContents.WITH_ACTIONS), is(1));
         assertThat(getGenerationImpressionCount(), is(2));
+    }
+
+    @Test
+    public void testModelChangesUpdatesTheContentDescriptionInModernView() {
+        setAutofillFeature(true);
+        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+                new PropertyProvider<>(AUTOFILL_SUGGESTION);
+
+        mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
+        autofillSuggestionProvider.notifyObservers(
+                new AutofillSuggestion[] {mock(AutofillSuggestion.class)});
+
+        assertThat(mModel.get(HAS_SUGGESTIONS), is(true));
+
+        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {});
+        assertThat(mModel.get(HAS_SUGGESTIONS), is(false));
     }
 
     private int getGenerationImpressionCount() {

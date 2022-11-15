@@ -53,18 +53,22 @@ class KeyboardAccessoryProperties {
             new WritableObjectPropertyKey<>("obfuscated_child_at_callback");
     static final WritableBooleanPropertyKey SHOW_SWIPING_IPH =
             new WritableBooleanPropertyKey("show_swiping_iph");
+    static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
+            new WritableBooleanPropertyKey("has_suggestions");
 
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel
                 .Builder(DISABLE_ANIMATIONS_FOR_TESTING, BAR_ITEMS, VISIBLE, SKIP_CLOSING_ANIMATION,
                         BOTTOM_OFFSET_PX, SHEET_OPENER_ITEM, KEYBOARD_TOGGLE_VISIBLE, SHEET_TITLE,
-                        SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH)
+                        SHOW_KEYBOARD_CALLBACK, OBFUSCATED_CHILD_AT_CALLBACK, SHOW_SWIPING_IPH,
+                        HAS_SUGGESTIONS)
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
                 .with(KEYBOARD_TOGGLE_VISIBLE, false)
                 .with(DISABLE_ANIMATIONS_FOR_TESTING, false)
-                .with(SHOW_SWIPING_IPH, false);
+                .with(SHOW_SWIPING_IPH, false)
+                .with(HAS_SUGGESTIONS, false);
     }
 
     /**

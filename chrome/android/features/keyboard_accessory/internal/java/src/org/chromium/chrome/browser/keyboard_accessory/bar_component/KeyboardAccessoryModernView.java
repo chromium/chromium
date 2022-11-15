@@ -219,6 +219,12 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         mObfuscatedLastChildAt = obfuscatedLastChildAt;
     }
 
+    void setAccessibilityMessage(boolean hasSuggestions) {
+        setContentDescription(getContext().getString(hasSuggestions
+                        ? R.string.autofill_keyboard_accessory_modern_content_description
+                        : R.string.autofill_keyboard_accessory_modern_content_fallback_description));
+    }
+
     private void animateSuggestionArrival() {
         if (areAnimationsDisabled()) return;
         int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;

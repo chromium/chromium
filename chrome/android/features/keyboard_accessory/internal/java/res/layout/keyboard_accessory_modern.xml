@@ -10,7 +10,6 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyboard_accessory"
     android:layout_gravity="start|bottom"
-    android:contentDescription="@string/autofill_keyboard_accessory_modern_content_description"
     android:scrollbars="none"
     android:visibility="gone"
     android:orientation="vertical"
