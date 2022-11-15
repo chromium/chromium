@@ -51,7 +51,7 @@ class V4StoreFuzzer {
     store->MergeUpdate(prefix_map_old, prefix_map_additions, &raw_removals,
                        empty_checksum);
 #ifndef NDEBUG
-    DisplayHashPrefixMapDetails(store->hash_prefix_map_);
+    DisplayHashPrefixMapDetails(*store->hash_prefix_map_);
 #endif
 
     return 0;
