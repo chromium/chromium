@@ -14,6 +14,8 @@
 
 namespace ash::cros_healthd::internal {
 
+// TODO(b/249182240): Rename interface name to another one. The
+// SetPrivacyScreenState method is conflicted with the interface name.
 class DataCollector
     : public mojom::ChromiumDataCollector,
       public chromeos::mojo_service_manager::mojom::ServiceProvider {
@@ -26,6 +28,10 @@ class DataCollector
 
     // Get the touchpad library name.
     virtual std::string GetTouchpadLibraryName() = 0;
+    // Queries if privacy screen is supported.
+    virtual bool IsPrivacyScreenSupported() = 0;
+    // Queries if privacy screen is in managed mode.
+    virtual bool IsPrivacyScreenManaged() = 0;
   };
 
   DataCollector();
@@ -41,6 +47,8 @@ class DataCollector
   // mojom::ChromiumDataCollector overrides.
   void GetTouchscreenDevices(GetTouchscreenDevicesCallback callback) override;
   void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
+  void SetPrivacyScreenState(bool state,
+                             SetPrivacyScreenStateCallback callback) override;
 
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
   void Request(

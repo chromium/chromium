@@ -13,6 +13,7 @@ source_set("cpp") {
     "data_collector.h",
   ]
   deps = [
+    "//ash:ash",
     "//base",
     "//chromeos/ash/components/mojo_service_manager",
     "//content/public/browser:browser",

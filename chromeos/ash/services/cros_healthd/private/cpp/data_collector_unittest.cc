@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
 
+#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,6 +26,24 @@ class FakeDataCollectorDelegate : public DataCollector::Delegate {
   std::string GetTouchpadLibraryName() override {
     return kFakeTouchpadLibraryName;
   }
+
+  bool IsPrivacyScreenSupported() override { return privacy_screen_supported_; }
+
+  bool IsPrivacyScreenManaged() override { return privacy_screen_managed_; }
+
+  void SetPrivacyScreenAttributes(bool supported,
+                                  bool managed,
+                                  [[maybe_unused]] bool enabled) {
+    privacy_screen_supported_ = supported;
+    privacy_screen_managed_ = managed;
+    // Parameter |enabled| is a no-op situation: whether privacy screen is
+    // enabled is not taken care of in the implementation, but remains tested in
+    // unittests.
+  }
+
+ private:
+  bool privacy_screen_supported_ = false;
+  bool privacy_screen_managed_ = false;
 };
 
 class DataCollectorTest : public testing::Test {
@@ -81,6 +100,60 @@ TEST_F(DataCollectorTest, GetTouchpadLibraryName) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+// Test that privacy screen set request will be rejected when privacy screen is
+// unsupported.
+TEST_F(DataCollectorTest, RejectPrivacyScreenSetRequestOnUnsupported) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/false, /*managed=*/false,
+                                       /*enabled=*/false);
+  remote_->SetPrivacyScreenState(
+      true, base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+}
+
+// Test that privacy screen set request will be rejected when privacy screen is
+// in managed mode.
+TEST_F(DataCollectorTest, RejectPrivacyScreenSetRequestOnManagedMode) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/true, /*managed=*/true,
+                                       /*enabled=*/false);
+  remote_->SetPrivacyScreenState(
+      true, base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+}
+
+// Test that privacy screen set request will be accepted when privacy screen is
+// on and is to be turned on.
+TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOnToOn) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/true, /*managed=*/false,
+                                       /*enabled=*/true);
+  remote_->SetPrivacyScreenState(
+      true, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+}
+
+// Test that privacy screen set request will be accepted when privacy screen is
+// on and is to be turned off.
+TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOnToOff) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
+                                       /*managed=*/false, /*enabled=*/true);
+  remote_->SetPrivacyScreenState(
+      false, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+}
+
+// Test that privacy screen set request will be accepted when privacy screen is
+// off and is to be turned on.
+TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToOn) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
+                                       /*managed=*/false, /*enabled=*/false);
+  remote_->SetPrivacyScreenState(
+      true, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+}
+
+// Test that privacy screen set request will be accepted when privacy screen is
+// off and is to be turned ff.
+TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToff) {
+  delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
+                                       /*managed=*/false, /*enabled=*/false);
+  remote_->SetPrivacyScreenState(
+      false, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 }
 
 }  // namespace

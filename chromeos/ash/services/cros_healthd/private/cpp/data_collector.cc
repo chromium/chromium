@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include "ash/display/privacy_screen_controller.h"
+#include "ash/shell.h"
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/no_destructor.h"
@@ -35,6 +37,8 @@ class DataCollectorDelegateImpl : public DataCollector::Delegate {
 
   // DataCollector::Delegate override.
   std::string GetTouchpadLibraryName() override;
+  bool IsPrivacyScreenSupported() override;
+  bool IsPrivacyScreenManaged() override;
 };
 
 DataCollectorDelegateImpl::DataCollectorDelegateImpl() = default;
@@ -75,6 +79,14 @@ std::string DataCollectorDelegateImpl::GetTouchpadLibraryName() {
 #else
   return "Default EventConverterEvdev";
 #endif
+}
+
+bool DataCollectorDelegateImpl::IsPrivacyScreenSupported() {
+  return Shell::Get()->privacy_screen_controller()->IsSupported();
+}
+
+bool DataCollectorDelegateImpl::IsPrivacyScreenManaged() {
+  return Shell::Get()->privacy_screen_controller()->IsManaged();
 }
 
 DataCollectorDelegateImpl* GetDataCollectorDelegate() {
@@ -155,6 +167,21 @@ void DataCollector::GetTouchscreenDevices(
 void DataCollector::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
   std::move(callback).Run(delegate_->GetTouchpadLibraryName());
+}
+
+void DataCollector::SetPrivacyScreenState(
+    bool state,
+    SetPrivacyScreenStateCallback callback) {
+  if (!delegate_->IsPrivacyScreenSupported() ||
+      delegate_->IsPrivacyScreenManaged()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  Shell::Get()->privacy_screen_controller()->SetEnabled(
+      state,
+      PrivacyScreenController::ToggleUISurface::kToggleUISurfaceToastButton);
+  std::move(callback).Run(true);
 }
 
 void DataCollector::Request(
