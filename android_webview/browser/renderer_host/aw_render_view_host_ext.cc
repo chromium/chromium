@@ -172,7 +172,7 @@ void AwRenderViewHostExt::ContentsSizeChanged(const gfx::Size& contents_size) {
       frame_host_receivers_.GetCurrentTargetFrame();
 
   // Only makes sense coming from the main frame of the current frame tree.
-  if (render_frame_host != web_contents()->GetPrimaryMainFrame())
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   client_->OnWebLayoutContentsSizeChanged(contents_size);
