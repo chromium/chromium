@@ -38,9 +38,6 @@ class KioskAppLauncher {
     // TODO(crbug.com/1015383): Refactor out this method at some moment.
     // Whether network configure UI is shown.
     virtual bool IsShowingNetworkConfigScreen() const = 0;
-    // Whether app launch flow can assume all required apps are installed, and
-    // skip app installation steps.
-    virtual bool ShouldSkipAppInstallation() const = 0;
     virtual void OnAppDataUpdated() {}
     virtual void OnAppInstalling() {}
     virtual void OnAppPrepared() {}

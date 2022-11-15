@@ -7,7 +7,7 @@
 namespace ash {
 
 MockWebKioskAppLauncher::MockWebKioskAppLauncher()
-    : WebKioskAppLauncher(nullptr, nullptr, EmptyAccountId()) {}
+    : WebKioskAppLauncher(nullptr, EmptyAccountId(), false, nullptr) {}
 
 MockWebKioskAppLauncher::~MockWebKioskAppLauncher() = default;
 

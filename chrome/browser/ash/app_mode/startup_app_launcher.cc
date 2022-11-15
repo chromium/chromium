@@ -94,8 +94,12 @@ class LacrosLauncher : public crosapi::BrowserManagerObserver {
 
 StartupAppLauncher::StartupAppLauncher(Profile* profile,
                                        const std::string& app_id,
+                                       bool should_skip_install,
                                        StartupAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate), profile_(profile), app_id_(app_id) {
+    : KioskAppLauncher(delegate),
+      profile_(profile),
+      app_id_(app_id),
+      should_skip_install_(should_skip_install) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
 }
@@ -107,7 +111,7 @@ void StartupAppLauncher::Initialize() {
          state_ != LaunchState::kWaitingForWindow &&
          state_ != LaunchState::kLaunchSucceeded);
 
-  if (delegate_->ShouldSkipAppInstallation()) {
+  if (should_skip_install_) {
     OnInstallSuccess();
     return;
   }
@@ -138,7 +142,7 @@ void StartupAppLauncher::ContinueWithNetworkReady() {
     return;
   }
 
-  if (delegate_->ShouldSkipAppInstallation()) {
+  if (should_skip_install_) {
     OnInstallSuccess();
     return;
   }

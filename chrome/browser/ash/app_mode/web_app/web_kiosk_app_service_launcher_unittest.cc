@@ -155,7 +155,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
     delegate_ = std::make_unique<MockAppLauncherDelegate>();
     launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-        profile(), delegate_.get(), AccountId::FromUserEmail(kAppEmail));
+        profile(), AccountId::FromUserEmail(kAppEmail), delegate_.get());
   }
 
   void TearDown() override {

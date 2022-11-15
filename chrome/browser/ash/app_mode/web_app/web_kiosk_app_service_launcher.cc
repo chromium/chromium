@@ -20,8 +20,8 @@ namespace ash {
 
 WebKioskAppServiceLauncher::WebKioskAppServiceLauncher(
     Profile* profile,
-    KioskAppLauncher::Delegate* delegate,
-    const AccountId& account_id)
+    const AccountId& account_id,
+    KioskAppLauncher::Delegate* delegate)
     : KioskAppLauncher(delegate), profile_(profile), account_id_(account_id) {}
 
 WebKioskAppServiceLauncher::~WebKioskAppServiceLauncher() = default;

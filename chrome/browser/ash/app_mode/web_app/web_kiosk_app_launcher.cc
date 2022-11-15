@@ -45,11 +45,13 @@ constexpr base::TimeDelta kSplashWindowCloseDelayTime = base::Seconds(1);
 
 WebKioskAppLauncher::WebKioskAppLauncher(
     Profile* profile,
-    WebKioskAppLauncher::Delegate* delegate,
-    const AccountId& account_id)
+    const AccountId& account_id,
+    bool should_skip_install,
+    WebKioskAppLauncher::Delegate* delegate)
     : KioskAppLauncher(delegate),
       profile_(profile),
       account_id_(account_id),
+      should_skip_install_(should_skip_install),
       url_loader_(std::make_unique<web_app::WebAppUrlLoader>()),
       data_retriever_factory_(base::BindRepeating(
           &std::make_unique<web_app::WebAppDataRetriever>)) {}
@@ -62,7 +64,7 @@ void WebKioskAppLauncher::Initialize() {
   DCHECK(app);
   SYSLOG(INFO) << "Launching web kiosk for url: " << app->install_url();
   if (app->status() == WebKioskAppData::Status::kInstalled ||
-      delegate_->ShouldSkipAppInstallation()) {
+      should_skip_install_) {
     delegate_->OnAppPrepared();
     return;
   }

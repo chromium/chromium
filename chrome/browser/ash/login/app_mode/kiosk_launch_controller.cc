@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
-#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
@@ -247,11 +246,12 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
         // ArcKioskAppService lifetime is bound to the profile, therefore
         // wrap it into a separate object.
         app_launcher_ = std::make_unique<ArcKioskAppServiceWrapper>(
-            ArcKioskAppService::Get(profile_), this);
+            ArcKioskAppService::Get(profile_), /*delegate=*/this);
         break;
       case KioskAppType::kChromeApp:
         app_launcher_ = std::make_unique<StartupAppLauncher>(
-            profile_, *kiosk_app_id_.app_id, this);
+            profile_, *kiosk_app_id_.app_id, /*should_skip_install=*/false,
+            /*delegate=*/this);
         break;
       case KioskAppType::kWebApp:
         // Make keyboard config sync with the `VirtualKeyboardFeatures` policy.
@@ -261,10 +261,11 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
         if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
             !crosapi::browser_util::IsLacrosEnabled()) {
           app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-              profile, this, *kiosk_app_id_.account_id);
+              profile, *kiosk_app_id_.account_id, /*delegate=*/this);
         } else {
           app_launcher_ = std::make_unique<WebKioskAppLauncher>(
-              profile, this, *kiosk_app_id_.account_id);
+              profile, *kiosk_app_id_.account_id,
+              /*should_skip_install=*/false, /*delegate=*/this);
         }
         break;
     }
@@ -468,10 +469,6 @@ bool KioskLaunchController::IsNetworkReady() const {
 
 bool KioskLaunchController::IsShowingNetworkConfigScreen() const {
   return network_ui_state_ == NetworkUIState::kShowing;
-}
-
-bool KioskLaunchController::ShouldSkipAppInstallation() const {
-  return false;
 }
 
 void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {

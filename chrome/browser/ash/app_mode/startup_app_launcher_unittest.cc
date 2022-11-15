@@ -91,9 +91,6 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
   KioskAppLaunchError::Error launch_error() const { return launch_error_; }
 
   void set_network_ready(bool network_ready) { network_ready_ = network_ready; }
-  void set_should_skip_app_installation(bool skip_app_installation) {
-    should_skip_app_installation_ = skip_app_installation;
-  }
   void set_showing_network_config_screen(bool showing) {
     showing_network_config_screen_ = showing;
   }
@@ -117,9 +114,6 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
     SetLaunchState(LaunchState::kInitializingNetwork);
   }
   bool IsNetworkReady() const override { return network_ready_; }
-  bool ShouldSkipAppInstallation() const override {
-    return should_skip_app_installation_;
-  }
   void OnAppInstalling() override {
     SetLaunchState(LaunchState::kInstallingApp);
   }
@@ -144,8 +138,6 @@ class TestAppLaunchDelegate : public StartupAppLauncher::Delegate {
 
   bool network_ready_ = false;
   bool showing_network_config_screen_ = false;
-
-  bool should_skip_app_installation_ = false;
 
   base::test::RepeatingTestFuture<LaunchState> launch_state_changes_;
 };
@@ -396,7 +388,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
         std::make_unique<AppLaunchTracker>(kTestPrimaryAppId, event_router);
 
     startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
-        profile(), kTestPrimaryAppId, &startup_launch_delegate_);
+        profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
+        &startup_launch_delegate_);
   }
 
   void TearDown() override {
@@ -1448,7 +1441,10 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
 
   // This matches the delegate settings during session restart (e.g. after a
   // browser process crash).
-  startup_launch_delegate_.set_should_skip_app_installation(true);
+  startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
+      profile(), kTestPrimaryAppId, /*should_skip_install=*/true,
+      &startup_launch_delegate_);
+
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->Initialize();
 

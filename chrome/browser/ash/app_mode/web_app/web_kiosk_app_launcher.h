@@ -12,15 +12,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
-#include "content/public/browser/web_contents.h"
-#include "url/gurl.h"
 
 class Browser;
 class BrowserWindow;
@@ -42,8 +37,9 @@ class WebKioskAppLauncher : public KioskAppLauncher,
                             public exo::WMHelper::ExoWindowObserver {
  public:
   WebKioskAppLauncher(Profile* profile,
-                      Delegate* delegate,
-                      const AccountId& account_id);
+                      const AccountId& account_id,
+                      bool should_skip_install,
+                      Delegate* delegate);
   WebKioskAppLauncher(const WebKioskAppLauncher&) = delete;
   WebKioskAppLauncher& operator=(const WebKioskAppLauncher&) = delete;
   ~WebKioskAppLauncher() override;
@@ -90,6 +86,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   bool is_installed_ = false;  // Whether the installation was completed.
   Profile* const profile_;
   const AccountId account_id_;
+  const bool should_skip_install_;
 
   Browser* browser_ = nullptr;  // Browser instance that runs the web kiosk app.
 

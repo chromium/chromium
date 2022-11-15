@@ -70,7 +70,6 @@ class MockAppLauncherDelegate : public WebKioskAppLauncher::Delegate {
 
   MOCK_CONST_METHOD0(IsNetworkReady, bool());
   MOCK_CONST_METHOD0(IsShowingNetworkConfigScreen, bool());
-  MOCK_CONST_METHOD0(ShouldSkipAppInstallation, bool());
 };
 
 const char kAppEmail[] = "lala@example.com";
@@ -126,13 +125,8 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     app_manager_ = std::make_unique<WebKioskAppManager>();
-    launcher_ = std::make_unique<WebKioskAppLauncher>(
-        profile(), &delegate_, AccountId::FromUserEmail(kAppEmail));
 
-    launcher_->SetBrowserWindowForTesting(window());
-    url_loader_ = new web_app::TestWebAppUrlLoader();
-    launcher_->SetUrlLoaderForTesting(
-        std::unique_ptr<web_app::TestWebAppUrlLoader>(url_loader_));
+    ConstructLauncher(/*should_skip_install=*/false);
 
     closer_ = std::make_unique<AppWindowCloser>();
   }
@@ -142,6 +136,16 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
     launcher_.reset();
     app_manager_.reset();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  void ConstructLauncher(bool should_skip_install) {
+    launcher_ = std::make_unique<WebKioskAppLauncher>(
+        profile(), AccountId::FromUserEmail(kAppEmail), should_skip_install,
+        &delegate_);
+    launcher_->SetBrowserWindowForTesting(window());
+    auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
+    url_loader_ = url_loader.get();
+    launcher_->SetUrlLoaderForTesting(std::move(url_loader));
   }
 
   void SetupAppData(bool installed) {
@@ -202,8 +206,8 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
 
 TEST_F(WebKioskAppLauncherTest, NormalFlowNotInstalled) {
   SetupAppData(/*installed*/ false);
+  ConstructLauncher(/*should_skip_install=*/false);
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(false));
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(),
                          InitializeNetwork());
 
@@ -234,7 +238,6 @@ TEST_F(WebKioskAppLauncherTest, NormalFlowAlreadyInstalled) {
 TEST_F(WebKioskAppLauncherTest, NormalFlowBadLaunchUrl) {
   SetupAppData(/*installed*/ false);
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(false));
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(),
                          InitializeNetwork());
 
@@ -253,7 +256,6 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
   // Freezes url requests until they are manually processed.
   url_loader_->SaveLoadUrlRequests();
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(false));
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(),
                          InitializeNetwork());
 
@@ -262,7 +264,6 @@ TEST_F(WebKioskAppLauncherTest, InstallationRestarted) {
   EXPECT_CALL(delegate(), OnAppInstalling());
   launcher()->ContinueWithNetworkReady();
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(false));
   EXPECT_CALL(delegate(), InitializeNetwork()).Times(1);
   launcher()->RestartLauncher();
 
@@ -294,7 +295,6 @@ TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
 
   SetupAppData(/*installed*/ false);
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(false));
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(),
                          InitializeNetwork());
 
@@ -316,7 +316,8 @@ TEST_F(WebKioskAppLauncherTest, UrlNotLoaded) {
 TEST_F(WebKioskAppLauncherTest, SkipInstallation) {
   SetupAppData(/*installed*/ false);
 
-  EXPECT_CALL(delegate(), ShouldSkipAppInstallation()).WillOnce(Return(true));
+  ConstructLauncher(/*should_skip_install=*/true);
+
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), delegate(), OnAppPrepared());
 
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);

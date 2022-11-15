@@ -41,8 +41,8 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
       "Kiosk.AppService.WebApp.InstallResult";
 
   WebKioskAppServiceLauncher(Profile* profile,
-                             KioskAppLauncher::Delegate* delegate,
-                             const AccountId& account_id);
+                             const AccountId& account_id,
+                             KioskAppLauncher::Delegate* delegate);
   WebKioskAppServiceLauncher(const WebKioskAppServiceLauncher&) = delete;
   WebKioskAppServiceLauncher& operator=(const WebKioskAppServiceLauncher&) =
       delete;

@@ -29,6 +29,7 @@ class StartupAppLauncher : public KioskAppLauncher,
  public:
   StartupAppLauncher(Profile* profile,
                      const std::string& app_id,
+                     bool should_skip_install,
                      Delegate* delegate);
   StartupAppLauncher(const StartupAppLauncher&) = delete;
   StartupAppLauncher& operator=(const StartupAppLauncher&) = delete;
@@ -77,6 +78,8 @@ class StartupAppLauncher : public KioskAppLauncher,
 
   Profile* const profile_;
   const std::string app_id_;
+  const bool should_skip_install_;
+
   int launch_attempt_ = 0;
   LaunchState state_ = LaunchState::kNotStarted;
 

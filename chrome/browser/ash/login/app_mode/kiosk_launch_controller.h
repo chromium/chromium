@@ -151,7 +151,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void InitializeNetwork() override;
   bool IsNetworkReady() const override;
   bool IsShowingNetworkConfigScreen() const override;
-  bool ShouldSkipAppInstallation() const override;
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
   void OnAppInstalling() override;
   void OnAppPrepared() override;
