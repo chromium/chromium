@@ -81,19 +81,6 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
     EXPECT_EQ(1, freed_size_samples->GetCount(10000));
   }
 
-  {
-    auto* histogram_time_delta = base::StatisticsRecorder::FindHistogram(
-        "Memory.LowMemoryKiller.TimeDelta");
-    ASSERT_TRUE(histogram_time_delta);
-    auto time_delta_samples = histogram_time_delta->SnapshotSamples();
-    EXPECT_EQ(3, time_delta_samples->TotalCount());
-    // First time delta is set to kMaxMemoryKillTimeDelta.
-    EXPECT_EQ(1, time_delta_samples->GetCount(
-                     kMaxMemoryKillTimeDelta.InMilliseconds()));
-    // Time delta for the other 2 events depends on Now() so we skip testing it
-    // here.
-  }
-
   lmk_count_histogram = GetLowMemoryKillsCountHistogram();
   ASSERT_TRUE(lmk_count_histogram);
   {

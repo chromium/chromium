@@ -57,8 +57,6 @@ class MemoryKillsMonitor : public chromeos::LoginState::Observer {
   // been started.
   base::AtomicFlag monitoring_started_;
 
-  // The last time a low memory kill happens. Accessed from UI thread only.
-  base::Time last_low_memory_kill_time_;
   // The number of low memory kills since monitoring is started. Accessed from
   // UI thread only.
   int low_memory_kills_count_ = 0;

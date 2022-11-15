@@ -100,14 +100,6 @@ void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,
 
   VLOG(1) << "LOW_MEMORY_KILL_" << type;
 
-  base::Time now = base::Time::Now();
-  const base::TimeDelta time_delta = last_low_memory_kill_time_.is_null()
-                                         ? kMaxMemoryKillTimeDelta
-                                         : (now - last_low_memory_kill_time_);
-  UMA_HISTOGRAM_MEMORY_KILL_TIME_INTERVAL("Memory.LowMemoryKiller.TimeDelta",
-                                          time_delta);
-  last_low_memory_kill_time_ = now;
-
   ++low_memory_kills_count_;
   base::UmaHistogramCustomCounts("Memory.LowMemoryKiller.Count",
                                  low_memory_kills_count_, 1, 1000, 1001);

@@ -1398,16 +1398,6 @@ chromium-metrics-reviews@google.com.
   <summary>The memory size freed by each low memory kill event.</summary>
 </histogram>
 
-<histogram name="Memory.LowMemoryKiller.TimeDelta" units="ms"
-    expires_after="2023-04-23">
-  <owner>khmel@google.com</owner>
-  <owner>vovoy@google.com</owner>
-  <summary>
-    The elapsed time between the last low memory kill event and the current low
-    memory kill event.
-  </summary>
-</histogram>
-
 <histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
     units="KB" expires_after="2023-02-12">
   <owner>lizeb@chromium.org</owner>
