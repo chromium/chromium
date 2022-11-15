@@ -760,7 +760,7 @@ class MainFrameSizeChangedWaiter : public WebContentsObserver {
  private:
   void FrameSizeChanged(RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override {
-    if (render_frame_host == web_contents()->GetPrimaryMainFrame())
+    if (render_frame_host->IsInPrimaryMainFrame())
       run_loop_.Quit();
   }
 
@@ -1338,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache, Basic) {
   contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   // |rfh_a| should become the active frame.
-  EXPECT_EQ(rfh_a.get(), render_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   // The results from the page A should be 19 as the mainframe(2 results) and
   // the new subframe (17 results).
   expect_match_results(19);
@@ -1351,7 +1351,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache, Basic) {
   contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   // |rfh_b| should become the active frame.
-  EXPECT_EQ(rfh_b.get(), render_frame_host());
+  EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
   // The results from the page B should be 5 as the mainframe(5 results) and no
   // subframe.
   expect_match_results(5);
@@ -1772,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache,
   contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   // |rfh_a| should become the active frame.
-  EXPECT_EQ(rfh_a.get(), render_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   // Ensure B is cached.
   EXPECT_EQ(rfh_b->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
@@ -1791,7 +1791,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache,
   contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   // |rfh_b| should become the active frame.
-  EXPECT_EQ(rfh_b.get(), render_frame_host());
+  EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
 
   // 9) Wait for replies from the main frame and the subframes.
   delegate.WaitForFinalReply();
