@@ -1184,11 +1184,6 @@ BASE_FEATURE(kMediaPowerExperiment,
              "MediaPowerExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable WebRTC actions for the Media Session API.
-BASE_FEATURE(kMediaSessionWebRTC,
-             "MediaSessionWebRTC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables flash to be ducked by audio focus. This is enabled on Chrome OS which
 // has audio focus enabled.
 BASE_FEATURE(kAudioFocusDuckFlash,

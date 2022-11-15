@@ -221,16 +221,6 @@ void MediaSession::setActionHandler(const String& action,
     UseCounter::Count(window, WebFeature::kMediaSessionSkipAd);
   }
 
-  if (!RuntimeEnabledFeatures::MediaSessionWebRTCEnabled()) {
-    if ("togglemicrophone" == action || "togglecamera" == action ||
-        "hangup" == action) {
-      exception_state.ThrowTypeError("The provided value '" + action +
-                                     "' is not a valid enum "
-                                     "value of type MediaSessionAction.");
-      return;
-    }
-  }
-
   if (handler) {
     auto add_result = action_handlers_.Set(action, handler);
 

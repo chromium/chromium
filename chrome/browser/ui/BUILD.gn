@@ -4703,8 +4703,6 @@ static_library("ui") {
       "views/omnibox/remove_suggestion_bubble.h",
       "views/omnibox/rounded_omnibox_results_frame.cc",
       "views/omnibox/rounded_omnibox_results_frame.h",
-      "views/overlay/back_to_tab_image_button.cc",
-      "views/overlay/back_to_tab_image_button.h",
       "views/overlay/back_to_tab_label_button.cc",
       "views/overlay/back_to_tab_label_button.h",
       "views/overlay/close_image_button.cc",

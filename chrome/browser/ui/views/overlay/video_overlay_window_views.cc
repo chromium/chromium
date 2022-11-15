@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
@@ -251,23 +250,13 @@ void VideoOverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
-
-  std::unique_ptr<BackToTabImageButton> back_to_tab_image_button;
-  std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
-  auto back_to_tab_callback = base::BindRepeating(
-      [](VideoOverlayWindowViews* overlay) {
-        overlay->controller_->CloseAndFocusInitiator();
-        overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
-      },
-      base::Unretained(this));
-  if (base::FeatureList::IsEnabled(media::kMediaSessionWebRTC)) {
-    back_to_tab_label_button =
-        std::make_unique<BackToTabLabelButton>(std::move(back_to_tab_callback));
-  } else {
-    back_to_tab_image_button =
-        std::make_unique<BackToTabImageButton>(std::move(back_to_tab_callback));
-  }
-
+  auto back_to_tab_label_button =
+      std::make_unique<BackToTabLabelButton>(base::BindRepeating(
+          [](VideoOverlayWindowViews* overlay) {
+            overlay->controller_->CloseAndFocusInitiator();
+            overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
+          },
+          base::Unretained(this)));
   auto previous_track_controls_view = std::make_unique<TrackImageButton>(
       base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
@@ -353,16 +342,9 @@ void VideoOverlayWindowViews::SetUpViews() {
   close_controls_view->layer()->SetName("CloseControlsView");
 
   // views::View that closes the window and focuses initiator tab. ------------
-  if (back_to_tab_image_button) {
-    back_to_tab_image_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-    back_to_tab_image_button->layer()->SetFillsBoundsOpaquely(false);
-    back_to_tab_image_button->layer()->SetName("BackToTabControlsView");
-  } else {
-    DCHECK(back_to_tab_label_button);
-    back_to_tab_label_button->SetPaintToLayer(ui::LAYER_TEXTURED);
-    back_to_tab_label_button->layer()->SetFillsBoundsOpaquely(false);
-    back_to_tab_label_button->layer()->SetName("BackToTabControlsView");
-  }
+  back_to_tab_label_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+  back_to_tab_label_button->layer()->SetFillsBoundsOpaquely(false);
+  back_to_tab_label_button->layer()->SetName("BackToTabControlsView");
 
   // views::View that holds the previous-track image button. ------------------
   previous_track_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -414,15 +396,8 @@ void VideoOverlayWindowViews::SetUpViews() {
       controls_container_view->AddChildView(std::move(controls_scrim_view));
   close_controls_view_ =
       controls_container_view->AddChildView(std::move(close_controls_view));
-
-  if (back_to_tab_image_button) {
-    back_to_tab_image_button_ = controls_container_view->AddChildView(
-        std::move(back_to_tab_image_button));
-  } else {
-    DCHECK(back_to_tab_label_button);
-    back_to_tab_label_button_ = controls_container_view->AddChildView(
-        std::move(back_to_tab_label_button));
-  }
+  back_to_tab_label_button_ = controls_container_view->AddChildView(
+      std::move(back_to_tab_label_button));
 
   previous_track_controls_view_ = controls_container_view->AddChildView(
       std::move(previous_track_controls_view));
@@ -538,16 +513,13 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   skip_ad_controls_view_->SetPosition(GetBounds().size());
 
   // Following controls order matters:
-  // #1 Back to tab
-  // #2 Previous track
-  // #3 Play/Pause
-  // #4 Next track
-  // #5 Toggle microphone
-  // #6 Toggle camera
-  // #7 Hang up
+  // #1 Previous track
+  // #2 Play/Pause
+  // #3 Next track
+  // #4 Toggle microphone
+  // #5 Toggle camera
+  // #6 Hang up
   std::vector<views::ImageButton*> visible_controls_views;
-  if (back_to_tab_image_button_)
-    visible_controls_views.push_back(back_to_tab_image_button_);
   if (show_previous_track_button_)
     visible_controls_views.push_back(previous_track_controls_view_);
   if (show_play_pause_button_)
@@ -905,10 +877,6 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBackToTabControlsBounds() {
-  if (back_to_tab_image_button_)
-    return back_to_tab_image_button_->GetMirroredBounds();
-
-  DCHECK(back_to_tab_label_button_);
   return back_to_tab_label_button_->GetMirroredBounds();
 }
 

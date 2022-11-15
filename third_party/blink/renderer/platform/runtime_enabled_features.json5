@@ -1743,10 +1743,6 @@
       status: "stable",
     },
     {
-      name: "MediaSessionWebRTC",
-      public: true,
-    },
-    {
       name: "MediaSourceExperimental",
       status: "experimental",
     },

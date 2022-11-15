@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/media_session_player_observer.h"
@@ -20,7 +19,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_content_type.h"
-#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -170,6 +168,25 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     observer.WaitForExpectedActions(expected_actions);
   }
 
+  void ExecuteScriptToSetUpWebRTCMediaSessionSync() {
+    ASSERT_TRUE(ExecJs(shell(), kSetUpWebRTCMediaSessionScript));
+    media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
+
+    std::set<media_session::mojom::MediaSessionAction> expected_actions;
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kToggleMicrophone);
+    expected_actions.insert(
+        media_session::mojom::MediaSessionAction::kToggleCamera);
+    expected_actions.insert(media_session::mojom::MediaSessionAction::kHangUp);
+
+    observer.WaitForExpectedActions(expected_actions);
+  }
+
  private:
   std::unique_ptr<MockMediaSessionPlayerObserver> player_;
 };
@@ -258,40 +275,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(1u, GetService()->actions().size());
 }
 
-// Browser tests with the MediaSessionWebRTC feature enabled.
-// TODO(steimel): Merge with above tests when the feature is enabled by default.
-class MediaSessionServiceImplWebRTCBrowserTest
-    : public MediaSessionServiceImplBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaSessionServiceImplBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
-  }
-
-  void ExecuteScriptToSetUpWebRTCMediaSessionSync() {
-    ASSERT_TRUE(ExecJs(shell(), kSetUpWebRTCMediaSessionScript));
-    media_session::test::MockMediaSessionMojoObserver observer(*GetSession());
-
-    std::set<media_session::mojom::MediaSessionAction> expected_actions;
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kPlay);
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kPause);
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kStop);
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kSeekTo);
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kScrubTo);
-    expected_actions.insert(
-        media_session::mojom::MediaSessionAction::kToggleMicrophone);
-    expected_actions.insert(
-        media_session::mojom::MediaSessionAction::kToggleCamera);
-    expected_actions.insert(media_session::mojom::MediaSessionAction::kHangUp);
-
-    observer.WaitForExpectedActions(expected_actions);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
                        MicrophoneAndCameraStatesInitiallyUnknown) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
@@ -304,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
   observer.WaitForCameraState(media_session::mojom::CameraState::kUnknown);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplWebRTCBrowserTest,
+IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
                        MicrophoneAndCameraStatesCanBeSet) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();

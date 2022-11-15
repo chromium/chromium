@@ -2345,24 +2345,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   WaitForTitle(active_web_contents, u"pause");
 }
 
-class VideoConferencingVideoPictureInPictureWindowControllerBrowserTest
-    : public VideoPictureInPictureWindowControllerBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
-    VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
-        command_line);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test that video conferencing action buttons function correctly.
 // TODO(crbug.com/1312401): Test is flaky.
-IN_PROC_BROWSER_TEST_F(
-    VideoConferencingVideoPictureInPictureWindowControllerBrowserTest,
-    DISABLED_VideoConferencingActions) {
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       DISABLED_VideoConferencingActions) {
   // Enter PiP.
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureVideoConferencingPage));

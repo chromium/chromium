@@ -20,7 +20,6 @@ namespace viz {
 class FrameSinkId;
 }  // namespace viz
 
-class BackToTabImageButton;
 class BackToTabLabelButton;
 class CloseImageButton;
 class HangUpButton;
@@ -160,7 +159,6 @@ class VideoOverlayWindowViews : public OverlayWindowViews,
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
-  raw_ptr<BackToTabImageButton> back_to_tab_image_button_ = nullptr;
   raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
   raw_ptr<TrackImageButton> previous_track_controls_view_ = nullptr;
   raw_ptr<PlaybackImageButton> play_pause_controls_view_ = nullptr;

@@ -243,7 +243,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableMediaCastOverlayButton, media::kMediaCastOverlayButton},
     {wf::EnableMediaEngagementBypassAutoplayPolicies,
      media::kMediaEngagementBypassAutoplayPolicies},
-    {wf::EnableMediaSessionWebRTC, media::kMediaSessionWebRTC},
     {wf::EnableMouseSubframeNoImplicitCapture,
      features::kMouseSubframeNoImplicitCapture},
     {wf::EnableNeverSlowMode, features::kNeverSlowMode},
