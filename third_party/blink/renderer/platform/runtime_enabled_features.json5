@@ -646,10 +646,8 @@
     {
       // Support for CSS Color Module Level 4
       // https://www.w3.org/TR/css-color-4/
-      // It has a kill-switch in case we see that something is not proplery working"
       name: "CSSColor4",
-      status:  "stable",
-      base_feature: "CSSColor4",
+      status:  "experimental",
     },
     {
       name: "CSSColorContrast",
