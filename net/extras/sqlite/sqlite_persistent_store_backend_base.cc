@@ -251,8 +251,7 @@ void SQLitePersistentStoreBackendBase::KillDatabase() {
   if (db_) {
     // This Backend will now be in-memory only. In a future run we will recreate
     // the database. Hopefully things go better then!
-    bool success = db_->RazeAndClose();
-    base::UmaHistogramBoolean(histogram_tag_ + ".KillDatabaseResult", success);
+    db_->RazeAndClose();
     meta_table_.Reset();
     db_.reset();
   }

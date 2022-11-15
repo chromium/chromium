@@ -11738,16 +11738,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReportingAndNEL.KillDatabaseResult" enum="BooleanSuccess"
-    expires_after="2020-09-09">
-  <owner>yhirano@chromium.org</owner>
-  <owner>src/net/reporting/OWNERS</owner>
-  <summary>
-    Whether killing the database because it was corrupted beyond repair
-    succeeded. This is recorded when a fatal SQLite error is detected.
-  </summary>
-</histogram>
-
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
     units="policy count" expires_after="2023-06-25">
   <owner>yhirano@chromium.org</owner>

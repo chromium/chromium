@@ -2281,9 +2281,6 @@ bool CookieMonster::DoRecordPeriodicStats() {
       RecordPeriodicFirstPartySetsStats(maybe_sets.value());
   }
 
-  // Can be up to kMaxDomainPurgedKeys.
-  UMA_HISTOGRAM_COUNTS_100("Cookie.NumDomainPurgedKeys",
-                           domain_purged_keys_.size());
   // Can be up to kMaxCookies.
   UMA_HISTOGRAM_COUNTS_10000("Cookie.NumKeys", num_keys_);
 

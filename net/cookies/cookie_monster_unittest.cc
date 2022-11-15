@@ -385,7 +385,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
   }
 
   void TestHostGarbageCollectHelper() {
-    const char kHistogramName[] = "Cookie.NumDomainPurgedKeys";
     int domain_max_cookies = CookieMonster::kDomainMaxCookies;
     int domain_purge_cookies = CookieMonster::kDomainPurgeCookies;
     const int more_than_enough_cookies = domain_max_cookies + 10;
@@ -401,10 +400,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         // Count the number of cookies.
         EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
       }
-      base::HistogramTester histogram_tester;
-      EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
-      histogram_tester.ExpectUniqueSample(kHistogramName, 1 /* sample */,
-                                          1 /* count */);
     }
 
     // Add a bunch of cookies on multiple hosts within a single eTLD.
@@ -438,11 +433,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                            base::ranges::count(cookies_specific, '='));
       EXPECT_GE(total_cookies, domain_max_cookies - domain_purge_cookies);
       EXPECT_LE(total_cookies, domain_max_cookies);
-
-      base::HistogramTester histogram_tester;
-      EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
-      histogram_tester.ExpectUniqueSample(kHistogramName, 1 /* sample */,
-                                          1 /* count */);
     }
 
     // Test histogram for the number of registrable domains affected by domain
@@ -461,10 +451,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
           // Count the number of cookies.
           EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
         }
-        base::HistogramTester histogram_tester;
-        EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
-        histogram_tester.ExpectUniqueSample(
-            kHistogramName, domain_num + 1 /* sample */, 1 /* count */);
       }
 
       // Triggering eviction again for a previously affected registrable domain
@@ -479,10 +465,6 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
         // Count the number of cookies.
         EXPECT_LE(base::ranges::count(cookies, '='), domain_max_cookies);
       }
-      base::HistogramTester histogram_tester;
-      EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
-      histogram_tester.ExpectUniqueSample(kHistogramName, 3 /* sample */,
-                                          1 /* count */);
     }
   }
 

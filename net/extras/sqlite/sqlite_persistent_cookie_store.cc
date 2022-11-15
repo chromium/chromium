@@ -329,13 +329,11 @@ class SQLitePersistentCookieStore::Backend
 
  private:
   // Creates or loads the SQLite database on background runner.
-  void LoadAndNotifyInBackground(LoadedCallback loaded_callback,
-                                 const base::Time& posted_at);
+  void LoadAndNotifyInBackground(LoadedCallback loaded_callback);
 
   // Loads cookies for the domain key (eTLD+1) on background runner.
   void LoadKeyAndNotifyInBackground(const std::string& domains,
-                                    LoadedCallback loaded_callback,
-                                    const base::Time& posted_at);
+                                    LoadedCallback loaded_callback);
 
   // Notifies the CookieMonster when loading completes for a specific domain key
   // or for all domain keys. Triggers the callback and passes it all cookies
@@ -351,8 +349,7 @@ class SQLitePersistentCookieStore::Backend
   // Sends notification when a single priority load completes. Updates priority
   // load metric data. The data is sent only after the final load completes.
   void CompleteLoadForKeyInForeground(LoadedCallback loaded_callback,
-                                      bool load_success,
-                                      const base::Time& requested_at);
+                                      bool load_success);
 
   // Initialize the Cookies table.
   bool CreateDatabaseSchema() override;
@@ -734,9 +731,9 @@ bool CreateV18Schema(sql::Database* db) {
 
 void SQLitePersistentCookieStore::Backend::Load(
     LoadedCallback loaded_callback) {
-  PostBackgroundTask(
-      FROM_HERE, base::BindOnce(&Backend::LoadAndNotifyInBackground, this,
-                                std::move(loaded_callback), base::Time::Now()));
+  PostBackgroundTask(FROM_HERE,
+                     base::BindOnce(&Backend::LoadAndNotifyInBackground, this,
+                                    std::move(loaded_callback)));
 }
 
 void SQLitePersistentCookieStore::Backend::LoadCookiesForKey(
@@ -751,14 +748,12 @@ void SQLitePersistentCookieStore::Backend::LoadCookiesForKey(
   }
 
   PostBackgroundTask(
-      FROM_HERE,
-      base::BindOnce(&Backend::LoadKeyAndNotifyInBackground, this, key,
-                     std::move(loaded_callback), base::Time::Now()));
+      FROM_HERE, base::BindOnce(&Backend::LoadKeyAndNotifyInBackground, this,
+                                key, std::move(loaded_callback)));
 }
 
 void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
-    LoadedCallback loaded_callback,
-    const base::Time& posted_at) {
+    LoadedCallback loaded_callback) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   IncrementTimeDelta increment(&cookie_load_duration_);
 
@@ -773,8 +768,7 @@ void SQLitePersistentCookieStore::Backend::LoadAndNotifyInBackground(
 
 void SQLitePersistentCookieStore::Backend::LoadKeyAndNotifyInBackground(
     const std::string& key,
-    LoadedCallback loaded_callback,
-    const base::Time& posted_at) {
+    LoadedCallback loaded_callback) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   IncrementTimeDelta increment(&cookie_load_duration_);
 
@@ -793,18 +787,13 @@ void SQLitePersistentCookieStore::Backend::LoadKeyAndNotifyInBackground(
       FROM_HERE,
       base::BindOnce(
           &SQLitePersistentCookieStore::Backend::CompleteLoadForKeyInForeground,
-          this, std::move(loaded_callback), success, posted_at));
+          this, std::move(loaded_callback), success));
 }
 
 void SQLitePersistentCookieStore::Backend::CompleteLoadForKeyInForeground(
     LoadedCallback loaded_callback,
-    bool load_success,
-    const ::Time& requested_at) {
+    bool load_success) {
   DCHECK(client_task_runner()->RunsTasksInCurrentSequence());
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("Cookie.TimeKeyLoadTotalWait",
-                             base::Time::Now() - requested_at,
-                             base::Milliseconds(1), base::Minutes(1), 50);
 
   Notify(std::move(loaded_callback), load_success);
 
