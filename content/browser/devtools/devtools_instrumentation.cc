@@ -1212,6 +1212,13 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
     exclusion_reasons->push_back(
         protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::
+              EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::CookieExclusionReasonEnum::
+            ExcludeThirdPartyCookieBlockedInFirstPartySet);
+  }
 
   return exclusion_reasons;
 }

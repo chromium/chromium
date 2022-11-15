@@ -952,7 +952,10 @@
   {
     "prefix": "first-party-sets",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/inspector-protocol/network"],
+    "bases": [
+      "http/tests/inspector-protocol/network",
+      "http/tests/inspector-protocol/issues"
+    ],
     "args": ["--use-first-party-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"]
   },
   {

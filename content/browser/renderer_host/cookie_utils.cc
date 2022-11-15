@@ -44,7 +44,10 @@ bool ShouldReportDevToolsIssueForStatus(
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY) ||
          status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
+             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::
+                 EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
 }
 
 }  // namespace

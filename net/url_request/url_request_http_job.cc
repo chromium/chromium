@@ -703,6 +703,11 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     for (auto it = partition_it; it < maybe_included_cookies.end(); ++it) {
       it->access_result.status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      if (first_party_set_metadata_.AreSitesInSameFirstPartySet()) {
+        it->access_result.status.AddExclusionReason(
+            CookieInclusionStatus::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+      }
     }
     excluded_cookies.insert(
         excluded_cookies.end(), std::make_move_iterator(partition_it),
