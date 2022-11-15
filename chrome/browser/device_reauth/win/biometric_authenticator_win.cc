@@ -18,9 +18,14 @@
 namespace {
 
 void SaveAvailability(BiometricAuthenticationStatusWin availability) {
+  bool is_available =
+      availability == BiometricAuthenticationStatusWin::kAvailable;
   g_browser_process->local_state()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable,
-      availability == BiometricAuthenticationStatusWin::kAvailable);
+      password_manager::prefs::kIsBiometricAvailable, is_available);
+  if (is_available) {
+    g_browser_process->local_state()->SetBoolean(
+        password_manager::prefs::kHadBiometricsAvailable, is_available);
+  }
   base::UmaHistogramEnumeration("PasswordManager.BiometricAvailabilityWin",
                                 availability);
 }

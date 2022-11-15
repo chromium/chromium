@@ -332,8 +332,6 @@ class PasswordAutofillManagerTest : public testing::Test {
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     test_pref_service_->registry()->RegisterBooleanPref(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-    test_pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kHadBiometricsAvailable, true);
     ON_CALL(*client, GetPrefs())
         .WillByDefault(Return(test_pref_service_.get()));
     ON_CALL(*client, GetLocalStatePrefs())
@@ -370,17 +368,18 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   void ExpectAndAllowAuthentication() {
     // Allow authentication.
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(true));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _));
 #else
-        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                     /*use_last_valid_auth= */ true));
+    EXPECT_CALL(*authenticator_.get(),
+                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*authenticator_.get(),
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true));
 #endif
   }
 
@@ -1705,10 +1704,12 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
     EXPECT_CALL(*client.mock_driver(),
                 FillSuggestion(test_username_, test_password_));
 
+#if BUILDFLAG(IS_ANDROID)
     // The authenticator exists, but cannot be used for authentication.
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(false));
+#endif
 
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
@@ -1769,19 +1770,20 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
         autofill_client,
         HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
-    // The authenticator exists and is available.
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(true));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/true));
+    // The authenticator exists and is available.
 #else
-        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                     /*use_last_valid_auth= */ true))
+    EXPECT_CALL(*authenticator_.get(),
+                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*authenticator_.get(),
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 #endif
 
@@ -1844,18 +1846,19 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
         HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
     // The authenticator exists and is available.
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
-        .WillOnce(Return(true));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/false));
 #else
-        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                     /*use_last_valid_auth= */ true))
+    EXPECT_CALL(*authenticator_.get(),
+                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*authenticator_.get(),
+                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                             /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 #endif
 
@@ -2081,7 +2084,6 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
       base::i18n::RIGHT_TO_LEFT, std::u16string(), 0, gfx::RectF());
 
   // The authenticator exists and is available.
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
       .WillOnce(MoveArg<2>(&auth_callback));
