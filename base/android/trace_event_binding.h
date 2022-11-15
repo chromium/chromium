@@ -10,7 +10,7 @@ namespace android {
 namespace internal {
 
 constexpr const char kJavaTraceCategory[] = "Java";
-constexpr const char kToplevelTraceCategory[] = "toplevel";
+constexpr const char kToplevelTraceCategory[] = "toplevel,Java";
 
 }  // namespace internal
 }  // namespace android
