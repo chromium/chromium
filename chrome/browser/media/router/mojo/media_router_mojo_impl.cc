@@ -581,7 +581,9 @@ void MediaRouterMojoImpl::RegisterMediaRoutesObserver(
         FROM_HERE,
         base::BindOnce(&MediaRouterMojoImpl::NotifyOfExistingRoutesIfRegistered,
                        weak_factory_.GetWeakPtr(),
-                       base::UnsafeDanglingUntriaged(observer)));
+                       // Safe because we check the routes_query_ in the notify
+                       // method before usage.
+                       base::Unretained(observer)));
   }
 }
 
