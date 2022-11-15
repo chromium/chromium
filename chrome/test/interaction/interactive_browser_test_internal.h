@@ -7,10 +7,16 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
+#include "base/strings/string_piece_forward.h"
+#include "base/template_util.h"
+#include "base/values.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 
 class InteractiveBrowserTestApi;
@@ -36,6 +42,149 @@ class InteractiveBrowserTestPrivate
   std::map<ui::ElementIdentifier,
            std::unique_ptr<WebContentsInteractionTestUtil>>
       instrumented_web_contents_;
+};
+
+// Provides a template-specialized method for converting base::Value objects to
+// an expected type for a testing::Matcher<T>.
+template <typename T>
+struct JsValueExtractor {};
+
+template <>
+struct JsValueExtractor<base::Value> {
+  static base::Value Extract(base::Value v) { return v; }
+};
+
+template <>
+struct JsValueExtractor<int> {
+  static int Extract(base::Value v) {
+    if (v.is_double()) {
+      LOG(ERROR) << "Result of Js function is a double; if there is any chance "
+                    "your function will return a floating-point result, please "
+                    "use a double value or matcher.";
+    }
+    return v.GetInt();
+  }
+};
+
+template <>
+struct JsValueExtractor<double> {
+  static double Extract(base::Value v) { return v.GetDouble(); }
+};
+
+template <>
+struct JsValueExtractor<bool> {
+  static bool Extract(base::Value v) { return v.GetBool(); }
+};
+
+template <>
+struct JsValueExtractor<std::string> {
+  static std::string Extract(base::Value v) { return v.GetString(); }
+};
+
+// Provides implementations for CheckJsResult[At]().
+//
+// The default implementation assumes an arbitrary value or and builds an
+// equality testing::Matcher<T> to use for the check; e.g.:
+//
+//   const std::string kExpectedHtmlContents = "...";
+//   ...
+//   CheckJsResult(id, "() => document.innerHtml", kExpectedHtmlContents)
+//   CheckJsResult(id, "() => getFooCount()", 3)
+//
+template <typename T>
+struct JsResultChecker {
+  using V = base::remove_cvref_t<T>;
+  using M = testing::Matcher<V>;
+  static ui::InteractionSequence::StepBuilder CheckJsResult(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function,
+      T&& value) {
+    return JsResultChecker<M>::CheckJsResult(webcontents_id, function,
+                                             M(std::move(value)));
+  }
+
+  static ui::InteractionSequence::StepBuilder CheckJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      WebContentsInteractionTestUtil::DeepQuery where,
+      const std::string& function,
+      T&& value) {
+    return JsResultChecker<M>::CheckJsResultAt(webcontents_id, where, function,
+                                               M(std::move(value)));
+  }
+};
+
+// This implementation allows for a javascript string to be matched against am
+// inline string literal, e.g.:
+//
+//   CheckJsResultAt(id, {"#id"}, "el => el.innerText", "The Quick Brown Fox")
+//
+template <int N>
+struct JsResultChecker<const char (&)[N]>
+    : public JsResultChecker<std::string> {};
+
+// This implementation allows for a javascript string ot be matched against a
+// constant C-style string, e.g.:
+//
+//   const char* const kExpectedString = "The Quick Brown Fox";
+//   ...
+//   CheckJsResultAt(id, {#id}m "el => el.innerText", kExpectedString)
+//
+template <>
+struct JsResultChecker<const char*> : public JsResultChecker<std::string> {};
+
+// This implementation allows for a testing::Matcher of any kind to be passed
+// in directly; e.g.:
+//
+//   CheckJsResult(id,
+//                 "() => document.documentElement.clientWidth",
+//                 testing::Gt(500))
+//
+template <template <typename...> typename M, typename T>
+struct JsResultChecker<M<T>> {
+  using E = JsValueExtractor<base::remove_cvref_t<T>>;
+
+  static ui::InteractionSequence::StepBuilder CheckJsResult(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function,
+      M<T> matcher) {
+    ui::InteractionSequence::StepBuilder builder;
+    builder.SetElementID(webcontents_id);
+    builder.SetStartCallback(base::BindOnce(
+        [](std::string function, testing::Matcher<T> matcher,
+           ui::InteractionSequence* seq, ui::TrackedElement* el) {
+          base::Value result =
+              el->AsA<TrackedElementWebContents>()->owner()->Evaluate(function);
+          if (!ui::test::internal::MatchAndExplain(
+                  "CheckJsResult()", matcher, E::Extract(std::move(result)))) {
+            seq->FailForTesting();
+          }
+        },
+        function, testing::Matcher<T>(std::move(matcher))));
+    return builder;
+  }
+
+  static ui::InteractionSequence::StepBuilder CheckJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      WebContentsInteractionTestUtil::DeepQuery where,
+      const std::string& function,
+      M<T> matcher) {
+    ui::InteractionSequence::StepBuilder builder;
+    builder.SetElementID(webcontents_id);
+    builder.SetStartCallback(base::BindOnce(
+        [](WebContentsInteractionTestUtil::DeepQuery where,
+           std::string function, testing::Matcher<T> matcher,
+           ui::InteractionSequence* seq, ui::TrackedElement* el) {
+          base::Value result =
+              el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
+                  where, function);
+          if (!ui::test::internal::MatchAndExplain(
+                  "CheckJsResult()", matcher, E::Extract(std::move(result)))) {
+            seq->FailForTesting();
+          }
+        },
+        where, function, testing::Matcher<T>(std::move(matcher))));
+    return builder;
+  }
 };
 
 }  // namespace internal

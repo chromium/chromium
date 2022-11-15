@@ -128,6 +128,77 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       StateChange state_change,
       bool expect_timeout = false);
 
+  // Required to keep from hiding inherited versions of this method.
+  using InteractiveViewsTestApi::EnsureNotPresent;
+
+  // Ensures that there is no element at path `where` in `webcontents_id`.
+  // Unlike InteractiveTestApi::EnsureNotPresent, you can use `InAnyContext`()`
+  // with this method; it will only be used to locate `webcontents_id`.
+  [[nodiscard]] static StepBuilder EnsureNotPresent(
+      ui::ElementIdentifier webcontents_id,
+      DeepQuery where);
+
+  // Execute javascript `function`, which should take no arguments, in
+  // WebContents `webcontents_id`.
+  [[nodiscard]] static StepBuilder ExecuteJs(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function);
+
+  // Execute javascript `function`, which should take a single DOM element as an
+  // argument, with the element at `where`, in WebContents `webcontents_id`.
+  [[nodiscard]] static StepBuilder ExecuteJsAt(
+      ui::ElementIdentifier webcontents_id,
+      DeepQuery where,
+      const std::string& function);
+
+  // Executes javascript `function`, which should take no arguments and return a
+  // value, in WebContents `webcontents_id`, and fails if the result is not
+  // truthy.
+  [[nodiscard]] static StepBuilder CheckJsResult(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function);
+
+  // Executes javascript `function`, which should take no arguments and return a
+  // value, in WebContents `webcontents_id`, and fails if the result does not
+  // match `matcher`, which can be a literal or a testing::Matcher.
+  //
+  // Note that only the following types are supported:
+  //  - string (for literals, you may pass a const char*)
+  //  - bool
+  //  - int
+  //  - double (will also match integer return values)
+  //  - base::Value (required if you want to match a list or dictionary)
+  //
+  // You must pass a literal or Matcher that matches the type returned by the
+  // javascript function. If your function could return either an integer or a
+  // floating-point value, you *must* use a double.
+  template <typename T>
+  [[nodiscard]] static StepBuilder CheckJsResult(
+      ui::ElementIdentifier webcontents_id,
+      const std::string& function,
+      T&& matcher);
+
+  // Executes javascript `function`, which should take a single DOM element as
+  // an argument and returns a value, in WebContents `webcontents_id` on the
+  // element specified by `where`, and fails if the result is not truthy.
+  [[nodiscard]] static StepBuilder CheckJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      DeepQuery where,
+      const std::string& function);
+
+  // Executes javascript `function`, which should take a single DOM element as
+  // an argument and returns a value, in WebContents `webcontents_id` on the
+  // element specified by `where`, and fails if the result does not match
+  // `matcher`, which can be a literal or a testing::Matcher.
+  //
+  // See notes on CheckJsResult() for what values and Matchers are supported.
+  template <typename T>
+  [[nodiscard]] static StepBuilder CheckJsResultAt(
+      ui::ElementIdentifier webcontents_id,
+      DeepQuery where,
+      const std::string& function,
+      T&& matcher);
+
   // These are required so the following overloads don't hide the base class
   // variations.
   using InteractiveViewsTestApi::DragMouseTo;
@@ -184,5 +255,28 @@ class InteractiveBrowserTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 };
+
+// Template definitions:
+
+// static
+template <typename T>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
+    ui::ElementIdentifier webcontents_id,
+    const std::string& function,
+    T&& matcher) {
+  return internal::JsResultChecker<T>::CheckJsResult(webcontents_id, function,
+                                                     std::move(matcher));
+}
+
+// static
+template <typename T>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
+    ui::ElementIdentifier webcontents_id,
+    DeepQuery where,
+    const std::string& function,
+    T&& matcher) {
+  return internal::JsResultChecker<T>::CheckJsResultAt(
+      webcontents_id, where, function, std::move(matcher));
+}
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_

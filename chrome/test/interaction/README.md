@@ -81,8 +81,8 @@ Verbs fall into a number of different categories:
     - `CheckViewProperty()` [Views]
     - `Screenshot` [Browser] - compares the target against Skia Gold in pixel
       tests
-- **WaitFor** verbs ensure that the given UI event happens before proceeding.
-  Examples:
+- **WaitFor** verbs ensure that the given UI event happens or condition becomes
+  true before proceeding. Examples:
     - `WaitForShow()`
     - `WaitForHide()`
     - `WaitForActivated()`
@@ -102,7 +102,9 @@ Verbs fall into a number of different categories:
   Unlike the above verbs, it will not wait; the element must exist when the step
   triggers or the test will fail.
 - **EnsureNotPresent** is the opposite of `WithElement`; if the element exists
-  when the step is triggered, the test fails.
+  when the step is triggered, the test fails. There is also a version that looks
+  for a DOM element in an
+  [instrumented WebContents](#webcontents-instrumentation) [Browser].
 - **Action** verbs simulate input to specific UI elements. You may specify the
   type of input you want to simulate (keyboard, mouse, etc.) but you don't have
   to. Examples:
@@ -125,6 +127,17 @@ Verbs fall into a number of different categories:
     - `NameChildView()` [Views]
     - `NameDescendantView()` [Views]
     - `NameViewRelative()` [Views]
+- **Javascript** verbs execute javascript in an
+  [instrumented WebContents](#webcontents-instrumentation), or verify a result
+  from calling a javascript function. The `*At()` methods take a
+  [DeepQuery](#specifying-dom-elements) and operate on a specific DOM element
+  (possibly in a Shadow DOM), while the non-at methods operate at global scope.
+  If you are not sure if the target element exists or the condition is true yet,
+  use `WaitForStateChange()` instead. Examples:
+   - `ExecuteJs()` [Browser]
+   - `ExecuteJsAt()` [Browser]
+   - `CheckJsResult()` [Browser]
+   - `CheckJsResultAt()` [Browser]
 
 Example with mouse input:
 ```cpp
@@ -154,7 +167,7 @@ RunTestSequence(
 
 A modifier wraps around a step and changes its behavior. Currently there is only one modifier:
 - **InAnyContext** allows the modified verb to find an element by its identifier
-  outside the test's default `ElementContext`. It has no effect on
+  outside the test's default `ElementContext`. It has no effect on some versions of
   `EnsureNotPresent()`, and is not compatible with named elements or with some
   specific verbs. Use sparingly.
 
@@ -166,7 +179,7 @@ RunTestSequence(
     InAnyContext(CheckView(kMyButton, ensure_pressed)));
 ```
 
-### Instrumentation
+### WebContents Instrumentation
 
 A feature of `InteractiveBrowserTestApi` that it borrows from
 [WebContentsInteractoinTestUtil](/chrome/test/interaction/webcontents_interaction_test_util.h)
@@ -185,6 +198,25 @@ You may call **Instrument** methods before or during a test sequence.
 - `InstrumentNonTabWebContents()` instruments a piece of primary or secondary UI
   that uses a `WebView` and is not a tab (e.g. the tablet tabstrip or Tab Search
   dialog).
+
+#### Specifying DOM Elements
+
+Certain verbs that operate on instrumented WebContents take a `DeepQuery`, which
+provides a path to a DOM element in the WebContents. A `DeepQuery` is a sequence
+of one or more element selectors, as taken by the JavaScript `querySelector()`
+method. A `DeepQuery` works as follows:
+
+```js
+let cur = document;
+for (let selector of deepQuery) {
+  if (cur.shadowRoot)
+    cur = cur.shadowRoot;
+  cur = cur.querySelector(selector);
+}  
+```
+
+If at any point the selector fails, the target DOM element is determined not to
+exist. Often, this fails the test, but might not in all cases. 
 
 ### Automatic Conversion
 

@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -213,6 +215,97 @@ InteractiveBrowserTestApi::WaitForStateChange(
                     .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                              event_type)));
   return steps;
+}
+
+// static
+ui::InteractionSequence::StepBuilder
+InteractiveBrowserTestApi::EnsureNotPresent(
+    ui::ElementIdentifier webcontents_id,
+    DeepQuery where) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetStartCallback(base::BindOnce(
+      [](DeepQuery where, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        if (AsInstrumentedWebContents(el)->Exists(where)) {
+          LOG(ERROR) << "Expected DOM element not to be present: \""
+                     << base::JoinString(where, "\", \"") << "\"";
+          seq->FailForTesting();
+        }
+      },
+      where));
+  return builder;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJs(
+    ui::ElementIdentifier webcontents_id,
+    const std::string& function) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetStartCallback(base::BindOnce(
+      [](std::string function, ui::TrackedElement* el) {
+        AsInstrumentedWebContents(el)->Execute(function);
+      },
+      function));
+  return builder;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ExecuteJsAt(
+    ui::ElementIdentifier webcontents_id,
+    DeepQuery where,
+    const std::string& function) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetStartCallback(base::BindOnce(
+      [](DeepQuery where, std::string function, ui::TrackedElement* el) {
+        AsInstrumentedWebContents(el)->ExecuteAt(where, function);
+      },
+      std::move(where), function));
+  return builder;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
+    ui::ElementIdentifier webcontents_id,
+    const std::string& function) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetStartCallback(base::BindOnce(
+      [](std::string function, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        const auto result = AsInstrumentedWebContents(el)->Evaluate(function);
+        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
+          LOG(ERROR) << "CheckJsResult(): result of function is falsy: "
+                     << result;
+          seq->FailForTesting();
+        }
+      },
+      function));
+  return builder;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
+    ui::ElementIdentifier webcontents_id,
+    DeepQuery where,
+    const std::string& function) {
+  StepBuilder builder;
+  builder.SetElementID(webcontents_id);
+  builder.SetStartCallback(base::BindOnce(
+      [](DeepQuery where, std::string function, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        const auto result =
+            AsInstrumentedWebContents(el)->EvaluateAt(where, function);
+        if (!WebContentsInteractionTestUtil::IsTruthy(result)) {
+          LOG(ERROR) << "CheckJsResultAt(): result of function is falsy: "
+                     << result;
+          seq->FailForTesting();
+        }
+      },
+      where, function));
+  return builder;
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
