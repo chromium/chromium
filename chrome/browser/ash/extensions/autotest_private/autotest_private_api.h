@@ -411,16 +411,6 @@ class AutotestPrivateIsSystemWebAppOpenFunction : public ExtensionFunction {
   void OnSystemWebAppsInstalled();
 };
 
-class AutotestPrivateLaunchArcAppFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchArcApp",
-                             AUTOTESTPRIVATE_LAUNCHARCAPP)
-
- private:
-  ~AutotestPrivateLaunchArcAppFunction() override;
-  ResponseAction Run() override;
-};
-
 class AutotestPrivateLaunchAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchApp",

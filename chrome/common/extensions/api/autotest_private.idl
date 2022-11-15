@@ -359,8 +359,6 @@ namespace autotestPrivate {
     double renderQuality;
   };
 
-  callback LaunchArcAppCallback = void (boolean appLaunched);
-
   callback TakeScreenshotCallback = void (DOMString base64Png);
 
   callback GetPrimaryDisplayScaleFactorCallback = void (double scaleFactor);
@@ -916,13 +914,6 @@ namespace autotestPrivate {
     [supportsPromises] static void isSystemWebAppOpen(
         DOMString appId,
         IsSystemWebAppOpenCallback callback);
-
-    // Launches ARC app with optional intent. Returns true if ARC is active,
-    // app exists and launch request is passed to Android.
-    [supportsPromises] static void launchArcApp(
-        DOMString appId,
-        DOMString intent,
-        LaunchArcAppCallback callback);
 
     // Launches an application from the launcher with the given appId.
     [supportsPromises] static void launchApp(DOMString appId,

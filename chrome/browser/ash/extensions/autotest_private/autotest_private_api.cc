@@ -2294,31 +2294,6 @@ void AutotestPrivateIsSystemWebAppOpenFunction::OnSystemWebAppsInstalled() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateLaunchArcIntentFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateLaunchArcAppFunction::~AutotestPrivateLaunchArcAppFunction() =
-    default;
-
-ExtensionFunction::ResponseAction AutotestPrivateLaunchArcAppFunction::Run() {
-  std::unique_ptr<api::autotest_private::LaunchArcApp::Params> params(
-      api::autotest_private::LaunchArcApp::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  DVLOG(1) << "AutotestPrivateLaunchArcIntentFunction " << params->app_id << "/"
-           << params->intent;
-
-  absl::optional<std::string> launch_intent;
-  if (!params->intent.empty())
-    launch_intent = params->intent;
-  const bool result = arc::LaunchAppWithIntent(
-      Profile::FromBrowserContext(browser_context()), params->app_id,
-      launch_intent, 0 /* event_flags */,
-      arc::UserInteractionType::APP_STARTED_FROM_EXTENSION_API,
-      nullptr /* window_info */);
-  return RespondNow(WithArguments(result));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateLaunchAppFunction
 ///////////////////////////////////////////////////////////////////////////////
 

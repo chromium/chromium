@@ -406,16 +406,6 @@ var defaultTests = [
          'fake.package',
          chrome.test.callbackFail('Package is not available'));
   },
-  // Launch fails, no any ARC app by default
-  function launchArcApp() {
-    chrome.autotestPrivate.launchArcApp(
-        'bifanmfigailifmdhaomnmchcgflbbdn',
-        '#Intent;',
-        function(appLaunched) {
-          chrome.test.assertFalse(appLaunched);
-          chrome.test.succeed();
-        });
-  },
   // This gets the primary display's scale factor.
   function getPrimaryDisplayScaleFactor() {
     chrome.autotestPrivate.getPrimaryDisplayScaleFactor(
@@ -1202,28 +1192,6 @@ var arcEnabledTests = [
           chrome.test.assertEq(false, packageInfo.vpnProvider);
           chrome.test.succeed();
         }));
-  },
-  // Launch existing ARC app
-  function launchArcApp() {
-    chrome.autotestPrivate.launchArcApp(
-        'bifanmfigailifmdhaomnmchcgflbbdn',
-        '#Intent;',
-        function(appLaunched) {
-          chrome.test.assertNoLastError();
-          chrome.test.assertTrue(appLaunched);
-          chrome.test.succeed();
-        });
-  },
-  // Launch non-existing ARC app
-  function launchNonExistingApp() {
-    chrome.autotestPrivate.launchArcApp(
-        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        '#Intent;',
-        function(appLaunched) {
-          chrome.test.assertNoLastError();
-          chrome.test.assertFalse(appLaunched);
-          chrome.test.succeed();
-        });
   },
 
   async function douleStartArc() {
