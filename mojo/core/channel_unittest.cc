@@ -714,6 +714,69 @@ TEST(ChannelTest, SendToDeadMachPortName) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST(ChannelTest, ShutDownStress) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  // Create a second IO thread for Channel B.
+  base::Thread peer_thread("channel_b_io");
+  peer_thread.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0));
+
+  // Create two channels, A and B, which run on different threads.
+  PlatformChannel platform_channel;
+
+  CallbackChannelDelegate delegate_a;
+  scoped_refptr<Channel> channel_a = Channel::Create(
+      &delegate_a, ConnectionParams(platform_channel.TakeLocalEndpoint()),
+      Channel::HandlePolicy::kRejectHandles,
+      task_environment.GetMainThreadTaskRunner());
+  channel_a->Start();
+
+  scoped_refptr<Channel> channel_b = Channel::Create(
+      nullptr, ConnectionParams(platform_channel.TakeRemoteEndpoint()),
+      Channel::HandlePolicy::kRejectHandles, peer_thread.task_runner());
+  channel_b->Start();
+
+  base::WaitableEvent go_event;
+
+  // Warm up the channel to ensure that A and B are connected, then quit.
+  channel_b->Write(Channel::Message::CreateMessage(0, 0));
+  {
+    base::RunLoop run_loop;
+    delegate_a.set_on_message(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Block the peer thread while some tasks are queued up from the test main
+  // thread.
+  peer_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&base::WaitableEvent::Wait, base::Unretained(&go_event)));
+
+  // First, write some messages for Channel B.
+  for (int i = 0; i < 500; ++i) {
+    channel_b->Write(Channel::Message::CreateMessage(0, 0));
+  }
+
+  // Then shut down channel B.
+  channel_b->ShutDown();
+
+  // Un-block the peer thread.
+  go_event.Signal();
+
+  // And then flood the channel with messages. This will suss out data races
+  // during Channel B's shutdown, since Writes can happen across threads
+  // without a PostTask.
+  for (int i = 0; i < 1000; ++i) {
+    channel_b->Write(Channel::Message::CreateMessage(0, 0));
+  }
+
+  // Explicitly join the thread to wait for pending tasks, which may reference
+  // stack variables, to complete.
+  peer_thread.Stop();
+}
+
 }  // namespace
 }  // namespace core
 }  // namespace mojo
