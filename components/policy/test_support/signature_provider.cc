@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/signature_creator.h"
 
@@ -82,6 +83,8 @@ constexpr char kTestDomain3Signature2[] =
     "vAMGg8L+rQaDwBTEnMsMZcvlrIyqSg5v4BxCWuL3Yd2xvUqZEUWRp1aKetsHRnz5hw"
     "H7WK7DzvKepDn06XjPG9lchi448U3HB3PRKtCzfO3nD9YXMKTuqRpKPF8PeK11CWh1"
     "DBvBYwi20vbQ==";
+
+constexpr char kWildCard[] = "*";
 
 std::unique_ptr<crypto::RSAPrivateKey> DecodePrivateKey(
     const char* const encoded) {
@@ -159,7 +162,7 @@ bool SignatureProvider::SigningKey::GetSignatureForDomain(
     return true;
   }
 
-  auto wildcard_signature = signatures_.find("*");
+  auto wildcard_signature = signatures_.find(kWildCard);
   if (wildcard_signature != signatures_.end()) {
     signature->assign(wildcard_signature->second);
     return true;
@@ -182,6 +185,14 @@ bool SignatureProvider::SigningKey::Sign(const std::string& str,
   signature->assign(reinterpret_cast<const char*>(signature_vec.data()),
                     signature_vec.size());
   return true;
+}
+
+void SignatureProvider::SetUniversalSigningKeys() {
+  std::vector<policy::SignatureProvider::SigningKey> universal_signing_keys;
+  universal_signing_keys.push_back(policy::SignatureProvider::SigningKey(
+      policy::PolicyBuilder::CreateTestSigningKey(),
+      {{kWildCard, policy::PolicyBuilder::GetTestSigningKeySignature()}}));
+  set_signing_keys(std::move(universal_signing_keys));
 }
 
 SignatureProvider::SignatureProvider() {

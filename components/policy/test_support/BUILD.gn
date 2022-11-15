@@ -64,6 +64,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//crypto",
     "//google_apis:google_apis",

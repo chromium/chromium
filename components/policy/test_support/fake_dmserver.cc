@@ -39,6 +39,7 @@ constexpr char kDirectoryApiIdKey[] = "directory_api_id";
 constexpr char kRequestErrorsKey[] = "request_errors";
 constexpr char kRobotApiAuthCodeKey[] = "robot_api_auth_code";
 constexpr char kAllowSetDeviceAttributesKey[] = "allow_set_device_attributes";
+constexpr char kUseUniversalSigningKeysKey[] = "use_universal_signing_keys";
 constexpr char kInitialEnrollmentStateKey[] = "initial_enrollment_state";
 constexpr char kManagementDomainKey[] = "management_domain";
 constexpr char kInitialEnrollmentModeKey[] = "initial_enrollment_mode";
@@ -296,6 +297,21 @@ bool FakeDMServer::ReadPolicyBlobFile() {
     }
     policy_storage()->set_allow_set_device_attributes(
         allow_set_device_attributes.value());
+  }
+
+  base::Value* use_universal_signing_keys =
+      dict.Find(kUseUniversalSigningKeysKey);
+  if (use_universal_signing_keys) {
+    if (!use_universal_signing_keys->is_bool()) {
+      LOG(ERROR)
+          << "The use_universal_signing_keys key isn't a bool, found type "
+          << use_universal_signing_keys->type() << ", found value "
+          << *use_universal_signing_keys;
+      return false;
+    }
+    if (use_universal_signing_keys->GetBool()) {
+      policy_storage()->signature_provider()->SetUniversalSigningKeys();
+    }
   }
 
   std::string* robot_api_auth_code = dict.FindString(kRobotApiAuthCodeKey);
