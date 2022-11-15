@@ -16,14 +16,19 @@
 namespace ash {
 namespace {
 
+constexpr char kRemoveAttemptResultHistogram[] =
+    "Network.Ash.WiFi.Hidden.RemovalAttempt.Result";
+
 constexpr base::TimeDelta kOneDay = base::Days(1);
 
 void OnRemoveConfigurationSuccess(const std::string guid) {
+  base::UmaHistogramBoolean(kRemoveAttemptResultHistogram, true);
   NET_LOG(EVENT) << "Successfully removed wrongly hidden network: " << guid;
 }
 
 void OnRemoveConfigurationFailure(const std::string guid,
                                   const std::string& error_name) {
+  base::UmaHistogramBoolean(kRemoveAttemptResultHistogram, false);
   NET_LOG(EVENT) << "Failed to remove wrongly hidden network: " << guid
                  << ", error: " << error_name;
 }
