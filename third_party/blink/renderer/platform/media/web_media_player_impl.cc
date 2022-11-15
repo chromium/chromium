@@ -924,6 +924,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
     buffered_data_source_host_->SetTotalBytes(data.size());
     buffered_data_source_host_->AddBufferedByteRange(0, data.size());
 
+    DCHECK(!mb_data_source_);
     data_source_ = std::make_unique<media::MemoryDataSource>(std::move(data));
     DataSourceInitialized(true);
     return;
@@ -932,18 +933,17 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   auto url_data = url_index_->GetByUrl(
       url, static_cast<UrlData::CorsMode>(cors_mode),
       is_cache_disabled ? UrlIndex::kCacheDisabled : UrlIndex::kNormal);
-  auto data_source = std::make_unique<MultiBufferDataSource>(
+  mb_data_source_ = new MultiBufferDataSource(
       main_task_runner_, std::move(url_data), media_log_.get(),
       buffered_data_source_host_.get(),
       base::BindRepeating(&WebMediaPlayerImpl::NotifyDownloading, weak_this_));
-  MultiBufferDataSource* mb_data_source = data_source.get();
-  data_source_ = std::move(data_source);
-
-  mb_data_source->OnRedirect(base::BindRepeating(
+  data_source_.reset(mb_data_source_);
+  mb_data_source_->OnRedirect(base::BindRepeating(
       &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
-  mb_data_source->SetPreload(preload_);
-  mb_data_source->SetIsClientAudioElement(client_->IsAudioElement());
-  mb_data_source->Initialize(base::BindOnce(
+  mb_data_source_->SetPreload(preload_);
+  mb_data_source_->SetIsClientAudioElement(client_->IsAudioElement());
+
+  mb_data_source_->Initialize(base::BindOnce(
       &WebMediaPlayerImpl::MultiBufferDataSourceInitialized, weak_this_));
 }
 
@@ -1896,51 +1896,6 @@ void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
   media_metrics_provider_->OnFallback(std::move(status).AddHere());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-media::PipelineStatus WebMediaPlayerImpl::StartHLSFallback() {
-  // HLS isn't enabled, so HLS detection should be the error.
-  if (!base::FeatureList::IsEnabled(media::kHlsPlayer))
-    return media::DEMUXER_ERROR_DETECTED_HLS;
-
-  // |data_source_| may be a MultiBufferDataSource if someone passes in a m3u8
-  // as a data:// URL, and since MediaPlayer doesn't support data:// URLs, fail
-  // playback now. Since HLS is enabled, the error is now a failing renderer.
-  if (!data_source_)
-    return media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-
-  const auto* co_data_source = data_source_->GetAsCrossOriginDataSource();
-  if (!co_data_source)
-    return media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
-
-  // Note: Does not consider the full redirect chain, which could contain
-  // undetected mixed content.
-  bool frame_url_is_cryptographic =
-      url::Origin(frame_->GetSecurityOrigin()).GetURL().SchemeIsCryptographic();
-  bool manifest_url_is_cryptographic =
-      loaded_url_.SchemeIsCryptographic() &&
-      data_source_->GetUrlAfterRedirects().SchemeIsCryptographic();
-  MimeType mime_type =
-      TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
-  bool is_cross_origin = co_data_source->IsCorsCrossOrigin();
-  base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
-                                mime_type);
-  UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin",
-                        is_cross_origin);
-  UMA_HISTOGRAM_BOOLEAN(
-      "Media.WebMediaPlayerImpl.HLS.IsMixedContent",
-      frame_url_is_cryptographic && !manifest_url_is_cryptographic);
-  if (is_cross_origin) {
-    UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.HasAccessControl",
-                          co_data_source->HasAccessControl());
-    base::UmaHistogramEnumeration(
-        "Media.WebMediaPlayerImpl.HLS.CorsCrossOrigin.MimeType", mime_type);
-  }
-
-  return media::PIPELINE_OK;
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   DVLOG(1) << __func__ << ": status=" << status;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -1950,51 +1905,80 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (status == media::DEMUXER_ERROR_DETECTED_HLS) {
-    auto started_hls = StartHLSFallback();
-    if (started_hls.is_ok()) {
-      demuxer_found_hls_ = true;
+  // `mb_data_source_` may be nullptr if someone passes in a m3u8 as a data://
+  // URL, since MediaPlayer doesn't support data:// URLs, fail playback now.
+  const bool found_hls = base::FeatureList::IsEnabled(media::kHlsPlayer) &&
+                         status == media::DEMUXER_ERROR_DETECTED_HLS;
+  if (found_hls && mb_data_source_) {
+    demuxer_found_hls_ = true;
 
-      if (observer_)
-        observer_->OnHlsManifestDetected();
+    if (observer_)
+      observer_->OnHlsManifestDetected();
 
-      renderer_factory_selector_->SetBaseRendererType(
-          media::RendererType::kMediaPlayer);
-
-      loaded_url_ = data_source_->GetUrlAfterRedirects();
-
-      data_source_->Stop();
-
-      pipeline_controller_->Stop();
-      SetMemoryReportingState(false);
-
-      media_task_runner_->DeleteSoon(FROM_HERE,
-                                     std::move(media_thread_mem_dumper_));
-
-      // Trampoline through the media task runner to destruct the demuxer and
-      // data source now that we're switching to HLS playback.
-      media_task_runner_->PostTask(
-          FROM_HERE,
-          media::BindToCurrentLoop(base::BindOnce(
-              [](std::unique_ptr<Demuxer> demuxer,
-                 std::unique_ptr<media::DataSource> data_source,
-                 base::OnceClosure start_pipeline_cb) {
-                // Release resources before starting HLS.
-                demuxer.reset();
-                data_source.reset();
-
-                std::move(start_pipeline_cb).Run();
-              },
-              std::move(demuxer_), std::move(data_source_),
-              base::BindOnce(&WebMediaPlayerImpl::StartPipeline, weak_this_))));
-
-      return;
+    UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.IsCorsCrossOrigin",
+                          mb_data_source_->IsCorsCrossOrigin());
+    if (mb_data_source_->IsCorsCrossOrigin()) {
+      UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.HasAccessControl",
+                            mb_data_source_->HasAccessControl());
     }
 
-    // This will keep "DETECTED_HLS" as the main error if the feature is not
-    // enabled.
-    status = std::move(started_hls).AddCause(std::move(status));
+    MimeType mime_type =
+        TranslateMimeTypeToHistogramEnum(mb_data_source_->GetMimeType());
+    base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
+                                  mime_type);
+    if (mb_data_source_->IsCorsCrossOrigin()) {
+      base::UmaHistogramEnumeration(
+          "Media.WebMediaPlayerImpl.HLS.CorsCrossOrigin.MimeType", mime_type);
+    }
+
+    // Note: Does not consider the full redirect chain, which could contain
+    // undetected mixed content.
+    bool frame_url_is_cryptographic = url::Origin(frame_->GetSecurityOrigin())
+                                          .GetURL()
+                                          .SchemeIsCryptographic();
+    bool manifest_url_is_cryptographic =
+        loaded_url_.SchemeIsCryptographic() &&
+        data_source_->GetUrlAfterRedirects().SchemeIsCryptographic();
+    UMA_HISTOGRAM_BOOLEAN(
+        "Media.WebMediaPlayerImpl.HLS.IsMixedContent",
+        frame_url_is_cryptographic && !manifest_url_is_cryptographic);
+
+    renderer_factory_selector_->SetBaseRendererType(
+        media::RendererType::kMediaPlayer);
+
+    loaded_url_ = data_source_->GetUrlAfterRedirects();
+    DCHECK(data_source_);
+    data_source_->Stop();
+    mb_data_source_ = nullptr;
+
+    pipeline_controller_->Stop();
+    SetMemoryReportingState(false);
+    media_task_runner_->DeleteSoon(FROM_HERE,
+                                   std::move(media_thread_mem_dumper_));
+
+    // Trampoline through the media task runner to destruct the demuxer and
+    // data source now that we're switching to HLS playback.
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        media::BindToCurrentLoop(base::BindOnce(
+            [](std::unique_ptr<Demuxer> demuxer,
+               std::unique_ptr<media::DataSource> data_source,
+               base::OnceClosure start_pipeline_cb) {
+              // Release resources before starting HLS.
+              demuxer.reset();
+              data_source.reset();
+
+              std::move(start_pipeline_cb).Run();
+            },
+            std::move(demuxer_), std::move(data_source_),
+            base::BindOnce(&WebMediaPlayerImpl::StartPipeline, weak_this_))));
+
+    return;
   }
+
+  // We found hls in a data:// URL, fail immediately.
+  if (found_hls)
+    status = media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
 #elif BUILDFLAG(IS_WIN)
   // Hardware context reset is not an error. Restart to recover.
   // TODO(crbug.com/1208618): Find a way to break the potential infinite loop of

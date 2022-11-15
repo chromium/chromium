@@ -700,8 +700,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
       bool expect_hls_content);
-
-  media::PipelineStatus StartHLSFallback();
 #endif
 
   absl::optional<media::DemuxerType> GetDemuxerType() const;
@@ -836,6 +834,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<media::Demuxer> demuxer_;
 
   // |data_source_| will be null if we're using the ChunkDemuxer.
+  MultiBufferDataSource* mb_data_source_ = nullptr;
   std::unique_ptr<media::DataSource> data_source_;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
