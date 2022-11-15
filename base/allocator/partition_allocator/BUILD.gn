@@ -58,8 +58,6 @@ component("partition_alloc") {
     "address_space_stats.h",
     "allocation_guard.cc",
     "allocation_guard.h",
-    "compressed_pointer.cc",
-    "compressed_pointer.h",
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
     "freeslot_bitmap.h",
@@ -422,7 +420,6 @@ buildflag_header("partition_alloc_buildflags") {
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
     "GLUE_CORE_POOLS=$glue_core_pools",
-    "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression_support",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$_enable_shadow_metadata_for_64_bits_pointers",
 
     # *Scan is currently only used by Chromium.

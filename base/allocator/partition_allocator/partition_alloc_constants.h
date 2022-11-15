@@ -274,11 +274,7 @@ constexpr size_t kNumPools = 3;
 // Special-case Android and iOS, which incur test failures with larger
 // pools. Regardless, allocating >8GiB with malloc() on these platforms is
 // unrealistic as of 2022.
-//
-// When pointer compression is enabled, we cannot use large pools (at most
-// 8GB for each of the glued pools).
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || \
-    defined(PA_POINTER_COMPRESSION)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
 constexpr size_t kPoolMaxSize = 16 * kGiB;

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
-#include "base/allocator/partition_allocator/compressed_pointer.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
@@ -311,10 +310,6 @@ void PartitionAddressSpace::Init() {
   brp_pool_shadow_offset_ =
       brp_pool_shadow_address - setup_.brp_pool_base_address_;
 #endif
-
-#if defined(PA_POINTER_COMPRESSION)
-  CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
-#endif  // defined(PA_POINTER_COMPRESSION)
 }
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
@@ -403,9 +398,6 @@ void PartitionAddressSpace::UninitForTesting() {
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
   AddressPoolManager::GetInstance().ResetForTesting();
-#if defined(PA_POINTER_COMPRESSION)
-  CompressedPointerBaseGlobal::ResetBaseForTesting();
-#endif  // defined(PA_POINTER_COMPRESSION)
 }
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
