@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -129,6 +130,15 @@ void ArcAppTest::SetUp(Profile* profile) {
       std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
           profile_, arc_session_manager_.get());
   arc_play_store_enabled_preference_handler_->Start();
+
+  if (initialize_real_intent_helper_bridge_) {
+    arc::ArcIntentHelperBridge::GetForBrowserContextForTesting(profile_);
+    intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
+    arc_service_manager_->arc_bridge_service()->intent_helper()->SetInstance(
+        intent_helper_instance_.get());
+    WaitForInstanceReady(
+        arc_service_manager_->arc_bridge_service()->intent_helper());
+  }
 
   arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_app_list_pref_);
@@ -270,12 +280,16 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
 }
 
 void ArcAppTest::TearDown() {
+  if (start_app_service_publisher_)
+    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
   if (intent_helper_instance_) {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());
     intent_helper_instance_.reset();
     intent_helper_host_.reset();
   }
+  if (initialize_real_intent_helper_bridge_)
+    arc::ArcIntentHelperBridge::ShutDownForTesting(profile_);
   app_instance_.reset();
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_.reset();

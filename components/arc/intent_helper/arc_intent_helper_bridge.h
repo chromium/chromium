@@ -54,6 +54,8 @@ class ArcIntentHelperBridge : public KeyedService,
   static ArcIntentHelperBridge* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
+  static void ShutDownForTesting(content::BrowserContext* context);
+
   // Returns factory for the ArcIntentHelperBridge.
   static BrowserContextKeyedServiceFactory* GetFactory();
 

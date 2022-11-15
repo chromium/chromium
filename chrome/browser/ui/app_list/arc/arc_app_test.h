@@ -126,6 +126,10 @@ class ArcAppTest {
     start_app_service_publisher_ = start_app_service_publisher;
   }
 
+  void set_initialize_real_intent_helper_bridge(bool value) {
+    initialize_real_intent_helper_bridge_ = value;
+  }
+
  private:
   const user_manager::User* CreateUserAndLogin();
   bool FindPackage(const std::string& package_name);
@@ -148,6 +152,10 @@ class ArcAppTest {
   // Whether the ArcApps AppService publisher should be started during
   // initialization.
   bool start_app_service_publisher_ = true;
+
+  // If set to true, the real ArcIntentHelperBridge is initialized on test start
+  // up.
+  bool initialize_real_intent_helper_bridge_ = false;
 
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;

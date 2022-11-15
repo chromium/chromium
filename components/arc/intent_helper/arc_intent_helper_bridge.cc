@@ -56,6 +56,12 @@ class ArcIntentHelperBridgeFactory
     return base::Singleton<ArcIntentHelperBridgeFactory>::get();
   }
 
+  static void ShutDownForTesting(content::BrowserContext* context) {
+    auto* factory = GetInstance();
+    factory->BrowserContextShutdown(context);
+    factory->BrowserContextDestroyed(context);
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<ArcIntentHelperBridgeFactory>;
 
@@ -124,6 +130,12 @@ ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContext(
 ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContextForTesting(
     content::BrowserContext* context) {
   return ArcIntentHelperBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
+// static
+void ArcIntentHelperBridge::ShutDownForTesting(
+    content::BrowserContext* context) {
+  return ArcIntentHelperBridgeFactory::ShutDownForTesting(context);
 }
 
 // static

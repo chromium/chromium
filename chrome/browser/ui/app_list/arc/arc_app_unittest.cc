@@ -481,8 +481,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     service_->Init();
 
     OnBeforeArcTestSetup();
+    arc_test_.set_initialize_real_intent_helper_bridge(true);
     arc_test_.SetUp(profile_.get());
-    arc_test_.SetUpIntentHelper();
 
     web_app::FakeWebAppProvider::Get(profile_.get())->Start();
     CreateBuilder();
