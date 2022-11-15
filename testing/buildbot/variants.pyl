@@ -476,8 +476,8 @@
   'CROS_DEDEDE_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '109.0.5391.0',
-      'cros_img': 'dedede-release/R109-15227.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'dedede-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_DEV',
@@ -512,8 +512,8 @@
   'CROS_EVE_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '109.0.5391.0',
-      'cros_img': 'eve-release/R109-15227.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'eve-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_DEV',
@@ -558,8 +558,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '109.0.5399.0',
-      'cros_img': 'hana-release/R109-15231.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'hana-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_DEV',
@@ -603,8 +603,8 @@
   'CROS_JACUZZI_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '109.0.5399.0',
-      'cros_img': 'jacuzzi-release/R109-15231.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'jacuzzi-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_DEV',
@@ -669,8 +669,8 @@
   'CROS_OCTOPUS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '109.0.5399.0',
-      'cros_img': 'octopus-release/R109-15231.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'octopus-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_DEV',
@@ -705,8 +705,8 @@
   'CROS_STRONGBAD_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '109.0.5399.0',
-      'cros_img': 'strongbad-release/R109-15231.0.0',
+      'cros_chrome_version': '109.0.5412.2',
+      'cros_img': 'strongbad-release/R109-15236.2.0',
     },
     'enabled': True,
     'identifier': 'strongbad_RELEASE_DEV',
