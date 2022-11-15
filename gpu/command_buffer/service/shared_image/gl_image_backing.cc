@@ -699,22 +699,4 @@ bool GLImageBacking::BindOrCopyImageIfNeeded() {
   return true;
 }
 
-void GLImageBacking::InitializePixels(GLenum format,
-                                      GLenum type,
-                                      const uint8_t* data) {
-  DCHECK_EQ(image_->ShouldBindOrCopy(), gl::GLImage::BIND);
-  RetainGLTexture();
-  BindOrCopyImageIfNeeded();
-
-  const GLenum target = GetGLTarget();
-  gl::GLApi* api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, target);
-  api->glBindTextureFn(target, GetGLServiceId());
-  ScopedUnpackState scoped_unpack_state(
-      /*uploading_data=*/true);
-  api->glTexSubImage2DFn(target, 0, 0, 0, size().width(), size().height(),
-                         format, type, data);
-  ReleaseGLTexture(true /* have_context */);
-}
-
 }  // namespace gpu

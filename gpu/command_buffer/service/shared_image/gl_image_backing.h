@@ -198,8 +198,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   GLImageBacking& operator=(const GLImageBacking& other) = delete;
   ~GLImageBacking() override;
 
-  void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
-
   GLenum GetGLTarget() const;
   GLuint GetGLServiceId() const;
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
