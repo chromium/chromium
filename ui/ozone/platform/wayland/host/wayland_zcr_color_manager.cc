@@ -77,12 +77,25 @@ void WaylandZcrColorManager::OnColorSpaceCreated(
 wl::Object<zcr_color_space_creator_v1>
 WaylandZcrColorManager::CreateZcrColorSpaceCreator(
     const gfx::ColorSpace& color_space) {
-  auto transferID = color_space.GetTransferID();
-  auto eotf = transferID == gfx::ColorSpace::TransferID::PIECEWISE_HDR
-                  ? ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ
-              : transferID == gfx::ColorSpace::TransferID::SRGB
-                  ? ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB
-                  : wayland::ToColorManagerEOTF(color_space.GetTransferID());
+  auto eotf = wayland::ToColorManagerEOTF(color_space);
+  if (eotf == ZCR_COLOR_MANAGER_V1_EOTF_NAMES_UNKNOWN) {
+    LOG(ERROR) << "Attempt to create color space from"
+               << " unsupported or invalid TransferID: "
+               << color_space.ToString() << ".";
+    return wl::Object<zcr_color_space_creator_v1>(
+        zcr_color_manager_v1_create_color_space_from_names(
+            zcr_color_manager_.get(), ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
+            ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_BT709,
+            ZCR_COLOR_MANAGER_V1_WHITEPOINT_NAMES_D65));
+  }
+  auto chromaticity =
+      wayland::ToColorManagerChromaticity(color_space.GetPrimaryID());
+  if (chromaticity != ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_UNKNOWN) {
+    return wl::Object<zcr_color_space_creator_v1>(
+        zcr_color_manager_v1_create_color_space_from_names(
+            zcr_color_manager_.get(), eotf, chromaticity,
+            ZCR_COLOR_MANAGER_V1_WHITEPOINT_NAMES_D65));
+  }
   auto primaries = color_space.GetPrimaries();
   return wl::Object<zcr_color_space_creator_v1>(
       zcr_color_manager_v1_create_color_space_from_params(

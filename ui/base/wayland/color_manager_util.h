@@ -8,10 +8,14 @@
 #include <chrome-color-management-server-protocol.h>
 
 #include "base/containers/fixed_flat_map.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 
 namespace ui::wayland {
+
+// A 2.4 gamma for the BT2087 transfer function.
+static constexpr skcms_TransferFunction gamma24 = {2.4f, 1.f};
 
 // A map from the zcr_color_manager_v1 chromaticity_names enum values
 // representing well-known chromaticities, to their equivalent PrimaryIDs.
@@ -45,6 +49,8 @@ constexpr auto kEotfMap =
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR,
          gfx::ColorSpace::TransferID::LINEAR},
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB,
+         gfx::ColorSpace::TransferID::SRGB},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT709,
          gfx::ColorSpace::TransferID::BT709},
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT2087,
          gfx::ColorSpace::TransferID::GAMMA24},
@@ -53,13 +59,43 @@ constexpr auto kEotfMap =
          // 2.19921875f, not 2.2
          gfx::ColorSpace::TransferID::GAMMA22},
         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ, gfx::ColorSpace::TransferID::PQ},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_HLG, gfx::ColorSpace::TransferID::HLG},
     });
+
+// A map from the SDR zcr_color_manager_v1 eotf_names enum values
+// representing well-known EOTFs, to their equivalent transfer functions.
+// See components/exo/wayland/protocol/chrome-color-management.xml
+constexpr auto kTransferMap =
+    base::MakeFixedFlatMap<zcr_color_manager_v1_eotf_names,
+                           skcms_TransferFunction>({
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR, SkNamedTransferFn::kLinear},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB, SkNamedTransferFnExt::kSRGB},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT709, SkNamedTransferFnExt::kRec709},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_BT2087, gamma24},
+        {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_ADOBERGB,
+         SkNamedTransferFnExt::kA98RGB},
+    });
+
+// A map from the HDR zcr_color_manager_v1 eotf_names enum values
+// representing well-known EOTFs, to their equivalent transfer functions.
+// See components/exo/wayland/protocol/chrome-color-management.xml
+constexpr auto kHDRTransferMap =
+    base::MakeFixedFlatMap<zcr_color_manager_v1_eotf_names,
+                           skcms_TransferFunction>(
+        {{ZCR_COLOR_MANAGER_V1_EOTF_NAMES_LINEAR, SkNamedTransferFn::kLinear},
+         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB, SkNamedTransferFnExt::kSRGB},
+         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_PQ, SkNamedTransferFn::kPQ},
+         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_HLG, SkNamedTransferFn::kHLG},
+         {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_EXTENDEDSRGB10,
+          SkNamedTransferFnExt::kSRGBExtended1023Over510}});
 
 zcr_color_manager_v1_chromaticity_names ToColorManagerChromaticity(
     gfx::ColorSpace::PrimaryID primaryID);
 
 zcr_color_manager_v1_eotf_names ToColorManagerEOTF(
     gfx::ColorSpace::TransferID transferID);
+
+zcr_color_manager_v1_eotf_names ToColorManagerEOTF(gfx::ColorSpace color_space);
 
 }  // namespace ui::wayland
 

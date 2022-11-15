@@ -50,7 +50,7 @@ class ColorManagerColorSpace {
  public:
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
       : color_space(color_space),
-        eotf(ui::wayland::ToColorManagerEOTF(color_space.GetTransferID())),
+        eotf(ui::wayland::ToColorManagerEOTF(color_space)),
         primaries(color_space.GetPrimaries()) {}
 
   ColorManagerColorSpace(gfx::ColorSpace color_space,
@@ -386,6 +386,19 @@ void color_manager_create_color_space_from_names(
   const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
   if (maybe_eotf != std::end(ui::wayland::kEotfMap)) {
     eotf_id = maybe_eotf->second;
+  } else if (ui::wayland::kHDRTransferMap.contains(eotf)) {
+    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
+    CreateColorSpace(
+        client, id,
+        std::make_unique<NameBasedColorSpace>(
+            gfx::ColorSpace(
+                chromaticity_id, gfx::ColorSpace::TransferID::CUSTOM_HDR,
+                gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
+                nullptr, &transfer_fn, /*is_hdr=*/true),
+            static_cast<zcr_color_manager_v1_chromaticity_names>(chromaticity),
+            static_cast<zcr_color_manager_v1_eotf_names>(eotf),
+            static_cast<zcr_color_manager_v1_whitepoint_names>(whitepoint)));
+    return;
   } else {
     DLOG(ERROR) << "Unable to find named eotf for id=" << eotf;
     wl_resource_post_error(color_manager_resource,

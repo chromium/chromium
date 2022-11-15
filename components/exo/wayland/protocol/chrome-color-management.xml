@@ -43,7 +43,7 @@
   over the course of our development.
   </description>
 
-  <interface name="zcr_color_manager_v1" version="1">
+  <interface name="zcr_color_manager_v1" version="2">
     <description summary="color manager singleton">
 	A global interface used for getting color management surface and color
 	management output objects as well as creating color space objects from
@@ -66,6 +66,9 @@
       <entry name="bt2087" value="3" summary="BT.2087 transfer function"/>
       <entry name="adobergb" value="4" summary="AdobeRGB transfer function"/>
       <entry name="pq" value="5" summary="Perceptual quantizer / SMPTEST2084"/>
+	  <entry name="hlg" value="6" summary="hybrid log gamma" since="2"/>
+      <entry name="bt709" value="7" summary="gamma for rec709 encoded videos" since="2"/>
+      <entry name="extendedsrgb10" value="8" summary="sRGB transfer function with headroom for HDR" since="2"/>
     </enum>
 
     <enum name="chromaticity_names">

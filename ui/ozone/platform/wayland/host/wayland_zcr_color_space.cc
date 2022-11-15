@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
+#include "skia/ext/skcolorspace_trfn.h"
 #include "ui/base/wayland/color_manager_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -61,6 +61,17 @@ void WaylandZcrColorSpace::OnNames(void* data,
   auto transferID = ui::wayland::kEotfMap.contains(eotf)
                         ? ui::wayland::kEotfMap.at(eotf)
                         : gfx::ColorSpace::TransferID::INVALID;
+  if (transferID == gfx::ColorSpace::TransferID::INVALID &&
+      wayland::kHDRTransferMap.contains(eotf)) {
+    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
+    zcr_color_space
+        ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
+        gfx::ColorSpace(primaryID, gfx::ColorSpace::TransferID::CUSTOM_HDR,
+                        gfx::ColorSpace::MatrixID::RGB,
+                        gfx::ColorSpace::RangeID::FULL, nullptr, &transfer_fn,
+                        /*is_hdr=*/true);
+    return;
+  }
   zcr_color_space
       ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
       gfx::ColorSpace(primaryID, transferID, gfx::ColorSpace::MatrixID::RGB,
@@ -82,9 +93,6 @@ void WaylandZcrColorSpace::OnParams(void* data,
   WaylandZcrColorSpace* zcr_color_space =
       static_cast<WaylandZcrColorSpace*>(data);
   DCHECK(zcr_color_space);
-  auto transferID = ui::wayland::kEotfMap.contains(eotf)
-                        ? ui::wayland::kEotfMap.at(eotf)
-                        : gfx::ColorSpace::TransferID::INVALID;
   SkColorSpacePrimaries primaries = {
       PARAM_TO_FLOAT(primary_r_x),  PARAM_TO_FLOAT(primary_r_y),
       PARAM_TO_FLOAT(primary_g_x),  PARAM_TO_FLOAT(primary_g_y),
@@ -98,6 +106,23 @@ void WaylandZcrColorSpace::OnParams(void* data,
         "{%f, %f, %f, %f, %f, %f, %f, %f}",
         primaries.fRX, primaries.fRY, primaries.fGX, primaries.fGY,
         primaries.fBX, primaries.fBY, primaries.fWX, primaries.fWY);
+    return;
+  }
+
+  auto transferID = ui::wayland::kEotfMap.contains(eotf)
+                        ? ui::wayland::kEotfMap.at(eotf)
+                        : gfx::ColorSpace::TransferID::INVALID;
+  if (transferID == gfx::ColorSpace::TransferID::INVALID &&
+      ui::wayland::kHDRTransferMap.contains(eotf)) {
+    auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
+    zcr_color_space
+        ->gathered_information[static_cast<uint8_t>(InformationType::kParams)] =
+        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::CUSTOM,
+                        gfx::ColorSpace::TransferID::CUSTOM_HDR,
+                        gfx::ColorSpace::MatrixID::RGB,
+                        gfx::ColorSpace::RangeID::FULL, &xyzd50, &transfer_fn,
+                        true);
+
     return;
   }
   zcr_color_space

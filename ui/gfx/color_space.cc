@@ -700,7 +700,6 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
       GetPrimaryMatrix(&gamut);
       break;
   }
-
   sk_sp<SkColorSpace> sk_color_space =
       SkColorSpace::MakeRGB(transfer_fn, gamut);
   if (!sk_color_space)
@@ -735,12 +734,18 @@ bool ColorSpace::HasExtendedSkTransferFn() const {
 
 bool ColorSpace::IsTransferFunctionEqualTo(
     const skcms_TransferFunction& fn) const {
-  if (fn.a == transfer_params_[0] && fn.b == transfer_params_[1] &&
-      fn.c == transfer_params_[2] && fn.d == transfer_params_[3] &&
-      fn.e == transfer_params_[4] && fn.f == transfer_params_[5] &&
-      fn.g == transfer_params_[6])
-    return true;
-  return false;
+  if (transfer_ == TransferID::PQ)
+    return skcms_TransferFunction_isPQish(&fn);
+  if (transfer_ == TransferID::HLG)
+    return skcms_TransferFunction_isHLGish(&fn);
+  if (!skcms_TransferFunction_isSRGBish(&fn))
+    return false;
+  skcms_TransferFunction transfer_fn;
+  GetTransferFunction(&transfer_fn);
+  return fn.a == transfer_fn.a && fn.b == transfer_fn.b &&
+         fn.c == transfer_fn.c && fn.d == transfer_fn.d &&
+         fn.e == transfer_fn.e && fn.f == transfer_fn.f &&
+         fn.g == transfer_fn.g;
 }
 
 bool ColorSpace::Contains(const ColorSpace& other) const {
@@ -886,6 +891,7 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
   switch (transfer) {
     case ColorSpace::TransferID::LINEAR:
     case ColorSpace::TransferID::LINEAR_HDR:
+      *fn = SkNamedTransferFn::kLinear;
       return true;
     case ColorSpace::TransferID::GAMMA18:
       fn->g = 1.801f;

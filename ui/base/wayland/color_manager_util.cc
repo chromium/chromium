@@ -24,4 +24,18 @@ zcr_color_manager_v1_eotf_names ToColorManagerEOTF(
   return ZCR_COLOR_MANAGER_V1_EOTF_NAMES_UNKNOWN;
 }
 
+zcr_color_manager_v1_eotf_names ToColorManagerEOTF(
+    gfx::ColorSpace color_space) {
+  if (color_space.IsHDR()) {
+    for (const auto& it : kHDRTransferMap) {
+      if (color_space.IsTransferFunctionEqualTo(it.second))
+        return it.first;
+    }
+  }
+  for (const auto& it : kTransferMap) {
+    if (color_space.IsTransferFunctionEqualTo(it.second))
+      return it.first;
+  }
+  return ZCR_COLOR_MANAGER_V1_EOTF_NAMES_UNKNOWN;
+}
 }  // namespace ui::wayland
