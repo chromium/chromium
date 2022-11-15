@@ -34,7 +34,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </variants>
 
 <histogram name="SoftwareReporter.Cleaner.ChromePromptChannelError"
-    enum="SoftwareReporterChromePromptChannelError" expires_after="2023-03-12">
+    enum="SoftwareReporterChromePromptChannelError" expires_after="2023-05-14">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

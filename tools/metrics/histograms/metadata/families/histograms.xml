@@ -670,7 +670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SupervisedUsers.FaviconAvailability"
-    enum="SupervisedUserFaviconAvailability" expires_after="2023-01-20">
+    enum="SupervisedUserFaviconAvailability" expires_after="2023-05-14">
   <owner>courtneywong@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>

@@ -434,7 +434,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.ClearDataTaskDelay"
-    units="ms" expires_after="2023-02-04">
+    units="ms" expires_after="2023-05-14">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

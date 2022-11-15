@@ -65,7 +65,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.InfoIPHOpenSettings"
-    units="BooleanSettingsOpened" expires_after="2023-03-01">
+    units="BooleanSettingsOpened" expires_after="2023-05-14">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -77,7 +77,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.IPHEnableMode"
-    units="BooleanEnableMode" expires_after="2023-03-01">
+    units="BooleanEnableMode" expires_after="2023-05-14">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

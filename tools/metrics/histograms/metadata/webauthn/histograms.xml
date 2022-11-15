@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledStatus"
-    enum="WebAuthenticationU2FClientStatus" expires_after="2023-03-05">
+    enum="WebAuthenticationU2FClientStatus" expires_after="2023-05-14">
   <owner>martinkr@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
