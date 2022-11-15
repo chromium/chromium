@@ -7,11 +7,14 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,6 +42,10 @@ SimpleDevToolsProtocolClient::SimpleDevToolsProtocolClient(
 SimpleDevToolsProtocolClient::~SimpleDevToolsProtocolClient() {
   if (parent_client_)
     parent_client_->sessions_.erase(session_id_);
+}
+
+void SimpleDevToolsProtocolClient::InitBrowserMainThread() {
+  browser_main_thread_ = content::GetUIThreadTaskRunner({});
 }
 
 void SimpleDevToolsProtocolClient::AttachClient(
@@ -120,7 +127,12 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
     ResponseCallback callback(std::move(it->second));
     pending_response_map_.erase(it);
 
-    std::move(callback).Run(std::move(message));
+    if (browser_main_thread_) {
+      browser_main_thread_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(message)));
+    } else {
+      std::move(callback).Run(std::move(message));
+    }
     return;
   }
 
@@ -141,8 +153,13 @@ void SimpleDevToolsProtocolClient::DispatchProtocolMessage(
   bool first_callback = true;
   for (auto& callback : handlers) {
     if (first_callback || HasEventHandler(*event_name, callback)) {
-      callback.Run(message);
       first_callback = false;
+      if (browser_main_thread_) {
+        browser_main_thread_->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), std::move(message)));
+      } else {
+        callback.Run(std::move(message));
+      }
     }
   }
 }
