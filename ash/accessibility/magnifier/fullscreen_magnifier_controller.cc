@@ -409,7 +409,8 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
     touch_points_++;
     press_event_map_[touch_event->pointer_details().id] =
         std::make_unique<ui::TouchEvent>(*touch_event);
-  } else if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
+  } else if (touch_event->type() == ui::ET_TOUCH_RELEASED ||
+             touch_event->type() == ui::ET_TOUCH_CANCELLED) {
     touch_points_--;
     press_event_map_.erase(touch_event->pointer_details().id);
   }

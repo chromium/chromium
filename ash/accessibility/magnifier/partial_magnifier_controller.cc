@@ -131,7 +131,8 @@ void PartialMagnifierController::OnLocatedEvent(
     SetActive(true);
   }
 
-  if (event->type() == ui::ET_TOUCH_RELEASED)
+  if (event->type() == ui::ET_TOUCH_RELEASED ||
+      event->type() == ui::ET_TOUCH_CANCELLED)
     SetActive(false);
 
   if (!is_active_)

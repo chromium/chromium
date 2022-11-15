@@ -140,6 +140,9 @@ class ASH_EXPORT FullscreenMagnifierController
   // Returns true if magnifier is still on animation for moving viewport.
   bool IsOnAnimationForTesting() const { return is_on_animation_; }
 
+  // Returns the current number of touch points.
+  int32_t GetTouchPointsForTesting() const { return touch_points_; }
+
  private:
   class GestureProviderClient;
 

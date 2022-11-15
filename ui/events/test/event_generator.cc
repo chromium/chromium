@@ -295,6 +295,17 @@ void EventGenerator::ReleaseTouchId(int touch_id) {
   Dispatch(&touchev);
 }
 
+void EventGenerator::CancelTouch() {
+  CancelTouchId(0);
+}
+
+void EventGenerator::CancelTouchId(int touch_id) {
+  ui::TouchEvent touchev =
+      CreateTestTouchEvent(ui::ET_TOUCH_CANCELLED, GetLocationInCurrentRoot(),
+                           touch_id, flags_, ui::EventTimeForNow());
+  Dispatch(&touchev);
+}
+
 void EventGenerator::PressMoveAndReleaseTouchTo(const gfx::Point& point) {
   PressTouch();
   MoveTouch(point);
