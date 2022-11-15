@@ -24,9 +24,6 @@
               },
               "legacy_gclient_config": {
                 "config": "chromium"
-              },
-              "legacy_test_results_config": {
-                "config": "staging_server"
               }
             }
           }

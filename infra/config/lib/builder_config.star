@@ -159,24 +159,6 @@ def _android_config(*, config, apply_configs = None):
         apply_configs = args.listify(apply_configs),
     )
 
-def _test_results_config(*, config):
-    """The details for configuring test_results recipe module.
-
-    This uses the recipe engine's config item facility.
-
-    Args:
-        config: (str) The name of the recipe module config item to use.
-
-    Returns:
-        A struct that can be passed to the `test_results_config` argument of
-        `builder_spec`.
-    """
-    if not config:
-        fail("config must be provided")
-    return struct(
-        config = config,
-    )
-
 def _skylab_upload_location(*, gs_bucket, gs_extra = None):
     """The details for where tests are uploaded for skylab.
 
@@ -232,7 +214,6 @@ def _builder_spec(
         gclient_config,
         chromium_config,
         android_config = None,
-        test_results_config = None,
         android_version_file = None,
         clobber = None,
         build_gs_bucket = None,
@@ -248,8 +229,6 @@ def _builder_spec(
         gclient_config: (gclient_config) The gclient config for the builder.
         chromium_config: (chromium_config) The chromium config for the builder.
         android_config: (android_config) The android config for the builder.
-        test_results_config: (test_results_config) The test_results config for
-            the builder.
         android_version_file: (str) A path relative to the checkout to a file
             containing the Chrome version information for Android.
         clobber: (bool) Whether to have bot_update perform a clobber of any
@@ -299,7 +278,6 @@ def _builder_spec(
         gclient_config = gclient_config,
         chromium_config = chromium_config,
         android_config = android_config,
-        test_results_config = test_results_config,
         android_version_file = android_version_file,
         clobber = clobber,
         build_gs_bucket = build_gs_bucket,
@@ -423,9 +401,6 @@ builder_config = struct(
 
     # Function for defining android recipe module config
     android_config = _android_config,
-
-    # Function for defining test_results recipe module config
-    test_results_config = _test_results_config,
 
     # Function for defining try-specific settings
     try_settings = _try_settings,
@@ -557,7 +532,6 @@ def _entry(bc_state, node, parent = None):
         ("gclient_config", "legacy_gclient_config"),
         ("chromium_config", "legacy_chromium_config"),
         ("android_config", "legacy_android_config"),
-        ("test_results_config", "legacy_test_results_config"),
     ):
         if src in builder_spec:
             builder_spec[dst] = builder_spec.pop(src)

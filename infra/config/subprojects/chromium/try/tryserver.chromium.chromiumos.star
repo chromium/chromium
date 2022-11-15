@@ -144,9 +144,6 @@ try_.builder(
         skylab_upload_location = builder_config.skylab_upload_location(
             gs_bucket = "gs://lacros-amd64-generic-rel-skylab-try",
         ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
     builderless = not settings.is_main,

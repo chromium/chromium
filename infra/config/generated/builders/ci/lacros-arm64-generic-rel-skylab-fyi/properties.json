@@ -35,9 +35,6 @@
                 ],
                 "config": "chromium"
               },
-              "legacy_test_results_config": {
-                "config": "staging_server"
-              },
               "skylab_upload_location": {
                 "gs_bucket": "lacros-arm64-generic-rel-skylab-try"
               }

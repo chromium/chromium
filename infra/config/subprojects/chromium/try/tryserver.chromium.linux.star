@@ -645,9 +645,6 @@ try_.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
-        test_results_config = builder_config.test_results_config(
-            config = "staging_server",
-        ),
     ),
     main_list_view = "try",
     tryjob = try_.job(
