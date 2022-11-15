@@ -1699,5 +1699,5 @@
     }
   ],
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'; style-src 'unsafe-inline' chrome://theme"
 }

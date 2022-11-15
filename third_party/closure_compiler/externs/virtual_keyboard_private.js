@@ -271,3 +271,9 @@ chrome.virtualKeyboardPrivate.onClipboardHistoryChanged;
  * @type {!ChromeEvent}
  */
 chrome.virtualKeyboardPrivate.onClipboardItemUpdated;
+
+/**
+ * Fired when the color provider of virtual keyboard window has changed.
+ * @type {!ChromeEvent}
+ */
+chrome.virtualKeyboardPrivate.onColorProviderChanged;

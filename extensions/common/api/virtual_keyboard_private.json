@@ -456,6 +456,11 @@
             "$ref": "ClipboardItem"
           }
         ]
+      },
+      {
+        "name": "onColorProviderChanged",
+        "type": "function",
+        "description": "Fired when the color provider of virtual keyboard window has changed."
       }
     ]
   }
