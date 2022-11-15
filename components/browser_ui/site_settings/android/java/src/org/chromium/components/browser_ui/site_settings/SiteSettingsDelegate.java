@@ -66,6 +66,11 @@ public interface SiteSettingsDelegate {
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
     /**
+     * @return true if the PrivacySandboxSettings4 feature is enabled.
+     */
+    boolean isPrivacySandboxSettings4Enabled();
+
+    /**
      * @return The id of the notification channel associated with the given origin.
      */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.

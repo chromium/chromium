@@ -121,6 +121,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 return ContentFeatureList.isEnabled(ContentFeatures.FED_CM);
             case SiteSettingsCategory.Type.NFC:
                 return ContentFeatureList.isEnabled(ContentFeatureList.WEB_NFC);
+            case SiteSettingsCategory.Type.COOKIES:
+                return !isPrivacySandboxSettings4Enabled();
+            case SiteSettingsCategory.Type.SITE_DATA:
+            case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
+                return isPrivacySandboxSettings4Enabled();
             default:
                 return true;
         }
@@ -139,6 +144,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI);
+    }
+
+    @Override
+    public boolean isPrivacySandboxSettings4Enabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4);
     }
 
     @Override

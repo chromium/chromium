@@ -62,6 +62,9 @@ public class SiteSettings
         // associated content settings entry.
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
+        @CookieControlsMode
+        int cookieControlsMode =
+                UserPrefs.get(browserContextHandle).getInteger(COOKIE_CONTROLS_MODE);
         for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {
             Preference p = findPreference(prefCategory);
             int contentType = SiteSettingsCategory.contentSettingsType(prefCategory);
@@ -87,7 +90,7 @@ public class SiteSettings
                         browserContextHandle, contentType);
             }
 
-            p.setTitle(ContentSettingsResources.getTitle(contentType));
+            p.setTitle(ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
             p.setOnPreferenceClickListener(this);
 
             if ((Type.CAMERA == prefCategory || Type.MICROPHONE == prefCategory
@@ -100,8 +103,7 @@ public class SiteSettings
                 // Show 'disabled' message when permission is not granted in Android.
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, false));
             } else if (Type.COOKIES == prefCategory && checked
-                    && UserPrefs.get(browserContextHandle).getInteger(COOKIE_CONTROLS_MODE)
-                            == CookieControlsMode.BLOCK_THIRD_PARTY) {
+                    && cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
                 p.setSummary(ContentSettingsResources.getCookieAllowedExceptThirdPartySummary());
             } else if (Type.DEVICE_LOCATION == prefCategory && checked
                     && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
@@ -122,8 +124,8 @@ public class SiteSettings
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, checked));
             }
 
-            p.setIcon(SettingsUtils.getTintedIcon(
-                    getContext(), ContentSettingsResources.getIcon(contentType)));
+            p.setIcon(SettingsUtils.getTintedIcon(getContext(),
+                    ContentSettingsResources.getIcon(contentType, getSiteSettingsDelegate())));
         }
 
         Preference p = findPreference(Type.ALL_SITES);
@@ -131,6 +133,16 @@ public class SiteSettings
         // TODO(finnur): Re-move this for Storage once it can be moved to the 'Usage' menu.
         p = findPreference(Type.USE_STORAGE);
         if (p != null) p.setOnPreferenceClickListener(this);
+
+        p = findPreference(Type.THIRD_PARTY_COOKIES);
+        if (p != null) {
+            p.setOnPreferenceClickListener(this);
+            // TODO(b/254416343): Handle block 3p cookies in incognito state?
+            p.setSummary(ContentSettingsResources.getCategorySummary(
+                    (cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY)
+                            ? ContentSettingValues.BLOCK
+                            : ContentSettingValues.ALLOW));
+        }
     }
 
     @Override

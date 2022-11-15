@@ -43,7 +43,7 @@ public class SiteSettingsCategory {
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
             Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE,
-            Type.FEDERATED_IDENTITY_API})
+            Type.FEDERATED_IDENTITY_API, Type.THIRD_PARTY_COOKIES, Type.SITE_DATA})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -74,10 +74,12 @@ public class SiteSettingsCategory {
         int AUTO_DARK_WEB_CONTENT = 23;
         int REQUEST_DESKTOP_SITE = 24;
         int FEDERATED_IDENTITY_API = 25;
+        int THIRD_PARTY_COOKIES = 26;
+        int SITE_DATA = 27;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 26;
+        int NUM_ENTRIES = 28;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -173,6 +175,7 @@ public class SiteSettingsCategory {
             case Type.CLIPBOARD:
                 return ContentSettingsType.CLIPBOARD_READ_WRITE;
             case Type.COOKIES:
+            case Type.SITE_DATA:
                 return ContentSettingsType.COOKIES;
             case Type.REQUEST_DESKTOP_SITE:
                 return ContentSettingsType.REQUEST_DESKTOP_SITE;
@@ -202,11 +205,13 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.USB_GUARD;
             case Type.VIRTUAL_REALITY:
                 return ContentSettingsType.VR;
-            // case Type.ALL_SITES
-            // case Type.USE_STORAGE
-            default:
+            case Type.ALL_SITES:
+            case Type.USE_STORAGE:
+            case Type.THIRD_PARTY_COOKIES:
                 return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
+        assert false;
+        return ContentSettingsType.DEFAULT;
     }
 
     /**
@@ -282,6 +287,10 @@ public class SiteSettingsCategory {
                 return "use_storage";
             case Type.VIRTUAL_REALITY:
                 return "virtual_reality";
+            case Type.SITE_DATA:
+                return "site_data";
+            case Type.THIRD_PARTY_COOKIES:
+                return "third_party_cookies";
             default:
                 assert false;
                 return "";

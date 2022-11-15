@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 
@@ -90,6 +92,7 @@ import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
@@ -1111,6 +1114,39 @@ public class SiteSettingsTest {
     }
 
     /**
+     * Test that showing the Site Settings menu contains only the "Cookies" row.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testSiteSettingsMenuWithPSS4Disabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNotNull(websitePreferences.findPreference("cookies"));
+        assertNull(websitePreferences.findPreference("third_party_cookies"));
+        assertNull(websitePreferences.findPreference("site_data"));
+        settingsActivity.finish();
+    }
+
+    /**
+     * Test that showing the Site Settings menu contains the "Third-party cookies" and "Site data"
+     * rows.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testSiteSettingsMenuWithPSS4Enabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNull(websitePreferences.findPreference("cookies"));
+        assertNotNull(websitePreferences.findPreference("third_party_cookies"));
+        assertNotNull(websitePreferences.findPreference("site_data"));
+        settingsActivity.finish();
+    }
+
+    /**
      * Tests that only expected Preferences are shown for a category. This
      * santiy checks the number of categories only. Each category has its own
      * individual test below.
@@ -1121,7 +1157,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(26, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(28, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1223,6 +1259,8 @@ public class SiteSettingsTest {
         setFourStateCookieToggle(CookieSettingsState.BLOCK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
     }
+
+    // TODO(b/254415173): Add tests for site data and third-party cookies page.
 
     @Test
     @SmallTest
@@ -1948,7 +1986,7 @@ public class SiteSettingsTest {
                     blockedGroup.getPreference(0).getSummary());
 
             // Blocked origin should has no summary.
-            Assert.assertNull(blockedGroup.getPreference(1).getSummary());
+            assertNull(blockedGroup.getPreference(1).getSummary());
         });
         settingsActivity.finish();
     }
@@ -2200,7 +2238,7 @@ public class SiteSettingsTest {
 
             ChromeSwitchPreference toggle =
                     singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
-            Assert.assertNotNull("Toggle should not be null.", toggle);
+            assertNotNull("Toggle should not be null.", toggle);
 
             singleCategorySettings.onPreferenceChange(toggle, mIsCategoryEnabled);
             Assert.assertEquals(exceptionString, mIsCategoryEnabled,
@@ -2212,14 +2250,16 @@ public class SiteSettingsTest {
         private void assertToggleTitleAndSummary(SingleCategorySettings singleCategorySettings) {
             ChromeSwitchPreference toggle =
                     singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
+            assert toggle != null;
 
             Assert.assertEquals("Preference title is not set correctly.",
                     singleCategorySettings.getResources().getString(
-                            ContentSettingsResources.getTitle(mContentSettingsType)),
+                            ContentSettingsResources.getTitle(mContentSettingsType,
+                                    new ChromeSiteSettingsDelegate(toggle.getContext(),
+                                            Profile.getLastUsedRegularProfile()))),
                     toggle.getTitle());
-            Assert.assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
-            Assert.assertNotNull(
-                    "Disabled summary text should not be null.", toggle.getSummaryOff());
+            assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
+            assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
 
             String summary = mIsCategoryEnabled ? toggle.getSummaryOn().toString()
                                                 : toggle.getSummaryOff().toString();

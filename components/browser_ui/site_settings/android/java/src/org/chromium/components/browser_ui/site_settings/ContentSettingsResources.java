@@ -87,8 +87,10 @@ public class ContentSettingsResources {
 
     /**
      * Returns the ResourceItem for a ContentSettingsType.
+     * @param delegate A site settings delegate to check feature states. Only needs to be passed
+     *                 to access Cookie icon or title.
      */
-    private static ResourceItem getResourceItem(int contentType) {
+    private static ResourceItem getResourceItem(int contentType, SiteSettingsDelegate delegate) {
         switch (contentType) {
             case ContentSettingsType.ADS:
                 return new ResourceItem(R.drawable.web_asset, R.string.ads_permission_title,
@@ -145,7 +147,15 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_clipboard_blocked);
 
             case ContentSettingsType.COOKIES:
-                return new ResourceItem(R.drawable.permission_cookie, R.string.cookies_title,
+                return new ResourceItem(delegate == null
+                                ? 0
+                                : (delegate.isPrivacySandboxSettings4Enabled()
+                                                ? R.drawable.gm_database_24
+                                                : R.drawable.permission_cookie),
+                        delegate == null ? 0
+                                         : (delegate.isPrivacySandboxSettings4Enabled()
+                                                         ? R.string.site_data_page_title
+                                                         : R.string.cookies_title),
                         ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
                         R.string.website_settings_category_cookie_allowed, 0);
 
@@ -277,8 +287,8 @@ public class ContentSettingsResources {
     /**
      * Returns the resource id of the 24dp icon for a content type.
      */
-    public static int getIcon(int contentType) {
-        return getResourceItem(contentType).getIcon();
+    public static int getIcon(int contentType, SiteSettingsDelegate delegate) {
+        return getResourceItem(contentType, delegate).getIcon();
     }
 
     /**
@@ -293,8 +303,9 @@ public class ContentSettingsResources {
      */
     public static Drawable getContentSettingsIcon(Context context,
             @ContentSettingsType int contentSettingsType,
-            @ContentSettingValues @Nullable Integer value) {
-        Drawable icon = SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType));
+            @ContentSettingValues @Nullable Integer value, SiteSettingsDelegate delegate) {
+        Drawable icon =
+                SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, delegate));
         if (value != null && value == ContentSettingValues.BLOCK) {
             return getBlockedSquareIcon(context.getResources(), icon);
         }
@@ -317,7 +328,8 @@ public class ContentSettingsResources {
             @ContentSettingValues @Nullable Integer value, boolean isIncognito) {
         int color = isIncognito ? R.color.default_icon_color_blue_light
                                 : R.color.default_icon_color_accent1_tint_list;
-        Drawable icon = SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType), color);
+        Drawable icon =
+                SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType, null), color);
         if (value != null && value == ContentSettingValues.BLOCK) {
             return getBlockedSquareIcon(context.getResources(), icon);
         }
@@ -381,10 +393,9 @@ public class ContentSettingsResources {
      * Returns the resource id of the title (short version), shown on the Site Settings page
      * and in the global toggle at the top of a Website Settings page for a content type.
      */
-    public static int getTitle(int contentType) {
-        return getResourceItem(contentType).getTitle();
+    public static int getTitle(int contentType, SiteSettingsDelegate delegate) {
+        return getResourceItem(contentType, delegate).getTitle();
     }
-
 
     /**
      * Returns which ContentSetting the global default is set to, when enabled.
@@ -392,7 +403,7 @@ public class ContentSettingsResources {
      * that appears on the Site Settings page and has a global toggle.
      */
     public static @ContentSettingValues @Nullable Integer getDefaultEnabledValue(int contentType) {
-        return getResourceItem(contentType).getDefaultEnabledValue();
+        return getResourceItem(contentType, null).getDefaultEnabledValue();
     }
 
     /**
@@ -401,7 +412,7 @@ public class ContentSettingsResources {
      * that appears on the Site Settings page and has a global toggle.
      */
     public static @ContentSettingValues @Nullable Integer getDefaultDisabledValue(int contentType) {
-        return getResourceItem(contentType).getDefaultDisabledValue();
+        return getResourceItem(contentType, null).getDefaultDisabledValue();
     }
 
     /**
@@ -456,14 +467,14 @@ public class ContentSettingsResources {
      * Returns the summary (resource id) to show when the content type is enabled.
      */
     public static int getEnabledSummary(int contentType) {
-        return getResourceItem(contentType).getEnabledSummary();
+        return getResourceItem(contentType, null).getEnabledSummary();
     }
 
     /**
      * Returns the summary (resource id) to show when the content type is disabled.
      */
     public static int getDisabledSummary(int contentType) {
-        return getResourceItem(contentType).getDisabledSummary();
+        return getResourceItem(contentType, null).getDisabledSummary();
     }
 
     /**

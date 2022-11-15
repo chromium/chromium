@@ -77,6 +77,11 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
+    public boolean isPrivacySandboxSettings4Enabled() {
+        return false;
+    }
+
+    @Override
     public String getChannelIdForOrigin(String origin) {
         return null;
     }

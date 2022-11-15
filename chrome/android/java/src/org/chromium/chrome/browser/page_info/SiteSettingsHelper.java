@@ -10,7 +10,9 @@ import android.os.Bundle;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
@@ -50,7 +52,9 @@ public class SiteSettingsHelper {
                 SiteSettingsCategory.preferenceKey(category));
         extras.putString(SingleCategorySettings.EXTRA_TITLE,
                 context.getResources().getString(ContentSettingsResources.getTitle(
-                        SiteSettingsCategory.contentSettingsType(category))));
+                        SiteSettingsCategory.contentSettingsType(category),
+                        new ChromeSiteSettingsDelegate(
+                                context, Profile.getLastUsedRegularProfile()))));
         Intent preferencesIntent = settingsLauncher.createSettingsActivityIntent(
                 context, SingleCategorySettings.class.getName(), extras);
         launchIntent(context, preferencesIntent);

@@ -30,6 +30,12 @@
   <message name="IDS_CLIPBOARD_PERMISSION_TITLE" desc="Title of the permission to read from clipboard [CHAR_LIMIT=32]">
     Clipboard
   </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_PAGE_TITLE" desc="The label used for the third-party cookies settings controls." translateable="false">
+    Third-party cookies
+  </message>
+  <message name="IDS_SITE_DATA_PAGE_TITLE" desc="The label used for the site data settings controls." translateable="false">
+    On-device site data
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR_LIMIT=32]">
     Your device use
   </message>

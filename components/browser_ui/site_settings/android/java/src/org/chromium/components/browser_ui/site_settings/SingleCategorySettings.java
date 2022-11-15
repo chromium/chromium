@@ -901,7 +901,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             extras.putSerializable(ChosenObjectSettings.EXTRA_OBJECT_INFOS, entry.first);
             extras.putSerializable(ChosenObjectSettings.EXTRA_SITES, entry.second);
             preference.setIcon(SettingsUtils.getTintedIcon(getContext(),
-                    ContentSettingsResources.getIcon(mCategory.getContentSettingsType())));
+                    ContentSettingsResources.getIcon(
+                            mCategory.getContentSettingsType(), getSiteSettingsDelegate())));
             preference.setTitle(entry.first.get(0).getName());
             preference.setFragment(ChosenObjectSettings.class.getCanonicalName());
             getPreferenceScreen().addPreference(preference);
@@ -1107,7 +1108,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     private void configureBinaryToggle(ChromeSwitchPreference binaryToggle, int contentType) {
         binaryToggle.setOnPreferenceChangeListener(this);
-        binaryToggle.setTitle(ContentSettingsResources.getTitle(contentType));
+        binaryToggle.setTitle(
+                ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate()));
 
         // Set summary on or off.
         BrowserContextHandle browserContextHandle =

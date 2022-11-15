@@ -453,7 +453,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private Drawable getContentSettingsIcon(@ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value) {
         return ContentSettingsResources.getContentSettingsIcon(
-                getContext(), contentSettingsType, value);
+                getContext(), contentSettingsType, value, getSiteSettingsDelegate());
     }
 
     /**
@@ -962,7 +962,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             Preference preference, @ContentSettingValues @Nullable Integer value) {
         @ContentSettingsType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
-        int titleResourceId = ContentSettingsResources.getTitle(contentType);
+        int titleResourceId =
+                ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate());
 
         if (titleResourceId != 0) {
             preference.setTitle(titleResourceId);
