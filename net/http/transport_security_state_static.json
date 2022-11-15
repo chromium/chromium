@@ -120956,7 +120956,6 @@
     { "name": "fitnetion.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "fixaslowcomputer.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "fizzcompetitions.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "flagcity.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "flashset.tk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "flexfitnessusa.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "flexibsd.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
