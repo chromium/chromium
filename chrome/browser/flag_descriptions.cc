@@ -6212,11 +6212,6 @@ const char kCrosPrivacyHubV0Name[] =
 const char kCrosPrivacyHubV0Description[] =
     "Enables ChromeOS Privacy Hub without the location switch.";
 
-const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
-const char kDefaultCalculatorWebAppDescription[] =
-    "Enable default installing of the calculator PWA instead of the deprecated "
-    "chrome app.";
-
 const char kDisableIdleSocketsCloseOnMemoryPressureName[] =
     "Disable closing idle sockets on memory pressure";
 const char kDisableIdleSocketsCloseOnMemoryPressureDescription[] =

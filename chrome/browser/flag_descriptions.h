@@ -3581,9 +3581,6 @@ extern const char kCrOSEnforceSystemAecNsDescription[];
 extern const char kCrOSEnforceSystemAecNsAgcName[];
 extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 
-extern const char kDefaultCalculatorWebAppName[];
-extern const char kDefaultCalculatorWebAppDescription[];
-
 extern const char kDisableIdleSocketsCloseOnMemoryPressureName[];
 extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 
