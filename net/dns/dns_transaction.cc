@@ -215,20 +215,15 @@ class DnsUDPAttempt : public DnsAttempt {
     DCHECK_EQ(STATE_NONE, next_state_);
     callback_ = std::move(callback);
     start_time_ = base::TimeTicks::Now();
-    next_state_ = STATE_SEND_QUERY;
+    next_state_ = STATE_CONNECT_COMPLETE;
 
-    int rv = socket_->Connect(server_);
-    if (rv != OK) {
-      DVLOG(1) << "Failed to connect socket: " << rv;
-      udp_tracker_->RecordConnectionError(rv);
-      return ERR_CONNECTION_REFUSED;
+    int rv = socket_->ConnectAsync(
+        server_,
+        base::BindOnce(&DnsUDPAttempt::OnIOComplete, base::Unretained(this)));
+    if (rv == ERR_IO_PENDING) {
+      return rv;
     }
-
-    IPEndPoint local_address;
-    if (socket_->GetLocalAddress(&local_address) == OK)
-      udp_tracker_->RecordQuery(local_address.port(), query_->id());
-
-    return DoLoop(OK);
+    return DoLoop(rv);
   }
 
   const DnsQuery* GetQuery() const override { return query_.get(); }
@@ -252,6 +247,7 @@ class DnsUDPAttempt : public DnsAttempt {
 
  private:
   enum State {
+    STATE_CONNECT_COMPLETE,
     STATE_SEND_QUERY,
     STATE_SEND_QUERY_COMPLETE,
     STATE_READ_RESPONSE,
@@ -266,8 +262,11 @@ class DnsUDPAttempt : public DnsAttempt {
       State state = next_state_;
       next_state_ = STATE_NONE;
       switch (state) {
+        case STATE_CONNECT_COMPLETE:
+          rv = DoConnectComplete(rv);
+          break;
         case STATE_SEND_QUERY:
-          rv = DoSendQuery();
+          rv = DoSendQuery(rv);
           break;
         case STATE_SEND_QUERY_COMPLETE:
           rv = DoSendQueryComplete(rv);
@@ -290,7 +289,23 @@ class DnsUDPAttempt : public DnsAttempt {
     return rv;
   }
 
-  int DoSendQuery() {
+  int DoConnectComplete(int rv) {
+    if (rv != OK) {
+      DVLOG(1) << "Failed to connect socket: " << rv;
+      udp_tracker_->RecordConnectionError(rv);
+      return ERR_CONNECTION_REFUSED;
+    }
+    next_state_ = STATE_SEND_QUERY;
+    IPEndPoint local_address;
+    if (socket_->GetLocalAddress(&local_address) == OK)
+      udp_tracker_->RecordQuery(local_address.port(), query_->id());
+    return OK;
+  }
+
+  int DoSendQuery(int rv) {
+    DCHECK_NE(ERR_IO_PENDING, rv);
+    if (rv < 0)
+      return rv;
     next_state_ = STATE_SEND_QUERY_COMPLETE;
     return socket_->Write(
         query_->io_buffer(), query_->io_buffer()->size(),
@@ -1497,8 +1512,6 @@ class DnsTransactionImpl : public DnsTransaction,
   // Resolves the result of a DnsAttempt until a terminal result is reached
   // or it will complete asynchronously (ERR_IO_PENDING).
   AttemptResult ProcessAttemptResult(AttemptResult result) {
-    DCHECK(!callback_.is_null());
-
     while (result.rv != ERR_IO_PENDING) {
       LogResponse(result.attempt);
 
