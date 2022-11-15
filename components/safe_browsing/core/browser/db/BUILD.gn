@@ -227,6 +227,7 @@ source_set("v4_store") {
     ":v4_protocol_manager_util",
     ":v4_rice",
     "//base",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//crypto",
   ]
@@ -299,6 +300,7 @@ source_set("unit_tests_shared") {
 source_set("unit_tests_local_db") {
   testonly = true
   sources = [
+    "hash_prefix_map_unittest.cc",
     "v4_database_unittest.cc",
     "v4_local_database_manager_unittest.cc",
     "v4_rice_unittest.cc",

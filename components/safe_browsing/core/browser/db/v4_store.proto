@@ -10,6 +10,15 @@ option optimize_for = LITE_RUNTIME;
 
 package safe_browsing;
 
+message HashFile {
+  // The size of hash prefixes stored in this file.
+  optional int32 prefix_size = 1;
+
+  // The file extension of this file. This extension should be added to the end
+  // of the store path.
+  optional string extension = 2;
+}
+
 // The message that's serialized to disk when a store update is processed.
 message V4StoreFileFormat {
   // The magic number to identify this file as a SafeBrowsing hash-prefix file.
@@ -24,4 +33,9 @@ message V4StoreFileFormat {
   // Information about the store and the hash-prefix updates.
   optional FetchThreatListUpdatesResponse.ListUpdateResponse
       list_update_response = 3;
+
+  // Information on hashes stored in separate files.
+  // TODO(crbug.com/1380507): If this launches, consider moving the data from
+  // list_update_response here.
+  repeated HashFile hash_files = 4;
 }

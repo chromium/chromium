@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/browser/db/v4_rice.h"
 #include "components/safe_browsing/core/browser/db/v4_store.pb.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -180,6 +181,13 @@ const base::FilePath TemporaryFileForFilename(const base::FilePath& filename) {
   return base::FilePath(filename.value() + FILE_PATH_LITERAL("_new"));
 }
 
+std::unique_ptr<HashPrefixMap> CreateHashPrefixMap(
+    const base::FilePath& store_path) {
+  if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase))
+    return std::make_unique<MmapHashPrefixMap>(store_path);
+  return std::make_unique<InMemoryHashPrefixMap>();
+}
+
 }  // namespace
 
 using ::google::protobuf::int32;
@@ -194,7 +202,8 @@ std::ostream& operator<<(std::ostream& os, const V4Store& store) {
 std::unique_ptr<V4Store> V4StoreFactory::CreateV4Store(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::FilePath& store_path) {
-  auto new_store = std::make_unique<V4Store>(task_runner, store_path);
+  auto new_store = std::make_unique<V4Store>(task_runner, store_path,
+                                             CreateHashPrefixMap(store_path));
   new_store->Initialize();
   return new_store;
 }
@@ -221,8 +230,9 @@ bool V4Store::HasValidData() {
 
 V4Store::V4Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                  const base::FilePath& store_path,
+                 std::unique_ptr<HashPrefixMap> hash_prefix_map,
                  const int64_t old_file_size)
-    : hash_prefix_map_(std::make_unique<InMemoryHashPrefixMap>()),
+    : hash_prefix_map_(std::move(hash_prefix_map)),
       file_size_(old_file_size),
       has_valid_data_(false),
       store_path_(store_path),
@@ -265,6 +275,7 @@ ApplyUpdateResult V4Store::ProcessPartialUpdateAndWriteToDisk(
     Checksum checksum = response->checksum();
     response.reset();
     RecordStoreWriteResult(WriteToDisk(checksum));
+    return hash_prefix_map_->IsValid();
   }
   return result;
 }
@@ -278,6 +289,7 @@ ApplyUpdateResult V4Store::ProcessFullUpdateAndWriteToDisk(
     Checksum checksum = response->checksum();
     response.reset();
     RecordStoreWriteResult(WriteToDisk(checksum));
+    return hash_prefix_map_->IsValid();
   }
   return result;
 }
@@ -375,8 +387,8 @@ void V4Store::ApplyUpdate(
     const scoped_refptr<base::SequencedTaskRunner>& callback_task_runner,
     UpdatedStoreReadyCallback callback) {
   base::ElapsedThreadTimer thread_timer;
-  std::unique_ptr<V4Store> new_store(
-      new V4Store(task_runner_, store_path_, file_size_));
+  auto new_store = std::make_unique<V4Store>(
+      task_runner_, store_path_, CreateHashPrefixMap(store_path_), file_size_);
   ApplyUpdateResult apply_update_result;
   std::string metric;
   if (response->response_type() == ListUpdateResponse::PARTIAL_UPDATE) {
@@ -724,10 +736,14 @@ StoreReadResult V4Store::ReadFromDisk() {
     return HASH_PREFIX_INFO_MISSING_FAILURE;
   }
 
-  std::unique_ptr<ListUpdateResponse> response(new ListUpdateResponse);
-  response->Swap(file_format.mutable_list_update_response());
-  ApplyUpdateResult apply_update_result = ProcessFullUpdate(
-      kReadFromDisk, response, true /* delay_checksum check */);
+  ApplyUpdateResult apply_update_result =
+      hash_prefix_map_->ReadFromDisk(file_format);
+  if (apply_update_result == APPLY_UPDATE_SUCCESS) {
+    std::unique_ptr<ListUpdateResponse> response(new ListUpdateResponse);
+    response->Swap(file_format.mutable_list_update_response());
+    apply_update_result = ProcessFullUpdate(kReadFromDisk, response,
+                                            true /* delay_checksum check */);
+  }
   RecordApplyUpdateResult(kReadFromDisk, apply_update_result, store_path_);
   last_apply_update_result_ = apply_update_result;
   if (apply_update_result != APPLY_UPDATE_SUCCESS) {
@@ -747,19 +763,23 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
   *(lur->mutable_checksum()) = checksum;
   lur->set_new_client_state(state_);
   lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
-  for (const auto& entry : hash_prefix_map_->view()) {
-    ThreatEntrySet* additions = lur->add_additions();
-    // TODO(vakh): Write RICE encoded hash prefixes on disk. Not doing so
-    // currently since it takes a long time to decode them on startup, which
-    // blocks resource load. See: http://crbug.com/654819
-    additions->set_compression_type(RAW);
-    additions->mutable_raw_hashes()->set_prefix_size(entry.first);
-    additions->mutable_raw_hashes()->set_raw_hashes(entry.second.data(),
-                                                    entry.second.size());
-  }
 
   // Attempt writing to a temporary file first and at the end, swap the files.
   const base::FilePath new_filename = TemporaryFileForFilename(store_path_);
+
+  base::ScopedClosureRunner cleanup_on_error(base::BindOnce(
+      [](const base::FilePath& new_filename, const base::FilePath& store_path,
+         V4StoreFileFormat* file_format) {
+        base::DeleteFile(new_filename);
+        for (const auto& hash_file : file_format->hash_files()) {
+          base::DeleteFile(
+              MmapHashPrefixMap::GetPath(store_path, hash_file.extension()));
+        }
+      },
+      new_filename, store_path_, base::Unretained(&file_format)));
+
+  if (!hash_prefix_map_->WriteToDisk(&file_format))
+    return UNEXPECTED_WRITE_FAILURE;
 
   file_format.set_magic_number(kFileMagic);
   file_format.set_version_number(kFileVersion);
@@ -768,18 +788,17 @@ StoreWriteResult V4Store::WriteToDisk(const Checksum& checksum) {
   size_t written = base::WriteFile(new_filename, file_format_string.data(),
                                    file_format_string.size());
 
-  if (file_format_string.size() != written) {
-    base::DeleteFile(new_filename);
+  if (file_format_string.size() != written)
     return UNEXPECTED_BYTES_WRITTEN_FAILURE;
-  }
 
-  if (!base::Move(new_filename, store_path_)) {
-    base::DeleteFile(new_filename);
+  if (!base::Move(new_filename, store_path_))
     return UNABLE_TO_RENAME_FAILURE;
-  }
 
   // Update |file_size_| now because we wrote the file correctly.
   file_size_ = static_cast<int64_t>(written);
+
+  // No cleanup needed, reset the closure.
+  std::ignore = cleanup_on_error.Release();
 
   return WRITE_SUCCESS;
 }
