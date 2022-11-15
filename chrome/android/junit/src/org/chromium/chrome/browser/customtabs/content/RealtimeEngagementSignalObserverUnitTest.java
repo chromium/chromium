@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -24,6 +25,7 @@ import static org.chromium.url.JUnitTestGURLs.URL_1;
 import android.graphics.Point;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +37,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -86,6 +90,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinatesImpl);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerImpl);
         TabInteractionRecorder.setInstanceForTesting(mTabInteractionRecorder);
+        RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(new ScrollState());
         doReturn(true).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
     }
 
@@ -95,6 +100,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         GestureListenerManagerImpl.setInstanceForTesting(null);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(null);
         TabInteractionRecorder.setInstanceForTesting(null);
+        RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(null);
     }
 
     @Test
@@ -139,6 +145,47 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);
         verify(mGestureListenerManagerImpl).removeListener(listener);
+    }
+
+    @Test
+    public void reAttachGestureStateListenerWhenTabClosed() {
+        initializeTabForTest();
+        mEngagementSignalObserver.onFinishNativeInitialization();
+        GestureStateListener listener = captureGestureStateListener();
+        WebContentsObserver webContentsObserver = captureWebContentsObserver();
+        List<TabObserver> tabObservers = captureTabObservers();
+        for (TabObserver observer : tabObservers) {
+            observer.onClosingStateChanged(env.tabProvider.getTab(), /*isClosing*/ true);
+        }
+
+        verify(env.tabProvider.getTab().getWebContents()).removeObserver(webContentsObserver);
+        verify(mGestureListenerManagerImpl).removeListener(listener);
+    }
+
+    @Test
+    public void reAttachGestureStateListenerWhenTabChanged() {
+        initializeTabForTest();
+        mEngagementSignalObserver.onFinishNativeInitialization();
+        GestureStateListener listener = captureGestureStateListener();
+        List<TabObserver> tabObservers = captureTabObservers();
+
+        boolean hasCustomTabTabObserver = false;
+        Tab anotherTab = env.prepareTab();
+        for (TabObserver observer : tabObservers) {
+            if (observer instanceof CustomTabTabObserver) {
+                hasCustomTabTabObserver = true;
+                ((CustomTabTabObserver) observer).onObservingDifferentTab(anotherTab);
+            }
+        }
+        verify(mGestureListenerManagerImpl).removeListener(listener);
+        assertTrue(
+                "At least one CustomTabTabObserver should be captured.", hasCustomTabTabObserver);
+
+        // Now, verify a new listener is attached.
+        GestureStateListener listener2 = captureGestureStateListener();
+        Assert.assertNotEquals(
+                "A new listener should be created once tab swapped.", listener, listener2);
+        verifyNoMemoryLeakForGestureStateListener(listener2);
     }
 
     @Test
@@ -503,16 +550,17 @@ public class RealtimeEngagementSignalObserverUnitTest {
     private void initializeTabForTest() {
         Tab initialTab = env.prepareTab();
         doAnswer(invocation -> {
-            TabObserver observer = invocation.getArgument(0);
+            CustomTabTabObserver observer = invocation.getArgument(0);
             initialTab.addObserver(observer);
+            observer.onAttachedToInitialTab(initialTab);
             return null;
         })
                 .when(env.tabObserverRegistrar)
-                .registerTabObserver(any());
+                .registerActivityTabObserver(any());
 
         mEngagementSignalObserver = new RealtimeEngagementSignalObserver(
-                env.tabObserverRegistrar, initialTab, env.connection, env.session);
-        verify(env.tabObserverRegistrar).registerTabObserver(mEngagementSignalObserver);
+                env.tabObserverRegistrar, env.connection, env.session);
+        verify(env.tabObserverRegistrar).registerActivityTabObserver(mEngagementSignalObserver);
 
         env.tabProvider.setInitialTab(initialTab, TabCreationMode.DEFAULT);
     }
@@ -520,7 +568,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     private GestureStateListener captureGestureStateListener() {
         ArgumentCaptor<GestureStateListener> gestureStateListenerArgumentCaptor =
                 ArgumentCaptor.forClass(GestureStateListener.class);
-        verify(mGestureListenerManagerImpl)
+        verify(mGestureListenerManagerImpl, atLeastOnce())
                 .addListener(gestureStateListenerArgumentCaptor.capture());
         return gestureStateListenerArgumentCaptor.getValue();
     }
@@ -548,5 +596,12 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .setGreatestScrollPercentageSupplier(
                         greatestScrollPercentageSupplierArgumentCaptor.capture());
         return greatestScrollPercentageSupplierArgumentCaptor.getValue();
+    }
+
+    private void verifyNoMemoryLeakForGestureStateListener(GestureStateListener listener) {
+        listener.onScrollStarted(0, 1, false);
+        listener.onScrollUpdateGestureConsumed(new Point(1, 1));
+        listener.onVerticalScrollDirectionChanged(false, 0.1f);
+        listener.onScrollEnded(1, 0);
     }
 }
