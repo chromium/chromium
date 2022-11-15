@@ -3510,20 +3510,17 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
   generator->ReleaseLeftButton();
 
   // Start dragging the regular window. Check that the float container gets
-  // stacked under the desk container.
+  // stacked under the desk container after dragging starts.
   generator->set_current_screen_location(
       gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
   generator->PressLeftButton();
+  generator->MoveMouseBy(10, 10);
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     EXPECT_TRUE(
         IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
                        root->GetChildById(kShellWindowId_DeskContainerA)));
   }
 
-  // Move the mouse a bit before releasing so that we stay in overview. We are
-  // no longer in a drag, and the float container is restacked between the
-  // always on top container and the app list container.
-  generator->MoveMouseBy(10, 10);
   generator->ReleaseLeftButton();
   ASSERT_TRUE(InOverviewSession());
   check_float_container_normal_stacked();
@@ -3537,6 +3534,22 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
   // `OverviewWindowDragController` gets deleted using `DeleteSoon()`.
   base::RunLoop().RunUntilIdle();
   check_float_container_normal_stacked();
+}
+
+// Tests that clicking the normal window to activate it does not result in a
+// crash. Regression test for b/258818000.
+TEST_F(FloatOverviewSessionTest, ClickingWithFloatedWindow) {
+  // Create one normal and one floated window.
+  auto normal_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  ToggleOverview();
+  OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
+  GetEventGenerator()->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  GetEventGenerator()->ClickLeftButton();
 }
 
 class TabletModeOverviewSessionTest : public OverviewTestBase {
