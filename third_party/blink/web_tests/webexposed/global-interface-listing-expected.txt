@@ -1330,7 +1330,7 @@ interface ContentIndex
     method constructor
     method delete
     method getAll
-interface ContentVisibilityAutoStateChangedEvent : Event
+interface ContentVisibilityAutoStateChangeEvent : Event
     attribute @@toStringTag
     getter skipped
     method constructor
@@ -1814,7 +1814,7 @@ interface Document : Node
     getter onchange
     getter onclick
     getter onclose
-    getter oncontentvisibilityautostatechanged
+    getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
     getter oncontextrestored
@@ -2028,7 +2028,7 @@ interface Document : Node
     setter onchange
     setter onclick
     setter onclose
-    setter oncontentvisibilityautostatechanged
+    setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
     setter oncontextrestored
@@ -3257,7 +3257,7 @@ interface HTMLElement : Element
     getter onchange
     getter onclick
     getter onclose
-    getter oncontentvisibilityautostatechanged
+    getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
     getter oncontextrestored
@@ -3388,7 +3388,7 @@ interface HTMLElement : Element
     setter onchange
     setter onclick
     setter onclose
-    setter oncontentvisibilityautostatechanged
+    setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
     setter oncontextrestored
@@ -5219,7 +5219,7 @@ interface MathMLElement : Element
     getter onchange
     getter onclick
     getter onclose
-    getter oncontentvisibilityautostatechanged
+    getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
     getter oncontextrestored
@@ -5331,7 +5331,7 @@ interface MathMLElement : Element
     setter onchange
     setter onclick
     setter onclose
-    setter oncontentvisibilityautostatechanged
+    setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
     setter oncontextrestored
@@ -7473,7 +7473,7 @@ interface SVGElement : Element
     getter onchange
     getter onclick
     getter onclose
-    getter oncontentvisibilityautostatechanged
+    getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
     getter oncontextrestored
@@ -7587,7 +7587,7 @@ interface SVGElement : Element
     setter onchange
     setter onclick
     setter onclose
-    setter oncontentvisibilityautostatechanged
+    setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
     setter oncontextrestored
@@ -11762,7 +11762,7 @@ namespace CSS
     getter onchange
     getter onclick
     getter onclose
-    getter oncontentvisibilityautostatechanged
+    getter oncontentvisibilityautostatechange
     getter oncontextlost
     getter oncontextmenu
     getter oncontextrestored
@@ -11985,7 +11985,7 @@ namespace CSS
     setter onchange
     setter onclick
     setter onclose
-    setter oncontentvisibilityautostatechanged
+    setter oncontentvisibilityautostatechange
     setter oncontextlost
     setter oncontextmenu
     setter oncontextrestored

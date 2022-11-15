@@ -82,7 +82,7 @@
     "connecting",
     "connectionavailable",
     "connectionstatechange",
-    "contentvisibilityautostatechanged",
+    "contentvisibilityautostatechange",
     "contextlost",
     "contextmenu",
     "contextrestored",
