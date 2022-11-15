@@ -163,21 +163,6 @@
             ]
         }
     ],
-    "AndroidContextualSearchForceCaption": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextualSearchForceCaption"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDiscardOccludedBitmaps": [
         {
             "platforms": [
