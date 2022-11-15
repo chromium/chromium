@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_
-#define CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#define CHROMEOS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_
 
 #include <string>
 
-#include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
+#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 
-namespace ash {
+namespace chromeos {
 
 class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
     : public IpPeripheralServiceClient {
@@ -63,6 +63,6 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) FakeIpPeripheralServiceClient
   int32_t zoom_ = 0;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_IP_PERIPHERAL_FAKE_IP_PERIPHERAL_SERVICE_CLIENT_H_

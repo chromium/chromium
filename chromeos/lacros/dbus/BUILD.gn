@@ -12,6 +12,7 @@ source_set("dbus") {
     "//chromeos/dbus/constants",
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/init",
+    "//chromeos/dbus/ip_peripheral",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",

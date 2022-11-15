@@ -47,7 +47,6 @@
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
 #include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
-#include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
@@ -82,6 +81,7 @@
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
+#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
@@ -174,7 +174,7 @@ void InitializeDBus() {
   InitializeDBusClient<ImageBurnerClient>(bus);
   InitializeDBusClient<ImageLoaderClient>(bus);
   InitializeDBusClient<InstallAttributesClient>(bus);
-  InitializeDBusClient<IpPeripheralServiceClient>(bus);
+  InitializeDBusClient<chromeos::IpPeripheralServiceClient>(bus);
   InitializeDBusClient<KerberosClient>(bus);
   InitializeDBusClient<LorgnetteManagerClient>(bus);
   InitializeDBusClient<chromeos::MachineLearningClient>(bus);
@@ -305,7 +305,7 @@ void ShutdownDBus() {
   chromeos::MachineLearningClient::Shutdown();
   LorgnetteManagerClient::Shutdown();
   KerberosClient::Shutdown();
-  IpPeripheralServiceClient::Shutdown();
+  chromeos::IpPeripheralServiceClient::Shutdown();
   InstallAttributesClient::Shutdown();
   ImageLoaderClient::Shutdown();
   ImageBurnerClient::Shutdown();

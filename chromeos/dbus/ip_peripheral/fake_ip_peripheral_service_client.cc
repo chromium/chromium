@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/dbus/ip_peripheral/fake_ip_peripheral_service_client.h"
+#include "chromeos/dbus/ip_peripheral/fake_ip_peripheral_service_client.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace ash {
+namespace chromeos {
 namespace {
 
 FakeIpPeripheralServiceClient* g_instance = nullptr;
@@ -90,4 +90,4 @@ void FakeIpPeripheralServiceClient::SetZoom(const std::string& ip,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-}  // namespace ash
+}  // namespace chromeos

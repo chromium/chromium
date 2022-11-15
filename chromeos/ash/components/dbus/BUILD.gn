@@ -61,7 +61,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/gnubby:unit_tests",
     "//chromeos/ash/components/dbus/hermes:test_support",
     "//chromeos/ash/components/dbus/hiberman",
-    "//chromeos/ash/components/dbus/ip_peripheral:test_support",
     "//chromeos/ash/components/dbus/lorgnette_manager:test_support",
     "//chromeos/ash/components/dbus/oobe_config:unit_tests",
     "//chromeos/ash/components/dbus/rmad:rmad_proto",

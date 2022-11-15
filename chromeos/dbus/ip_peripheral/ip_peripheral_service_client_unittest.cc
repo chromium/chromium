@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
+#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -128,4 +128,4 @@ TEST_F(IpPeripheralServiceClientTest, SetZoomDBusMessage) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace ash
+}  // namespace chromeos

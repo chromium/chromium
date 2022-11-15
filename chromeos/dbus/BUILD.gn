@@ -13,6 +13,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/common",
+    "//chromeos/dbus/ip_peripheral:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/tpm_manager",

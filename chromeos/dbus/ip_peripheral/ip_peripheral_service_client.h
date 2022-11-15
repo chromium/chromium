@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_
-#define CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#define CHROMEOS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -15,7 +15,7 @@ namespace dbus {
 class Bus;
 }  // namespace dbus
 
-namespace ash {
+namespace chromeos {
 
 // IpPeripheralServiceClient is used to communicate with the DBus interface
 // (org.chromium.IpPeripheralService) exposed by the IP Peripheral service on
@@ -75,6 +75,6 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) IpPeripheralServiceClient {
   virtual ~IpPeripheralServiceClient();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_IP_PERIPHERAL_IP_PERIPHERAL_SERVICE_CLIENT_H_

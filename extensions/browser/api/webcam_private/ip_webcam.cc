@@ -6,7 +6,9 @@
 
 #include <utility>
 
-#include "chromeos/ash/components/dbus/ip_peripheral/ip_peripheral_service_client.h"
+#include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
+
+using chromeos::IpPeripheralServiceClient;
 
 namespace extensions {
 
@@ -15,18 +17,15 @@ IpWebcam::IpWebcam(const std::string& device_id) : device_id_(device_id) {}
 IpWebcam::~IpWebcam() {}
 
 void IpWebcam::GetPan(const GetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->GetPan(device_id_,
-                                                std::move(callback));
+  IpPeripheralServiceClient::Get()->GetPan(device_id_, std::move(callback));
 }
 
 void IpWebcam::GetTilt(const GetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->GetTilt(device_id_,
-                                                 std::move(callback));
+  IpPeripheralServiceClient::Get()->GetTilt(device_id_, std::move(callback));
 }
 
 void IpWebcam::GetZoom(const GetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->GetZoom(device_id_,
-                                                 std::move(callback));
+  IpPeripheralServiceClient::Get()->GetZoom(device_id_, std::move(callback));
 }
 
 void IpWebcam::GetFocus(const GetPTZCompleteCallback& callback) {
@@ -41,20 +40,20 @@ void IpWebcam::GetFocus(const GetPTZCompleteCallback& callback) {
 void IpWebcam::SetPan(int value,
                       int pan_speed,
                       const SetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->SetPan(device_id_, value,
-                                                std::move(callback));
+  IpPeripheralServiceClient::Get()->SetPan(device_id_, value,
+                                           std::move(callback));
 }
 
 void IpWebcam::SetTilt(int value,
                        int tilt_speed,
                        const SetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->SetTilt(device_id_, value,
-                                                 std::move(callback));
+  IpPeripheralServiceClient::Get()->SetTilt(device_id_, value,
+                                            std::move(callback));
 }
 
 void IpWebcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
-  ash::IpPeripheralServiceClient::Get()->SetZoom(device_id_, value,
-                                                 std::move(callback));
+  IpPeripheralServiceClient::Get()->SetZoom(device_id_, value,
+                                            std::move(callback));
 }
 
 void IpWebcam::SetFocus(int value, const SetPTZCompleteCallback& callback) {

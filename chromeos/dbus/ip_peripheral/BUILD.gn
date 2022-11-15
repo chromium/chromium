@@ -4,7 +4,7 @@
 
 import("//build/config/ui.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("ip_peripheral") {
   defines = [ "IS_DBUS_IP_PERIPHERAL_CLIENT_IMPL" ]
@@ -22,7 +22,7 @@ component("ip_peripheral") {
   ]
 }
 
-source_set("test_support") {
+source_set("unit_tests") {
   testonly = true
 
   public_deps = [ ":ip_peripheral" ]
