@@ -9,10 +9,15 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -97,6 +102,10 @@ DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
 void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   DCHECK(!base::Contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
+  if (rule_set->has_document_rule()) {
+    InitializeIfNecessary();
+    InvalidateAllLinks();
+  }
   QueueUpdateSpeculationCandidates();
 }
 
@@ -104,6 +113,8 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
   auto* it = base::ranges::remove(rule_sets_, rule_set);
   DCHECK(it != rule_sets_.end()) << "rule set was removed without existing";
   rule_sets_.erase(it, rule_sets_.end());
+  if (rule_set->has_document_rule())
+    InvalidateAllLinks();
   QueueUpdateSpeculationCandidates();
 }
 
@@ -117,11 +128,45 @@ void DocumentSpeculationRules::RemoveSpeculationRuleLoader(
   speculation_rule_loaders_.erase(speculation_rule_loader);
 }
 
+void DocumentSpeculationRules::LinkInserted(HTMLAnchorElement* link) {
+  DCHECK(link->IsLink());
+  AddLink(link);
+  QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::LinkRemoved(HTMLAnchorElement* link) {
+  DCHECK(link->IsLink());
+  RemoveLink(link);
+  QueueUpdateSpeculationCandidates();
+}
+
+void DocumentSpeculationRules::HrefAttributeChanged(
+    HTMLAnchorElement* link,
+    const AtomicString& old_value,
+    const AtomicString& new_value) {
+  DCHECK_NE(old_value, new_value);
+
+  if (!link->isConnected())
+    return;
+
+  if (old_value.IsNull())
+    AddLink(link);
+  else if (new_value.IsNull())
+    RemoveLink(link);
+  else
+    InvalidateLink(link);
+
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
   visitor->Trace(host_);
   visitor->Trace(speculation_rule_loaders_);
+  visitor->Trace(matched_links_);
+  visitor->Trace(unmatched_links_);
+  visitor->Trace(pending_links_);
 }
 
 mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
@@ -225,7 +270,150 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     }
   }
 
+  // Add candidates derived from document rule predicates.
+  AddLinkBasedSpeculationCandidates(candidates);
+
   host->UpdateSpeculationCandidates(std::move(candidates));
+}
+
+void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
+    Vector<mojom::blink::SpeculationCandidatePtr>& candidates) {
+  // Match all the unmatched
+  while (!pending_links_.empty()) {
+    auto it = pending_links_.begin();
+    HTMLAnchorElement* link = *it;
+    Vector<mojom::blink::SpeculationCandidatePtr> link_candidates;
+    ExecutionContext* execution_context =
+        GetSupplementable()->GetExecutionContext();
+    DCHECK(execution_context);
+
+    const auto push_link_candidates =
+        [&link, &link_candidates](
+            mojom::blink::SpeculationAction action,
+            const HeapVector<Member<SpeculationRule>>& speculation_rules) {
+          for (SpeculationRule* rule : speculation_rules) {
+            if (!rule->predicate())
+              continue;
+            if (!rule->predicate()->Matches(*link))
+              continue;
+
+            // TODO(crbug.com/1371522): This should be computed based on the
+            // speculation rule's referrer policy or the link's referrer
+            // policy, and the execution context's referrer url.
+            mojom::blink::ReferrerPtr referrer = mojom::blink::Referrer::New(
+                KURL(), network::mojom::ReferrerPolicy::kNever);
+
+            // TODO(crbug.com/1371522): We should be generating a target hint
+            // based on the link's target.
+            mojom::blink::SpeculationCandidatePtr candidate =
+                mojom::blink::SpeculationCandidate::New(
+                    link->HrefURL(), action, std::move(referrer),
+                    rule->requires_anonymous_client_ip_when_cross_origin(),
+                    rule->target_browsing_context_name_hint().value_or(
+                        mojom::blink::SpeculationTargetHint::kNoHint));
+            link_candidates.push_back(std::move(candidate));
+          }
+        };
+
+    for (SpeculationRuleSet* rule_set : rule_sets_) {
+      if (RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
+              execution_context)) {
+        push_link_candidates(mojom::blink::SpeculationAction::kPrefetch,
+                             rule_set->prefetch_rules());
+      }
+
+      if (RuntimeEnabledFeatures::
+              SpeculationRulesPrefetchWithSubresourcesEnabled(
+                  execution_context)) {
+        push_link_candidates(
+            mojom::blink::SpeculationAction::kPrefetchWithSubresources,
+            rule_set->prefetch_with_subresources_rules());
+      }
+
+      if (RuntimeEnabledFeatures::Prerender2Enabled(execution_context)) {
+        push_link_candidates(mojom::blink::SpeculationAction::kPrerender,
+                             rule_set->prerender_rules());
+      }
+    }
+
+    if (!link_candidates.empty())
+      matched_links_.Set(link, std::move(link_candidates));
+    else
+      unmatched_links_.insert(link);
+
+    pending_links_.erase(it);
+  }
+
+  for (auto& it : matched_links_) {
+    for (const auto& candidate : it.value) {
+      candidates.push_back(candidate.Clone());
+    }
+  }
+}
+
+void DocumentSpeculationRules::InitializeIfNecessary() {
+  if (initialized_)
+    return;
+  initialized_ = true;
+  for (Node& node :
+       ShadowIncludingTreeOrderTraversal::DescendantsOf(*GetSupplementable())) {
+    if (!node.IsLink())
+      continue;
+    if (auto* anchor = DynamicTo<HTMLAnchorElement>(node))
+      pending_links_.insert(anchor);
+    else if (auto* area = DynamicTo<HTMLAreaElement>(node))
+      pending_links_.insert(area);
+  }
+}
+
+void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {
+  DCHECK(link->IsLink());
+  DCHECK(!base::Contains(unmatched_links_, link));
+  DCHECK(!base::Contains(matched_links_, link));
+  DCHECK(!base::Contains(pending_links_, link));
+
+  pending_links_.insert(link);
+}
+
+void DocumentSpeculationRules::RemoveLink(HTMLAnchorElement* link) {
+  if (auto it = matched_links_.find(link); it != matched_links_.end()) {
+    matched_links_.erase(it);
+    DCHECK(!base::Contains(unmatched_links_, link));
+    DCHECK(!base::Contains(pending_links_, link));
+    return;
+  }
+  // TODO(crbug.com/1371522): Removing a link that doesn't match anything isn't
+  // going to change the candidate list, we could skip calling
+  // QueueUpdateSpeculationCandidates in this scenario.
+  if (auto it = unmatched_links_.find(link); it != unmatched_links_.end()) {
+    unmatched_links_.erase(it);
+    DCHECK(!base::Contains(pending_links_, link));
+    return;
+  }
+  auto it = pending_links_.find(link);
+  DCHECK(it != pending_links_.end());
+  pending_links_.erase(it);
+}
+
+void DocumentSpeculationRules::InvalidateLink(HTMLAnchorElement* link) {
+  pending_links_.insert(link);
+  if (auto it = matched_links_.find(link); it != matched_links_.end()) {
+    matched_links_.erase(it);
+    DCHECK(!base::Contains(unmatched_links_, link));
+    return;
+  }
+  if (auto it = unmatched_links_.find(link); it != unmatched_links_.end())
+    unmatched_links_.erase(it);
+}
+
+void DocumentSpeculationRules::InvalidateAllLinks() {
+  for (const auto& it : matched_links_)
+    pending_links_.insert(it.key);
+  matched_links_.clear();
+
+  for (HTMLAnchorElement* link : unmatched_links_)
+    pending_links_.insert(link);
+  unmatched_links_.clear();
 }
 
 }  // namespace blink

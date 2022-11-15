@@ -17,13 +17,16 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -514,6 +517,22 @@ void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
   run_loop.Run();
 
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+}
+
+// Same as above method except it performs a microtask checkpoint (and therefore
+// runs any queued microtasks) immediately after executing the functor.
+template <typename F>
+void PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+    DummyPageHolder& page_holder,
+    StubSpeculationHost& speculation_host,
+    const F& functor) {
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    auto* script_state = ToScriptStateForMainWorld(&page_holder.GetFrame());
+    v8::MicrotasksScope microtasks_scope(script_state->GetIsolate(),
+                                         ToMicrotaskQueue(script_state),
+                                         v8::MicrotasksScope::kRunMicrotasks);
+    functor();
+  });
 }
 
 // This function adds a speculationrules script to the given page, and simulates
@@ -1222,7 +1241,7 @@ TEST_F(DocumentRulesTest, DefaultPredicate) {
 TEST_F(DocumentRulesTest, EvaluateCombinators) {
   DummyPageHolder page_holder;
   Document& document = page_holder.GetDocument();
-  Element* link = MakeGarbageCollected<HTMLAnchorElement>(document);
+  HTMLAnchorElement* link = MakeGarbageCollected<HTMLAnchorElement>(document);
 
   auto* empty_and = CreatePredicate(R"("and": [])");
   EXPECT_THAT(empty_and, And());
@@ -1296,6 +1315,349 @@ TEST_F(DocumentRulesTest, EvaluateHrefMatches) {
   auto* pass_fail = CreatePredicate(
       R"("href_matches": ["https://foo.com/bar.html?*", "https://bar.com/*"])");
   EXPECT_TRUE(pass_fail->Matches(*link));
+}
+
+// Matches a SpeculationCandidatePtr list with a KURL list (without requiring
+// candidates to be in a specific order).
+template <typename... Matchers>
+auto HasURLs(Matchers&&... urls) {
+  return ::testing::ResultOf(
+      "urls",
+      [](const auto& candidates) {
+        Vector<KURL> urls;
+        base::ranges::transform(
+            candidates.begin(), candidates.end(), std::back_inserter(urls),
+            [](const auto& candidate) { return candidate->url; });
+        return urls;
+      },
+      ::testing::UnorderedElementsAre(urls...));
+}
+
+// Matches a SpeculationCandidatePtr with a SpeculationAction.
+auto HasAction(::testing::Matcher<mojom::blink::SpeculationAction> matcher) {
+  return ::testing::Pointee(
+      ::testing::Field("action", &mojom::blink::SpeculationCandidate::action,
+                       std::forward<decltype(matcher)>(matcher)));
+}
+
+HTMLAnchorElement* AddAnchor(ContainerNode& parent, const String& href) {
+  HTMLAnchorElement* link =
+      MakeGarbageCollected<HTMLAnchorElement>(parent.GetDocument());
+  link->setHref(href);
+  parent.appendChild(link);
+  return link;
+}
+
+HTMLAreaElement* AddAreaElement(ContainerNode& parent, const String& href) {
+  HTMLAreaElement* area =
+      MakeGarbageCollected<HTMLAreaElement>(parent.GetDocument());
+  area->setHref(href);
+  parent.appendChild(area);
+  return area;
+}
+
+// Tests that speculation candidates based of existing links are reported after
+// a document rule is inserted.
+TEST_F(DocumentRulesTest, SpeculationCandidatesReportedAfterInitialization) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://foo.com/doc.html");
+  AddAnchor(*document.body(), "https://bar.com/doc.html");
+  AddAnchor(*document.body(), "https://foo.com/doc2.html");
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/doc.html"),
+                                  KURL("https://foo.com/doc2.html")));
+}
+
+// Tests that a new speculation candidate is reported after different
+// modifications to a link.
+TEST_F(DocumentRulesTest, SpeculationCandidatesUpdatedAfterLinkModifications) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_TRUE(candidates.empty());
+  HTMLAnchorElement* link = nullptr;
+
+  // Add link with href that matches.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        link = AddAnchor(*document.body(), "https://foo.com/action.html");
+      });
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_EQ(candidates[0]->url, KURL("https://foo.com/action.html"));
+
+  // Update link href to URL that doesn't match.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->setHref("https://bar.com/document.html"); });
+  EXPECT_TRUE(candidates.empty());
+
+  // Update link href to URL that matches.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->setHref("https://foo.com/document.html"); });
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_EQ(candidates[0]->url, KURL("https://foo.com/document.html"));
+
+  // Remove link.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() { link->remove(); });
+  EXPECT_TRUE(candidates.empty());
+}
+
+// Tests that a new list of speculation candidates is reported after a rule set
+// is added/removed.
+TEST_F(DocumentRulesTest, SpeculationCandidatesUpdatedAfterRuleSetsChanged) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  KURL url_1 = KURL("https://foo.com/abc");
+  KURL url_2 = KURL("https://foo.com/xyz");
+  AddAnchor(*document.body(), url_1);
+  AddAnchor(*document.body(), url_2);
+
+  String speculation_script_1 = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script_1);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(url_1, url_2));
+
+  // Add a new rule set; the number of candidates should double.
+  String speculation_script_2 = R"(
+    {"prerender": [
+      {"source": "document", "where": {"not":
+        {"href_matches": {"protocol": "https", "hostname": "bar.com"}}
+      }}
+    ]}
+  )";
+  HTMLScriptElement* script_el = nullptr;
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    script_el = InsertSpeculationRules(document, speculation_script_2);
+  });
+  EXPECT_THAT(candidates, HasURLs(url_1, url_1, url_2, url_2));
+  EXPECT_THAT(candidates, ::testing::UnorderedElementsAre(
+                              HasAction(mojom::SpeculationAction::kPrefetch),
+                              HasAction(mojom::SpeculationAction::kPrefetch),
+                              HasAction(mojom::SpeculationAction::kPrerender),
+                              HasAction(mojom::SpeculationAction::kPrerender)));
+
+  // Remove the recently added rule set, the number of candidates should be
+  // halved.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() { script_el->remove(); });
+  ASSERT_EQ(candidates.size(), 2u);
+  EXPECT_THAT(candidates, HasURLs(url_1, url_2));
+  EXPECT_THAT(candidates,
+              ::testing::Each(HasAction(mojom::SpeculationAction::kPrefetch)));
+}
+
+// Tests that list and document speculation rules work in combination correctly.
+TEST_F(DocumentRulesTest, ListRuleCombinedWithDocumentRule) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://foo.com/bar");
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document"},
+      {"source": "list", "urls": ["https://bar.com/foo"]}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar"),
+                                  KURL("https://bar.com/foo")));
+}
+
+// Tests that candidates created for document rules are correct when
+// "anonyomour-client-ip-when-origin" is specified.
+TEST_F(DocumentRulesTest, RequiresAnonymousClientIPWhenCrossOrigin) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  AddAnchor(*document.body(), "https://foo.com/bar");
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "requires": ["anonymous-client-ip-when-cross-origin"]
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_TRUE(candidates[0]->requires_anonymous_client_ip_when_cross_origin);
+}
+
+// Tests that a link inside a shadow tree is included when creating
+// document-rule based speculation candidates. Also tests that an "unslotted"
+// link (link inside shadow host that isn't assigned to a slot) is included.
+TEST_F(DocumentRulesTest, LinkInShadowTreeIncluded) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+  ShadowRoot& shadow_root =
+      document.body()->AttachShadowRootInternal(ShadowRootType::kOpen);
+  auto* link_1 = AddAnchor(shadow_root, "https://foo.com/bar.html");
+  auto* link_2 = AddAnchor(*document.body(), "https://foo.com/fizz.html");
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar.html"),
+                                  KURL("https://foo.com/fizz.html")));
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        link_1->setHref("https://bar.com/foo.html");
+        link_2->remove();
+      });
+  EXPECT_TRUE(candidates.empty());
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link_1 = AddAnchor(shadow_root, "https://foo.com/buzz"); });
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_EQ(candidates[0]->url, KURL("https://foo.com/buzz"));
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() { link_1->remove(); });
+  EXPECT_TRUE(candidates.empty());
+}
+
+// Tests that an anchor element with no href attribute is handled correctly.
+TEST_F(DocumentRulesTest, LinkWithNoHrefAttribute) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link = MakeGarbageCollected<HTMLAnchorElement>(document);
+  document.body()->appendChild(link);
+  ASSERT_FALSE(link->FastHasAttribute(html_names::kHrefAttr));
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_TRUE(candidates.empty());
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->setHref("https://foo.com/bar"); });
+  ASSERT_EQ(candidates.size(), 1u);
+  ASSERT_EQ(candidates[0]->url, "https://foo.com/bar");
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->removeAttribute(html_names::kHrefAttr); });
+  ASSERT_TRUE(candidates.empty());
+
+  // Just to test that no DCHECKs are hit.
+  link->remove();
+}
+
+// Tests a couple of edge cases:
+// 1) Removing a link that doesn't match any rules
+// 2) Adding and removing a link before running microtasks (i.e. before calling
+// UpdateSpeculationCandidates).
+TEST_F(DocumentRulesTest, RemovingUnmatchedAndPendingLinks) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* unmatched_link = AddAnchor(*document.body(), "https://bar.com/foo");
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_TRUE(candidates.empty());
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() {
+        auto* pending_link = AddAnchor(*document.body(), "https://foo.com/bar");
+        unmatched_link->remove();
+        pending_link->remove();
+      });
+  EXPECT_TRUE(candidates.empty());
+}
+
+// Tests if things still work if we use <area> instead of <a>.
+TEST_F(DocumentRulesTest, AreaElement) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+  HTMLAreaElement* area =
+      AddAreaElement(*document.body(), "https://foo.com/action.html");
+
+  String speculation_script = R"(
+    {"prefetch": [
+      {"source": "document", "where": {"href_matches": "https://foo.com/*"}}
+    ]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_EQ(candidates[0]->url, KURL("https://foo.com/action.html"));
+
+  // Update area href to URL that doesn't match.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { area->setHref("https://bar.com/document.html"); });
+  EXPECT_TRUE(candidates.empty());
+
+  // Update area href to URL that matches.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { area->setHref("https://foo.com/document.html"); });
+  ASSERT_EQ(candidates.size(), 1u);
+  EXPECT_EQ(candidates[0]->url, KURL("https://foo.com/document.html"));
+
+  // Remove area.
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host, [&]() { area->remove(); });
+  EXPECT_TRUE(candidates.empty());
 }
 
 }  // namespace

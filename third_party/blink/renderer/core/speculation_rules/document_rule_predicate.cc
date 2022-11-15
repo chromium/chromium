@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -28,7 +29,7 @@ class Conjunction : public DocumentRulePredicate {
       : clauses_(std::move(clauses)) {}
   ~Conjunction() override = default;
 
-  bool Matches(const Element& el) const override {
+  bool Matches(const HTMLAnchorElement& el) const override {
     return base::ranges::all_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
@@ -70,7 +71,7 @@ class Disjunction : public DocumentRulePredicate {
       : clauses_(std::move(clauses)) {}
   ~Disjunction() override = default;
 
-  bool Matches(const Element& el) const override {
+  bool Matches(const HTMLAnchorElement& el) const override {
     return base::ranges::any_of(clauses_, [&](DocumentRulePredicate* clause) {
       return clause->Matches(el);
     });
@@ -111,7 +112,7 @@ class Negation : public DocumentRulePredicate {
   explicit Negation(DocumentRulePredicate* clause) : clause_(clause) {}
   ~Negation() override = default;
 
-  bool Matches(const Element& el) const override {
+  bool Matches(const HTMLAnchorElement& el) const override {
     return !clause_->Matches(el);
   }
 
@@ -151,7 +152,7 @@ class URLPatternPredicate : public DocumentRulePredicate {
       : patterns_(std::move(patterns)) {}
   ~URLPatternPredicate() override = default;
 
-  bool Matches(const Element& el) const override {
+  bool Matches(const HTMLAnchorElement& el) const override {
     // Let href be the result of running el’s href getter steps.
     const KURL href = el.HrefURL();
     // For each pattern of predicate’s patterns:

@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class Element;
+class HTMLAnchorElement;
 class ExceptionState;
 class JSONObject;
 class KURL;
@@ -32,7 +32,7 @@ class CORE_EXPORT DocumentRulePredicate
   // always returns true).
   static DocumentRulePredicate* MakeDefaultPredicate();
 
-  virtual bool Matches(const Element& link) const = 0;
+  virtual bool Matches(const HTMLAnchorElement& link) const = 0;
 
   // Methods for testing.
   enum class Type { kAnd, kOr, kNot, kURLPatterns };

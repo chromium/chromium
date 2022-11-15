@@ -118,6 +118,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   bool draggable() const final;
   bool IsInteractiveContent() const final;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
   void HandleClick(Event&);
 
   unsigned link_relations_ : 31;

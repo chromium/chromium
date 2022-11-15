@@ -262,6 +262,9 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
             continue;
           }
 
+          if (rule->predicate())
+            result->has_document_rule_ = true;
+
           // Append rule to result's prefetch/prerender rules.
           destination.push_back(rule);
         }

@@ -43,12 +43,15 @@ class CORE_EXPORT SpeculationRuleSet final
     return prerender_rules_;
   }
 
+  bool has_document_rule() const { return has_document_rule_; }
+
   void Trace(Visitor*) const;
 
  private:
   HeapVector<Member<SpeculationRule>> prefetch_rules_;
   HeapVector<Member<SpeculationRule>> prefetch_with_subresources_rules_;
   HeapVector<Member<SpeculationRule>> prerender_rules_;
+  bool has_document_rule_ = false;
 };
 
 }  // namespace blink

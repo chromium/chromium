@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -261,6 +262,11 @@ void HTMLAnchorElement::ParseAttribute(
           }
         }
       }
+    }
+    if (auto* document_rules =
+            DocumentSpeculationRules::FromIfExists(GetDocument())) {
+      document_rules->HrefAttributeChanged(this, params.old_value,
+                                           params.new_value);
     }
     InvalidateCachedVisitedLinkHash();
     LogUpdateAttributeIfIsolatedWorldAndInDocument("a", params);
@@ -600,7 +606,25 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
   }
 
+  if (IsLink()) {
+    if (auto* document_rules =
+            DocumentSpeculationRules::FromIfExists(GetDocument())) {
+      document_rules->LinkInserted(this);
+    }
+  }
+
   return request;
+}
+
+void HTMLAnchorElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+
+  if (IsLink()) {
+    if (auto* document_rules =
+            DocumentSpeculationRules::FromIfExists(GetDocument())) {
+      document_rules->LinkRemoved(this);
+    }
+  }
 }
 
 void HTMLAnchorElement::Trace(Visitor* visitor) const {
