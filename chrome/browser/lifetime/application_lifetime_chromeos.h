@@ -29,6 +29,10 @@ bool IsSendingStopRequestToSessionManager();
 // down/restarting Chrome in place.
 void SetSendStopRequestToSessionManager(bool should_send_request = true);
 
+// Sends stop request to session manager. If there is an update pending, this
+// will reboot.
+void StopSession();
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_CHROMEOS_H_

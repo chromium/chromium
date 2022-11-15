@@ -14,11 +14,15 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace chrome {
 namespace {
@@ -58,7 +62,8 @@ void AttemptUserExit() {
   SetSendStopRequestToSessionManager();
   // On ChromeOS, always terminate the browser, regardless of the result of
   // AreAllBrowsersCloseable(). See crbug.com/123107.
-  browser_shutdown::NotifyAndTerminate(true /* fast_path */);
+  browser_shutdown::NotifyAppTerminating();
+  StopSession();
 }
 
 void AttemptRelaunch() {
@@ -121,6 +126,31 @@ bool IsSendingStopRequestToSessionManager() {
 
 void SetSendStopRequestToSessionManager(bool should_send_request) {
   g_send_stop_request_to_session_manager = should_send_request;
+}
+
+void StopSession() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Only call this function once.
+  static bool notified = false;
+  if (notified)
+    return;
+  notified = true;
+
+  if (chromeos::PowerPolicyController::IsInitialized())
+    chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
+
+  if (chrome::UpdatePending()) {
+    chrome::RelaunchForUpdate();
+    return;
+  }
+
+  // Signal session manager to stop the session if Chrome has initiated an
+  // attempt to do so.
+  if (chrome::IsSendingStopRequestToSessionManager() &&
+      ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->StopSession(
+        login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
+  }
 }
 
 }  // namespace chrome

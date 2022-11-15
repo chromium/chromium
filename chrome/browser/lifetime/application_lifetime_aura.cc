@@ -18,6 +18,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -58,7 +59,8 @@ void HandleAppExitingForPlatform() {
     // if something prevents a browser from closing before SetTryingToQuit()
     // gets called (e.g. browser->TabsNeedBeforeUnloadFired() is true).
     // NotifyAndTerminate does nothing if called more than once.
-    browser_shutdown::NotifyAndTerminate(true /* fast_path */);
+    browser_shutdown::NotifyAppTerminating();
+    StopSession();
   }
 #endif
 }

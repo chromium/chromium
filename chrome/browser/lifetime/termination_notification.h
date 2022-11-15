@@ -21,11 +21,6 @@ base::CallbackListSubscription AddAppTerminatingCallback(
 // notification is sent only once.
 void NotifyAppTerminating();
 
-// Send out notifications.
-// For ChromeOS, also request session manager to end the session.
-// The function reboots the system if an update is available.
-void NotifyAndTerminate(bool fast_path);
-
 }  // namespace browser_shutdown
 
 #endif  // CHROME_BROWSER_LIFETIME_TERMINATION_NOTIFICATION_H_

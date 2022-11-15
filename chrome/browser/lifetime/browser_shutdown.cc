@@ -28,7 +28,7 @@
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/switch_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
@@ -365,7 +365,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NotifyAndTerminate(false /* fast_path */);
+  chrome::StopSession();
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
