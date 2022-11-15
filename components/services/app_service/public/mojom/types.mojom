@@ -408,12 +408,6 @@ struct IntentFilter {
   string? activity_label;
 };
 
-// The preferred app represents by |app_id| for |intent_fitler|.
-struct PreferredApp {
-  IntentFilter intent_filter;
-  string app_id;
-};
-
 struct FilePaths {
   array<mojo_base.mojom.FilePath> file_paths;
 };

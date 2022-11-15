@@ -56,20 +56,6 @@ PreferredApps ClonePreferredApps(const PreferredApps& preferred_apps);
 
 bool IsEqual(const PreferredApps& source, const PreferredApps& target);
 
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-PreferredAppPtr ConvertMojomPreferredAppToPreferredApp(
-    const apps::mojom::PreferredAppPtr& mojom_preferred_app);
-
-apps::mojom::PreferredAppPtr ConvertPreferredAppToMojomPreferredApp(
-    const PreferredAppPtr& preferred_app);
-
-PreferredApps ConvertMojomPreferredAppsToPreferredApps(
-    const std::vector<apps::mojom::PreferredAppPtr>& mojom_preferred_apps);
-
-std::vector<apps::mojom::PreferredAppPtr>
-ConvertPreferredAppsToMojomPreferredApps(const PreferredApps& preferred_apps);
-
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APP_H_
