@@ -45,57 +45,28 @@ BindStateBase::BindStateBase(
       destructor_(destructor),
       query_cancellation_traits_(query_cancellation_traits) {}
 
-CallbackBase& CallbackBase::operator=(CallbackBase&& c) noexcept = default;
-CallbackBase::CallbackBase(const CallbackBaseCopyable& c)
-    : bind_state_(c.bind_state_) {}
+BindStateHolder& BindStateHolder::operator=(BindStateHolder&&) noexcept =
+    default;
 
-CallbackBase& CallbackBase::operator=(const CallbackBaseCopyable& c) {
-  bind_state_ = c.bind_state_;
-  return *this;
-}
+BindStateHolder::BindStateHolder(const BindStateHolder&) = default;
 
-CallbackBase::CallbackBase(CallbackBaseCopyable&& c) noexcept
-    : bind_state_(std::move(c.bind_state_)) {}
+BindStateHolder& BindStateHolder::operator=(const BindStateHolder&) = default;
 
-CallbackBase& CallbackBase::operator=(CallbackBaseCopyable&& c) noexcept {
-  bind_state_ = std::move(c.bind_state_);
-  return *this;
-}
+BindStateHolder::~BindStateHolder() = default;
 
-void CallbackBase::Reset() {
-  // NULL the bind_state_ last, since it may be holding the last ref to whatever
-  // object owns us, and we may be deleted after that.
+void BindStateHolder::Reset() {
   bind_state_ = nullptr;
 }
 
-bool CallbackBase::IsCancelled() const {
+bool BindStateHolder::IsCancelled() const {
   DCHECK(bind_state_);
   return bind_state_->IsCancelled();
 }
 
-bool CallbackBase::MaybeValid() const {
+bool BindStateHolder::MaybeValid() const {
   DCHECK(bind_state_);
   return bind_state_->MaybeValid();
 }
-
-bool CallbackBase::EqualsInternal(const CallbackBase& other) const {
-  return bind_state_ == other.bind_state_;
-}
-
-CallbackBase::~CallbackBase() = default;
-
-CallbackBaseCopyable::CallbackBaseCopyable(const CallbackBaseCopyable& c) {
-  bind_state_ = c.bind_state_;
-}
-
-CallbackBaseCopyable& CallbackBaseCopyable::operator=(
-    const CallbackBaseCopyable& c) {
-  bind_state_ = c.bind_state_;
-  return *this;
-}
-
-CallbackBaseCopyable& CallbackBaseCopyable::operator=(
-    CallbackBaseCopyable&& c) noexcept = default;
 
 }  // namespace internal
 }  // namespace base

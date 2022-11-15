@@ -14,18 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "build/build_config.h"
-
-// TODO(https://crbug.com/1383397): Temporary workaround for clang-cl
-// ignoring TRIVIAL_ABI on `CallbackBaseCopyable`, `OnceCallback`, and
-// `RepeatingCallback` because, for some reason, it considers them to have
-// non-trivial abi base classes, despite all the base classes being annotated
-// with TRIVIAL_ABI...
-#if BUILDFLAG(IS_WIN)
-#define TRIVIAL_ABI_EXCEPT_WIN
-#else
-#define TRIVIAL_ABI_EXCEPT_WIN TRIVIAL_ABI
-#endif
 
 namespace base {
 
@@ -34,17 +22,9 @@ struct FakeBindState;
 namespace internal {
 
 class BindStateBase;
-class FinallyExecutorCommon;
-class ThenAndCatchExecutorCommon;
-
-template <typename ReturnType>
-class PostTaskExecutor;
 
 template <typename Functor, typename... BoundArgs>
 struct BindState;
-
-class CallbackBase;
-class CallbackBaseCopyable;
 
 struct BASE_EXPORT BindStateBaseRefCountTraits {
   static void Destruct(const BindStateBase*);
@@ -91,8 +71,7 @@ class BASE_EXPORT BindStateBase
   friend struct BindStateBaseRefCountTraits;
   friend class RefCountedThreadSafe<BindStateBase, BindStateBaseRefCountTraits>;
 
-  friend class CallbackBase;
-  friend class CallbackBaseCopyable;
+  friend class BindStateHolder;
 
   // Allowlist subclasses that access the destructor of BindStateBase.
   template <typename Functor, typename... BoundArgs>
@@ -119,98 +98,66 @@ class BASE_EXPORT BindStateBase
                                      CancellationQueryMode mode);
 };
 
-// Holds the Callback methods that don't require specialization to reduce
-// template bloat.
-// CallbackBase<MoveOnly> is a direct base class of MoveOnly callbacks, and
-// CallbackBase<Copyable> uses CallbackBase<MoveOnly> for its implementation.
-class BASE_EXPORT TRIVIAL_ABI_EXCEPT_WIN CallbackBase {
+// Minimal wrapper around a `scoped_refptr<BindStateBase>`. It allows more
+// expensive operations (such as ones that destroy `BindStateBase` or manipulate
+// refcounts) to be defined out-of-line to reduce binary size.
+class BASE_EXPORT TRIVIAL_ABI BindStateHolder {
  public:
-  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
-  // the moved-from object in a trivially destructible state.
-  inline CallbackBase(CallbackBase&& c) noexcept;
-  CallbackBase& operator=(CallbackBase&& c) noexcept;
+  using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
 
-  explicit CallbackBase(const CallbackBaseCopyable& c);
-  CallbackBase& operator=(const CallbackBaseCopyable& c);
+  // Used to construct a null callback.
+  inline constexpr BindStateHolder() noexcept;
 
-  explicit CallbackBase(CallbackBaseCopyable&& c) noexcept;
-  CallbackBase& operator=(CallbackBaseCopyable&& c) noexcept;
+  // Used to construct a callback by `base::BindOnce()`/`base::BindRepeating().
+  inline explicit BindStateHolder(BindStateBase* bind_state);
 
-  // Returns true if Callback is null (doesn't refer to anything).
+  // BindStateHolder is always copyable so it can be used by `OnceCallback` and
+  // `RepeatingCallback`. `OnceCallback` restricts copies so a `BindStateHolder`
+  // used with a `OnceCallback will never be copied.
+  BindStateHolder(const BindStateHolder&);
+  BindStateHolder& operator=(const BindStateHolder&);
+
+  // Subtle: since `this` is marked as TRIVIAL_ABI, the move operations must
+  // leave a moved-from `BindStateHolder` in a trivially destructible state.
+  inline BindStateHolder(BindStateHolder&&) noexcept;
+  BindStateHolder& operator=(BindStateHolder&&) noexcept;
+
+  ~BindStateHolder();
+
   bool is_null() const { return !bind_state_; }
   explicit operator bool() const { return !is_null(); }
 
-  // Returns true if the callback invocation will be nop due to an cancellation.
-  // It's invalid to call this on uninitialized callback.
-  //
-  // Must be called on the Callback's destination sequence.
   bool IsCancelled() const;
-
-  // If this returns false, the callback invocation will be a nop due to a
-  // cancellation. This may(!) still return true, even on a cancelled callback.
-  //
-  // This function is thread-safe.
   bool MaybeValid() const;
 
-  // Returns the Callback into an uninitialized state.
-  REINITIALIZES_AFTER_MOVE void Reset();
+  void Reset();
 
- protected:
-  friend class FinallyExecutorCommon;
-  friend class ThenAndCatchExecutorCommon;
+  bool operator==(const BindStateHolder& other) const {
+    return bind_state_ == other.bind_state_;
+  }
 
-  template <typename ReturnType>
-  friend class PostTaskExecutor;
-
-  using InvokeFuncStorage = BindStateBase::InvokeFuncStorage;
-
-  // Returns true if this callback equals |other|. |other| may be null.
-  bool EqualsInternal(const CallbackBase& other) const;
-
-  inline constexpr CallbackBase();
-
-  // Allow initializing of |bind_state_| via the constructor to avoid default
-  // initialization of the scoped_refptr.
-  explicit inline CallbackBase(BindStateBase* bind_state);
+  const scoped_refptr<BindStateBase>& bind_state() const { return bind_state_; }
 
   InvokeFuncStorage polymorphic_invoke() const {
     return bind_state_->polymorphic_invoke_;
   }
 
-  // Force the destructor to be instantiated inside this translation unit so
-  // that our subclasses will not get inlined versions.  Avoids more template
-  // bloat.
-  //
-  // Since type is marked as TRIVIAL_ABI, the destructor must be a no-op when
-  // `this` is a moved-from object.
-  ~CallbackBase();
-
+ private:
   scoped_refptr<BindStateBase> bind_state_;
 };
 
-constexpr CallbackBase::CallbackBase() = default;
-CallbackBase::CallbackBase(CallbackBase&&) noexcept = default;
-CallbackBase::CallbackBase(BindStateBase* bind_state)
+constexpr BindStateHolder::BindStateHolder() noexcept = default;
+
+// TODO(dcheng): Try plumbing a scoped_refptr all the way through, since
+// scoped_refptr is marked as TRIVIAL_ABI.
+BindStateHolder::BindStateHolder(BindStateBase* bind_state)
     : bind_state_(AdoptRef(bind_state)) {}
 
-// CallbackBase<Copyable> is a direct base class of Copyable Callbacks.
-class BASE_EXPORT TRIVIAL_ABI_EXCEPT_WIN CallbackBaseCopyable
-    : public CallbackBase {
- public:
-  CallbackBaseCopyable(const CallbackBaseCopyable& c);
-  CallbackBaseCopyable& operator=(const CallbackBaseCopyable& c);
-
-  // Since this type is marked as TRIVIAL_ABI, the move operations must leave
-  // the moved-from object in a trivially destructible state.
-  CallbackBaseCopyable(CallbackBaseCopyable&& c) noexcept = default;
-  CallbackBaseCopyable& operator=(CallbackBaseCopyable&& c) noexcept;
-
- protected:
-  constexpr CallbackBaseCopyable() = default;
-  explicit CallbackBaseCopyable(BindStateBase* bind_state)
-      : CallbackBase(bind_state) {}
-  ~CallbackBaseCopyable() = default;
-};
+// Unlike the copy constructor, copy assignment operator, and move assignment
+// operator, the move constructor is defaulted in the header because it
+// generates minimal code: move construction does not change any refcounts, nor
+// does it potentially destroy `BindStateBase`.
+BindStateHolder::BindStateHolder(BindStateHolder&&) noexcept = default;
 
 // Helpers for the `Then()` implementation.
 template <typename OriginalCallback, typename ThenCallback>
@@ -268,7 +215,5 @@ struct ThenHelper<OriginalCallback<OriginalR(OriginalArgs...)>,
 
 }  // namespace internal
 }  // namespace base
-
-#undef TRIVIAL_ABI_EXCEPT_WIN
 
 #endif  // BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_
