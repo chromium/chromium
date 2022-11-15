@@ -261,7 +261,7 @@ struct PreloadResult {
 
 using net::extras::PreloadDecoder;
 
-// Extracts the current PreloadResult entry from the given Huffman encoded trie.
+// Extracts the current PreloadResult entry from the given Huffman encoded tree.
 // If an "end of string" matches a period in the hostname then the information
 // is remembered because, if no more specific node is found, then that
 // information applies to the hostname.
