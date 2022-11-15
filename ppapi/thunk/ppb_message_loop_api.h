@@ -5,7 +5,7 @@
 #ifndef PPAPI_THUNK_PPB_MESSAGE_LOOP_API_H_
 #define PPAPI_THUNK_PPB_MESSAGE_LOOP_API_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_stdint.h"

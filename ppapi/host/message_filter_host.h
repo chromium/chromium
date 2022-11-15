@@ -6,7 +6,7 @@
 #define PPAPI_HOST_MESSAGE_FILTER_HOST_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/host/ppapi_host_export.h"
 #include "ppapi/host/resource_host.h"
 

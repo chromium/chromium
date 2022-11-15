@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/dev/ppb_video_decoder_dev.h"
 
 namespace ppapi {

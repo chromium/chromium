@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/private/ppb_tcp_server_socket_private.h"
 #include "ppapi/thunk/ppapi_thunk_export.h"
 

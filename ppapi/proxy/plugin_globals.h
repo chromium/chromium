@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_local_storage.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource_tracker.h"

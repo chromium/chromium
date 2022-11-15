@@ -12,7 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sync_socket.h"
 #include "base/threading/simple_thread.h"
 #include "ppapi/proxy/device_enumeration_resource_helper.h"

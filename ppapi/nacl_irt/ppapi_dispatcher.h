@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"

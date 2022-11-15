@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ipc/ipc_sender.h"
 #include "ipc/message_filter.h"
 #include "ppapi/c/pp_instance.h"

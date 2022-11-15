@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ppapi/c/dev/ppb_device_ref_dev.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"

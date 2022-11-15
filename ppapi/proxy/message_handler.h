@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/ppp_message_handler.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"

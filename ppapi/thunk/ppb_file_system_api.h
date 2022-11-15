@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/ppb_file_system.h"
 
 namespace ppapi {

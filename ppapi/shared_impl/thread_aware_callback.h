@@ -6,7 +6,7 @@
 #define PPAPI_SHARED_IMPL_THREAD_AWARE_CALLBACK_H_
 
 #include "base/bind.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/dev/ppb_video_capture_dev.h"
 #include "ppapi/c/pp_array_output.h"
 #include "ppapi/c/pp_resource.h"

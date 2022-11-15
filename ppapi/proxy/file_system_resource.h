@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"

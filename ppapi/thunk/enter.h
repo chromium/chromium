@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
