@@ -383,11 +383,14 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   // Work out the physical layout.
   if (device_info->keyboard_type ==
       ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
-    // TODO(crbug.com/1207678): set internal keyboard as unknown on ChromeOS
-    // Flex (board names chromeover64 or reven).
-    if (device_info->keyboard_top_row_layout ==
-        ui::EventRewriterChromeOS::KeyboardTopRowLayout::
-            kKbdTopRowLayoutWilco) {
+    // Reven boards have unknown keyboard layouts and should not be considered
+    // internal keyboards for the purposes of diagnostics.
+    if (chromeos::switches::IsRevenBranding()) {
+      result->physical_layout = mojom::PhysicalLayout::kUnknown;
+      result->connection_type = mojom::ConnectionType::kUnknown;
+    } else if (device_info->keyboard_top_row_layout ==
+               ui::EventRewriterChromeOS::KeyboardTopRowLayout::
+                   kKbdTopRowLayoutWilco) {
       result->physical_layout =
           mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco;
     } else if (device_info->keyboard_top_row_layout ==
@@ -403,8 +406,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   }
 
   // Get the mechanical and visual layouts, if possible.
-  if (device_info->keyboard_type ==
-      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+  if (result->physical_layout != mojom::PhysicalLayout::kUnknown) {
     result->mechanical_layout = GetSystemMechanicalLayout();
     result->region_code = GetRegionCode();
   } else {
@@ -413,8 +415,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   }
 
   // Determine number pad presence.
-  if (device_info->keyboard_type ==
-      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+  if (result->physical_layout != mojom::PhysicalLayout::kUnknown) {
     result->number_pad_present =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kHasNumberPad)
@@ -446,8 +447,7 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
   // Logic in InputDataProvider will change kUnknown to the most likely one in
   // cases where we can't be sure.
   result->top_right_key = mojom::TopRightKey::kUnknown;
-  if (device_info->keyboard_type ==
-      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+  if (result->physical_layout != mojom::PhysicalLayout::kUnknown) {
     if (result->physical_layout ==
         mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco) {
       // The first generation of Wilco devices both have lock in the top-right

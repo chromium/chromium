@@ -113,6 +113,11 @@ class InputDataProviderKeyboardTest : public ash::AshTestBase {
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
 
+    statistics_provider_.SetMachineStatistic(
+        chromeos::system::kKeyboardMechanicalLayoutKey, "ANSI");
+    statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+                                             "us");
+
     keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
         &device_information, &aux_data_);
   }
@@ -374,10 +379,30 @@ TEST_F(HasNumpadTest, SwitchDisabled) {
             keyboard_info_->number_pad_present);
 }
 
-class AssistantKeyTest : public VivaldiKeyboardTestBase {
-  void SetUp() override { VivaldiKeyboardTestBase::SetUp(); }
-};
+class RevenBoardTest : public VivaldiKeyboardTestBase {};
+TEST_F(RevenBoardTest, SwitchEnabled) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kRevenBranding);
 
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(mojom::ConnectionType::kUnknown, keyboard_info_->connection_type);
+  EXPECT_EQ(mojom::PhysicalLayout::kUnknown, keyboard_info_->physical_layout);
+}
+
+TEST_F(RevenBoardTest, SwitchDisabled) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kRevenBranding);
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(mojom::ConnectionType::kInternal, keyboard_info_->connection_type);
+  EXPECT_EQ(mojom::PhysicalLayout::kChromeOS, keyboard_info_->physical_layout);
+}
+
+class AssistantKeyTest : public VivaldiKeyboardTestBase {};
 TEST_F(AssistantKeyTest, DrobitNoAssistantKey) {
   InitInputDeviceInformation(ui::kDrobitKeyboard);
 
