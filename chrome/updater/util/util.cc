@@ -130,8 +130,10 @@ absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope) {
   const auto product_data_dir =
       app_data_dir->AppendASCII(COMPANY_SHORTNAME_STRING)
           .AppendASCII(PRODUCT_FULLNAME_STRING);
-  if (!base::CreateDirectory(product_data_dir)) {
-    LOG(ERROR) << "Can't create base directory: " << product_data_dir;
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(product_data_dir, &error)) {
+    LOG(WARNING) << "Can't create base directory: " << product_data_dir << ": "
+                 << error;
     return absl::nullopt;
   }
   return product_data_dir;
