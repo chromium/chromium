@@ -70,6 +70,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -662,7 +663,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
 
   bool should_display_gpay_logo;
   auto cards = GetCreditCardSuggestions(FormStructure(form), field_data, type,
-                                        &should_display_gpay_logo);
+                                        should_display_gpay_logo);
 
   DCHECK(!cards.empty());
 
@@ -2414,17 +2415,20 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormStructure& form_structure,
     const FormFieldData& field,
     const AutofillType& type,
-    bool* should_display_gpay_logo) const {
+    bool& should_display_gpay_logo) const {
   credit_card_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
 
   std::vector<Suggestion> suggestions;
   bool with_offer = false;
+  autofill_metrics::CardMetadataLoggingContext context;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-        field, type, app_locale_, should_display_gpay_logo, &with_offer);
+        field, type, app_locale_, should_display_gpay_logo, with_offer,
+        context);
   }
 
-  credit_card_form_event_logger_->OnDidFetchSuggestion(suggestions, with_offer);
+  credit_card_form_event_logger_->OnDidFetchSuggestion(suggestions, with_offer,
+                                                       context);
   return suggestions;
 }
 
@@ -2898,7 +2902,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   if (context->is_filling_credit_card) {
     *suggestions = GetCreditCardSuggestions(*context->form_structure, field,
                                             context->focused_field->Type(),
-                                            &context->should_display_gpay_logo);
+                                            context->should_display_gpay_logo);
   } else {
     *suggestions = GetProfileSuggestions(*context->form_structure, field,
                                          *context->focused_field);

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_selection.h"
@@ -117,14 +118,15 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
     const FormFieldData& field,
     const AutofillType& type,
     const std::string& app_locale,
-    bool* should_display_gpay_logo,
-    bool* with_offer) {
+    bool& should_display_gpay_logo,
+    bool& with_offer,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   DCHECK(type.group() == FieldTypeGroup::kCreditCard);
   std::vector<Suggestion> suggestions;
 
   std::map<std::string, AutofillOfferData*> card_linked_offers_map =
       getCardLinkedOffers(autofill_client_);
-  *with_offer = !card_linked_offers_map.empty();
+  with_offer = !card_linked_offers_map.empty();
 
   DCHECK(personal_data_);
   std::vector<CreditCard*> cards_to_suggest =
@@ -142,9 +144,6 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
         });
   }
 
-  *should_display_gpay_logo = base::ranges::all_of(
-      cards_to_suggest, base::not_fn(&CreditCard::IsLocalCard));
-
   // The field value is sanitized before attempting to match it to the user's
   // data.
   auto field_contents = SanitizeCreditCardFieldValue(field.value);
@@ -158,6 +157,13 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   }
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
+
+  metadata_logging_context = GetMetadataLoggingContext(cards_to_suggest);
+
+  // Set `should_display_gpay_logo` to true if all cards are server cards, and
+  // to false if any of the card is a local card.
+  should_display_gpay_logo = base::ranges::all_of(
+      cards_to_suggest, base::not_fn(&CreditCard::IsLocalCard));
 
   for (const CreditCard* credit_card : cards_to_suggest) {
     // The value of the stored data for this field type in the |credit_card|.
@@ -619,6 +625,46 @@ void AutofillSuggestionGenerator::SetCardArtURL(
   if (image)
     suggestion.custom_icon = *image;
 #endif
+}
+
+autofill_metrics::CardMetadataLoggingContext
+AutofillSuggestionGenerator::GetMetadataLoggingContext(
+    const std::vector<CreditCard*>& cards_to_suggest) const {
+  bool card_product_description_available = false;
+  bool card_art_image_available = false;
+  bool virtual_card_with_card_art_image = false;
+
+  for (const auto* card : cards_to_suggest) {
+    if (!card->product_description().empty())
+      card_product_description_available = true;
+
+    if (card->card_art_url().is_valid()) {
+      card_art_image_available = true;
+      if (card->virtual_card_enrollment_state() ==
+          CreditCard::VirtualCardEnrollmentState::ENROLLED) {
+        virtual_card_with_card_art_image = true;
+      }
+    }
+  }
+
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  metadata_logging_context.card_metadata_available =
+      card_product_description_available || card_art_image_available;
+
+  metadata_logging_context.card_product_description_shown =
+      card_product_description_available &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
+
+  // `card_art_image_shown` is set to true if art image is available and
+  // 1. the experiment is enabled or
+  // 2. the card with art image has a linked virtual card (for virtual cards,
+  // the card art image is always shown if available).
+  metadata_logging_context.card_art_image_shown =
+      card_art_image_available &&
+      (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
+       virtual_card_with_card_art_image);
+
+  return metadata_logging_context;
 }
 
 InternalId AutofillSuggestionGenerator::BackendIdToInternalId(

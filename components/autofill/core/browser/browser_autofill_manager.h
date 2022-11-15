@@ -597,7 +597,7 @@ class BrowserAutofillManager : public AutofillManager,
       const FormStructure& form_structure,
       const FormFieldData& field,
       const AutofillType& type,
-      bool* should_display_gpay_logo) const;
+      bool& should_display_gpay_logo) const;
 
   // If |initial_interaction_timestamp_| is unset or is set to a later time than
   // |interaction_timestamp|, updates the cached timestamp.  The latter check is
