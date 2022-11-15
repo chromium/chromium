@@ -15,6 +15,7 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -378,13 +379,11 @@ checked_in_dts_files = [
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
-copy("copy_checked_in_dts_files") {
-  visibility = [
-    ":build_ts",
-    ":generate_definitions",
-  ]
-  sources = checked_in_dts_files
-  outputs = [ "$target_gen_dir/tsc/{{source_target_relative}}" ]
+preprocess_if_expr("copy_checked_in_dts_files") {
+  in_folder = "./"
+  in_files = checked_in_dts_files
+  out_folder = "$target_gen_dir/tsc"
+  visibility = [ ":build_ts" ]
 }
 
 generate_definitions_js_files = [ "mojo_webui_test_support.js" ]
@@ -397,10 +396,7 @@ ts_definitions("generate_definitions") {
   out_dir = "$target_gen_dir/tsc"
   js_files = generate_definitions_js_files
   visibility = [ ":build_ts" ]
-  extra_deps = [
-    ":copy_checked_in_dts_files",
-    "//ui/webui/resources:generate_definitions",
-  ]
+  extra_deps = [ "//ui/webui/resources:generate_definitions" ]
 
   if (is_chromeos_ash) {
     extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
@@ -482,6 +478,7 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     input_files += [
       "chromeos/mock_controller.js",
+      "chromeos/test_store.js",
       "chromeos/arc_account_picker/test_util.js",
       "chromeos/ash_common/i18n_behavior_test.js",
       "chromeos/fake_network_config_mojom.js",
@@ -611,7 +608,6 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    input_files += [ "chromeos/test_store.js" ]
     deps += [
       "chromeos/ash_common:build_grdp",
       "chromeos/cloud_upload:build_grdp",
