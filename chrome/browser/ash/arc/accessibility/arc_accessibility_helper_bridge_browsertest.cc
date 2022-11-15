@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -345,6 +346,52 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest, PerformAction) {
   EXPECT_EQ(10, dispatched_action.target_node_id);
   EXPECT_EQ(tree_source->ax_tree_id(), dispatched_action.target_tree_id);
   EXPECT_EQ(ax::mojom::Action::kDoDefault, dispatched_action.action);
+
+  EXPECT_TRUE(router.last_dispatched_action_result_.has_value());
+  EXPECT_TRUE(router.last_dispatched_action_result_.value());
+
+  // Clear event router to prevent invalid access.
+  tree_source->set_automation_event_router_for_test(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
+                       PerformActionWithParams) {
+  auto shell_surface = MakeTestArcWindow("org.chromium.arc.1");
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+
+  ArcAccessibilityHelperBridge* bridge =
+      ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
+  auto& tree_map = bridge->trees_for_test();
+  ASSERT_EQ(1u, tree_map.size());
+  AXTreeSourceArc* tree_source = tree_map.begin()->second.get();
+  MockAutomationEventRouter router;
+  tree_source->set_automation_event_router_for_test(&router);
+  tree_source->set_window_id_for_test(5);
+
+  ui::AXActionData action_data;
+  action_data.target_node_id = 10;
+  action_data.target_tree_id = tree_source->ax_tree_id();
+  action_data.action = ax::mojom::Action::kScrollToPositionAtRowColumn;
+  action_data.row_column = {1, 3};
+  bridge->OnAction(action_data);
+
+  mojom::AccessibilityActionData* requested_action =
+      fake_accessibility_helper_instance_->last_requested_action();
+  EXPECT_EQ(10, requested_action->node_id);
+  EXPECT_EQ(mojom::AccessibilityActionType::SCROLL_TO_POSITION,
+            requested_action->action_type);
+  EXPECT_EQ(5, requested_action->window_id);
+  EXPECT_EQ(1, requested_action->int_parameters->at(
+                   mojom::ActionIntArgumentType::ROW_INT));
+  EXPECT_EQ(3, requested_action->int_parameters->at(
+                   mojom::ActionIntArgumentType::COLUMN_INT));
+
+  ui::AXActionData dispatched_action =
+      router.last_dispatched_action_data_.value();
+  EXPECT_EQ(10, dispatched_action.target_node_id);
+  EXPECT_EQ(tree_source->ax_tree_id(), dispatched_action.target_tree_id);
+  EXPECT_EQ(ax::mojom::Action::kScrollToPositionAtRowColumn,
+            dispatched_action.action);
 
   EXPECT_TRUE(router.last_dispatched_action_result_.has_value());
   EXPECT_TRUE(router.last_dispatched_action_result_.value());
