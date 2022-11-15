@@ -99,12 +99,6 @@ void WaylandPopup::UpdateDecoration() {
     shell_popup_->Decorate();
     return;
   }
-
-  // Decorate the frame using the older protocol. Can be removed once Lacros >=
-  // M107. Reshown popups will not be decorated if |aura_surface_| isn't reset
-  // when server implements the older protocol.
-  if (shadow_type_ == PlatformWindowShadowType::kDrop)
-    zaura_surface_set_frame(aura_surface(), ZAURA_SURFACE_FRAME_TYPE_SHADOW);
 }
 
 void WaylandPopup::Show(bool inactive) {
