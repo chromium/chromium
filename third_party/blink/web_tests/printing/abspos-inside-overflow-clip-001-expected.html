@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+  if (window.internals)
+    internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<style>
+  body { margin: 0; }
+</style>
+<div style="height:80vh;">
+  There should be a yellow square at the bottom of the first page, and another
+  one at the top of the second page.
+</div>
+<!-- Thanks to some subpixel clipping issues in printing, the ref has to be a
+     bit more complicated than simply placing a 20x40 DIV. We need clipping here
+     as well... -->
+<div style="position:relative; margin:auto; width:20vh; height:40vh; overflow:clip;">
+  <div style="position:absolute; contain:size; top:-1vh; left:-1vh; width:40vh; height:70vh; background:yellow;"></div>
+</div>

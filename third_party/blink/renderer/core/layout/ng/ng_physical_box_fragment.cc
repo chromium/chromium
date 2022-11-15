@@ -847,17 +847,39 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
   PhysicalRect physical_fragment_rect =
       converter.ToPhysical(logical_fragment_rect);
 
-  const auto overflow_clip = box->GetOverflowClipAxes();
-  PhysicalRect overflow_physical_fragment_rect = physical_fragment_rect;
-  if (overflow_clip != kOverflowClipBothAxis) {
-    ApplyVisibleOverflowToClipRect(overflow_clip,
-                                   overflow_physical_fragment_rect);
-  } else if (box->ShouldApplyOverflowClipMargin()) {
-    overflow_physical_fragment_rect.Expand(OverflowClipMarginOutsets());
+  // For monolithic descendants that get sliced (for certain values of "sliced";
+  // keep on reading) when printing, we will keep the stitched box clip
+  // rectangle, and just translate it so that it becomes relative to this
+  // fragment. The problem this addresses is the fact that monolithic
+  // descendants only get sliced visually and overflow nicely into the next
+  // pages, whereas, internally, a monolithic element always generates only one
+  // fragment. If we clip it strictly against the originating fragment, we risk
+  // losing content.
+  //
+  // This is a work-around for the fact that we never break monolithic content
+  // into fragments (which the spec actually suggests that we do in such cases).
+  //
+  // This work-around only makes sense when printing, since pages are simply
+  // stacked in the writing direction internally when printing, so that
+  // overflowing content from one page "accidentally" ends up at the right place
+  // on the next page. This isn't the case for multicol for instance (where this
+  // problem is "unfixable" unless we implement support for breaking monolithic
+  // content into fragments), so if we're not printing, clip it against the
+  // bounds of the fragment now.
+  if (!GetDocument().Printing()) {
+    const auto overflow_clip = box->GetOverflowClipAxes();
+    PhysicalRect overflow_physical_fragment_rect = physical_fragment_rect;
+    if (overflow_clip != kOverflowClipBothAxis) {
+      ApplyVisibleOverflowToClipRect(overflow_clip,
+                                     overflow_physical_fragment_rect);
+    } else if (box->ShouldApplyOverflowClipMargin()) {
+      overflow_physical_fragment_rect.Expand(OverflowClipMarginOutsets());
+    }
+
+    // Clip against the fragment's bounds.
+    clip_rect.Intersect(overflow_physical_fragment_rect);
   }
 
-  // Clip against the fragment's bounds.
-  clip_rect.Intersect(overflow_physical_fragment_rect);
   // Make the clip rectangle relative to the fragment.
   clip_rect.offset -= physical_fragment_rect.offset;
   // Make the clip rectangle relative to whatever the caller wants.
