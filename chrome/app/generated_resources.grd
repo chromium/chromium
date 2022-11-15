@@ -7343,7 +7343,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         upload a file
       </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_OR_TEXT" desc="Message to user on drop zone where they can select a file to search.">
-        or
+        OR
       </message>
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_TEXT_PLACEHOLDER" desc="Label on the input box for Lens search URL upload.">
         Paste image link
