@@ -234,7 +234,7 @@ class PendingUsbPrinterInfoRequests {
 
   // Completes the request with the provided request id. It runs the request
   // callback and removes the request from the set.
-  void Complete(int request_id, const base::DictionaryValue& printer_info);
+  void Complete(int request_id, base::Value::Dict printer_info);
 
   // Runs all pending callbacks with empty capability value and clears the
   // set of pending requests.
@@ -502,9 +502,8 @@ int PendingUsbPrinterInfoRequests::Add(
   return last_request_id_;
 }
 
-void PendingUsbPrinterInfoRequests::Complete(
-    int request_id,
-    const base::DictionaryValue& printer_info) {
+void PendingUsbPrinterInfoRequests::Complete(int request_id,
+                                             base::Value::Dict printer_info) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return;
@@ -512,12 +511,12 @@ void PendingUsbPrinterInfoRequests::Complete(
   PrinterProviderAPI::GetPrinterInfoCallback callback = std::move(it->second);
   pending_requests_.erase(it);
 
-  std::move(callback).Run(printer_info);
+  std::move(callback).Run(std::move(printer_info));
 }
 
 void PendingUsbPrinterInfoRequests::FailAll() {
   for (auto& request : pending_requests_) {
-    std::move(request.second).Run(base::DictionaryValue());
+    std::move(request.second).Run(base::Value::Dict());
   }
   pending_requests_.clear();
 }
@@ -661,7 +660,7 @@ void PrinterProviderAPIImpl::DispatchGetUsbPrinterInfoRequested(
   if (!event_router->ExtensionHasEventListener(
           extension_id,
           api::printer_provider::OnGetUsbPrinterInfoRequested::kEventName)) {
-    std::move(callback).Run(base::DictionaryValue());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -722,11 +721,10 @@ void PrinterProviderAPIImpl::OnGetUsbPrinterInfoResult(
     base::Value::Dict printer(result->ToValue());
     UpdatePrinterWithExtensionInfo(&printer, extension);
     pending_usb_printer_info_requests_[extension->id()].Complete(
-        request_id, *base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                        base::Value(std::move(printer)))));
+        request_id, std::move(printer));
   } else {
     pending_usb_printer_info_requests_[extension->id()].Complete(
-        request_id, base::DictionaryValue());
+        request_id, base::Value::Dict());
   }
 }
 

@@ -282,11 +282,10 @@ void RecordPrintResult(size_t* call_count,
 // Used as a callback to StartGrantPrinterAccess in tests.
 // Increases |*call_count| and records the value returned.
 void RecordPrinterInfo(size_t* call_count,
-                       std::unique_ptr<base::DictionaryValue>* printer_info_out,
-                       const base::DictionaryValue& printer_info) {
+                       base::Value::Dict* printer_info_out,
+                       const base::Value::Dict& printer_info) {
   ++(*call_count);
-  *printer_info_out = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(printer_info.Clone()));
+  *printer_info_out = printer_info.Clone();
 }
 
 std::string RefCountedMemoryToString(
@@ -442,10 +441,9 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
     return pending_usb_info_callbacks_.size();
   }
 
-  void TriggerNextUsbPrinterInfoCallback(
-      const base::DictionaryValue& printer_info) {
+  void TriggerNextUsbPrinterInfoCallback(base::Value::Dict printer_info) {
     ASSERT_GT(pending_usb_info_count(), 0u);
-    std::move(pending_usb_info_callbacks_.front()).Run(printer_info);
+    std::move(pending_usb_info_callbacks_.front()).Run(std::move(printer_info));
     pending_usb_info_callbacks_.pop();
   }
 
@@ -597,7 +595,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   EXPECT_EQ(1u, call_count);
   EXPECT_FALSE(is_done);
   EXPECT_EQ(2u, printers.size());
-  std::unique_ptr<base::DictionaryValue> extension_1_entry(
+  base::Value::Dict extension_1_entry =
       DictionaryBuilder()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",
                                         extension_1->id().c_str(),
@@ -606,8 +604,8 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionName", "Provider 1")
           .Set("extensionId", extension_1->id())
           .Set("provisional", true)
-          .Build());
-  std::unique_ptr<base::DictionaryValue> extension_2_entry(
+          .BuildDict();
+  base::Value::Dict extension_2_entry =
       DictionaryBuilder()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",
                                         extension_2->id().c_str(),
@@ -616,9 +614,9 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
           .Set("extensionName", "Provider 2")
           .Set("extensionId", extension_2->id())
           .Set("provisional", true)
-          .Build());
-  EXPECT_TRUE(base::Contains(printers, *extension_1_entry));
-  EXPECT_TRUE(base::Contains(printers, *extension_2_entry));
+          .BuildDict();
+  EXPECT_TRUE(base::Contains(printers, extension_1_entry));
+  EXPECT_TRUE(base::Contains(printers, extension_2_entry));
 
   fake_api->TriggerNextGetPrintersCallback(base::Value::List(), /*done=*/true);
 
@@ -979,7 +977,7 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
   base::RunLoop().RunUntilIdle();
 
   size_t call_count = 0;
-  std::unique_ptr<base::DictionaryValue> printer_info;
+  base::Value::Dict printer_info;
 
   std::string printer_id = base::StringPrintf(
       "provisional-usb:fake extension id:%s", device->guid.c_str());
@@ -987,23 +985,22 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
       printer_id,
       base::BindOnce(&RecordPrinterInfo, &call_count, &printer_info));
 
-  EXPECT_FALSE(printer_info.get());
+  EXPECT_TRUE(printer_info.empty());
   FakePrinterProviderAPI* fake_api = GetPrinterProviderAPI();
   ASSERT_TRUE(fake_api);
   ASSERT_EQ(1u, fake_api->pending_usb_info_count());
 
-  std::unique_ptr<base::DictionaryValue> original_printer_info(
-      DictionaryBuilder()
-          .Set("id", "printer1")
-          .Set("name", "Printer 1")
-          .Build());
+  base::Value::Dict original_printer_info = DictionaryBuilder()
+                                                .Set("id", "printer1")
+                                                .Set("name", "Printer 1")
+                                                .BuildDict();
 
-  fake_api->TriggerNextUsbPrinterInfoCallback(*original_printer_info);
+  fake_api->TriggerNextUsbPrinterInfoCallback(original_printer_info.Clone());
 
   EXPECT_EQ(1u, call_count);
-  ASSERT_TRUE(printer_info.get());
-  EXPECT_EQ(*printer_info, *original_printer_info)
-      << *printer_info << ", expected: " << *original_printer_info;
+  EXPECT_FALSE(printer_info.empty());
+  EXPECT_EQ(printer_info, original_printer_info)
+      << printer_info << ", expected: " << original_printer_info;
 }
 
 TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess_Reset) {
@@ -1012,30 +1009,29 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess_Reset) {
   base::RunLoop().RunUntilIdle();
 
   size_t call_count = 0;
-  std::unique_ptr<base::DictionaryValue> printer_info;
+  base::Value::Dict printer_info;
 
   extension_printer_handler_->StartGrantPrinterAccess(
       base::StringPrintf("provisional-usb:fake extension id:%s",
                          device->guid.c_str()),
       base::BindOnce(&RecordPrinterInfo, &call_count, &printer_info));
 
-  EXPECT_FALSE(printer_info.get());
+  EXPECT_TRUE(printer_info.empty());
   FakePrinterProviderAPI* fake_api = GetPrinterProviderAPI();
   ASSERT_TRUE(fake_api);
   ASSERT_EQ(1u, fake_api->pending_usb_info_count());
 
   extension_printer_handler_->Reset();
 
-  std::unique_ptr<base::DictionaryValue> original_printer_info(
-      DictionaryBuilder()
-          .Set("id", "printer1")
-          .Set("name", "Printer 1")
-          .Build());
+  base::Value::Dict original_printer_info = DictionaryBuilder()
+                                                .Set("id", "printer1")
+                                                .Set("name", "Printer 1")
+                                                .BuildDict();
 
-  fake_api->TriggerNextUsbPrinterInfoCallback(*original_printer_info);
+  fake_api->TriggerNextUsbPrinterInfoCallback(std::move(original_printer_info));
 
   EXPECT_EQ(0u, call_count);
-  EXPECT_FALSE(printer_info.get());
+  EXPECT_TRUE(printer_info.empty());
 }
 
 }  // namespace printing

@@ -92,7 +92,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
                                  base::Value::Dict capability);
   void WrapPrintCallback(PrintCallback callback, const base::Value& status);
   void WrapGetPrinterInfoCallback(GetPrinterInfoCallback callback,
-                                  const base::DictionaryValue& printer_info);
+                                  base::Value::Dict printer_info);
 
   void OnUsbDevicesEnumerated(
       AddedPrintersCallback callback,

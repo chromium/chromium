@@ -239,12 +239,12 @@ void PrintPreviewHandlerChromeOS::MaybeAllowJavascript() {
 
 void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
     const std::string& callback_id,
-    const base::DictionaryValue& printer_info) {
-  if (printer_info.DictEmpty()) {
+    const base::Value::Dict& printer_info) {
+  if (printer_info.empty()) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
-    return;
+  } else {
+    ResolveJavascriptCallback(base::Value(callback_id), printer_info);
   }
-  ResolveJavascriptCallback(base::Value(callback_id), printer_info);
 }
 
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(

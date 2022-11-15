@@ -83,10 +83,10 @@ void RecordDictAndRunCallback(std::string* result,
 
 // Callback for PrinterProvider::DispatchGrantUsbPrinterAccess calls.
 // It expects |value| to equal |expected_value| and runs |callback|.
-void ExpectValueAndRunCallback(const base::Value* expected_value,
+void ExpectValueAndRunCallback(const base::Value::Dict& expected_value,
                                base::OnceClosure callback,
-                               const base::DictionaryValue& value) {
-  EXPECT_EQ(value, *expected_value);
+                               base::Value::Dict value) {
+  EXPECT_EQ(value, expected_value);
   if (!callback.is_null())
     std::move(callback).Run();
 }
@@ -760,12 +760,12 @@ class PrinterProviderUsbApiTest : public PrinterProviderApiTest {
                                            test_param, &extension_id);
     ASSERT_FALSE(extension_id.empty());
 
-    std::unique_ptr<base::Value> expected_printer_info(
-        new base::DictionaryValue());
+    base::Value::Dict expected_printer_info;
     base::RunLoop run_loop;
     StartGetUsbPrinterInfoRequest(
         extension_id, *device,
-        base::BindOnce(&ExpectValueAndRunCallback, expected_printer_info.get(),
+        base::BindOnce(&ExpectValueAndRunCallback,
+                       std::move(expected_printer_info),
                        run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
   ASSERT_FALSE(extension_id.empty());
 
   UsbDeviceManager* device_manager = UsbDeviceManager::Get(profile());
-  std::unique_ptr<base::Value> expected_printer_info(
+  base::Value::Dict expected_printer_info =
       DictionaryBuilder()
           .Set("description", "This printer is a USB device.")
           .Set("extensionId", extension_id)
@@ -800,12 +800,12 @@ IN_PROC_BROWSER_TEST_P(PrinterProviderUsbApiTest, GetUsbPrinterInfo) {
                base::StringPrintf("%s:usbDevice-%u", extension_id.c_str(),
                                   device_manager->GetIdFromGuid(device->guid)))
           .Set("name", "Test Printer")
-          .Build());
+          .BuildDict();
   base::RunLoop run_loop;
   StartGetUsbPrinterInfoRequest(
       extension_id, *device,
-      base::BindOnce(&ExpectValueAndRunCallback, expected_printer_info.get(),
-                     run_loop.QuitClosure()));
+      base::BindOnce(&ExpectValueAndRunCallback,
+                     std::move(expected_printer_info), run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();

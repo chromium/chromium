@@ -48,7 +48,7 @@ class PrinterHandler {
       base::OnceCallback<void(base::Value::Dict capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
   using GetPrinterInfoCallback =
-      base::OnceCallback<void(const base::DictionaryValue& printer_info)>;
+      base::OnceCallback<void(const base::Value::Dict& printer_info)>;
 #if BUILDFLAG(IS_CHROMEOS)
   using GetEulaUrlCallback =
       base::OnceCallback<void(const std::string& license)>;

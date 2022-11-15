@@ -208,7 +208,7 @@ void ExtensionPrinterHandler::StartGrantPrinterAccess(
   absl::optional<ProvisionalUsbPrinter> printer =
       ParseProvisionalUsbPrinterId(printer_id);
   if (!printer.has_value()) {
-    std::move(callback).Run(base::DictionaryValue());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -216,7 +216,7 @@ void ExtensionPrinterHandler::StartGrantPrinterAccess(
       UsbDeviceManager::Get(profile_)->GetDeviceInfo(
           printer.value().device_guid);
   if (!device) {
-    std::move(callback).Run(base::DictionaryValue());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -307,8 +307,8 @@ void ExtensionPrinterHandler::WrapPrintCallback(PrintCallback callback,
 
 void ExtensionPrinterHandler::WrapGetPrinterInfoCallback(
     GetPrinterInfoCallback callback,
-    const base::DictionaryValue& printer_info) {
-  std::move(callback).Run(printer_info);
+    base::Value::Dict printer_info) {
+  std::move(callback).Run(std::move(printer_info));
 }
 
 void ExtensionPrinterHandler::OnUsbDevicesEnumerated(

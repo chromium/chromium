@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
@@ -21,10 +22,6 @@
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace printing {
 
@@ -88,7 +85,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // |callback_id|: The javascript callback to resolve or reject.
   // |printer_info|: The data reported by the extension.
   void OnGotExtensionPrinterInfo(const std::string& callback_id,
-                                 const base::DictionaryValue& printer_info);
+                                 const base::Value::Dict& printer_info);
 
   // Called to initiate a status request for a printer.
   void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
