@@ -84,8 +84,8 @@ class SignedWebBundleId {
                     std::array<uint8_t, kDecodedIdLength> decoded_id);
 
   Type type_;
-  const std::string encoded_id_;
-  const std::array<uint8_t, kDecodedIdLength> decoded_id_;
+  std::string encoded_id_;
+  std::array<uint8_t, kDecodedIdLength> decoded_id_;
 
   static base::RepeatingCallback<void(void*, size_t)>
   GetDefaultRandomGenerator();
