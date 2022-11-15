@@ -378,23 +378,23 @@ div.splitter {
   flex: none;
   justify-content: center;
   margin: 0;
-  margin-inline-end: calc(16px - 6px);
   position: relative;
-  width: 32px;
+  width: 24px;
   z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
 div.splitter .splitter-button {
-  --hover-bg-color: var(--cros-ripple-color);
-  --ink-color: var(--cros-ripple-color);
-  --ripple-opacity: 100%;
+  --hover-bg-color: var(--cros-sys-hover_on_quiet);
+  --ink-color: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 8px;
   cursor: col-resize;
-  height: 32px;
-  min-width: 32px;
+  height: 64px;
+  left: 12px;
+  min-width: 16px;
   padding: 0;
-  width: 32px;
+  position: relative;
+  width: 16px;
 }
 
 html.pointer-active div.splitter:not(.splitter-active):hover {
@@ -411,22 +411,15 @@ html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:act
 }
 
 div.splitter.splitter-active .splitter-button:active:not(:hover) {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_quiet);
 }
 
 div.splitter.splitter-active .splitter-button:not(:active) {
-  background-color: var(--cros-icon-button-pressed-color);
+  background-color: var(--cros-sys-hover_on_quiet);
 }
 
 div.splitter .splitter-button .icon {
-  -webkit-mask-image: url(../images/common/dragger.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  /* TODO(crbug.com/1268206): the icon is not in disabled state */
-  background-color: var(--cros-icon-color-disabled);
-  height: 20px;
-  padding: 6px;
-  width: 20px;
+  display: none;
 }
 
 html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
