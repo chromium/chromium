@@ -13,10 +13,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace pdf_extension_test_util {
@@ -95,14 +97,15 @@ testing::AssertionResult EnsurePDFHasLoaded(
                       : (testing::AssertionFailure() << "Load failed.");
 }
 
-gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
-                                         const gfx::Point& point) {
-  if (!contents) {
-    ADD_FAILURE() << "contents needs to be non-null";
+gfx::Point ConvertPageCoordToScreenCoord(
+    content::ToRenderFrameHost guest_main_frame,
+    const gfx::Point& point) {
+  if (!guest_main_frame.render_frame_host()) {
+    ADD_FAILURE() << "The guest main frame needs to be non-null";
     return point;
   }
   if (!content::ExecuteScript(
-          contents,
+          guest_main_frame,
           "var visiblePage = viewer.viewport.getMostVisiblePage();"
           "var visiblePageDimensions ="
           "    viewer.viewport.getPageScreenRect(visiblePage);"
@@ -130,21 +133,36 @@ gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
 
   int x;
   if (!content::ExecuteScriptAndExtractInt(
-          contents, "window.domAutomationController.send(linkScreenPositionX);",
-          &x)) {
+          guest_main_frame,
+          "window.domAutomationController.send(linkScreenPositionX);", &x)) {
     ADD_FAILURE() << "error getting linkScreenPositionX";
     return point;
   }
 
   int y;
   if (!content::ExecuteScriptAndExtractInt(
-          contents, "window.domAutomationController.send(linkScreenPositionY);",
-          &y)) {
+          guest_main_frame,
+          "window.domAutomationController.send(linkScreenPositionY);", &y)) {
     ADD_FAILURE() << "error getting linkScreenPositionY";
     return point;
   }
 
   return {x, y};
+}
+
+void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest) {
+  auto* guest_main_frame = guest->GetGuestMainFrame();
+  content::WaitForHitTestData(guest_main_frame);
+
+  const gfx::Point point_in_root_coords =
+      guest_main_frame->GetView()->TransformPointToRootCoordSpace(
+          ConvertPageCoordToScreenCoord(guest_main_frame, {1, 1}));
+
+  content::FocusChangedObserver focus_observer(guest->web_contents());
+  content::SimulateMouseClickAt(
+      guest->embedder_web_contents(), blink::WebInputEvent::kNoModifiers,
+      blink::WebMouseEvent::Button::kLeft, point_in_root_coords);
+  focus_observer.Wait();
 }
 
 void SetInputFocusOnPlugin(content::WebContents* guest_contents) {
@@ -154,6 +172,21 @@ void SetInputFocusOnPlugin(content::WebContents* guest_contents) {
       blink::WebMouseEvent::Button::kLeft,
       ConvertPageCoordToScreenCoord(guest_contents, {1, 1}));
   focus_observer.Wait();
+}
+
+extensions::MimeHandlerViewGuest* GetOnlyMimeHandlerView(
+    content::WebContents* embedder_contents) {
+  extensions::MimeHandlerViewGuest* result = nullptr;
+  embedder_contents->ForEachRenderFrameHost([&result](
+                                                content::RenderFrameHost* rfh) {
+    auto* guest = extensions::MimeHandlerViewGuest::FromRenderFrameHost(rfh);
+    if (guest && guest->GetGuestMainFrame() == rfh) {
+      // Assume exactly one MimeHandlerView.
+      EXPECT_FALSE(result);
+      result = guest;
+    }
+  });
+  return result;
 }
 
 }  // namespace pdf_extension_test_util

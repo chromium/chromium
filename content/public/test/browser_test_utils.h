@@ -526,8 +526,14 @@ bool IsWebcamAvailableOnSystem(WebContents* web_contents);
 class ToRenderFrameHost {
  public:
   template <typename T>
+  // NOLINTNEXTLINE(google-explicit-constructor)
   ToRenderFrameHost(T* frame_convertible_value)
       : render_frame_host_(ConvertToRenderFrameHost(frame_convertible_value)) {}
+
+  template <typename T, typename RawPtrType>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ToRenderFrameHost(const raw_ptr<T, RawPtrType>& frame_convertible_value)
+      : ToRenderFrameHost(frame_convertible_value.get()) {}
 
   // Extract the underlying frame.
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }

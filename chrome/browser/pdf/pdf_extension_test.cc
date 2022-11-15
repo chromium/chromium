@@ -175,6 +175,7 @@ using ::guest_view::GuestViewManager;
 using ::guest_view::TestGuestViewManager;
 using ::guest_view::TestGuestViewManagerFactory;
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
+using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::GetPdfPluginFrames;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 using ::testing::Contains;
@@ -279,30 +280,38 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
   }
 
-  // Same as LoadPdf(), but also returns a pointer to the guest WebContents for
-  // the loaded PDF. Returns nullptr if the load fails.
+  // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
+  // for the loaded PDF. Returns nullptr if the load fails.
+  MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url) {
+    if (!LoadPdf(url))
+      return nullptr;
+    return GetOnlyMimeHandlerView(GetActiveWebContents());
+  }
+
+  // TODO(crbug.com/1261928): Prefer using `LoadPdfGetMimeHandlerView`.
   WebContents* LoadPdfGetGuestContents(const GURL& url) {
     if (!LoadPdf(url))
       return nullptr;
     return GetOnlyGuestContents(GetActiveWebContents());
   }
 
-  // Same as LoadPdf(), but also returns a pointer to the guest WebContents for
-  // the loaded PDF in a new tab. Returns nullptr if the load fails.
-  WebContents* LoadPdfInNewTabGetGuestContents(const GURL& url) {
+  // Same as LoadPdf(), but also returns a pointer to the `MimeHandlerViewGuest`
+  // for the loaded PDF in a new tab. Returns nullptr if the load fails.
+  MimeHandlerViewGuest* LoadPdfInNewTabGetMimeHandlerView(const GURL& url) {
     if (!LoadPdfInNewTab(url))
       return nullptr;
-    return GetOnlyGuestContents(GetActiveWebContents());
+    return GetOnlyMimeHandlerView(GetActiveWebContents());
   }
 
   void TestGetSelectedTextReply(const GURL& url, bool expect_success) {
-    WebContents* guest_contents = LoadPdfGetGuestContents(url);
-    ASSERT_TRUE(guest_contents);
+    MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
+    ASSERT_TRUE(guest);
 
     // Reach into the guest and hook into it such that it posts back a 'flush'
     // message after every getSelectedTextReply message sent.
     ASSERT_TRUE(content::ExecuteScript(
-        guest_contents, "viewer.overrideSendScriptingMessageForTest();"));
+        guest->GetGuestMainFrame(),
+        "viewer.overrideSendScriptingMessageForTest();"));
 
     // Add an event listener for flush messages and request the selected text.
     // If we get a flush message without receiving getSelectedText we know that
@@ -344,23 +353,18 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     return manager;
   }
 
+  // TODO(crbug.com/1261928): Prefer using GetOnlyMimeHandlerView.
   WebContents* GetOnlyGuestContents(WebContents* embedder_contents) const {
-    content::BrowserPluginGuestManager* guest_manager =
-        embedder_contents->GetBrowserContext()->GetGuestManager();
-
-    WebContents* guest_contents = nullptr;
-    guest_manager->ForEachGuest(
-        embedder_contents,
-        base::BindLambdaForTesting([&guest_contents](WebContents* guest) {
-          // Assume exactly one guest contents.
-          EXPECT_FALSE(guest_contents);
-          guest_contents = guest;
-          return false;
-        }));
-
-    return guest_contents;
+    MimeHandlerViewGuest* guest = GetOnlyMimeHandlerView(embedder_contents);
+    return guest ? guest->web_contents() : nullptr;
   }
 
+  content::RenderFrameHost* GetPluginFrame(MimeHandlerViewGuest* guest) const {
+    return pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
+  }
+
+  // TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
+  // method.
   content::RenderFrameHost* GetPluginFrame(WebContents* guest_contents) const {
     return pdf_frame_util::FindPdfChildFrame(
         guest_contents->GetPrimaryMainFrame());
@@ -1022,9 +1026,10 @@ class PDFExtensionJSTest : public PDFExtensionTest {
     // being seen due to the BrowserPluginGuest not being available yet (see
     // crbug.com/498077). So instead use LoadPdf() which ensures that the PDF is
     // loaded before continuing.
-    WebContents* guest_contents = new_tab ? LoadPdfInNewTabGetGuestContents(url)
-                                          : LoadPdfGetGuestContents(url);
-    ASSERT_TRUE(guest_contents);
+    MimeHandlerViewGuest* guest = new_tab
+                                      ? LoadPdfInNewTabGetMimeHandlerView(url)
+                                      : LoadPdfGetMimeHandlerView(url);
+    ASSERT_TRUE(guest);
 
     constexpr char kModuleLoaderTemplate[] =
         R"(var s = document.createElement('script');
@@ -1036,7 +1041,7 @@ class PDFExtensionJSTest : public PDFExtensionTest {
            document.body.appendChild(s);)";
 
     ASSERT_TRUE(content::ExecuteScript(
-        guest_contents,
+        guest->GetGuestMainFrame(),
         base::StringPrintf(kModuleLoaderTemplate,
                            chrome::kChromeUIWebUITestHost, filename.c_str())));
 
@@ -1641,10 +1646,10 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
  protected:
   class ScrollEventWaiter {
    public:
-    explicit ScrollEventWaiter(WebContents* guest_contents)
-        : message_queue_(guest_contents) {
+    explicit ScrollEventWaiter(content::ToRenderFrameHost guest_main_frame)
+        : message_queue_(guest_main_frame.render_frame_host()) {
       content::ExecuteScriptAsync(
-          guest_contents,
+          guest_main_frame,
           R"(viewer.shadowRoot.querySelector('#scroller').onscroll = () => {
             if (viewer.viewport.scrollContent_.unackedScrollsToRemote_ === 0) {
               window.domAutomationController.send('dispatchedScrollEvent');
@@ -1679,28 +1684,30 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   // difference.
   static constexpr float kScrollPositionEpsilon = 2.0f;
 
-  static int GetViewportHeight(WebContents* guest_contents) {
+  static int GetViewportHeight(content::ToRenderFrameHost guest_main_frame) {
     int viewport_height = 0;
     EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_contents,
+        guest_main_frame,
         "window.domAutomationController.send(viewer.viewport.size.height);",
         &viewport_height));
     return viewport_height;
   }
 
-  static int GetViewportScrollPositionX(WebContents* guest_contents) {
+  static int GetViewportScrollPositionX(
+      content::ToRenderFrameHost guest_main_frame) {
     int position_x = 0;
     EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_contents,
+        guest_main_frame,
         "window.domAutomationController.send(viewer.viewport.position.x);",
         &position_x));
     return position_x;
   }
 
-  static int GetViewportScrollPositionY(WebContents* guest_contents) {
+  static int GetViewportScrollPositionY(
+      content::ToRenderFrameHost guest_main_frame) {
     int position_y = 0;
     EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        guest_contents,
+        guest_main_frame,
         "window.domAutomationController.send(viewer.viewport.position.y);",
         &position_y));
     return position_y;
@@ -1918,9 +1925,9 @@ namespace {
 
 class PrintObserver : public printing::PrintViewManagerBase::Observer {
  public:
-  PrintObserver(content::WebContents* contents,
-                const content::RenderFrameHost* rfh)
-      : print_view_manager_(PrintViewManagerImpl::FromWebContents(contents)),
+  explicit PrintObserver(content::RenderFrameHost* rfh)
+      : print_view_manager_(PrintViewManagerImpl::FromWebContents(
+            content::WebContents::FromRenderFrameHost(rfh))),
         rfh_(rfh) {
     print_view_manager_->AddObserver(*this);
   }
@@ -1983,19 +1990,19 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DISABLED_BasicPrintCommand) {
   content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(frame);
 
-  PrintObserver print_observer(guest_contents, frame);
+  PrintObserver print_observer(frame);
   chrome::BasicPrint(browser());
   print_observer.WaitForPrintNow();
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintCommand) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* frame = GetPluginFrame(guest);
   ASSERT_TRUE(frame);
 
-  PrintObserver print_observer(guest_contents, frame);
+  PrintObserver print_observer(frame);
   chrome::Print(browser());
   print_observer.WaitForPrintPreview();
 }
@@ -2014,7 +2021,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
-  PrintObserver print_observer(guest_contents, plugin_frame);
+  PrintObserver print_observer(plugin_frame);
   guest_contents->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
@@ -2038,7 +2045,7 @@ IN_PROC_BROWSER_TEST_F(
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
-  PrintObserver print_observer(guest_contents, plugin_frame);
+  PrintObserver print_observer(plugin_frame);
   content::SimulateMouseClickAt(guest_contents,
                                 blink::WebInputEvent::kNoModifiers,
                                 blink::WebMouseEvent::Button::kLeft, {1, 1});
@@ -2061,7 +2068,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
-  PrintObserver print_observer(guest_contents, plugin_frame);
+  PrintObserver print_observer(plugin_frame);
   SetInputFocusOnPlugin(guest_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
@@ -2083,7 +2090,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
-  PrintObserver print_observer(guest_contents, plugin_frame);
+  PrintObserver print_observer(plugin_frame);
   SetInputFocusOnPlugin(guest_contents);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
@@ -2097,7 +2104,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintButton) {
   content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(frame);
 
-  PrintObserver print_observer(guest_contents, frame);
+  PrintObserver print_observer(frame);
   constexpr char kClickPrintButtonScript[] = R"(
     viewer.shadowRoot.querySelector('#toolbar')
         .shadowRoot.querySelector('#print')
@@ -2530,14 +2537,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
 
   // Load a page with an embedded PDF and an HTML iframe, both of the same
   // origin.
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/embed_pdf_and_html.html"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
   // The PDF plugin frame and the iframe should not share renderer processes
   // even though they share origins.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPdfPluginFrames(guest_contents);
+      GetPdfPluginFrames(GetActiveWebContents());
   ASSERT_EQ(plugin_frames.size(), 1u);
 
   content::RenderFrameHost* iframe = ChildFrameAt(GetActiveWebContents(), 0);
@@ -2552,17 +2559,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
 
   // The PDF plugin frame and the extension main frame should not share renderer
   // processes even though the extension triggers a data: navigation when
   // loading its plugin.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPdfPluginFrames(guest_contents);
+      GetPdfPluginFrames(GetActiveWebContents());
   ASSERT_EQ(plugin_frames.size(), 1u);
   EXPECT_NE(plugin_frames[0]->GetProcess(),
-            guest_contents->GetPrimaryMainFrame()->GetProcess());
+            guest->GetGuestMainFrame()->GetProcess());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
@@ -2584,13 +2591,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, Jitless) {
-  WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest);
 
   // PDF content should always be in JIT-less processes.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPdfPluginFrames(guest_contents);
+      GetPdfPluginFrames(GetActiveWebContents());
   ASSERT_EQ(plugin_frames.size(), 1u);
   EXPECT_TRUE(plugin_frames[0]->GetProcess()->IsJitDisabled());
 }
@@ -2626,6 +2633,9 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
     guest_contents_ = guest_contents;
   }
 
+  // TODO(crbug.com/1261928): Tests should transform the point by the guest's
+  // RenderWidgetHostView's TransformPointToRootCoordSpace and send to the
+  // embedding WebContents.
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:
@@ -2856,6 +2866,9 @@ class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
     return ConvertPageCoordToScreenCoord(guest_contents_, {100, 100});
   }
 
+  // TODO(crbug.com/1261928): Tests should transform the point by the guest's
+  // RenderWidgetHostView's TransformPointToRootCoordSpace and send to the
+  // embedding WebContents.
   WebContents* GetWebContentsForInputRouting() { return guest_contents_; }
 
  private:

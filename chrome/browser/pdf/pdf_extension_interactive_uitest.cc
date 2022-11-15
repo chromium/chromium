@@ -20,6 +20,7 @@
 #include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,6 +50,7 @@ namespace {
 
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::EnsurePDFHasLoaded;
+using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
@@ -70,26 +72,30 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
     extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
-  content::WebContents* LoadPdfGetGuestContents(const GURL& url) {
+  extensions::MimeHandlerViewGuest* LoadPdfGetMimeHandlerView(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     if (!EnsurePDFHasLoaded(GetActiveWebContents()))
       return nullptr;
 
-    content::WebContents* contents = GetActiveWebContents();
-    content::BrowserPluginGuestManager* guest_manager =
-        contents->GetBrowserContext()->GetGuestManager();
-    return guest_manager->GetFullPageGuest(contents);
+    return GetOnlyMimeHandlerView(GetActiveWebContents());
+  }
+
+  // TODO(crbug.com/1261928): Prefer using `LoadPdfGetMimeHandlerView`.
+  content::WebContents* LoadPdfGetGuestContents(const GURL& url) {
+    extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
+    return guest ? guest->web_contents() : nullptr;
   }
 
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  content::FocusedNodeDetails TabAndWait(content::WebContents* guest_contents,
-                                         bool forward) {
-    content::FocusChangedObserver focus_observer(guest_contents);
+  content::FocusedNodeDetails TabAndWait(
+      extensions::MimeHandlerViewGuest* guest,
+      bool forward) {
+    content::FocusChangedObserver focus_observer(guest->web_contents());
     if (!ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB,
                                          /*control=*/false,
                                          /*shift=*/!forward,
@@ -99,6 +105,16 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
       return {};
     }
     return focus_observer.Wait();
+  }
+
+  // TODO(crbug.com/1261928): Prefer the `MimeHandlerViewGuest` overload of this
+  // method in tests.
+  content::FocusedNodeDetails TabAndWait(content::WebContents* guest_contents,
+                                         bool forward) {
+    extensions::MimeHandlerViewGuest* guest =
+        extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
+    EXPECT_TRUE(guest);
+    return TabAndWait(guest, forward);
   }
 };
 
@@ -131,14 +147,14 @@ class TabChangedWaiter : public TabStripModelObserver {
 // For crbug.com/1038918
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
                        CtrlPageUpDownSwitchesTabs) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(1, tab_strip_model->active_index());
 
-  SetInputFocusOnPlugin(guest_contents);
+  SetInputFocusOnPlugin(guest);
 
   {
     TabChangedWaiter tab_changed_waiter(browser());
@@ -166,16 +182,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
   // Tab in.
-  content::FocusedNodeDetails details =
-      TabAndWait(guest_contents, /*forward=*/true);
+  content::FocusedNodeDetails details = TabAndWait(guest, /*forward=*/true);
   EXPECT_EQ(blink::mojom::FocusType::kForward, details.focus_type);
 
   // Tab out.
-  details = TabAndWait(guest_contents, /*forward=*/true);
+  details = TabAndWait(guest, /*forward=*/true);
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 

@@ -19,6 +19,10 @@ class ToRenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace extensions {
+class MimeHandlerViewGuest;
+}  // namespace extensions
+
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -46,12 +50,21 @@ size_t CountPdfPluginProcesses(Browser* browser);
     bool wait_for_hit_test_data = true,
     const std::string& pdf_element = "embed");
 
-gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
-                                         const gfx::Point& point);
+gfx::Point ConvertPageCoordToScreenCoord(
+    content::ToRenderFrameHost guest_main_frame,
+    const gfx::Point& point);
 
 // Synchronously sets the input focus on the plugin frame by clicking on the
 // top-left corner of a PDF document.
+void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest);
+// TODO(crbug.com/1261928): Prefer the MimeHandlerViewGuest overload of this
+// method.
 void SetInputFocusOnPlugin(content::WebContents* guest_contents);
+
+// Returns the `MimeHandlerViewGuest` embedded in `embedder_contents`. If more
+// than one `MimeHandlerViewGuest` is found, the test fails.
+extensions::MimeHandlerViewGuest* GetOnlyMimeHandlerView(
+    content::WebContents* embedder_contents);
 
 }  // namespace pdf_extension_test_util
 
