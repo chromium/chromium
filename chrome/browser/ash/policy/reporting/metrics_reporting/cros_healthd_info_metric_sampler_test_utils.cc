@@ -109,4 +109,66 @@ cros_healthd::TelemetryInfoPtr CreateInputResult(
   return telemetry_info;
 }
 
+// ------- display -------
+
+cros_healthd::TelemetryInfoPtr CreateDisplayResult(
+    cros_healthd::EmbeddedDisplayInfoPtr embedded_display,
+    std::vector<cros_healthd::ExternalDisplayInfoPtr> external_displays) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->display_result = cros_healthd::DisplayResult::NewDisplayInfo(
+      cros_healthd::DisplayInfo::New(std::move(embedded_display),
+                                     std::move(external_displays)));
+  return telemetry_info;
+}
+
+cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
+    bool privacy_screen_supported,
+    int display_width,
+    int display_height,
+    int resolution_horizontal,
+    int resolution_vertical,
+    double refresh_rate,
+    std::string manufacturer,
+    int model_id,
+    int manufacture_year,
+    std::string display_name) {
+  return cros_healthd::EmbeddedDisplayInfo::New(
+      privacy_screen_supported, /*privacy_screen_enabled*/ false,
+      cros_healthd::NullableUint32::New(display_width),
+      cros_healthd::NullableUint32::New(display_height),
+      cros_healthd::NullableUint32::New(resolution_horizontal),
+      cros_healthd::NullableUint32::New(resolution_vertical),
+      cros_healthd::NullableDouble::New(refresh_rate), manufacturer,
+      cros_healthd::NullableUint16::New(model_id),
+      /*serial_number*/ cros_healthd::NullableUint32::New(12345),
+      /*manufacture_week*/ cros_healthd::NullableUint8::New(10),
+      cros_healthd::NullableUint16::New(manufacture_year),
+      /*edid_version*/ "V2.0",
+      /*input_type*/ cros_healthd::DisplayInputType::kDigital, display_name);
+}
+
+cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
+    int display_width,
+    int display_height,
+    int resolution_horizontal,
+    int resolution_vertical,
+    double refresh_rate,
+    std::string manufacturer,
+    int model_id,
+    int manufacture_year,
+    std::string display_name) {
+  return cros_healthd::ExternalDisplayInfo ::New(
+      cros_healthd::NullableUint32::New(display_width),
+      cros_healthd::NullableUint32::New(display_height),
+      cros_healthd::NullableUint32::New(resolution_horizontal),
+      cros_healthd::NullableUint32::New(resolution_vertical),
+      cros_healthd::NullableDouble::New(refresh_rate), manufacturer,
+      cros_healthd::NullableUint16::New(model_id),
+      /*serial_number*/ cros_healthd::NullableUint32::New(12345),
+      /*manufacture_week*/ cros_healthd::NullableUint8::New(10),
+      cros_healthd::NullableUint16::New(manufacture_year),
+      /*edid_version*/ "V2.0",
+      /*input_type*/ cros_healthd::DisplayInputType::kDigital, display_name);
+}
+
 }  // namespace reporting::test

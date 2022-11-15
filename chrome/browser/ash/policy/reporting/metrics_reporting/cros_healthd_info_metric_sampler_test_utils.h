@@ -60,6 +60,38 @@ void AssertMemoryInfo(const MetricData& result,
 cros_healthd::TelemetryInfoPtr CreateInputResult(
     std::string library_name,
     std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices);
+
+// --------- display ----------
+
+// Create a display info for display tests.
+cros_healthd::TelemetryInfoPtr CreateDisplayResult(
+    cros_healthd::EmbeddedDisplayInfoPtr embedded_display,
+    std::vector<cros_healthd::ExternalDisplayInfoPtr> external_displays);
+
+// Create an embedded display. Used to fed into `CreateDisplayResult`.
+cros_healthd::EmbeddedDisplayInfoPtr CreateEmbeddedDisplay(
+    bool privacy_screen_supported,
+    int display_width,
+    int display_height,
+    int resolution_horizontal,
+    int resolution_vertical,
+    double refresh_rate,
+    std::string manufacturer,
+    int model_id,
+    int manufacture_year,
+    std::string display_name);
+
+// Create an external display. Used to fed into `CreateDisplayResult`.
+cros_healthd::ExternalDisplayInfoPtr CreateExternalDisplay(
+    int display_width,
+    int display_height,
+    int resolution_horizontal,
+    int resolution_vertical,
+    double refresh_rate,
+    std::string manufacturer,
+    int model_id,
+    int manufacture_year,
+    std::string display_name);
 }  // namespace reporting::test
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_INFO_METRIC_SAMPLER_TEST_UTILS_H_
