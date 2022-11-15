@@ -297,7 +297,7 @@
   {
     "name": "arc-window-predictor",
     "owners": [ "sstan" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "ash-bento-bar",
