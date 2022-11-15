@@ -35,13 +35,14 @@ _COMPILATOR = nodes.create_node_type_with_builder_ref("compilator")
 # bucket-qualified names of the experimental orchestrators that can use the
 # compilator.
 _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
-    "try/linux-rel-compilator": ["try/linux-rel-inverse-fyi"],
     "try/android-nougat-x86-rel-compilator": ["try/android-nougat-x86-rel-inverse-fyi"],
-    "try/win10_chromium_x64_rel_ng-compilator": ["try/win10_chromium_x64_rel_ng-inverse-fyi"],
-    "try/mac-rel-compilator": ["try/mac-rel-inverse-fyi"],
     "try/android-pie-arm64-rel-compilator": ["try/android-pie-arm64-rel-inverse-fyi"],
+    "try/mac-rel-compilator": ["try/mac-rel-inverse-fyi"],
     "try/linux_chromium_asan_rel_ng-compilator": ["try/linux_chromium_asan_rel_ng-inverse-fyi"],
     "try/linux_chromium_tsan_rel_ng-compilator": ["try/linux_chromium_tsan_rel_ng-inverse-fyi"],
+    "try/linux-rel-compilator": ["try/linux-rel-inverse-fyi"],
+    "try/linux-wayland-rel-compilator": ["try/linux-wayland-rel-inverse-fyi"],
+    "try/win-rel-compilator": ["try/win-rel-inverse-fyi"],
 }
 
 def register_orchestrator(bucket, name, builder_group, compilator):

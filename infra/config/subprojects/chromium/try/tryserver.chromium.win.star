@@ -249,9 +249,9 @@ try_.orchestrator_builder(
 )
 
 try_.orchestrator_builder(
-    name = "win10_chromium_x64_rel_ng-inverse-fyi",
+    name = "win-rel-inverse-fyi",
     check_for_flakiness = True,
-    compilator = "win10_chromium_x64_rel_ng-compilator",
+    compilator = "win-rel-compilator",
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
@@ -265,12 +265,14 @@ try_.orchestrator_builder(
     ),
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
+
+    # TODO(crbug.com/1366994): remove this.
+    omit_python2 = False,
 )
 
 try_.compilator_builder(

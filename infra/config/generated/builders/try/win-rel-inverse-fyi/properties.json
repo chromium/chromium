@@ -1,6 +1,6 @@
 {
   "$build/chromium_orchestrator": {
-    "compilator": "win10_chromium_x64_rel_ng-compilator",
+    "compilator": "win-rel-compilator",
     "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
   },
   "$build/chromium_tests_builder_config": {

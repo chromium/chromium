@@ -240,8 +240,9 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-try_.builder(
+try_.orchestrator_builder(
     name = "linux-wayland-rel-inverse-fyi",
+    compilator = "linux-wayland-rel-compilator",
     mirrors = [
         "ci/Linux Builder (Wayland)",
         "ci/Linux Tests (Wayland)",
@@ -251,11 +252,7 @@ try_.builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    builderless = True,
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
+    use_orchestrator_pool = True,
 
     # TODO(crbug.com/1366987): remove this.
     omit_python2 = False,
