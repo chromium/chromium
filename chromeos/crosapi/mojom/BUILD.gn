@@ -111,6 +111,7 @@ mojom("mojom") {
     "//components/digital_goods/mojom:mojom",
     "//components/metrics/structured/mojom",
     "//components/services/app_service/public/mojom:mojom",
+    "//components/tab_groups/public/mojom:mojo_bindings",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture_types",
     "//media/mojo/mojom:speech_recognition",
