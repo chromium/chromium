@@ -191,6 +191,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/signin",

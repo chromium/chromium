@@ -230,6 +230,12 @@ using base::UserMetricsAction;
       sel_isEqual(action, @selector(keyCommand_addToReadingList))) {
     return [self isHTTPOrHTTPSPage];
   }
+  if (sel_isEqual(action, @selector(keyCommand_reopenLastClosedTab))) {
+    sessions::TabRestoreService* const tabRestoreService =
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    return tabRestoreService && !tabRestoreService->entries().empty();
+  }
   return [super canPerformAction:action withSender:sender];
 }
 

@@ -272,6 +272,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prerender:test_support",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/signin:signin",

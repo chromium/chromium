@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
@@ -84,109 +85,6 @@ const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 // Timeout for waiting for the GridConsumer updates.
 constexpr base::TimeDelta kWaitForGridConsumerUpdateTimeout = base::Seconds(1);
-
-// A Fake restore service that just store and returns tabs.
-class FakeTabRestoreService : public sessions::TabRestoreService {
- public:
-  void AddObserver(sessions::TabRestoreServiceObserver* observer) override {
-    NOTREACHED();
-  }
-
-  void RemoveObserver(sessions::TabRestoreServiceObserver* observer) override {
-    NOTREACHED();
-  }
-
-  absl::optional<SessionID> CreateHistoricalTab(sessions::LiveTab* live_tab,
-                                                int index) override {
-    auto tab = std::make_unique<Tab>();
-    int entry_count =
-        live_tab->IsInitialBlankNavigation() ? 0 : live_tab->GetEntryCount();
-    tab->navigations.resize(static_cast<int>(entry_count));
-    for (int i = 0; i < entry_count; ++i) {
-      sessions::SerializedNavigationEntry entry = live_tab->GetEntryAtIndex(i);
-      tab->navigations[i] = entry;
-    }
-    entries_.push_front(std::move(tab));
-    return absl::nullopt;
-  }
-
-  void BrowserClosing(sessions::LiveTabContext* context) override {
-    NOTREACHED();
-  }
-
-  void BrowserClosed(sessions::LiveTabContext* context) override {
-    NOTREACHED();
-  }
-
-  void CreateHistoricalGroup(sessions::LiveTabContext* context,
-                             const tab_groups::TabGroupId& group) override {
-    NOTREACHED();
-  }
-
-  void GroupClosed(const tab_groups::TabGroupId& group) override {
-    NOTREACHED();
-  }
-
-  void GroupCloseStopped(const tab_groups::TabGroupId& group) override {
-    NOTREACHED();
-  }
-
-  void ClearEntries() override { NOTREACHED(); }
-
-  void DeleteNavigationEntries(const DeletionPredicate& predicate) override {
-    NOTREACHED();
-  }
-
-  const Entries& entries() const override { return entries_; }
-
-  std::vector<sessions::LiveTab*> RestoreMostRecentEntry(
-      sessions::LiveTabContext* context) override {
-    NOTREACHED();
-    return std::vector<sessions::LiveTab*>();
-  }
-
-  void RemoveTabEntryById(SessionID session_id) override {
-    Entries::iterator it = GetEntryIteratorById(session_id);
-    if (it == entries_.end()) {
-      return;
-    }
-    entries_.erase(it);
-  }
-
-  std::vector<sessions::LiveTab*> RestoreEntryById(
-      sessions::LiveTabContext* context,
-      SessionID session_id,
-      WindowOpenDisposition disposition) override {
-    NOTREACHED();
-    return std::vector<sessions::LiveTab*>();
-  }
-
-  void LoadTabsFromLastSession() override { NOTREACHED(); }
-
-  bool IsLoaded() const override {
-    NOTREACHED();
-    return false;
-  }
-
-  void DeleteLastSession() override { NOTREACHED(); }
-
-  bool IsRestoring() const override {
-    NOTREACHED();
-    return false;
-  }
-
- private:
-  // Returns an iterator to the entry with id `session_id`.
-  Entries::iterator GetEntryIteratorById(SessionID session_id) {
-    for (auto i = entries_.begin(); i != entries_.end(); ++i) {
-      if ((*i)->id == session_id) {
-        return i;
-      }
-    }
-    return entries_.end();
-  }
-  Entries entries_;
-};
 
 std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
     web::BrowserState* browser_state) {

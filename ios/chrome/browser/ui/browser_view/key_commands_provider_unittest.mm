@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
@@ -42,10 +45,18 @@
 
 namespace {
 
+std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
+    web::BrowserState* browser_state) {
+  return std::make_unique<FakeTabRestoreService>();
+}
+
 class KeyCommandsProviderTest : public PlatformTest {
  protected:
   KeyCommandsProviderTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
+                              base::BindRepeating(BuildFakeTabRestoreService));
+    browser_state_ = builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     web_state_list_ = browser_->GetWebStateList();
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
@@ -67,7 +78,7 @@ class KeyCommandsProviderTest : public PlatformTest {
 
   void CloseWebState(int index) {
     web_state_list_->CloseWebStateAt(
-        0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+        index, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
   }
 
   // Checks that `view_controller_` can perform the `action` with the given
@@ -103,6 +114,22 @@ class KeyCommandsProviderTest : public PlatformTest {
         WebStateOpener());
     return static_cast<web::FakeWebState*>(
         web_state_list_->GetWebStateAt(insertedIndex));
+  }
+
+  // Creates a FakeWebState with a navigation history containing exactly only
+  // the given `url`.
+  std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(
+      const GURL& url) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
+    navigation_manager->SetLastCommittedItem(
+        navigation_manager->GetItemAtIndex(0));
+    web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetNavigationItemCount(1);
+    web_state->SetCurrentURL(url);
+    return web_state;
   }
 
   void ExpectUMA(NSString* action, const std::string& user_action) {
@@ -184,7 +211,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoTab"));
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewWindow"));
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_reopenLastClosedTab"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
   EXPECT_TRUE(CanPerform(@"keyCommand_reportAnIssue"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
@@ -448,6 +474,35 @@ TEST_F(KeyCommandsProviderTest, CanPerform_BackForwardWithMultipleEntries) {
   web_navigation_util::GoForward(web_state);
   EXPECT_TRUE(CanPerform(goBackActions));
   EXPECT_FALSE(CanPerform(goForwardActions));
+}
+
+// Checks whether KeyCommandsProvider can perform the actions that are only
+// available when there are at least one closed tab.
+TEST_F(KeyCommandsProviderTest, CanPerform_ReopenLastClosedTab) {
+  ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+  EXPECT_FALSE(CanPerform(@"keyCommand_reopenLastClosedTab"));
+
+  // Add three new tabs.
+  auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
+  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state1),
+                                              WebStateList::INSERT_FORCE_INDEX,
+                                              WebStateOpener());
+  auto web_state2 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
+  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state2),
+                                              WebStateList::INSERT_FORCE_INDEX,
+                                              WebStateOpener());
+  auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url3"));
+  browser_->GetWebStateList()->InsertWebState(2, std::move(web_state3),
+                                              WebStateList::INSERT_FORCE_INDEX,
+                                              WebStateOpener());
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+  EXPECT_FALSE(CanPerform(@"keyCommand_reopenLastClosedTab"));
+
+  // Close a tab.
+  CloseWebState(1);
+  EXPECT_TRUE(CanPerform(@"keyCommand_reopenLastClosedTab"));
 }
 
 #pragma mark - Metrics Tests
