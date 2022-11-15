@@ -350,6 +350,9 @@ public final class ProductionSupportedFlagList {
                     "This changes event propagation for disabled form controls."),
             Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
                     "Disable to turn off the new SurfaceSync Fullscreen path."),
+            Flag.baseFeature(ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
+                    "If enabled, servers will be able to use persistent origin trials "
+                            + "on this device."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
