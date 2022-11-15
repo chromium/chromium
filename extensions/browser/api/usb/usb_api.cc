@@ -484,16 +484,13 @@ void UsbConnectionFunction::ReleaseDeviceResource(
 UsbTransferFunction::UsbTransferFunction() = default;
 UsbTransferFunction::~UsbTransferFunction() = default;
 
-void UsbTransferFunction::OnCompleted(
-    UsbTransferStatus status,
-    std::unique_ptr<base::DictionaryValue> transfer_info) {
+void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
+                                      base::Value::Dict transfer_info) {
   if (status == UsbTransferStatus::COMPLETED) {
-    Respond(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(transfer_info))));
+    Respond(OneArgument(base::Value(std::move(transfer_info))));
   } else {
     base::Value::List error_args;
-    error_args.Append(
-        base::Value::FromUniquePtrValue(std::move(transfer_info)));
+    error_args.Append(std::move(transfer_info));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
     Respond(ErrorWithArguments(std::move(error_args),
@@ -504,26 +501,25 @@ void UsbTransferFunction::OnCompleted(
 void UsbTransferFunction::OnTransferInCompleted(
     UsbTransferStatus status,
     base::span<const uint8_t> data) {
-  base::Value transfer_info(base::Value::Type::DICTIONARY);
-  transfer_info.SetIntKey(kResultCodeKey, static_cast<int>(status));
-  transfer_info.SetKey(kDataKey, base::Value(data));
+  base::Value::Dict transfer_info;
+  transfer_info.Set(kResultCodeKey, static_cast<int>(status));
+  transfer_info.Set(kDataKey, base::Value(data));
 
-  OnCompleted(status, base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                          std::move(transfer_info))));
+  OnCompleted(status, std::move(transfer_info));
 }
 
 void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {
-  auto transfer_info = std::make_unique<base::DictionaryValue>();
-  transfer_info->SetIntKey(kResultCodeKey, static_cast<int>(status));
-  transfer_info->SetKey(kDataKey, base::Value(base::Value::Type::BINARY));
+  base::Value::Dict transfer_info;
+  transfer_info.Set(kResultCodeKey, static_cast<int>(status));
+  transfer_info.Set(kDataKey, base::Value(base::Value::Type::BINARY));
 
   OnCompleted(status, std::move(transfer_info));
 }
 
 void UsbTransferFunction::OnDisconnect() {
   const auto status = UsbTransferStatus::DISCONNECT;
-  auto transfer_info = std::make_unique<base::DictionaryValue>();
-  transfer_info->SetIntKey(kResultCodeKey, static_cast<int>(status));
+  base::Value::Dict transfer_info;
+  transfer_info.Set(kResultCodeKey, static_cast<int>(status));
   OnCompleted(status, std::move(transfer_info));
 }
 
@@ -1307,9 +1303,9 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
     data_ptr += packet->length;
   }
 
-  auto transfer_info = std::make_unique<base::DictionaryValue>();
-  transfer_info->SetKey(kResultCodeKey, base::Value(static_cast<int>(status)));
-  transfer_info->SetKey(kDataKey, base::Value(std::move(buffer)));
+  base::Value::Dict transfer_info;
+  transfer_info.Set(kResultCodeKey, base::Value(static_cast<int>(status)));
+  transfer_info.Set(kDataKey, base::Value(std::move(buffer)));
   OnCompleted(status, std::move(transfer_info));
 }
 
@@ -1323,8 +1319,8 @@ void UsbIsochronousTransferFunction::OnTransferOutCompleted(
       status = packet->status;
     }
   }
-  auto transfer_info = std::make_unique<base::DictionaryValue>();
-  transfer_info->SetKey(kResultCodeKey, base::Value(static_cast<int>(status)));
+  base::Value::Dict transfer_info;
+  transfer_info.Set(kResultCodeKey, base::Value(static_cast<int>(status)));
   OnCompleted(status, std::move(transfer_info));
 }
 
