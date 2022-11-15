@@ -1218,7 +1218,7 @@ const base::FeatureParam<base::TimeDelta>
 // Enables the second version of the sentiment survey for users of Trust &
 // Safety features, using HaTS.
 BASE_FEATURE(kTrustSafetySentimentSurveyV2,
-             "kTrustSafetySentimentSurveyV2",
+             "TrustSafetySentimentSurveyV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // The minimum and maximum time after a user has interacted with a Trust and
 // Safety feature that they are eligible to be surveyed.
