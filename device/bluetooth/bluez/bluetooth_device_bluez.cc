@@ -1122,14 +1122,7 @@ void BluetoothDeviceBlueZ::OnConnectError(ConnectCallback callback,
                        << " still in progress";
 
   // Determine the error code from error_name.
-  ConnectErrorCode error_code = ERROR_UNKNOWN;
-  if (error_name == bluetooth_device::kErrorFailed) {
-    error_code = ERROR_FAILED;
-  } else if (error_name == bluetooth_device::kErrorInProgress) {
-    error_code = ERROR_INPROGRESS;
-  } else if (error_name == bluetooth_device::kErrorNotSupported) {
-    error_code = ERROR_UNSUPPORTED_DEVICE;
-  }
+  ConnectErrorCode error_code = DBusErrorToConnectError(error_name);
 
   std::move(callback).Run(error_code);
 }
