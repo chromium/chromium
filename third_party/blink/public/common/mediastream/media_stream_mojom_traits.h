@@ -25,6 +25,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.id;
   }
 
+  static int64_t display_id(const blink::MediaStreamDevice& device) {
+    return device.display_id;
+  }
+
   static const media::VideoFacingMode& video_facing(
       const blink::MediaStreamDevice& device) {
     return device.video_facing;

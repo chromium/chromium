@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "ash/root_window_settings.h"
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "build/chromeos_buildflags.h"
@@ -15,21 +16,11 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-#include "ui/gfx/geometry/point.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "ui/aura/window.h"
-#endif
 
-struct ScreenWithMetaData {
-  ScreenWithMetaData(const content::DesktopMediaID& id, const gfx::Rect& bounds)
-      : id(id), bounds(bounds) {}
-  content::DesktopMediaID id;
-  gfx::Rect bounds;
-};
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 std::vector<aura::Window*>* root_windows_for_testing_ = nullptr;
@@ -38,45 +29,23 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreensAsh(
     blink::mojom::MediaStreamType stream_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::vector<ScreenWithMetaData> screens_with_metadata;
   aura::Window::Windows root_windows =
       (root_windows_for_testing_) ? std::move(*root_windows_for_testing_)
                                   : ash::Shell::GetAllRootWindows();
 
-  if (root_windows.empty()) {
-    return blink::mojom::StreamDevicesSet::New();
-  }
-
+  blink::mojom::StreamDevicesSetPtr stream_devices_set =
+      blink::mojom::StreamDevicesSet::New();
   for (aura::Window* window : root_windows) {
     content::DesktopMediaID media_id =
         content::DesktopMediaID::RegisterNativeWindow(
             content::DesktopMediaID::TYPE_SCREEN, window);
-    gfx::Rect bounds = window->GetActualBoundsInScreen();
-    if (window == ash::Shell::GetPrimaryRootWindow()) {
-      screens_with_metadata.emplace(screens_with_metadata.begin(),
-                                    std::move(media_id), bounds);
-    } else {
-      screens_with_metadata.emplace_back(std::move(media_id), bounds);
-    }
-  }
-  base::ranges::stable_sort(
-      screens_with_metadata,
-      [](const ScreenWithMetaData& lhs, const ScreenWithMetaData& rhs) {
-        return std::make_tuple(lhs.bounds.origin().x(),
-                               lhs.bounds.origin().y()) <
-               std::make_tuple(rhs.bounds.origin().x(),
-                               rhs.bounds.origin().y());
-      });
-
-  blink::mojom::StreamDevicesSetPtr stream_devices_set =
-      blink::mojom::StreamDevicesSet::New();
-  for (const ScreenWithMetaData& screen_with_metadata : screens_with_metadata) {
-    const content::DesktopMediaID& media_id = screen_with_metadata.id;
     DCHECK_EQ(content::DesktopMediaID::Type::TYPE_SCREEN, media_id.type);
 
     // Add selected desktop source to the list.
-    blink::MediaStreamDevice device(stream_type, /*id=*/media_id.ToString(),
-                                    /*name=*/"Screen");
+    blink::MediaStreamDevice device(
+        stream_type, /*id=*/media_id.ToString(),
+        /*name=*/"Screen",
+        /*display_id=*/ash::GetRootWindowSettings(window)->display_id);
     device.display_media_info = media::mojom::DisplayMediaInformation::New(
         /*display_surface=*/media::mojom::DisplayCaptureSurfaceType::MONITOR,
         /*logical_surface=*/true,

@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/display/types/display_constants.h"
 
 namespace blink {
 
@@ -105,6 +106,9 @@ class PLATFORM_EXPORT MediaStreamSource final
 
   void SetGroupId(const String& group_id);
   const String& GroupId() { return group_id_; }
+
+  void SetDisplayId(int64_t display_id) { display_id_ = display_id; }
+  int64_t GetDisplayId() const { return display_id_; }
 
   void SetReadyState(ReadyState);
   ReadyState GetReadyState() const { return ready_state_; }
@@ -182,7 +186,13 @@ class PLATFORM_EXPORT MediaStreamSource final
     Vector<const float*> bus_vector_;
   };
 
+  // The ID of this MediaStreamSource object itself.
   String id_;
+  // If this MediaStreamSource object is associated with a display,
+  // then `display_id_` holds the display's own ID.
+  // Otherwise, display::kInvalidDisplayId.
+  // This attribute is currently only set on ChromeOS.
+  int64_t display_id_ = display::kInvalidDisplayId;
   StreamType type_;
   String name_;
   String group_id_;

@@ -18,6 +18,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/scheduler/public/worker_pool.h",
     "+third_party/blink/renderer/platform/wtf/uuid.h",
     "+third_party/blink/renderer/platform/wtf",
+    "+ui/display/types/display_constants.h",
 ]
 
 specific_include_rules = {

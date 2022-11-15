@@ -22,6 +22,7 @@ bool StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return false;
   if (!input.ReadId(&out->id))
     return false;
+  out->display_id = input.display_id();
   if (!input.ReadVideoFacing(&out->video_facing))
     return false;
   if (!input.ReadGroupId(&out->group_id))

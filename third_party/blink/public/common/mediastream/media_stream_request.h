@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/display/types/display_constants.h"
 
 namespace blink {
 
@@ -53,6 +54,10 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
   MediaStreamDevice(mojom::MediaStreamType type,
                     const std::string& id,
                     const std::string& name);
+  MediaStreamDevice(mojom::MediaStreamType type,
+                    const std::string& id,
+                    const std::string& name,
+                    int64_t display_id);
   MediaStreamDevice(
       mojom::MediaStreamType type,
       const std::string& id,
@@ -93,6 +98,11 @@ struct BLINK_COMMON_EXPORT MediaStreamDevice {
 
   // The device's unique ID.
   std::string id;
+
+  // The device's unique display id if the device is a display.
+  // display::kInvalidDisplayId should be used in case a surface type other
+  // than monitor is requested.
+  int64_t display_id = display::kInvalidDisplayId;
 
   // The control support for video capture device.
   media::VideoCaptureControlSupport video_control_support;

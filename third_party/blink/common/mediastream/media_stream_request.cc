@@ -85,6 +85,16 @@ MediaStreamDevice::MediaStreamDevice(mojom::MediaStreamType type,
       video_facing(media::MEDIA_VIDEO_FACING_NONE),
       name(name) {}
 
+MediaStreamDevice::MediaStreamDevice(mojom::MediaStreamType type,
+                                     const std::string& id,
+                                     const std::string& name,
+                                     int64_t display_id)
+    : type(type),
+      id(id),
+      display_id(display_id),
+      video_facing(media::MEDIA_VIDEO_FACING_NONE),
+      name(name) {}
+
 MediaStreamDevice::MediaStreamDevice(
     mojom::MediaStreamType type,
     const std::string& id,
@@ -120,6 +130,7 @@ MediaStreamDevice::MediaStreamDevice(
 MediaStreamDevice::MediaStreamDevice(const MediaStreamDevice& other)
     : type(other.type),
       id(other.id),
+      display_id(other.display_id),
       video_control_support(other.video_control_support),
       video_facing(other.video_facing),
       group_id(other.group_id),
@@ -140,6 +151,7 @@ MediaStreamDevice& MediaStreamDevice::operator=(
     return *this;
   type = other.type;
   id = other.id;
+  display_id = other.display_id;
   video_control_support = other.video_control_support;
   video_facing = other.video_facing;
   group_id = other.group_id;

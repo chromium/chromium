@@ -55,6 +55,7 @@ include_rules = [
     "+third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h",
     "+third_party/blink/renderer/modules/screen_enumeration/screen_details.h",
     "+third_party/blink/renderer/modules/webrtc",
+    "+ui/display/types/display_constants.h",
     "+ui/gfx/geometry/size.h",
 ]
 

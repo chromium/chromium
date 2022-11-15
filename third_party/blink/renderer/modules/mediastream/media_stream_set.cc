@@ -15,8 +15,30 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "ui/display/types/display_constants.h"
 
 namespace blink {
+
+namespace {
+
+ScreenDetailed* FindScreenDetailedByDisplayId(
+    ScreenDetails* screen_details,
+    absl::optional<int64_t> display_id) {
+  if (display_id == display::kInvalidDisplayId) {
+    return nullptr;
+  }
+
+  auto* const screen_iterator = base::ranges::find_if(
+      screen_details->screens(),
+      [display_id](const ScreenDetailed* screen_detailed) {
+        return *display_id == screen_detailed->DisplayId();
+      });
+
+  return (screen_iterator != screen_details->screens().end()) ? *screen_iterator
+                                                              : nullptr;
+}
+
+}  // namespace
 
 MediaStreamSet* MediaStreamSet::Create(
     ExecutionContext* context,
@@ -92,13 +114,15 @@ void MediaStreamSet::InitializeGetDisplayMediaSetStreams(
     MediaStreamDescriptor* const descriptor = stream_descriptors[stream_index];
     DCHECK_EQ(1u, descriptor->NumberOfVideoComponents());
 
+    ScreenDetailed* screen = FindScreenDetailedByDisplayId(
+        screen_details,
+        descriptor->VideoComponent(0u)->Source()->GetDisplayId());
+
     MediaStreamTrack* video_track =
         MakeGarbageCollected<ScreenCaptureMediaStreamTrack>(
             context, descriptor->VideoComponent(0u),
             screen_details_match_descriptors ? screen_details : nullptr,
-            screen_details_match_descriptors
-                ? screen_details->screens()[stream_index]
-                : nullptr);
+            screen);
     initialized_media_streams_.push_back(
         MediaStream::Create(context, descriptor, {}, {video_track}));
   }

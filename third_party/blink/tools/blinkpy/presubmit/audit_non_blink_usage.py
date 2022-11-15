@@ -522,6 +522,9 @@ _CONFIG = [
             'display::ScreenInfo',
             'display::ScreenInfos',
 
+            # Terminal value for display id's used across display <-> Blink.
+            'display::kInvalidDisplayId',
+
             # Standalone utility libraries that only depend on //base
             'skia::.+',
             'url::.+',

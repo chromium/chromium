@@ -109,6 +109,7 @@ struct StreamSelectionInfo {
 struct MediaStreamDevice {
   MediaStreamType type;
   string id;
+  int64 display_id;
   media.mojom.VideoFacingMode video_facing;
   string? group_id;
   string? matched_output_device_id;

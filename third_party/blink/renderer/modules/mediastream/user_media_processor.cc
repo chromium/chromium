@@ -1827,6 +1827,7 @@ MediaStreamSource* UserMediaProcessor::InitializeSourceObject(
       false /* remote */, std::move(platform_source));
   if (device.group_id)
     source->SetGroupId(String::FromUTF8(*device.group_id));
+  source->SetDisplayId(device.display_id);
   return source;
 }
 

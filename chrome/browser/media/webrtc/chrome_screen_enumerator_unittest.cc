@@ -4,8 +4,8 @@
 
 #include <memory>
 
+#include "ash/root_window_settings.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,8 +16,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
-#include "ui/base/cursor/cursor.h"
-#include "ui/gfx/native_widget_types.h"
 
 class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
  public:
@@ -37,16 +35,15 @@ class ChromeScreenEnumeratorTest : public ChromeAshTestBase {
         /*disable_features=*/"");
   }
 
-  std::vector<aura::Window*> GenerateScreensList(
-      const std::vector<gfx::Rect>& screens_bounds) {
+  std::vector<aura::Window*> GenerateScreensList(size_t number_of_screens) {
     screens_.clear();
     window_delegates_.clear();
     std::vector<aura::Window*> screens;
-    for (const gfx::Rect& bounds : screens_bounds) {
+    for (size_t i = 0; i < number_of_screens; ++i) {
       auto window_delegate = std::make_unique<aura::test::TestWindowDelegate>();
       auto screen = std::make_unique<aura::Window>(window_delegate.get());
+      ash::InitRootWindowSettings(screen.get());
       screen->Init(ui::LayerType::LAYER_NOT_DRAWN);
-      screen->SetBounds(bounds);
       screens.push_back(screen.get());
       screens_.emplace_back(std::move(screen));
       window_delegates_.emplace_back(std::move(window_delegate));
@@ -83,16 +80,9 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
 }
 
-TEST_F(ChromeScreenEnumeratorTest, MultiScreenSorting) {
-  std::vector<int> expected_ids_order = {3, 1, 5, 4, 2, 6};
-  std::vector<aura::Window*> screens_list = GenerateScreensList({
-      gfx::Rect(10, 20, 1024, 768),  // Expected as 3rd.
-      gfx::Rect(20, 30, 1024, 768),  // Expected as 1st.
-      gfx::Rect(5, 32, 1024, 768),   // Expected as 5th.
-      gfx::Rect(20, 25, 1024, 768),  // Expected as 4th.
-      gfx::Rect(20, 22, 1024, 768),  // Expected as 2nd.
-      gfx::Rect(50, 1, 1024, 768),   // Expected as 6th.
-  });
+TEST_F(ChromeScreenEnumeratorTest, MultipleScreens) {
+  std::vector<aura::Window*> screens_list =
+      GenerateScreensList(/*number_of_screens=*/6u);
   SetRootWindowsForTesting(&screens_list);
 
   base::RunLoop run_loop;
@@ -110,22 +100,13 @@ TEST_F(ChromeScreenEnumeratorTest, MultiScreenSorting) {
           }));
   run_loop.Run();
 
-  for (size_t screen_index = 0;
-       screen_index < actual_stream_devices_set->stream_devices.size();
-       ++screen_index) {
-    EXPECT_EQ(
-        base::StrCat({"screen:0:",
-                      base::NumberToString(expected_ids_order[screen_index])}),
-        actual_stream_devices_set->stream_devices[screen_index]
-            ->video_device.value()
-            .id);
-  }
+  EXPECT_EQ(6u, actual_stream_devices_set->stream_devices.size());
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
 }
 
 TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
   std::vector<aura::Window*> screens_list =
-      GenerateScreensList({gfx::Rect(20, 10, 1024, 768)});
+      GenerateScreensList(/*number_of_screens=*/1u);
   SetRootWindowsForTesting(&screens_list);
 
   base::RunLoop run_loop;
