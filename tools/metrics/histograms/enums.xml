@@ -24200,8 +24200,18 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="CustomTabsResizeType">
+  <obsolete>
+    Obsolete as of November 2022.
+  </obsolete>
   <int value="0" label="Partial Custom Tab is expanded"/>
   <int value="1" label="Partial Custom Tab is minimized"/>
+</enum>
+
+<enum name="CustomTabsResizeType2">
+  <int value="0" label="Partial Custom Tab is manually expanded"/>
+  <int value="1" label="Partial Custom Tab is manually minimized"/>
+  <int value="2" label="Partial Custom Tab is automatically expanded"/>
+  <int value="3" label="Partial Custom Tab is automatically minimized"/>
 </enum>
 
 <enum name="CustomTabsSessionDisconnectStatus">

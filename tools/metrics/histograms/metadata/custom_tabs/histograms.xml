@@ -386,6 +386,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
     expires_after="2023-05-14">
+  <obsolete>
+    Deprecated 2022-11. Replaced by CustomTabs.ResizeType2
+  </obsolete>
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    When a Partial Custom Tab has been resized by the user log if it is an
+    expansion or a minimization of the tab.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.ResizeType2" enum="CustomTabsResizeType2"
+    expires_after="2023-05-14">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
