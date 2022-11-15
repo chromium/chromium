@@ -26,7 +26,7 @@ TEST(BuildInfoDeathTest,
   // All test processes have BuildInfo cached before tests are run. Re-fetch and
   // cache the BuildInfo to restore that state for any tests that are
   // subsequently run in the same process as this one.
-  FetchAndCacheSystemInfo();
+  EXPECT_TRUE(FetchAndCacheSystemInfo());
 }
 
 // TODO(crbug.com/1326674) Ensure the test passes on Fuchsia bots and
@@ -34,7 +34,7 @@ TEST(BuildInfoDeathTest,
 TEST(BuildInfoTest, DISABLED_GetCachedBuildInfo_CheckExpectedValues) {
   // Ensure the cached BuildInfo is in a known state.
   ClearCachedSystemInfoForTesting();
-  FetchAndCacheSystemInfo();
+  ASSERT_TRUE(FetchAndCacheSystemInfo());
 
   // TODO(crbug.com/1326674): Check for specific values once Fuchsia
   // completes the requested changes to the data returned from the fake.

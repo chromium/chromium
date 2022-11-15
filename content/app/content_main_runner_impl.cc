@@ -825,7 +825,9 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   // ensure the cache is populated.
   // Making the blocking call now also avoids the potential for blocking later
   // in when it might be user-visible.
-  base::FetchAndCacheSystemInfo();
+  if (!base::FetchAndCacheSystemInfo()) {
+    return TerminateForFatalInitializationError();
+  }
 #endif
 
   if (!GetContentClient())
