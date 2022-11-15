@@ -211,78 +211,15 @@ std::vector<std::unique_ptr<CertBuilder>> CertBuilder::CreateSimpleChain(
 }
 
 // static
-void CertBuilder::CreateSimpleChain(
-    std::unique_ptr<CertBuilder>* out_leaf,
-    std::unique_ptr<CertBuilder>* out_intermediate,
-    std::unique_ptr<CertBuilder>* out_root) {
-  // TODO(mattm): change this to generate the test certs from scratch using the
-  // arbitrary length version, or just remove this and convert callers.
-  base::FilePath certs_dir =
-      GetTestNetDataDirectory()
-          .AppendASCII("verify_certificate_chain_unittest")
-          .AppendASCII("target-and-intermediate");
-
-  CertificateList orig_certs = CreateCertificateListFromFile(
-      certs_dir, "chain.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, orig_certs.size());
-
-  // Set a default validity.
-  base::Time not_before = base::Time::Now() - base::Days(7);
-  base::Time not_after = base::Time::Now() + base::Days(7);
-
-  // Build slightly modified variants of |orig_certs|.
-  *out_root =
-      std::make_unique<CertBuilder>(orig_certs[2]->cert_buffer(), nullptr);
-  (*out_root)->SetValidity(not_before, not_after);
-  (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  (*out_root)->GenerateECKey();
-
-  *out_intermediate = std::make_unique<CertBuilder>(
-      orig_certs[1]->cert_buffer(), out_root->get());
-  (*out_intermediate)->SetValidity(not_before, not_after);
-  (*out_intermediate)->EraseExtension(der::Input(kCrlDistributionPointsOid));
-  (*out_intermediate)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
-  (*out_intermediate)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  (*out_intermediate)->GenerateECKey();
-
-  *out_leaf = std::make_unique<CertBuilder>(orig_certs[0]->cert_buffer(),
-                                            out_intermediate->get());
-  (*out_leaf)->SetValidity(not_before, not_after);
-  (*out_leaf)->SetSubjectAltName(kSimpleChainHostname);
-  (*out_leaf)->EraseExtension(der::Input(kCrlDistributionPointsOid));
-  (*out_leaf)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
-  (*out_leaf)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  (*out_leaf)->GenerateECKey();
+std::array<std::unique_ptr<CertBuilder>, 3> CertBuilder::CreateSimpleChain3() {
+  auto chain = CreateSimpleChain(3);
+  return {std::move(chain[0]), std::move(chain[1]), std::move(chain[2])};
 }
 
 // static
-void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
-                                    std::unique_ptr<CertBuilder>* out_root) {
-  // TODO(mattm): change this to generate the test certs from scratch using the
-  // arbitrary length version, or just remove this and convert callers.
-  base::FilePath certs_dir = GetTestCertsDirectory();
-
-  auto orig_root = ImportCertFromFile(certs_dir, "root_ca_cert.pem");
-  ASSERT_TRUE(orig_root);
-  auto orig_leaf = ImportCertFromFile(certs_dir, "ok_cert.pem");
-  ASSERT_TRUE(orig_leaf);
-
-  // Set a default validity.
-  base::Time not_before = base::Time::Now() - base::Days(7);
-  base::Time not_after = base::Time::Now() + base::Days(7);
-
-  // Build slightly modified variants of |orig_certs|.
-  *out_root = std::make_unique<CertBuilder>(orig_root->cert_buffer(), nullptr);
-  (*out_root)->SetValidity(not_before, not_after);
-  (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  (*out_root)->GenerateECKey();
-
-  *out_leaf =
-      std::make_unique<CertBuilder>(orig_leaf->cert_buffer(), out_root->get());
-  (*out_leaf)->SetValidity(not_before, not_after);
-  (*out_leaf)->SetSubjectAltName(kSimpleChainHostname);
-  (*out_leaf)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  (*out_leaf)->GenerateECKey();
+std::array<std::unique_ptr<CertBuilder>, 2> CertBuilder::CreateSimpleChain2() {
+  auto chain = CreateSimpleChain(2);
+  return {std::move(chain[0]), std::move(chain[1])};
 }
 
 // static

@@ -299,8 +299,7 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
                                        2);
     // We reject empty CRS updates, so create a new cert root that doesn't match
     // what the test server uses.
-    std::unique_ptr<net::CertBuilder> leaf, root;
-    net::CertBuilder::CreateSimpleChain(&leaf, &root);
+    auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
     chrome_root_store::TrustAnchor* anchor =
         root_store_proto.add_trust_anchors();
     anchor->set_der(root->GetDER());

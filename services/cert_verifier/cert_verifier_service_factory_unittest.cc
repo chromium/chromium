@@ -109,8 +109,7 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
 TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
   // Create leaf and root certs.
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<net::CertBuilder> leaf, root;
-  net::CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
@@ -173,8 +172,7 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
 TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
   // Create leaf and root certs.
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<net::CertBuilder> leaf, root;
-  net::CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
@@ -262,8 +260,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
   // Create leaf and root certs.
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<net::CertBuilder> leaf, root;
-  net::CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
@@ -328,8 +325,7 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
 TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   // Create leaf and root certs.
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<net::CertBuilder> leaf, root;
-  net::CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
@@ -475,9 +471,7 @@ void GetRootStoreInfo(cert_verifier::mojom::ChromeRootStoreInfoPtr* return_ptr,
 TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   // Create leaf and root certs.
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<net::CertBuilder> leaf, root;
-  net::CertBuilder::CreateSimpleChain(&leaf, &root);
-  ASSERT_TRUE(leaf && root);
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
 
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));

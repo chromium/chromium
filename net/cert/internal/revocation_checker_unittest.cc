@@ -38,8 +38,7 @@ bool AddCertsToList(std::vector<CertBuilder*> builders,
 }
 
 TEST(RevocationChecker, NoRevocationMechanism) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   ParsedCertificateList chain;
   ASSERT_TRUE(AddCertsToList({leaf.get(), root.get()}, &chain));
@@ -104,8 +103,7 @@ TEST(RevocationChecker, NoRevocationMechanism) {
 }
 
 TEST(RevocationChecker, ValidCRL) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kTestCrlUrl("http://example.com/crl1");
   leaf->SetCrlDistributionPointUrl(kTestCrlUrl);
@@ -179,8 +177,7 @@ TEST(RevocationChecker, ValidCRL) {
 }
 
 TEST(RevocationChecker, RevokedCRL) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kTestCrlUrl("http://example.com/crl1");
   leaf->SetCrlDistributionPointUrl(kTestCrlUrl);
@@ -239,8 +236,7 @@ TEST(RevocationChecker, RevokedCRL) {
 }
 
 TEST(RevocationChecker, CRLRequestFails) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kTestCrlUrl("http://example.com/crl1");
   leaf->SetCrlDistributionPointUrl(kTestCrlUrl);
@@ -311,8 +307,7 @@ TEST(RevocationChecker, CRLRequestFails) {
 }
 
 TEST(RevocationChecker, CRLNonHttpUrl) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kTestCrlUrl("https://example.com/crl1");
   leaf->SetCrlDistributionPointUrl(kTestCrlUrl);
@@ -341,8 +336,7 @@ TEST(RevocationChecker, CRLNonHttpUrl) {
 }
 
 TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kSecondCrlUrl("http://www.example.com/bar.crl");
 
@@ -410,8 +404,7 @@ TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
 }
 
 TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithNonUriFullname) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kSecondCrlUrl("http://www.example.com/bar.crl");
 
@@ -495,8 +488,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithNonUriFullname) {
 }
 
 TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kSecondCrlUrl("http://www.example.com/bar.crl");
 
@@ -565,8 +557,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
 }
 
 TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithCrlIssuer) {
-  std::unique_ptr<CertBuilder> leaf, root;
-  CertBuilder::CreateSimpleChain(&leaf, &root);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   const GURL kSecondCrlUrl("http://www.example.com/bar.crl");
 
