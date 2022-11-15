@@ -170,7 +170,7 @@ void PersonalizationAppUserProviderImpl::SelectImageFromDisk() {
 
 void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
   if (!ash::default_user_image::IsInCurrentImageSet(index)) {
-    mojo::ReportBadMessage("Invalid user image selected");
+    user_receiver_.ReportBadMessage("Invalid user image selected");
     return;
   }
 
