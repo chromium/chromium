@@ -143,3 +143,6 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
 
   def GetResultCountTryQuery(self) -> str:
     return TRY_RESULT_COUNT_QUERY
+
+  def GetFailingBuildCulpritFromCiQuery(self) -> str:
+    raise NotImplementedError
