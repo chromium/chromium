@@ -161,7 +161,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
           source_index(source),
           thread_id(thread),
           option(draw_option) {}
-    base::DictionaryValue GetDictionaryValue() const;
+    base::Value::Dict GetDictionaryValue() const;
     int draw_index;
     int source_index;
     int thread_id;
