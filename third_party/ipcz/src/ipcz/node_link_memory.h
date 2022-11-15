@@ -36,6 +36,8 @@ class NodeLink;
 // between the two endpoint nodes.
 class NodeLinkMemory : public RefCounted {
  public:
+  static constexpr BufferId kPrimaryBufferId{0};
+
   // The maximum number of initial portals supported on ConnectNode() API calls.
   // The first kMaxInitialPortals SublinkIds on a NodeLinkMemory will always be
   // reserved for use by initial portals.
@@ -59,12 +61,6 @@ class NodeLinkMemory : public RefCounted {
   // initialized by a prior call to AllocateMemory() above.
   static Ref<NodeLinkMemory> Create(Ref<Node> node,
                                     DriverMemoryMapping primary_buffer_memory);
-
-  // Returns true if and only if new parcels are allowed to try allocating their
-  // data buffer through this NodeLinkMemory.
-  bool allow_parcel_data_allocation() const {
-    return allow_parcel_data_allocation_;
-  }
 
   // Returns a new BufferId which should still be unused by any buffer in this
   // NodeLinkMemory's BufferPool, or that of its peer NodeLinkMemory. When
@@ -168,7 +164,7 @@ class NodeLinkMemory : public RefCounted {
       const Fragment& fragment);
 
   const Ref<Node> node_;
-  const bool allow_parcel_data_allocation_;
+  const bool allow_memory_expansion_for_parcel_data_;
 
   // The underlying BufferPool. Note that this object is itself thread-safe, so
   // access to it is not synchronized by NodeLinkMemory.

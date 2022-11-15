@@ -507,9 +507,15 @@ struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
   // passing the structure to CreateNode().
   size_t size;
 
-  // If set to true, this node will not attempt to allocate parcel data storage
-  // within shared memory.
-  bool disable_shared_memory_parcel_data;
+  // If set to true this node will not attempt to expand the shared memory
+  // capacity from which parcel data blocks may be allocated on its various
+  // links to other nodes.
+  //
+  // This means more application messages may fall back onto driver I/O for
+  // transmission, but also that ipcz' memory footprint will remain largely
+  // constant. Note that memory may still be occasionally expanded to facilitate
+  // new portal links as needed.
+  bool disable_parcel_memory_expansion;
 };
 
 // See CreateNode() and the IPCZ_CREATE_NODE_* flag descriptions below.

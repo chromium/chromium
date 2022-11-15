@@ -266,11 +266,12 @@ TEST_F(NodeLinkMemoryTest, NewBlockSizes) {
 
 TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
   // NodeLinkMemory can in general be used by Parcel instances to allocate data
-  // buffers; but this can also be disabled when configuring a new node.
+  // buffers, but dynamic expansion of the allocation capacity can be disabled
+  // when configuring a new node.
 
   const IpczCreateNodeOptions options = {
       .size = sizeof(options),
-      .disable_shared_memory_parcel_data = true,
+      .disable_parcel_memory_expansion = true,
   };
   const Ref<Node> node_c{MakeRefCounted<Node>(
       Node::Type::kNormal, kTestDriver, IPCZ_INVALID_DRIVER_HANDLE, &options)};
@@ -278,22 +279,30 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
   auto links = ConnectNodes(node_a(), node_c);
 
   // We use a small enough size that this is guaranteed to allocate within
-  // NodeLinkMemory unless parcel allocation is disabled.
+  // NodeLinkMemory. But we allocate them from node C's side of the link, where
+  // capacity expansion is disabled. This loop should therefore eventually
+  // terminate. Since we're using a synchronous test driver, if the memory were
+  // going to expand its capacity at all, it would do so synchronously within
+  // AllocateData.
   constexpr size_t kParcelSize = 32;
-  Parcel parcel_from_a_to_c;
-  parcel_from_a_to_c.AllocateData(kParcelSize, /*allow_partial=*/false,
-                                  &links.first->memory());
-  EXPECT_FALSE(parcel_from_a_to_c.data_fragment().is_null());
-  EXPECT_GE(parcel_from_a_to_c.data_fragment().size(), kParcelSize);
+  std::vector<Parcel> parcels;
+  for (;;) {
+    Parcel parcel;
+    parcel.AllocateData(kParcelSize, /*allow_partial=*/false,
+                        &links.second->memory());
+    if (parcel.data_fragment().is_null()) {
+      break;
+    }
 
-  // But when allocated from the `node_c` side, we should never get a memory
-  // fragment for parcel data.
-  Parcel parcel_from_c_to_a;
-  parcel_from_c_to_a.AllocateData(kParcelSize, /*allow_partial=*/false,
-                                  &links.second->memory());
-  EXPECT_TRUE(parcel_from_c_to_a.data_fragment().is_null());
-  EXPECT_EQ(parcel_from_c_to_a.data_size(), kParcelSize);
+    // Every fragment allocated must be of sufficient size and must be in the
+    // link memory's primary buffer ONLY.
+    EXPECT_GE(parcel.data_fragment().size(), kParcelSize);
+    EXPECT_EQ(NodeLinkMemory::kPrimaryBufferId,
+              parcel.data_fragment().buffer_id());
+    parcels.push_back(std::move(parcel));
+  }
 
+  EXPECT_FALSE(parcels.empty());
   node_c->Close();
 }
 

@@ -44,9 +44,9 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
   const IpczCreateNodeOptions create_options = {
       .size = sizeof(create_options),
 
-      // TODO(https://crbug.com/1380476): Enable parcel data to be allocated
-      // within shared memory.
-      .disable_shared_memory_parcel_data = true,
+      // TODO(https://crbug.com/1380476): Enable parcel data allocation capacity
+      // to be expanded.
+      .disable_parcel_memory_expansion = true,
   };
   IpczResult result =
       GetIpczAPI().CreateNode(&ipcz_driver::kDriver, IPCZ_INVALID_DRIVER_HANDLE,
