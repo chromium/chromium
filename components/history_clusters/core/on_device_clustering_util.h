@@ -15,10 +15,6 @@ void MergeDuplicateVisitIntoCanonicalVisit(
     history::ClusterVisit&& duplicate_visit,
     history::ClusterVisit& canonical_visit);
 
-// Enforces the reverse-chronological invariant of clusters, as well the
-// by-score sorting of visits within clusters. Exposed for testing.
-void SortClusters(std::vector<history::Cluster>* clusters);
-
 // Whether the visit is considered a noisy visit (i.e. high engagement,
 // non-SRP).
 bool IsNoisyVisit(const history::ClusterVisit& visit);

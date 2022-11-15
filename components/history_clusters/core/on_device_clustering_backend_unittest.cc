@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -167,6 +168,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
         visits);
     run_loop.Run();
 
+    // Sort clusters here for easier verification.
+    SortClusters(&clusters);
     return clusters;
   }
 

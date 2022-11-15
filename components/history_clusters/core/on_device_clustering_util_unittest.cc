@@ -124,54 +124,6 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
       20);
 }
 
-TEST_F(OnDeviceClusteringUtilTest, SortClusters) {
-  std::vector<history::Cluster> clusters;
-  // This first cluster is meant to validate that the higher scoring "visit 1"
-  // gets sorted to the top, even though "visit 1" is older than "visit 2".
-  // It's to validate the within-cluster sorting.
-  clusters.push_back(history::Cluster(
-      0,
-      {
-          testing::CreateClusterVisit(
-              testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
-                                                   base::Time::FromTimeT(10)),
-              absl::nullopt, 0.5),
-          testing::CreateClusterVisit(
-              testing::CreateDefaultAnnotatedVisit(1, GURL("https://one.com/"),
-                                                   base::Time::FromTimeT(5)),
-              absl::nullopt, 0.9),
-      },
-      {}));
-  // The second cluster is lower scoring, but newer, because the top visit is
-  // newer. It should be sorted above the first cluster because of reverse
-  // chronological between-cluster sorting.
-  clusters.push_back(history::Cluster(
-      0,
-      {
-          testing::CreateClusterVisit(
-              testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
-                                                   base::Time::FromTimeT(10)),
-              absl::nullopt, 0.1),
-      },
-      {}));
-
-  SortClusters(&clusters);
-
-  ASSERT_EQ(clusters.size(), 2u);
-
-  auto& visits = clusters[0].visits;
-  ASSERT_EQ(visits.size(), 1u);
-  EXPECT_EQ(visits[0].annotated_visit.url_row.url(), "https://two.com/");
-  EXPECT_FLOAT_EQ(visits[0].score, 0.1);
-
-  visits = clusters[1].visits;
-  ASSERT_EQ(visits.size(), 2u);
-  EXPECT_EQ(visits[0].annotated_visit.url_row.url(), "https://one.com/");
-  EXPECT_FLOAT_EQ(visits[0].score, 0.9);
-  EXPECT_EQ(visits[1].annotated_visit.url_row.url(), "https://two.com/");
-  EXPECT_FLOAT_EQ(visits[1].score, 0.5);
-}
-
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchHighEngagementVisit) {
   history::ClusterVisit visit;
   visit.annotated_visit.content_annotations.search_terms = u"search";
