@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -73,40 +74,6 @@ bool AppendJsonValueOrNull(AuctionV8Helper* const v8_helper,
     args->push_back(v8::Null(isolate));
   }
   return true;
-}
-
-// Creates a V8 array containing information about the passed in previous wins.
-// Array is sorted by time, earliest wins first. Modifies order of `prev_wins`
-// input vector. This should should be harmless, since each list of previous
-// wins is only used for a single bid in a single auction, and its order is
-// unspecified, anyways.
-v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::Context> context,
-    base::Time auction_start_time,
-    std::vector<mojom::PreviousWinPtr>& prev_wins) {
-  std::sort(prev_wins.begin(), prev_wins.end(),
-            [](const mojom::PreviousWinPtr& prev_win1,
-               const mojom::PreviousWinPtr& prev_win2) {
-              return prev_win1->time < prev_win2->time;
-            });
-  std::vector<v8::Local<v8::Value>> prev_wins_v8;
-  v8::Isolate* isolate = v8_helper->isolate();
-  for (const auto& prev_win : prev_wins) {
-    int64_t time_delta = (auction_start_time - prev_win->time).InSeconds();
-    // Don't give negative times if clock has changed since last auction win.
-    if (time_delta < 0)
-      time_delta = 0;
-    v8::Local<v8::Value> win_values[2];
-    win_values[0] = v8::Number::New(isolate, time_delta);
-    if (!v8_helper->CreateValueFromJson(context, prev_win->ad_json)
-             .ToLocal(&win_values[1])) {
-      return v8::MaybeLocal<v8::Value>();
-    }
-    prev_wins_v8.push_back(
-        v8::Array::New(isolate, win_values, std::size(win_values)));
-  }
-  return v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size());
 }
 
 // Converts a vector of blink::InterestGroup::Ads into a v8 object.
@@ -670,6 +637,8 @@ BidderWorklet::V8State::GenerateSingleBid(
     fresh_context_recycler->AddSetBidBindings();
     fresh_context_recycler->AddSetPriorityBindings();
     fresh_context_recycler->AddSetPrioritySignalsOverrideBindings();
+    fresh_context_recycler->AddInterestGroupLazyFiller();
+    fresh_context_recycler->AddBiddingBrowserSignalsLazyFiller();
     context_recycler = fresh_context_recycler.get();
   }
 
@@ -705,48 +674,15 @@ BidderWorklet::V8State::GenerateSingleBid(
            bidder_worklet_non_shared_params->daily_update_url->spec())) ||
       (trusted_bidding_signals_url_ &&
        !interest_group_dict.Set("trustedBiddingSignalsUrl",
-                                trusted_bidding_signals_url_->spec())) ||
-      (bidder_worklet_non_shared_params->user_bidding_signals &&
-       !v8_helper_->InsertJsonValue(
-           context, "userBiddingSignals",
-           *bidder_worklet_non_shared_params->user_bidding_signals,
-           interest_group_object))) {
+                                trusted_bidding_signals_url_->spec()))) {
     return absl::nullopt;
   }
 
-  if (bidder_worklet_non_shared_params->priority_vector) {
-    v8::Local<v8::Object> priority_vector = v8::Object::New(isolate);
-    gin::Dictionary priority_vector_dict(isolate, priority_vector);
-    for (const auto& pair :
-         *bidder_worklet_non_shared_params->priority_vector) {
-      if (!priority_vector_dict.Set(pair.first, pair.second)) {
-        return absl::nullopt;
-      }
-    }
-    if (!v8_helper_->InsertValue("priorityVector", priority_vector,
-                                 interest_group_object)) {
-      return absl::nullopt;
-    }
-  }
-
-  if (bidder_worklet_non_shared_params->trusted_bidding_signals_keys) {
-    std::vector<v8::Local<v8::Value>> trusted_bidding_signals_keys;
-    for (const auto& key :
-         *bidder_worklet_non_shared_params->trusted_bidding_signals_keys) {
-      v8::Local<v8::Value> key_value;
-      if (!v8_helper_->CreateUtf8String(key).ToLocal(&key_value)) {
-        return absl::nullopt;
-      }
-      trusted_bidding_signals_keys.emplace_back(std::move(key_value));
-    }
-
-    if (!v8_helper_->InsertValue(
-            "trustedBiddingSignalsKeys",
-            v8::Array::New(isolate, trusted_bidding_signals_keys.data(),
-                           trusted_bidding_signals_keys.size()),
-            interest_group_object)) {
-      return absl::nullopt;
-    }
+  context_recycler->interest_group_lazy_filler()->ReInitialize(
+      bidder_worklet_non_shared_params.get());
+  if (!context_recycler->interest_group_lazy_filler()->FillInObject(
+          interest_group_object)) {
+    return absl::nullopt;
   }
 
   v8::Local<v8::Value> ads;
@@ -825,16 +761,10 @@ BidderWorklet::V8State::GenerateSingleBid(
     }
   }
 
-  v8::Local<v8::Value> prev_wins;
-  if (!CreatePrevWinsArray(v8_helper_.get(), context, auction_start_time,
-                           bidding_browser_signals->prev_wins)
-           .ToLocal(&prev_wins)) {
-    return absl::nullopt;
-  }
-
-  v8::Maybe<bool> result = browser_signals->Set(
-      context, gin::StringToV8(isolate, "prevWins"), prev_wins);
-  if (result.IsNothing() || !result.FromJust()) {
+  context_recycler->bidding_browser_signals_lazy_filler()->ReInitialize(
+      bidding_browser_signals.get(), auction_start_time);
+  if (!context_recycler->bidding_browser_signals_lazy_filler()->FillInObject(
+          browser_signals)) {
     return absl::nullopt;
   }
 

@@ -18,6 +18,7 @@
 #include "content/common/private_aggregation_features.h"
 #include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -585,6 +586,197 @@ TEST_F(ContextRecyclerTest, SetPriorityBindings) {
         context_recycler.set_priority_bindings()->set_priority().has_value());
     EXPECT_EQ(10.0,
               context_recycler.set_priority_bindings()->set_priority().value());
+  }
+}
+
+TEST_F(ContextRecyclerTest, BidderLazyFiller) {
+  // Test to make sure lifetime managing/avoiding UaF is done right.
+  // Actual argument passing is covered thoroughly in bidder worklet unit tests.
+  const char kScript[] = R"(
+    function test(obj) {
+      if (!globalThis.stash) {
+        // On first run
+        globalThis.stash = obj;
+      } else {
+        return JSON.stringify(globalThis.stash);
+      }
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddInterestGroupLazyFiller();
+  context_recycler.AddBiddingBrowserSignalsLazyFiller();
+
+  {
+    base::Time now = base::Time::Now();
+    mojom::BidderWorkletNonSharedParamsPtr ig_params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ig_params->user_bidding_signals.emplace("{\"j\": 1}");
+    ig_params->trusted_bidding_signals_keys.emplace();
+    ig_params->trusted_bidding_signals_keys->push_back("a");
+    ig_params->trusted_bidding_signals_keys->push_back("b");
+    ig_params->priority_vector.emplace();
+    ig_params->priority_vector->insert(
+        std::pair<std::string, double>("a", 42.0));
+
+    mojom::BiddingBrowserSignalsPtr bs_params =
+        mojom::BiddingBrowserSignals::New();
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(1), "[\"a\"]"));
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(2), "[\"b\"]"));
+
+    ContextRecyclerScope scope(context_recycler);
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        ig_params.get());
+    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+        bs_params.get(), now);
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+  }
+
+  {
+    base::Time now = base::Time::Now();
+    mojom::BidderWorkletNonSharedParamsPtr ig_params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ig_params->user_bidding_signals.emplace("{\"k\": 2}");
+    ig_params->trusted_bidding_signals_keys.emplace();
+    ig_params->trusted_bidding_signals_keys->push_back("c");
+    ig_params->trusted_bidding_signals_keys->push_back("d");
+    ig_params->priority_vector.emplace();
+    ig_params->priority_vector->insert(
+        std::pair<std::string, double>("e", 12.0));
+
+    mojom::BiddingBrowserSignalsPtr bs_params =
+        mojom::BiddingBrowserSignals::New();
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(3), "[\"c\"]"));
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(4), "[\"d\"]"));
+
+    ContextRecyclerScope scope(context_recycler);
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        ig_params.get());
+    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+        bs_params.get(), now);
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+
+    std::vector<std::string> error_msgs;
+    v8::MaybeLocal<v8::Value> maybe_result =
+        Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+    v8::Local<v8::Value> result;
+    ASSERT_TRUE(maybe_result.ToLocal(&result));
+    std::string str_result;
+    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
+    EXPECT_EQ(
+        "{\"userBiddingSignals\":{\"k\":2},"
+        "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
+        "\"priorityVector\":{\"e\":12},"
+        "\"prevWins\":[[240,[\"d\"]],[180,[\"c\"]]]}",
+        str_result);
+  }
+}
+
+TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
+  // Test to make sure that stale objects with fields added that are no longer
+  // there handle it gracefully.
+  const char kScript[] = R"(
+    function test(obj) {
+      if (!globalThis.stash) {
+        // On first run
+        globalThis.stash = obj;
+      } else {
+        return JSON.stringify(globalThis.stash);
+      }
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddInterestGroupLazyFiller();
+  context_recycler.AddBiddingBrowserSignalsLazyFiller();
+
+  {
+    base::Time now = base::Time::Now();
+    mojom::BidderWorkletNonSharedParamsPtr ig_params =
+        mojom::BidderWorkletNonSharedParams::New();
+    ig_params->user_bidding_signals.emplace("{\"j\": 1}");
+    ig_params->trusted_bidding_signals_keys.emplace();
+    ig_params->trusted_bidding_signals_keys->push_back("a");
+    ig_params->trusted_bidding_signals_keys->push_back("b");
+    ig_params->priority_vector.emplace();
+    ig_params->priority_vector->insert(
+        std::pair<std::string, double>("a", 42.0));
+
+    mojom::BiddingBrowserSignalsPtr bs_params =
+        mojom::BiddingBrowserSignals::New();
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(1), "[\"a\"]"));
+    bs_params->prev_wins.push_back(
+        mojom::PreviousWin::New(now - base::Minutes(2), "[\"b\"]"));
+
+    ContextRecyclerScope scope(context_recycler);
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        ig_params.get());
+    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+        bs_params.get(), now);
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+  }
+
+  {
+    // Now cover the data for the fields not actually being there.
+    base::Time now = base::Time::Now();
+    mojom::BidderWorkletNonSharedParamsPtr ig_params =
+        mojom::BidderWorkletNonSharedParams::New();
+    mojom::BiddingBrowserSignalsPtr bs_params =
+        mojom::BiddingBrowserSignals::New();
+
+    ContextRecyclerScope scope(context_recycler);
+    context_recycler.interest_group_lazy_filler()->ReInitialize(
+        ig_params.get());
+    context_recycler.bidding_browser_signals_lazy_filler()->ReInitialize(
+        bs_params.get(), now);
+
+    v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
+    context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+    context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+
+    std::vector<std::string> error_msgs;
+    v8::MaybeLocal<v8::Value> maybe_result =
+        Run(scope, script, "test", error_msgs, arg);
+    EXPECT_THAT(error_msgs, ElementsAre());
+    v8::Local<v8::Value> result;
+    ASSERT_TRUE(maybe_result.ToLocal(&result));
+    std::string str_result;
+    ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &str_result));
+    EXPECT_EQ(
+        "{\"userBiddingSignals\":null,"
+        "\"trustedBiddingSignalsKeys\":null,"
+        "\"priorityVector\":null,"
+        "\"prevWins\":[]}",
+        str_result);
   }
 }
 

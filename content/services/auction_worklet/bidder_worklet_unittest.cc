@@ -1785,11 +1785,16 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
   const std::string kGenerateBidBody =
       R"({ad: interestGroup.userBiddingSignals, bid:1, render:"https://response.test/"})";
 
-  // Since UserBiddingSignals are in JSON, non-JSON strings should result in
-  // failures.
+  // Since UserBiddingSignals are in JSON, non-JSON like standalone string
+  // literals should not come in, but we are required to hangle such cases
+  // gracefully, since it's ultimately data from the renderer. In this case it
+  // just turns into null.
   interest_group_user_bidding_signals_ = "foo";
-  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
-                                               mojom::BidderWorkletBidPtr());
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
 
   interest_group_user_bidding_signals_ = R"("foo")";
   RunGenerateBidWithReturnValueExpectingResult(
