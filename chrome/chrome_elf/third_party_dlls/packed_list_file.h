@@ -17,7 +17,7 @@ namespace third_party_dlls {
 bool IsModuleListed(const elf_sha1::Digest& basename_hash,
                     const elf_sha1::Digest& fingerprint_hash);
 
-// Get the full path of the blacklist file used.
+// Get the full path of the blocklist file used.
 std::wstring GetBlFilePathUsed();
 
 // Initialize internal module list from file.
@@ -31,7 +31,7 @@ bool IsStatusCodeSuccessful(ThirdPartyStatus code);
 // Removes initialization for use by tests, or cleanup on failure.
 void DeinitFromFile();
 
-// Overrides the blacklist path for use by tests.
+// Overrides the blocklist path for use by tests.
 void OverrideFilePathForTesting(const std::wstring& new_bl_path);
 
 }  // namespace third_party_dlls

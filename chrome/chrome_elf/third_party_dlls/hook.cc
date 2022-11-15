@@ -249,7 +249,7 @@ bool GetDataFromImage(PVOID buffer,
 // 2) Return if OS failure or not interested in section.
 // 3) Mine the data needed out of the PE headers.
 // 4) Lookup module in local cache (blocking).
-// 5) Temporarily check old (deprecated) blacklist.
+// 5) Temporarily check old (deprecated) blocklist.
 // 6) Unmap view if blocking required.
 // 7) Log the result either way.
 //------------------------------------------------------------------------------
@@ -315,25 +315,25 @@ NTSTATUS NewNtMapViewOfSectionImpl(
   elf_sha1::Digest fingerprint_hash = elf_sha1::SHA1HashString(
       GetFingerprintString(time_date_stamp, image_size));
 
-  // Check sources for blacklist decision.
+  // Check sources for blocklist decision.
   bool block = false;
 
   if (!image_name.empty() &&
       IsModuleListed(image_name_hash, fingerprint_hash)) {
-    // 1) Third-party DLL blacklist, check for image name from PE header.
+    // 1) Third-party DLL blocklist, check for image name from PE header.
     block = true;
   } else if (!section_basename.empty() &&
              section_basename_hash != image_name_hash &&
              IsModuleListed(section_basename_hash, fingerprint_hash)) {
-    // 2) Third-party DLL blacklist, check for image name from the section.
+    // 2) Third-party DLL blocklist, check for image name from the section.
     block = true;
   } else if (!image_name.empty() && DllMatch(image_name)) {
-    // 3) Hard-coded blacklist with name from PE header (deprecated).
+    // 3) Hard-coded blocklist with name from PE header (deprecated).
     block = true;
   } else if (!section_basename.empty() &&
              section_basename.compare(image_name) != 0 &&
              DllMatch(section_basename)) {
-    // 4) Hard-coded blacklist with name from the section (deprecated).
+    // 4) Hard-coded blocklist with name from the section (deprecated).
     block = true;
   }
   // Else, no block.

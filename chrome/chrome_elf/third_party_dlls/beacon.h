@@ -17,7 +17,7 @@ bool LeaveSetupBeacon();
 
 // Looks for the setup running beacon that LeaveSetupBeacon() creates and resets
 // it to to show the setup was successful.
-// Returns true if the beacon was successfully set to BLACKLIST_ENABLED.
+// Returns true if the beacon was successfully set to BLOCKLIST_ENABLED.
 bool ResetBeacon();
 
 }  // namespace third_party_dlls

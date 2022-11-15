@@ -39,7 +39,7 @@ constexpr wchar_t kTestDllName1MixedCase[] = L"MaiN_uniTtest_dLL_1.Dll";
 constexpr wchar_t kTestDllName2[] = L"main_unittest_dll_2.dll";
 constexpr wchar_t kChineseUnicode[] = {0x68D5, 0x8272, 0x72D0, 0x72F8, 0x002E,
                                        0x0064, 0x006C, 0x006C, 0x0000};
-constexpr wchar_t kOldBlacklistDllName[] = L"libapi2hook.dll";
+constexpr wchar_t kOldBlocklistDllName[] = L"libapi2hook.dll";
 
 struct TestModuleData {
   std::string image_name;
@@ -193,7 +193,7 @@ class ThirdPartyTest : public testing::Test {
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe));
     exe_dir_ = std::move(exe.value());
 
-    // Create the blacklist file empty.
+    // Create the blocklist file empty.
     base::File file(base::FilePath(bl_test_file_path_),
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
                         base::File::FLAG_WIN_SHARE_DELETE |
@@ -206,8 +206,8 @@ class ThirdPartyTest : public testing::Test {
 
   void TearDown() override {}
 
-  // Overwrite the content of the blacklist file.
-  bool WriteModulesToBlacklist(const std::vector<PackedListModule>& list) {
+  // Overwrite the content of the blocklist file.
+  bool WriteModulesToBlocklist(const std::vector<PackedListModule>& list) {
     bl_file_.SetLength(0);
 
     // Write content {metadata}{array_of_modules}.
@@ -256,7 +256,7 @@ class ThirdPartyTest : public testing::Test {
 #endif
 // Note: The test module used in this unittest has no export table.
 TEST_F(ThirdPartyTest, MAYBE_Base) {
-  // 1. Spawn the test process with NO blacklist.  Expect successful
+  // 1. Spawn the test process with NO blocklist.  Expect successful
   // initialization.
   base::CommandLine cmd_line1 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line1.AppendArgNative(GetBlTestFilePath());
@@ -267,7 +267,7 @@ TEST_F(ThirdPartyTest, MAYBE_Base) {
   ASSERT_EQ(kDllLoadSuccess, exit_code);
 
   //----------------------------------------------------------------------------
-  // 2. Spawn the test process with NO blacklist.  Expect successful DLL load.
+  // 2. Spawn the test process with NO blocklist.  Expect successful DLL load.
   base::CommandLine cmd_line2 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line2.AppendArgNative(GetBlTestFilePath());
   cmd_line2.AppendArgNative(base::NumberToWString(kTestSingleDllLoad));
@@ -277,7 +277,7 @@ TEST_F(ThirdPartyTest, MAYBE_Base) {
   ASSERT_EQ(kDllLoadSuccess, exit_code);
 
   //----------------------------------------------------------------------------
-  // 3. Spawn the test process with blacklist.  Expect failed DLL load.
+  // 3. Spawn the test process with blocklist.  Expect failed DLL load.
   TestModuleData module_data = {};
   ASSERT_TRUE(GetTestModuleData(kTestDllName1, GetExeDir(), &module_data));
 
@@ -289,7 +289,7 @@ TEST_F(ThirdPartyTest, MAYBE_Base) {
   vector.emplace_back(GeneratePackedListModule(module_data.section_basename,
                                                module_data.timedatestamp,
                                                module_data.imagesize));
-  ASSERT_TRUE(WriteModulesToBlacklist(vector));
+  ASSERT_TRUE(WriteModulesToBlocklist(vector));
 
   base::CommandLine cmd_line3 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line3.AppendArgNative(GetBlTestFilePath());
@@ -300,13 +300,13 @@ TEST_F(ThirdPartyTest, MAYBE_Base) {
   ASSERT_EQ(kDllLoadFailed, exit_code);
 
   //----------------------------------------------------------------------------
-  // 4. Spawn the test process with blacklist.  Expect failed DLL load.
+  // 4. Spawn the test process with blocklist.  Expect failed DLL load.
   //    ** Rename the module with some upper-case characters to test that
   //       the hook matching handles case properly.
   ASSERT_TRUE(MakeFileCopy(GetExeDir(), kTestDllName1, GetScopedTempDirValue(),
                            kTestDllName1MixedCase));
 
-  // Note: the blacklist is already set from the previous test.
+  // Note: the blocklist is already set from the previous test.
   // Note: using the module with no export table for this test, to ensure that
   //       the section name (the rename) is used in the comparison.
 
@@ -327,7 +327,7 @@ TEST_F(ThirdPartyTest, WideCharEncoding) {
   ASSERT_TRUE(MakeFileCopy(GetExeDir(), kTestDllName1, GetScopedTempDirValue(),
                            kChineseUnicode));
 
-  // 1) Test a successful DLL load with no blacklist.
+  // 1) Test a successful DLL load with no blocklist.
   base::CommandLine cmd_line1 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line1.AppendArgNative(GetBlTestFilePath());
   cmd_line1.AppendArgNative(base::NumberToWString(kTestSingleDllLoad));
@@ -338,7 +338,7 @@ TEST_F(ThirdPartyTest, WideCharEncoding) {
   ASSERT_EQ(kDllLoadSuccess, exit_code);
 
   //----------------------------------------------------------------------------
-  // 2) Test a failed DLL load with blacklist.
+  // 2) Test a failed DLL load with blocklist.
   TestModuleData module_data = {};
   ASSERT_TRUE(GetTestModuleData(kChineseUnicode, GetScopedTempDirValue(),
                                 &module_data));
@@ -351,7 +351,7 @@ TEST_F(ThirdPartyTest, WideCharEncoding) {
   vector.emplace_back(GeneratePackedListModule(module_data.section_basename,
                                                module_data.timedatestamp,
                                                module_data.imagesize));
-  ASSERT_TRUE(WriteModulesToBlacklist(vector));
+  ASSERT_TRUE(WriteModulesToBlocklist(vector));
 
   base::CommandLine cmd_line2 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line2.AppendArgNative(GetBlTestFilePath());
@@ -369,7 +369,7 @@ TEST_F(ThirdPartyTest, WideCharEncodingWithExportDir) {
   ASSERT_TRUE(MakeFileCopy(GetExeDir(), kTestDllName2, GetScopedTempDirValue(),
                            kChineseUnicode));
 
-  // 1) Test a successful DLL load with no blacklist.
+  // 1) Test a successful DLL load with no blocklist.
   base::CommandLine cmd_line1 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line1.AppendArgNative(GetBlTestFilePath());
   cmd_line1.AppendArgNative(base::NumberToWString(kTestSingleDllLoad));
@@ -380,7 +380,7 @@ TEST_F(ThirdPartyTest, WideCharEncodingWithExportDir) {
   ASSERT_EQ(kDllLoadSuccess, exit_code);
 
   //----------------------------------------------------------------------------
-  // 2) Test a failed DLL load with blacklist.
+  // 2) Test a failed DLL load with blocklist.
   TestModuleData module_data = {};
   ASSERT_TRUE(GetTestModuleData(kChineseUnicode, GetScopedTempDirValue(),
                                 &module_data));
@@ -389,16 +389,16 @@ TEST_F(ThirdPartyTest, WideCharEncodingWithExportDir) {
 
   // NOTE: a file rename does not affect the module name mined from the export
   //       table in the PE.  So image_name and section_basename will be
-  //       different. Ensure blacklisting both section name and image name
+  //       different. Ensure blocklisting both section name and image name
   //       works!
 
-  // 2a) Only blacklist the original DLL name, which should be mined out of the
+  // 2a) Only blocklist the original DLL name, which should be mined out of the
   //     export table by the hook, and the load should be blocked.
   std::vector<PackedListModule> vector;
   vector.emplace_back(GeneratePackedListModule(base::WideToASCII(kTestDllName2),
                                                module_data.timedatestamp,
                                                module_data.imagesize));
-  ASSERT_TRUE(WriteModulesToBlacklist(vector));
+  ASSERT_TRUE(WriteModulesToBlocklist(vector));
 
   base::CommandLine cmd_line2 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line2.AppendArgNative(GetBlTestFilePath());
@@ -408,13 +408,13 @@ TEST_F(ThirdPartyTest, WideCharEncodingWithExportDir) {
   LaunchChildAndWait(cmd_line2, &exit_code);
   ASSERT_EQ(kDllLoadFailed, exit_code);
 
-  // 2b) Only blacklist the new DLL file name, which should be mined out of the
+  // 2b) Only blocklist the new DLL file name, which should be mined out of the
   //     section by the hook, and the load should be blocked.
   vector.clear();
   vector.emplace_back(GeneratePackedListModule(
       base::WideToUTF8(kChineseUnicode), module_data.timedatestamp,
       module_data.imagesize));
-  ASSERT_TRUE(WriteModulesToBlacklist(vector));
+  ASSERT_TRUE(WriteModulesToBlocklist(vector));
 
   base::CommandLine cmd_line3 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line3.AppendArgNative(GetBlTestFilePath());
@@ -426,18 +426,18 @@ TEST_F(ThirdPartyTest, WideCharEncodingWithExportDir) {
 }
 
 // Note: The test module used in this unittest has no export table.
-TEST_F(ThirdPartyTest, DeprecatedBlacklistSanityCheck) {
-  // Rename module to something on the old, deprecated, hard-coded blacklist.
+TEST_F(ThirdPartyTest, DeprecatedBlocklistSanityCheck) {
+  // Rename module to something on the old, deprecated, hard-coded blocklist.
   ASSERT_TRUE(MakeFileCopy(GetExeDir(), kTestDllName1, GetScopedTempDirValue(),
-                           kOldBlacklistDllName));
+                           kOldBlocklistDllName));
 
-  // 1) Test a failed DLL load with no blacklist (the old, hard-coded blacklist
+  // 1) Test a failed DLL load with no blocklist (the old, hard-coded blocklist
   //    should trigger a block).
   base::CommandLine cmd_line1 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line1.AppendArgNative(GetBlTestFilePath());
   cmd_line1.AppendArgNative(base::NumberToWString(kTestSingleDllLoad));
   cmd_line1.AppendArgNative(
-      MakePath(GetScopedTempDirValue(), kOldBlacklistDllName));
+      MakePath(GetScopedTempDirValue(), kOldBlocklistDllName));
 
   int exit_code = 0;
   LaunchChildAndWait(cmd_line1, &exit_code);
@@ -509,7 +509,7 @@ TEST_F(ThirdPartyTest, MAYBE_PathCaseSensitive) {
                 MakePath(GetScopedTempDirValue(), kTestDllName1MixedCase)),
             0);
 
-  // 2) Now check an actual log.  Successful DLL load with no blacklist is fine
+  // 2) Now check an actual log.  Successful DLL load with no blocklist is fine
   //    for this test.
   base::CommandLine cmd_line1 = base::CommandLine::FromString(kTestExeFilename);
   cmd_line1.AppendArgNative(GetBlTestFilePath());

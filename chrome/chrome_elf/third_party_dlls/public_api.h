@@ -30,7 +30,7 @@ enum LogType : uint8_t {
 // Define a flat log entry for any attempted module load.
 // The total size in bytes of a log entry is returned by GetLogEntrySize().
 // - Note: If this is a |blocked| entry, |path_len| will be 0.
-//   (Full path not required for a blacklisted load attempt log.)
+//   (Full path not required for a blocklisted load attempt log.)
 struct LogEntry {
   LogType type;
   uint32_t module_size;

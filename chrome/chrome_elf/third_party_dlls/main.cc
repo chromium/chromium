@@ -107,7 +107,7 @@ bool Init() {
   if (!ResetStatusCodes())
     AddStatusCode(ThirdPartyStatus::kStatusCodeResetFailure);
 
-  // 1) Initialize the blacklist from file
+  // 1) Initialize the blocklist from file
   ThirdPartyStatus status = InitFromFile();
   if (status != ThirdPartyStatus::kSuccess) {
     AddStatusCode(status);

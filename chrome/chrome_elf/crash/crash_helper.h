@@ -24,7 +24,7 @@ void DisableSetUnhandledExceptionFilter();
 
 // Exception handler for exceptions in chrome_elf which need to be passed on to
 // the next handler in the chain. Examples include exceptions in DllMain,
-// blacklist interception code, etc.
+// blocklist interception code, etc.
 // Note: the handler takes a minidump.
 int GenerateCrashDump(EXCEPTION_POINTERS* exception_pointers);
 

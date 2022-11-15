@@ -16,7 +16,7 @@ enum ExitCode {
   kThirdPartyAlreadyInitialized = -2,
   kThirdPartyInitFailure = -3,
   kMissingArgument = -4,
-  kBadBlacklistPath = -5,
+  kBadBlocklistPath = -5,
   kBadArgument = -6,
   kUnsupportedTestId = -7,
   kEmptyLog = -8,
