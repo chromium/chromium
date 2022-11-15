@@ -207,8 +207,7 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
-          std::make_unique<WebAppUrlLoader>(), *profile_,
-          provider_->install_finalizer(), std::move(callback)));
+          std::make_unique<WebAppUrlLoader>(), *profile_, std::move(callback)));
 }
 
 void WebAppCommandScheduler::Shutdown() {

@@ -33,10 +33,10 @@ class WebContents;
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
 class WebAppDataRetriever;
-class WebAppInstallFinalizer;
 class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
@@ -59,7 +59,7 @@ struct InstallIsolatedWebAppCommandError {
 //
 // |content::IsolatedWebAppThrottle| enforces that. The requirements prevent
 // re-using web contents.
-class InstallIsolatedWebAppCommand : public WebAppCommand {
+class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
  public:
   //
   // |isolation_info| holds the origin information of the app. It is
@@ -78,7 +78,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommand {
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       content::BrowserContext& browser_context,
-      WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback);
@@ -97,7 +96,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommand {
 
   base::Value ToDebugValue() const override;
 
-  void Start() override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
@@ -136,6 +135,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommand {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<AppLockDescription> lock_description_;
+  std::unique_ptr<AppLock> lock_;
 
   IsolatedWebAppUrlInfo isolation_info_;
   IsolationData isolation_data_;
@@ -145,8 +145,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommand {
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   base::raw_ref<content::BrowserContext> browser_context_;
-
-  const raw_ref<WebAppInstallFinalizer> install_finalizer_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 

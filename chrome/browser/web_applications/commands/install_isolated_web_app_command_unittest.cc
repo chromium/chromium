@@ -30,7 +30,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/lock.h"
-#include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
@@ -38,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -47,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -233,13 +230,9 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       url_loader = std::move(test_url_loader);
     }
 
-    auto command =
-        CreateCommand(parameters.url_info, std::move(web_contents),
-                      parameters.isolation_data, std::move(url_loader),
-                      parameters.install_finalizer != nullptr
-                          ? *parameters.install_finalizer
-                          : web_app_provider().install_finalizer(),
-                      test_future.GetCallback());
+    auto command = CreateCommand(
+        parameters.url_info, std::move(web_contents), parameters.isolation_data,
+        std::move(url_loader), test_future.GetCallback());
 
     command->SetDataRetrieverForTesting(
         data_retriever != nullptr ? std::move(data_retriever)
@@ -254,7 +247,6 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       std::unique_ptr<content::WebContents> web_contents,
       absl::optional<IsolationData> isolation_data,
       std::unique_ptr<WebAppUrlLoader> url_loader,
-      WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback) {
@@ -264,8 +256,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, isolation_data.value(), std::move(web_contents),
-        std::move(url_loader), *profile(), install_finalizer,
-        std::move(callback));
+        std::move(url_loader), *profile(), std::move(callback));
   }
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -452,38 +443,6 @@ TEST_F(InstallIsolatedWebAppCommandTest, URLLoaderIgnoresQueryParameters) {
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
-       InstallationFailsWhenFinalizerReturnNotInstallableError) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  auto install_finalizer = std::make_unique<FakeInstallFinalizer>();
-  install_finalizer->SetNextFinalizeInstallResult(
-      url_info.app_id(), webapps::InstallResultCode::kNotInstallable);
-
-  EXPECT_THAT(ExecuteCommand(Parameters{
-                  .url_info = url_info,
-                  .install_finalizer = install_finalizer.get(),
-              }),
-              IsInstallationError(
-                  HasSubstr("Error during finalization: kNotInstallable")));
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest,
-       InstallationFailsWhenFinalizerReturnInstallURLLoadTimeOut) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-
-  auto install_finalizer = std::make_unique<FakeInstallFinalizer>();
-  install_finalizer->SetNextFinalizeInstallResult(
-      url_info.app_id(), webapps::InstallResultCode::kInstallURLLoadTimeOut);
-
-  EXPECT_THAT(ExecuteCommand(Parameters{
-                  .url_info = url_info,
-                  .install_finalizer = install_finalizer.get(),
-              }),
-              IsInstallationError(HasSubstr(
-                  "Error during finalization: kInstallURLLoadTimeOut")));
-}
-
-TEST_F(InstallIsolatedWebAppCommandTest,
        InstallationSucceedesWhenFinalizerReturnSuccessNewInstall) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
 
@@ -550,7 +509,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
       content::WebContents::Create(
           content::WebContents::CreateParams(profile())),
       CreateIsolationDataDevProxy(), std::make_unique<TestWebAppUrlLoader>(),
-      web_app_provider().install_finalizer(), test_future.GetCallback());
+      test_future.GetCallback());
   EXPECT_THAT(
       command->lock_description(),
       AllOf(Property(&LockDescription::type, Eq(LockDescription::Type::kApp)),

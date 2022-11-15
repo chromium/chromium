@@ -70,7 +70,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     content::BrowserContext& browser_context,
-    WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback)
@@ -81,7 +80,6 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
       browser_context_(browser_context),
-      install_finalizer_(install_finalizer),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -109,8 +107,11 @@ LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
   return *lock_description_;
 }
 
-void InstallIsolatedWebAppCommand::Start() {
+void InstallIsolatedWebAppCommand::StartWithLock(
+    std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  lock_ = std::move(lock);
+
   CreateStoragePartition();
   LoadUrl();
 }
@@ -257,7 +258,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
   options.isolation_data = isolation_data_;
 
-  install_finalizer_->FinalizeInstall(
+  lock_->install_finalizer().FinalizeInstall(
       info, options,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr()));
