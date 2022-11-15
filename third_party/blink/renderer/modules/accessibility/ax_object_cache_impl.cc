@@ -3290,22 +3290,11 @@ void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
     if (parent->IsInert() || parent->IsAriaHidden())
       return;
     // If the parent is 'display: none', then the subtree will be ignored and
-    // changing aria-hidden will have no effect.
-    if (!parent->GetLayoutObject()) {
-      // No layout object: may be in display: none.
-      if (Element* parent_element = parent->GetElement()) {
-        if (!IsDisplayLocked(parent_element)) {
-          // No layout object: must ensure computed style.
-          // Do not perform this check for display locked content, where
-          // computed styles are not updated. In that case, we will need to
-          // assume the need for marking the subtree dirty.
-          const ComputedStyle* parent_style =
-              parent_element->EnsureComputedStyle();
-          if (!parent_style || parent_style->IsEnsuredInDisplayNone())
-            return;
-        }
-      }
-    }
+    // changing aria-hidden will have no effect. However, determining whether
+    // something is in display:none would require calling EnsureComputedStyle(),
+    // which is not ok during post lifecycle tasks. Ultimately, it does not
+    // really matter if we perform this check, because it's just an optimization
+    // to avoid invalidating the entire aria-hidden subtree.
     // Unlike AXObject's |IsVisible| or |IsHiddenViaStyle| this method does not
     // consider 'visibility: [hidden|collapse]', because while the visibility
     // property is inherited it can be overridden by any descendant by providing

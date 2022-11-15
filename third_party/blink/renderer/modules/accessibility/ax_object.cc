@@ -2840,6 +2840,9 @@ AXObjectInclusion AXObject::DefaultObjectInclusion(
   return kDefaultBehavior;
 }
 
+// Note: do not rely on the value of this inside of display:none.
+// In practice, it does not matter because nodes in display:none subtrees are
+// marked ignored either way.
 bool AXObject::IsInert() const {
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_inert_;
@@ -3824,6 +3827,14 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
   if (!node)
     return nullptr;
 
+#if DCHECK_IS_ON()
+  DCHECK(GetDocument());
+  DCHECK(GetDocument()->Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle "
+      << GetDocument()->Lifecycle().ToString();
+#endif
+
   // content-visibility:hidden or content-visibility: auto.
   if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node))
     return nullptr;
@@ -3832,8 +3843,13 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
   if (GetLayoutObject())
     return GetLayoutObject()->Style();
 
-  // No layout object: must ensure computed style.
-  return node->EnsureComputedStyle();
+  // No layout object: if possible, use EnsureComputedStyle().
+  // Cannot call EnsureComputedStyle() here because we may be in post lifecycle
+  // steps, and EnsureComputedStyle() can cause a style recalc which is not
+  // allowed at that time (enforced by DCHECK).
+  // TODO(szager) Figure out how to make this code cleaner.
+  return GetDocument()->InPostLifecycleSteps() ? node->GetComputedStyle()
+                                               : node->EnsureComputedStyle();
 }
 
 // There are 4 ways to use CSS to hide something:
