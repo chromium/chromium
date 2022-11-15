@@ -7,14 +7,7 @@
 namespace ash {
 namespace ime {
 
-AssistiveWindow::AssistiveWindow() : type(AssistiveWindowType::kNone) {}
-
-AssistiveWindow::AssistiveWindow(
-    const AssistiveWindowType& type,
-    const std::vector<AssistiveSuggestion>& candidates)
-    : type(type), candidates(std::move(candidates)) {}
-
-AssistiveWindow::AssistiveWindow(const AssistiveWindow& window) = default;
+AssistiveWindow::AssistiveWindow() = default;
 AssistiveWindow::~AssistiveWindow() = default;
 
 }  // namespace ime

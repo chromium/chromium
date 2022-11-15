@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
-#include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -19,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
@@ -35,99 +33,15 @@ const char16_t kAnnounceString[] = u"announce string";
 namespace ash {
 namespace input_method {
 
-using ::ash::ime::AssistiveSuggestion;
-using ::ash::ime::AssistiveSuggestionType;
-using ::ash::ime::AssistiveWindow;
-using ::ash::ime::AssistiveWindowType;
-using ::testing::_;
-using ::ui::ime::SuggestionDetails;
-
 constexpr size_t kShowSuggestionDelayMs = 5;
-
-std::vector<AssistiveSuggestion> SingleCandidateList(
-    const AssistiveSuggestionType& suggestion_type,
-    const std::string& candidate,
-    size_t confirmed_length) {
-  return std::vector<AssistiveSuggestion>{
-      AssistiveSuggestion{
-          .type = suggestion_type,
-          .text = candidate,
-          .confirmed_length = confirmed_length,
-      },
-  };
-}
-
-std::vector<AssistiveSuggestion> MultiCandidateList(
-    const AssistiveSuggestionType& suggestion_type,
-    const std::vector<std::string>& candidates) {
-  std::vector<AssistiveSuggestion> suggestions;
-  for (const auto& candidate : candidates) {
-    suggestions.push_back(AssistiveSuggestion{
-        .type = suggestion_type,
-        .text = candidate,
-        .confirmed_length = 0,
-    });
-  }
-  return suggestions;
-}
-
-std::vector<AssistiveSuggestion> EmptyCandidateList() {
-  return {};
-}
-
-AssistiveWindowProperties MultiWordWindowProperties(
-    const std::u16string& candidate) {
-  return AssistiveWindowProperties(
-      /*type=*/AssistiveWindowType::kEmojiSuggestion,
-      /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-      /*visible=*/true,
-      /*candidates=*/{candidate});
-}
-
-AssistiveWindowProperties PersonalInfoWindowProperties(
-    const std::u16string& candidate) {
-  return AssistiveWindowProperties(
-      /*type=*/AssistiveWindowType::kEmojiSuggestion,
-      /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-      /*visible=*/true,
-      /*candidates=*/{candidate});
-}
-
-AssistiveWindowProperties EmojiWindowProperties(
-    const std::vector<std::u16string>& candidates) {
-  return AssistiveWindowProperties(
-      /*type=*/AssistiveWindowType::kEmojiSuggestion,
-      /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-      /*visible=*/true,
-      /*candidates=*/candidates);
-}
-
-AssistiveWindowProperties LongpressWindowProperties(
-    const std::vector<std::u16string>& candidates) {
-  return AssistiveWindowProperties(
-      /*type=*/AssistiveWindowType::kLongpressDiacriticsSuggestion,
-      /*suggestion_type=*/AssistiveSuggestionType::kLongpressDiacritic,
-      /*visible=*/true,
-      /*candidates=*/candidates);
-}
-
-AssistiveWindowProperties UndoWindowProperties() {
-  return AssistiveWindowProperties(
-      /*type=*/AssistiveWindowType::kUndoWindow,
-      /*visible=*/true,
-      /*candidates=*/{});
-}
 
 class MockDelegate : public AssistiveWindowControllerDelegate {
  public:
-  MOCK_METHOD(void,
-              AssistiveWindowButtonClicked,
-              (const ui::ime::AssistiveWindowButton& button),
-              (const override));
-  MOCK_METHOD(void,
-              AssistiveWindowChanged,
-              (const ash::ime::AssistiveWindow& window),
-              (const override));
+  ~MockDelegate() override = default;
+  void AssistiveWindowButtonClicked(
+      const ui::ime::AssistiveWindowButton& button) const override {}
+  void AssistiveWindowChanged(
+      const ash::ime::AssistiveWindow& window) const override {}
 };
 
 class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
@@ -159,7 +73,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     profile_ = std::make_unique<TestingProfile>();
     accessibility_view_ = std::make_unique<TestAccessibilityView>();
     controller_ = std::make_unique<AssistiveWindowController>(
-        &delegate_, profile_.get(), accessibility_view_.get());
+        delegate_.get(), profile_.get(), accessibility_view_.get());
     ui::IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
     // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
@@ -207,7 +121,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AssistiveWindowController> controller_;
-  testing::StrictMock<MockDelegate> delegate_;
+  std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;
   const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
@@ -216,8 +130,6 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
 };
 
 TEST_F(AssistiveWindowControllerTest, ShowSuggestionDelaysWindowDisplay) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   ui::ime::SuggestionDetails details;
   details.text = u"asdf";
   details.confirmed_length = 3;
@@ -235,8 +147,6 @@ TEST_F(AssistiveWindowControllerTest, ShowSuggestionDelaysWindowDisplay) {
 
 TEST_F(AssistiveWindowControllerTest,
        SetBoundsAfterShowSuggestionCancelsDelay) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   ui::ime::SuggestionDetails details;
   details.text = u"asdf";
   details.confirmed_length = 3;
@@ -261,8 +171,6 @@ TEST_F(AssistiveWindowControllerTest, ShowSuggestionSetsConfirmedLength) {
 }
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
@@ -284,8 +192,6 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
 }
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
@@ -307,8 +213,6 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
 }
 
 TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(2);
-
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
@@ -341,8 +245,6 @@ TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
 
 TEST_F(AssistiveWindowControllerTest,
        SuggestionViewBoundIsResetAfterHideSuggestionThenShowAgain) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(3);
-
   // Sets up suggestion_view with confirmed_length = 1.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
@@ -356,8 +258,11 @@ TEST_F(AssistiveWindowControllerTest,
   controller_->HideSuggestion();
 
   // Create new suggestion window.
-  controller_->SetAssistiveWindowProperties(
-      EmojiWindowProperties({u"candidate"}));
+  AssistiveWindowProperties properties;
+  properties.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(properties);
 
   gfx::Rect new_caret_bounds(current_bounds.width() + 1,
                              current_bounds.height());
@@ -369,8 +274,6 @@ TEST_F(AssistiveWindowControllerTest,
 }
 
 TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   gfx::Rect autocorrect_bounds(1, 1);
   gfx::Rect caret_bounds(2, 2);
 
@@ -378,7 +281,11 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
   bounds.caret = caret_bounds;
   bounds.autocorrect = autocorrect_bounds;
   controller_->SetBounds(bounds);
-  controller_->SetAssistiveWindowProperties(UndoWindowProperties());
+
+  AssistiveWindowProperties window;
+  window.type = ash::ime::AssistiveWindowType::kUndoWindow;
+  window.visible = true;
+  controller_->SetAssistiveWindowProperties(window);
 
   ASSERT_TRUE(controller_->GetUndoWindowForTesting() != nullptr);
   autocorrect_bounds.Inset(-4);
@@ -387,10 +294,12 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
 }
 
 TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
-  controller_->SetAssistiveWindowProperties(
-      EmojiWindowProperties({u"candidate"}));
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ash::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -404,10 +313,12 @@ TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
 
 TEST_F(AssistiveWindowControllerTest,
        SetsPersonalInfoWindowOrientationVertical) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
-  controller_->SetAssistiveWindowProperties(
-      PersonalInfoWindowProperties(u"candidate"));
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ash::ime::AssistiveWindowType::kPersonalInfoSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -420,10 +331,12 @@ TEST_F(AssistiveWindowControllerTest,
 }
 
 TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
-  controller_->SetAssistiveWindowProperties(
-      MultiWordWindowProperties(u"candidate"));
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ash::ime::AssistiveWindowType::kMultiWordSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -437,10 +350,13 @@ TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
 
 TEST_F(AssistiveWindowControllerTest,
        SetsDiacriticsWindowOrientationHorizontal) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
-  controller_->SetAssistiveWindowProperties(
-      LongpressWindowProperties({u"a", u"b", u"c"}));
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type =
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -454,14 +370,21 @@ TEST_F(AssistiveWindowControllerTest,
 
 TEST_F(AssistiveWindowControllerTest,
        SetsWindowOrientationHorizontalWhenVerticalWindowAlreadyInitialised) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(2);
+  AssistiveWindowProperties init_vertical_properties;
+  init_vertical_properties.type =
+      ash::ime::AssistiveWindowType::kMultiWordSuggestion;
+  init_vertical_properties.visible = true;
+  init_vertical_properties.candidates =
+      std::vector<std::u16string>({u"vertical"});
+  controller_->SetAssistiveWindowProperties(init_vertical_properties);
 
-  // Show a vertical window
-  controller_->SetAssistiveWindowProperties(
-      MultiWordWindowProperties(u"vertical"));
-  // Then show a horizontal window
-  controller_->SetAssistiveWindowProperties(
-      LongpressWindowProperties({u"a", u"b", u"c"}));
+  AssistiveWindowProperties horizontal_properties;
+  horizontal_properties.type =
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  horizontal_properties.visible = true;
+  horizontal_properties.candidates =
+      std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(horizontal_properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -475,14 +398,20 @@ TEST_F(AssistiveWindowControllerTest,
 
 TEST_F(AssistiveWindowControllerTest,
        SetsWindowOrientationVerticalWhenHorizontalWindowAlreadyInitialised) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(2);
+  AssistiveWindowProperties init_horizontal_properties;
+  init_horizontal_properties.type =
+      ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  init_horizontal_properties.visible = true;
+  init_horizontal_properties.candidates =
+      std::vector<std::u16string>({u"horizontal"});
+  controller_->SetAssistiveWindowProperties(init_horizontal_properties);
 
-  // Show a horizontal window
-  controller_->SetAssistiveWindowProperties(
-      LongpressWindowProperties({u"a", u"b", u"c"}));
-  // Then show a vertical window
-  controller_->SetAssistiveWindowProperties(
-      MultiWordWindowProperties(u"vertical"));
+  AssistiveWindowProperties vertical_properties;
+  vertical_properties.type =
+      ash::ime::AssistiveWindowType::kMultiWordSuggestion;
+  vertical_properties.visible = true;
+  vertical_properties.candidates = std::vector<std::u16string>({u"candidate"});
+  controller_->SetAssistiveWindowProperties(vertical_properties);
 
   ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
   views::BoxLayout::Orientation layout_orientation =
@@ -525,8 +454,6 @@ TEST_F(
 
 TEST_F(AssistiveWindowControllerTest,
        AnnouncesWhenSetButtonHighlightedInUndoWindowHasAnnounceString) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_));
-
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
   AssistiveWindowProperties window;
@@ -555,328 +482,6 @@ TEST_F(
 
   accessibility_view_->VerifyAnnouncement(base::EmptyString16());
 }
-
-TEST_F(AssistiveWindowControllerTest,
-       NoAssistiveWindowChangedWhenNoWindowShownAndSuggestionHidden) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(0);
-
-  controller_->HideSuggestion();
-}
-
-TEST_F(AssistiveWindowControllerTest,
-       NoAssistiveWindowChangedWhenNoWindowShownAndSuggestionAccepted) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(0);
-
-  controller_->AcceptSuggestion(u"");
-}
-
-TEST_F(AssistiveWindowControllerTest,
-       NoAssistiveWindowChangedWhenNoWindowShownAndFocusChanged) {
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(_)).Times(0);
-
-  controller_->FocusStateChanged();
-}
-
-struct ShowSuggestionTestCase {
-  std::string test_name;
-  AssistiveWindow window;
-  SuggestionDetails suggestion_details;
-};
-
-class AssistiveWindowChangedAfterShowSuggestion
-    : public AssistiveWindowControllerTest,
-      public testing::WithParamInterface<ShowSuggestionTestCase> {};
-
-TEST_P(AssistiveWindowChangedAfterShowSuggestion, VerifyChangeEmitted) {
-  const ShowSuggestionTestCase& test_case = GetParam();
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-
-  controller_->ShowSuggestion(test_case.suggestion_details);
-  WaitForSuggestionWindowDelay();
-}
-
-TEST_P(AssistiveWindowChangedAfterShowSuggestion,
-       AndAgainAfterSuggestionIsHidden) {
-  const ShowSuggestionTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->ShowSuggestion(test_case.suggestion_details);
-  WaitForSuggestionWindowDelay();
-  controller_->HideSuggestion();
-}
-
-TEST_P(AssistiveWindowChangedAfterShowSuggestion,
-       AndAgainAfterSuggestionIsAccepted) {
-  const ShowSuggestionTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->ShowSuggestion(test_case.suggestion_details);
-  WaitForSuggestionWindowDelay();
-  controller_->AcceptSuggestion(u"");
-}
-
-TEST_P(AssistiveWindowChangedAfterShowSuggestion,
-       AndAgainWhenWidgetIsDestroying) {
-  const ShowSuggestionTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->ShowSuggestion(test_case.suggestion_details);
-  WaitForSuggestionWindowDelay();
-  controller_->OnWidgetDestroying(
-      controller_->GetSuggestionWindowViewForTesting()->GetWidget());
-}
-
-TEST_P(AssistiveWindowChangedAfterShowSuggestion,
-       AndAgainWhenFocusStateChanged) {
-  const ShowSuggestionTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->ShowSuggestion(test_case.suggestion_details);
-  WaitForSuggestionWindowDelay();
-  controller_->FocusStateChanged();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AssistiveWindowControllerTest,
-    AssistiveWindowChangedAfterShowSuggestion,
-    testing::ValuesIn<ShowSuggestionTestCase>({
-        {"MultiwordCandidate",
-         AssistiveWindow(
-             AssistiveWindowType::kMultiWordSuggestion,
-             SingleCandidateList(
-                 /*suggestion_type=*/AssistiveSuggestionType::kMultiWord,
-                 /*candidate=*/"gday",
-                 /*confirmed_length=*/0)),
-         SuggestionDetails{.type = AssistiveSuggestionType::kMultiWord,
-                           .text = u"gday",
-                           .confirmed_length = 0}},
-        {"PersonalInfoCandidate",
-         AssistiveWindow(AssistiveWindowType::kPersonalInfoSuggestion,
-                         SingleCandidateList(
-                             /*suggestion_type=*/AssistiveSuggestionType::
-                                 kAssistivePersonalInfo,
-                             /*candidate=*/"my name is Jack Black",
-                             /*confirmed_length=*/0)),
-         SuggestionDetails{
-             .type = AssistiveSuggestionType::kAssistivePersonalInfo,
-             .text = u"my name is Jack Black",
-             .confirmed_length = 0}},
-    }),
-    [](const testing::TestParamInfo<ShowSuggestionTestCase>& info) {
-      return info.param.test_name;
-    });
-
-struct SetAssistiveWindowPropsTestCase {
-  std::string test_name;
-  AssistiveWindow window;
-  AssistiveWindowProperties window_props;
-  AssistiveWindowProperties hidden_props;
-};
-
-class AssistiveWindowChangedAfterSetAssistiveWindowProps
-    : public AssistiveWindowControllerTest,
-      public testing::WithParamInterface<SetAssistiveWindowPropsTestCase> {
- protected:
-  views::Widget* GetWidgetForWindowType(
-      const AssistiveWindowType& window_type) {
-    switch (window_type) {
-      case AssistiveWindowType::kMultiWordSuggestion:
-      case AssistiveWindowType::kPersonalInfoSuggestion:
-      case AssistiveWindowType::kEmojiSuggestion:
-      case AssistiveWindowType::kLongpressDiacriticsSuggestion:
-        return controller_->GetSuggestionWindowViewForTesting()->GetWidget();
-      case AssistiveWindowType::kUndoWindow:
-        return controller_->GetUndoWindowForTesting()->GetWidget();
-      case AssistiveWindowType::kGrammarSuggestion:
-        return controller_->GetGrammarWindowForTesting()->GetWidget();
-      default:
-        return nullptr;
-    }
-  }
-};
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       VerifyChangeEmitted) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-}
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       AndAgainAfterSuggestionIsHidden) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-  controller_->HideSuggestion();
-}
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       AndAgainAfterSuggestionIsHiddenByWindowProps) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-  controller_->SetAssistiveWindowProperties(test_case.hidden_props);
-}
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       AndAgainAfterSuggestionIsAccepted) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  if (test_case.window.type == AssistiveWindowType::kUndoWindow) {
-    // You can't accept a suggestion for the undo window as there's no
-    // suggestion to be accepted.
-    return;
-  }
-
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-  controller_->AcceptSuggestion(u"");
-}
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       AndAgainWhenFocusStateChanged) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-  controller_->FocusStateChanged();
-}
-
-TEST_P(AssistiveWindowChangedAfterSetAssistiveWindowProps,
-       AndAgainWhenWidgetIsDestroying) {
-  const SetAssistiveWindowPropsTestCase& test_case = GetParam();
-  {
-    testing::InSequence seq;
-    EXPECT_CALL(delegate_, AssistiveWindowChanged(test_case.window));
-    EXPECT_CALL(delegate_,
-                AssistiveWindowChanged(AssistiveWindow(
-                    AssistiveWindowType::kNone, EmptyCandidateList())));
-  }
-
-  controller_->SetAssistiveWindowProperties(test_case.window_props);
-  controller_->OnWidgetDestroying(
-      GetWidgetForWindowType(test_case.window.type));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AssistiveWindowControllerTest,
-    AssistiveWindowChangedAfterSetAssistiveWindowProps,
-    testing::ValuesIn<SetAssistiveWindowPropsTestCase>({
-        {"EmojiWindow",
-         AssistiveWindow(
-             AssistiveWindowType::kEmojiSuggestion,
-             MultiCandidateList(
-                 /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-                 /*candidates=*/{":)", ":(", ":|"})),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kEmojiSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-             /*visible=*/true,
-             /*candidates=*/{u":)", u":(", u":|"}),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kEmojiSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kAssistiveEmoji,
-             /*visible=*/false,
-             /*candidates=*/{})},
-        {"LongpressWindow",
-         AssistiveWindow(AssistiveWindowType::kLongpressDiacriticsSuggestion,
-                         MultiCandidateList(
-                             /*suggestion_type=*/AssistiveSuggestionType::
-                                 kLongpressDiacritic,
-                             /*candidates=*/{"a", "b", "c"})),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kLongpressDiacriticsSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kLongpressDiacritic,
-             /*visible=*/true,
-             /*candidates=*/{u"a", u"b", u"c"}),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kLongpressDiacriticsSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kLongpressDiacritic,
-             /*visible=*/false,
-             /*candidates=*/{})},
-        {"UndoWindow",
-         AssistiveWindow(AssistiveWindowType::kUndoWindow,
-                         EmptyCandidateList()),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kUndoWindow,
-             /*visible=*/true,
-             /*candidates=*/{}),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kUndoWindow,
-             /*visible=*/false,
-             /*candidates=*/{})},
-        {"GrammarWindow",
-         AssistiveWindow(
-             AssistiveWindowType::kGrammarSuggestion,
-             SingleCandidateList(
-                 /*suggestion_type=*/AssistiveSuggestionType::kGrammar,
-                 /*candidate=*/"they are students",
-                 /*confirmed_length=*/0)),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kGrammarSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kGrammar,
-             /*visible=*/true,
-             /*candidates*/ {u"they are students"}),
-         AssistiveWindowProperties(
-             /*type=*/AssistiveWindowType::kGrammarSuggestion,
-             /*suggestion_type=*/AssistiveSuggestionType::kGrammar,
-             /*visible=*/false,
-             /*candidates*/ {u"they are students"})},
-    }),
-    [](const testing::TestParamInfo<SetAssistiveWindowPropsTestCase>& info) {
-      return info.param.test_name;
-    });
 
 }  // namespace input_method
 }  // namespace ash
