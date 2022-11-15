@@ -64,11 +64,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 37;
+const int AttributionStorageSql::kCurrentVersionNumber = 38;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 37;
+const int AttributionStorageSql::kCompatibleVersionNumber = 38;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -126,6 +126,8 @@ constexpr int64_t kUnsetReportId = -1;
   prefix "reporting_origin," \
   prefix "source_time," \
   prefix "expiry_time," \
+  prefix "event_report_window_time," \
+  prefix "aggregatable_report_window_time," \
   prefix "source_type," \
   prefix "attribution_logic," \
   prefix "priority," \
@@ -372,7 +374,7 @@ struct StoredSourceData {
   int num_conversions;
 };
 
-constexpr int kSourceColumnCount = 17;
+constexpr int kSourceColumnCount = 19;
 
 // Helper to deserialize source rows. See `GetActiveSources()` for the
 // expected ordering of columns used for the input to this function.
@@ -392,6 +394,8 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
       SuitableOrigin::Deserialize(statement.ColumnString(col++));
   base::Time source_time = statement.ColumnTime(col++);
   base::Time expiry_time = statement.ColumnTime(col++);
+  base::Time event_report_window_time = statement.ColumnTime(col++);
+  base::Time aggregatable_report_window_time = statement.ColumnTime(col++);
   absl::optional<AttributionSourceType> source_type =
       DeserializeSourceType(statement.ColumnInt(col++));
   absl::optional<StoredSource::AttributionLogic> attribution_logic =
@@ -403,6 +407,8 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement.ColumnString(col++));
 
+  // TODO: Enforce remaining expiry/report_window/time invariants from
+  // CommonSource.
   if (!source_origin || !destination_origin || !reporting_origin ||
       !source_type.has_value() || !attribution_logic.has_value() ||
       num_conversions < 0 || aggregatable_budget_consumed < 0 ||
@@ -422,18 +428,17 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   if (!active_state.has_value())
     return absl::nullopt;
 
-  // TODO(crbug.com/1366433): Change constructor call to include separated
-  // event_report_window and aggregatable_report_window.
   return StoredSourceData{
       .source = StoredSource(
-          CommonSourceInfo(source_event_id, std::move(*source_origin),
-                           std::move(*destination_origin),
-                           std::move(*reporting_origin), source_time,
-                           /*expiry_time=*/expiry_time,
-                           /*event_report_window_time=*/expiry_time,
-                           /*aggregatable_report_window_time=*/expiry_time,
-                           *source_type, priority, std::move(*filter_data),
-                           debug_key, std::move(*aggregation_keys)),
+          CommonSourceInfo(
+              source_event_id, std::move(*source_origin),
+              std::move(*destination_origin), std::move(*reporting_origin),
+              source_time,
+              /*expiry_time=*/expiry_time,
+              /*event_report_window_time=*/event_report_window_time,
+              /*aggregatable_report_window_time=*/
+              aggregatable_report_window_time, *source_type, priority,
+              std::move(*filter_data), debug_key, std::move(*aggregation_keys)),
           *attribution_logic, *active_state, source_id,
           aggregatable_budget_consumed),
       .num_conversions = num_conversions};
@@ -639,12 +644,12 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   static constexpr char kInsertImpressionSql[] =
       "INSERT INTO sources"
       "(source_event_id,source_origin,destination_origin,"
-      "destination_site,"
-      "reporting_origin,source_time,expiry_time,source_type,"
-      "attribution_logic,priority,source_site,"
+      "destination_site,reporting_origin,source_time,"
+      "expiry_time,event_report_window_time,aggregatable_report_window_time,"
+      "source_type,attribution_logic,priority,source_site,"
       "num_attributions,event_level_active,aggregatable_active,debug_key,"
       "aggregatable_budget_consumed,aggregatable_source,filter_data)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(delegate_->SanitizeSourceEventId(
@@ -655,23 +660,25 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindString(4, common_info.reporting_origin().Serialize());
   statement.BindTime(5, common_info.source_time());
   statement.BindTime(6, common_info.expiry_time());
-  statement.BindInt(7, SerializeSourceType(common_info.source_type()));
-  statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
-  statement.BindInt64(9, common_info.priority());
-  statement.BindString(10, common_info.SourceSite().Serialize());
-  statement.BindInt(11, num_conversions);
-  statement.BindBool(12, event_level_active);
-  statement.BindBool(13, aggregatable_active);
+  statement.BindTime(7, common_info.event_report_window_time());
+  statement.BindTime(8, common_info.aggregatable_report_window_time());
+  statement.BindInt(9, SerializeSourceType(common_info.source_type()));
+  statement.BindInt(10, SerializeAttributionLogic(attribution_logic));
+  statement.BindInt64(11, common_info.priority());
+  statement.BindString(12, common_info.SourceSite().Serialize());
+  statement.BindInt(13, num_conversions);
+  statement.BindBool(14, event_level_active);
+  statement.BindBool(15, aggregatable_active);
 
-  BindUint64OrNull(statement, 14, common_info.debug_key());
+  BindUint64OrNull(statement, 16, common_info.debug_key());
 
   absl::optional<StoredSource::ActiveState> active_state =
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
-  statement.BindBlob(15,
+  statement.BindBlob(17,
                      SerializeAggregationKeys(common_info.aggregation_keys()));
-  statement.BindBlob(16, SerializeFilterData(common_info.filter_data()));
+  statement.BindBlob(18, SerializeFilterData(common_info.filter_data()));
 
   if (!statement.Run())
     return StoreSourceResult(StorableSource::Result::kInternalError);
@@ -2205,6 +2212,8 @@ bool AttributionStorageSql::CreateSchema() {
       "reporting_origin TEXT NOT NULL,"
       "source_time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL,"
+      "event_report_window_time INTEGER NOT NULL,"
+      "aggregatable_report_window_time INTEGER NOT NULL,"
       "num_attributions INTEGER NOT NULL,"
       "event_level_active INTEGER NOT NULL,"
       "aggregatable_active INTEGER NOT NULL,"

@@ -267,6 +267,97 @@ bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion38(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kNewSourceTableSql[] =
+      "CREATE TABLE new_sources("
+      "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_event_id INTEGER NOT NULL,"
+      "source_origin TEXT NOT NULL,"
+      "destination_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "source_time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL,"
+      "event_report_window_time INTEGER NOT NULL,"
+      "aggregatable_report_window_time INTEGER NOT NULL,"
+      "num_attributions INTEGER NOT NULL,"
+      "event_level_active INTEGER NOT NULL,"
+      "aggregatable_active INTEGER NOT NULL,"
+      "destination_site TEXT NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attribution_logic INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "source_site TEXT NOT NULL,"
+      "debug_key INTEGER,"
+      "aggregatable_budget_consumed INTEGER NOT NULL,"
+      "aggregatable_source BLOB NOT NULL,"
+      "filter_data BLOB NOT NULL)";
+  if (!db->Execute(kNewSourceTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table, inserting
+  // `expiry_time` as default values for the event_report_window_time
+  // and aggregatable_report_window_time columns.
+  static constexpr char kPopulateNewSourceTableSql[] =
+      "INSERT INTO new_sources SELECT "
+      "source_id,source_event_id,source_origin,destination_origin,"
+      "reporting_origin,source_time,expiry_time,expiry_time,expiry_time,"
+      "num_attributions,event_level_active,aggregatable_active,"
+      "destination_site,source_type,attribution_logic,priority,"
+      "source_site,debug_key,aggregatable_budget_consumed,"
+      "aggregatable_source,filter_data "
+      "FROM sources";
+  if (!db->Execute(kPopulateNewSourceTableSql))
+    return false;
+
+  static constexpr char kDropOldSourceTableSql[] = "DROP TABLE sources";
+  if (!db->Execute(kDropOldSourceTableSql))
+    return false;
+
+  static constexpr char kRenameSourceTableSql[] =
+      "ALTER TABLE new_sources RENAME TO sources";
+  if (!db->Execute(kRenameSourceTableSql))
+    return false;
+
+  // Create the sources table indices on the new table.
+  static constexpr char kConversionDestinationIndexSql[] =
+      "CREATE INDEX sources_by_active_destination_site_reporting_origin "
+      "ON sources"
+      "(event_level_active,aggregatable_active,destination_site,"
+      "reporting_origin)";
+  if (!db->Execute(kConversionDestinationIndexSql))
+    return false;
+
+  static constexpr char kImpressionExpiryIndexSql[] =
+      "CREATE INDEX sources_by_expiry_time "
+      "ON sources(expiry_time)";
+  if (!db->Execute(kImpressionExpiryIndexSql))
+    return false;
+
+  static constexpr char kImpressionOriginIndexSql[] =
+      "CREATE INDEX active_sources_by_source_origin "
+      "ON sources(source_origin)"
+      "WHERE event_level_active=1 OR aggregatable_active=1";
+  if (!db->Execute(kImpressionOriginIndexSql))
+    return false;
+
+  static constexpr char kImpressionSiteReportingOriginIndexSql[] =
+      "CREATE INDEX active_unattributed_sources_by_site_reporting_origin "
+      "ON sources(source_site,reporting_origin)"
+      "WHERE event_level_active=1 AND num_attributions=0 AND "
+      "aggregatable_active=1 AND aggregatable_budget_consumed=0";
+  if (!db->Execute(kImpressionSiteReportingOriginIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(38);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -292,6 +383,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 36) {
     if (!MigrateToVersion37(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 37) {
+    if (!MigrateToVersion38(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

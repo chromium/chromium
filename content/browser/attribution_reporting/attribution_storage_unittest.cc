@@ -231,6 +231,21 @@ TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
       ElementsAre(CommonSourceInfoIs(SourceBuilder().BuildCommonInfo())));
 }
 
+TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
+  storage()->StoreSource(SourceBuilder()
+                             .SetExpiry(base::Days(30))
+                             .SetEventReportWindow(base::Days(15))
+                             .SetAggregatableReportWindow(base::Days(5))
+                             .Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(CommonSourceInfoIs(
+                  SourceBuilder()
+                      .SetExpiry(base::Days(30))
+                      .SetEventReportWindow(base::Days(15))
+                      .SetAggregatableReportWindow(base::Days(5))
+                      .BuildCommonInfo())));
+}
+
 TEST_F(AttributionStorageTest,
        GetWithNoMatchingImpressions_NoImpressionsReturned) {
   EXPECT_THAT(
