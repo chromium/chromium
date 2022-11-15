@@ -1192,7 +1192,6 @@ crbug.com/1054656 external/wpt/css/css-text-decor/text-decoration-skip-ink-005.h
 # `text-decoration: spelling|grammar-error`
 crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]
 crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]
-crbug.com/1163436 external/wpt/css/css-text-decor/text-decoration-line-spelling-error-color-001.optional.html [ Failure ]
 
 crbug.com/722825 [ Linux ] media/controls/video-enter-exit-fullscreen-while-hovering-shows-controls.html [ Pass Timeout ]
 
@@ -2146,7 +2145,6 @@ crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
 crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Pass Timeout ]
-crbug.com/1002377 external/wpt/service-workers/service-worker/update-bytecheck-cors-import.https.html [ Pass Timeout ]
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 
 # crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
@@ -2290,7 +2288,6 @@ crbug.com/483653 accessibility/scroll-containers.html [ Crash Failure Pass Timeo
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 
 # Bugs caused by enabling DMSAA on OOPR-Canvas
-crbug.com/1229463 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-largedraws.html [ Crash ]
 crbug.com/1229486 virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Failure ]
 
 # Temporarily disabled after chromium change
@@ -3005,22 +3002,16 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-01
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-011.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-012.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-016.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-017.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-019.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-020.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-177.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-178.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-179.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-180.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-189.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-190.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-192.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-193.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-194.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-195.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-196.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-197.xht [ Failure ]
-crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-198.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-205.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
@@ -3161,7 +3152,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/genera
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Skip Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/permissions-policy/reporting/xr-report-only.https.html [ Crash ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/mixed-content/gen/worker-classic.http-rp/opt-in/websocket.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/mixed-content/gen/worker-module-data.meta/opt-in/websocket.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/upgrade-insecure-requests/gen/worker-classic-data.meta/upgrade/websocket.https.html [ Skip Timeout ]
@@ -3241,7 +3231,6 @@ crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
-crbug.com/626703 [ Win ] external/wpt/websockets/constructor/010.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/constructor/010.html?wss [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/opening-handshake/005.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Skip Timeout ]
@@ -3868,7 +3857,6 @@ crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/image-object-in-canvas.html [ C
 
 # We cannot yet launch Canvas2D staying GPU on readback
 crbug.com/1288118 fast/canvas/bug382588.html [ Crash Failure Pass Timeout ]
-crbug.com/1288118 fast/canvas/canvas-gpu-consistency.html [ Crash Failure Pass Timeout ]
 
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
@@ -3955,7 +3943,6 @@ crbug.com/783154 [ Mac ] media/controls/doubletap-to-toggle-fullscreen.html [ Cr
 crbug.com/783154 [ Mac ] media/controls/click-anywhere-to-play-pause.html [ Crash Failure Pass Timeout ]
 
 # Seen flaky on Linux, suppressing on Windows as well
-crbug.com/831720 [ Win ] media/controls/doubletap-to-jump-forwards-too-short.html [ Failure Pass ]
 crbug.com/831720 [ Linux ] media/controls/doubletap-to-jump-forwards-too-short.html [ Failure Pass ]
 crbug.com/831720 media/controls/tap-to-hide-controls.html [ Failure Pass ]
 
@@ -4553,7 +4540,6 @@ crbug.com/1070995 external/wpt/html/infrastructure/safe-passing-of-structured-da
 
 # navigation tests fail or time out when run with run_web_tests.py but passes with run_wpt_tests.py
 crbug.com/1317067 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/reload.window.html [ Timeout ]
-crbug.com/1317067 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/tasks.window.html [ Timeout ]
 crbug.com/1317067 external/wpt/html/browsers/browsing-the-web/unloading-documents/prompt-and-unload-script-closeable.html [ Failure ]
 crbug.com/1317067 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=windows-1252 [ Failure Timeout ]
 crbug.com/1317067 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/navigation.sub.html?encoding=x-cp1251 [ Failure Timeout ]
@@ -5523,7 +5509,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure ]
 
 # Flakes that surfaced on the mac12 and mac12-arm64 waterfall
-crbug.com/1249176 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass ]
 
 # Sheriff 2022-07-04
