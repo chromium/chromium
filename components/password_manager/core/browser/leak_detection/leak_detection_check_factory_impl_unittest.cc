@@ -50,8 +50,7 @@ class LeakDetectionCheckFactoryImplTest : public testing::Test {
 }  // namespace
 
 TEST_F(LeakDetectionCheckFactoryImplTest, SignedOut) {
-  EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNotSignIn));
-  EXPECT_FALSE(request_factory().TryCreateLeakCheck(
+  EXPECT_TRUE(request_factory().TryCreateLeakCheck(
       &delegate(), identity_env().identity_manager(), url_loader_factory(),
       kChannel));
 }

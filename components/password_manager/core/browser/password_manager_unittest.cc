@@ -419,6 +419,8 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
         .WillByDefault(Return(&reuse_manager_));
 
     manager_ = std::make_unique<PasswordManager>(&client_);
+    manager_->set_leak_factory(
+        std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
     password_autofill_manager_ =
         std::make_unique<PasswordAutofillManager>(&driver_, nullptr, &client_);
 

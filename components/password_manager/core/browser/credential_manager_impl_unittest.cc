@@ -256,6 +256,9 @@ class CredentialManagerImplTest : public testing::Test,
     client_ = std::make_unique<testing::NiceMock<MockPasswordManagerClient>>(
         store_.get(), account_store_.get());
     cm_service_impl_ = std::make_unique<CredentialManagerImpl>(client_.get());
+    cm_service_impl_->set_leak_factory(
+        std::make_unique<NiceMock<MockLeakDetectionCheckFactory>>());
+
     ON_CALL(*client_, IsSavingAndFillingEnabled(_))
         .WillByDefault(testing::Return(true));
     ON_CALL(*client_, IsFillingEnabled(_)).WillByDefault(testing::Return(true));
