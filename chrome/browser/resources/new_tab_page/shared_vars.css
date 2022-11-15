@@ -8,6 +8,8 @@
  * 'ui/webui/resources/shared_vars_css.m.js'.
  */
 html {
+  --google-grey-850-rgb: 48, 49, 52;  /* #303134 */
+  --google-grey-850: rgb(var(--google-grey-850-rgb));
   --google-red-50-rgb: 252, 232, 230;  /* #fce8e6 */
   --google-red-50: rgb(var(--google-red-50-rgb));
   --google-red-800-rgb: 179, 20, 18;  /* #b31412 */

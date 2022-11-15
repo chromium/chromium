@@ -22,26 +22,36 @@
     width: calc(100% + 8px);
   }
 
+  :host([is-dragging_]),
+  :host([is-loading_]) {
+    --upload-dialog-drag-drop-background: var(--google-blue-50);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
+      --upload-dialog-background: var(--google-grey-850);
       --upload-dialog-divider-line-border-top: 1px solid var(--google-grey-800);
-      --upload-dialog-input-box-color: rgba(var(--google-grey-900-rgb), .68);
+      --upload-dialog-drag-drop-background: rgba(var(--google-grey-900-rgb), .68);
       --upload-dialog-drag-drop-border: 1px dashed var(--google-grey-800);
       --upload-dialog-drag-drop-error-background-color: var(--google-red-300);
       --upload-dialog-drag-drop-upload-text-color: var(--google-blue-300);
       --upload-dialog-error-message-color: var(--google-grey-900);
+      --upload-dialog-input-box-background: transparent;
       --upload-dialog-input-box-border-color: var(--google-grey-800);
-      --upload-dialog-input-box-color: rgba(var(--google-grey-900-rgb), .68);
-      --upload-dialog-input-box-placeholder-color: var(--google-grey-700);
+      --upload-dialog-input-box-color: var(--google-grey-100);
+      --upload-dialog-input-box-placeholder-color: var(--google-grey-300);
+      --upload-dialog-input-submit-background: transparent;
       --upload-dialog-input-submit-border-color: var(--google-grey-800);
       --upload-dialog-input-submit-color: var(--google-blue-300);
       --upload-dialog-title-color: var(--google-grey-100);
     }
-  }
 
-  :host([is-dragging_]),
-  :host([is-loading_]) {
-    --upload-dialog-drag-drop-background: var(--google-blue-50);
+    :host([is-dragging_]),
+    :host([is-loading_]) {
+      --upload-dialog-drag-drop-background: rgba(var(--google-blue-300), .24);
+      --upload-dialog-drag-drop-border: 1px dashed var(--google-blue-300);
+      --upload-dialog-drag-drop-title-color: var(--google-blue-300);
+    }
   }
 
   #dialog {
@@ -152,6 +162,12 @@
     text-decoration: underline;
   }
 
+  @media (forced-colors: active) {
+    #uploadText {
+      color: LinkText;
+    }
+  }
+
   #urlUploadContainer {
     box-sizing: border-box;
     display: flex;
@@ -214,6 +230,20 @@
     --upload-dialog-input-box-border-color: var(--google-blue-700);
   }
 
+  @media (prefers-color-scheme: dark) {
+    #inputBox:hover {
+      --upload-dialog-input-box-border-color: var(--google-grey-700);
+    }
+
+    #inputBox:focus {
+      --upload-dialog-input-box-border-color: var(--google-blue-300);
+    }
+
+    #inputBox:active {
+      --upload-dialog-input-box-border-color: var(--google-blue-300);
+    }
+  }
+
   #inputSubmit {
     align-items: center;
     background: var(--upload-dialog-input-submit-background);
@@ -247,6 +277,26 @@
     --upload-dialog-input-submit-background: rgba(var(--google-blue-700), 0.14);
     --upload-dialog-input-submit-border-color: var(--google-grey-300);
     --upload-dialog-input-submit-color: var(--google-blue-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #inputSubmit:hover {
+      --upload-dialog-input-submit-background: rgba(var(--google-blue-300), 0.04);
+      --upload-dialog-input-submit-border-color: var(--google-grey-800);
+      --upload-dialog-input-submit-color: var(--google-blue-100);
+    }
+
+    #inputSubmit:focus {
+      --upload-dialog-input-submit-background: rgba(var(--google-blue-300), 0.12);
+      --upload-dialog-input-submit-border-color: var(--google-blue-100);
+      --upload-dialog-input-submit-color: var(--google-blue-100);
+    }
+
+    #inputSubmit:active {
+      --upload-dialog-input-submit-background: rgba(var(--google-blue-300), 0.10);
+      --upload-dialog-input-submit-border-color: var(--google-grey-800);
+      --upload-dialog-input-submit-color: var(--google-blue-100);
+    }
   }
 
   #loadingContainer,
