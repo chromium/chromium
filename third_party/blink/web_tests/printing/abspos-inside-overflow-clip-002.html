@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+  if (window.internals)
+    internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<style>
+  body { margin: 0; }
+</style>
+<div style="height:80vh;">
+  There should be a yellow square at the bottom of the first page, a blue square
+  at the top of the second page, an orange square at the bottom of the second
+  page, and another orange square at the top of the third page.
+</div>
+
+<!-- Add some red squares to detect overclipping. -->
+<div style="position:absolute; top:85vh; left:50%; width:5vh; height:5vh; background:red;"></div>
+<div style="position:absolute; top:105vh; left:50%; width:5vh; height:5vh; background:red;"></div>
+<div style="position:absolute; top:185vh; left:50%; width:5vh; height:5vh; background:red;"></div>
+<div style="position:absolute; top:205vh; left:50%; width:5vh; height:5vh; background:red;"></div>
+
+<div style="position:relative; margin:auto; width:20vh; height:140vh; overflow:clip;">
+  <div style="position:absolute; contain:size; left:-10vh; bottom:-10vh; width:50vh; height:50vh; background:orange;"></div>
+  <div style="height:40vh;"></div>
+  <div style="position:absolute; contain:size; left:-10vh; top:-10vh; width:50vh; height:30vh; background:yellow;"></div>
+  <div style="height:100vh;"></div>
+  <div style="position:absolute; contain:size; left:-10vh; top:20vh; width:50vh; height:20vh; background:blue;"></div>
+</div>
