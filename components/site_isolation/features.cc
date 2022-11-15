@@ -11,7 +11,7 @@ namespace features {
 
 BASE_FEATURE(kCacheSiteIsolationMemoryThreshold,
              "CacheSiteIsolationMemoryThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls a mode for dynamically process-isolating sites where the user has
 // entered a password.  This is intended to be used primarily when full site
