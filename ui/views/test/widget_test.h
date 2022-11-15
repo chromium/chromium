@@ -116,6 +116,8 @@ class WidgetTest : public ViewsTestBase {
 
   // Return true if |above| is higher than |below| in the native window Z-order.
   // Both windows must be visible.
+  // WARNING: this does not work for Aura desktop widgets (crbug.com/1333445)
+  // and is not reliable on MacOS 10.13 and earlier.
   static bool IsWindowStackedAbove(Widget* above, Widget* below);
 
   // Query the native window system for the minimum size configured for user
