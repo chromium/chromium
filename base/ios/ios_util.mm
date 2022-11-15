@@ -41,6 +41,11 @@ bool IsRunningOnIOS15OrLater() {
   return is_running_on_or_later;
 }
 
+bool IsRunningOnIOS16OrLater() {
+  static const bool is_running_on_or_later = IsRunningOnOrLater(16, 0, 0);
+  return is_running_on_or_later;
+}
+
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
   static const class OSVersion {
    public:

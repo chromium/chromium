@@ -492,10 +492,30 @@ class CertVerifyProcInternalTest
     return false;
   }
 
+  bool VerifyProcTypeIsMacAtMostOS12() const {
+#if BUILDFLAG(IS_MAC)
+    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
+        base::mac::IsAtMostOS12()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
   bool VerifyProcTypeIsIOSAtMostOS14() const {
 #if BUILDFLAG(IS_IOS)
     if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
         !base::ios::IsRunningOnIOS15OrLater()) {
+      return true;
+    }
+#endif
+    return false;
+  }
+
+  bool VerifyProcTypeIsIOSAtMostOS15() const {
+#if BUILDFLAG(IS_IOS)
+    if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
+        !base::ios::IsRunningOnIOS16OrLater()) {
       return true;
     }
 #endif
@@ -4483,6 +4503,43 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignIntermediate) {
 
 TEST_P(CertVerifyProcConstraintsTest, KeyUsageNotPresentIntermediate) {
   chain_[2]->EraseExtension(der::Input(kKeyUsageOid));
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
+  chain_[3]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+
+  if (VerifyProcTypeIsBuiltin() ||
+      verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
+      verify_proc_type() == CERT_VERIFY_PROC_MAC ||
+      verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthRoot) {
+  chain_[3]->SetExtendedKeyUsages({der::Input(kServerAuth)});
+
+  EXPECT_THAT(Verify(), IsOk());
+}
+
+TEST_P(CertVerifyProcConstraintsTest,
+       ExtendedKeyUsageNoServerAuthIntermediate) {
+  chain_[2]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
+
+  if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
+      VerifyProcTypeIsMacAtMostOS12() || VerifyProcTypeIsIOSAtMostOS15()) {
+    EXPECT_THAT(Verify(), IsOk());
+  } else {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageServerAuthIntermediate) {
+  chain_[2]->SetExtendedKeyUsages({der::Input(kServerAuth)});
 
   EXPECT_THAT(Verify(), IsOk());
 }
