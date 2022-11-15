@@ -345,7 +345,7 @@ bool IsSiteSearchStarterPackEnabled();
 // Returns true if the feature to enable uniform row height is enabled.
 bool IsUniformRowHeightEnabled();
 // Specifies the row height in pixels for omnibox suggestions.
-extern const base::FeatureParam<int> kSuggestionRowHeight;
+extern const base::FeatureParam<int> kSuggestionVerticalMargin;
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:

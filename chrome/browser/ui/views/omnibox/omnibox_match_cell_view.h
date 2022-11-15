@@ -60,8 +60,11 @@ class OmniboxMatchCellView : public views::View {
 
   static int GetTextIndent();
 
-  // Determine whether `match` should be displayed on 2 lines.
-  static bool IsTwoLineLayout(const AutocompleteMatch& match);
+  // Determines if `match` should display an answer, calculator, or entity
+  // image.
+  // If #omnibox-uniform-suggestion-height experiment flag is disabled, also
+  // determines whether `match` should be displayed on 1 or 2 lines.
+  static bool ShouldDisplayImage(const AutocompleteMatch& match);
 
   void OnMatchUpdate(const OmniboxResultView* result_view,
                      const AutocompleteMatch& match);
@@ -85,6 +88,7 @@ class OmniboxMatchCellView : public views::View {
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
   bool is_search_type_ = false;
+  bool has_image_ = false;
   LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
 
   // Weak pointers for easy reference.

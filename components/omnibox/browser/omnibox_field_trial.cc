@@ -604,14 +604,14 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
 
 // Omnibox UI simplification - Uniform Suggestion Row Heights
 
-bool IsUniformRowHeightEnabled() {
+bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
 }
 
-const base::FeatureParam<int> OmniboxFieldTrial::kSuggestionRowHeight(
+const base::FeatureParam<int> OmniboxFieldTrial::kSuggestionVerticalMargin(
     &omnibox::kUniformRowHeight,
-    "OmniboxUniformRowHeight",
-    36);
+    "OmniboxSuggestionVerticalMargin",
+    8);
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";

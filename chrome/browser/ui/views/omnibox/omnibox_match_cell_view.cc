@@ -16,7 +16,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,6 +28,8 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -33,6 +38,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace {
 
@@ -41,6 +47,7 @@ static constexpr int kAnswerImageSize = 24;
 
 // The edge length of the entity suggestions images.
 static constexpr int kEntityImageSize = 32;
+// TODO: set image size to 28 px if UniformRowHeight feature is enabled.
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
@@ -191,7 +198,7 @@ int OmniboxMatchCellView::GetTextIndent() {
 }
 
 // static
-bool OmniboxMatchCellView::IsTwoLineLayout(const AutocompleteMatch& match) {
+bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
   return match.answer || match.type == AutocompleteMatchType::CALCULATOR ||
          !match.image_url.is_empty();
 }
@@ -199,17 +206,21 @@ bool OmniboxMatchCellView::IsTwoLineLayout(const AutocompleteMatch& match) {
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
   is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
+  has_image_ = ShouldDisplayImage(match);
   // Decide layout style once before Layout, while match data is available.
-  const bool two_line = IsTwoLineLayout(match);
-  layout_style_ = two_line ? LayoutStyle::TWO_LINE_SUGGESTION
-                           : LayoutStyle::ONE_LINE_SUGGESTION;
+  layout_style_ = has_image_ && !OmniboxFieldTrial::IsUniformRowHeightEnabled()
+                      ? LayoutStyle::TWO_LINE_SUGGESTION
+                      : LayoutStyle::ONE_LINE_SUGGESTION;
 
   // Set up the separator.
-  separator_view_->SetSize(two_line ? gfx::Size()
-                                    : separator_view_->GetPreferredSize());
+  separator_view_->SetSize(layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION ||
+                                   match.description.empty()
+                               ? gfx::Size()
+                               : separator_view_->GetPreferredSize());
 
   // Set up the small icon.
-  icon_view_->SetSize(two_line ? gfx::Size() : icon_view_->GetPreferredSize());
+  icon_view_->SetSize(has_image_ ? gfx::Size()
+                                 : icon_view_->GetPreferredSize());
 
   const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
     const auto* color_provider = GetColorProvider();
@@ -225,7 +236,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
-  } else if (!two_line) {
+  } else if (!has_image_) {
     answer_image_view_->SetImage(gfx::ImageSkia());
     answer_image_view_->SetSize(gfx::Size());
   } else {
@@ -275,9 +286,13 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const bool single_line = layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION;
-  const int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
-                  : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
+
+  const int vertical_margin =
+      OmniboxFieldTrial::IsUniformRowHeightEnabled()
+          ? OmniboxFieldTrial::kSuggestionVerticalMargin.Get()
+          : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
+                            : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
   return gfx::Insets::TLBR(vertical_margin, OmniboxMatchCellView::kMarginLeft,
                            vertical_margin, OmniboxMatchCellView::kMarginRight);
 }
@@ -289,9 +304,11 @@ void OmniboxMatchCellView::Layout() {
   const gfx::Rect child_area = GetContentsBounds();
   int x = child_area.x();
   int y = child_area.y();
+
   const int row_height = child_area.height();
+
   views::ImageView* const image_view =
-      two_line ? answer_image_view_.get() : icon_view_.get();
+      has_image_ ? answer_image_view_.get() : icon_view_.get();
   image_view->SetBounds(x, y, OmniboxMatchCellView::kImageBoundsWidth,
                         row_height);
 

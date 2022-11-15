@@ -264,7 +264,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     // calculator answers are 2-line but not deemphasized.
     const bool deemphasize =
         match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
-        OmniboxMatchCellView::IsTwoLineLayout(match_);
+        OmniboxMatchCellView::ShouldDisplayImage(match_);
     suggestion_view_->description()->SetTextWithStyling(
         match_.description, match_.description_class, deemphasize);
   }

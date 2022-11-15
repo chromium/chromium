@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -154,14 +155,15 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     : popup_contents_view_(popup_contents_view),
       model_(model),
       model_index_(model_index) {
+  int bottom_margin = OmniboxFieldTrial::IsUniformRowHeightEnabled()
+                          ? OmniboxFieldTrial::kSuggestionVerticalMargin.Get()
+                          : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetInteriorMargin(
-          gfx::Insets::TLBR(0, OmniboxMatchCellView::GetTextIndent(),
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING),
-                            0))
+      .SetInteriorMargin(gfx::Insets::TLBR(
+          0, OmniboxMatchCellView::GetTextIndent(), bottom_margin, 0))
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(

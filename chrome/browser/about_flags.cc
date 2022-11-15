@@ -1604,14 +1604,14 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUniformRowHeight36[] = {
-    {"OmniboxUniformRowHeight", "36"}};
+    {"OmniboxSuggestionVerticalMargin", "8"}};
 const FeatureEntry::FeatureParam kOmniboxUniformRowHeight40[] = {
-    {"OmniboxUniformRowHeight", "40"}};
+    {"OmniboxSuggestionVerticalMargin", "10"}};
 
 const FeatureEntry::FeatureVariation kOmniboxSuggestionHeightVariations[] = {
-    {"36 px height for all omnibox suggestions", kOmniboxUniformRowHeight36,
+    {"36px height for all omnibox suggestions", kOmniboxUniformRowHeight36,
      std::size(kOmniboxUniformRowHeight36), nullptr},
-    {"40 px height for all omnibox suggestions", kOmniboxUniformRowHeight40,
+    {"40px height for all omnibox suggestions", kOmniboxUniformRowHeight40,
      std::size(kOmniboxUniformRowHeight40), nullptr},
 };
 
