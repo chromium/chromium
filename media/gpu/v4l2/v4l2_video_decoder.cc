@@ -931,15 +931,17 @@ void V4L2VideoDecoder::SetState(State new_state) {
       break;
   }
 
+  // |StopStreamV4L2Queue()| can call |SetState()|.  Update |state_|
+  // before calling so that calls to |SetState()| from
+  // |StopStreamV4L2Queue()| return quickly.
+  state_ = new_state;
+
   if (new_state == State::kError) {
     VLOGF(1) << "Error occurred, stopping queues.";
     StopStreamV4L2Queue(true);
     if (backend_)
       backend_->ClearPendingRequests(DecoderStatus::Codes::kFailed);
-    return;
   }
-  state_ = new_state;
-  return;
 }
 
 void V4L2VideoDecoder::OnBackendError() {
