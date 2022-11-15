@@ -3407,8 +3407,11 @@
       "intel_gpu_series": [
         "icelake",
         "tigerlake",
+        "rocketlake",
+        "dg1",
         "alderlake",
-        "alchemist"
+        "alchemist",
+        "raptorlake"
       ],
       "features": [
         "force_rgb10a2_overlay_support_flags"
