@@ -2066,6 +2066,31 @@
             ]
         }
     ],
+    "BrokeringDiskCacheOnAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "OutOfProcessNetworkService",
+                    "disable_features": [
+                        "BrokerFileOperationsOnDiskCacheInNetworkService",
+                        "NetworkServiceInProcess2"
+                    ]
+                },
+                {
+                    "name": "BrokerDiskCache",
+                    "enable_features": [
+                        "BrokerFileOperationsOnDiskCacheInNetworkService"
+                    ],
+                    "disable_features": [
+                        "NetworkServiceInProcess2"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserPeriodicYieldingToNative": [
         {
             "platforms": [
