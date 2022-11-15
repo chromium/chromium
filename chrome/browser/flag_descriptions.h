@@ -3560,10 +3560,6 @@ extern const char kLacrosScreenCoordinatesEnabledDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
-extern const char
-    kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[];
-
 extern const char kCrOSDspBasedAecAllowedName[];
 extern const char kCrOSDspBasedAecAllowedDescription[];
 

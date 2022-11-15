@@ -76,20 +76,6 @@ BASE_FEATURE(kDefaultCalculatorWebApp,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
-// MigrateDefaultChromeAppToWebAppsNonGSuite flags for managed users.
-// Without this flag enabled managed users will not undergo the default web app
-// migration.
-//
-// Why have a separate flag?
-// Field trials are not able to accurately distinguish managed Chrome OS users.
-// Because admin installed Chrome apps conflict with the default web app
-// migration we need to maintain separate control over the rollout for mananged
-// users.
-BASE_FEATURE(kAllowDefaultWebAppMigrationForChromeOsManagedUsers,
-             "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables installing the Cursive app on managed devices with a built-in
 // stylus-capable screen.
 BASE_FEATURE(kCursiveManagedStylusPreinstall,
@@ -109,17 +95,6 @@ bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
     return true;
 
   for (const base::Feature* feature : kPreinstalledAppInstallFeatures) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // See |kAllowDefaultWebAppMigrationForChromeOsManagedUsers| comment above.
-    if (base::FeatureList::IsEnabled(*feature) &&
-        feature->name == feature_name && IsMigrationFeature(*feature) &&
-        profile.GetProfilePolicyConnector() &&
-        profile.GetProfilePolicyConnector()->IsManaged()) {
-      return base::FeatureList::IsEnabled(
-          kAllowDefaultWebAppMigrationForChromeOsManagedUsers);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     if (feature->name == feature_name)
       return base::FeatureList::IsEnabled(*feature);
   }

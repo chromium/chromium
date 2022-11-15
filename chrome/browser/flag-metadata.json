@@ -87,15 +87,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "allow-default-web-app-migration-for-chrome-os-managed-users",
-    "owners": [
-      "alancutter@chromium.org",
-      "giovax@chromium.org",
-      "chromeos-web-apps-platform-syd@google.com"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "allow-disable-touchpad-haptic-feedback",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 112

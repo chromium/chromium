@@ -6180,14 +6180,6 @@ const char kLacrosScreenCoordinatesEnabledDescription[] =
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[] =
-    "Allow default web app migration for ChromeOS managed users";
-const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
-    "The web app migration flags "
-    "(chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-gsuite and "
-    "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
-    "are ignored for managed ChromeOS users unless this feature is enabled.";
-
 const char kCrOSDspBasedAecAllowedName[] =
     "Allow CRAS to use a DSP-based AEC if available";
 const char kCrOSDspBasedAecAllowedDescription[] =

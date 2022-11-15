@@ -4614,13 +4614,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBypassAppBannerEngagementChecksDescription, kOsAll,
      SINGLE_VALUE_TYPE(webapps::switches::kBypassAppBannerEngagementChecks)},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"allow-default-web-app-migration-for-chrome-os-managed-users",
-     flag_descriptions::kAllowDefaultWebAppMigrationForChromeOsManagedUsersName,
-     flag_descriptions::
-         kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
     {"microsoft-office-web-app-experiment",
      flag_descriptions::kMicrosoftOfficeWebAppExperimentName,
      flag_descriptions::kMicrosoftOfficeWebAppExperimentDescription,

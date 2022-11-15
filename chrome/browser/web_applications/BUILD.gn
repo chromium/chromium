@@ -572,7 +572,6 @@ source_set("web_applications_unit_tests") {
     "os_integration/web_app_protocol_handler_manager_unittest.cc",
     "os_integration/web_app_shortcut_unittest.cc",
     "policy/pre_redirection_url_observer_unittest.cc",
-    "preinstalled_app_install_features_unittest.cc",
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
