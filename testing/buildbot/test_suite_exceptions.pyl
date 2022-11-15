@@ -1616,6 +1616,12 @@
           '--gtest_filter=-FieldFormatterTest.DifferentLocales',
         ],
       },
+      'win-asan': {
+        # With a single shard seems to hit time limit.
+        'swarming': {
+          'shards': 2,
+        },
+      },
     },
   },
   'compositor_unittests': {
