@@ -253,6 +253,7 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
     text_annotation_request->text = request.selected_text;
     text_annotation_request->default_locales =
         QuickAnswersState::Get()->application_locale();
+    text_annotation_request->trigger_dictionary_on_beginner_words = true;
 
     text_classifier_->Annotate(
         std::move(text_annotation_request),
