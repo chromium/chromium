@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_server_session.h"
+#include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
 #include "chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.h"
 #include "chromeos/printing/uri.h"
@@ -133,8 +134,10 @@ AuthorizationZoneImpl::PendingAuthorization::~PendingAuthorization() = default;
 AuthorizationZoneImpl::AuthorizationZoneImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& authorization_server_uri,
-    const std::string& client_id)
-    : server_data_(url_loader_factory, authorization_server_uri, client_id),
+    ClientIdsDatabase* client_ids_database)
+    : server_data_(url_loader_factory,
+                   authorization_server_uri,
+                   client_ids_database),
       url_loader_factory_(url_loader_factory) {}
 
 AuthorizationZoneImpl::~AuthorizationZoneImpl() = default;
@@ -545,9 +548,9 @@ bool AuthorizationZoneImpl::FindAndRemovePendingAuthorization(
 std::unique_ptr<AuthorizationZone> AuthorizationZone::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& authorization_server_uri,
-    const std::string& client_id) {
+    ClientIdsDatabase* client_ids_database) {
   return std::make_unique<AuthorizationZoneImpl>(
-      url_loader_factory, authorization_server_uri, client_id);
+      url_loader_factory, authorization_server_uri, client_ids_database);
 }
 
 }  // namespace oauth2

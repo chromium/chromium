@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
+#include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/log_entry.h"
 #include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
@@ -68,7 +69,8 @@ class AuthorizationZonesManagerImpl
       private ProfileAuthServersSyncBridge::Observer {
  public:
   explicit AuthorizationZonesManagerImpl(Profile* profile)
-      : sync_bridge_(ProfileAuthServersSyncBridge::Create(
+      : client_ids_database_(ClientIdsDatabase::Create()),
+        sync_bridge_(ProfileAuthServersSyncBridge::Create(
             this,
             ModelTypeStoreServiceFactory::GetForProfile(profile)
                 ->GetStoreFactory())),
@@ -76,12 +78,15 @@ class AuthorizationZonesManagerImpl
         auth_zone_creator_(base::BindRepeating(AuthorizationZone::Create,
                                                url_loader_factory_)) {}
 
+  // Constructor for testing.
   AuthorizationZonesManagerImpl(
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,
+      std::unique_ptr<ClientIdsDatabase> client_ids_database,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory)
-      : sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
+      : client_ids_database_(std::move(client_ids_database)),
+        sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
             this,
             std::move(change_processor),
             std::move(store_factory))),
@@ -98,7 +103,7 @@ class AuthorizationZonesManagerImpl
       return StatusCode::kInvalidURL;
     }
     std::unique_ptr<AuthorizationZone> auth_zone =
-        auth_zone_creator_.Run(auth_server, /*client_id=*/"");
+        auth_zone_creator_.Run(auth_server, client_ids_database_.get());
     if (sync_bridge_->IsInitialized()) {
       if (!base::Contains(servers_, auth_server)) {
         servers_.emplace(auth_server, std::move(auth_zone));
@@ -240,10 +245,15 @@ class AuthorizationZonesManagerImpl
     }
     for (const GURL& url : added) {
       if (!base::Contains(servers_, url)) {
-        servers_.emplace(url, auth_zone_creator_.Run(url, /*client_id=*/""));
+        servers_.emplace(
+            url, auth_zone_creator_.Run(url, client_ids_database_.get()));
       }
     }
   }
+
+  // Must live longer than all instances of AuthorizationZone
+  // (`waiting_servers_` and `servers_`).
+  std::unique_ptr<ClientIdsDatabase> client_ids_database_;
 
   std::map<GURL, WaitingServer> waiting_servers_;
   std::unique_ptr<ProfileAuthServersSyncBridge> sync_bridge_;
@@ -264,12 +274,13 @@ std::unique_ptr<AuthorizationZonesManager>
 AuthorizationZonesManager::CreateForTesting(
     Profile* profile,
     CreateAuthZoneCallback auth_zone_creator,
+    std::unique_ptr<ClientIdsDatabase> client_ids_database,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory store_factory) {
   DCHECK(profile);
   return std::make_unique<AuthorizationZonesManagerImpl>(
-      profile, std::move(auth_zone_creator), std::move(change_processor),
-      std::move(store_factory));
+      profile, std::move(auth_zone_creator), std::move(client_ids_database),
+      std::move(change_processor), std::move(store_factory));
 }
 
 AuthorizationZonesManager::~AuthorizationZonesManager() = default;

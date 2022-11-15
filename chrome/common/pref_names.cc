@@ -3639,4 +3639,11 @@ const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
 // DIPS-related repeated actions (logging metrics, clearing state, etc).
 const char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// A dictionary that keeps client_ids assigned by Authorization Servers indexed
+// by URLs of these servers. It does not contain empty strings.
+const char kPrintingOAuth2AuthorizationServers[] =
+    "printing.oauth2_authorization_servers";
+#endif
+
 }  // namespace prefs

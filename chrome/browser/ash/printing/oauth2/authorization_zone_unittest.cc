@@ -16,9 +16,11 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
+#include "chrome/browser/ash/printing/oauth2/mock_client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/test_authorization_server.h"
 #include "chromeos/printing/uri.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -33,8 +35,13 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
   void CreateAuthorizationZone(const std::string& client_id) {
     GURL auth_server_uri(authorization_server_uri_);
     CHECK(auth_server_uri.is_valid());
+
+    EXPECT_CALL(client_ids_database_, FetchId)
+        .WillOnce([client_id](const GURL& url, StatusCallback callback) {
+          std::move(callback).Run(StatusCode::kOK, client_id);
+        });
     authorization_zone_ = printing::oauth2::AuthorizationZone::Create(
-        server_.GetURLLoaderFactory(), auth_server_uri, client_id);
+        server_.GetURLLoaderFactory(), auth_server_uri, &client_ids_database_);
   }
 
   // Simulates the authorization process in the internet browser. Returns the
@@ -168,6 +175,7 @@ class PrintingOAuth2AuthorizationZoneTest : public testing::Test {
   const std::string token_uri_ = "https://example.com/token";
   const std::string registration_uri_ = "https://example.com/registration";
 
+  testing::NiceMock<MockClientIdsDatabase> client_ids_database_;
   std::unique_ptr<printing::oauth2::AuthorizationZone> authorization_zone_;
   FakeAuthorizationServer server_;
 };

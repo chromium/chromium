@@ -21,6 +21,8 @@ namespace ash {
 namespace printing {
 namespace oauth2 {
 
+class ClientIdsDatabase;
+
 // The class AuthorizationZone is responsible for handling sessions with single
 // Authorization Server. It creates and maintains OAuth2 sessions.
 //
@@ -44,17 +46,14 @@ namespace oauth2 {
 //
 class AuthorizationZone {
  public:
-  // Constructor. If `client_ID` is empty a Registration Request will be used
-  // to register a new client (inside InitAuthorization(...) method).
+  // `client_ids_database` cannot be nullptr and must outlive created object.
   static std::unique_ptr<AuthorizationZone> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& authorization_server_uri,
-      const std::string& client_id = "");
-  // Not copyable.
+      ClientIdsDatabase* client_ids_database);
+
   AuthorizationZone(const AuthorizationZone&) = delete;
   AuthorizationZone& operator=(const AuthorizationZone&) = delete;
-
-  // Destructor.
   virtual ~AuthorizationZone() = default;
 
   // Starts authorization process. If successful, the `callback` is returned

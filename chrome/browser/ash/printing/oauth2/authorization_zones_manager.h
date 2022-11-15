@@ -28,6 +28,7 @@ class ModelTypeChangeProcessor;
 namespace ash::printing::oauth2 {
 
 class AuthorizationZone;
+class ClientIdsDatabase;
 
 // This class is responsible for managing OAuth2 sessions required to get access
 // to some printers. In the API provided by the class, printers are referred to
@@ -70,14 +71,17 @@ class AuthorizationZone;
 // details.
 class AuthorizationZonesManager : public KeyedService {
  public:
-  using CreateAuthZoneCallback = base::RepeatingCallback<std::unique_ptr<
-      AuthorizationZone>(const GURL& url, const std::string& client_id)>;
+  using CreateAuthZoneCallback =
+      base::RepeatingCallback<std::unique_ptr<AuthorizationZone>(
+          const GURL& url,
+          ClientIdsDatabase* client_ids_database)>;
 
   // `profile` must not be nullptr.
   static std::unique_ptr<AuthorizationZonesManager> Create(Profile* profile);
   static std::unique_ptr<AuthorizationZonesManager> CreateForTesting(
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,
+      std::unique_ptr<ClientIdsDatabase> client_ids_database,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
 

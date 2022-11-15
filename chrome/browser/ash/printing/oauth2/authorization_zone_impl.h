@@ -27,6 +27,7 @@ namespace printing {
 namespace oauth2 {
 
 class AuthorizationServerSession;
+class ClientIdsDatabase;
 class IppEndpointTokenFetcher;
 
 // The class AuthorizationZoneImpl implements functionality described in
@@ -34,16 +35,14 @@ class IppEndpointTokenFetcher;
 //
 class AuthorizationZoneImpl : public AuthorizationZone {
  public:
-  // Constructor. If `client_id` is empty a Registration Request will be used
-  // to register a new client (inside InitAuthorization() method).
+  // `client_ids_database` cannot be nullptr and must outlive this object.
   AuthorizationZoneImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& authorization_server_uri,
-      const std::string& client_id);
-  // Not copyable.
+      ClientIdsDatabase* client_ids_database);
+
   AuthorizationZoneImpl(const AuthorizationZoneImpl&) = delete;
   AuthorizationZoneImpl& operator=(const AuthorizationZoneImpl&) = delete;
-  // Destructor.
   ~AuthorizationZoneImpl() override;
 
   // AuthorizationZone interface.

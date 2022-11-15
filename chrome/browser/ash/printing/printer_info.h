@@ -28,8 +28,8 @@ namespace ash {
 // |auth_info| holds the information about authentication required by the
 // printer.
 using PrinterInfoCallback = base::OnceCallback<void(
-    printing::PrinterQueryResult result,
-    const printing::PrinterStatus& status,
+    ::printing::PrinterQueryResult result,
+    const ::printing::PrinterStatus& status,
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool autoconf,

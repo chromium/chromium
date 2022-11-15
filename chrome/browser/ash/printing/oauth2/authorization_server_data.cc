@@ -12,12 +12,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/constants.h"
 #include "chrome/browser/ash/printing/oauth2/http_exchange.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -27,30 +29,43 @@ namespace oauth2 {
 AuthorizationServerData::AuthorizationServerData(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& authorization_server_uri,
-    const std::string& client_id)
+    ClientIdsDatabase* client_ids_database)
     : authorization_server_uri_(authorization_server_uri),
-      client_id_(client_id),
-      http_exchange_(url_loader_factory) {}
+      client_ids_database_(client_ids_database),
+      http_exchange_(url_loader_factory) {
+  CHECK(client_ids_database_);
+}
 
 AuthorizationServerData::~AuthorizationServerData() = default;
 
 void AuthorizationServerData::Initialize(StatusCallback callback) {
+  DCHECK(!callback_);
+  DCHECK(callback);
   callback_ = std::move(callback);
   InitializationProcedure();
 }
 
 void AuthorizationServerData::InitializationProcedure() {
-  // First, check if we have server's metadata.
+  // First, check if `client_id_` is known.
+  if (!client_id_) {
+    client_ids_database_->FetchId(
+        authorization_server_uri_,
+        base::BindOnce(&AuthorizationServerData::OnClientIdFetched,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Check if we have server's metadata.
   if (authorization_endpoint_uri_.is_empty() ||
       token_endpoint_uri_.is_empty()) {
     SendMetadataRequest();
     return;
   }
 
-  // Check if the clientID is known. If not, tries to register a new client
-  // and obtain clientID. Return error when the server doesn't support
+  // Check if the `client_id_` is known. If not, try to register a new client
+  // and obtain `client_id_`. Return error when the server doesn't support
   // dynamic registration.
-  if (client_id_.empty()) {
+  if (client_id_->empty()) {
     if (registration_endpoint_uri_.is_empty()) {
       std::move(callback_).Run(StatusCode::kClientNotRegistered, "");
     } else {
@@ -61,6 +76,19 @@ void AuthorizationServerData::InitializationProcedure() {
 
   // Everything is done already, just call the callback.
   std::move(callback_).Run(StatusCode::kOK, "");
+}
+
+void AuthorizationServerData::OnClientIdFetched(StatusCode status,
+                                                std::string data) {
+  if (status != StatusCode::kOK) {
+    // Error occurred. Exit.
+    std::move(callback_).Run(status, data);
+    return;
+  }
+
+  // Success! Set `client_id_` and return to the main procedure.
+  client_id_ = data;
+  InitializationProcedure();
 }
 
 void AuthorizationServerData::SendMetadataRequest() {
@@ -169,7 +197,7 @@ void AuthorizationServerData::OnRegistrationResponse(StatusCode status) {
 
   // Parse the response.
   const bool ok =
-      http_exchange_.ParamStringGet("client_id", true, &client_id_) &&
+      http_exchange_.ParamStringGet("client_id", true, &*client_id_) &&
       http_exchange_.ParamArrayStringEquals("redirect_uris", true,
                                             {kRedirectURI}) &&
       http_exchange_.ParamArrayStringEquals("token_endpoint_auth_method", true,
@@ -180,12 +208,15 @@ void AuthorizationServerData::OnRegistrationResponse(StatusCode status) {
       http_exchange_.ParamStringEquals("client_name", true, kClientName);
   if (!ok) {
     // Parsing failed. Reset all parameters and exit.
-    client_id_.clear();
+    client_id_->clear();
     std::move(callback_).Run(
         StatusCode::kInvalidResponse,
         "Registration Request: " + http_exchange_.GetErrorMessage());
     return;
   }
+
+  // Save the obtained `client_id_`.
+  client_ids_database_->StoreId(authorization_server_uri_, *client_id_);
 
   // Success! Return to the main procedure.
   InitializationProcedure();

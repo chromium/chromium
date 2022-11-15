@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/printing/automatic_usb_printer_configurer.h"
 #include "chrome/browser/ash/printing/cups_printer_status_creator.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
+#include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/ppd_resolution_tracker.h"
 #include "chrome/browser/ash/printing/print_servers_policy_provider.h"
@@ -75,7 +76,7 @@ using ::chromeos::CupsPrinterStatus;
 using ::chromeos::PpdProvider;
 using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
-using printing::PrinterQueryResult;
+using ::printing::PrinterQueryResult;
 
 class CupsPrintersManagerImpl
     : public CupsPrintersManager,
@@ -850,6 +851,7 @@ void CupsPrintersManager::RegisterLocalStatePrefs(
   registry->RegisterStringPref(prefs::kPrintingClientNameTemplate,
                                std::string());
   PrintServersProvider::RegisterLocalStatePrefs(registry);
+  printing::oauth2::ClientIdsDatabase::RegisterLocalStatePrefs(registry);
 }
 
 }  // namespace ash
