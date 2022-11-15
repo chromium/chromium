@@ -60,13 +60,6 @@ enum DriveConnectionStateType {OFFLINE, METERED, ONLINE};
 // List of reasons of DriveConnectionStateType.
 enum DriveOfflineReason {NOT_READY, NO_NETWORK, NO_SERVICE};
 
-// Additional data about mount, for example, that the filesystem is not
-// supported.
-enum MountCondition {
-  error_unknown_filesystem,
-  error_unsupported_filesystem
-};
-
 // Additional information of the context the volume was mounted.
 enum MountContext { user, auto };
 
@@ -620,7 +613,7 @@ dictionary VolumeMetadata {
 
   // Additional data about mount, for example, that the filesystem is not
   // supported.
-  MountCondition? mountCondition;
+  MountError? mountCondition;
 
   // Context in which the volume has been mounted.
   MountContext? mountContext;

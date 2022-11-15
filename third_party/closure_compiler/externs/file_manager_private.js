@@ -56,12 +56,6 @@ chrome.fileManagerPrivate.DriveOfflineReason = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.MountCondition = {
-  UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
-  UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
-};
-
-/** @enum {string} */
 chrome.fileManagerPrivate.MountContext = {
   USER: 'user',
   AUTO: 'auto',
@@ -465,7 +459,7 @@ chrome.fileManagerPrivate.IconSet;
  *   hasMedia: boolean,
  *   configurable: boolean,
  *   watchable: boolean,
- *   mountCondition: (!chrome.fileManagerPrivate.MountCondition|undefined),
+ *   mountCondition: (!chrome.fileManagerPrivate.MountError|undefined),
  *   mountContext: (!chrome.fileManagerPrivate.MountContext|undefined),
  *   diskFileSystemType: (string|undefined),
  *   iconSet: !chrome.fileManagerPrivate.IconSet,

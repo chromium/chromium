@@ -566,16 +566,15 @@ void VolumeToVolumeMetadata(
       LOG(ERROR) << "Unexpected mount condition: " << volume.mount_condition();
       [[fallthrough]];
     case ash::MountError::kSuccess:
-      volume_metadata->mount_condition =
-          file_manager_private::MOUNT_CONDITION_NONE;
+      volume_metadata->mount_condition = file_manager_private::MOUNT_ERROR_NONE;
       break;
     case ash::MountError::kUnknownFilesystem:
       volume_metadata->mount_condition =
-          file_manager_private::MOUNT_CONDITION_ERROR_UNKNOWN_FILESYSTEM;
+          file_manager_private::MOUNT_ERROR_ERROR_UNKNOWN_FILESYSTEM;
       break;
     case ash::MountError::kUnsupportedFilesystem:
       volume_metadata->mount_condition =
-          file_manager_private::MOUNT_CONDITION_ERROR_UNSUPPORTED_FILESYSTEM;
+          file_manager_private::MOUNT_ERROR_ERROR_UNSUPPORTED_FILESYSTEM;
       break;
   }
 
