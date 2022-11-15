@@ -24,7 +24,7 @@ const NSUInteger kCarouselCapacity = 10;
 // Margin of the StackView.
 const CGFloat kStackMargin = 8.0f;
 // Minimum spacing between items in the StackView.
-const CGFloat kMinStackSpacing = 6.0f;
+const CGFloat kMinStackSpacing = 8.0f;
 // Width of the gradient applied at the end of the carousel.
 const CGFloat kGradientWidth = 20.0f;
 

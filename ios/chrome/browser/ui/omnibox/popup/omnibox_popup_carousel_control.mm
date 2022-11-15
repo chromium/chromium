@@ -20,7 +20,7 @@ namespace {
 // Size of the view behind the icon.
 const CGFloat kBackgroundViewSize = 56.0f;
 // Top, leading and trailing margins of `ImageView`.
-const CGFloat kBackgroundViewMargin = 8.0f;
+const CGFloat kBackgroundViewMargin = 7.0f;
 // Padding between the icon and the label.
 const CGFloat kBackgroundLabelSpacing = 10.0f;
 // Size of the view containing the favicon.
