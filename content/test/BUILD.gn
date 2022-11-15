@@ -2899,13 +2899,19 @@ test("content_unittests") {
     ]
   }
   if (is_chromeos_ash) {
-    sources += [ "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc" ]
+    sources += [
+      "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc",
+      "../browser/ml/ml_service_impl_cros_unittest.cc",
+      "../browser/ml/ml_service_impl_unittest.cc",
+    ]
     deps += [
       "//ash/constants:constants",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
+      "//chromeos/services/machine_learning/public/mojom",
+      "//components/ml/mojom",
     ]
   }
   if (is_chromeos_lacros) {
