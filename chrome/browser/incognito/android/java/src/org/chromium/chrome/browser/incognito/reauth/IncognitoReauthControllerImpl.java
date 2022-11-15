@@ -251,7 +251,11 @@ public class IncognitoReauthControllerImpl
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }
-        hideDialogIfShowing(DialogDismissalCause.ACTIVITY_DESTROYED);
+
+        if (mIncognitoReauthCoordinator != null) {
+            mIncognitoReauthCoordinator.destroy();
+            mIncognitoReauthCoordinator = null;
+        }
     }
 
     /**

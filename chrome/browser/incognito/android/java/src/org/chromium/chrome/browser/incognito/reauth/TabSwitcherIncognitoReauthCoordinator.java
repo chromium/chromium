@@ -78,7 +78,7 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
      *         screen.
      */
     @Override
-    public void hide(int dismissalCause) {
+    public void hide(@DialogDismissalCause int dismissalCause) {
         boolean success = mTabSwitcherCustomViewManager.releaseView();
         assert success : "Unable to signal removing the re-auth screen from tab switcher.";
 
