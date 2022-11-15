@@ -86,11 +86,6 @@ class CONTENT_EXPORT Navigator {
 
   // Notifications coming from the RenderFrameHosts ----------------------------
 
-  // The RenderFrameHostImpl has failed to load the document.
-  void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
-                            const GURL& url,
-                            int error_code);
-
   // The RenderFrameHostImpl has committed a navigation. The Navigator is
   // responsible for resetting |navigation_request| at the end of this method
   // and should not attempt to keep it alive. Note: it is possible that

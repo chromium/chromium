@@ -4300,8 +4300,7 @@ void RenderFrameHostImpl::DidFailLoadWithError(const GURL& url,
   GURL validated_url(url);
   GetProcess()->FilterURL(false, &validated_url);
 
-  frame_tree_node_->navigator().DidFailLoadWithError(this, validated_url,
-                                                     error_code);
+  delegate_->DidFailLoadWithError(this, validated_url, error_code);
 }
 
 void RenderFrameHostImpl::DidFocusFrame() {

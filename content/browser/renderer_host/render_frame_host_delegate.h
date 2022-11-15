@@ -665,6 +665,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The load progress for the primary main frame was changed.
   virtual void DidChangeLoadProgressForPrimaryMainFrame() {}
 
+  // Document load in |render_frame_host| failed.
+  virtual void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
+                                    const GURL& url,
+                                    int error_code) {}
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

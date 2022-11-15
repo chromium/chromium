@@ -442,12 +442,6 @@ NavigatorDelegate* Navigator::GetDelegate() {
   return delegate_;
 }
 
-void Navigator::DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
-                                     const GURL& url,
-                                     int error_code) {
-  delegate_->DidFailLoadWithError(render_frame_host, url, error_code);
-}
-
 bool Navigator::StartHistoryNavigationInNewSubframe(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client) {

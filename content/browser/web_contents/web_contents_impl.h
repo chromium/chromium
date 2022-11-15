@@ -821,6 +821,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                           bool is_hung) override;
 #endif  // BUILDFLAG(ENABLE_PPAPI)
   void DidChangeLoadProgressForPrimaryMainFrame() override;
+  void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
+                            const GURL& url,
+                            int error_code) override;
 
   // RenderViewHostDelegate ----------------------------------------------------
   RenderViewHostDelegateView* GetDelegateView() override;
@@ -878,9 +881,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
-                            const GURL& url,
-                            int error_code) override;
   void DidNavigateMainFramePreCommit(FrameTreeNode* frame_tree_node,
                                      bool navigation_is_within_page) override;
   void DidNavigateMainFramePostCommit(

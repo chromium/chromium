@@ -52,11 +52,6 @@ class NavigatorDelegate {
   // TODO(clamy): all methods below that are related to navigation
   // events should go away in favor of the ones above.
 
-  // Document load in |render_frame_host| failed.
-  virtual void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
-                                    const GURL& url,
-                                    int error_code) = 0;
-
   // Handles post-navigation tasks in navigation BEFORE the entry has been
   // committed to the NavigationController.
   virtual void DidNavigateMainFramePreCommit(
