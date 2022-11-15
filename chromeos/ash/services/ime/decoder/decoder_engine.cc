@@ -57,7 +57,7 @@ class ClientDelegate : public ImeClientDelegate {
 
 DecoderEngine::DecoderEngine(
     ImeCrosPlatform* platform,
-    absl::optional<ImeDecoder::EntryPoints> entry_points) {
+    absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points) {
   if (!entry_points) {
     LOG(WARNING) << "DecoderEngine INIT INCOMPLETE.";
     return;

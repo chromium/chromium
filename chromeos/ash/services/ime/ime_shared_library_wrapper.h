@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_IME_IME_DECODER_H_
-#define CHROMEOS_ASH_SERVICES_IME_IME_DECODER_H_
+#ifndef CHROMEOS_ASH_SERVICES_IME_IME_SHARED_LIBRARY_WRAPPER_H_
+#define CHROMEOS_ASH_SERVICES_IME_IME_SHARED_LIBRARY_WRAPPER_H_
 
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 
@@ -54,12 +54,11 @@ typedef bool (*IsInputMethodConnectedFn)();
 
 // END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
 
-// TODO(b/214153032): Rename to ImeSharedLib to better reflect what this
-// represents. This class manages the dynamic loading of CrOS 1P IME shared lib
+// This class manages the dynamic loading of CrOS 1P IME shared lib
 // .so, and facilitates access to its "C" API entry points.
-class ImeDecoder {
+class ImeSharedLibraryWrapper {
  public:
-  virtual ~ImeDecoder() = default;
+  virtual ~ImeSharedLibraryWrapper() = default;
 
   // Function pointers to "C" API entry points of the loaded IME shared library.
   // See chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h for API
@@ -89,25 +88,24 @@ class ImeDecoder {
 };
 
 // A proxy class for the IME decoder.
-// ImeDecoder is implemented as a singleton and is initialized before 'ime'
-// sandbox is engaged.
-// TODO(b/214153032): Rename to ImeSharedLibImpl, as soon as ImeDecoder is
-// renamed to ImeSharedLib, to better reflect what this represents.
-class ImeDecoderImpl : public ImeDecoder {
+// ImeSharedLibraryWrapper is implemented as a singleton and is initialized
+// before 'ime' sandbox is engaged.
+class ImeSharedLibraryWrapperImpl : public ImeSharedLibraryWrapper {
  public:
   // Gets the singleton ImeDecoderImpl.
-  static ImeDecoderImpl* GetInstance();
+  static ImeSharedLibraryWrapperImpl* GetInstance();
 
-  ImeDecoderImpl(const ImeDecoderImpl&) = delete;
-  ImeDecoderImpl& operator=(const ImeDecoderImpl&) = delete;
+  ImeSharedLibraryWrapperImpl(const ImeSharedLibraryWrapperImpl&) = delete;
+  ImeSharedLibraryWrapperImpl& operator=(const ImeSharedLibraryWrapperImpl&) =
+      delete;
 
   absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
 
  private:
-  friend class base::NoDestructor<ImeDecoderImpl>;
+  friend class base::NoDestructor<ImeSharedLibraryWrapperImpl>;
 
-  explicit ImeDecoderImpl();
-  ~ImeDecoderImpl() override;
+  explicit ImeSharedLibraryWrapperImpl();
+  ~ImeSharedLibraryWrapperImpl() override;
 
   // Result of IME decoder DSO initialization.
   absl::optional<base::ScopedNativeLibrary> library_;
@@ -118,4 +116,4 @@ class ImeDecoderImpl : public ImeDecoder {
 }  // namespace ime
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_SERVICES_IME_IME_DECODER_H_
+#endif  // CHROMEOS_ASH_SERVICES_IME_IME_SHARED_LIBRARY_WRAPPER_H_

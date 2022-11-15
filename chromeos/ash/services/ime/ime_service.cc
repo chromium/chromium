@@ -52,11 +52,11 @@ std::string FieldTrialParamsRetrieverImpl::GetFieldTrialParamValueByFeature(
 
 ImeService::ImeService(
     mojo::PendingReceiver<mojom::ImeService> receiver,
-    ImeDecoder* ime_decoder,
+    ImeSharedLibraryWrapper* ime_shared_library_wrapper,
     std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever)
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      ime_decoder_(ime_decoder),
+      ime_shared_library_(ime_shared_library_wrapper),
       field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
 
 ImeService::~ImeService() = default;
@@ -101,7 +101,7 @@ void ImeService::ConnectToImeEngine(
   ResetAllBackendConnections();
 
   decoder_engine_ = std::make_unique<DecoderEngine>(
-      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+      this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
   bool bound = decoder_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
@@ -122,7 +122,7 @@ void ImeService::InitializeConnectionFactory(
     }
     case mojom::ConnectionTarget::kImeServiceLib: {
       system_engine_ = std::make_unique<SystemEngine>(
-          this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+          this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
       bool bound =
           system_engine_->BindConnectionFactory(std::move(connection_factory));
       std::move(callback).Run(bound);

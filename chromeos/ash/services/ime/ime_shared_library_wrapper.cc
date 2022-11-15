@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/ime/ime_decoder.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
@@ -54,10 +54,10 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeDecoderImpl::ImeDecoderImpl() = default;
+ImeSharedLibraryWrapperImpl::ImeSharedLibraryWrapperImpl() = default;
 
-absl::optional<ImeDecoder::EntryPoints>
-ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
+absl::optional<ImeSharedLibraryWrapper::EntryPoints>
+ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
   if (entry_points_) {
     return entry_points_;
   }
@@ -118,10 +118,10 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   return entry_points_;
 }
 
-ImeDecoderImpl::~ImeDecoderImpl() = default;
+ImeSharedLibraryWrapperImpl::~ImeSharedLibraryWrapperImpl() = default;
 
-ImeDecoderImpl* ImeDecoderImpl::GetInstance() {
-  static base::NoDestructor<ImeDecoderImpl> instance;
+ImeSharedLibraryWrapperImpl* ImeSharedLibraryWrapperImpl::GetInstance() {
+  static base::NoDestructor<ImeSharedLibraryWrapperImpl> instance;
   return instance.get();
 }
 

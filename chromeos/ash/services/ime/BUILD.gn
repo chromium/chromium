@@ -19,10 +19,10 @@ component("constants") {
   ]
 }
 
-source_set("decoder") {
+source_set("ime_shared_library") {
   sources = [
-    "ime_decoder.cc",
-    "ime_decoder.h",
+    "ime_shared_library_wrapper.cc",
+    "ime_shared_library_wrapper.h",
   ]
 
   deps = [
@@ -49,7 +49,7 @@ source_set("lib") {
 
   deps = [
     ":constants",
-    ":decoder",
+    ":ime_shared_library",
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/ime/public/cpp:rulebased",
@@ -66,7 +66,7 @@ source_set("sandbox_hook") {
 
   deps = [
     ":constants",
-    ":decoder",
+    ":ime_shared_library",
     "//base",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",
@@ -81,12 +81,12 @@ source_set("unit_tests") {
 source_set("services_unittests") {
   testonly = true
   deps = [
+    ":ime_shared_library",
     ":lib",
     ":test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/services/ime:decoder",
     "//chromeos/ash/services/ime/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",

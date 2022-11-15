@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
 #include "base/scoped_native_library.h"
-#include "chromeos/ash/services/ime/ime_decoder.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
@@ -29,8 +29,9 @@ namespace ime {
 // shared lib, to facilitate accessing an IME engine therein via MojoMode.
 class SystemEngine {
  public:
-  explicit SystemEngine(ImeCrosPlatform* platform,
-                        absl::optional<ImeDecoder::EntryPoints> entry_points);
+  explicit SystemEngine(
+      ImeCrosPlatform* platform,
+      absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
 
   SystemEngine(const SystemEngine&) = delete;
   SystemEngine& operator=(const SystemEngine&) = delete;
@@ -43,7 +44,7 @@ class SystemEngine {
   bool IsConnected();
 
  private:
-  absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
+  absl::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
 };
 
 }  // namespace ime

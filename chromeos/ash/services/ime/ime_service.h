@@ -55,7 +55,7 @@ class ImeService : public mojom::ImeService,
  public:
   explicit ImeService(
       mojo::PendingReceiver<mojom::ImeService> receiver,
-      ImeDecoder* ime_decoder,
+      ImeSharedLibraryWrapper* ime_decoder,
       std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever);
 
   ImeService(const ImeService&) = delete;
@@ -128,9 +128,7 @@ class ImeService : public mojom::ImeService,
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
-  // TODO(b/214153032): Rename to better reflect what this represents:
-  //     ime_decoder_ --> ime_shared_lib_
-  ImeDecoder* ime_decoder_ = nullptr;
+  ImeSharedLibraryWrapper* ime_shared_library_ = nullptr;
 
   std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;
 };

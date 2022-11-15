@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "chromeos/ash/services/ime/constants.h"
-#include "chromeos/ash/services/ime/ime_decoder.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 
@@ -77,7 +77,7 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
-  ImeDecoderImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
+  ImeSharedLibraryWrapperImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
   instance->EngageNamespaceSandboxIfPossible();
   return true;
 }

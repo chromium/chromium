@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_
 
 #include "base/scoped_native_library.h"
-#include "chromeos/ash/services/ime/ime_decoder.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
@@ -29,8 +29,9 @@ namespace ime {
 // shared lib, to facilitate accessing an IME engine therein via ProtoMode.
 class DecoderEngine : public mojom::InputChannel {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform,
-                         absl::optional<ImeDecoder::EntryPoints> entry_points);
+  explicit DecoderEngine(
+      ImeCrosPlatform* platform,
+      absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;
@@ -49,7 +50,7 @@ class DecoderEngine : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
+  absl::optional<ImeSharedLibraryWrapper::EntryPoints> decoder_entry_points_;
   mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
 };
 

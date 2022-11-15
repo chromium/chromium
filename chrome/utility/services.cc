@@ -361,7 +361,7 @@ auto RunPrintCompositor(
 auto RunImeService(
     mojo::PendingReceiver<ash::ime::mojom::ImeService> receiver) {
   return std::make_unique<ash::ime::ImeService>(
-      std::move(receiver), ash::ime::ImeDecoderImpl::GetInstance(),
+      std::move(receiver), ash::ime::ImeSharedLibraryWrapperImpl::GetInstance(),
       std::make_unique<ash::ime::FieldTrialParamsRetrieverImpl>());
 }
 

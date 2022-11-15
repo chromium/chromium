@@ -15,7 +15,7 @@ namespace ime {
 
 SystemEngine::SystemEngine(
     ImeCrosPlatform* platform,
-    absl::optional<ImeDecoder::EntryPoints> entry_points) {
+    absl::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points) {
   if (!entry_points) {
     LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
     return;
