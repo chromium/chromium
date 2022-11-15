@@ -549,6 +549,7 @@ void AppBannerManager::ResetCurrentPageData() {
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
+  passed_worker_check_ = false;
   install_path_tracker_.Reset();
   screenshots_.clear();
 }
