@@ -800,12 +800,12 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
     zaura_surface_move_to_desk(aura_surface(), index);
 }
 
-void WaylandToplevelWindow::Pin(bool trusted) const {
+void WaylandToplevelWindow::Pin(bool trusted) {
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_SET_PIN_SINCE_VERSION))
     zaura_surface_set_pin(aura_surface(), trusted);
 }
 
-void WaylandToplevelWindow::Unpin() const {
+void WaylandToplevelWindow::Unpin() {
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_UNSET_PIN_SINCE_VERSION))
     zaura_surface_unset_pin(aura_surface());
 }

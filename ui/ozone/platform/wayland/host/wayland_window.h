@@ -363,9 +363,6 @@ class WaylandWindow : public PlatformWindow,
   zaura_surface* aura_surface() {
     return aura_surface_ ? aura_surface_.get() : nullptr;
   }
-  zaura_surface* aura_surface() const {
-    return aura_surface_ ? aura_surface_.get() : nullptr;
-  }
 
   void SetAuraSurface(zaura_surface* aura_surface);
 

@@ -176,8 +176,8 @@ class WaylandToplevelWindow : public WaylandWindow,
       WorkspaceExtensionDelegate* delegate) override;
 
   // PinnedModeExtension:
-  void Pin(bool trusted) const override;
-  void Unpin() const override;
+  void Pin(bool trusted) override;
+  void Unpin() override;
 
   // SystemModalExtension:
   void SetSystemModal(bool modal) override;
