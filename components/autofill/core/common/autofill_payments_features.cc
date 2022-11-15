@@ -112,12 +112,6 @@ BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
              "AutofillEnableRemadeDownstreamMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether we send billing customer number in GetUploadDetails
-// preflight call.
-BASE_FEATURE(kAutofillEnableSendingBcnInGetUploadDetails,
-             "AutofillEnableSendingBcnInGetUploadDetails",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, if the user interacts with the manual fallback bottom sheet
 // on Android, it'll remain sticky until the user dismisses it.
 BASE_FEATURE(kAutofillEnableStickyManualFallbackForCards,

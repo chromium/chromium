@@ -50,12 +50,6 @@ const char kAutofillEnableRemadeDownstreamMetricsDescription[] =
     "When enabled, some extra metrics logging for Autofill Downstream will "
     "start.";
 
-const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
-    "Enable sending billing customer number in GetUploadDetails";
-const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =
-    "When enabled the billing customer number will be sent in the "
-    "GetUploadDetails preflight calls.";
-
 const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[] =
     "When enabled, sets non-legacy instrument ID in UnmaskCardRequest";
 const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =

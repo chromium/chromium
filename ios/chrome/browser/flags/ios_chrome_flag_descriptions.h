@@ -46,11 +46,6 @@ extern const char kAutofillEnableRankingFormulaDescription[];
 extern const char kAutofillEnableRemadeDownstreamMetricsName[];
 extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
 
-// Title and description for the flag enable sending billing customer number in
-// GetUploadDetails preflight call.
-extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
-extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
-
 // Title and description for flag to enable sending non-legacy instrument ID in
 // UnmaskCardRequest.
 extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[];

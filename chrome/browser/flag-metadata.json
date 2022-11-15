@@ -501,14 +501,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "autofill-enable-sending-bcn-in-get-upload-details",
-    "owners": [
-      "jsaul@google.com",
-      "payments-autofill-team@google.com"
-    ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "autofill-enable-sticky-manual-fallback-for-cards",
     "owners": [ "siashah","siyua" ],
     "expiry_milestone": 112
