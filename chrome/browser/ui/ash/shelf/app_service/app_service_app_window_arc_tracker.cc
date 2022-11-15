@@ -248,22 +248,18 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   DCHECK(task_id_to_arc_app_window_info_.find(task_id) ==
          task_id_to_arc_app_window_info_.end());
 
-  const std::string arc_app_id =
-      ArcAppListPrefs::GetAppId(package_name, activity_name);
-  const arc::ArcAppShelfId arc_app_shelf_id =
-      arc::ArcAppShelfId::FromIntentAndAppId(intent, arc_app_id);
-  task_id_to_arc_app_window_info_[task_id] = std::make_unique<ArcAppWindowInfo>(
-      arc_app_shelf_id, intent, package_name);
-
   // If there is a ghost window for `session_id`, reuse the ghost window info,
   // and clear the ghost window info from `session_id_to_arc_app_window_info_`,
   // and reset `active_session_id_`.
   auto it = session_id_to_arc_app_window_info_.find(session_id);
   if (it != session_id_to_arc_app_window_info_.end()) {
+    const auto app_shelf_id = it->second->app_shelf_id();
+    task_id_to_arc_app_window_info_[task_id] =
+        std::make_unique<ArcAppWindowInfo>(app_shelf_id, intent, package_name);
+
     session_id_to_task_id_map_[session_id] = task_id;
     task_id_to_arc_app_window_info_[task_id]->set_window(it->second->window());
 
-    const auto app_shelf_id = it->second->app_shelf_id();
     auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
     if (it_controller != app_shelf_group_to_controller_map_.end())
       it_controller->second->RemoveSessionId(it->first);
@@ -271,6 +267,14 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
     session_id_to_arc_app_window_info_.erase(it);
     if (session_id == active_session_id_)
       active_session_id_ = arc::kNoTaskId;
+  } else {
+    const std::string arc_app_id =
+        ArcAppListPrefs::GetAppId(package_name, activity_name);
+    const arc::ArcAppShelfId arc_app_shelf_id =
+        arc::ArcAppShelfId::FromIntentAndAppId(intent, arc_app_id);
+    task_id_to_arc_app_window_info_[task_id] =
+        std::make_unique<ArcAppWindowInfo>(arc_app_shelf_id, intent,
+                                           package_name);
   }
 
   // Hide from shelf if there already is some task representing the window.
