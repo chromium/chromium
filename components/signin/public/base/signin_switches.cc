@@ -34,7 +34,7 @@ BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
 // redirects. The hypothesis is that this order of checks is faster to perform.
 BASE_FEATURE(kNewSigninRequestHeaderCheckOrder,
              "NewSigninRequestHeaderCheckOrder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Clears the token service before using it. This allows simulating the
 // expiration of credentials during testing.
