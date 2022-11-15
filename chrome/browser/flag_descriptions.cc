@@ -4214,12 +4214,6 @@ extern const char kBatterySaverModeAvailableName[] =
 extern const char kBatterySaverModeAvailableDescription[] =
     "When enabled, shows the battery section in the performance settings page";
 
-const char kBlockMigratedDefaultChromeAppSyncName[] =
-    "Block migrated default Chrome app sync";
-const char kBlockMigratedDefaultChromeAppSyncDescription[] =
-    "Prevents Chrome apps that have been migrated to default web apps from "
-    "getting sync installed and creating duplicate entries for the same app.";
-
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "

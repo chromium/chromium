@@ -116,14 +116,11 @@ bool PendingExtensionManager::AddFromSync(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kBlockMigratedDefaultChromeAppSync)) {
-    EnsureMigratedDefaultChromeAppIdsCachePopulated();
-    if (migrating_default_chrome_app_ids_cache_->contains(id)) {
-      base::UmaHistogramBoolean(
-          "Extensions.SyncBlockedByDefaultWebAppMigration", true);
-      return false;
-    }
+  EnsureMigratedDefaultChromeAppIdsCachePopulated();
+  if (migrating_default_chrome_app_ids_cache_->contains(id)) {
+    base::UmaHistogramBoolean("Extensions.SyncBlockedByDefaultWebAppMigration",
+                              true);
+    return false;
   }
 
   static const bool kIsFromSync = true;

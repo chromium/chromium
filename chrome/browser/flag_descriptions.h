@@ -2412,9 +2412,6 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kBatterySaverModeAvailableName[];
 extern const char kBatterySaverModeAvailableDescription[];
 
-extern const char kBlockMigratedDefaultChromeAppSyncName[];
-extern const char kBlockMigratedDefaultChromeAppSyncDescription[];
-
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 

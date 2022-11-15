@@ -708,11 +708,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "block-migrated-default-chrome-app-sync",
-    "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "bluetooth-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
     "expiry_milestone": 111

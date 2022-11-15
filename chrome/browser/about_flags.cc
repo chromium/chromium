@@ -4679,11 +4679,6 @@ const FeatureEntry kFeatureEntries[] = {
          syncer::kSyncServiceURL,
          "https://chrome-sync.sandbox.google.com/chrome-sync/alpha")},
 #if !BUILDFLAG(IS_ANDROID)
-    {"block-migrated-default-chrome-app-sync",
-     flag_descriptions::kBlockMigratedDefaultChromeAppSyncName,
-     flag_descriptions::kBlockMigratedDefaultChromeAppSyncDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kBlockMigratedDefaultChromeAppSync)},
     {"media-router-cast-allow-all-ips",
      flag_descriptions::kMediaRouterCastAllowAllIPsName,
      flag_descriptions::kMediaRouterCastAllowAllIPsDescription, kOsDesktop,
