@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
-import org.chromium.base.Consumer;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.modules.ModuleInstallUi;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.autofill_assistant.AssistantModuleInstallUi;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Consumer;
 
 /**
  * Implementation of {@link AssistantModuleInstallUi.Provider} for Chrome.

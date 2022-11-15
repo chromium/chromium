@@ -12,9 +12,10 @@ import android.os.HandlerThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Consumer;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
+
+import java.util.function.Consumer;
 
 /**
  * This class manages functionality related to Google Mobile Services (i.e. GMS).

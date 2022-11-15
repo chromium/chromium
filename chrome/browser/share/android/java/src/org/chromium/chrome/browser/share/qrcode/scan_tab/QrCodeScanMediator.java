@@ -23,7 +23,6 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.Consumer;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
@@ -42,6 +41,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
+import java.util.function.Consumer;
 
 /**
  * QrCodeScanMediator is in charge of calculating and setting values for QrCodeScanViewProperties.

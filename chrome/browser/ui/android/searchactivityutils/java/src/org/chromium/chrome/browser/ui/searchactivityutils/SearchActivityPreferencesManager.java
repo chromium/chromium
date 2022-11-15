@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Consumer;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -39,6 +38,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 /**
  * Facilitates access to and updates of the cached SearchActivityPreferences.

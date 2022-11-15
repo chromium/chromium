@@ -319,6 +319,7 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/Both.java",
       "$java_src_dir/org/chromium/chromecast/base/Box.java",
       "$java_src_dir/org/chromium/chromecast/base/Cell.java",
+      "$java_src_dir/org/chromium/chromecast/base/Consumer.java",
       "$java_src_dir/org/chromium/chromecast/base/Controller.java",
       "$java_src_dir/org/chromium/chromecast/base/Itertools.java",
       "$java_src_dir/org/chromium/chromecast/base/Observable.java",

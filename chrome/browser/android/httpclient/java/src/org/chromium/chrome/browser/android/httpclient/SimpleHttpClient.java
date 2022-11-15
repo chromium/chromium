@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.android.httpclient;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Consumer;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -18,6 +17,7 @@ import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * A very simple http client

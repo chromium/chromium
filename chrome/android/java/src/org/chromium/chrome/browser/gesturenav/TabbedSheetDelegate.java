@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
-import org.chromium.base.Consumer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.url.GURL;
+
+import java.util.function.Consumer;
 
 /**
  * Implementation of {@link NavigationSheet#Delegate} that works with

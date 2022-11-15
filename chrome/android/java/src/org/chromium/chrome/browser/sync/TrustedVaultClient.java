@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Consumer;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -21,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 
 /**
  * Client used to communicate with GmsCore about sync encryption keys.

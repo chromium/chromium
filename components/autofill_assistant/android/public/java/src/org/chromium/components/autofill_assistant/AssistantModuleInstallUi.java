@@ -4,7 +4,7 @@
 
 package org.chromium.components.autofill_assistant;
 
-import org.chromium.base.Consumer;
+import java.util.function.Consumer;
 
 /**
  * UI informing the user about the status of installing a dynamic feature module.

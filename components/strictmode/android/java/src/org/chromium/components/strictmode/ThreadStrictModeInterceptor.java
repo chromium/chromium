@@ -10,11 +10,11 @@ import android.os.StrictMode.ThreadPolicy;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Consumer;
 import org.chromium.base.Function;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /** Installs a whitelist configuration for StrictMode's ThreadPolicy feature. */
 public interface ThreadStrictModeInterceptor {

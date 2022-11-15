@@ -17,13 +17,13 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
-import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * A custom WebView AndroidMetricsLogUploader. It
