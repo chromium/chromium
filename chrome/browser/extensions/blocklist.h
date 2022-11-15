@@ -34,7 +34,7 @@ class BlocklistStateFetcher;
 class ExtensionPrefs;
 
 // The blocklist of extensions backed by safe browsing.
-class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
+class Blocklist : public KeyedService {
  public:
   class Observer {
    public:
@@ -160,6 +160,8 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   // is a pair of [vector of string ids to check, response closure].
   std::list<std::pair<std::vector<std::string>, base::OnceClosure>>
       state_requests_;
+
+  base::WeakPtrFactory<Blocklist> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

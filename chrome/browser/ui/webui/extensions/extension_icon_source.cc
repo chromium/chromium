@@ -210,8 +210,8 @@ void ExtensionIconSource::LoadExtensionImage(const ExtensionResource& icon,
   ExtensionIconRequest* request = GetData(request_id);
   ImageLoader::Get(profile_)->LoadImageAsync(
       request->extension.get(), icon, gfx::Size(request->size, request->size),
-      base::BindOnce(&ExtensionIconSource::OnImageLoaded, AsWeakPtr(),
-                     request_id));
+      base::BindOnce(&ExtensionIconSource::OnImageLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void ExtensionIconSource::LoadFaviconImage(int request_id) {

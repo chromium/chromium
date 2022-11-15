@@ -131,38 +131,41 @@ void AlarmManager::AddAlarm(const std::string& extension_id,
                             std::unique_ptr<Alarm> alarm,
                             AddAlarmCallback callback) {
   RunWhenReady(extension_id,
-               base::BindOnce(&AlarmManager::AddAlarmWhenReady, AsWeakPtr(),
-                              std::move(alarm), std::move(callback)));
+               base::BindOnce(&AlarmManager::AddAlarmWhenReady,
+                              weak_ptr_factory_.GetWeakPtr(), std::move(alarm),
+                              std::move(callback)));
 }
 
 void AlarmManager::GetAlarm(const std::string& extension_id,
                             const std::string& name,
                             GetAlarmCallback callback) {
-  RunWhenReady(extension_id,
-               base::BindOnce(&AlarmManager::GetAlarmWhenReady, AsWeakPtr(),
-                              name, std::move(callback)));
+  RunWhenReady(extension_id, base::BindOnce(&AlarmManager::GetAlarmWhenReady,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            name, std::move(callback)));
 }
 
 void AlarmManager::GetAllAlarms(const std::string& extension_id,
                                 GetAllAlarmsCallback callback) {
-  RunWhenReady(extension_id,
-               base::BindOnce(&AlarmManager::GetAllAlarmsWhenReady, AsWeakPtr(),
-                              std::move(callback)));
+  RunWhenReady(
+      extension_id,
+      base::BindOnce(&AlarmManager::GetAllAlarmsWhenReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AlarmManager::RemoveAlarm(const std::string& extension_id,
                                const std::string& name,
                                RemoveAlarmCallback callback) {
-  RunWhenReady(extension_id,
-               base::BindOnce(&AlarmManager::RemoveAlarmWhenReady, AsWeakPtr(),
-                              name, std::move(callback)));
+  RunWhenReady(extension_id, base::BindOnce(&AlarmManager::RemoveAlarmWhenReady,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            name, std::move(callback)));
 }
 
 void AlarmManager::RemoveAllAlarms(const std::string& extension_id,
                                    RemoveAllAlarmsCallback callback) {
-  RunWhenReady(extension_id,
-               base::BindOnce(&AlarmManager::RemoveAllAlarmsWhenReady,
-                              AsWeakPtr(), std::move(callback)));
+  RunWhenReady(
+      extension_id,
+      base::BindOnce(&AlarmManager::RemoveAllAlarmsWhenReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AlarmManager::AddAlarmWhenReady(std::unique_ptr<Alarm> alarm,
@@ -440,10 +443,10 @@ void AlarmManager::OnExtensionLoaded(content::BrowserContext* browser_context,
   if (storage) {
     bool is_unpacked = Manifest::IsUnpackedLocation(extension->location());
     ready_actions_.insert(ReadyMap::value_type(extension->id(), ReadyQueue()));
-    storage->GetExtensionValue(
-        extension->id(), kRegisteredAlarms,
-        base::BindOnce(&AlarmManager::ReadFromStorage, AsWeakPtr(),
-                       extension->id(), is_unpacked));
+    storage->GetExtensionValue(extension->id(), kRegisteredAlarms,
+                               base::BindOnce(&AlarmManager::ReadFromStorage,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              extension->id(), is_unpacked));
   }
 }
 

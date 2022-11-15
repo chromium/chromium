@@ -21,8 +21,7 @@ namespace extensions {
 // InstallLimiter defers big app installs after all small app installs and then
 // runs big app installs one by one. This improves first-time login experience.
 // See http://crbug.com/166296
-class InstallLimiter : public KeyedService,
-                       public base::SupportsWeakPtr<InstallLimiter> {
+class InstallLimiter : public KeyedService {
  public:
   static InstallLimiter* Get(Profile* profile);
 
@@ -96,6 +95,8 @@ class InstallLimiter : public KeyedService,
 
   bool all_external_providers_ready_ = false;
   int num_installs_waiting_for_file_size_ = 0;
+
+  base::WeakPtrFactory<InstallLimiter> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

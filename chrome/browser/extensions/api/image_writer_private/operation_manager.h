@@ -40,8 +40,7 @@ class Operation;
 // and message routing.
 class OperationManager : public BrowserContextKeyedAPI,
                          public ExtensionRegistryObserver,
-                         public ProcessManagerObserver,
-                         public base::SupportsWeakPtr<OperationManager> {
+                         public ProcessManagerObserver {
  public:
   explicit OperationManager(content::BrowserContext* context);
 
@@ -90,6 +89,10 @@ class OperationManager : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI
   static BrowserContextKeyedAPIFactory<OperationManager>* GetFactoryInstance();
   static OperationManager* Get(content::BrowserContext* context);
+
+  base::WeakPtr<OperationManager> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   static const char* service_name() {

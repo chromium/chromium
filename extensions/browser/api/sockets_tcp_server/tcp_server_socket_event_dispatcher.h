@@ -30,9 +30,7 @@ namespace api {
 
 // Dispatch events related to "sockets.tcp" sockets from callback on native
 // socket instances. There is one instance per profile.
-class TCPServerSocketEventDispatcher
-    : public BrowserContextKeyedAPI,
-      public base::SupportsWeakPtr<TCPServerSocketEventDispatcher> {
+class TCPServerSocketEventDispatcher : public BrowserContextKeyedAPI {
  public:
   explicit TCPServerSocketEventDispatcher(content::BrowserContext* context);
   ~TCPServerSocketEventDispatcher() override;

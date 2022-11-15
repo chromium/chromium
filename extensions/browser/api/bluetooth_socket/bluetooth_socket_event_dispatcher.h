@@ -30,9 +30,7 @@ namespace api {
 
 // Dispatch events related to "bluetooth" sockets from callback on native socket
 // instances. There is one instance per browser context.
-class BluetoothSocketEventDispatcher
-    : public BrowserContextKeyedAPI,
-      public base::SupportsWeakPtr<BluetoothSocketEventDispatcher> {
+class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
  public:
   explicit BluetoothSocketEventDispatcher(content::BrowserContext* context);
   ~BluetoothSocketEventDispatcher() override;

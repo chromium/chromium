@@ -99,7 +99,8 @@ StateStore::StateStore(
   if (deferred_load) {
     // Call `Init()` asynchronously with a low priority to not delay startup.
     content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
-        ->PostTask(FROM_HERE, base::BindOnce(&StateStore::Init, AsWeakPtr()));
+        ->PostTask(FROM_HERE, base::BindOnce(&StateStore::Init,
+                                             weak_ptr_factory_.GetWeakPtr()));
   } else {
     Init();
   }

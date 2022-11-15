@@ -27,7 +27,7 @@ class WebstoreDataFetcherDelegate;
 
 // WebstoreDataFetcher fetches web store data and parses it into a
 // DictionaryValue.
-class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
+class WebstoreDataFetcher {
  public:
   WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                       const GURL& referrer_url,
@@ -62,7 +62,9 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
 
   // Maximum auto retry times on server 5xx error or ERR_NETWORK_CHANGED.
   // Default is 0 which means to use the URLFetcher default behavior.
-  int max_auto_retries_;
+  int max_auto_retries_ = 0;
+
+  base::WeakPtrFactory<WebstoreDataFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

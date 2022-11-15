@@ -28,11 +28,9 @@ class NativeWindowTracker;
 namespace extensions {
 class Extension;
 
-class ExtensionUninstallDialog
-    : public base::SupportsWeakPtr<ExtensionUninstallDialog>,
-      public ChromeAppIconDelegate,
-      public ExtensionRegistryObserver,
-      public ProfileObserver {
+class ExtensionUninstallDialog : public ChromeAppIconDelegate,
+                                 public ExtensionRegistryObserver,
+                                 public ProfileObserver {
  public:
   // Implement this callback to handle checking for the dialog's header message.
   using OnWillShowCallback =
@@ -107,6 +105,10 @@ class ExtensionUninstallDialog
 
   // Called when the dialog is closing to do any book-keeping.
   void OnDialogClosed(CloseAction action);
+
+  base::WeakPtr<ExtensionUninstallDialog> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Called from unit test to check callbacks in dialog.
   static void SetOnShownCallbackForTesting(OnWillShowCallback* callback);
@@ -191,6 +193,8 @@ class ExtensionUninstallDialog
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ThreadChecker thread_checker_;
+
+  base::WeakPtrFactory<ExtensionUninstallDialog> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

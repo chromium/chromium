@@ -28,9 +28,7 @@ namespace api {
 
 // Dispatch events related to "sockets.udp" sockets from callback on native
 // socket instances. There is one instance per profile.
-class UDPSocketEventDispatcher
-    : public BrowserContextKeyedAPI,
-      public base::SupportsWeakPtr<UDPSocketEventDispatcher> {
+class UDPSocketEventDispatcher : public BrowserContextKeyedAPI {
  public:
   explicit UDPSocketEventDispatcher(content::BrowserContext* context);
   ~UDPSocketEventDispatcher() override;

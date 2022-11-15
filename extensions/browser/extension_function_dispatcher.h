@@ -42,8 +42,7 @@ class WindowController;
 // we can gracefully handle cases like WebContents, where the RVH, extension,
 // and URL can all change over the lifetime of the tab. Instead, these items
 // are all passed into each request.
-class ExtensionFunctionDispatcher
-    : public base::SupportsWeakPtr<ExtensionFunctionDispatcher> {
+class ExtensionFunctionDispatcher {
  public:
   class Delegate {
    public:
@@ -111,6 +110,10 @@ class ExtensionFunctionDispatcher
   void ProcessServiceWorkerResponse(int request_id,
                                     int64_t service_worker_version_id);
 
+  base::WeakPtr<ExtensionFunctionDispatcher> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // For a given RenderFrameHost instance, ResponseCallbackWrapper
   // creates ExtensionFunction::ResponseCallback instances which send responses
@@ -171,6 +174,8 @@ class ExtensionFunctionDispatcher
   // the renderer. These are removed once the response is processed.
   // The lifetimes of the instances are managed by the instances themselves.
   std::set<ExtensionFunction*> worker_response_targets_;
+
+  base::WeakPtrFactory<ExtensionFunctionDispatcher> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

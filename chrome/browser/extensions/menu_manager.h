@@ -286,7 +286,6 @@ class MenuItem {
 
 // This class keeps track of menu items added by extensions.
 class MenuManager : public ProfileObserver,
-                    public base::SupportsWeakPtr<MenuManager>,
                     public KeyedService,
                     public ExtensionRegistryObserver {
  public:
@@ -435,6 +434,8 @@ class MenuManager : public ProfileObserver,
   raw_ptr<StateStore> store_;
 
   base::ObserverList<TestObserver> observers_;
+
+  base::WeakPtrFactory<MenuManager> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

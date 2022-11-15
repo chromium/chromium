@@ -28,8 +28,7 @@ class ValueStoreFactory;
 namespace extensions {
 
 // A storage area for per-extension state that needs to be persisted to disk.
-class StateStore : public base::SupportsWeakPtr<StateStore>,
-                   public ExtensionRegistryObserver {
+class StateStore : public ExtensionRegistryObserver {
  public:
   typedef value_store::ValueStoreFrontend::ReadCallback ReadCallback;
 
@@ -118,6 +117,8 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  base::WeakPtrFactory<StateStore> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

@@ -406,8 +406,8 @@ void ExtensionFunctionDispatcher::Dispatch(
   std::unique_ptr<ResponseCallbackWrapper>& callback_wrapper =
       response_callback_wrappers_[&frame];
   if (!callback_wrapper) {
-    callback_wrapper =
-        std::make_unique<ResponseCallbackWrapper>(AsWeakPtr(), &frame);
+    callback_wrapper = std::make_unique<ResponseCallbackWrapper>(
+        weak_ptr_factory_.GetWeakPtr(), &frame);
   }
 
   DispatchWithCallbackInternal(
@@ -448,7 +448,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
       response_callback_wrappers_for_worker_[key];
   if (!callback_wrapper) {
     callback_wrapper = std::make_unique<WorkerResponseCallbackWrapper>(
-        AsWeakPtr(), rph, params.worker_thread_id);
+        weak_ptr_factory_.GetWeakPtr(), rph, params.worker_thread_id);
   }
 
   DispatchWithCallbackInternal(params, nullptr, render_process_id,
@@ -501,7 +501,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   } else {
     function->SetRenderFrameHost(render_frame_host);
   }
-  function->SetDispatcher(AsWeakPtr());
+  function->SetDispatcher(weak_ptr_factory_.GetWeakPtr());
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
           extension, browser_context_)) {

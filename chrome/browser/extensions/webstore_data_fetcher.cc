@@ -35,10 +35,7 @@ namespace extensions {
 WebstoreDataFetcher::WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                                          const GURL& referrer_url,
                                          const std::string webstore_item_id)
-    : delegate_(delegate),
-      referrer_url_(referrer_url),
-      id_(webstore_item_id),
-      max_auto_retries_(0) {}
+    : delegate_(delegate), referrer_url_(referrer_url), id_(webstore_item_id) {}
 
 WebstoreDataFetcher::~WebstoreDataFetcher() {}
 
@@ -146,8 +143,8 @@ void WebstoreDataFetcher::OnSimpleLoaderComplete(
 
   // The parser will call us back via one of the callbacks.
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&WebstoreDataFetcher::OnJsonParsed, AsWeakPtr()));
+      *response_body, base::BindOnce(&WebstoreDataFetcher::OnJsonParsed,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace extensions

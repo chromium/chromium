@@ -26,9 +26,7 @@ namespace api {
 
 // Dispatch events related to "sockets.tcp" sockets from callback on native
 // socket instances. There is one instance per profile.
-class TCPSocketEventDispatcher
-    : public BrowserContextKeyedAPI,
-      public base::SupportsWeakPtr<TCPSocketEventDispatcher> {
+class TCPSocketEventDispatcher : public BrowserContextKeyedAPI {
  public:
   explicit TCPSocketEventDispatcher(content::BrowserContext* context);
   ~TCPSocketEventDispatcher() override;

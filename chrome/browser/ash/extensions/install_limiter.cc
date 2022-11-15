@@ -78,8 +78,8 @@ void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&GetFileSize, file_info.path),
-      base::BindOnce(&InstallLimiter::AddWithSize, AsWeakPtr(), installer,
-                     file_info));
+      base::BindOnce(&InstallLimiter::AddWithSize,
+                     weak_ptr_factory_.GetWeakPtr(), installer, file_info));
 }
 
 void InstallLimiter::OnAllExternalProvidersReady() {
@@ -132,8 +132,8 @@ void InstallLimiter::CheckAndRunDeferrredInstalls() {
 
 void InstallLimiter::RunInstall(const scoped_refptr<CrxInstaller>& installer,
                                 const CRXFileInfo& file_info) {
-  installer->AddInstallerCallback(
-      base::BindOnce(&InstallLimiter::OnInstallerDone, AsWeakPtr()));
+  installer->AddInstallerCallback(base::BindOnce(
+      &InstallLimiter::OnInstallerDone, weak_ptr_factory_.GetWeakPtr()));
   installer->InstallCrxFile(file_info);
   num_running_installs_++;
 }

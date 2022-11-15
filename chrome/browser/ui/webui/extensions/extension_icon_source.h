@@ -49,8 +49,7 @@ class Extension;
 //  2) If a 16px icon was requested, the favicon for extension's launch URL.
 //  3) The default extension / application icon if there are still no matches.
 //
-class ExtensionIconSource : public content::URLDataSource,
-                            public base::SupportsWeakPtr<ExtensionIconSource> {
+class ExtensionIconSource : public content::URLDataSource {
  public:
   explicit ExtensionIconSource(Profile* profile);
 
@@ -161,6 +160,8 @@ class ExtensionIconSource : public content::URLDataSource,
   std::unique_ptr<SkBitmap> default_extension_data_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
+
+  base::WeakPtrFactory<ExtensionIconSource> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

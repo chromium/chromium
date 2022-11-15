@@ -61,8 +61,7 @@ struct Alarm {
 // Manages the currently pending alarms for every extension in a profile.
 // There is one manager per virtual Profile.
 class AlarmManager : public BrowserContextKeyedAPI,
-                     public ExtensionRegistryObserver,
-                     public base::SupportsWeakPtr<AlarmManager> {
+                     public ExtensionRegistryObserver {
  public:
   using AlarmList = std::vector<std::unique_ptr<Alarm>>;
 
@@ -249,6 +248,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   // Next poll's time.
   base::Time next_poll_time_;
+
+  base::WeakPtrFactory<AlarmManager> weak_ptr_factory_{this};
 };
 
 }  //  namespace extensions
