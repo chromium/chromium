@@ -242,16 +242,16 @@ class CORE_EXPORT HTMLTokenizer {
     token_.AppendToCharacter(character);
   }
 
-  inline bool EmitAndResumeIn(SegmentedString& source, State state) {
+  inline bool EmitAndResumeInDataState(SegmentedString& source) {
     SaveEndTagNameIfNeeded();
-    state_ = state;
-    source.AdvanceAndUpdateLineNumber();
+    state_ = kDataState;
+    source.AdvancePastNonNewline();
     return true;
   }
 
-  inline bool EmitAndReconsumeIn(SegmentedString&, State state) {
+  inline bool EmitAndReconsumeInDataState() {
     SaveEndTagNameIfNeeded();
-    state_ = state;
+    state_ = kDataState;
     return true;
   }
 
@@ -262,18 +262,19 @@ class CORE_EXPORT HTMLTokenizer {
   inline bool EmitEndOfFile(SegmentedString& source) {
     if (HaveBufferedCharacterToken())
       return true;
-    state_ = HTMLTokenizer::kDataState;
+    state_ = kDataState;
     source.AdvanceAndUpdateLineNumber();
     token_.Clear();
     token_.MakeEndOfFile();
     return true;
   }
 
-  inline bool FlushEmitAndResumeIn(SegmentedString&, State);
+  inline bool FlushEmitAndResumeInDataState(SegmentedString& source);
 
   // Return whether we need to emit a character token before dealing with
   // the buffered end tag.
-  inline bool FlushBufferedEndTag(SegmentedString&);
+  inline bool FlushBufferedEndTag(SegmentedString&,
+                                  bool current_char_may_be_newline);
   inline bool TemporaryBufferIs(const String&);
 
   // Sometimes we speculatively consume input characters and we don't
