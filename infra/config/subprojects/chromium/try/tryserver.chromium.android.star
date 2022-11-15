@@ -109,7 +109,7 @@ try_.orchestrator_builder(
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 5,
+        experiment_percentage = 20,
     ),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
