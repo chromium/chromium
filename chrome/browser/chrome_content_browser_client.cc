@@ -5412,6 +5412,16 @@ void ChromeContentBrowserClient::
   DCHECK(browser_context);
   DCHECK(factories);
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
+      !browser_context->ShutdownStarted()) {
+    factories->emplace(
+        chrome::kIsolatedAppScheme,
+        web_app::IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
+            browser_context));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   factories->emplace(
       extensions::kExtensionScheme,
@@ -5631,16 +5641,26 @@ void ChromeContentBrowserClient::
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps) &&
-      web_contents) {
-    if (auto* browser_context = web_contents->GetBrowserContext();
-        !browser_context->ShutdownStarted()) {
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    content::BrowserContext* browser_context =
+        content::RenderProcessHost::FromID(render_process_id)
+            ->GetBrowserContext();
+    DCHECK(browser_context);
+    if (!browser_context->ShutdownStarted()) {
       // TODO(crbug.com/1365848): Only register the factory if we are already in
       // an isolated storage partition.
-      factories->emplace(
-          chrome::kIsolatedAppScheme,
-          web_app::IsolatedWebAppURLLoaderFactory::Create(
-              frame_host->GetFrameTreeNodeId(), browser_context));
+
+      if (frame_host != nullptr) {
+        factories->emplace(
+            chrome::kIsolatedAppScheme,
+            web_app::IsolatedWebAppURLLoaderFactory::Create(
+                frame_host->GetFrameTreeNodeId(), browser_context));
+      } else {
+        factories->emplace(
+            chrome::kIsolatedAppScheme,
+            web_app::IsolatedWebAppURLLoaderFactory::CreateForServiceWorker(
+                browser_context));
+      }
     }
   }
 #endif
