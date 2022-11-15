@@ -115,7 +115,7 @@ class LoaderTask : public content::WebContentsObserver {
   }
 
   bool IsSubframeLoad(content::RenderFrameHost* render_frame_host) const {
-    return web_contents()->GetPrimaryMainFrame() != render_frame_host;
+    return !render_frame_host->IsInPrimaryMainFrame();
   }
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
