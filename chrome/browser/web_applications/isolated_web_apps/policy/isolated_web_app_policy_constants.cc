@@ -6,7 +6,11 @@
 
 namespace web_app {
 
-const char kUpdateManifestUrlKey[] = "update_manifest_url";
-const char kWebBundleIdKey[] = "web_bundle_id";
+const char kPolicyUpdateManifestUrlKey[] = "update_manifest_url";
+const char kPolicyWebBundleIdKey[] = "web_bundle_id";
+
+const char kUpdateManifestAllVersionsKey[] = "versions";
+const char kUpdateManifestVersionKey[] = "version";
+const char kUpdateManifestSrcKey[] = "src";
 
 }  // namespace web_app

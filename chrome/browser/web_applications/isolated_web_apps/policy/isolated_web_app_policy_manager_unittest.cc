@@ -42,6 +42,8 @@ constexpr char kUpdateManifestUrl3[] =
     "https://example.com/3/update-manifest-3.json";
 constexpr char kUpdateManifestUrl4[] =
     "https://example.com/4/update-manifest-4.json";
+constexpr char kUpdateManifestUrl5[] =
+    "https://example.com/5/update-manifest-5.json";
 
 constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
@@ -54,6 +56,9 @@ constexpr char kUpdateManifestValue2[] = R"(
 constexpr char kUpdateManifestValue3[] =
     "This update manifest should return error 404";
 constexpr char kUpdateManifestValue4[] = R"(This is not JSON)";
+constexpr char kUpdateManifestValue5[] = R"(
+    {"versions":
+    [{"version": "1.0.0", "src": "Ooops! Wrong Web Bundle URL!"}]})";
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -63,12 +68,14 @@ constexpr char kWebBundleId3[] =
     "cerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId4[] =
     "derugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+constexpr char kWebBundleId5[] =
+    "eerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
   base::Value policy_entry(base::Value::Type::DICT);
-  policy_entry.SetStringKey(web_app::kWebBundleIdKey, web_bundle_id);
-  policy_entry.SetStringKey(web_app::kUpdateManifestUrlKey,
+  policy_entry.SetStringKey(web_app::kPolicyWebBundleIdKey, web_bundle_id);
+  policy_entry.SetStringKey(web_app::kPolicyUpdateManifestUrlKey,
                             update_manifest_url);
   return policy_entry;
 }
@@ -94,12 +101,18 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
   IsolatedWebAppExternalInstallOptions app_options_4 =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_4)
           .value();
+  const base::Value policy_value_5 =
+      CreatePolicyEntry(kWebBundleId5, kUpdateManifestUrl5);
+  IsolatedWebAppExternalInstallOptions app_options_5 =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_value_5)
+          .value();
 
   std::vector<IsolatedWebAppExternalInstallOptions> options;
   options.push_back(std::move(app_options_1));
   options.push_back(std::move(app_options_2));
   options.push_back(std::move(app_options_3));
   options.push_back(std::move(app_options_4));
+  options.push_back(std::move(app_options_5));
   return options;
 }
 
@@ -147,6 +160,7 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
     test_factory_.AddResponse(kUpdateManifestUrl3, kUpdateManifestValue3,
                               net::HttpStatusCode::HTTP_NOT_FOUND);
     AddJsonResponse(kUpdateManifestUrl4, kUpdateManifestValue4);
+    AddJsonResponse(kUpdateManifestUrl5, kUpdateManifestValue5);
     StartManagedGuestSession();
   }
 
@@ -189,6 +203,8 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
       EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed;
   expected_results.at(3) = IsolatedWebAppPolicyManager::
       EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed;
+  expected_results.at(4) = IsolatedWebAppPolicyManager::
+      EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined;
   base::test::TestFuture<
       std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
       future;
@@ -259,6 +275,289 @@ TEST_F(IsolatedWebAppPolicyManagerTest, EmptyInstallList) {
 
   // No apps to install leads to zero install results.
   EXPECT_TRUE(future.Get().empty());
+}
+
+TEST(IsolatedWebAppPolicyManagerStaticFunctionsTest,
+     ExtractWebBundleURLErrorTest) {
+  {
+    // Providing a non-dictionary value should not be handled correctly.
+    const base::Value string_value("A string value");
+    EXPECT_FALSE(string_value.is_dict());
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(string_value)
+                     .has_value());
+  }
+
+  {
+    // Empty dictionary should be handled correctly as well.
+    base::Value::Dict empty_dict;
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(empty_dict)))
+                     .has_value());
+  }
+
+  {
+    // Dictionary contains string instead of list.
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey,
+             "Instead of this string we expect a base::Value::List here");
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Dictionary with empty version records.
+    base::Value::List apps;
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Dictionary with empty random strings instead of the version/URL
+    // dictionary.
+    base::Value::List apps;
+    apps.Append("aaa");
+    apps.Append("bbb");
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // There is no version.
+    base::Value::List apps;
+
+    base::Value::Dict no_version_record;
+    no_version_record.Set(kUpdateManifestSrcKey,
+                          "https://example.com/a/b.json");
+    apps.Append(std::move(no_version_record));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // There is no Web bundle URL.
+    base::Value::List apps;
+
+    base::Value::Dict no_web_bundle_url;
+    no_web_bundle_url.Set(kUpdateManifestVersionKey, "1.0.0");
+    apps.Append(std::move(no_web_bundle_url));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Version is not parseble.
+    base::Value::List apps;
+
+    base::Value::Dict invalid_version_record;
+    invalid_version_record.Set(kUpdateManifestVersionKey,
+                               "It is not a correct version");
+    invalid_version_record.Set(kUpdateManifestSrcKey,
+                               "https://example.com/a/b.json");
+    apps.Append(std::move(invalid_version_record));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Web bundle URL is not parsable.
+    base::Value::List apps;
+
+    base::Value::Dict invalid_web_bundle_url;
+    invalid_web_bundle_url.Set(kUpdateManifestVersionKey, "1.0.0");
+    invalid_web_bundle_url.Set(kUpdateManifestSrcKey, "It is not a valid URL");
+    apps.Append(std::move(invalid_web_bundle_url));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // If at least one version is not parsable return nullptr.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/a/b.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict ok_app_1;
+    ok_app_1.Set(kUpdateManifestVersionKey, "2.0.0");
+    ok_app_1.Set(kUpdateManifestSrcKey, "http://example.com/a/b.json");
+    apps.Append(std::move(ok_app_1));
+
+    base::Value::Dict invalid_version_record;
+    invalid_version_record.Set(kUpdateManifestVersionKey,
+                               "It is not a correct version");
+    invalid_version_record.Set(kUpdateManifestSrcKey,
+                               "https://example.com/a/b.json");
+    apps.Append(std::move(invalid_version_record));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Unparsable URL of the latest app version leads to return of nullptr.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/a/b.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict invalid_web_bundle_url;
+    invalid_web_bundle_url.Set(kUpdateManifestVersionKey, "2.0.0");
+    invalid_web_bundle_url.Set(kUpdateManifestSrcKey, "It is not a valid URL");
+    apps.Append(std::move(invalid_web_bundle_url));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+
+  {
+    // Two equal versions in the one update manifest are not acceptable.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/v100.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict ok_app_1;
+    ok_app_1.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app_1.Set(kUpdateManifestSrcKey, "http://example.com/xyz.json");
+    apps.Append(std::move(ok_app_1));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    EXPECT_FALSE(IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+                     base::Value(std::move(dict)))
+                     .has_value());
+  }
+}
+
+TEST(IsolatedWebAppPolicyManagerStaticFunctionsTest,
+     ExtractWebBundleURLSuccessTest) {
+  {
+    // One app case.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.1");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/v101.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    auto result = IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+        base::Value(std::move(dict)));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "http://example.com/v101.json");
+  }
+
+  {
+    // Several apps use case.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/v100.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict ok_app_1;
+    ok_app_1.Set(kUpdateManifestVersionKey, "2.0.0");
+    ok_app_1.Set(kUpdateManifestSrcKey, "http://example.com/v200.json");
+    apps.Append(std::move(ok_app_1));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    auto result = IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+        base::Value(std::move(dict)));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "http://example.com/v200.json");
+  }
+
+  {
+    // The invalid URL of the stale app version doesn't affect result.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.0");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/v100.json");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict ok_app_1;
+    ok_app_1.Set(kUpdateManifestVersionKey, "2.0.0");
+    ok_app_1.Set(kUpdateManifestSrcKey, "http://example.com/v200.json");
+    apps.Append(std::move(ok_app_1));
+
+    base::Value::Dict invalid_web_bundle_url;
+    invalid_web_bundle_url.Set(kUpdateManifestVersionKey, "1.4.0");
+    invalid_web_bundle_url.Set(kUpdateManifestSrcKey, "It is not a valid URL");
+    apps.Append(std::move(invalid_web_bundle_url));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    auto result = IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+        base::Value(std::move(dict)));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "http://example.com/v200.json");
+  }
+
+  {
+    // We don't mind the update manifest has other fields.
+    base::Value::List apps;
+
+    base::Value::Dict ok_app;
+    ok_app.Set(kUpdateManifestVersionKey, "1.0.1");
+    ok_app.Set(kUpdateManifestSrcKey, "http://example.com/v101.json");
+    ok_app.Set("comment", "This is app v1.0.1");
+    apps.Append(std::move(ok_app));
+
+    base::Value::Dict dict;
+    dict.Set(kUpdateManifestAllVersionsKey, std::move(apps));
+
+    auto result = IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+        base::Value(std::move(dict)));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), "http://example.com/v101.json");
+  }
 }
 
 }  // namespace web_app

@@ -14,8 +14,8 @@ namespace {
 base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
                               base::StringPiece update_manifest_url) {
   base::Value policy_entry(base::Value::Type::DICT);
-  policy_entry.SetStringKey(web_app::kWebBundleIdKey, web_bundle_id);
-  policy_entry.SetStringKey(web_app::kUpdateManifestUrlKey,
+  policy_entry.SetStringKey(web_app::kPolicyWebBundleIdKey, web_bundle_id);
+  policy_entry.SetStringKey(web_app::kPolicyUpdateManifestUrlKey,
                             update_manifest_url);
   return policy_entry;
 }
@@ -87,7 +87,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongUrl) {
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueNoField) {
   // Web Bundle ID is not present.
   base::Value policy_entry_no_id(base::Value::Type::DICT);
-  policy_entry_no_id.SetStringKey(web_app::kUpdateManifestUrlKey,
+  policy_entry_no_id.SetStringKey(web_app::kPolicyUpdateManifestUrlKey,
                                   kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -97,7 +97,7 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueNoField) {
 
   // Update manifest URL is not present.
   base::Value policy_entry_no_url(base::Value::Type::DICT);
-  policy_entry_no_url.SetStringKey(web_app::kWebBundleIdKey,
+  policy_entry_no_url.SetStringKey(web_app::kPolicyWebBundleIdKey,
                                    kEd25519SignedWebBundleId);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -111,8 +111,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueNoField) {
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongType) {
   // Web Bundle ID is int.
   base::Value policy_entry_id_int(base::Value::Type::DICT);
-  policy_entry_id_int.SetIntKey(web_app::kWebBundleIdKey, 10);
-  policy_entry_id_int.SetStringKey(web_app::kUpdateManifestUrlKey,
+  policy_entry_id_int.SetIntKey(web_app::kPolicyWebBundleIdKey, 10);
+  policy_entry_id_int.SetStringKey(web_app::kPolicyUpdateManifestUrlKey,
                                    kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -122,9 +122,9 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongType) {
 
   // Update manifest URL is int.
   base::Value policy_entry_url_int(base::Value::Type::DICT);
-  policy_entry_url_int.SetStringKey(web_app::kWebBundleIdKey,
+  policy_entry_url_int.SetStringKey(web_app::kPolicyWebBundleIdKey,
                                     kEd25519SignedWebBundleId);
-  policy_entry_url_int.SetIntKey(web_app::kUpdateManifestUrlKey, 10);
+  policy_entry_url_int.SetIntKey(web_app::kPolicyUpdateManifestUrlKey, 10);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
       options_url = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(

@@ -14,11 +14,16 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace {
 constexpr size_t kMaxUpdateManifestLength = 5 * 1024 * 1024;
@@ -204,10 +209,19 @@ void IsolatedWebAppPolicyManager::OnUpdateManifestParsed(
     ContinueWithTheNextApp();
     return;
   }
-  LOG(ERROR) << "We have parsed update manifest of the app "
+  absl::optional<GURL> web_bundle_url = ExtractWebBundleURL(result.value());
+  if (!web_bundle_url.has_value()) {
+    SetResultForCurrentEphemeralApp(
+        EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined);
+    ContinueWithTheNextApp();
+    return;
+  }
+
+  LOG(ERROR) << "We have determined the URL of the Web Bundle for the app "
              << current_app_->web_bundle_id().id()
              << ". Further installation steps will be executed after "
                 "the feature is complete.";
+
   // Even though the app is not installed because the feature is not yet
   // implemented, let's set the result to kSuccess as nothing went wrong for
   // the current app.
@@ -227,6 +241,65 @@ IsolatedWebAppPolicyManager::GetJsonParserPtr() {
   }
 
   return json_parser_.get();
+}
+
+// static
+absl::optional<GURL> IsolatedWebAppPolicyManager::ExtractWebBundleURL(
+    const base::Value& parsed_update_manifest) {
+  if (!parsed_update_manifest.is_dict()) {
+    return absl::nullopt;
+  }
+
+  const base::Value::List* versions =
+      parsed_update_manifest.GetDict().FindList(kUpdateManifestAllVersionsKey);
+  if (!versions) {
+    return absl::nullopt;
+  }
+
+  base::Version latest_version;
+  const std::string* latest_url_string = nullptr;
+  for (const auto& version_entry : *versions) {
+    if (!version_entry.is_dict()) {
+      return absl::nullopt;
+    }
+
+    const std::string* const version_string =
+        version_entry.FindStringKey(kUpdateManifestVersionKey);
+    const std::string* const url_string =
+        version_entry.FindStringKey(kUpdateManifestSrcKey);
+    if (!version_string || !url_string) {
+      // No version or Web Bundle URL. Let's return error as this update
+      // manifest looks strange.
+      return absl::nullopt;
+    }
+
+    base::Version version(*version_string);
+    if (!version.IsValid()) {
+      // We can't parse the version. It might be that exactly this version was
+      // meant to be the latest but there was a typo. It is better not to
+      // install any version of the app than install old and potentially
+      // compromised one.
+      return absl::nullopt;
+    }
+
+    if (!latest_version.IsValid() || version > latest_version) {
+      latest_version = version;
+      latest_url_string = url_string;
+    } else if (version == latest_version) {
+      // Several apps of the same version is definitely an error case
+      return absl::nullopt;
+    }
+  }
+
+  if (!latest_version.IsValid() || !latest_url_string) {
+    return absl::nullopt;
+  }
+
+  GURL url(*latest_url_string);
+  if (url.is_valid()) {
+    return url;
+  }
+  return absl::nullopt;
 }
 
 }  // namespace web_app

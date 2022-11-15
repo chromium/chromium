@@ -33,6 +33,7 @@ class IsolatedWebAppPolicyManager {
     kErrorCantCreateRootDirectory,
     kErrorUpdateManifestDownloadFailed,
     kErrorUpdateManifestParsingFailed,
+    kErrorWebBundleUrlCantBeDetermined,
     kUnknown,
   };
   static constexpr char kEphemeralIwaRootDirectory[] = "EphemeralIWA";
@@ -55,6 +56,11 @@ class IsolatedWebAppPolicyManager {
   IsolatedWebAppPolicyManager(const IsolatedWebAppPolicyManager&) = delete;
   IsolatedWebAppPolicyManager& operator=(const IsolatedWebAppPolicyManager&) =
       delete;
+
+  // Extracts the URL of the Web Bundle that corresponds to the latest version
+  // of the app in the Update Manifest.
+  static absl::optional<GURL> ExtractWebBundleURL(
+      const base::Value& parsed_update_manifest);
 
  private:
   // Creating root directory where the ephemeral apps will be placed.
