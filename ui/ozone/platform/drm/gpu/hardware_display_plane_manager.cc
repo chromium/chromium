@@ -213,7 +213,7 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
       auto* current = hw_planes_iter->get();
       if (IsCompatible(current, plane, crtc_id)) {
         hw_plane = current;
-        ++hw_planes_iter; // bump so we don't assign the same plane twice
+        ++hw_planes_iter;  // bump so we don't assign the same plane twice
         break;
       }
     }
@@ -364,6 +364,19 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
   return CommitGammaCorrection(*crtc_props);
 }
 
+bool HardwareDisplayPlaneManager::SetVrrEnabled(uint32_t crtc_id,
+                                                bool vrr_enabled) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  if (!crtc_index) {
+    LOG(ERROR) << "Unknown CRTC ID=" << crtc_id;
+    return false;
+  }
+
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
+  crtc_state->properties.vrr_enabled.value = vrr_enabled;
+  return true;
+}
+
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
   ScopedDrmResourcesPtr resources(drm_->GetResources());
   if (!resources) {
@@ -409,6 +422,8 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
                           &state.properties.out_fence_ptr);
     GetDrmPropertyForName(drm_, props.get(), "BACKGROUND_COLOR",
                           &state.properties.background_color);
+    GetDrmPropertyForName(drm_, props.get(), kVrrEnabledPropertyName,
+                          &state.properties.vrr_enabled);
 
     num_crtcs_with_out_fence_ptr += (state.properties.out_fence_ptr.id != 0);
 

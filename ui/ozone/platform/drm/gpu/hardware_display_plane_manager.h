@@ -82,6 +82,7 @@ class HardwareDisplayPlaneManager {
     DrmDevice::Property degamma_lut_size;
     DrmDevice::Property out_fence_ptr;
     DrmDevice::Property background_color;
+    DrmDevice::Property vrr_enabled;
   };
 
   struct CrtcState {
@@ -139,6 +140,10 @@ class HardwareDisplayPlaneManager {
       uint32_t crtc_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+
+  // Sets the variable refresh rate enabled state on the CRTC object with ID
+  // |crtc_id|.
+  virtual bool SetVrrEnabled(uint32_t crtc_id, bool vrr_enabled);
 
   // Assign hardware planes from the |planes_| list to |overlay_list| entries,
   // recording the plane IDs in the |plane_list|. Only planes compatible with

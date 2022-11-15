@@ -48,6 +48,7 @@ constexpr uint32_t kGammaLutSizePropId = 1005;
 constexpr uint32_t kDegammaLutPropId = 1006;
 constexpr uint32_t kDegammaLutSizePropId = 1007;
 constexpr uint32_t kOutFencePtrPropId = 1008;
+constexpr uint32_t kVrrEnabledPropId = 1009;
 
 constexpr uint32_t kCrtcIdPropId = 2000;
 constexpr uint32_t kTypePropId = 3010;
@@ -217,6 +218,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
   property_names_.insert({kDegammaLutPropId, "DEGAMMA_LUT"});
   property_names_.insert({kDegammaLutSizePropId, "DEGAMMA_LUT_SIZE"});
   property_names_.insert({kOutFencePtrPropId, "OUT_FENCE_PTR"});
+  property_names_.insert({kVrrEnabledPropId, "VRR_ENABLED"});
 }
 
 void HardwareDisplayPlaneManagerTest::PerformPageFlip(
@@ -1132,6 +1134,66 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {
               GetCrtcPropertyValue(crtc_properties_[0].id, "BACKGROUND_COLOR"));
   } else {
     EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
+  }
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, SetVrrEnabled_Success) {
+  InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
+  crtc_properties_[0].properties.push_back(
+      {.id = kVrrEnabledPropId, .value = 0});
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+  ui::HardwareDisplayPlaneList state;
+  fake_drm_->plane_manager()->BeginFrame(&state);
+
+  // Check the property is set correctly, but isn't committed until modeset.
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->SetVrrEnabled(crtc_properties_[0].id, true));
+  {
+    EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    ui::CommitRequest commit_request;
+    ui::DrmOverlayPlaneList overlays;
+    overlays.emplace_back(fake_buffer_, nullptr);
+    commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
+        crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
+        gfx::Point(), &state, std::move(overlays)));
+    fake_drm_->plane_manager()->Commit(
+        commit_request,
+        DRM_MODE_ATOMIC_ALLOW_MODESET & DRM_MODE_ATOMIC_TEST_ONLY);
+    EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    fake_drm_->plane_manager()->Commit(commit_request,
+                                       DRM_MODE_ATOMIC_ALLOW_MODESET);
+    EXPECT_EQ(1u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+  }
+
+  // Check the property is reset correctly, but isn't committed until modeset.
+  EXPECT_TRUE(
+      fake_drm_->plane_manager()->SetVrrEnabled(crtc_properties_[0].id, false));
+  {
+    EXPECT_EQ(1u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(1u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    ui::CommitRequest commit_request;
+    ui::DrmOverlayPlaneList overlays;
+    overlays.emplace_back(fake_buffer_, nullptr);
+    commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
+        crtc_properties_[0].id, connector_properties_[0].id, kDefaultMode,
+        gfx::Point(), &state, std::move(overlays)));
+    fake_drm_->plane_manager()->Commit(
+        commit_request,
+        DRM_MODE_ATOMIC_ALLOW_MODESET & DRM_MODE_ATOMIC_TEST_ONLY);
+    EXPECT_EQ(1u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
+
+    fake_drm_->plane_manager()->Commit(commit_request,
+                                       DRM_MODE_ATOMIC_ALLOW_MODESET);
+    EXPECT_EQ(0u, GetCrtcPropertyValue(crtc_properties_[0].id, "VRR_ENABLED"));
   }
 }
 

@@ -16,6 +16,7 @@
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
 using ::testing::_;
+using ::testing::Return;
 using ::testing::SizeIs;
 
 // Verifies that the argument goes from 0 to the maximum uint16_t times |scale|
@@ -47,10 +48,16 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
       : HardwareDisplayPlaneManager(drm) {}
   ~MockHardwareDisplayPlaneManager() override = default;
 
-  MOCK_METHOD3(SetGammaCorrection,
-               bool(uint32_t crtc_id,
-                    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-                    const std::vector<display::GammaRampRGBEntry>& gamma_lut));
+  MOCK_METHOD(bool,
+              SetGammaCorrection,
+              (uint32_t crtc_id,
+               const std::vector<display::GammaRampRGBEntry>& degamma_lut,
+               const std::vector<display::GammaRampRGBEntry>& gamma_lut),
+              (override));
+  MOCK_METHOD(bool,
+              SetVrrEnabled,
+              (uint32_t crtc_id, bool vrr_enabled),
+              (override));
 
   bool Commit(CommitRequest commit_request, uint32_t flags) override {
     return false;
@@ -166,7 +173,7 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
       AddMockHardwareDisplayPlaneManager();
 
   ON_CALL(*plane_manager, SetGammaCorrection(_, _, _))
-      .WillByDefault(::testing::Return(true));
+      .WillByDefault(Return(true));
 
   constexpr float kSDRLevel = 0.85;
   constexpr float kExponent = 1.2;
@@ -175,6 +182,17 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
   drm_display_.SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
                                   std::vector<display::GammaRampRGBEntry>());
+}
+
+TEST_F(DrmDisplayTest, SetVrrEnabled) {
+  MockHardwareDisplayPlaneManager* plane_manager =
+      AddMockHardwareDisplayPlaneManager();
+
+  EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(false));
+  EXPECT_FALSE(drm_display_.SetVrrEnabled(true));
+
+  EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(true));
+  EXPECT_TRUE(drm_display_.SetVrrEnabled(true));
 }
 
 }  // namespace ui

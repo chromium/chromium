@@ -85,6 +85,8 @@ bool HardwareDisplayPlaneManagerAtomic::SetCrtcProps(
   bool status =
       AddPropertyIfValid(atomic_request, crtc_id, modeset_props.active);
   status &= AddPropertyIfValid(atomic_request, crtc_id, modeset_props.mode_id);
+  status &=
+      AddPropertyIfValid(atomic_request, crtc_id, modeset_props.vrr_enabled);
   return status;
 }
 
