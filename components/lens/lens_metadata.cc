@@ -78,6 +78,11 @@ std::string CreateProto(
     timestamp->set_nanos(time_nanoseconds % base::Time::kNanosecondsPerSecond);
 
     switch (log->phase) {
+      case lens::mojom::Phase::OVERALL_START:
+        phase->set_phase_type(
+            lens::proto::lens_latencies_metadata::
+                ChromeSpecificPhaseLatenciesMetadata::Phase::OVERALL_START);
+        break;
       case lens::mojom::Phase::DOWNSCALE_START:
         phase->set_phase_type(lens::proto::lens_latencies_metadata::
                                   ChromeSpecificPhaseLatenciesMetadata::Phase::
