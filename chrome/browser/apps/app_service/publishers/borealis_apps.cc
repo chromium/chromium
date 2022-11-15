@@ -381,12 +381,8 @@ void BorealisApps::Launch(const std::string& app_id,
 
 void BorealisApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
-  } else {
-    Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
-           nullptr);
-  }
+  Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
+
   // TODO(crbug.com/1244506): Add launch return value.
   std::move(callback).Run(LaunchResult());
 }
