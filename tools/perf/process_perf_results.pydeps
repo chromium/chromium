@@ -461,6 +461,7 @@
 ../variations/fieldtrial_to_struct.py
 ../variations/fieldtrial_util.py
 benchmarks/__init__.py
+benchmarks/ad_frames.py
 benchmarks/benchmark_smoke_unittest.py
 benchmarks/benchmark_unittest.py
 benchmarks/blink_perf.py
@@ -601,6 +602,7 @@ measurements/multipage_skpicture_printer.py
 measurements/rasterize_and_record_micro.py
 measurements/skpicture_printer.py
 page_sets/__init__.py
+page_sets/ad_frames.py
 page_sets/android_screen_restoration_shared_state.py
 page_sets/cros_ui_cases.py
 page_sets/desktop_power.py
