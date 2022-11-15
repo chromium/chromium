@@ -43,18 +43,21 @@ class TestMultiEvent {
   TestMultiEvent(const TestMultiEvent& other) = delete;
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
 
-  using TupleType = std::tuple<std::decay_t<ResType>...>;
+  using TupleType = std::tuple<ResType...>;
 
-  template <
-      typename = std::enable_if<!std::is_move_constructible<TupleType>::value>>
   [[nodiscard]] const TupleType& ref_result() {
+    static_assert(
+        !IsMovable<TupleType>(),
+        "std::tuple<ResType...> is not movable. Please use result().");
     RunUntilHasResult();
     return result_.value();
   }
 
-  template <
-      typename = std::enable_if<std::is_move_constructible<TupleType>::value>>
+  template <typename T = TupleType>
   [[nodiscard]] TupleType result() {
+    static_assert(
+        IsMovable<TupleType>(),
+        "std::tuple<ResType...> is movable. Please use ref_result().");
     RunUntilHasResult();
     return std::move(result_.value());
   }
@@ -80,6 +83,13 @@ class TestMultiEvent {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
+ protected:
+  // Can type T be moved from, i.e., T is move constructible and assignable.
+  template <typename T>
+  static constexpr bool IsMovable() {
+    return std::is_move_constructible_v<T> && std::is_move_assignable_v<T>;
+  }
+
  private:
   void RunUntilHasResult() {
     base::RunLoop run_loop;
@@ -96,7 +106,7 @@ class TestMultiEvent {
 
   void SetResult(ResType... res) {
     base::AutoLock auto_lock(lock_);
-    result_ = std::make_tuple(std::forward<ResType>(res)...);
+    result_.emplace(std::forward<ResType>(res)...);
   }
 
   base::Lock lock_;
@@ -123,15 +133,15 @@ class TestEvent : public TestMultiEvent<ResType> {
   TestEvent(const TestEvent& other) = delete;
   TestEvent& operator=(const TestEvent& other) = delete;
 
-  template <std::enable_if_t<std::is_move_constructible<ResType>::value, bool> =
-                false>
   [[nodiscard]] const ResType& ref_result() {
+    static_assert(!TestMultiEvent<ResType>::template IsMovable<ResType>(),
+                  "ResType is movable. Plesae use result().");
     return std::get<0>(TestMultiEvent<ResType>::ref_result());
   }
 
-  template <
-      std::enable_if_t<std::is_move_constructible<ResType>::value, bool> = true>
   [[nodiscard]] ResType result() {
+    static_assert(TestMultiEvent<ResType>::template IsMovable<ResType>(),
+                  "ResType is not movable. Please use ref_result().");
     return std::get<0>(TestMultiEvent<ResType>::result());
   }
 };
