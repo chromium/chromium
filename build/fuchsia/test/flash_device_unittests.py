@@ -37,10 +37,10 @@ class FlashDeviceTest(unittest.TestCase):
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
 
-    def test_flash_ignore(self) -> None:
+    def test_update_ignore(self) -> None:
         """Test setting |os_check| to 'ignore'."""
 
-        flash_device.flash(_TEST_IMAGE_DIR, 'ignore', None)
+        flash_device.update(_TEST_IMAGE_DIR, 'ignore', None)
         self.assertEqual(self._ffx_mock.call_count, 0)
         self.assertEqual(self._sdk_hash_mock.call_count, 0)
 
@@ -48,48 +48,93 @@ class FlashDeviceTest(unittest.TestCase):
         """Test ValueError raised when system_image_dir unspecified."""
 
         with self.assertRaises(ValueError):
-            flash_device.flash(None, 'check', None)
+            flash_device.update(None, 'check', None)
 
-    def test_flash_system_info_match(self) -> None:
-        """Test no flash when |os_check| is 'check' and system info matches."""
+    def test_update_system_info_match(self) -> None:
+        """Test no update when |os_check| is 'check' and system info matches."""
 
         self._ffx_mock.return_value.stdout = \
             '[{"title": "Build", "child": [{"value": "%s"}, ' \
             '{"value": "%s"}]}]' % (_TEST_VERSION, _TEST_PRODUCT)
-        flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
+        flash_device.update(_TEST_IMAGE_DIR, 'check', None)
         self.assertEqual(self._ffx_mock.call_count, 1)
         self.assertEqual(self._sdk_hash_mock.call_count, 1)
 
-    def test_flash_system_info_mismatch(self) -> None:
-        """Test flash when |os_check| is 'check' and system info does not
+    def test_update_system_info_mismatch(self) -> None:
+        """Test update when |os_check| is 'check' and system info does not
         match."""
 
         self._ffx_mock.return_value.stdout = \
             '[{"title": "Build", "child": [{"value": "wrong.version"}, ' \
             '{"value": "wrong_product"}]}]'
-        flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
+        flash_device.update(_TEST_IMAGE_DIR, 'check', None, should_pave=False)
         self.assertEqual(self._ffx_mock.call_count, 3)
 
     def test_incorrect_target_info(self) -> None:
-        """Test flash when |os_check| is 'check' and system info was not
+        """Test update when |os_check| is 'check' and system info was not
         retrieved."""
 
         self._ffx_mock.return_value.stdout = '[{"title": "badtitle"}]'
-        flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
+        flash_device.update(_TEST_IMAGE_DIR, 'check', None, should_pave=False)
         self.assertEqual(self._ffx_mock.call_count, 3)
 
-    def test_flash_with_serial_num(self) -> None:
-        """Test flash when |serial_num| is specified."""
+    def test_update_with_serial_num(self) -> None:
+        """Test update when |serial_num| is specified."""
 
         with mock.patch('time.sleep'):
-            flash_device.flash(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'update',
+                                None,
+                                'test_serial',
+                                should_pave=False)
         self.assertEqual(self._ffx_mock.call_count, 4)
+
+    # pylint: disable=no-self-use
+    def test_update_calls_paving_if_specified(self) -> None:
+        """Test update calls pave if specified."""
+        with mock.patch('time.sleep'), \
+            mock.patch('flash_device.pave') as mock_pave:
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'update',
+                                'some-target-id',
+                                should_pave=True)
+            mock_pave.assert_called_once_with(_TEST_IMAGE_DIR,
+                                              'some-target-id')
+
+    # pylint: enable=no-self-use
+
+    def test_update_raises_error_if_unattended_with_no_target(self) -> None:
+        """Test update calls pave if specified."""
+        with mock.patch('time.sleep'), \
+            mock.patch('flash_device.pave'), \
+            mock.patch('flash_device.running_unattended', return_value=True):
+            self.assertRaises(AssertionError,
+                              flash_device.update,
+                              _TEST_IMAGE_DIR,
+                              'update',
+                              None,
+                              should_pave=True)
+
+    def test_update_on_swarming(self) -> None:
+        """Test update on swarming bots."""
+
+        with mock.patch('time.sleep'), \
+             mock.patch('flash_device.running_unattended',
+                        return_value = True), \
+             mock.patch('subprocess.run'):
+            flash_device.update(_TEST_IMAGE_DIR,
+                                'update',
+                                None,
+                                'test_serial',
+                                should_pave=False)
+        self.assertEqual(self._ffx_mock.call_count, 3)
 
     def test_main(self) -> None:
         """Tests |main| function."""
 
-        with mock.patch('sys.argv',
-                        ['flash_device.py', '--os-check', 'ignore']):
+        with mock.patch(
+                'sys.argv',
+            ['flash_device.py', '--os-check', 'ignore', '--no-pave']):
             with mock.patch.dict(os.environ, {}):
                 flash_device.main()
         self.assertEqual(self._ffx_mock.call_count, 0)
