@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -48,9 +49,13 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
-  button_->SetVisible(
+  const bool visible =
       Shell::Get()->session_controller()->ShouldShowNotificationTray() &&
-      !Shell::Get()->session_controller()->IsScreenLocked());
+      !Shell::Get()->session_controller()->IsScreenLocked();
+  button_->SetVisible(visible);
+  if (visible)
+    TrackVisibilityUMA();
+
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(

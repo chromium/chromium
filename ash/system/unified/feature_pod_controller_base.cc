@@ -21,4 +21,8 @@ void FeaturePodControllerBase::TrackDiveInUMA() {
   quick_settings_metrics_util::RecordQsFeatureDiveIn(GetCatalogName());
 }
 
+void FeaturePodControllerBase::TrackVisibilityUMA() {
+  quick_settings_metrics_util::RecordVisibleQsFeature(GetCatalogName());
+}
+
 }  // namespace ash

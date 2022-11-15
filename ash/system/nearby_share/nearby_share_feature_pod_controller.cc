@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
@@ -66,10 +67,14 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
   button_ = new FeaturePodButton(this);
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  button_->SetVisible(nearby_share_delegate_->IsPodButtonVisible() &&
-                      session_controller->IsActiveUserSessionStarted() &&
-                      session_controller->IsUserPrimary() &&
-                      !session_controller->IsUserSessionBlocked());
+  const bool visible = nearby_share_delegate_->IsPodButtonVisible() &&
+                       session_controller->IsActiveUserSessionStarted() &&
+                       session_controller->IsUserPrimary() &&
+                       !session_controller->IsUserSessionBlocked();
+  button_->SetVisible(visible);
+  if (visible)
+    TrackVisibilityUMA();
+
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(

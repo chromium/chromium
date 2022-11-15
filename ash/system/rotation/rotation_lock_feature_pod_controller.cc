@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,6 +32,9 @@ FeaturePodButton* RotationLockFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->DisableLabelButtonFocus();
+  // Init the button with invisible state. The `UpdateButton` method will update
+  // the visibility based on the current condition.
+  button_->SetVisible(false);
   UpdateButton();
   return button_;
 }
@@ -62,6 +66,10 @@ void RotationLockFeaturePodController::UpdateButton() {
   // shown in the case.
   const bool is_auto_rotation_allowed =
       Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+
+  if (!button_->GetVisible() && is_auto_rotation_allowed)
+    TrackVisibilityUMA();
+
   button_->SetVisible(is_auto_rotation_allowed);
 
   if (!is_auto_rotation_allowed)

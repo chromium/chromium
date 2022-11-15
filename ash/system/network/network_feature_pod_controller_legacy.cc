@@ -63,6 +63,7 @@ FeaturePodButton* NetworkFeaturePodControllerLegacy::CreateButton() {
   DCHECK(!button_);
   button_ = new NetworkFeaturePodButtonLegacy(this);
   UpdateButton();
+  TrackVisibilityUMA();
   return button_;
 }
 

@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,6 +32,10 @@ FeaturePodButton* ShelfPartyFeaturePodController::CreateButton() {
   button_->SetVectorIcon(kShelfPartyIcon);
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SHELF_PARTY_LABEL));
+
+  // Init the button with invisible state. The `UpdateButton` method will update
+  // the visibility based on the current condition.
+  button_->SetVisible(false);
   UpdateButton();
   Shell::Get()->session_controller()->AddObserver(this);
   Shell::Get()->shelf_controller()->model()->AddObserver(this);
@@ -62,9 +67,16 @@ void ShelfPartyFeaturePodController::UpdateButton() {
   DCHECK(button_);
   const SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  button_->SetVisible(session_controller->GetSessionState() ==
-                          session_manager::SessionState::ACTIVE &&
-                      !session_controller->IsEnterpriseManaged());
+
+  const bool visible = session_controller->GetSessionState() ==
+                           session_manager::SessionState::ACTIVE &&
+                       !session_controller->IsEnterpriseManaged();
+  // If the button's visibility changes from invisible to visible, log its
+  // visibility.
+  if (!button_->GetVisible() && visible)
+    TrackVisibilityUMA();
+  button_->SetVisible(visible);
+
   const bool toggled =
       Shell::Get()->shelf_controller()->model()->in_shelf_party();
   button_->SetToggled(toggled);

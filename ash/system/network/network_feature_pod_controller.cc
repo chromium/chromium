@@ -179,6 +179,7 @@ FeaturePodButton* NetworkFeaturePodController::CreateButton() {
   button_ = button.get();
   button_->ShowDetailedViewArrow();
   UpdateButtonStateIfExists();
+  TrackVisibilityUMA();
   return button.release();
 }
 

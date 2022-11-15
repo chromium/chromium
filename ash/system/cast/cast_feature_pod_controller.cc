@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,7 +42,9 @@ FeaturePodButton* CastFeaturePodController::CreateButton() {
     CastConfigController::Get()->AddObserver(this);
     CastConfigController::Get()->RequestDeviceRefresh();
   }
-
+  // Init the button with invisible state. The `Update` method will update the
+  // visibility based on the current condition.
+  button_->SetVisible(false);
   Update();
   return button_;
 }
@@ -84,11 +87,14 @@ void CastFeaturePodController::Update() {
   auto* cast_config = CastConfigController::Get();
   // The cast feature tile will always be shown on the QS bubble if the revamped
   // view is enabled.
-  button_->SetVisible(features::IsQsRevampEnabled() ||
-                      (cast_config &&
-                       (cast_config->HasSinksAndRoutes() ||
-                        cast_config->AccessCodeCastingEnabled()) &&
-                       !cast_config->HasActiveRoute()));
+  const bool visible = features::IsQsRevampEnabled() ||
+                       (cast_config &&
+                        (cast_config->HasSinksAndRoutes() ||
+                         cast_config->AccessCodeCastingEnabled()) &&
+                        !cast_config->HasActiveRoute());
+  if (!button_->GetVisible() && visible)
+    TrackVisibilityUMA();
+  button_->SetVisible(visible);
 }
 
 }  // namespace ash

@@ -11,6 +11,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -37,6 +38,9 @@ FeaturePodButton* AutozoomFeaturePodController::CreateButton() {
       description);
   button_->label_button()->GetViewAccessibility().OverrideDescription(
       description);
+  // Init the button with invisible state. The `UpdateButton` method will update
+  // the visibility based on the current condition.
+  button_->SetVisible(false);
   UpdateButton(Shell::Get()->autozoom_controller()->GetState());
   return button_;
 }
@@ -56,9 +60,14 @@ void AutozoomFeaturePodController::UpdateButtonVisibility() {
   if (!button_)
     return;
 
-  button_->SetVisible(
+  const bool visible =
       Shell::Get()->autozoom_controller()->IsAutozoomControlEnabled() &&
-      Shell::Get()->session_controller()->ShouldEnableSettings());
+      Shell::Get()->session_controller()->ShouldEnableSettings();
+
+  if (!button_->GetVisible() && visible)
+    TrackVisibilityUMA();
+
+  button_->SetVisible(visible);
 }
 
 void AutozoomFeaturePodController::OnAutozoomStateChanged(

@@ -17,6 +17,7 @@
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -50,8 +51,12 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->SetVectorIcon(kUnifiedMenuNightLightIcon);
-  button_->SetVisible(
-      Shell::Get()->session_controller()->ShouldEnableSettings());
+  const bool visible =
+      Shell::Get()->session_controller()->ShouldEnableSettings();
+  button_->SetVisible(visible);
+  if (visible)
+    TrackVisibilityUMA();
+
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(

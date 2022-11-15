@@ -50,6 +50,10 @@ class ASH_EXPORT FeaturePodControllerBase {
   // Tracks the navigating to detailed page behavior, usually happens
   // `OnLabelPressed`, sometimes also happens `OnIconPressed`.
   void TrackDiveInUMA();
+
+  // Tracks the visibility of this feature pod. Call this method if the
+  // visibility is set from `false` to `true`.
+  void TrackVisibilityUMA();
 };
 
 }  // namespace ash

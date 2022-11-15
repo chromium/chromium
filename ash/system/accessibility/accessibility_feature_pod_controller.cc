@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -37,9 +38,13 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
 
   AccessibilityDelegate* delegate = Shell::Get()->accessibility_delegate();
   LoginStatus login_status = Shell::Get()->session_controller()->login_status();
-  button->SetVisible(login_status == LoginStatus::NOT_LOGGED_IN ||
-                     login_status == LoginStatus::LOCKED ||
-                     delegate->ShouldShowAccessibilityMenu());
+  const bool visible = login_status == LoginStatus::NOT_LOGGED_IN ||
+                       login_status == LoginStatus::LOCKED ||
+                       delegate->ShouldShowAccessibilityMenu();
+  button->SetVisible(visible);
+  if (visible)
+    TrackVisibilityUMA();
+
   return button;
 }
 

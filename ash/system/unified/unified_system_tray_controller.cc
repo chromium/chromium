@@ -8,6 +8,7 @@
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -650,14 +651,7 @@ void UnifiedSystemTrayController::AddFeaturePodItem(
   FeaturePodButton* button = controller->CreateButton();
   button->SetExpandedAmount(IsExpanded() ? 1.0 : 0.0,
                             false /* fade_icon_button */);
-
-  // Records visible pods.
-  if (button->visible_preferred()) {
-    quick_settings_metrics_util::RecordVisibleQsFeature(
-        controller->GetCatalogName());
-  }
   unified_view_->AddFeaturePodButton(button);
-
   feature_pod_controllers_.push_back(std::move(controller));
 }
 

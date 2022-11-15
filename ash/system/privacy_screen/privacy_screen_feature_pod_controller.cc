@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -28,6 +29,9 @@ PrivacyScreenFeaturePodController::~PrivacyScreenFeaturePodController() {
 FeaturePodButton* PrivacyScreenFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
+  // Init the button with invisible state. The `UpdateButton` method will update
+  // the visibility based on the current condition.
+  button_->SetVisible(false);
   UpdateButton();
   return button_;
 }
@@ -56,6 +60,11 @@ void PrivacyScreenFeaturePodController::UpdateButton() {
   auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
 
   bool is_supported = privacy_screen_controller->IsSupported();
+  // If the button's visibility changes from invisible to visible, log its
+  // visibility.
+  if (!button_->GetVisible() && is_supported)
+    TrackVisibilityUMA();
+
   button_->SetVisible(is_supported);
   if (!is_supported)
     return;

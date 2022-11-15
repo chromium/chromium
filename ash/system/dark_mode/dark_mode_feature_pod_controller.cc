@@ -14,6 +14,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -40,10 +41,13 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
   // TODO(minch): Add the logic for login screen.
   // Disable dark mode feature pod in OOBE since only light mode should be
   // allowed there.
-  button_->SetVisible(
+  const bool visible =
       Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
       Shell::Get()->session_controller()->GetSessionState() !=
-          session_manager::SessionState::OOBE);
+          session_manager::SessionState::OOBE;
+  if (visible)
+    TrackVisibilityUMA();
+  button_->SetVisible(visible);
 
   UpdateButton(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
   return button_;

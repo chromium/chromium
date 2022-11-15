@@ -9,6 +9,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "base/i18n/number_formatting.h"
@@ -40,6 +41,9 @@ FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->ShowDetailedViewArrow();
+  // Init the button with invisible state. The `UpdateButtonStateIfExists`
+  // method will update the visibility based on the current condition.
+  button_->SetVisible(false);
   UpdateButtonStateIfExists();
   return button_;
 }
@@ -195,12 +199,16 @@ void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
     return;
   }
 
+  // If the button's visibility changes from invisible to visible, log its
+  // visibility.
+  if (!button_->GetVisible())
+    TrackVisibilityUMA();
+
   button_->SetEnabled(modification_state_ ==
                       BluetoothModificationState::kCanModifyBluetooth);
   button_->SetToggled(
       bluetooth_config::IsBluetoothEnabledOrEnabling(system_state_));
   button_->SetVisible(true);
-
   button_->SetVectorIcon(ComputeButtonIcon());
   button_->SetLabel(ComputeButtonLabel());
   button_->SetSubLabel(ComputeButtonSubLabel());

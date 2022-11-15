@@ -15,6 +15,7 @@
 #include "ash/system/network/vpn_list.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,6 +63,9 @@ FeaturePodButton* VPNFeaturePodController::CreateButton() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP));
   button_->ShowDetailedViewArrow();
   button_->DisableLabelButtonFocus();
+  // Init the button with invisible state. The `Update` method will update the
+  // visibility based on the current condition.
+  button_->SetVisible(false);
   Update();
   return button_;
 }
@@ -80,6 +84,11 @@ void VPNFeaturePodController::ActiveNetworkStateChanged() {
 }
 
 void VPNFeaturePodController::Update() {
+  // If the button's visibility changes from invisible to visible, log its
+  // visibility.
+  if (!button_->GetVisible() && IsVPNVisibleInSystemTray())
+    TrackVisibilityUMA();
+
   button_->SetVisible(IsVPNVisibleInSystemTray());
   if (!button_->GetVisible())
     return;

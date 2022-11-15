@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -33,8 +34,13 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   button_->SetLabel(label_text);
   button_->icon_button()->SetTooltipText(label_text);
   button_->SetLabelTooltip(label_text);
-  button_->SetVisible(
-      !Shell::Get()->session_controller()->IsUserSessionBlocked());
+  const bool visible =
+      !Shell::Get()->session_controller()->IsUserSessionBlocked();
+  button_->SetVisible(visible);
+
+  if (visible)
+    TrackVisibilityUMA();
+
   button_->DisableLabelButtonFocus();
   return button_;
 }
