@@ -217,6 +217,14 @@ void ProxyMain::BeginMainFrame(
     return;
   }
 
+  // This call winds through to the LocalFrameView to mark the beginning
+  // of a main frame for metrics purposes. Some metrics are only gathered
+  // between calls to RecordStartOfFrameMetrics and RecordEndOfFrameMetrics.
+  // This is not wrapped into layer_tree_host_->WillBeginMainFrame because
+  // it should only be called from the multi-threaded proxy (we do not want
+  // metrics gathering in tests).
+  layer_tree_host_->RecordStartOfFrameMetrics();
+
   final_pipeline_stage_ =
       std::max(final_pipeline_stage_, deferred_final_pipeline_stage_);
   deferred_final_pipeline_stage_ = NO_PIPELINE_STAGE;
@@ -247,14 +255,6 @@ void ProxyMain::BeginMainFrame(
       std::move(begin_main_frame_state->mutator_events));
 
   layer_tree_host_->WillBeginMainFrame();
-
-  // This call winds through to the LocalFrameView to mark the beginning
-  // of a main frame for metrics purposes. Some metrics are only gathered
-  // between calls to RecordStartOfFrameMetrics and RecordEndOfFrameMetrics.
-  // This is not wrapped into layer_tree_host_->WillBeginMainFrame because
-  // it should only be called from the multi-threaded proxy (we do not want
-  // metrics gathering in tests).
-  layer_tree_host_->RecordStartOfFrameMetrics();
 
   // See LayerTreeHostClient::BeginMainFrame for more documentation on
   // what this does.
