@@ -58,7 +58,8 @@ def _get_daemon_status():
     status = json.loads(
         run_ffx_command(['--machine', 'json', 'daemon', 'socket'],
                         check=True,
-                        suppress_repair=True))
+                        capture_output=True,
+                        suppress_repair=True).stdout.strip())
     return status.get('pid', {}).get('status', {'NotRunning': True})
 
 
@@ -165,7 +166,6 @@ def run_ffx_command(cmd: Iterable[str],
                               env=env,
                               **kwargs)
     except subprocess.CalledProcessError as cpe:
-        logging.exception(cpe)
         if suppress_repair or (cpe.output
                                and not _run_repair_command(cpe.output)):
             raise
