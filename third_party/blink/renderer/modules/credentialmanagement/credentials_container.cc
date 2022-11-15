@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/scoped_promise_resolver.h"
+#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -1317,12 +1318,33 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
 
     bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
-    auto* auth_request =
-        CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-    auth_request->RequestToken(
-        std::move(identity_provider_ptrs), prefer_auto_sign_in,
-        WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
-                      std::move(scoped_abort_state), WrapPersistent(options)));
+
+    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+            context)) {
+      Vector<mojom::blink::IdentityProviderGetParametersPtr> idp_get_params;
+      mojom::blink::IdentityProviderGetParametersPtr get_params =
+          mojom::blink::IdentityProviderGetParameters::New(
+              std::move(identity_provider_ptrs), prefer_auto_sign_in);
+      idp_get_params.push_back(std::move(get_params));
+
+      auto* auth_request =
+          CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+      auth_request->RequestToken(
+          std::move(idp_get_params),
+          WTF::BindOnce(&OnRequestToken, WrapPersistent(resolver),
+                        std::move(scoped_abort_state),
+                        WrapPersistent(options)));
+      return promise;
+    }
+
+    if (!web_identity_requester_) {
+      web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
+          WrapPersistent(context), std::move(scoped_abort_state));
+    }
+
+    web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
+                                           options->identity()->providers(),
+                                           prefer_auto_sign_in);
 
     return promise;
   }
@@ -1710,6 +1732,7 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
 }
 
 void CredentialsContainer::Trace(Visitor* visitor) const {
+  visitor->Trace(web_identity_requester_);
   ScriptWrappable::Trace(visitor);
   Supplement<Navigator>::Trace(visitor);
 }

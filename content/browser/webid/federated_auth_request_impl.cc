@@ -38,6 +38,7 @@
 
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProvider;
+using blink::mojom::IdentityProviderGetParametersPtr;
 using blink::mojom::IdentityProviderPtr;
 using blink::mojom::IdpSigninStatus;
 using blink::mojom::LogoutRpsStatus;
@@ -418,28 +419,38 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 }
 
 void FederatedAuthRequestImpl::RequestToken(
-    std::vector<IdentityProviderPtr> idp_ptrs,
-    bool prefer_auto_sign_in,
+    std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     RequestTokenCallback callback) {
-  if (idp_ptrs.empty()) {
-    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+  // idp_get_params_ptrs should never be empty since it is the renderer-side
+  // code which populates it.
+  if (idp_get_params_ptrs.empty()) {
+    mojo::ReportBadMessage("idp_get_params_ptrs is empty.");
     return;
   }
   // It should not be possible to receive multiple IDPs when the
   // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
   // could be received from a compromised renderer.
-  if (idp_ptrs.size() > 1u && !base::FeatureList::IsEnabled(
-                                  features::kFedCmMultipleIdentityProviders)) {
+  const bool is_multi_idp_input = idp_get_params_ptrs.size() > 1u ||
+                                  idp_get_params_ptrs[0]->providers.size() > 1u;
+  if (is_multi_idp_input && !IsFedCmMultipleIdentityProvidersEnabled()) {
     std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
     return;
+  }
+
+  // Check that providers are non-empty.
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    if (idp_get_params_ptr->providers.size() == 0) {
+      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
+      return;
+    }
   }
 
   if (!fedcm_metrics_) {
     // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
     fedcm_metrics_ = std::make_unique<FedCmMetrics>(
-        idp_ptrs[0]->config_url, render_frame_host().GetPageUkmSourceId(),
-        base::RandInt(1, 1 << 30),
-        /*is_disabled=*/idp_ptrs.size() > 1);
+        idp_get_params_ptrs[0]->providers[0]->config_url,
+        render_frame_host().GetPageUkmSourceId(), base::RandInt(1, 1 << 30),
+        /*is_disabled=*/idp_get_params_ptrs.size() > 1);
   }
 
   if (HasPendingRequest()) {
@@ -454,80 +465,92 @@ void FederatedAuthRequestImpl::RequestToken(
       ->SetHasPendingWebIdentityRequest(true);
   network_manager_ = CreateNetworkManager();
   request_dialog_controller_ = CreateDialogController();
+  start_time_ = base::TimeTicks::Now();
 
-  for (auto& idp_ptr : idp_ptrs) {
-    // Throw an error if duplicate IDPs are specified.
-    if (pending_idps_.count(idp_ptr->config_url)) {
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               /*token_status=*/absl::nullopt,
-                               /*should_delay_callback=*/false);
-      return;
-    }
-    pending_idps_.insert(idp_ptr->config_url);
+  FederatedApiPermissionStatus permission_status =
+      api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
+
+  absl::optional<TokenStatus> error_token_status;
+  FederatedAuthRequestResult request_result =
+      FederatedAuthRequestResult::kError;
+
+  switch (permission_status) {
+    case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
+      error_token_status = TokenStatus::kDisabledInFlags;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
+      error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
+      error_token_status = TokenStatus::kDisabledInSettings;
+      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      break;
+    case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
+      error_token_status = TokenStatus::kDisabledEmbargo;
+      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      break;
+    case FederatedApiPermissionStatus::GRANTED:
+      // Intentional fall-through.
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+
+  if (error_token_status) {
+    CompleteRequestWithError(request_result, *error_token_status,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
+  std::set<GURL> pending_idps;
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    for (auto& idp_ptr : idp_get_params_ptr->providers) {
+      // Throw an error if duplicate IDPs are specified.
+      const bool is_unique_idp =
+          pending_idps.insert(idp_ptr->config_url).second;
+      if (!is_unique_idp) {
+        CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                 /*token_status=*/absl::nullopt,
+                                 /*should_delay_callback=*/false);
+        return;
+      }
+
+      if (!network::IsOriginPotentiallyTrustworthy(
+              url::Origin::Create(idp_ptr->config_url))) {
+        CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                 TokenStatus::kIdpNotPotentiallyTrustworthy,
+                                 /*should_delay_callback=*/false);
+        return;
+      }
+
+      // TODO(crbug.com/1382545): Handle ShouldFailIfNotSignedInWithIdp in the
+      // multi IDP use case.
+      if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
+                                         sharing_permission_delegate_)) {
+        CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                 TokenStatus::kNotSignedInWithIdp,
+                                 /*should_delay_callback=*/true);
+        return;
+      }
+    }
+  }
+  CHECK(pending_idps_.empty());
+  pending_idps_ = std::move(pending_idps);
 
   // TODO(crbug.com/1361642): Handle cases where not all IDPs' requests are
   // successful. Currently when multiple IDPs are specified, an accounts
   // dialog is shown only when the last IDP's request is successful.
-  for (auto& idp_ptr : idp_ptrs) {
-    prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
-    start_time_ = base::TimeTicks::Now();
-
-    if (!network::IsOriginPotentiallyTrustworthy(
-            url::Origin::Create(idp_ptr->config_url))) {
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               TokenStatus::kIdpNotPotentiallyTrustworthy,
-                               /*should_delay_callback=*/false);
-      return;
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    // TODO(crbug.com/1383384): Handle prefer_auto_sign_in_ for multi IDP.
+    prefer_auto_sign_in_ = idp_get_params_ptr->prefer_auto_sign_in &&
+                           IsFedCmAutoSigninEnabled() &&
+                           !IsFedCmMultipleIdentityProvidersEnabled();
+    for (auto& idp_ptr : idp_get_params_ptr->providers) {
+      idp_info_[idp_ptr->config_url].provider = *idp_ptr;
+      idp_order_.push_back(idp_ptr->config_url);
+      FetchManifest(*idp_ptr);
     }
-
-    FederatedApiPermissionStatus permission_status =
-        api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
-
-    absl::optional<TokenStatus> error_token_status;
-    FederatedAuthRequestResult request_result =
-        FederatedAuthRequestResult::kError;
-
-    switch (permission_status) {
-      case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
-        error_token_status = TokenStatus::kDisabledInFlags;
-        break;
-      case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
-        error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
-        break;
-      case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-        error_token_status = TokenStatus::kDisabledInSettings;
-        request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
-        break;
-      case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
-        error_token_status = TokenStatus::kDisabledEmbargo;
-        request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
-        break;
-      case FederatedApiPermissionStatus::GRANTED:
-        // Intentional fall-through.
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-
-    if (error_token_status) {
-      CompleteRequestWithError(request_result, *error_token_status,
-                               /*should_delay_callback=*/true);
-      return;
-    }
-
-    if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
-                                       sharing_permission_delegate_)) {
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               TokenStatus::kNotSignedInWithIdp,
-                               /*should_delay_callback=*/true);
-      return;
-    }
-
-    idp_info_[idp_ptr->config_url].provider = *idp_ptr;
-    idp_order_.push_back(idp_ptr->config_url);
-    FetchManifest(*idp_ptr);
   }
 }
 

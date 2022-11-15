@@ -58,19 +58,31 @@ struct IdentityProvider {
   string nonce;
 };
 
+// The parameters for a get call for identity provider(s).
+struct IdentityProviderGetParameters {
+  // Details of identity provider(s).
+  array<IdentityProvider> providers;
+
+  // Whether auto sign in is preferred by the caller.
+  bool prefer_auto_sign_in;
+};
+
 // Create a federated sign-in request using the specified provider.
 // This interface is called from a renderer process and implemented in the
 // browser process.
 interface FederatedAuthRequest {
-  // Requests a token to be generated, given an array of IdentityProviders.
+  // Requests a token to be generated, given an array of
+  // IdentityProviderGetParameters.
   // Returns:
+  // - Status of token request.
   // - Configuration URL of the identity provider that the user selected.
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
-  RequestToken(array<IdentityProvider> identity_providers,
-               bool prefer_auto_sign_in) =>
-      (RequestTokenStatus status, url.mojom.Url? selected_identity_provider_config_url, string? token);
+  RequestToken(array<IdentityProviderGetParameters> idp_get_params) =>
+      (RequestTokenStatus status,
+      url.mojom.Url? selected_identity_provider_config_url,
+      string? token);
 
   // Cancels the pending token request, if any.
   CancelTokenRequest();

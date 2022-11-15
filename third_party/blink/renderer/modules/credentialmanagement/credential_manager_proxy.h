@@ -59,6 +59,7 @@ class MODULES_EXPORT CredentialManagerProxy
   // Must be called only with argument representing a valid
   // context corresponding to an attached window.
   static CredentialManagerProxy* From(ScriptState*);
+  static CredentialManagerProxy* From(ExecutionContext*);
 
   static CredentialManagerProxy* From(LocalDOMWindow*);
 

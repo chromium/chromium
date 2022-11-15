@@ -114,6 +114,8 @@ void CredentialManagerProxy::OnFedCmLogoutConnectionError() {
   // appropriate error message.
 }
 
+// TODO(crbug.com/1372275): Replace From(ScriptState*) with
+// From(ExecutionContext*)
 // static
 CredentialManagerProxy* CredentialManagerProxy::From(
     ScriptState* script_state) {
@@ -128,6 +130,21 @@ CredentialManagerProxy* CredentialManagerProxy::From(LocalDOMWindow* window) {
   if (!supplement) {
     supplement = MakeGarbageCollected<CredentialManagerProxy>(*window);
     ProvideTo(*window, supplement);
+  }
+  return supplement;
+}
+
+// static
+CredentialManagerProxy* CredentialManagerProxy::From(
+    ExecutionContext* execution_context) {
+  // Since the FedCM API cannot be used by workers, the execution context is
+  // always a window.
+  LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
+  auto* supplement =
+      Supplement<LocalDOMWindow>::From<CredentialManagerProxy>(window);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<CredentialManagerProxy>(window);
+    ProvideTo(window, supplement);
   }
   return supplement;
 }

@@ -1737,5 +1737,8 @@ crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/m
 # Utility for manual testing, not intended to be run as part of layout tests.
 crbug.com/785955 http/tests/credentialmanagement/tools/virtual-authenticator-environment-manual.html [ Skip ]
 
+# Since enabling the multi IDP flag affects existing tests, we only enable the flag in the virtual multi IDP test suite
+crbug.com/1373766 external/wpt/credential-management/fedcm-multi-idp/* [ Skip ]
+
 # Feature can only be disabled via base feature flag, not by commandline switch.
 crbug.com/1293679 virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html [ Skip ]

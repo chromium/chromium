@@ -1449,6 +1449,13 @@
     "args": ["--enable-features=JavaScriptExperimentalSharedMemory"]
   },
   {
+    "prefix": "fedcm-multi-idp",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-multi-idp/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmMultipleIdentityProviders"]
+  },
+  {
     "prefix": "scoped-custom-element-registry-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],

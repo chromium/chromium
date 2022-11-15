@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 
+#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -44,6 +45,8 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
  private:
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
+
+  Member<WebIdentityRequester> web_identity_requester_;
 };
 
 }  // namespace blink
