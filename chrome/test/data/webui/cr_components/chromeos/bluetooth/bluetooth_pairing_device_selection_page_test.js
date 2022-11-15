@@ -11,7 +11,7 @@ import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState,
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
 import {FakeBluetoothDiscoveryDelegate} from './fake_bluetooth_discovery_delegate.js';

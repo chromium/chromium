@@ -7,7 +7,7 @@ import {Account, ArcAccountPickerBrowserProxyImpl} from 'chrome://chrome-signin/
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {getFakeAccountsNotAvailableInArcList, TestArcAccountPickerBrowserProxy} from './test_util.js';
 

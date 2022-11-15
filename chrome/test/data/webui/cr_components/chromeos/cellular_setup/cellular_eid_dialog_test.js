@@ -8,7 +8,7 @@ import 'chrome://resources/ash/common/cellular_setup/cellular_eid_dialog.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertDeepEquals, assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {FakeCanvasContext} from './fake_canvas_context.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';

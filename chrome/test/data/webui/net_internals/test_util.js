@@ -12,7 +12,7 @@ import {MainView} from 'chrome://net-internals/main.js';
 import {ProxyView} from 'chrome://net-internals/proxy_view.js';
 import {SocketsView} from 'chrome://net-internals/sockets_view.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Returns the view and menu item node for the tab with given id.

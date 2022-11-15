@@ -5,7 +5,7 @@
 // clang-format off
 import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from './position_util.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 // clang-format on
 
 /** @type {!HTMLElement} */

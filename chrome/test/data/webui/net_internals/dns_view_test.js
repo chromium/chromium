@@ -5,7 +5,7 @@
 import {DnsView} from 'chrome://net-internals/dns_view.js';
 import {$} from 'chrome://resources/js/util.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {Task, TaskQueue} from './task_queue.js';
 import {switchToView} from './test_util.js';

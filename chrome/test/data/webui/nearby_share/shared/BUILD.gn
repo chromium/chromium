@@ -42,7 +42,7 @@ js_library("nearby_contact_visibility_test") {
   deps = [
     ":fake_nearby_contact_manager",
     ":fake_nearby_share_settings",
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
   ]
@@ -51,7 +51,7 @@ js_library("nearby_contact_visibility_test") {
 
 js_library("nearby_device_icon_test") {
   deps = [
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "//chrome/browser/resources/nearby_share/shared:nearby_device_icon",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -59,7 +59,7 @@ js_library("nearby_device_icon_test") {
 
 js_library("nearby_device_test") {
   deps = [
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "//chrome/browser/resources/nearby_share/shared:nearby_device",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -68,7 +68,7 @@ js_library("nearby_device_test") {
 js_library("nearby_onboarding_one_page_test") {
   deps = [
     ":fake_nearby_share_settings",
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
   ]
@@ -81,7 +81,7 @@ js_library("nearby_onboarding_one_page_test") {
 js_library("nearby_onboarding_page_test") {
   deps = [
     ":fake_nearby_share_settings",
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
   ]
@@ -93,7 +93,7 @@ js_library("nearby_onboarding_page_test") {
 
 js_library("nearby_page_template_test") {
   deps = [
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "../../chromeos:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
   ]
@@ -102,7 +102,7 @@ js_library("nearby_page_template_test") {
 
 js_library("nearby_preview_test") {
   deps = [
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "//chrome/browser/resources/nearby_share/shared:nearby_preview",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -110,7 +110,7 @@ js_library("nearby_preview_test") {
 
 js_library("nearby_progress_test") {
   deps = [
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "//chrome/browser/resources/nearby_share/shared:nearby_progress",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -125,7 +125,7 @@ js_library("fake_nearby_share_settings") {
 js_library("nearby_visibility_page_test") {
   deps = [
     ":fake_nearby_share_settings",
-    "../..:chai_assert",
+    "../../chromeos:chai_assert",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

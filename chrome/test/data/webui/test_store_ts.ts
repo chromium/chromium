@@ -4,7 +4,7 @@
 
 import {Action, Store} from 'chrome://resources/js/store_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue} from './chai_assert.js';
 
 /**
  * This is a generic test store, designed to replace a real Store instance

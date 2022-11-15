@@ -5,7 +5,7 @@
 // clang-format off
 import {ListSelectionModel} from './list_selection_model.js';
 
-import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {adjust, range} from './list_selection_model_test_util.js';
 // clang-format on

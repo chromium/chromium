@@ -8,7 +8,7 @@ import 'chrome://nearby/nearby_confirmation_page.js';
 
 import {NearbyConfirmationPageElement} from 'chrome://nearby/nearby_confirmation_page.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../chromeos/chai_assert.js';
 
 import {FakeConfirmationManagerRemote, FakeTransferUpdateListenerPendingReceiver} from './fake_mojo_interfaces.js';
 

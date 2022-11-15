@@ -9,7 +9,7 @@ import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {List} from './list.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 // clang-format on
 

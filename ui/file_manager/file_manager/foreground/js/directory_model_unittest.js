@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockFileOperationManager} from '../../background/js/mock_file_operation_manager.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';

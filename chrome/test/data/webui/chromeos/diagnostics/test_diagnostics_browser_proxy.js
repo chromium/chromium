@@ -5,7 +5,7 @@
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {getNavigationViewForPageId} from 'chrome://diagnostics/diagnostics_utils.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** Test version of DiagnosticsBrowserProxy. */

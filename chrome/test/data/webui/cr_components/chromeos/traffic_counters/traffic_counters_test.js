@@ -11,7 +11,7 @@ import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
 import {FakeNetworkConfig} from '../../../chromeos/fake_network_config_mojom.js';
 
 suite('TrafficCountersTest', function() {

@@ -40,7 +40,6 @@ class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
 
   convertFramesToPng(_: HTMLCanvasElement[]): string {
     assertNotReached('This function should never be called');
-    return '';
   }
 
   async captureFrames(

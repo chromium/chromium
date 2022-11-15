@@ -5,7 +5,7 @@
 import {RepairComponentChip} from 'chrome://shimless-rma/repair_component_chip.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../../test_util.js';
 
 export function repairComponentChipTest() {

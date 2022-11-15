@@ -4,7 +4,7 @@
 
 import {NetworkDiagnosticsRoutinesInterface, RoutineResult, RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 
-import {assertNotReached} from '../../../chai_assert.js';
+import {assertNotReached} from '../../../chromeos/chai_assert.js';
 
 import {createResult} from './network_health_test_utils.js';
 

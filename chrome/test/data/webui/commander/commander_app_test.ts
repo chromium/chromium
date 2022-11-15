@@ -11,7 +11,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertGT, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestCommanderBrowserProxy} from './test_commander_browser_proxy.js';
 

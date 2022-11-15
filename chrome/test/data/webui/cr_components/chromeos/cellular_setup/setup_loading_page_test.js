@@ -7,7 +7,7 @@ import 'chrome://resources/ash/common/cellular_setup/setup_loading_page.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
 
 suite('CrComponentsSetupLoadingPageTest', function() {
   let setupLoadingPage;

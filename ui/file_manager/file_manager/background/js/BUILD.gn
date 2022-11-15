@@ -146,7 +146,7 @@ js_library("mock_crostini") {
 js_unittest("crostini_unittest") {
   deps = [
     ":mock_crostini",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
@@ -187,7 +187,7 @@ js_unittest("drive_sync_handler_unittest") {
   deps = [
     ":drive_sync_handler",
     ":mock_progress_center",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:url_constants",
@@ -221,7 +221,7 @@ js_unittest("file_operation_handler_unittest") {
     ":file_operation_util",
     ":mock_file_operation_manager",
     ":mock_progress_center",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -253,7 +253,7 @@ js_unittest("file_operation_manager_unittest") {
     ":file_operation_manager",
     ":file_operation_util",
     ":volume_manager_factory",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
@@ -386,7 +386,7 @@ js_unittest("trash_unittest") {
   deps = [
     ":mock_volume_manager",
     ":trash",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:trash",
     "//ui/file_manager/file_manager/common/js:util",
@@ -433,7 +433,7 @@ js_unittest("volume_manager_unittest") {
     ":volume_manager_factory",
     ":volume_manager_impl",
     ":volume_manager_util",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",

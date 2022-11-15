@@ -4,7 +4,7 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
-import './chai.js';
+import '../chai.js';
 
 /**
  * @param {boolean} value The value to check.

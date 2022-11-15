@@ -11,7 +11,7 @@ import {eventToPromise} from './test_util.js';
 
 import {waitAfterNextRender} from './polymer_test_util.js';
 
-import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue, assertEquals} from './chai_assert.js';
 
 // clang-format on
 

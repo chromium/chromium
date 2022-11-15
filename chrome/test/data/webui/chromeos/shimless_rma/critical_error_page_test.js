@@ -9,7 +9,7 @@ import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interf
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function criticalErrorPageTest() {
   /**

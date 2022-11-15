@@ -10,7 +10,7 @@ import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_sh
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chromeos/chai_assert.js';
 
 import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';
 

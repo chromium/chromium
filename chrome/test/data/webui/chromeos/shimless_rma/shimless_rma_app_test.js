@@ -12,7 +12,7 @@ import {RmadErrorCode, State, StateResult} from 'chrome://shimless-rma/shimless_
 import {disableAllButtons, enableAllButtons} from 'chrome://shimless-rma/shimless_rma_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../../test_util.js';
 
 export function shimlessRMAAppTest() {

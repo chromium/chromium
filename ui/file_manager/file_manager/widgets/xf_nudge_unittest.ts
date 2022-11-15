@@ -4,7 +4,7 @@
 
 import './xf_nudge.js';
 
-import {assertEquals, assertGT, assertLT, assertThrows} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertGT, assertLT, assertThrows} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {NudgeDirection, XfNudge} from './xf_nudge.js';
 

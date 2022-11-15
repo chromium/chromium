@@ -10,7 +10,7 @@ import {TouchpadTesterElement} from 'chrome://diagnostics/touchpad_tester.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from '../mock_controller.m.js';
 import {isChildVisible, isVisible} from '../test_util.js';
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {storage} from './storage_adapter.js';
 import {waitUntil} from './test_error_reporting.js';

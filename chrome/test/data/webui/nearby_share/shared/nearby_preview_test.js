@@ -12,7 +12,7 @@ import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import {NearbyPreviewElement} from 'chrome://nearby/shared/nearby_preview.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from '../../chromeos/chai_assert.js';
 
 suite('PreviewTest', function() {
   /** @type {!NearbyPreviewElement} */

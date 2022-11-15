@@ -8,7 +8,7 @@ import {Command} from './command.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 // clang-format on
 
 /** @type {Menu} */

@@ -81,7 +81,7 @@ js_library("dlp_restricted_banner") {
 js_unittest("dlp_restricted_banner_unittest") {
   deps = [
     ":dlp_restricted_banner",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
@@ -168,7 +168,7 @@ js_library("educational_banner") {
 js_unittest("educational_banner_unittest") {
   deps = [
     ":educational_banner",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_util",
     "//ui/file_manager/file_manager/externs:banner",
   ]
@@ -203,7 +203,7 @@ js_library("state_banner") {
 js_unittest("state_banner_unittest") {
   deps = [
     ":state_banner",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_util",
   ]
 }
@@ -227,7 +227,7 @@ js_library("warning_banner") {
 js_unittest("warning_banner_unittest") {
   deps = [
     ":warning_banner",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_util",
     "//ui/file_manager/file_manager/externs:banner",
   ]

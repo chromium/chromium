@@ -6,7 +6,7 @@
 import {decorate} from '../../../common/js/ui.js';
 import {Command} from './command.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 // clang-format on
 

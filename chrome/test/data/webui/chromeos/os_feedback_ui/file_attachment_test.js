@@ -13,7 +13,7 @@ import {mojoString16ToString} from 'chrome://resources/ash/common/mojo_utils.js'
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */

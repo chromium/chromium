@@ -38,7 +38,7 @@ js_library("cache") {
 js_unittest("cache_unittest") {
   deps = [
     ":load_image_request",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -58,7 +58,7 @@ js_unittest("image_loader_unittest") {
     ":image_loader_util",
     ":image_orientation",
     ":load_image_request",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -92,7 +92,7 @@ js_unittest("image_loader_client_unittest") {
   deps = [
     ":image_loader_client",
     ":load_image_request",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
@@ -103,7 +103,7 @@ js_library("image_orientation") {
 js_unittest("image_orientation_unittest") {
   deps = [
     ":image_orientation",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -137,7 +137,7 @@ js_unittest("scheduler_unittest") {
   deps = [
     ":image_request_task",
     ":scheduler",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 

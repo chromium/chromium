@@ -7,7 +7,7 @@ import 'chrome://resources/ash/common/cellular_setup/provisioning_page.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertTrue} from '../../../chai_assert.js';
+import {assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
 

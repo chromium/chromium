@@ -16,7 +16,7 @@ import {MemoryUsage} from 'chrome://diagnostics/system_data_provider.mojom-webui
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isChildVisible, isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

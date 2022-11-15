@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertTrue} from '../../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function assertCloseTo(actual, expected) {
   assertTrue(

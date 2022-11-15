@@ -8,7 +8,7 @@ import {BluetoothDeviceBatteryInfoElement} from 'chrome://resources/ash/common/b
 import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 

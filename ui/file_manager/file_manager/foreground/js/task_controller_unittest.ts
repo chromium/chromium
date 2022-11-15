@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {assertDeepEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -244,7 +244,6 @@ export function testGetFileTasksShouldNotReturnObsoletePromise(
       })
       .catch(error => {
         assertNotReached(error.toString());
-        callback();
       });
 }
 
@@ -272,7 +271,6 @@ export function testGetFileTasksShouldNotCacheRejectedPromise(
   taskController.getFileTasks().then(
       (_tasks: FileTasks) => {
         assertNotReached('Fail: getFileTasks promise should be rejected');
-        callback();
       },
       () => {
         // Clears the selection handler computeAdditionalCallback so that the
@@ -287,7 +285,6 @@ export function testGetFileTasksShouldNotCacheRejectedPromise(
             },
             () => {
               assertNotReached('Fail: getFileTasks promise was rejected');
-              callback();
             });
       });
 }

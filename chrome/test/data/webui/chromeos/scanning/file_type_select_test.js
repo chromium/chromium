@@ -4,7 +4,7 @@
 
 import 'chrome://scanning/file_type_select.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {changeSelect} from './scanning_app_test_utils.js';
 

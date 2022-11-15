@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ApnListTest', function() {
   /** @type {ApnListItemElement} */

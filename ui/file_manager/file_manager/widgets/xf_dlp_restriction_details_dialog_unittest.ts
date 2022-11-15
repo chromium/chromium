@@ -5,7 +5,7 @@
 import './xf_dlp_restriction_details_dialog.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {XfDlpRestrictionDetailsDialog} from './xf_dlp_restriction_details_dialog.js';
 

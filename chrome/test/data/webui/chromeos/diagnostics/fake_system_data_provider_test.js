@@ -9,7 +9,7 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {BatteryChargeStatusObserverRemote, BatteryHealthObserverRemote, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeSystemDataProviderTestSuite', function() {
   /** @type {?FakeSystemDataProvider} */

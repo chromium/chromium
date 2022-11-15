@@ -4,7 +4,7 @@
 
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 const EMPTY_SELECTED_PATH = {

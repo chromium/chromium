@@ -4,7 +4,7 @@
 import {alphabeticalCompare} from 'chrome://scanning/scanning_app_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 /**
  * @param {!Array} arr

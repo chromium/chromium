@@ -313,14 +313,7 @@ group("closure_compile") {
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
-  deps = [
-    ":chai_assert",
-    ":test_browser_proxy",
-  ]
-}
-
-js_library("chai_assert") {
-  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
+  deps = [ ":test_browser_proxy" ]
 }
 
 js_library("test_browser_proxy") {
@@ -372,10 +365,11 @@ generate_grd("build_web_ui_test_mojo_grdp") {
 
 # TypeScript related targets
 
-checked_in_dts_files = [
-  "chai_assert.d.ts",
-  "test_browser_proxy.d.ts",
-]
+checked_in_dts_files = [ "test_browser_proxy.d.ts" ]
+
+if (is_chromeos_ash) {
+  checked_in_dts_files += [ "chromeos/chai_assert.d.ts" ]
+}
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
@@ -412,6 +406,7 @@ ts_library("build_ts") {
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
   in_files = [
+    "chai_assert.ts",
     "chrome_timeticks_test.ts",
     "color_provider_css_colors_test.ts",
     "color_provider_css_colors_test_chromeos.ts",
@@ -466,7 +461,6 @@ generate_grd("build_grd") {
 
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
-    "chai_assert.js",
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
@@ -477,8 +471,11 @@ generate_grd("build_grd") {
 
   if (is_chromeos_ash) {
     input_files += [
+      "chromeos/chai_assert.js",
       "chromeos/mock_controller.js",
+      "chromeos/mock_controller.m.js",
       "chromeos/test_store.js",
+      "chromeos/test_util.js",
       "chromeos/arc_account_picker/test_util.js",
       "chromeos/ash_common/i18n_behavior_test.js",
       "chromeos/fake_network_config_mojom.js",

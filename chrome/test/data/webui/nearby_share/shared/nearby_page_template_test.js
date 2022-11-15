@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import {NearbyPageTemplateElement} from 'chrome://nearby/shared/nearby_page_template.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chromeos/chai_assert.js';
 import {isChildVisible} from '../../chromeos/test_util.js';
 
 suite('nearby-page-template', function() {

@@ -27,7 +27,7 @@ import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_comp
 import {WrapupRestockPage} from 'chrome://shimless-rma/wrapup_restock_page.js';
 import {WrapupWaitForManualWpEnablePage} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
 
-import {assertTrue} from '../../chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function allInputsDisabledTest() {
   const INPUT_TYPES =

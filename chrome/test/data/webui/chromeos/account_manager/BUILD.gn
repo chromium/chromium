@@ -10,6 +10,9 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://account-migration-welcome/=" + rebase_path(
                             "//chrome/browser/resources/chromeos/account_manager/",
                             root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/chromeos/=" + rebase_path(
+                            "//chrome/test/data/webui/chromeos/",
+                            root_build_dir) + "\"",
                     "js_module_root=" + rebase_path("//chrome/test/data/webui/",
                                                     root_build_dir),
                     "js_module_root=./gen/chrome/test/data/webui/",
@@ -23,7 +26,7 @@ js_type_check("closure_compile") {
 js_library("account_migration_welcome_test") {
   deps = [
     ":test_account_manager_browser_proxy",
-    "../..:chai_assert",
+    "..:chai_assert",
     "//chrome/browser/resources/chromeos/account_manager:account_migration_welcome_app",
     "//ui/webui/resources/js:assert",
   ]

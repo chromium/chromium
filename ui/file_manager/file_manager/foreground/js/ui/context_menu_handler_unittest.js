@@ -7,7 +7,7 @@ import {decorate} from '../../../common/js/ui.js';
 import {contextMenuHandler} from './context_menu_handler.js';
 import {Menu} from './menu.js';
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 // clang-format on
 

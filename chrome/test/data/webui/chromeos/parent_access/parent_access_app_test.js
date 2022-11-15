@@ -10,7 +10,7 @@ import {Screens} from 'chrome://parent-access/parent_access_app.js';
 import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertNotEquals} from '../../chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {buildWebApprovalsParams} from './parent_access_test_utils.js';
 import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';

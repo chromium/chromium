@@ -16,7 +16,7 @@ import {setInputDataProviderForTesting, setSystemDataProviderForTesting} from 'c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 

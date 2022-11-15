@@ -132,7 +132,7 @@ js_library("array_data_model") {
 js_unittest("array_data_model_unittest") {
   deps = [
     ":array_data_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -154,7 +154,7 @@ js_unittest("files_app_entry_types_unittest") {
   deps = [
     ":files_app_entry_types",
     ":mock_entry",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/js:assert",
@@ -195,7 +195,7 @@ js_unittest("file_type_unittest") {
   deps = [
     ":file_type",
     ":mock_entry",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
@@ -220,7 +220,7 @@ js_library("filtered_volume_manager") {
 js_unittest("filtered_volume_manager_unittest") {
   deps = [
     ":filtered_volume_manager",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/webui/resources/js:load_time_data.m",
@@ -233,7 +233,7 @@ js_library("lru_cache") {
 js_unittest("lru_cache_unittest") {
   deps = [
     ":lru_cache",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -294,7 +294,7 @@ js_library("storage_adapter") {
 js_unittest("storage_adapter_unittest") {
   deps = [
     ":storage_adapter",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -321,7 +321,7 @@ js_library("trash") {
 }
 
 js_library("unittest_util") {
-  deps = [ "//chrome/test/data/webui:chai_assert" ]
+  deps = [ "//chrome/test/data/webui/chromeos:chai_assert" ]
 }
 
 js_library("url_constants") {
@@ -353,7 +353,7 @@ js_unittest("util_unittest") {
     ":files_app_entry_types",
     ":mock_entry",
     ":util",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]

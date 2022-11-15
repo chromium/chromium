@@ -7,8 +7,8 @@ import {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-w
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {assertEquals, assertNotEquals} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export const NONE_ANIMATION: string = 'none 0s ease 0s 1 normal none running';
 

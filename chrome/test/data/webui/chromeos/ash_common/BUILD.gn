@@ -44,6 +44,9 @@ js_type_check("closure_compile") {
                     "browser_resolver_prefix_replacements=\"chrome://resources/ash/common/=" + rebase_path(
                             "//ash/webui/common/resources/",
                             root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/chromeos/=" + rebase_path(
+                            "//chrome/test/data/webui/chromeos/",
+                            root_build_dir) + "\"",
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./gen/chrome/test/data/webui/tsc\"",
                     "js_module_root=" + rebase_path("//chrome/test/data/webui/",
                                                     root_build_dir),
@@ -66,28 +69,28 @@ js_library("ash_common_unified_test") {
 
 js_library("fake_observables_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/common/resources:fake_observables",
   ]
 }
 
 js_library("fake_method_resolver_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/common/resources:fake_method_resolver",
   ]
 }
 
 js_library("keyboard_diagram_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/common/resources:keyboard_diagram",
   ]
 }
 
 js_library("navigation_selector_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/common/resources:navigation_selector",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
   ]
@@ -95,7 +98,7 @@ js_library("navigation_selector_test") {
 
 js_library("navigation_view_panel_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/common/resources:navigation_selector",
     "//ash/webui/common/resources:navigation_view_panel",
   ]
@@ -105,8 +108,8 @@ js_library("navigation_view_panel_test") {
 
 js_library("page_toolbar_test") {
   deps = [
+    "..:chai_assert",
     "..:test_util",
-    "../..:chai_assert",
     "//ash/webui/common/resources:page_toolbar",
   ]
 }

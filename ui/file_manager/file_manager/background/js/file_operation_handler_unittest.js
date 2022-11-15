@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FileOperationHandler} from './file_operation_handler.js';
 import {fileOperationUtil} from './file_operation_util.js';

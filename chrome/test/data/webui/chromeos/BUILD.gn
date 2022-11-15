@@ -15,10 +15,15 @@ js_type_check("closure_compile_local") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":chai_assert",
     ":fake_network_config_mojom",
     ":mock_controller.m",
     ":test_util",
   ]
+}
+
+js_library("chai_assert") {
+  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
 }
 
 js_library("fake_network_config_mojom") {

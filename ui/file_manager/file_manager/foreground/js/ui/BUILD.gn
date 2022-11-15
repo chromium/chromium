@@ -143,7 +143,7 @@ js_unittest("actions_submenu_unittest") {
   deps = [
     ":actions_submenu",
     ":menu",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
     "//ui/webui/resources/js:assert",
@@ -174,7 +174,7 @@ js_library("command") {
 js_unittest("command_unittest") {
   deps = [
     ":command",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
@@ -206,7 +206,7 @@ js_unittest("context_menu_handler_unittest") {
   deps = [
     ":context_menu_handler",
     ":menu",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
@@ -266,7 +266,7 @@ js_library("directory_tree") {
 js_unittest("directory_tree_unittest") {
   deps = [
     ":directory_tree",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -320,7 +320,7 @@ js_unittest("file_grid_unittest") {
     ":a11y_announce",
     ":file_grid",
     ":list_selection_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -342,7 +342,7 @@ js_library("file_list_selection_model") {
 js_unittest("file_list_selection_model_unittest") {
   deps = [
     ":file_list_selection_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -357,7 +357,7 @@ js_library("file_manager_dialog_base") {
 js_unittest("file_manager_dialog_base_unittest") {
   deps = [
     ":file_manager_dialog_base",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/webui/resources/js:assert",
   ]
@@ -448,7 +448,7 @@ js_unittest("file_table_unittest") {
   deps = [
     ":file_table",
     "table:table_column",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -480,7 +480,7 @@ js_unittest("file_table_list_unittest") {
     ":file_list_selection_model",
     ":file_table",
     ":file_table_list",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -498,7 +498,7 @@ js_library("file_tap_handler") {
 js_unittest("file_tap_handler_unittest") {
   deps = [
     ":file_tap_handler",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
@@ -547,7 +547,7 @@ js_library("grid") {
 js_unittest("grid_unittest") {
   deps = [
     ":grid",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:array_data_model",
   ]
 }
@@ -563,7 +563,7 @@ js_library("install_linux_package_dialog") {
 js_unittest("install_linux_package_dialog_unittest") {
   deps = [
     ":install_linux_package_dialog",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -590,7 +590,7 @@ js_library("list") {
 js_unittest("list_unittest") {
   deps = [
     ":list",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:ui",
   ]
@@ -632,7 +632,7 @@ js_library("list_selection_model_test_util") {
   deps = [
     ":list_selection_model",
     ":list_single_selection_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -640,7 +640,7 @@ js_unittest("list_selection_model_unittest") {
   deps = [
     ":list_selection_model",
     ":list_selection_model_test_util",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -655,7 +655,7 @@ js_library("list_single_selection_model_unittest") {
   deps = [
     ":list_selection_model_test_util",
     ":list_single_selection_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -673,7 +673,7 @@ js_unittest("menu_unittest") {
     ":command",
     ":menu",
     ":menu_item",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
@@ -693,7 +693,7 @@ js_unittest("menu_button_unittest") {
   deps = [
     ":menu",
     ":menu_button",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
   ]
 }
@@ -737,7 +737,7 @@ js_unittest("multi_menu_unittest") {
     ":command",
     ":menu",
     ":multi_menu_button",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",
@@ -750,7 +750,7 @@ js_library("position_util") {
 js_unittest("position_util_unittest") {
   deps = [
     ":position_util",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -799,7 +799,7 @@ js_library("splitter") {
 js_unittest("splitter_unittest") {
   deps = [
     ":splitter",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:ui",
     "//ui/webui/resources/js:util",
   ]

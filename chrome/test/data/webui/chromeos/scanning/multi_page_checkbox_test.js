@@ -6,7 +6,7 @@ import 'chrome://scanning/multi_page_checkbox.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function multiPageCheckboxTest() {
   /** @type {?MultiPageCheckboxElement} */

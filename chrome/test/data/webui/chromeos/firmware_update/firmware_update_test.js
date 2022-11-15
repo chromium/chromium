@@ -16,7 +16,7 @@ import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from '../test_util.js';
 
 export function firmwareUpdateAppTest() {

@@ -4,7 +4,7 @@
 
 import {getTrustedHTML, getTrustedScript, getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 
-import {assertEquals, assertNotReached, assertThrows} from '../chai_assert.js';
+import {assertEquals, assertNotReached, assertThrows} from 'chrome://webui-test/chai_assert.js';
 
 suite('StaticTypesTest', function() {
   test('compatible with Trusted Types', () => {

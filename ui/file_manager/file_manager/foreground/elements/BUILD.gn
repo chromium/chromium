@@ -101,7 +101,7 @@ js_library("files_metadata_entry") {
 js_unittest("files_password_dialog_unittest") {
   deps = [
     ":files_password_dialog",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/webui/resources/js:assert",
   ]
@@ -157,7 +157,7 @@ html_to_wrapper("polymer_elements") {
 js_unittest("files_tooltip_unittest") {
   deps = [
     ":files_tooltip",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
@@ -169,7 +169,7 @@ js_library("files_tooltip") {
 }
 
 js_unittest("files_toast_unittest") {
-  deps = [ "//chrome/test/data/webui:chai_assert" ]
+  deps = [ "//chrome/test/data/webui/chromeos:chai_assert" ]
   externs_list = [
     "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
   ]
@@ -178,7 +178,7 @@ js_unittest("files_toast_unittest") {
 js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",

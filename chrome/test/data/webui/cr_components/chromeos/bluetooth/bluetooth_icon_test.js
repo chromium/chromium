@@ -6,7 +6,7 @@ import {SettingsBluetoothIconElement} from 'chrome://resources/ash/common/blueto
 import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 

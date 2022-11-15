@@ -12,7 +12,7 @@ import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import {NearbyProgressElement} from 'chrome://nearby/shared/nearby_progress.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from '../../chromeos/chai_assert.js';
 
 suite('ProgressTest', function() {
   /** @type {!NearbyProgressElement} */

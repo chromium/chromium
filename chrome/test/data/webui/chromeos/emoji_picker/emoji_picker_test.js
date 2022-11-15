@@ -11,7 +11,7 @@ import {EMOJI_PICKER_READY, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/ev
 import {assert} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertCloseTo, deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 

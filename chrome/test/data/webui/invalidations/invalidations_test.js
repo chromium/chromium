@@ -4,7 +4,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.js';
-import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 window.invalidations_test = {};
 invalidations_test = window.invalidations_test;

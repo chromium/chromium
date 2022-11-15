@@ -4,7 +4,7 @@
 
 import {decorate} from '../../../../common/js/ui.js';
 import {Command} from '../command.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {waitUntil} from '../../../../common/js/test_error_reporting.js';

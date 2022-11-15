@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {SELECTION_CHANGED, XfSelect} from './xf_select.js';
 

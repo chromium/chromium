@@ -9,7 +9,7 @@ import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {WrapupRestockPage} from 'chrome://shimless-rma/wrapup_restock_page.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function wrapupRestockPageTest() {
   /**

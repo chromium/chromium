@@ -11,7 +11,7 @@ import {RmadErrorCode, ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../../test_util.js';
 
 export function wrapupRepairCompletePageTest() {

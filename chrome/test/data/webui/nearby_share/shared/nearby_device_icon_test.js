@@ -12,7 +12,7 @@ import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import {NearbyDeviceIconElement} from 'chrome://nearby/shared/nearby_device_icon.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from '../../chromeos/chai_assert.js';
 
 suite('DeviceIconTest', function() {
   /** @type {!NearbyDeviceIconElement} */

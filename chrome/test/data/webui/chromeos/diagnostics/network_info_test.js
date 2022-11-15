@@ -10,7 +10,7 @@ import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.
 import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';

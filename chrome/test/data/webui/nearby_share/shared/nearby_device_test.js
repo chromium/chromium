@@ -12,7 +12,7 @@ import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import {NearbyDeviceElement} from 'chrome://nearby/shared/nearby_device.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from '../../chromeos/chai_assert.js';
 
 suite('DeviceTest', function() {
   /** @type {!NearbyDeviceElement} */

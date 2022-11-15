@@ -20,7 +20,7 @@ js_type_check("closure_compile") {
 
 js_library("traffic_counters_test") {
   deps = [
-    "../../..:chai_assert",
+    "../../../chromeos:chai_assert",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:onc_mojo",

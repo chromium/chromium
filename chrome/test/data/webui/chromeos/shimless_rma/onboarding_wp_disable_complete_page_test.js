@@ -10,7 +10,7 @@ import {OnboardingWpDisableCompletePage} from 'chrome://shimless-rma/onboarding_
 import {WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 
 export function onboardingWpDisableCompletePageTest() {

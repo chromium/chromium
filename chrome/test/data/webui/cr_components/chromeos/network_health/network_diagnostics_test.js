@@ -10,7 +10,7 @@ import {Icons} from 'chrome://resources/ash/common/network_health/network_diagno
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chromeos/chai_assert.js';
 import {isVisible} from '../../../chromeos/test_util.js';
 
 import {FakeNetworkDiagnostics} from './fake_network_diagnostics_routines.js';

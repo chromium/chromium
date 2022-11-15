@@ -7,7 +7,7 @@ import {FakeUpdateController} from 'chrome://accessory-update/fake_update_contro
 import {UpdateProgressObserverRemote} from 'chrome://accessory-update/firmware_update_types.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 export function fakeUpdateControllerTest() {
   /** @type {?FakeUpdateController} */

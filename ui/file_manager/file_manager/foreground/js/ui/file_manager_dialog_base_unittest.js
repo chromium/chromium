@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../../common/js/test_error_reporting.js';
 

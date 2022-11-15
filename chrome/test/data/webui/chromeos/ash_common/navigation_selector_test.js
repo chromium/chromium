@@ -5,7 +5,7 @@
 import {NavigationSelectorElement, SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 export function navigationSelectorTestSuite() {

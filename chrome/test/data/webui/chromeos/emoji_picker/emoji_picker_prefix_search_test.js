@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {EmojiPrefixSearch} from 'chrome://emoji-picker/prefix_search.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {assertCloseTo} from './emoji_picker_test_util.js';
 
 const mockCollection1 = [

@@ -6,17 +6,18 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + [
-        "browser_resolver_prefix_replacements=\"chrome://accessory-update/=" +
-            rebase_path("//ash/webui/firmware_update_ui/resources/",
-                        root_build_dir) + "\"",
-        "browser_resolver_prefix_replacements=\"chrome://webui-test/=" +
-            "./gen/chrome/test/data/webui/tsc\"",
-        "js_module_root=" +
-            rebase_path("//chrome/test/data/webui/", root_build_dir),
-        "js_module_root=./gen/chrome/test/data/webui/",
-      ]
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://accessory-update/=" + rebase_path(
+                            "//ash/webui/firmware_update_ui/resources/",
+                            root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/chromeos/=" + rebase_path(
+                            "//chrome/test/data/webui/chromeos/",
+                            root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=" + "./gen/chrome/test/data/webui/tsc\"",
+                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
+                                                    root_build_dir),
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
   deps = [
     ":fake_update_controller_test",
     ":fake_update_provider_test",
@@ -30,7 +31,7 @@ js_type_check("closure_compile") {
 
 js_library("fake_update_controller_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_controller",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -40,7 +41,7 @@ js_library("fake_update_controller_test") {
 
 js_library("fake_update_provider_test") {
   deps = [
-    "../..:chai_assert",
+    "..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -50,8 +51,8 @@ js_library("fake_update_provider_test") {
 
 js_library("firmware_update_dialog_test") {
   deps = [
+    "..:chai_assert",
     "..:test_util",
-    "../..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -66,8 +67,8 @@ js_library("firmware_update_dialog_test") {
 
 js_library("firmware_update_test") {
   deps = [
+    "..:chai_assert",
     "..:test_util",
-    "../..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_controller",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
@@ -88,8 +89,8 @@ js_library("firmware_update_test") {
 
 js_library("peripheral_updates_list_test") {
   deps = [
+    "..:chai_assert",
     "..:test_util",
-    "../..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
@@ -103,8 +104,8 @@ js_library("peripheral_updates_list_test") {
 
 js_library("update_card_test") {
   deps = [
+    "..:chai_assert",
     "..:test_util",
-    "../..:chai_assert",
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_utils",

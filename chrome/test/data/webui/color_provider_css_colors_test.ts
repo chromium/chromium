@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals} from './chai_assert.js';
 
 suite('ColorProviderCSSColorsTest', function() {
   let link: HTMLLinkElement;

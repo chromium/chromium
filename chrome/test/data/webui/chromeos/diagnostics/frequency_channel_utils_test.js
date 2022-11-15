@@ -7,7 +7,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import {ChannelBand} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertFrequencyToChannel, getFrequencyChannelBand} from 'chrome://diagnostics/frequency_channel_utils.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('frequencyChannelUtilsTestSuite', function() {
   test('ConvertFrequencyToChannel', () => {

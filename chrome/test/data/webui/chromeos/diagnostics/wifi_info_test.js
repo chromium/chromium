@@ -11,7 +11,7 @@ import {Network, SecurityType, WiFiStateProperties} from 'chrome://diagnostics/n
 import {WifiInfoElement} from 'chrome://diagnostics/wifi_info.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {assertDataPointHasExpectedHeaderAndValue, assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 

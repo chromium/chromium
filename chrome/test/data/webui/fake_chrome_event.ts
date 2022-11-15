@@ -6,7 +6,7 @@
  * @fileoverview Fake implementations of ChromeEvent.
  */
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from './chai_assert.js';
 
 export class FakeChromeEvent {
   private listeners_: Set<Function> = new Set();

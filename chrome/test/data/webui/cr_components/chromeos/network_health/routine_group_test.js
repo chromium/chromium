@@ -9,7 +9,7 @@ import {Icons, Routine} from 'chrome://resources/ash/common/network_health/netwo
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../../chromeos/chai_assert.js';
 
 import {createResult, getIconFromSrc} from './network_health_test_utils.js';
 

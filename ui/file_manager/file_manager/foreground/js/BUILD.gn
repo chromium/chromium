@@ -225,7 +225,7 @@ js_unittest("banner_controller_unittest") {
     ":banner_controller",
     ":directory_model",
     ":mock_directory_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -243,7 +243,7 @@ js_unittest("banner_util_unittest") {
   deps = [
     ":banner_controller",
     ":directory_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
     "//ui/file_manager/file_manager/externs:volume_info",
@@ -272,7 +272,7 @@ js_unittest("actions_model_unittest") {
     "ui:action_model_ui",
     "ui:files_alert_dialog",
     "ui:list_container",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:metrics",
@@ -411,7 +411,7 @@ js_library("directory_contents") {
 js_unittest("directory_contents_unittest") {
   deps = [
     ":directory_contents",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entry_location",
@@ -453,7 +453,7 @@ js_unittest("directory_model_unittest") {
     ":directory_contents",
     ":directory_model",
     "metadata:mock_metadata",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_file_operation_manager",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -515,7 +515,7 @@ js_unittest("empty_folder_controller_unittest") {
     ":file_list_model",
     ":mock_directory_model",
     "metadata:mock_metadata",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:util",
@@ -559,7 +559,7 @@ js_unittest("file_list_model_unittest") {
   deps = [
     ":file_list_model",
     "metadata:metadata_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
 
@@ -684,7 +684,7 @@ js_library("file_manager_commands") {
 js_unittest("file_manager_commands_unittest") {
   deps = [
     ":file_manager_commands",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
@@ -760,7 +760,7 @@ js_unittest("file_transfer_controller_unittest") {
     "ui:file_table",
     "ui:list_container",
     "ui:list_selection_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -792,7 +792,7 @@ js_unittest("file_type_filters_controller_unittest") {
     ":directory_model",
     ":file_type_filters_controller",
     "ui:a11y_announce",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -898,7 +898,7 @@ js_unittest("list_thumbnail_loader_unittest") {
     ":mock_thumbnail_loader",
     "metadata:metadata_model",
     "metadata:thumbnail_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -988,7 +988,7 @@ js_library("navigation_list_model") {
     ":android_app_list_model",
     ":directory_model",
     ":folder_shortcuts_data_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:trash",
@@ -1009,7 +1009,7 @@ js_unittest("navigation_list_model_unittest") {
     ":mock_directory_model",
     ":mock_folder_shortcut_data_model",
     ":navigation_list_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/background/js:volume_info_impl",
     "//ui/file_manager/file_manager/common/js:dialog_type",
@@ -1034,7 +1034,7 @@ js_library("path_component") {
 js_unittest("path_component_unittest") {
   deps = [
     ":path_component",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -1053,7 +1053,7 @@ js_library("providers_model") {
 js_unittest("providers_model_unittest") {
   deps = [
     ":providers_model",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/background/js:volume_info_impl",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -1158,7 +1158,7 @@ js_library("spinner_controller") {
 js_unittest("spinner_controller_unittest") {
   deps = [
     ":spinner_controller",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/webui/resources/js:assert",
   ]
@@ -1186,7 +1186,7 @@ js_library("thumbnail_loader") {
 js_unittest("thumbnail_loader_unittest") {
   deps = [
     ":thumbnail_loader",
-    "//chrome/test/data/webui:chai_assert",
+    "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/image_loader:image_loader_client",
