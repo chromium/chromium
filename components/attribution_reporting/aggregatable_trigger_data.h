@@ -9,11 +9,17 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/bounded_list.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -24,6 +30,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
       base::flat_set<std::string> source_keys,
       Filters filters,
       Filters not_filters);
+
+  static base::expected<AggregatableTriggerData,
+                        mojom::TriggerRegistrationError>
+  FromJSON(base::Value& value);
 
   ~AggregatableTriggerData();
 

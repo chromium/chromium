@@ -4,26 +4,100 @@
 
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 
+#include <stddef.h>
+
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
 namespace {
 
+using ::attribution_reporting::mojom::TriggerRegistrationError;
+
 bool AreSourceKeysValid(const base::flat_set<std::string>& source_keys) {
   if (source_keys.size() > kMaxAggregationKeysPerSourceOrTrigger)
     return false;
 
   return base::ranges::all_of(source_keys, [](const auto& key) {
-    return key.size() <= kMaxBytesPerAggregationKeyId;
+    return AggregationKeyIdHasValidLength(key);
   });
+}
+
+base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
+    const base::Value::Dict& registration) {
+  const base::Value* v = registration.Find("key_piece");
+  if (!v) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing);
+  }
+
+  const std::string* s = v->GetIfString();
+  if (!s) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataKeyPieceWrongType);
+  }
+
+  absl::optional<absl::uint128> key_piece = StringToAggregationKeyPiece(*s);
+  if (!key_piece) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataKeyPieceWrongFormat);
+  }
+  return *key_piece;
+}
+
+base::expected<base::flat_set<std::string>, TriggerRegistrationError>
+ParseSourceKeys(base::Value::Dict& registration) {
+  base::Value* v = registration.Find("source_keys");
+  if (!v) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataSourceKeysMissing);
+  }
+
+  base::Value::List* l = v->GetIfList();
+  if (!l) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataSourceKeysWrongType);
+  }
+
+  const size_t num_source_keys = l->size();
+
+  if (num_source_keys > kMaxAggregationKeysPerSourceOrTrigger) {
+    return base::unexpected(TriggerRegistrationError::
+                                kAggregatableTriggerDataSourceKeysTooManyKeys);
+  }
+
+  base::flat_set<std::string>::container_type source_keys;
+  source_keys.reserve(num_source_keys);
+
+  for (auto& maybe_string_value : *l) {
+    std::string* s = maybe_string_value.GetIfString();
+    if (!s) {
+      return base::unexpected(
+          TriggerRegistrationError::
+              kAggregatableTriggerDataSourceKeysKeyWrongType);
+    }
+    if (!AggregationKeyIdHasValidLength(*s)) {
+      return base::unexpected(TriggerRegistrationError::
+                                  kAggregatableTriggerDataSourceKeysKeyTooLong);
+    }
+
+    source_keys.emplace_back(std::move(*s));
+  }
+
+  return source_keys;
 }
 
 }  // namespace
@@ -39,6 +113,35 @@ absl::optional<AggregatableTriggerData> AggregatableTriggerData::Create(
 
   return AggregatableTriggerData(key_piece, std::move(source_keys),
                                  std::move(filters), std::move(not_filters));
+}
+
+// static
+base::expected<AggregatableTriggerData, TriggerRegistrationError>
+AggregatableTriggerData::FromJSON(base::Value& value) {
+  base::Value::Dict* dict = value.GetIfDict();
+  if (!dict) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableTriggerDataWrongType);
+  }
+
+  auto key_piece = ParseKeyPiece(*dict);
+  if (!key_piece.has_value())
+    return base::unexpected(key_piece.error());
+
+  auto source_keys = ParseSourceKeys(*dict);
+  if (!source_keys.has_value())
+    return base::unexpected(source_keys.error());
+
+  auto filters = Filters::FromJSON(dict->Find("filters"));
+  if (!filters.has_value())
+    return base::unexpected(filters.error());
+
+  auto not_filters = Filters::FromJSON(dict->Find("not_filters"));
+  if (!not_filters.has_value())
+    return base::unexpected(not_filters.error());
+
+  return AggregatableTriggerData(*key_piece, std::move(*source_keys),
+                                 std::move(*filters), std::move(*not_filters));
 }
 
 AggregatableTriggerData::AggregatableTriggerData(

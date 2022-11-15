@@ -29,6 +29,8 @@ component("attribution_reporting") {
     "filters.h",
     "os_registration.cc",
     "os_registration.h",
+    "parsing_utils.cc",
+    "parsing_utils.h",
     "source_registration.cc",
     "source_registration.h",
     "suitable_origin.cc",
@@ -55,11 +57,13 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregatable_trigger_data_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
     "bounded_list_unittest.cc",
     "filters_unittest.cc",
     "os_registration_unittest.cc",
+    "parsing_utils_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
   ]

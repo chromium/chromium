@@ -18,4 +18,14 @@ enum TriggerRegistrationError {
   kAggregatableValuesKeyTooLong,
   kAggregatableValuesValueWrongType,
   kAggregatableValuesValueOutOfRange,
+
+  kAggregatableTriggerDataWrongType,
+  kAggregatableTriggerDataKeyPieceMissing,
+  kAggregatableTriggerDataKeyPieceWrongType,
+  kAggregatableTriggerDataKeyPieceWrongFormat,
+  kAggregatableTriggerDataSourceKeysMissing,
+  kAggregatableTriggerDataSourceKeysWrongType,
+  kAggregatableTriggerDataSourceKeysTooManyKeys,
+  kAggregatableTriggerDataSourceKeysKeyWrongType,
+  kAggregatableTriggerDataSourceKeysKeyTooLong,
 };

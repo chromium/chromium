@@ -14,10 +14,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -38,7 +36,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
@@ -548,45 +545,6 @@ class AttributionSimulatorInputParser {
     return attribution_reporting::Filters();
   }
 
-  absl::uint128 ParseAggregationKey(const base::Value& key_value) {
-    const std::string* s = key_value.GetIfString();
-
-    absl::uint128 value = 0;
-    if (!s ||
-        !base::StartsWith(*s, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
-        !base::HexStringToUInt128(*s, &value)) {
-      *Error() << "must be a uint128 formatted as a base-16 string";
-    }
-
-    return value;
-  }
-
-  base::flat_set<std::string> ParseAggregatableTriggerDataSourceKeys(
-      const base::Value::Dict& dict) {
-    static constexpr char kKey[] = "source_keys";
-
-    base::flat_set<std::string> source_keys;
-
-    auto context = PushContext(kKey);
-
-    const base::Value* values = dict.Find(kKey);
-    if (!values) {
-      *Error() << "must be present";
-      return source_keys;
-    }
-
-    ParseList(*values,
-              base::BindLambdaForTesting([&](const base::Value& value) {
-                if (!value.is_string()) {
-                  *Error() << "must be a string";
-                } else {
-                  source_keys.emplace(value.GetString());
-                }
-              }));
-
-    return source_keys;
-  }
-
   std::vector<attribution_reporting::AggregatableTriggerData>
   ParseAggregatableTriggerData(const base::Value::Dict& dict) {
     static constexpr char kKey[] = "aggregatable_trigger_data";
@@ -603,42 +561,15 @@ class AttributionSimulatorInputParser {
         *values,
         base::BindLambdaForTesting(
             [&](const base::Value& aggregatable_trigger) {
-              if (!EnsureDictionary(aggregatable_trigger))
-                return;
-
-              const base::Value::Dict& trigger_dict =
-                  aggregatable_trigger.GetDict();
-
-              base::flat_set<std::string> source_keys =
-                  ParseAggregatableTriggerDataSourceKeys(trigger_dict);
-
-              absl::uint128 key;
-              {
-                static constexpr char kKeyKeyPiece[] = "key_piece";
-                auto key_context = PushContext(kKeyKeyPiece);
-                const base::Value* key_piece = trigger_dict.Find(kKeyKeyPiece);
-                if (key_piece) {
-                  key = ParseAggregationKey(*key_piece);
-                } else {
-                  *Error() << "must be present";
-                }
-              }
-
-              attribution_reporting::Filters filters =
-                  ParseFilters(trigger_dict, "filters");
-
-              attribution_reporting::Filters not_filters =
-                  ParseFilters(trigger_dict, "not_filters");
-
+              base::Value aggregatable_trigger_copy =
+                  aggregatable_trigger.Clone();
               auto trigger_data =
-                  attribution_reporting::AggregatableTriggerData::Create(
-                      key, std::move(source_keys), std::move(filters),
-                      std::move(not_filters));
-              if (!trigger_data)
-                *Error() << "invalid";
-
-              if (has_error())
+                  attribution_reporting::AggregatableTriggerData::FromJSON(
+                      aggregatable_trigger_copy);
+              if (!trigger_data.has_value()) {
+                *Error() << trigger_data.error();
                 return;
+              }
 
               aggregatable_triggers.push_back(std::move(*trigger_data));
             }),
