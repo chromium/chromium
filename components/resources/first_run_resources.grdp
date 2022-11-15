@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <if expr="_google_chrome">
+    <then>
+      <include name="IDR_FIRST_RUN_PRODUCT_LOGO_ANIMATION" file="default_100_percent/google_chrome/first_run/chrome_logo_animation.svg" type="BINDATA" />
+    </then>
+    <else>
+      <include name="IDR_FIRST_RUN_PRODUCT_LOGO_ANIMATION" file="default_100_percent/chromium/first_run/chromium_logo_animation.svg" type="BINDATA" />
+    </else>
+  </if>
+</grit-part>

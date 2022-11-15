@@ -8,14 +8,22 @@
     font-size: 100%;
     margin: 0;
   }
+
+  #product-logo-animation {
+    height: 160px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+  }
 </style>
 
 <cr-view-manager id="viewManager">
   <!-- TODO(crbug.com/1347507): On load, transition to "splash" and trigger the
        animation -->
   <div id="splash" slot="view">
-    <!-- TODO(crbug.com/1347507): Use <cr_lottie> -->
-    🏐 Faster. Safer. Yours.
+    <img id="product-logo-animation" src="product-logo-animation.svg">
   </div>
   <sign-in-promo id="signInPromo" slot="view"></sign-in-promo>
 </cr-view-manager>

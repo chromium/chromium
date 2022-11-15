@@ -31,13 +31,12 @@ export class IntroAppElement extends PolymerElement {
 
   private async setupViewManager_(queryParams: URLSearchParams) {
     if (!queryParams.has('noAnimations')) {
+      const kSplashViewDurationMillis = 1500;
       this.$.viewManager.switchView('splash', 'fade-in', 'fade-out');
-
-      // TODO(crbug.com/1347507): Delay the switch to signInPromo based on the
-      // splash animation timing instead.
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Delay the switch to signInPromo based on the splash animation timing.
+      await new Promise(
+          resolve => setTimeout(resolve, kSplashViewDurationMillis));
     }
-
     this.$.viewManager.switchView('signInPromo', 'fade-in', 'no-animation');
   }
 
