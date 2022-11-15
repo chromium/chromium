@@ -9624,6 +9624,8 @@
     "RunTasksByBatches": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "mac"
             ],
             "experiments": [
