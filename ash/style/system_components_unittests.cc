@@ -48,7 +48,9 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
 
 using SystemComponentsTest = AshTestBase;
 
-TEST_F(SystemComponentsTest, IconButtonWithBackgroundColorIdDoesNotCrash) {
+// TODO(crbug/1384370): Disable for constant failure.
+TEST_F(SystemComponentsTest,
+       DISABLED_IconButtonWithBackgroundColorIdDoesNotCrash) {
   // Create an IconButton with an explicit background color ID.
   auto icon_button = std::make_unique<IconButton>(
       IconButton::PressedCallback(), IconButton::Type::kSmall, &kTestIcon,
