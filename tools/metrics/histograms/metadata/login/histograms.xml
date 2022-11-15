@@ -317,9 +317,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.StateKeyGenerationStatus"
-    enum="LoginStateKeyGenerationStatus" expires_after="M77">
-  <owner>mnissler@chromium.org</owner>
-  <summary>Result of a state key generation operation.</summary>
+    enum="LoginStateKeyGenerationStatus" expires_after="2023-11-01">
+  <owner>sergiyb@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@chromium.org</owner>
+  <summary>
+    Result of a state key generation operation. Warning: this histogram was
+    expired from 2019-10-22 (M78) to 2023-02-07 (M110); data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Login.SuccessReason" enum="LoginSuccessReason"
