@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/tokenize.h"
+#include "third_party/liburlpattern/utils.h"
 
 namespace blink {
 
@@ -78,6 +79,23 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
   return default_port != url::PORT_UNSPECIFIED && default_port == port_number;
 }
 
+// Base URL values that include pattern string characters should not blow
+// up pattern parsing.  Automatically escape them.  We must not escape inputs
+// for non-pattern base URLs, though.
+String EscapeBaseURLString(const String& input, ValueType type) {
+  if (type != ValueType::kPattern || !input.length())
+    return input;
+
+  std::string result;
+  result.reserve(input.length());
+
+  StringUTF8Adaptor utf8(input);
+  liburlpattern::EscapePatternStringAndAppend(
+      absl::string_view(utf8.data(), utf8.size()), result);
+
+  return String::FromUTF8(result);
+}
+
 // A utility method that takes a URLPatternInit, splits it apart, and applies
 // the individual component values in the given set of strings.  The strings
 // are only applied if a value is present in the init structure.
@@ -107,16 +125,25 @@ void ApplyInit(const URLPatternInit* init,
       return;
     }
 
-    protocol = base_url.Protocol() ? base_url.Protocol() : g_empty_string;
-    username = base_url.User() ? base_url.User() : g_empty_string;
-    password = base_url.Pass() ? base_url.Pass() : g_empty_string;
-    hostname = base_url.Host() ? base_url.Host() : g_empty_string;
+    protocol = base_url.Protocol()
+                   ? EscapeBaseURLString(base_url.Protocol(), type)
+                   : g_empty_string;
+    username = base_url.User() ? EscapeBaseURLString(base_url.User(), type)
+                               : g_empty_string;
+    password = base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
+                               : g_empty_string;
+    hostname = base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
+                               : g_empty_string;
     port =
         base_url.Port() > 0 ? String::Number(base_url.Port()) : g_empty_string;
-    pathname = base_url.GetPath() ? base_url.GetPath() : g_empty_string;
-    search = base_url.Query() ? base_url.Query() : g_empty_string;
-    hash = base_url.HasFragmentIdentifier() ? base_url.FragmentIdentifier()
-                                            : g_empty_string;
+    pathname = base_url.GetPath()
+                   ? EscapeBaseURLString(base_url.GetPath(), type)
+                   : g_empty_string;
+    search = base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
+                              : g_empty_string;
+    hash = base_url.HasFragmentIdentifier()
+               ? EscapeBaseURLString(base_url.FragmentIdentifier(), type)
+               : g_empty_string;
   }
 
   // Apply the URLPatternInit component values on top of the default and
@@ -157,11 +184,12 @@ void ApplyInit(const URLPatternInit* init,
       // and check.  If there is no slash then we cannot use resolve the
       // relative pathname and just treat the init pathname as an absolute
       // value.
-      auto slash_index = base_url.GetPath().ReverseFind("/");
+      String base_path = EscapeBaseURLString(base_url.GetPath(), type);
+      auto slash_index = base_path.ReverseFind("/");
       if (slash_index != kNotFound) {
         // Extract the baseURL path up to and including the first slash.  Append
         // the relative init pathname to it.
-        pathname = base_url.GetPath().Substring(0, slash_index + 1) + pathname;
+        pathname = base_path.Substring(0, slash_index + 1) + pathname;
       }
     }
     pathname = url_pattern::CanonicalizePathname(protocol, pathname, type,
