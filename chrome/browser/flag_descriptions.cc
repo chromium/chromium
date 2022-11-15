@@ -784,6 +784,7 @@ const char kFontAccessAPIDescription[] =
 
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
+const char kForceColorProfileRec2020[] = "ITU-R BT.2020";
 const char kForceColorProfileColorSpin[] = "Color spin with gamma 2.4";
 const char kForceColorProfileSCRGBLinear[] =
     "scRGB linear (HDR where available)";

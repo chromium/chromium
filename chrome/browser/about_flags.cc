@@ -1044,6 +1044,8 @@ const FeatureEntry::Choice kForceColorProfileChoices[] = {
      switches::kForceDisplayColorProfile, "srgb"},
     {flag_descriptions::kForceColorProfileP3,
      switches::kForceDisplayColorProfile, "display-p3-d65"},
+    {flag_descriptions::kForceColorProfileRec2020,
+     switches::kForceDisplayColorProfile, "rec2020"},
     {flag_descriptions::kForceColorProfileColorSpin,
      switches::kForceDisplayColorProfile, "color-spin-gamma24"},
     {flag_descriptions::kForceColorProfileSCRGBLinear,

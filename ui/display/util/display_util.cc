@@ -217,6 +217,10 @@ gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
     return gfx::ColorSpace::CreateSRGB();
   if (value == "display-p3-d65")
     return gfx::ColorSpace::CreateDisplayP3D65();
+  if (value == "rec2020") {
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                           gfx::ColorSpace::TransferID::BT2020_10);
+  }
   if (value == "scrgb-linear")
     return gfx::ColorSpace::CreateSRGBLinear();
   if (value == "hdr10")
