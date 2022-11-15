@@ -129,7 +129,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL,
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
                 ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED,
-                ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME,
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF,
                 ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID,
                 ChromePreferenceKeys.TABMODEL_HAS_COMPUTED_MAX_ID,

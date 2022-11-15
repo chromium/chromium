@@ -116,7 +116,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     @After
     public void tearDown() {
-        mSharedPrefsManager.removeKey(ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME);
+        mSharedPrefsManager.removeKey(ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME);
         mFakeTimeTestRule.resetTimes();
     }
 
@@ -128,7 +128,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
-                ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME, timeOfSyncPrompt);
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS);
         assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
@@ -144,7 +144,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
-                ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME, timeOfSyncPrompt);
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         assertFalse(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());
     }
 
@@ -157,7 +157,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
-                ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME, timeOfSyncPrompt);
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfSyncPrompt);
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
         assertTrue(PasswordManagerErrorMessageHelperBridge.shouldShowErrorUi());

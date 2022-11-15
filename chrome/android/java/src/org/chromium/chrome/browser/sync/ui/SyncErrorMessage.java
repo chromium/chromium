@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptType;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -59,6 +58,26 @@ import java.lang.annotation.RetentionPolicy;
  * only one instance in the whole application will exist at a time.
  */
 public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserData {
+    @VisibleForTesting
+    @IntDef({MessageType.NOT_SHOWN, MessageType.AUTH_ERROR, MessageType.PASSPHRASE_REQUIRED,
+            MessageType.SYNC_SETUP_INCOMPLETE, MessageType.CLIENT_OUT_OF_DATE,
+            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING,
+            MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS,
+            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING,
+            MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MessageType {
+        int NOT_SHOWN = -1;
+        int AUTH_ERROR = 0;
+        int PASSPHRASE_REQUIRED = 1;
+        int SYNC_SETUP_INCOMPLETE = 2;
+        int CLIENT_OUT_OF_DATE = 3;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING = 4;
+        int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 5;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 6;
+        int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 7;
+    }
+
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({Action.SHOWN, Action.DISMISSED, Action.BUTTON_CLICKED, Action.NUM_ENTRIES})
@@ -70,7 +89,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
         int NUM_ENTRIES = 3;
     }
 
-    private final @SyncErrorPromptType int mType;
+    private final @MessageType int mType;
     private final Activity mActivity;
     private final MessageDispatcher mMessageDispatcher;
     private final PropertyModel mModel;
@@ -84,7 +103,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
      * Creates a {@link SyncErrorMessage} in the window of |dispatcher|, or results in a no-op
      * if preconditions are not satisfied. The conditions are:
      * a) there is an ongoing sync error and it belongs to the subset defined by
-     *    {@link SyncErrorPromptType}.
+     *    {@link MessageType}.
      * b) a minimal time interval has passed since the UI was last shown.
      * c) there is no other instance of the UI being shown on this window.
      * d) there is a valid {@link MessageDispatcher} in this window.
@@ -93,21 +112,24 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
      */
     public static void maybeShowMessageUi(WindowAndroid windowAndroid) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (!SyncErrorPromptUtils.shouldShowPrompt(SyncErrorPromptUtils.getSyncErrorUiType(
-                        SyncSettingsUtils.getSyncError()))) {
+            if (getMessageType(SyncSettingsUtils.getSyncError()) == MessageType.NOT_SHOWN) {
+                return;
+            }
+
+            if (!SyncErrorMessageImpressionTracker.canShowNow()) {
                 return;
             }
 
             MessageDispatcher dispatcher = MessageDispatcherProvider.from(windowAndroid);
             if (dispatcher == null) {
-                // Show prompt UI next time when there is a valid dispatcher attached to this
+                // Show message next time when there is a valid dispatcher attached to this
                 // window.
                 return;
             }
 
             UnownedUserDataHost host = windowAndroid.getUnownedUserDataHost();
             if (SYNC_ERROR_MESSAGE_KEY.retrieveDataFromHost(host) != null) {
-                // Show prompt UI next time when the previous message has disappeared.
+                // Show message next time when the previous message has disappeared.
                 return;
             }
             SYNC_ERROR_MESSAGE_KEY.attachToHost(
@@ -142,17 +164,17 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
         mMessageDispatcher =
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
-        mType = SyncErrorPromptUtils.getSyncErrorUiType(error);
+        mType = getMessageType(error);
         mActivity = activity;
         SyncService.get().addSyncStateChangedListener(this);
-        SyncErrorPromptUtils.updateLastShownTime();
+        SyncErrorMessageImpressionTracker.updateLastShownTime();
         recordHistogram(Action.SHOWN);
     }
 
     @Override
     public void syncStateChanged() {
         // If the error disappeared or changed type in the meantime, dismiss the UI.
-        if (mType != SyncErrorPromptUtils.getSyncErrorUiType(SyncSettingsUtils.getSyncError())) {
+        if (mType != getMessageType(SyncSettingsUtils.getSyncError())) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
                 : "Message UI should have been dismissed";
@@ -161,27 +183,27 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
 
     private @PrimaryActionClickBehavior int onAccepted() {
         switch (mType) {
-            case SyncErrorPromptType.NOT_SHOWN:
+            case MessageType.NOT_SHOWN:
                 assert false;
                 break;
-            case SyncErrorPromptType.AUTH_ERROR:
+            case MessageType.AUTH_ERROR:
                 if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)) {
                     startUpdateCredentialsFlow(mActivity);
                 } else {
                     openSyncSettings();
                 }
                 break;
-            case SyncErrorPromptType.PASSPHRASE_REQUIRED:
-            case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
-            case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
+            case MessageType.PASSPHRASE_REQUIRED:
+            case MessageType.SYNC_SETUP_INCOMPLETE:
+            case MessageType.CLIENT_OUT_OF_DATE:
                 openSyncSettings();
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 openTrustedVaultKeyRetrievalActivity();
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 openTrustedVaultRecoverabilityDegradedActivity();
                 break;
         }
@@ -197,7 +219,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
             // wasn't reached either, resetLastShownTime() so the message can be shown again. This
             // includes the case where the user changes tabs while the message is showing
             // (TAB_SWITCHED).
-            SyncErrorPromptUtils.resetLastShownTime();
+            SyncErrorMessageImpressionTracker.resetLastShownTime();
         }
         SyncService.get().removeSyncStateChangedListener(this);
         SYNC_ERROR_MESSAGE_KEY.detachFromAllHosts(this);
@@ -209,31 +231,31 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
     }
 
     private void recordHistogram(@Action int action) {
-        assert mType != SyncErrorPromptType.NOT_SHOWN;
+        assert mType != MessageType.NOT_SHOWN;
         String name = "Signin.SyncErrorMessage.";
         switch (mType) {
-            case SyncErrorPromptType.AUTH_ERROR:
+            case MessageType.AUTH_ERROR:
                 name += "AuthError";
                 break;
-            case SyncErrorPromptType.PASSPHRASE_REQUIRED:
+            case MessageType.PASSPHRASE_REQUIRED:
                 name += "PassphraseRequired";
                 break;
-            case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
+            case MessageType.SYNC_SETUP_INCOMPLETE:
                 name += "SyncSetupIncomplete";
                 break;
-            case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
+            case MessageType.CLIENT_OUT_OF_DATE:
                 name += "ClientOutOfDate";
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
                 name += "TrustedVaultKeyRequiredForEverything";
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+            case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
                 name += "TrustedVaultKeyRequiredForPasswords";
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
                 name += "TrustedVaultRecoverabilityDegradedForEverything";
                 break;
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+            case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 name += "TrustedVaultRecoverabilityDegradedForPasswords";
                 break;
             default:
@@ -323,6 +345,31 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
             return null;
         }
         return SyncService.get().getAccountInfo();
+    }
+
+    @VisibleForTesting
+    @MessageType
+    public static int getMessageType(@SyncError int error) {
+        switch (error) {
+            case SyncError.AUTH_ERROR:
+                return MessageType.AUTH_ERROR;
+            case SyncError.PASSPHRASE_REQUIRED:
+                return MessageType.PASSPHRASE_REQUIRED;
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+                return MessageType.SYNC_SETUP_INCOMPLETE;
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return MessageType.CLIENT_OUT_OF_DATE;
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING;
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING;
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
+            default:
+                return MessageType.NOT_SHOWN;
+        }
     }
 
     @VisibleForTesting

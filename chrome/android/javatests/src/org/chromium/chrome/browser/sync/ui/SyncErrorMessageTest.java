@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptType;
+import org.chromium.chrome.browser.sync.ui.SyncErrorMessage.MessageType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -85,7 +85,7 @@ public class SyncErrorMessageTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        SyncErrorPromptUtils.resetLastShownTime();
+        SyncErrorMessageImpressionTracker.resetLastShownTime();
         mFakeSyncServiceImpl = (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
         SyncErrorMessage.setMessageDispatcherForTesting(mMessageDispatcher);
         doAnswer((invocation) -> {
@@ -148,7 +148,7 @@ public class SyncErrorMessageTest {
         verifyHasShownMessage();
 
         // Not possible to resolve this error from within chrome unlike the other
-        // SyncErrorPromptType-s.
+        // SyncErrorMessage-s.
     }
 
     @Test
@@ -195,8 +195,7 @@ public class SyncErrorMessageTest {
             return SyncSettingsUtils.getSyncError();
         });
 
-        Assert.assertEquals(
-                SyncErrorPromptType.NOT_SHOWN, SyncErrorPromptUtils.getSyncErrorUiType(syncError));
+        Assert.assertEquals(MessageType.NOT_SHOWN, SyncErrorMessage.getMessageType(syncError));
 
         verifyHasNeverShownMessage();
     }

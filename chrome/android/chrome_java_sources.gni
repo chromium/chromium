@@ -1079,7 +1079,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseDialogFragment.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseTypeDialogFragment.java",
   "java/src/org/chromium/chrome/browser/sync/ui/SyncErrorMessage.java",
-  "java/src/org/chromium/chrome/browser/sync/ui/SyncErrorPromptUtils.java",
+  "java/src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageImpressionTracker.java",
   "java/src/org/chromium/chrome/browser/sync/ui/SyncTrustedVaultProxyActivity.java",
   "java/src/org/chromium/chrome/browser/tab/AccessibilityVisibilityHandler.java",
   "java/src/org/chromium/chrome/browser/tab/AutofillSessionLifetimeController.java",

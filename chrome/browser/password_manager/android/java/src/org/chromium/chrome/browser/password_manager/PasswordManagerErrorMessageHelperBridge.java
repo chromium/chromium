@@ -68,7 +68,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         long lastShownTimestamp =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
         long lastShownSyncErrorTimestamp = SharedPreferencesManager.getInstance().readLong(
-                ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME, 0);
+                ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, 0);
         long currentTime = TimeUtils.currentTimeMillis();
         return (currentTime - lastShownTimestamp > MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS)
                 && (currentTime - lastShownSyncErrorTimestamp) > MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
