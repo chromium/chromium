@@ -336,9 +336,9 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation(bool is_fast_swipe) {
   // local so we do not try to access a member of a deleted object.
   int local_ending_desk_index = -1;
 
-  // For the improvements trial, try animating to `ending_desk_index_`
-  // regardless of how much of it is visible.
-  if (is_fast_swipe && features::AreDesksTrackpadSwipeImprovementsEnabled()) {
+  // Try animating to `ending_desk_index_` regardless of how much of it is
+  // visible.
+  if (is_fast_swipe) {
     local_ending_desk_index = ending_desk_index_;
     // If the ending desk screenshot is underway, it will call
     // `StartAnimation()` when finished.

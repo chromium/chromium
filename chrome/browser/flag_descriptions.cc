@@ -4900,12 +4900,6 @@ const char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "
     "launchable template in a new desk";
 
-const char kDesksTrackpadSwipeImprovementsName[] =
-    "Experiment: Trackpad swiping to switch desks.";
-const char kDesksTrackpadSwipeImprovementsDescription[] =
-    "Adds some modifications to the four finger trackpad gesture which "
-    "switches desks.";
-
 const char kPreferConstantFrameRateName[] = "Prefer Constant Frame Rate";
 const char kPreferConstantFrameRateDescription[] =
     "Enables this flag to prefer using constant frame rate for camera when "

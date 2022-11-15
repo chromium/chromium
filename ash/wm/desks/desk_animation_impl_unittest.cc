@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -12,7 +11,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "base/barrier_closure.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -140,10 +138,6 @@ TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
 // Tests that if a fast swipe is detected, we will still wait for the ending
 // screenshot to be taken and animated to.
 TEST_F(DeskActivationAnimationTest, AnimatingAfterFastSwipe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kEnableDesksTrackpadSwipeImprovements);
-
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 

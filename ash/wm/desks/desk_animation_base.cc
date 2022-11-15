@@ -118,9 +118,7 @@ void DeskAnimationBase::OnEndingDeskScreenshotTaken() {
   // see an animation but expect to. If the gesture has ended, and has been
   // determined to be fast, we will start the animation to delete `this`.
   const bool skip_start_animation =
-      is_continuous_gesture_animation_ &&
-      (!features::AreDesksTrackpadSwipeImprovementsEnabled() ||
-       !did_continuous_gesture_end_fast_);
+      is_continuous_gesture_animation_ && !did_continuous_gesture_end_fast_;
   if (skip_start_animation)
     return;
 

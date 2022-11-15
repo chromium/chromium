@@ -2813,9 +2813,6 @@ extern const char kDesksSaveAndRecallDescription[];
 extern const char kDesksTemplatesName[];
 extern const char kDesksTemplatesDescription[];
 
-extern const char kDesksTrackpadSwipeImprovementsName[];
-extern const char kDesksTrackpadSwipeImprovementsDescription[];
-
 extern const char kPreferConstantFrameRateName[];
 extern const char kPreferConstantFrameRateDescription[];
 

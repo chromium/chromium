@@ -2061,11 +2061,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-desks-trackpad-swipe-improvements",
-    "owners": [ "fanafan", "sammiequon", "tclaiborne" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-desktop-capture-lacros-v2",
     "owners": [ "alcooper", "mfoltz" ],
     "expiry_milestone": 115

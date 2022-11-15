@@ -680,13 +680,6 @@ BASE_FEATURE(kEnableBackgroundBlur,
              "EnableBackgroundBlur",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables some trials aimed at improving user experiencing when using the
-// trackpad to switch desks.
-// TODO(https://crbug.com/1191545): Remove this after the feature is launched.
-BASE_FEATURE(kEnableDesksTrackpadSwipeImprovements,
-             "EnableDesksTrackpadSwipeImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the DNS proxy service providing support split and secure DNS
 // for ChromeOS.
 BASE_FEATURE(kEnableDnsProxy,
@@ -2224,10 +2217,6 @@ bool AreContextualNudgesEnabled() {
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);
-}
-
-bool AreDesksTrackpadSwipeImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDesksTrackpadSwipeImprovements);
 }
 
 bool AreSystemSoundsEnabled() {
