@@ -1995,7 +1995,6 @@ static_library("browser") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/chrome_for_testing:buildflags",
     "//chrome/browser/devtools",
-    "//chrome/browser/enterprise/identifiers",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_guide/notifications:public",

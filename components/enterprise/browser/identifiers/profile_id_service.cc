@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
 #include "components/enterprise/browser/identifiers/profile_id_delegate.h"
 #include "components/prefs/pref_service.h"
@@ -30,14 +29,7 @@ absl::nullopt_t RecordError(ProfileIdService::Error error) {
   return absl::nullopt;
 }
 
-// Used in testing for storing and retrieving the profile identifier.
-std::string& GetTestProfileIdFromStorage() {
-  static base::NoDestructor<std::string> storage;
-  return *storage;
-}
-
 }  // namespace
-
 ProfileIdService::ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
                                    PrefService* profile_prefs)
     : delegate_(std::move(delegate)), profile_prefs_(profile_prefs) {
@@ -45,17 +37,9 @@ ProfileIdService::ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
   DCHECK(profile_prefs_);
 }
 
-ProfileIdService::ProfileIdService(const std::string profile_id) {
-  GetTestProfileIdFromStorage() = profile_id;
-}
-
 ProfileIdService::~ProfileIdService() = default;
 
 absl::optional<std::string> ProfileIdService::GetProfileId() {
-  std::string profile_id = GetTestProfileIdFromStorage();
-  if (!profile_id.empty())
-    return profile_id;
-
   std::string profile_guid = profile_prefs_->GetString(kProfileGUIDPref);
   if (profile_guid.empty())
     return RecordError(Error::kGetProfileGUIDFailure);

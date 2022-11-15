@@ -104,7 +104,6 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   }
   info.browser_version = std::move(signals.browser_version);
   info.built_in_dns_client_enabled = signals.built_in_dns_client_enabled;
-  info.enterprise_profile_id = signals.enterprise_profile_id;
 
   switch (signals.safe_browsing_protection_level) {
     case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:

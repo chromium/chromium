@@ -35,9 +35,6 @@ class ProfileIdService : public KeyedService {
   ProfileIdService(std::unique_ptr<ProfileIdDelegate> delegate,
                    PrefService* profile_prefs);
 
-  // Used in tests to set a fake profile id.
-  explicit ProfileIdService(const std::string profile_id);
-
   ~ProfileIdService() override;
 
   // Creates and returns the profile identifier for the current profile.
