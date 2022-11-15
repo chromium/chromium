@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -44,24 +45,24 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
 
   content::WebContents* web_contents = handle->GetWebContents();
 
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser || !browser->app_controller())
+    return nullptr;
+
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
   if (!provider)
     return nullptr;
 
-  absl::optional<web_app::AppId> app_id =
-      provider->registrar().FindInstalledAppWithUrlInScope(
-          handle->GetURL(), /*window_only=*/true);
-  if (!app_id)
-    return nullptr;
+  const AppId& app_id = browser->app_controller()->app_id();
 
   absl::optional<GURL> home_tab_url =
-      provider->registrar().GetAppPinnedHomeTabUrl(*app_id);
+      provider->registrar().GetAppPinnedHomeTabUrl(app_id);
 
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
 
   // Only create the throttle for tabbed web apps that have a home tab.
   if (tab_helper && tab_helper->acting_as_app() &&
-      provider->registrar().IsTabbedWindowModeEnabled(*app_id) &&
+      provider->registrar().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
     return std::make_unique<TabbedWebAppNavigationThrottle>(handle);
   }
@@ -76,20 +77,22 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
 
-  absl::optional<web_app::AppId> app_id =
-      provider->registrar().FindInstalledAppWithUrlInScope(
-          navigation_handle()->GetURL(), /*window_only=*/true);
-  DCHECK(app_id);
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  DCHECK(browser);
+  web_app::AppBrowserController* app_controller = browser->app_controller();
+  DCHECK(app_controller);
+
+  const AppId& app_id = app_controller->app_id();
 
   absl::optional<GURL> home_tab_url =
-      provider->registrar().GetAppPinnedHomeTabUrl(*app_id);
+      provider->registrar().GetAppPinnedHomeTabUrl(app_id);
   DCHECK(home_tab_url.has_value());
 
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
   bool navigating_from_home_tab = tab_helper->is_pinned_home_tab();
   bool navigation_url_is_home_url = IsPinnedHomeTabUrl(
-      provider->registrar(), *app_id, navigation_handle()->GetURL());
+      provider->registrar(), app_id, navigation_handle()->GetURL());
 
   // Navigations from the home tab to another URL should open in a new tab.
   if (navigating_from_home_tab && !navigation_url_is_home_url) {
