@@ -208,9 +208,11 @@ CGFloat ModuleVerticalSpacing() {
     }
     CGFloat cardWidth = content_suggestions::SearchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
-    [NSLayoutConstraint
-        activateConstraints:@[ [parentView.widthAnchor
-                                constraintEqualToConstant:cardWidth] ]];
+    [NSLayoutConstraint activateConstraints:@[
+      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
+      [parentView.heightAnchor
+          constraintEqualToConstant:ReturnToRecentTabHeight()]
+    ]];
   }
   if (IsContentSuggestionsUIModuleRefreshEnabled() ||
       [self.mostVisitedViews count] > 0) {
@@ -619,7 +621,10 @@ CGFloat ModuleVerticalSpacing() {
     }
   }
   if (self.returnToRecentTabTile) {
-    height += (ReturnToRecentTabHeight() + ModuleVerticalSpacing());
+    height += ReturnToRecentTabHeight();
+    if (IsContentSuggestionsUIModuleRefreshEnabled()) {
+      height += ModuleVerticalSpacing();
+    }
   }
   return height;
 }
