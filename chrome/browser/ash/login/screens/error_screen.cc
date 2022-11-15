@@ -290,8 +290,14 @@ void ErrorScreen::OnUserAction(const base::Value::List& args) {
     OnCancelButtonClicked();
   } else if (action_id == kUserActionReloadGaia) {
     OnReloadGaiaClicked();
-  } else if (action_id == kUserActionNetworkConnected ||
-             action_id == kUserActionCancelReset) {
+  } else if (action_id == kUserActionNetworkConnected) {
+    // JS network implementation might notify that the network was connected
+    // faster than the corresponding C++ code. Let the screen on which error is
+    // shown handle `ErrorScreen::Hide`
+    if (network_state_informer_->state() == NetworkStateInformer::ONLINE) {
+      Hide();
+    }
+  } else if (action_id == kUserActionCancelReset) {
     Hide();
   } else if (action_id == kUserActionOfflineLogin) {
     OnOfflineLoginClicked();

@@ -249,7 +249,6 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
     error_screen_->ShowNetworkErrorMessage(state, reason);
   } else {
     HideOfflineMessage(state, reason);
-    reload_gaia = false;
   }
 
   if (reload_gaia)
@@ -319,6 +318,8 @@ void SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
 
 void SigninScreenHandler::OnErrorScreenHide() {
   histogram_helper_->OnErrorHide();
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  ReloadGaia(/*force_reload=*/true);
   ShowScreenDeprecated(GaiaView::kScreenId);
 }
 
