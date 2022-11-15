@@ -324,6 +324,7 @@ source_set("wtf_unittests_sources") {
     "testing/run_all_tests.cc",
     "text/atomic_string_table_test.cc",
     "text/atomic_string_test.cc",
+    "text/base64_test.cc",
     "text/case_map_test.cc",
     "text/code_point_iterator_test.cc",
     "text/encoding_tables_test.cc",
