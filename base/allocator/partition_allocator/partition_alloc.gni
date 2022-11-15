@@ -44,6 +44,9 @@ declare_args() {
   # Puts the regular and BRP pools right next to each other, so that we can
   # check "belongs to one of the two pools" with a single bitmask operation.
   glue_core_pools = false
+
+  # Introduces pointer compression support in PA.
+  enable_pointer_compression_support = false
 }
 
 declare_args() {
@@ -61,6 +64,9 @@ declare_args() {
 
 assert(!(enable_backup_ref_ptr_support && enable_mte_checked_ptr_support),
        "MTECheckedPtrSupport conflicts with BRPSupport.")
+
+assert(!enable_pointer_compression_support || glue_core_pools,
+       "Pointer compression relies on core pools being contiguous.")
 
 declare_args() {
   # The supported platforms are supposed to match `_is_brp_supported`, but we

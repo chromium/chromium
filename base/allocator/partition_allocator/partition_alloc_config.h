@@ -284,4 +284,23 @@ constexpr bool kUseLazyCommit = false;
 #define PA_ENABLE_MAC11_MALLOC_SIZE_HACK
 #endif
 
+// Enables compressed (4-byte) pointers that can point within the core pools
+// (Regular + BRP).
+#if defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+#define PA_POINTER_COMPRESSION
+
+#if !defined(PA_GLUE_CORE_POOLS)
+#error "Pointer compression works only with contiguous pools"
+#endif
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#error "Dynamically selected pool size is currently not supported"
+#endif
+#if defined(ENABLE_MTE_CHECKED_PTR_SUPPORT) || defined(PA_HAS_MEMORY_TAGGING)
+// TODO(1376980): Address MTE once it's enabled.
+#error "Compressed pointers don't support tag in the upper bits"
+#endif
+
+#endif  // defined(PA_HAS_64_BITS_POINTERS) &&
+        // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
