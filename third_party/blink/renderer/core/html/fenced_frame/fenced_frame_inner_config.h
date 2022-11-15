@@ -24,6 +24,12 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Attribute {
+    kURL,
+    kWidth,
+    kHeight,
+  };
+
   // Note this visibility has different semantics from
   // FencedFrameURLMapping::VisibilityToEmbedder and
   // FencedFrameURLMapping::VisibilityToContent. Here `AttributeVisibility`
@@ -37,7 +43,11 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
     kNull,
   };
 
-  explicit FencedFrameInnerConfig(const String& src);
+  // Create an inner config with a given url, the url will be transparent.
+  static FencedFrameInnerConfig* Create(const String& url);
+
+  // Construct an inner config with a given url, the url will be transparent.
+  explicit FencedFrameInnerConfig(const String& url);
   FencedFrameInnerConfig(const FencedFrameInnerConfig&) = delete;
   FencedFrameInnerConfig& operator=(const FencedFrameInnerConfig&) = delete;
 
@@ -45,19 +55,26 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
   V8UnionOpaquePropertyOrUnsignedLong* width() const;
   V8UnionOpaquePropertyOrUnsignedLong* height() const;
 
+  // Get attribute's value ignoring visibility.
+  template <Attribute attr>
+  auto GetValueIgnoringVisibility() const {
+    if constexpr (attr == Attribute::kURL) {
+      return url_;
+    } else if constexpr (attr == Attribute::kWidth) {
+      return width_;
+    } else if constexpr (attr == Attribute::kHeight) {
+      return height_;
+    }
+    NOTREACHED();
+  }
+
  private:
-  enum class Attribute {
-    kURL,
-    kWidth,
-    kHeight,
-  };
-
-  AttributeVisibility url_attribute_visibility_ = AttributeVisibility::kNull;
-  AttributeVisibility size_attribute_visibility_ = AttributeVisibility::kNull;
-
   KURL url_;
   uint32_t width_;
   uint32_t height_;
+
+  AttributeVisibility url_attribute_visibility_ = AttributeVisibility::kNull;
+  AttributeVisibility size_attribute_visibility_ = AttributeVisibility::kNull;
 
   // Attribute's union type based on its value type.
   template <typename T>

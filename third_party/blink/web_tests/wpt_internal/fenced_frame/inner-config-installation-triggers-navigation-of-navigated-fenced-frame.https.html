@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+<title>Test installing an inner config to a navigated fenced frame triggers
+  navigation.
+</title>
+
+<body>
+
+<script>
+promise_test(async () => {
+  const fenced_frame_loaded_key = token();
+
+  // Create a fenced frame.
+  const fenced_frame = document.createElement('fencedframe');
+  document.body.append(fenced_frame);
+  assert_equals(fenced_frame.mode, "default");
+
+  // Specify the fenced frame's src attribute to an url.
+  const url = generateURL('resources/fenced-frame-loaded.html',
+                          [fenced_frame_loaded_key]);
+  fenced_frame.src = url;
+
+  // The fenced frame should navigate to the src url.
+  const load_expected = "fenced frame loaded";
+  const load_actual = await nextValueFromServer(fenced_frame_loaded_key);
+  assert_equals(load_actual, load_expected,
+    "Fenced frame successfully loaded by specifying its src attribute.");
+
+  // Create an inner config.
+  const config_navigation_key = token();
+  const config_url = generateURL('resources/fenced-frame-loaded.html',
+                                 [config_navigation_key]);
+  const config = new FencedFrameInnerConfig(config_url.toString());
+  fenced_frame.innerConfig = config;
+
+  // Installing an inner config to the fenced frame triggers navigation.
+  const config_navigation_actual =
+    await nextValueFromServer(config_navigation_key);
+  assert_equals(config_navigation_actual, load_expected,
+    "Fenced frame successfully navigated by installing an inner config.");
+
+}, 'Installing an inner config to a fenced frame that has navigated triggers',
+  'navigation.');
+</script>
+
+</body>

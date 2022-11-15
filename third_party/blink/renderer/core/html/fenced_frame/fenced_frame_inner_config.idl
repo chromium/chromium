@@ -13,6 +13,7 @@ interface FencedFrameInnerConfig {
   // of FencedFrameURLMapping::FencedFrameConfiguration.
   // For more information on why this is needed please see:
   // https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738
+  constructor(USVString url);
   readonly attribute FencedFrameInnerConfigURL? url;
   readonly attribute FencedFrameInnerConfigSize? width;
   readonly attribute FencedFrameInnerConfigSize? height;

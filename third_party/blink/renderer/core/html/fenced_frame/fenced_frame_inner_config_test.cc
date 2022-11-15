@@ -25,14 +25,35 @@ class FencedFrameInnerConfigTest : private ScopedFencedFramesForTest,
 };
 
 TEST_F(FencedFrameInnerConfigTest, FencedFrameInnerConfigConstructionWithURL) {
-  FencedFrameInnerConfig inner_config("https://example.com");
+  String url = "https://example.com/";
+  FencedFrameInnerConfig inner_config(url);
 
   EXPECT_NE(inner_config.url(), nullptr);
-  EXPECT_TRUE(inner_config.url()->IsOpaqueProperty());
-  EXPECT_FALSE(inner_config.url()->IsUSVString());
+  EXPECT_FALSE(inner_config.url()->IsOpaqueProperty());
+  EXPECT_TRUE(inner_config.url()->IsUSVString());
+  EXPECT_EQ(inner_config.url()->GetAsUSVString(), url);
+  EXPECT_EQ(inner_config.GetValueIgnoringVisibility<
+                FencedFrameInnerConfig::Attribute::kURL>(),
+            url);
 
   EXPECT_EQ(inner_config.width(), nullptr);
   EXPECT_EQ(inner_config.height(), nullptr);
+}
+
+TEST_F(FencedFrameInnerConfigTest, FencedFrameInnerConfigCreateWithURL) {
+  String url = "https://example.com/";
+  FencedFrameInnerConfig* inner_config = FencedFrameInnerConfig::Create(url);
+
+  EXPECT_NE(inner_config->url(), nullptr);
+  EXPECT_FALSE(inner_config->url()->IsOpaqueProperty());
+  EXPECT_TRUE(inner_config->url()->IsUSVString());
+  EXPECT_EQ(inner_config->url()->GetAsUSVString(), url);
+  EXPECT_EQ(inner_config->GetValueIgnoringVisibility<
+                FencedFrameInnerConfig::Attribute::kURL>(),
+            url);
+
+  EXPECT_EQ(inner_config->width(), nullptr);
+  EXPECT_EQ(inner_config->height(), nullptr);
 }
 
 }  // namespace blink

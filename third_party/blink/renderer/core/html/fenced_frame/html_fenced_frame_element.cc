@@ -140,6 +140,7 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
   visitor->Trace(resize_observer_);
+  visitor->Trace(inner_config_);
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
@@ -284,6 +285,18 @@ HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
   return nullptr;
 }
 
+void HTMLFencedFrameElement::setInnerConfig(FencedFrameInnerConfig* config) {
+  inner_config_ = config;
+
+  if (inner_config_) {
+    // Navigate to the specified url in the installed inner config.
+    DCHECK(inner_config_->url());
+    KURL url = inner_config_->GetValueIgnoringVisibility<
+        FencedFrameInnerConfig::Attribute::kURL>();
+    Navigate(url);
+  }
+}
+
 // static
 bool HTMLFencedFrameElement::canLoadOpaqueURL(ScriptState* script_state) {
   if (!script_state->ContextIsValid())
@@ -392,7 +405,19 @@ void HTMLFencedFrameElement::ParseAttribute(
 
     mode_ = new_mode;
   } else if (params.name == html_names::kSrcAttr) {
-    Navigate();
+    if (inner_config_) {
+      DCHECK(inner_config_->url());
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "Changing the `src` attribute on a fenced frame has no effect after "
+          "it has already been installed an inner config with a specified "
+          "url."));
+      return;
+    }
+
+    KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
+    Navigate(url);
   } else {
     HTMLFrameOwnerElement::ParseAttribute(params);
   }
@@ -423,7 +448,7 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void HTMLFencedFrameElement::Navigate() {
+void HTMLFencedFrameElement::Navigate(const KURL& url) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
     return;
@@ -436,8 +461,6 @@ void HTMLFencedFrameElement::Navigate() {
   // to the most current src.
   if (!frame_delegate_)
     return;
-
-  KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
 
   if (url.IsEmpty())
     return;
@@ -513,7 +536,16 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
   freeze_mode_attribute_ = true;
 
   frame_delegate_ = FencedFrameDelegate::Create(this);
-  Navigate();
+
+  KURL url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
+  if (inner_config_) {
+    // If there is an inner config, the url will be retrieved from it.
+    DCHECK(inner_config_->url());
+    url = inner_config_->GetValueIgnoringVisibility<
+        FencedFrameInnerConfig::Attribute::kURL>();
+  }
+
+  Navigate(url);
 }
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {

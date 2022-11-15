@@ -105,8 +105,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // while keeping the inner frame size unchanged.
   HTMLIFrameElement* InnerIFrameElement() const;
 
-  FencedFrameInnerConfig* innerConfig() const { return nullptr; }
-  void setInnerConfig(FencedFrameInnerConfig* config) const {}
+  FencedFrameInnerConfig* innerConfig() const { return inner_config_; }
+  void setInnerConfig(FencedFrameInnerConfig* config);
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.
   // Checks the following criteria:
@@ -120,7 +120,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.
-  void Navigate();
+  void Navigate(const KURL& url);
 
   // Delegate creation will be deferred if the page is currently prerendering.
   void CreateDelegateAndNavigate();
@@ -170,6 +170,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // `kFencedFrameMandatoryUnsandboxedFlags`.
   Member<FencedFrameDelegate> frame_delegate_;
   Member<ResizeObserver> resize_observer_;
+  Member<FencedFrameInnerConfig> inner_config_;
   // See |FrozenFrameSize| above. Stored in CSS pixel (without DSF multiplied.)
   absl::optional<PhysicalSize> frozen_frame_size_;
   absl::optional<PhysicalRect> content_rect_;

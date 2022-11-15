@@ -1193,7 +1193,8 @@
       "wpt_internal/fenced_frame",
       "http/tests/inspector-protocol/fenced-frame"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies"]
+    "args": ["--enable-features=FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,SharedStorageAPI,NoncedPartitionedCookies",
+             "--enable-blink-features=FencedFramesAPIChanges"]
   },
   {
     "prefix": "cors-non-wildcard-request-headers",

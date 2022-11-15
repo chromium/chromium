@@ -6,8 +6,12 @@
 
 namespace blink {
 
-FencedFrameInnerConfig::FencedFrameInnerConfig(const String& src)
-    : url_attribute_visibility_(AttributeVisibility::kOpaque), url_(src) {}
+FencedFrameInnerConfig* FencedFrameInnerConfig::Create(const String& url) {
+  return MakeGarbageCollected<FencedFrameInnerConfig>(url);
+}
+
+FencedFrameInnerConfig::FencedFrameInnerConfig(const String& url)
+    : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameInnerConfig::url() const {
   return Get<Attribute::kURL>();
