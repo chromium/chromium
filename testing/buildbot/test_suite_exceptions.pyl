@@ -1555,6 +1555,11 @@
   },
   'components_browsertests': {
     'modifications': {
+      'Linux TSan Tests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'swarming': {
           'shards': 2,
@@ -1656,8 +1661,7 @@
       },
       'Linux TSan Tests': {
         'swarming': {
-          'shards': 15,
-          'quickrun_shards': 30,
+          'shards': 30,
         },
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
