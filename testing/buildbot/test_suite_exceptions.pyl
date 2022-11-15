@@ -608,6 +608,9 @@
         },
       },
       'Mac12 Tests': {
+        'args': [
+          '--driver-logging',
+        ],
         'swarming': {
           'dimension_sets': [
             {
