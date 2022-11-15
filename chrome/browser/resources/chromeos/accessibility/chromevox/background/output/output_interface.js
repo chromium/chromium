@@ -135,12 +135,6 @@ export class OutputInterface {
   /**
    * @param {!OutputFormattingData} data
    * @param {string} token
-   */
-  formatPressed_(data, token) {}
-
-  /**
-   * @param {!OutputFormattingData} data
-   * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
   formatRole_(data, token, options) {}

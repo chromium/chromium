@@ -64,7 +64,7 @@ export class OutputFormatter {
     } else if (token === 'checked') {
       this.formatChecked_(this.params_, token);
     } else if (token === 'pressed') {
-      this.output_.formatPressed_(this.params_, token);
+      this.formatPressed_(this.params_, token);
     } else if (token === 'state') {
       this.output_.formatState_(this.params_, token);
     } else if (token === 'find') {
@@ -326,6 +326,28 @@ export class OutputFormatter {
       this.output_.format_({
         node,
         outputFormat: '$descendants',
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+      });
+    }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @private
+   */
+  formatPressed_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
+    if (msg) {
+      formatLog.writeToken(token);
+      this.output_.format_({
+        node,
+        outputFormat: '@' + msg,
         outputBuffer: buff,
         outputFormatLogger: formatLog,
       });
