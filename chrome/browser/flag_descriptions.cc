@@ -5860,12 +5860,6 @@ const char kArcInputOverlayDescriptionBeta[] =
     "Enable more features based on ARC Input Overlay Alpha, "
     "so it can change the touch point position.";
 
-const char kSecondaryGoogleAccountUsageName[] =
-    "Enable Secondary Google account usage policy.";
-const char kSecondaryGoogleAccountUsageDescription[] =
-    "Add restrictions on a managed account's usage as a secondary account on "
-    "ChromeOS.";
-
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 const char kShelfAutoHideSeparationDescription[] =

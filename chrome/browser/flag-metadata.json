@@ -6097,11 +6097,6 @@
     "expiry_milestone" : 110
   },
   {
-    "name": "secondary-google-account-usage",
-    "owners": [ "rodmartin", "sinhak", "chromeos-commercial-identity@google.com" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "send-tab-to-self-signin-promo",
     "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
     "expiry_milestone": 107

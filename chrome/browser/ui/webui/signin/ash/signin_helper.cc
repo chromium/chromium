@@ -25,11 +25,6 @@ constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
 
 using SigninRestrictionPolicyFetcher = UserCloudSigninRestrictionPolicyFetcher;
 
-// static
-bool SigninHelper::IsSecondaryGoogleAccountUsageEnabled() {
-  return base::FeatureList::IsEnabled(features::kSecondaryGoogleAccountUsage);
-}
-
 SigninHelper::ArcHelper::ArcHelper(
     bool is_available_in_arc,
     bool is_account_addition,
@@ -75,7 +70,7 @@ SigninHelper::SigninHelper(
 
   if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
     DCHECK(arc_helper_);
-  if (!IsInitialPrimaryAccount() && IsSecondaryGoogleAccountUsageEnabled()) {
+  if (!IsInitialPrimaryAccount()) {
     DCHECK(show_signin_blocked_error_);
     restriction_fetcher_ =
         std::make_unique<UserCloudSigninRestrictionPolicyFetcher>(
@@ -90,7 +85,7 @@ SigninHelper::~SigninHelper() = default;
 
 void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   refresh_token_ = result.refresh_token;
-  if (!IsInitialPrimaryAccount() && IsSecondaryGoogleAccountUsageEnabled()) {
+  if (!IsInitialPrimaryAccount()) {
     restriction_fetcher_->GetSecondaryGoogleAccountUsage(
         /*access_token_fetcher=*/GaiaAccessTokenFetcher::
             CreateExchangeRefreshTokenForAccessTokenInstance(

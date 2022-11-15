@@ -70,8 +70,6 @@ class SigninHelper : public GaiaAuthConsumer {
   SigninHelper& operator=(const SigninHelper&) = delete;
   ~SigninHelper() override;
 
-  static bool IsSecondaryGoogleAccountUsageEnabled();
-
  protected:
   // GaiaAuthConsumer overrides.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;

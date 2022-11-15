@@ -508,10 +508,7 @@ IN_PROC_BROWSER_TEST_F(SigninHelperTestWithArcAccountRestrictions,
 class SigninHelperTestSecondaryGoogleAccountUsage : public SigninHelperTest {
  public:
   SigninHelperTestSecondaryGoogleAccountUsage() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kSecondaryGoogleAccountUsage,
-                              chromeos::features::kLacrosSupport},
-        /*disabled_features=*/{chromeos::features::kLacrosSupport});
+    feature_list_.InitAndDisableFeature(chromeos::features::kLacrosSupport);
   }
 
   ~SigninHelperTestSecondaryGoogleAccountUsage() override = default;
