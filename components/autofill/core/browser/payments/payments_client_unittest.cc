@@ -942,10 +942,6 @@ TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesLegacyAndNonLegacyId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
-
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
@@ -958,10 +954,6 @@ TEST_F(PaymentsClientTest, UnmaskIncludesLegacyAndNonLegacyId) {
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesOnlyLegacyId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
-
   StartUnmasking(CardUnmaskOptions().with_only_legacy_id());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
@@ -973,10 +965,6 @@ TEST_F(PaymentsClientTest, UnmaskIncludesOnlyLegacyId) {
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesOnlyNonLegacyId) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
-
   StartUnmasking(CardUnmaskOptions().with_only_non_legacy_id());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
@@ -985,21 +973,6 @@ TEST_F(PaymentsClientTest, UnmaskIncludesOnlyNonLegacyId) {
   EXPECT_TRUE(GetUploadData().find("%22instrument_id%22:%221%22") !=
               std::string::npos);
   EXPECT_TRUE(GetUploadData().find("credit_card_id") == std::string::npos);
-}
-
-TEST_F(PaymentsClientTest, UnmaskDoesNotIncludeInstrumentIdIfFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableUnmaskCardRequestSetInstrumentId);
-
-  StartUnmasking(CardUnmaskOptions());
-  IssueOAuthToken();
-  ReturnResponse(net::HTTP_OK, "{}");
-
-  // Instrument id is not set if flag is disabled.
-  EXPECT_TRUE(GetUploadData().find("instrument_id") == std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("%22credit_card_id%22:%22a123%22") !=
-              std::string::npos);
 }
 
 TEST_F(PaymentsClientTest,

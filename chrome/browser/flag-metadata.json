@@ -506,11 +506,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "autofill-enable-unmask-card-request-set-instrument-id",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "autofill-enable-update-virtual-card-enrollment",
     "owners": [ "siyua", "jsaul@google.com" ],
     "expiry_milestone": 112

@@ -1018,13 +1018,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTailoredSecurityIntegrationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityIntegration)},
-    {"autofill-enable-unmask-card-request-set-instrument-id",
-     flag_descriptions::kAutofillEnableUnmaskCardRequestSetInstrumentIdName,
-     flag_descriptions::
-         kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableUnmaskCardRequestSetInstrumentId)},
     {"autofill-enable-card-product-name",
      flag_descriptions::kAutofillEnableCardProductNameName,
      flag_descriptions::kAutofillEnableCardProductNameDescription,

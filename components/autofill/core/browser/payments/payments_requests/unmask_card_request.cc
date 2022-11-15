@@ -183,9 +183,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
   if (!request_details_.card.server_id().empty()) {
     request_dict.Set("credit_card_id", request_details_.card.server_id());
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableUnmaskCardRequestSetInstrumentId) &&
-      request_details_.card.instrument_id() != 0) {
+  if (request_details_.card.instrument_id() != 0) {
     request_dict.Set(
         "instrument_id",
         base::NumberToString(request_details_.card.instrument_id()));

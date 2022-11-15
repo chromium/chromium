@@ -118,12 +118,6 @@ BASE_FEATURE(kAutofillEnableStickyManualFallbackForCards,
              "AutofillEnableStickyManualFallbackForCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, UnmaskCardRequest will set instrument id, which is Chrome-side
-// field for non-legacy ID.
-BASE_FEATURE(kAutofillEnableUnmaskCardRequestSetInstrumentId,
-             "AutofillEnableUnmaskCardRequestSetInstrumentId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the user will have the ability to update the virtual card
 // enrollment of a credit card through their chrome browser after certain
 // autofill flows (for example, downstream and upstream), and from the settings
