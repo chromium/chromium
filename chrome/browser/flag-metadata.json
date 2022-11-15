@@ -3309,7 +3309,7 @@
   {
     "name": "enable-web-bluetooth",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-web-bluetooth-confirm-pairing-support",
@@ -3319,7 +3319,7 @@
   {
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-web-filter-interstitial-refresh",
@@ -3329,7 +3329,7 @@
   {
     "name": "enable-web-hid-on-extension-service-worker",
     "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-web-payments-experimental-features",
