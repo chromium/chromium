@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("media_perception_private") {
+  sources = [
+    "conversion_utils.cc",
+    "conversion_utils.h",
+    "media_perception_api_delegate.h",
+    "media_perception_api_manager.cc",
+    "media_perception_api_manager.h",
+    "media_perception_private_api.cc",
+    "media_perception_private_api.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/media_analytics",
+    "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/services/media_perception/public/mojom",
+    "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
+}
