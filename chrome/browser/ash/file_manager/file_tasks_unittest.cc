@@ -796,13 +796,6 @@ class FileManagerFileTasksCrostiniTest
       : crostini_test_helper_(std::make_unique<crostini::CrostiniTestHelper>(
             test_profile_.get())),
         crostini_folder_(util::GetCrostiniMountDirectory(test_profile_.get())) {
-    // Disable kArcAndGuestOsFileTasksUseAppService to get Crostini file
-    // tasks from guest_os_file_tasks.cc. When the flag is enabled, we get
-    // Crostini file tasks from App Service and these test cases are covered in
-    // app_service_file_tasks_unittest.cc.
-    feature_list_.InitAndDisableFeature(
-        ash::features::kArcAndGuestOsFileTasksUseAppService);
-
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     vm_tools::apps::App text_app =
@@ -844,7 +837,6 @@ class FileManagerFileTasksCrostiniTest
         ->UpdateMimeTypes(mime_types_list);
   }
   ~FileManagerFileTasksCrostiniTest() override {
-    feature_list_.Reset();
     crostini_test_helper_.reset();
     test_profile_.reset();
     ash::ConciergeClient::Shutdown();
@@ -869,7 +861,6 @@ class FileManagerFileTasksCrostiniTest
     return GURL("filesystem:chrome-extension://id/external/" + virtual_path);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;
   base::FilePath crostini_folder_;
   std::string text_app_id_;
