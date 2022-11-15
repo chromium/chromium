@@ -184,10 +184,6 @@ ManifestUpdateDataFetchCommand::ManifestUpdateDataFetchCommand(
     const AppId& app_id,
     base::WeakPtr<content::WebContents> web_contents,
     ManifestFetchCallback fetch_callback,
-    WebAppRegistrar* registrar,
-    WebAppIconManager* icon_manager,
-    WebAppUiManager* ui_manager,
-    OsIntegrationManager* os_integration_manager,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
@@ -196,10 +192,6 @@ ManifestUpdateDataFetchCommand::ManifestUpdateDataFetchCommand(
       app_id_(app_id),
       web_contents_(web_contents),
       fetch_callback_(std::move(fetch_callback)),
-      registrar_(registrar),
-      icon_manager_(icon_manager),
-      ui_manager_(ui_manager),
-      os_integration_manager_(os_integration_manager),
       data_retriever_(std::move(data_retriever)) {}
 
 ManifestUpdateDataFetchCommand::~ManifestUpdateDataFetchCommand() = default;
@@ -221,7 +213,10 @@ base::Value ManifestUpdateDataFetchCommand::ToDebugValue() const {
   return base::Value(std::move(data));
 }
 
-void ManifestUpdateDataFetchCommand::Start() {
+void ManifestUpdateDataFetchCommand::StartWithLock(
+    std::unique_ptr<AppLock> lock) {
+  lock_ = std::move(lock);
+
   if (IsWebContentsDestroyed()) {
     CompleteCommand(ManifestUpdateResult::kWebContentsDestroyed);
     return;
@@ -323,7 +318,7 @@ void ManifestUpdateDataFetchCommand::OnIconsDownloaded(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
   stage_ = ManifestUpdateStage::kPendingIconReadFromDisk;
-  icon_manager_->ReadAllIcons(
+  lock_->icon_manager().ReadAllIcons(
       app_id_, base::BindOnce(&ManifestUpdateDataFetchCommand::OnAllIconsRead,
                               AsWeakPtr(), std::move(icons_map)));
 }
@@ -354,7 +349,7 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
 
   IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
   std::u16string old_title =
-      base::UTF8ToUTF16(registrar_->GetAppShortName(app_id_));
+      base::UTF8ToUTF16(lock_->registrar().GetAppShortName(app_id_));
   std::u16string new_title = install_info_->title;
 
   bool title_change = old_title != new_title;
@@ -376,7 +371,7 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   // - All icon changes when the kWebAppManifestIconUpdating override is set.
   // - ... and apps that simply aren't requesting any app identity changes.
   if (!NeedsAppIdentityUpdateDialog(title_change, icon_change, app_id_,
-                                    *registrar_)) {
+                                    lock_->registrar())) {
     UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
                               app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
@@ -406,7 +401,7 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   // special exemption), they should bail out now (with the icon set reset) so
   // as to avoid showing the app identity dialog and allow other non-app
   // identity changes to occur.
-  const WebApp* web_app = registrar_->GetAppById(app_id_);
+  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
   if (web_app->IsPreinstalledApp() || web_app->IsPolicyInstalledApp()) {
     UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
                               app_id_changes);
@@ -463,7 +458,7 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   }
 
   UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.Showing", app_id_changes);
-  ui_manager_->ShowWebAppIdentityUpdateDialog(
+  lock_->ui_manager().ShowWebAppIdentityUpdateDialog(
       app_id_, title_change, icon_change, old_title, new_title, *before_icon,
       *after_icon, web_contents_.get(),
       base::BindOnce(
@@ -487,12 +482,13 @@ void ManifestUpdateDataFetchCommand::OnPostAppIdentityUpdateCheck(
   }
 
   DCHECK(install_info_.has_value());
-  if (IsUpdateNeededForManifest(app_id_, install_info_.value(), *registrar_)) {
+  if (IsUpdateNeededForManifest(app_id_, install_info_.value(),
+                                lock_->registrar())) {
     CompleteCommand(absl::nullopt);
     return;
   }
 
-  icon_manager_->ReadAllShortcutsMenuIcons(
+  lock_->icon_manager().ReadAllShortcutsMenuIcons(
       app_id_, base::BindOnce(
                    &ManifestUpdateDataFetchCommand::OnAllShortcutsMenuIconsRead,
                    AsWeakPtr()));
@@ -501,7 +497,7 @@ void ManifestUpdateDataFetchCommand::OnPostAppIdentityUpdateCheck(
 IconDiff ManifestUpdateDataFetchCommand::IsUpdateNeededForIconContents(
     const IconBitmaps& disk_icon_bitmaps) const {
   DCHECK(install_info_.has_value());
-  const WebApp* app = registrar_->GetAppById(app_id_);
+  const WebApp* app = lock_->registrar().GetAppById(app_id_);
   DCHECK(app);
 
   return HaveIconBitmapsChanged(disk_icon_bitmaps, install_info_->icon_bitmaps,
@@ -541,7 +537,7 @@ bool ManifestUpdateDataFetchCommand::
     return true;
   }
 
-  const WebApp* app = registrar_->GetAppById(app_id_);
+  const WebApp* app = lock_->registrar().GetAppById(app_id_);
   DCHECK(app);
   for (size_t i = 0; i < downloaded_shortcuts_menu_icon_bitmaps.size(); ++i) {
     const IconBitmaps& downloaded_icon_bitmaps =
@@ -580,7 +576,7 @@ void ManifestUpdateDataFetchCommand::NoManifestUpdateRequired() {
     return;
   }
 
-  os_integration_manager_->UpdateUrlHandlers(
+  lock_->os_integration_manager().UpdateUrlHandlers(
       app_id_,
       base::BindOnce(
           &ManifestUpdateDataFetchCommand::OnWebAppOriginAssociationsUpdated,

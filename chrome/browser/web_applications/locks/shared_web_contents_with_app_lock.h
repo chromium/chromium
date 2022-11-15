@@ -23,6 +23,7 @@ class WebAppInstallManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
+class WebAppUiManager;
 
 // This locks both the background shared web contents AND the given app ids. The
 // background web contents is used by the WebAppProvider system to do operations
@@ -50,7 +51,8 @@ class SharedWebContentsWithAppLock : public SharedWebContentsLock,
                                OsIntegrationManager& os_integration_manager,
                                WebAppInstallManager& install_manager,
                                WebAppIconManager& icon_manager,
-                               WebAppTranslationManager& translation_manager);
+                               WebAppTranslationManager& translation_manager,
+                               WebAppUiManager& ui_manager);
   ~SharedWebContentsWithAppLock();
 };
 

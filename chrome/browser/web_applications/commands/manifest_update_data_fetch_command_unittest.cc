@@ -415,8 +415,6 @@ class ManifestUpdateDataFetchCommandTest : public WebAppTest {
                       app_identity_allowed;
                   loop.Quit();
                 }),
-            &provider().registrar(), &provider().icon_manager(),
-            &provider().ui_manager(), &provider().os_integration_manager(),
             std::move(data_retriever)));
     loop.Run();
     return output_result;

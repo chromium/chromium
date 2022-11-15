@@ -131,9 +131,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateDataFetchCommand>(
-          url, app_id, contents, std::move(callback), &provider_->registrar(),
-          &provider_->icon_manager(), &provider_->ui_manager(),
-          &provider_->os_integration_manager(),
+          url, app_id, contents, std::move(callback),
           std::make_unique<WebAppDataRetriever>()));
 }
 

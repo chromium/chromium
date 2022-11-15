@@ -17,6 +17,7 @@ class WebAppInstallManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
+class WebAppUiManager;
 
 // This locks the whole system. No other locks can be held when this lock is
 // acquired.
@@ -39,7 +40,8 @@ class FullSystemLock : public AppLock {
                  OsIntegrationManager& os_integration_manager,
                  WebAppInstallManager& install_manager,
                  WebAppIconManager& icon_manager,
-                 WebAppTranslationManager& translation_manager);
+                 WebAppTranslationManager& translation_manager,
+                 WebAppUiManager& ui_manager);
   ~FullSystemLock();
 };
 

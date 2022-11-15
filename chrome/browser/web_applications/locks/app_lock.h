@@ -19,6 +19,7 @@ class WebAppInstallManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
+class WebAppUiManager;
 
 // This locks the given app ids in the WebAppProvider system.
 //
@@ -40,7 +41,8 @@ class AppLock {
           OsIntegrationManager& os_integration_manager,
           WebAppInstallManager& install_manager,
           WebAppIconManager& icon_manager,
-          WebAppTranslationManager& translation_manager);
+          WebAppTranslationManager& translation_manager,
+          WebAppUiManager& ui_manager);
   ~AppLock();
 
   WebAppRegistrar& registrar() { return *registrar_; }
@@ -54,6 +56,7 @@ class AppLock {
   WebAppTranslationManager& translation_manager() {
     return *translation_manager_;
   }
+  WebAppUiManager& ui_manager() { return *ui_manager_; }
 
  private:
   raw_ref<WebAppRegistrar> registrar_;
@@ -63,6 +66,7 @@ class AppLock {
   raw_ref<WebAppInstallManager> install_manager_;
   raw_ref<WebAppIconManager> icon_manager_;
   raw_ref<WebAppTranslationManager> translation_manager_;
+  raw_ref<WebAppUiManager> ui_manager_;
 };
 
 }  // namespace web_app

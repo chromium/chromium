@@ -32,12 +32,9 @@ class WebContents;
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
-class OsIntegrationManager;
-class WebAppIconManager;
-class WebAppRegistrar;
-class WebAppUiManager;
 class WebAppDataRetriever;
 
 enum class AppIdentityUpdate;
@@ -133,7 +130,7 @@ IconDiff HaveIconBitmapsChanged(
 //    locally. Abort if no differences.
 //  - Check if the app ID has changed, abort if so.
 //  - Require user confirmation for changes to the app name.
-class ManifestUpdateDataFetchCommand : public WebAppCommand {
+class ManifestUpdateDataFetchCommand : public WebAppCommandTemplate<AppLock> {
  public:
   using ManifestFetchCallback =
       base::OnceCallback<void(absl::optional<ManifestUpdateResult> result,
@@ -145,10 +142,6 @@ class ManifestUpdateDataFetchCommand : public WebAppCommand {
       const AppId& app_id,
       base::WeakPtr<content::WebContents> web_contents,
       ManifestFetchCallback fetch_callback,
-      WebAppRegistrar* registrar,
-      WebAppIconManager* icon_manager,
-      WebAppUiManager* ui_manager,
-      OsIntegrationManager* os_integration_manager,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
   ~ManifestUpdateDataFetchCommand() override;
@@ -157,7 +150,7 @@ class ManifestUpdateDataFetchCommand : public WebAppCommand {
   void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
-  void Start() override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
   base::WeakPtr<ManifestUpdateDataFetchCommand> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -197,14 +190,12 @@ class ManifestUpdateDataFetchCommand : public WebAppCommand {
   void CompleteCommand(absl::optional<ManifestUpdateResult> result);
 
   std::unique_ptr<AppLockDescription> lock_description_;
+  std::unique_ptr<AppLock> lock_;
+
   const GURL url_;
   const AppId app_id_;
   base::WeakPtr<content::WebContents> web_contents_;
   ManifestFetchCallback fetch_callback_;
-  raw_ptr<WebAppRegistrar> registrar_;
-  raw_ptr<WebAppIconManager> icon_manager_;
-  raw_ptr<WebAppUiManager> ui_manager_;
-  raw_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   ManifestUpdateStage stage_ = ManifestUpdateStage::kPendingInstallableData;

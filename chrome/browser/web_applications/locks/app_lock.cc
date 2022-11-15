@@ -18,14 +18,16 @@ AppLock::AppLock(WebAppRegistrar& registrar,
                  OsIntegrationManager& os_integration_manager,
                  WebAppInstallManager& install_manager,
                  WebAppIconManager& icon_manager,
-                 WebAppTranslationManager& translation_manager)
+                 WebAppTranslationManager& translation_manager,
+                 WebAppUiManager& ui_manager)
     : registrar_(registrar),
       sync_bridge_(sync_bridge),
       install_finalizer_(install_finalizer),
       os_integration_manager_(os_integration_manager),
       install_manager_(install_manager),
       icon_manager_(icon_manager),
-      translation_manager_(translation_manager) {}
+      translation_manager_(translation_manager),
+      ui_manager_(ui_manager) {}
 AppLock::~AppLock() = default;
 
 }  // namespace web_app
