@@ -1475,7 +1475,7 @@
 <translation id="2318817390901984578">Android ऐप्लिकेशन का इस्तेमाल करने के लिए, अपना <ph name="DEVICE_TYPE" /> चार्ज करें और अपडेट करें.</translation>
 <translation id="2319459402137712349">कीबोर्ड खोलने के लिए कोई टेक्स्ट फ़ील्ड चुनें. आपके पास स्क्रीन पर सबसे नीचे कीबोर्ड आइकॉन को चुनने का विकल्प भी मौजूद होता है.</translation>
 <translation id="2319993584768066746">साइन-इन स्क्रीन पर दी गई फ़ोटो</translation>
-<translation id="2322193970951063277">शीर्षलेख और पादलेख</translation>
+<translation id="2322193970951063277">हेडर और फ़ुटर</translation>
 <translation id="2322318151094136999">जब कोई साइट सीरियल पाेर्ट (सुझाया गया) ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="2322622365472107569">खत्म होने का समय <ph name="TIME" /></translation>
 <translation id="2323018538045954000">सेव किए गए वाई-फ़ाई नेटवर्क</translation>
@@ -8142,7 +8142,7 @@
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8713110120305151436">फटाफट सेटिंग में जाकर सुलभता के विकल्प दिखाएं</translation>
 <translation id="8713570323158206935"><ph name="BEGIN_LINK1" />सिस्‍टम जानकारी<ph name="END_LINK1" /> भेजें</translation>
-<translation id="8714838604780058252">पृष्‍ठभूमि ग्राफ़िक</translation>
+<translation id="8714838604780058252">बैकग्राउंड ग्राफ़िक</translation>
 <translation id="871515167518607670">कोई डिवाइस चुनें. इसके बाद, पेज को देखने के लिए, वहां Chrome खोलें.</translation>
 <translation id="8715480913140015283">बैकग्राउंड टैब आपके कैमरे का इस्तेमाल कर रहा है</translation>
 <translation id="8716931980467311658">इस <ph name="DEVICE_TYPE" /> से अपने सभी Linux ऐप्लिकेशन और अपनी Linux फ़ाइलों में मौजूद डेटा मिटाना चाहते हैं?</translation>
