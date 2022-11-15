@@ -13,12 +13,14 @@ import abc
 import argparse
 import collections
 import errno
+import itertools
 import os
 import re
 import struct
 import sys
 import zipfile
 
+import dalvik_bytecode
 import stream_reader
 
 # https://source.android.com/devices/tech/dalvik/dex-format#header-item
@@ -51,6 +53,8 @@ _DEX_HEADER_FMT = (
 # Full list of type codes:
 # https://source.android.com/devices/tech/dalvik/dex-format#type-codes
 _TYPE_TYPE_LIST = 0x1001
+_TYPE_CLASS_DATA_ITEM = 0x2000
+_TYPE_CODE_ITEM = 0x2001
 
 _CLASS_ACCESS_FLAGS = {
     0x1: 'public',
@@ -69,23 +73,114 @@ DexHeader = collections.namedtuple('DexHeader',
                                    ','.join(t[0] for t in _DEX_HEADER_FMT))
 
 # Simple memory items.
-_StringDataItem = collections.namedtuple('StringItem', 'utf16_size,data')
+_StringDataItem = collections.namedtuple('StringDataItem', 'utf16_size,data')
 _TypeIdItem = collections.namedtuple('TypeIdItem', 'descriptor_idx')
 _ProtoIdItem = collections.namedtuple(
     'ProtoIdItem', 'shorty_idx,return_type_idx,parameters_off')
 _MethodIdItem = collections.namedtuple('MethodIdItem',
                                        'type_idx,proto_idx,name_idx')
-_TypeItem = collections.namedtuple('TypeItem', 'type_idx')
 _ClassDefItem = collections.namedtuple(
     'ClassDefItem',
     'class_idx,access_flags,superclass_idx,interfaces_off,source_file_idx,'
     'annotations_off,class_data_off,static_values_off')
+
+_ClassDataItem = collections.namedtuple(
+    'ClassDataItem',
+    'offset,static_fields_size,instance_fields_size,direct_methods_size,'
+    'virtual_methods_size,static_fields,instance_fields,direct_methods,'
+    'virtual_methods')
+_EncodedField = collections.namedtuple('EncodedField', 'field_idx,access_flags')
+_EncodedMethod = collections.namedtuple('EncodedMethod',
+                                        'method_idx,access_flags,code_off')
+
+_TypeItem = collections.namedtuple('TypeItem', 'type_idx')
+_CodeItem = collections.namedtuple(
+    'CodeItem',
+    'offset,registers_size,ins_size,outs_size,tries_size,debug_info_off,'
+    'insns_size,insns,tries,handlers')
+_TryItem = collections.namedtuple('TryItem',
+                                  'start_addr,insn_count,handler_off')
+_EncodedCatchHandlerList = collections.namedtuple('_EncodedCatchHandlerList',
+                                                  'size,list')
+_EncodedCatchHandler = collections.namedtuple('_EncodedCatchHandler',
+                                              'size,handlers,catch_all_addr')
+_EncodedTypeAddrPair = collections.namedtuple('_EncodedTypeAddrPair',
+                                              'type_idx,addr')
 
 
 class _DexReader(stream_reader.StreamReader):
   def NextDexHeader(self):
     header_fmt = '<' + ''.join(t[1] for t in _DEX_HEADER_FMT)
     return DexHeader._make(self.NextStruct(header_fmt))
+
+  def NextClassDataItem(self):
+    offset = self.Tell()
+    static_fields_size = self.NextULeb128()
+    instance_fields_size = self.NextULeb128()
+    direct_methods_size = self.NextULeb128()
+    virtual_methods_size = self.NextULeb128()
+    static_fields = self.NextEncodedFieldList(static_fields_size)
+    instance_fields = self.NextEncodedFieldList(instance_fields_size)
+    direct_methods = self.NextEncodedMethodList(direct_methods_size)
+    virtual_methods = self.NextEncodedMethodList(virtual_methods_size)
+    return _ClassDataItem(offset, static_fields_size, instance_fields_size,
+                          direct_methods_size, virtual_methods_size,
+                          static_fields, instance_fields, direct_methods,
+                          virtual_methods)
+
+  def NextEncodedFieldList(self, count):
+    ret = []
+    field_idx = 0
+    for _ in range(count):
+      field_idx += self.NextULeb128()
+      ret.append(_EncodedField(field_idx, self.NextULeb128()))
+    return ret
+
+  def NextEncodedMethodList(self, count):
+    ret = []
+    method_idx = 0
+    for _ in range(count):
+      method_idx += self.NextULeb128()
+      ret.append(
+          _EncodedMethod(method_idx, self.NextULeb128(), self.NextULeb128()))
+    return ret
+
+  def NextCodeItem(self):
+    item_offset = self.Tell()
+    registers_size = self.NextUShort()
+    ins_size = self.NextUShort()
+    outs_size = self.NextUShort()
+    tries_size = self.NextUShort()
+    debug_info_off = self.NextUInt()
+    insns_size = self.NextUInt()
+    insns = self.NextBytes(insns_size * 2)
+    if tries_size > 0:
+      self.AlignUpTo(4)
+    tries = [self.NextTryItem() for _ in range(tries_size)]
+    handlers = None
+    if tries_size != 0:
+      handlers = self.NextEncodedCatchHandlerList()
+    self.AlignUpTo(4)
+    return _CodeItem(item_offset, registers_size, ins_size, outs_size,
+                     tries_size, debug_info_off, insns_size, insns, tries,
+                     handlers)
+
+  def NextTryItem(self):
+    return _TryItem(self.NextUInt(), self.NextUShort(), self.NextUShort())
+
+  def NextEncodedCatchHandlerList(self):
+    size = self.NextULeb128()
+    handler_list = [self.NextEncodedCatchHandler() for _ in range(size)]
+    return _EncodedCatchHandlerList(size, handler_list)
+
+  def NextEncodedCatchHandler(self):
+    size = self.NextSLeb128()
+    handlers = [self.NextEncodedTypeAddrPair() for _ in range(abs(size))]
+    catch_all_addr = self.NextULeb128() if size <= 0 else None
+    return _EncodedCatchHandler(size, handlers, catch_all_addr)
+
+  def NextEncodedTypeAddrPair(self):
+    return _EncodedTypeAddrPair(self.NextULeb128(), self.NextULeb128())
 
 
 class _MemoryItemList:
@@ -140,10 +235,10 @@ class _MemoryItemList:
 class _StringItemList(_MemoryItemList):
   def __init__(self, reader, offset, size):
     reader.Seek(offset)
-    string_item_offsets = iter([reader.NextUInt() for _ in range(size)])
+    string_data_item_offsets = iter([reader.NextUInt() for _ in range(size)])
 
     def factory(x):
-      x.Seek(next(string_item_offsets))
+      x.Seek(next(string_data_item_offsets))
       string = x.NextString()
       return _StringDataItem(len(string), string)
 
@@ -169,6 +264,23 @@ class _MethodIdItemList(_MemoryItemList):
     super().__init__(reader, offset, size, factory)
 
 
+class _ClassDefItemList(_MemoryItemList):
+  def __init__(self, reader, offset, size):
+    reader.Seek(offset)
+
+    def factory(x):
+      return _ClassDefItem(*(x.NextUInt()
+                             for _ in range(len(_ClassDefItem._fields))))
+
+    super().__init__(reader, offset, size, factory)
+
+
+class _ClassDataItemList(_MemoryItemList):
+  def __init__(self, reader, offset, size):
+    reader.Seek(offset)
+    super().__init__(reader, offset, size, lambda x: x.NextClassDataItem())
+
+
 class _TypeListItem(_MemoryItemList):
   def __init__(self, reader):
     offset = reader.Tell()
@@ -190,15 +302,10 @@ class _TypeListItemList(_MemoryItemList):
     super().__init__(reader, offset, size, _TypeListItem)
 
 
-class _ClassDefItemList(_MemoryItemList):
+class _CodeItemList(_MemoryItemList):
   def __init__(self, reader, offset, size):
     reader.Seek(offset)
-
-    def factory(x):
-      return _ClassDefItem(*(x.NextUInt()
-                             for _ in range(len(_ClassDefItem._fields))))
-
-    super().__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, lambda x: x.NextCodeItem())
 
 
 class _DexMapItem:
@@ -239,14 +346,16 @@ class DexFile:
     reader: _DexReader object used to decode DEX file contents.
     header: DexHeader for this DEX file.
     map_list: _DexMapList object containing list of DEX file contents.
-    string_item_list: _StringItemList containing _StringDataItems that are
+    string_data_item_list: _StringItemList containing _StringDataItems that are
       referenced by index in other sections.
-    type_item_list: _TypeIdItemList containing _TypeIdItems.
-    proto_item_list: _ProtoIdItemList containing _ProtoIdItems.
-    method_item_list: _MethodIdItemList containing _MethodIdItems.
+    type_id_item_list: _TypeIdItemList containing _TypeIdItems.
+    proto_id_item_list: _ProtoIdItemList containing _ProtoIdItems.
+    method_id_item_list: _MethodIdItemList containing _MethodIdItems.
     type_list_item_list: _TypeListItemList containing _TypeListItems.
       _TypeListItems are referenced by their offsets from other DEX items.
     class_def_item_list: _ClassDefItemList containing _ClassDefItems.
+    class_data_item_list: _ClassDataItemList containing _ClassDataItems.
+    code_item_list: _CodeItemList containing _CodeItems.
   """
 
   def __init__(self, data):
@@ -258,17 +367,18 @@ class DexFile:
     self.reader = _DexReader(data)
     self.header = self.reader.NextDexHeader()
     self.map_list = _DexMapList(self.reader, self.header.map_off)
-    self.string_item_list = _StringItemList(self.reader,
-                                            self.header.string_ids_off,
-                                            self.header.string_ids_size)
-    self.type_item_list = _TypeIdItemList(self.reader, self.header.type_ids_off,
-                                          self.header.type_ids_size)
-    self.proto_item_list = _ProtoIdItemList(self.reader,
-                                            self.header.proto_ids_off,
-                                            self.header.proto_ids_size)
-    self.method_item_list = _MethodIdItemList(self.reader,
-                                              self.header.method_ids_off,
-                                              self.header.method_ids_size)
+    self.string_data_item_list = _StringItemList(self.reader,
+                                                 self.header.string_ids_off,
+                                                 self.header.string_ids_size)
+    self.type_id_item_list = _TypeIdItemList(self.reader,
+                                             self.header.type_ids_off,
+                                             self.header.type_ids_size)
+    self.proto_id_item_list = _ProtoIdItemList(self.reader,
+                                               self.header.proto_ids_off,
+                                               self.header.proto_ids_size)
+    self.method_id_item_list = _MethodIdItemList(self.reader,
+                                                 self.header.method_ids_off,
+                                                 self.header.method_ids_size)
     self.class_def_item_list = _ClassDefItemList(self.reader,
                                                  self.header.class_defs_off,
                                                  self.header.class_defs_size)
@@ -285,19 +395,44 @@ class DexFile:
         for type_list in self.type_list_item_list
     }
 
+    class_data_item = self.map_list.get(_TYPE_CLASS_DATA_ITEM)
+    if class_data_item:
+      self.class_data_item_list = _ClassDataItemList(self.reader,
+                                                     class_data_item.offset,
+                                                     class_data_item.size)
+      self._class_data_item_by_offset = {
+          class_data_item.offset: class_data_item
+          for class_data_item in self.class_data_item_list
+      }
+
+    code_item = self.map_list.get(_TYPE_CODE_ITEM)
+    if code_item:
+      self.code_item_list = _CodeItemList(self.reader, code_item.offset,
+                                          code_item.size)
+      self._code_item_by_offset = {
+          code_item.offset: code_item
+          for code_item in self.code_item_list
+      }
+
   def GetString(self, string_idx):
-    string_item = self.string_item_list[string_idx]
-    return string_item.data
+    string_data_item = self.string_data_item_list[string_idx]
+    return string_data_item.data
 
   def GetTypeString(self, type_idx):
-    type_item = self.type_item_list[type_idx]
-    return self.GetString(type_item.descriptor_idx)
+    type_id_item = self.type_id_item_list[type_idx]
+    return self.GetString(type_id_item.descriptor_idx)
 
   def GetTypeListStringsByOffset(self, offset):
     if not offset:
       return ()
     type_list = self._type_lists_by_offset[offset]
     return tuple(self.GetTypeString(item.type_idx) for item in type_list)
+
+  def GetClassDataItemByOffset(self, offset):
+    return self._class_data_item_by_offset.get(offset)
+
+  def GetCodeItemByOffset(self, offset):
+    return self._code_item_by_offset.get(offset)
 
   @staticmethod
   def ResolveClassAccessFlags(access_flags):
@@ -312,13 +447,13 @@ class DexFile:
       Tuples that look like:
         (class name, return type, method name, (parameter type, ...)).
     """
-    for method_item in self.method_item_list:
-      class_name_string = self.GetTypeString(method_item.type_idx)
-      method_name_string = self.GetString(method_item.name_idx)
-      proto_item = self.proto_item_list[method_item.proto_idx]
-      return_type_string = self.GetTypeString(proto_item.return_type_idx)
+    for method_id_item in self.method_id_item_list:
+      class_name_string = self.GetTypeString(method_id_item.type_idx)
+      method_name_string = self.GetString(method_id_item.name_idx)
+      proto_id_item = self.proto_id_item_list[method_id_item.proto_idx]
+      return_type_string = self.GetTypeString(proto_id_item.return_type_idx)
       parameter_types = self.GetTypeListStringsByOffset(
-          proto_item.parameters_off)
+          proto_id_item.parameters_off)
       yield (class_name_string, return_type_string, method_name_string,
              parameter_types)
 
@@ -326,12 +461,14 @@ class DexFile:
     items = [
         self.header,
         self.map_list,
-        self.type_item_list,
-        self.proto_item_list,
-        self.method_item_list,
-        self.string_item_list,
+        self.string_data_item_list,
+        self.type_id_item_list,
+        self.proto_id_item_list,
+        self.method_id_item_list,
         self.type_list_item_list,
         self.class_def_item_list,
+        self.class_data_item_list,
+        self.code_item_list,
     ]
     return '\n'.join(str(item) for item in items)
 
@@ -352,9 +489,9 @@ class _DumpSummary(_DumpCommand):
 
 class _DumpStrings(_DumpCommand):
   def Run(self):
-    for string_item in self._dexfile.string_item_list:
+    for string_data_item in self._dexfile.string_data_item_list:
       # Some strings are likely to be non-ascii (vs. methods/classes).
-      print(string_item.data.encode('utf-8'))
+      print(string_data_item.data.encode('utf-8'))
 
 
 class _DumpMethods(_DumpCommand):
@@ -377,6 +514,44 @@ class _DumpClasses(_DumpCommand):
           class_string, superclass_string, interfaces, access_flags))
 
 
+class _DumpCodes(_DumpCommand):
+  def Run(self):
+    dexfile = self._dexfile
+
+    total_insns_bytes = 0
+    total_insns_count = 0
+    total_code_bytes = 0
+    total_tries_count = 0
+    insns_popu = [0] * 256
+    attrs = [
+        'registers_size', 'ins_size', 'outs_size', 'tries_size', 'insns_size'
+    ]
+    for i, code_item in enumerate(dexfile.code_item_list):
+      total_insns_bytes += len(code_item.insns)
+      total_tries_count += code_item.tries_size
+      insns_count = 0
+      actual_insns_bytes = 0
+      for bytecode in dalvik_bytecode.Split(code_item.insns):
+        insns_popu[bytecode[0]] += 1
+        insns_count += 1
+        actual_insns_bytes += len(bytecode)
+      total_insns_count += insns_count
+      total_code_bytes += actual_insns_bytes
+      details = ', '.join('{}={}'.format(a, getattr(code_item, a))
+                          for a in attrs if getattr(code_item, a) > 0)
+      print('code(%08x) o:%08X: (%s)' % (i, code_item.offset, details))
+    total_data_bytes = total_insns_bytes - total_code_bytes
+
+    print('\n*** Summary ***')
+    print('Code item count:         %d' % len(dexfile.code_item_list))
+    print('Total instruction count: %d' % total_insns_count)
+    print('Total instruction bytes: %d' % total_insns_bytes)
+    print('  Code: %d' % total_code_bytes)
+    print('  Data: %d' % total_data_bytes)
+    print('Total tries count:       %d' % total_tries_count)
+    print('Total tries bytes:       %d' % (total_tries_count * (4 + 2 + 2)))
+
+
 def _DumpDexItems(dexfile_data, name, item):
   dexfile = DexFile(bytearray(dexfile_data))
   print('dex_parser: Dumping {} for {}'.format(item, name))
@@ -385,6 +560,7 @@ def _DumpDexItems(dexfile_data, name, item):
       'strings': _DumpStrings,
       'methods': _DumpMethods,
       'classes': _DumpClasses,
+      'codes': _DumpCodes,
   }
   try:
     cmds[item](dexfile).Run()
@@ -399,7 +575,8 @@ def main():
   parser.add_argument('input',
                       help='Input (.dex, .jar, .zip, .aab, .apk) file path.')
   parser.add_argument('item',
-                      choices=('summary', 'strings', 'methods', 'classes'),
+                      choices=('summary', 'strings', 'methods', 'classes',
+                               'codes'),
                       help='Item to dump',
                       nargs='?',
                       default='summary')
