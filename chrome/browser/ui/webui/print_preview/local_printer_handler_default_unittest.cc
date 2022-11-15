@@ -31,9 +31,77 @@
 #include "base/notreached.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
+#include <vector>
+
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/values_test_util.h"
+#include "chrome/browser/printing/printer_xml_parser_impl.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
+
 namespace printing {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
+constexpr char kVendorCapabilities[] = "vendor_capability";
+
+// XML with feature not of interest.
+constexpr char kXmlTestFeature[] =
+    R"(<?xml version="1.0" encoding="UTF-8"?>
+    <psf:PrintCapabilities>
+      <psf:Feature name="TestFeature">
+        <psf:Property name="psf:SelectionType">
+          <psf:Value xsi:type="xsd:QName">psk:PickOne</psf:Value>
+        </psf:Property>
+        <psf:Option constrained="psk:None">
+          <psf:ScoredProperty name="TestTimeStamp">
+            <psf:Value xsi:type="xsd:integer">0</psf:Value>
+          </psf:ScoredProperty>
+        </psf:Option>
+      </psf:Feature>
+    </psf:PrintCapabilities>)";
+
+constexpr char kXmlPageOutputQuality[] =
+    R"(<?xml version="1.0" encoding="UTF-8"?>
+    <psf:PrintCapabilities>
+      <psf:Feature name="psk:PageOutputQuality">
+        <psf:Property name="psf:SelectionType">
+          <psf:Value xsi:type="xsd:QName">psk:PickOne</psf:Value>
+        </psf:Property>
+        <psf:Property name="psk:DisplayName">
+          <psf:Value xsi:type="xsd:string">Quality</psf:Value>
+        </psf:Property>
+        <psf:Option name="ns0000:Draft" constrained="psk:None">
+          <psf:Property name="psk:DisplayName">
+            <psf:Value xsi:type="xsd:string">Draft</psf:Value>
+          </psf:Property>
+        </psf:Option>
+        <psf:Option name="ns0000:Standard" constrained="psk:None">
+          <psf:Property name="psk:DisplayName">
+            <psf:Value xsi:type="xsd:string">Standard</psf:Value>
+          </psf:Property>
+        </psf:Option>
+      </psf:Feature>
+    </psf:PrintCapabilities>)";
+
+constexpr char kJsonPageOutputQuality[] = R"({
+  "display_name": "Page output quality",
+  "id": "page_output_quality",
+  "select_cap": {
+    "option": [ {
+        "display_name": "Draft",
+        "value": "ns0000:Draft"
+      }, {
+        "display_name": "Standard",
+        "value": "ns0000:Standard"
+      } ]
+  },
+  "type": "SELECT"
+})";
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
 
 // Used as a callback to `GetDefaultPrinter()` in tests.
 // Records value returned by `GetDefaultPrinter()`.
@@ -118,16 +186,33 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   // Indicate if fallback support for access-denied errors should be included
   // when using a service for print backend calls.
   virtual bool SupportFallback() = 0;
-#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Indicate if print backend service should be able to fetch XPS capabilities
+  // when fetching printer capabilities.
+  virtual bool EnableXpsCapabilities() = 0;
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   void SetUp() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
     if (UseService()) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          features::kEnableOopPrintDrivers,
-          {{ features::kEnableOopPrintDriversSandbox.name,
-             "true" }});
+      std::vector<base::test::FeatureRefAndParams> features_and_params(
+          {{ features::kEnableOopPrintDrivers,
+             {
+               { features::kEnableOopPrintDriversSandbox.name,
+                 "true" }
+             } }});
+
+#if BUILDFLAG(IS_WIN)
+      if (EnableXpsCapabilities()) {
+        features_and_params.push_back(
+            {features::kReadPrinterCapabilitiesWithXps, {}});
+      }
+#endif  // BUILDFLAG(IS_WIN)
+
+      feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
     } else {
       feature_list_.InitWithFeatureState(features::kEnableOopPrintDrivers,
                                          false);
@@ -145,18 +230,30 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+      if (SupportFallback())
+        unsandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+
+#if BUILDFLAG(IS_WIN)
+      // To test OOP for Windows, the Print Backend service and Data Decoder
+      // service are launched on separate threads. This setup is required to
+      // unblock Mojo calls.
+      if (EnableXpsCapabilities()) {
+        xml_parser_ = std::make_unique<PrinterXmlParserImpl>();
+        SetUpDataDecoder();
+      }
+      SetUpServiceThread();
+#else
       sandboxed_print_backend_service_ =
           PrintBackendServiceTestImpl::LaunchForTesting(
               sandboxed_print_backend_remote_, sandboxed_print_backend_,
               /*sandboxed=*/true);
       if (SupportFallback()) {
-        unsandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
-
         unsandboxed_print_backend_service_ =
             PrintBackendServiceTestImpl::LaunchForTesting(
                 unsandboxed_print_backend_remote_, unsandboxed_print_backend_,
                 /*sandboxed=*/false);
       }
+#endif  // BUILDFLAG(IS_WIN)
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -169,8 +266,26 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  void TearDown() override { PrintBackendServiceManager::ResetForTesting(); }
-#endif
+
+  void TearDown() override {
+#if BUILDFLAG(IS_WIN)
+    if (UseService()) {
+      service_task_runner_->DeleteSoon(
+          FROM_HERE, std::move(sandboxed_print_backend_service_));
+      if (SupportFallback()) {
+        service_task_runner_->DeleteSoon(
+            FROM_HERE, std::move(unsandboxed_print_backend_service_));
+      }
+      if (EnableXpsCapabilities()) {
+        data_decoder_task_runner_->DeleteSoon(FROM_HERE,
+                                              std::move(data_decoder_));
+      }
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
+    PrintBackendServiceManager::ResetForTesting();
+  }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
@@ -210,6 +325,19 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_WIN)
+  void SetPrinterXml(const std::string& id,
+                     const std::string& capabilities_xml) {
+    if (SupportFallback()) {
+      unsandboxed_print_backend()->SetXmlCapabilitiesForPrinter(
+          id, capabilities_xml);
+    }
+
+    sandboxed_print_backend()->SetXmlCapabilitiesForPrinter(id,
+                                                            capabilities_xml);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void SetTerminateServiceOnNextInteraction() {
     if (SupportFallback()) {
       unsandboxed_print_backend_service_
@@ -227,6 +355,48 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   }
 
  private:
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
+  void SetUpDataDecoder() {
+    data_decoder_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+    base::RunLoop run_loop;
+    data_decoder_task_runner_->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          data_decoder_ =
+              std::make_unique<data_decoder::test::InProcessDataDecoder>();
+        }),
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SetUpServiceThread() {
+    mojo::PendingRemote<mojom::PrinterXmlParser> sandboxed_xml_parser_remote;
+    mojo::PendingRemote<mojom::PrinterXmlParser> unsandboxed_xml_parser_remote;
+    if (EnableXpsCapabilities()) {
+      sandboxed_xml_parser_remote = xml_parser_->GetRemote();
+      unsandboxed_xml_parser_remote = xml_parser_->GetRemote();
+    }
+
+    service_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+    sandboxed_print_backend_service_ =
+        PrintBackendServiceTestImpl::LaunchForTestingWithServiceThread(
+            sandboxed_print_backend_remote_, sandboxed_print_backend_,
+            /*sandboxed=*/true, std::move(sandboxed_xml_parser_remote),
+            service_task_runner_);
+
+    if (SupportFallback()) {
+      unsandboxed_print_backend_service_ =
+          PrintBackendServiceTestImpl::LaunchForTestingWithServiceThread(
+              unsandboxed_print_backend_remote_, unsandboxed_print_backend_,
+              /*sandboxed=*/false, std::move(unsandboxed_xml_parser_remote),
+              service_task_runner_);
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_OOP_PRINTING)
+
   // Must outlive `profile_`.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -243,6 +413,14 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
   std::unique_ptr<PrintBackendServiceTestImpl> sandboxed_print_backend_service_;
   std::unique_ptr<PrintBackendServiceTestImpl>
       unsandboxed_print_backend_service_;
+
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<base::SingleThreadTaskRunner> service_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> data_decoder_task_runner_;
+  std::unique_ptr<data_decoder::test::InProcessDataDecoder> data_decoder_;
+  std::unique_ptr<PrinterXmlParserImpl> xml_parser_;
+#endif  // BUILDFLAG(IS_WIN)
+
 #else
   scoped_refptr<TestPrintBackend> default_print_backend_;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -266,7 +444,11 @@ class LocalPrinterHandlerDefaultTest
   bool UseService() override { return GetParam(); }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   bool SupportFallback() override { return false; }
-#endif
+
+#if BUILDFLAG(IS_WIN)
+  bool EnableXpsCapabilities() override { return false; }
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 };
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -293,7 +475,18 @@ class LocalPrinterHandlerDefaultWithServiceTest
 
   bool UseService() override { return true; }
   bool SupportFallback() override { return true; }
+#if BUILDFLAG(IS_WIN)
+  bool EnableXpsCapabilities() override { return false; }
+#endif  // BUILDFLAG(IS_WIN)
 };
+
+#if BUILDFLAG(IS_WIN)
+class LocalPrinterHandlerDefaultWithServiceEnableXpsTest
+    : public LocalPrinterHandlerDefaultWithServiceTest {
+ public:
+  bool EnableXpsCapabilities() override { return true; }
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(All, LocalPrinterHandlerDefaultTest, testing::Bool());
 
@@ -591,6 +784,89 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
   EXPECT_TRUE(fetched_caps.empty());
 }
 
-#endif  // #if BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_WIN)
+
+// Tests that fetching XPS capabilities succeeds if the XML string is valid,
+// even when there are no XPS capabilities of interest.
+TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
+       FetchXpsPrinterCapabilitiesValidXps) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  SetPrinterXml("printer1", kXmlTestFeature);
+
+  base::Value::Dict fetched_caps;
+  local_printer_handler()->StartGetCapability(
+      /*destination_id=*/"printer1",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+  RunUntilIdle();
+
+  // Fetching capabilities should still succeed.
+  const base::Value::Dict* capabilities =
+      fetched_caps.FindDict(kSettingCapabilities);
+  ASSERT_TRUE(capabilities);
+  EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
+
+  // None of the capabilities of interest exist in the XML, so no XML
+  // capabilities should be added.
+  const base::Value::Dict* printer = capabilities->FindDict(kPrinter);
+  ASSERT_TRUE(printer);
+  ASSERT_FALSE(printer->FindList(kVendorCapabilities));
+}
+
+// Tests that XPS capabilities are included when fetching capabilities of
+// interest.
+TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
+       FetchXpsPrinterCapabilitiesValidXpsCapabilityWithInterest) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  SetPrinterXml("printer1", kXmlPageOutputQuality);
+
+  base::Value::Dict fetched_caps;
+  local_printer_handler()->StartGetCapability(
+      /*destination_id=*/"printer1",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  const base::Value::Dict* capabilities =
+      fetched_caps.FindDict(kSettingCapabilities);
+  ASSERT_TRUE(capabilities);
+  EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
+
+  // Check for XPS capabilities added.
+  const base::Value::Dict* printer = capabilities->FindDict(kPrinter);
+  ASSERT_TRUE(printer);
+
+  const base::Value::List* vendor_capabilities =
+      printer->FindList(kVendorCapabilities);
+  ASSERT_TRUE(vendor_capabilities);
+  ASSERT_EQ(vendor_capabilities->size(), 1u);
+  EXPECT_EQ(vendor_capabilities->front(),
+            base::test::ParseJson(kJsonPageOutputQuality));
+}
+
+// Tests that fetching capabilities fails when the XPS string is invalid and
+// cannot be processed.
+TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
+       FetchXpsPrinterCapabilitiesInvalidXps) {
+  AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
+             /*requires_elevated_permissions=*/false);
+  SetPrinterXml("printer1", "");
+
+  base::Value::Dict fetched_caps;
+  local_printer_handler()->StartGetCapability(
+      /*destination_id=*/"printer1",
+      base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
+
+  RunUntilIdle();
+
+  const base::Value::Dict* capabilities =
+      fetched_caps.FindDict(kSettingCapabilities);
+  ASSERT_FALSE(capabilities);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace printing

@@ -14,6 +14,19 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "printing/backend/test_print_backend.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <memory>
+
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/printing/printer_xml_parser_impl.h"
+#include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "printing/printing_features.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace printing {
 
 #if BUILDFLAG(IS_WIN)
@@ -115,6 +128,12 @@ void PrintBackendServiceTestImpl::FetchCapabilities(
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // Fetching capabilities with XPS uses synchronous mojo calls, which requires
+  // base sync primitives for testing with multiple threads.
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
+#endif  // BUILDFLAG(IS_WIN)
+
   PrintBackendServiceImpl::FetchCapabilities(printer_name, std::move(callback));
 }
 
@@ -212,5 +231,59 @@ PrintBackendServiceTestImpl::LaunchForTesting(
 
   return service;
 }
+
+#if BUILDFLAG(IS_WIN)
+// static
+std::unique_ptr<PrintBackendServiceTestImpl>
+PrintBackendServiceTestImpl::LaunchForTestingWithServiceThread(
+    mojo::Remote<mojom::PrintBackendService>& remote,
+    scoped_refptr<TestPrintBackend> backend,
+    bool sandboxed,
+    mojo::PendingRemote<mojom::PrinterXmlParser> xml_parser_remote,
+    scoped_refptr<base::SingleThreadTaskRunner> service_task_runner) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<PrintBackendServiceTestImpl> service;
+
+  base::RunLoop run_loop;
+  service_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&PrintBackendServiceTestImpl::CreateServiceOnServiceThread,
+                     remote.BindNewPipeAndPassReceiver(), backend,
+                     std::move(xml_parser_remote)),
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<PrintBackendServiceTestImpl> result_service) {
+            service = std::move(result_service);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // Register this test version of print backend service to be used instead of
+  // launching instances out-of-process on-demand.
+  if (sandboxed) {
+    PrintBackendServiceManager::GetInstance().SetServiceForTesting(&remote);
+  } else {
+    PrintBackendServiceManager::GetInstance().SetServiceForFallbackTesting(
+        &remote);
+  }
+
+  return service;
+}
+
+// static
+std::unique_ptr<PrintBackendServiceTestImpl>
+PrintBackendServiceTestImpl::CreateServiceOnServiceThread(
+    mojo::PendingReceiver<mojom::PrintBackendService> receiver,
+    scoped_refptr<TestPrintBackend> backend,
+    mojo::PendingRemote<mojom::PrinterXmlParser> xml_parser_remote) {
+  // Private ctor.
+  auto service = base::WrapUnique(
+      new PrintBackendServiceTestImpl(std::move(receiver), std::move(backend)));
+  service->Init(/*locale=*/std::string(), std::move(xml_parser_remote));
+
+  return service;
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing
