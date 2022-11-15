@@ -90,6 +90,10 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
       backface_visibility != other.backface_visibility ||
       rendering_context_id != other.rendering_context_id ||
       compositor_element_id != other.compositor_element_id ||
+      // This change affects cull rect expansion for scrolling contents.
+      UsesCompositedScrolling() != other.UsesCompositedScrolling() ||
+      // This change affects cull rect expansion for the element itself.
+      RequiresCullRectExpansion() != other.RequiresCullRectExpansion() ||
       scroll != other.scroll ||
       scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
       !base::ValuesEquivalent(sticky_constraint, other.sticky_constraint) ||

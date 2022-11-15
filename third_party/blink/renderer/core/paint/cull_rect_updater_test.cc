@@ -587,6 +587,29 @@ TEST_P(CullRectUpdaterTest, PerspectiveDescendants) {
   EXPECT_TRUE(GetCullRect("target").IsInfinite());
 }
 
+// Test case for crbug.com/1382842.
+TEST_P(CullRectUpdaterTest, UpdateOnCompositedScrollingStatusChange) {
+  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>body {position: absolute}</style>
+    <div id="scroller" style="width: 100px; height: 100px;
+                              overflow: auto; position: relative">
+      <div style="height: 1000px">TEXT</div>
+    <div>
+  )HTML");
+
+  EXPECT_EQ(gfx::Rect(100, 100), GetContentsCullRect("scroller").Rect());
+
+  auto* scroller = GetDocument().getElementById("scroller");
+  scroller->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "yellow");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(100, 1000), GetContentsCullRect("scroller").Rect());
+
+  scroller->RemoveInlineStyleProperty(CSSPropertyID::kBackgroundColor);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(100, 100), GetContentsCullRect("scroller").Rect());
+}
+
 TEST_P(CullRectUpdaterTest, NestedOverriddenCullRectScopes) {
   SetBodyInnerHTML(R"HTML(
     <div id="div1" style="contain: paint; height: 100px"></div>
