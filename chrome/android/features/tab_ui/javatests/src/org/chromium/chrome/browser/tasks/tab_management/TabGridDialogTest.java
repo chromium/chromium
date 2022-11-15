@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DISCARD_OCCLUDED_BITMAPS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
@@ -87,6 +88,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -101,6 +104,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
@@ -122,6 +126,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 
@@ -156,6 +161,9 @@ public class TabGridDialogTest {
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
                     .build();
 
+    @Mock
+    private HomepagePolicyManager mHomepagePolicyManager;
+
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
@@ -171,6 +179,7 @@ public class TabGridDialogTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         Intents.init();
         TabUiFeatureUtilities.setTabManagementModuleSupportedForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -1125,7 +1134,7 @@ public class TabGridDialogTest {
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    public void testStripDialog_TabSelectionEditorV2CloseAll() throws Exception {
+    public void testStripDialog_TabSelectionEditorV2CloseAll_NoCustomHomepage() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
         createTabs(cta, false, 2);
@@ -1157,7 +1166,55 @@ public class TabGridDialogTest {
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
 
+        // Rather than destroying the activity the GTS should be showing.
+        verifyTabSwitcherCardCount(cta, 0);
+    }
+
+    @Test
+    @MediumTest
+    @DisableIf.Device(type = UiDisableIf.TABLET)
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testStripDialog_TabSelectionEditorV2CloseAll_CustomHomepage() throws Exception {
+        GURL url = new GURL(mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL(
+                "/chrome/test/data/android/google.html"));
+        when(mHomepagePolicyManager.isHomepageLocationPolicyEnabled()).thenReturn(true);
+        when(mHomepagePolicyManager.getHomepagePreference()).thenReturn(url);
+
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        // Create a tab group with 2 tabs.
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Enter tab switcher and select first tab.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        clickFirstTabInDialog(cta);
+        waitForDialogHidingAnimation(cta);
+
+        // Make sure tab strip is showing.
+        CriteriaHelper.pollUiThread(()
+                                            -> mActivityTestRule.getActivity()
+                                                       .getBrowserControlsManager()
+                                                       .getBottomControlOffset()
+                        == 0);
+        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+
+        // Test opening dialog from strip and from tab switcher.
+        openDialogFromStripAndVerify(cta, 2, null);
+        openSelectionEditorV2AndVerify(cta, 2);
+
+        // Close two tabs.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Close tabs");
+
+        // With a custom homepage exit the app.
         CriteriaHelper.pollUiThread(() -> cta.isDestroyed());
+        HomepagePolicyManager.setInstanceForTests(null);
     }
 
     @Test
