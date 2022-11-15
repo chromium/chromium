@@ -4,6 +4,7 @@
 
 chrome_java_sources = [
   "java/src/com/ark/browser/ArkBrowserActivity.java",
+  "java/src/com/ark/browser/ArkBrowserApplicationImpl.java",
   "java/src/com/ark/browser/ArkCompositorViewHolder.java",
   "java/src/com/ark/browser/ArkLayoutManager.java",
   "java/src/com/ark/browser/ArkNavigationHandler.java",
@@ -76,7 +77,6 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/dialog/BookmarkManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/DownloadManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/HistoryManagerDialog.java",
-  "java/src/com/ark/browser/ui/dialog/MainMenuDialog.java",
   "java/src/com/ark/browser/ui/dialog/SmartSearchDialog.java",
   "java/src/com/ark/browser/ui/dialog/SmartSearchPopupWindow.java",
   "java/src/com/ark/browser/ui/dialog/TestWindow.java",
@@ -87,14 +87,18 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
 
+  "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",
+
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
+  "java/src/com/ark/browser/ui/widget/ShadowLayout.java",
   "java/src/com/ark/browser/ui/widget/SmartSearchPanel.java",
   "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
 
   "java/src/com/ark/browser/utils/ArkLogger.java",
   "java/src/com/ark/browser/utils/PrefsHelper.java",
+  "java/src/com/ark/browser/utils/SkinChangeAnimation.java",
   "java/src/com/ark/browser/utils/ThreadPool.java",
 
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",

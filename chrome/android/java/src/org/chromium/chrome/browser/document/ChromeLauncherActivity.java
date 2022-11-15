@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.document;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.ark.browser.ArkBrowserActivity;
 import com.google.android.material.color.DynamicColors;
+import com.zpj.toast.ZToast;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
@@ -29,21 +32,27 @@ public class ChromeLauncherActivity extends Activity {
         // activities like this.
         applyThemeOverlays();
 
-        @LaunchIntentDispatcher.Action
-        int dispatchAction = LaunchIntentDispatcher.dispatch(this, getIntent());
-        switch (dispatchAction) {
-            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY:
-                finish();
-                break;
-            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
-                this.finishAndRemoveTask();
-                break;
-            default:
-                assert false : "Intent dispatcher finished with action " + dispatchAction
-                               + ", finishing anyway";
-                finish();
-                break;
-        }
+        ZToast.error("ChromeLauncherActivity");
+
+        Intent intent = new Intent(this, ArkBrowserActivity.class);
+        startActivity(intent);
+        finish();
+
+//        @LaunchIntentDispatcher.Action
+//        int dispatchAction = LaunchIntentDispatcher.dispatch(this, getIntent());
+//        switch (dispatchAction) {
+//            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY:
+//                finish();
+//                break;
+//            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
+//                this.finishAndRemoveTask();
+//                break;
+//            default:
+//                assert false : "Intent dispatcher finished with action " + dispatchAction
+//                               + ", finishing anyway";
+//                finish();
+//                break;
+//        }
         TraceEvent.end("ChromeLauncherActivity.onCreate");
     }
 

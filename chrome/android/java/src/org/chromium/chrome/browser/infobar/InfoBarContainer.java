@@ -496,9 +496,12 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
             mInfoBarContainerView = null;
         }
 
-        if (mTab.getWindowAndroid() != null) {
-            mTab.getWindowAndroid().getKeyboardDelegate().removeKeyboardVisibilityListener(this);
+        if (windowAndroid != null) {
+            windowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
         }
+//        if (mTab.getWindowAndroid() != null) {
+//            mTab.getWindowAndroid().getKeyboardDelegate().removeKeyboardVisibilityListener(this);
+//        }
 
 
         if (mTabView != null) {

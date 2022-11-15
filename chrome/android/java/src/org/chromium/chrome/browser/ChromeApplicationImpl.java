@@ -67,6 +67,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
             PartitionResolverSupplier.setInstance(new ProfileResolver());
 
             AppHooks.get().getChimeDelegate().initialize();
+
+
+
         }
     }
 

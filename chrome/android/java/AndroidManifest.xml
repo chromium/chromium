@@ -399,7 +399,7 @@ by a child template that "extends" this file.
             android:windowSoftInputMode="adjustPan"
             android:exported="false"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.Chromium.TabbedMode" />
+            android:theme="@style/DayTheme" />
 
         <!-- ChromeTabbedActivity related -->
         <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
@@ -438,6 +438,26 @@ by a child template that "extends" this file.
             {% block extra_web_rendering_activity_definitions %}
             {% endblock %}
         </activity>
+
+<!--        <activity-alias android:name="com.ark.browser.Main"-->
+<!--            android:targetActivity="com.ark.browser.ArkBrowserActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--                <category android:name="android.intent.category.APP_BROWSER" />-->
+<!--                {% if channel in ['dev', 'canary', 'default'] %}-->
+<!--                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />-->
+<!--                {% endif %}-->
+<!--            </intent-filter>-->
+<!--            <meta-data android:name="android.app.shortcuts"-->
+<!--                android:resource="@xml/launchershortcuts" />-->
+<!--            {{ self.supports_vr() }}-->
+<!--            {{ self.extra_web_rendering_activity_definitions() }}-->
+<!--        </activity-alias>-->
+
         <activity-alias android:name="com.google.android.apps.chrome.Main"
             android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity"
             android:exported="true">
@@ -456,6 +476,7 @@ by a child template that "extends" this file.
             {{ self.supports_vr() }}
             {{ self.extra_web_rendering_activity_definitions() }}
         </activity-alias>
+
         <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
             android:theme="@style/Theme.Chromium.TabbedMode"
             android:exported="false"

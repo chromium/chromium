@@ -30,8 +30,12 @@ import org.chromium.base.metrics.RecordHistogram;
 public class SplitChromeApplication extends SplitCompatApplication {
     private static final String TAG = "SplitChromeApp";
 
+//    @IdentifierNameString
+//    private static String sImplClassName = "org.chromium.chrome.browser.ChromeApplicationImpl";
+
     @IdentifierNameString
-    private static String sImplClassName = "org.chromium.chrome.browser.ChromeApplicationImpl";
+    private static final String sImplClassName = "com.ark.browser.ArkBrowserApplicationImpl";
+
 
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;

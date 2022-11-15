@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+
+<!--    <color name="black_alpha_38">#61000000</color>-->
+<!--    <color name="black_alpha_54">#8A000000</color>-->
+<!--    <color name="black_alpha_87">#DE000000</color>-->
+<!--    <color name="white_alpha_70">#B3FFFFFF</color>-->
+    <color name="google_blue_500">#4285F4</color>
+    <color name="google_blue_700">#3367D6</color>
+
+    <color name="colorPrimary">#3e53f1</color>
+    <color name="colorPrimaryDark">@color/google_blue_500</color>
+    <color name="colorAccent">@color/google_blue_500</color>
+
+    <!--用于重要文字-->
+    <color name="color_text_major">#1F1614</color>
+    <!--用于次要文字-->
+    <color name="color_text_normal">#666666</color>
+    <!--用于较弱文字-->
+    <color name="color_text_minor">#8C8C8C</color>
+
+    <color name="light_gray_2">#f0f2f6</color>
+    <color name="light_gray_9">#f4f5f7</color>
+    <color name="dark_gray_3">#252525</color>
+
+    <!-- 酱红色 -->
+    <!-- 深红色 -->
+    <color name="red5">#ff7870</color>
+
+    <color name="light_blue4">#84d4f9</color>
+
+
+<!--    <color name="switcher_normal_color">#eeeeee</color>-->
+<!--    <color name="switcher_checked_color">@color/colorPrimary</color>-->
+
+    <!-- Common colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+<!--    <color name="default_text_color">@color/black_alpha_87</color>-->
+<!--&lt;!&ndash;    <color name="default_primary_color">#F2F2F2</color>&ndash;&gt;-->
+<!--    <color name="light_red">#FF5E5E</color>-->
+<!--    <color name="light_normal_color">#5A5A5A</color>-->
+<!--    <color name="light_active_color">@color/google_blue_500</color>-->
+<!--    <color name="google_blue_grey_500">#607D8B</color>-->
+<!--    <color name="google_red_700">#C53929</color>-->
+<!--    <color name="google_green_700">#0B8043</color>-->
+<!--    <color name="google_grey_200">#EEEEEE</color>-->
+<!--    <color name="google_grey_300">#E0E0E0</color>-->
+    <color name="google_grey_400">#BDBDBD</color>
+<!--    <color name="google_grey_500">#9E9E9E</color>-->
+<!--    <color name="google_grey_600">#757575</color>-->
+    <color name="google_black_400">#222222</color>
+<!--    <color name="grey_alpha_90">#E6505050</color>-->
+<!--&lt;!&ndash;    <color name="white_alpha_50">#80FFFFFF</color>&ndash;&gt;-->
+<!--&lt;!&ndash;    <color name="black_alpha_65">#A6000000</color>&ndash;&gt;-->
+<!--    <color name="light_grey">#CCCCCC</color>-->
+
+<!--    <color name="modern_light_grey">#F1F3F5</color>-->
+
+<!--    &lt;!&ndash; New list of common text colors &ndash;&gt;-->
+<!--    <color name="black_alpha_24">#3D000000</color>-->
+
+</resources>

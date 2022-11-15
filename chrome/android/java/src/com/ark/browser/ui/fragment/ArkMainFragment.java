@@ -20,8 +20,8 @@ import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.ui.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.base.BaseFragment;
+import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.toast.ZToast;
@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -146,12 +147,12 @@ public class ArkMainFragment extends BaseFragment implements
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
-        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
+//        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
         // If the UI was inflated on a background thread, then the CompositorView may not have been
         // fully initialized yet as that may require the creation of a handler which is not allowed
         // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
         // been yet.
-        mViewHolder.setRootView(rootView);
+        mViewHolder.setRootView(view);
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
@@ -194,7 +195,10 @@ public class ArkMainFragment extends BaseFragment implements
         });
 
         ImageView btnMenu = findViewById(R.id.btn_menu);
-        btnMenu.setOnClickListener(v -> MainMenuDialog.show((ArkBrowserActivity)_mActivity));
+        btnMenu.setOnClickListener(v -> {
+//            MainMenuDialog.show((ArkBrowserActivity)_mActivity)
+            start(new MainMenuDialog());
+        });
     }
 
     @Override
@@ -243,6 +247,7 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onStartWithNative() {
+        DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
         ChromeActivitySessionTracker.getInstance().onStartWithNative();
         ChromeCachedFlags.getInstance().cacheNativeFlags();
     }

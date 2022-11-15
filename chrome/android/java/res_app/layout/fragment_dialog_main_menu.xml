@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ark.browser.ui.widget.ShadowLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:hl_shadowLimit="0dp"
+    app:hl_shadowBackColor="?attr/_dialog_background_color"
+    app:hl_cornerRadius_leftTop="24dp"
+    app:hl_cornerRadius_rigthTop="24dp"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="8dp"
+        >
+
+        <View
+            android:layout_width="56dp"
+            android:layout_height="4dp"
+            android:background="@drawable/bg_round_accent"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <LinearLayout
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="16dp"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_launcher"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="千寻浏览器"
+                android:layout_gravity="center_vertical"
+                android:textColor="?attr/textColorMajor"
+                />
+
+
+        </LinearLayout>
+
+        <androidx.gridlayout.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:orientation="horizontal"
+            app:columnCount="5"
+            app:rowCount="2"
+            >
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_offline"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_vconsole"
+                android:text="离线网页"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_private_mode"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_private_mode"
+                android:text="无痕模式"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <!--        <com.ark.browser.ui.widget.DrawableTintTextView-->
+            <!--            android:id="@+id/tv_reader_mode"-->
+            <!--            style="@style/popup_menu_item"-->
+            <!--            android:drawableTop="@drawable/qianxun_safe"-->
+            <!--            android:text="阅读模式"-->
+            <!--            android:textColor="?attr/textColorMajor"-->
+            <!--            app:drawable_tint_color="?attr/textColorMajor"-->
+            <!--            />-->
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_addon"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_html"
+                android:text="插件"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_skin"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_skin"
+                android:text="主题"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_night_mode"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_night_mode"
+                android:text="夜间模式"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_history"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_history"
+                android:text="历史记录"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_collection"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_bookmark"
+                android:text="书签收藏"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_download"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_download"
+                android:text="下载"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_manager"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_safe"
+                android:text="浏览器管家"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintTextView
+                android:id="@+id/tv_exit"
+                style="@style/popup_menu_item"
+                android:drawableTop="@drawable/ic_exit"
+                android:text="退出"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+
+        </androidx.gridlayout.widget.GridLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:id="@+id/ib_share"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_share"
+                android:tint="?attr/textColorMajor"
+                android:paddingVertical="16dp"
+                />
+
+            <ImageView
+                android:id="@+id/ib_close"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:src="@drawable/ic_down"
+                android:tint="?attr/textColorMajor"
+                android:paddingVertical="16dp"
+                />
+
+            <ImageView
+                android:id="@+id/ib_setting"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_settings"
+                android:tint="?attr/textColorMajor"
+                android:paddingVertical="16dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.ark.browser.ui.widget.ShadowLayout>

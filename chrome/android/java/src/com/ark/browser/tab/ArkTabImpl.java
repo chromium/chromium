@@ -270,7 +270,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public void removeObserver(TabObserver observer) {
         mObservers.removeObserver(observer);
-        observer.onDetachToWindowAndroid(this, null);
+        observer.onDetachToWindowAndroid(this, mWindowAndroid);
     }
 
     @Override

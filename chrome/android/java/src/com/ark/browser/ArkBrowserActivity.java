@@ -1,54 +1,38 @@
 package com.ark.browser;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.ark.browser.core.utils.NavigationPredictorBridge;
+import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
-import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.ui.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.utils.ArkLogger;
+import com.zpj.skin.SkinEngine;
+import com.zpj.skin.SkinLayoutInflater;
+import com.zpj.utils.StatusBarUtils;
 
-import org.chromium.base.Callback;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.PageTransition;
-import org.chromium.url.GURL;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
@@ -56,14 +40,50 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     private ArkMainFragment mFragment;
 
+    private SkinLayoutInflater mLayoutInflater;
+
+    @NonNull
+    @Override
+    public final LayoutInflater getLayoutInflater() {
+        if (mLayoutInflater == null) {
+            mLayoutInflater = new SkinLayoutInflater(this);
+        }
+        return mLayoutInflater;
+    }
+
+    @Override
+    public final Object getSystemService(@NonNull String name) {
+        if (Context.LAYOUT_INFLATER_SERVICE.equals(name)) {
+            return getLayoutInflater();
+        }
+        return super.getSystemService(name);
+    }
+
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
+
+        getLayoutInflater();
+        mLayoutInflater.applyCurrentSkin();
+        // AppCompatActivity 需要设置
+        AppCompatDelegate delegate = this.getDelegate();
+        if (delegate instanceof LayoutInflater.Factory2) {
+            mLayoutInflater.setFactory2((LayoutInflater.Factory2) delegate);
+        }
+
+        SkinEngine.changeSkin(AppConfig.isNightMode() ? R.style.NightTheme : R.style.DayTheme);
+
         mFragment = findFragment(ArkMainFragment.class);
         if (mFragment == null) {
             mFragment = new ArkMainFragment();
         }
         getLifecycleDispatcher().register(mFragment);
+    }
+
+    @Override
+    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        StatusBarUtils.transparentStatusBar(getWindow());
     }
 
     @Override
@@ -109,7 +129,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     protected void onInitialLayoutInflationComplete() {
-        DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
 

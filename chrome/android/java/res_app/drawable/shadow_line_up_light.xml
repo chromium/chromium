@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    <gradient-->
+<!--        android:startColor="@color/transparent"-->
+<!--        android:centerColor="#20E0E0E0"-->
+<!--        android:endColor="@color/google_grey_300"-->
+<!--        android:angle="270"-->
+<!--        />-->
+
+<!--    <gradient-->
+<!--        android:startColor="#10000000"-->
+<!--        android:endColor="@android:color/transparent"-->
+<!--        android:angle="90" >-->
+<!--    </gradient>-->
+
+    <gradient
+        android:startColor="#10000000"
+        android:endColor="@android:color/transparent"
+        android:angle="90" >
+    </gradient>
+
+</shape>

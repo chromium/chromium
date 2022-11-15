@@ -184,6 +184,9 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
             return false;
         }
 
+        Log.e(TAG, "shouldIgnoreNavigation isRedirect=" + navigationHandle.isRedirect()
+                + " isDownload=" + navigationHandle.isDownload()
+                + " isFragmentNavigation=" + navigationHandle.isFragmentNavigation());
         if (!navigationHandle.isRedirect() && !navigationHandle.isDownload()
                 && !navigationHandle.isFragmentNavigation()) {
 

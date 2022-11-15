@@ -2,6 +2,68 @@
 <resources xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
+    <style name="ArkBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="DayTheme" parent="ArkBaseTheme">
+        <item name="backgroundColor">@android:color/white</item>
+        <item name="backgroundColorDark">#FAFAFA</item>
+        <!--        @color/dark_gray_5-->
+        <item name="backgroundColorAccent">#F9FAFC</item>
+        <item name="backgroundTintColor">#40333333</item>
+        <item name="backgroundBottomDialog">@drawable/bg_bottom_popup_light</item>
+        <item name="backgroundShadowBottom">@drawable/shadow_line_bottom_light</item>
+        <item name="backgroundShadowUp">@drawable/shadow_line_up_light</item>
+        <item name="backgroundColorCard">#F8F8F8</item>
+        <!--        @color/light_gray_9-->
+        <item name="backgroundSearchBar">#f2f2f2</item>
+        <item name="wallpaperTintColor">@color/transparent</item>
+        <item name="textColorMajor">@color/color_text_major</item>
+        <item name="textColorNormal">@color/color_text_normal</item>
+        <item name="textColorMinor">@color/color_text_minor</item>
+
+        <!--        fragmentation-dialog-->
+        <item name="_dialog_background_color">@android:color/white</item>
+        <item name="_dialog_text_color_major">@color/color_text_major</item>
+        <item name="_dialog_text_color_normal">@color/color_text_normal</item>
+        <item name="_dialog_text_color_negative">@color/color_text_normal</item>
+        <item name="_dialog_text_color_positive">@color/colorPrimary</item>
+        <item name="_dialog_text_color_minus">@color/color_text_minor</item>
+    </style>
+
+    <style name="NightTheme" parent="ArkBaseTheme">
+        <!--        <item name="backgroundColor">@android:color/black</item>-->
+        <item name="backgroundColor">#1C1C1C</item>
+        <item name="backgroundColorDark">#303030</item>
+        <item name="backgroundColorAccent">#0F0F0F</item>
+        <item name="backgroundTintColor">#aa000000</item>
+        <item name="backgroundBottomDialog">@drawable/bg_bottom_popup_dark</item>
+        <item name="backgroundShadowBottom">@drawable/shadow_line_bottom_dark</item>
+        <item name="backgroundShadowUp">@drawable/shadow_line_up_dark</item>
+        <item name="backgroundColorCard">@color/dark_gray_3</item>
+        <item name="backgroundSearchBar">@color/dark_gray_3</item>
+        <item name="wallpaperTintColor">#80000000</item>
+        <item name="textColorMajor">#EAEEF1</item>
+        <item name="textColorNormal">#f8f8f8</item>
+        <item name="textColorMinor">#AFB2B7</item>
+
+        <!--        fragmentation-dialog-->
+        <item name="_dialog_background_color">#10101F</item>
+        <item name="_dialog_text_color_major">#cccccc</item>
+        <item name="_dialog_text_color_normal">#999999</item>
+        <item name="_dialog_text_color_negative">#f8f8f8</item>
+        <item name="_dialog_text_color_positive">@color/colorPrimary</item>
+        <item name="_dialog_text_color_minus">#efefef</item>
+    </style>
+
     <style name="menu_item">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -10,6 +72,22 @@
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">#333</item>
         <item name="drawable_tint_color">#333</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="popup_menu_item">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="app:layout_columnWeight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/google_black_400</item>
+        <item name="drawable_tint_color">@color/google_black_400</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:paddingTop">12dp</item>
