@@ -675,13 +675,13 @@
   },
   {
     "name": "biometric-authentication-for-filling",
-    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
+    "owners": ["vsemeniuk@google.com", "vasilii"],
     "expiry_milestone": 111
   },
   {
     "name": "biometric-authentication-in-settings",
-    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
-    "expiry_milestone": 110
+    "owners": ["vsemeniuk@google.com", "vasilii"],
+    "expiry_milestone": 111
   },
   {
     "name": "biometric-reauth-password-filling",
@@ -3754,7 +3754,7 @@
   {
     "name": "filling-across-affiliated-websites",
     "owners": [ "vsemeniuk@google.com", "vasilii" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 111
   },
   {
     "name": "focus-follows-cursor",
