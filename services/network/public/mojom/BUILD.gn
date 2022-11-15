@@ -1053,6 +1053,10 @@ mojom("cookies_mojom") {
           mojom = "network.mojom.CookieSourceScheme"
           cpp = "::net::CookieSourceScheme"
         },
+        {
+          mojom = "network.mojom.HttpMethod"
+          cpp = "::net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/cookie_manager_mojom_traits.h" ]

@@ -95,6 +95,19 @@ struct EnumTraits<network::mojom::ContextRedirectTypeBug1221316,
 };
 
 template <>
+struct EnumTraits<
+    network::mojom::HttpMethod,
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod> {
+  static network::mojom::HttpMethod ToMojom(
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
+          input);
+  static bool FromMojom(
+      network::mojom::HttpMethod input,
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod*
+          output);
+};
+
+template <>
 struct EnumTraits<network::mojom::CookieSourceScheme, net::CookieSourceScheme> {
   static network::mojom::CookieSourceScheme ToMojom(
       net::CookieSourceScheme input);
@@ -128,6 +141,12 @@ struct StructTraits<
       redirect_type_bug_1221316(
           const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
     return m.redirect_type_bug_1221316;
+  }
+
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
+  http_method_bug_1221316(
+      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
+    return m.http_method_bug_1221316;
   }
 
   static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,

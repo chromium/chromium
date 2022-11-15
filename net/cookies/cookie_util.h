@@ -259,6 +259,11 @@ ComputeFirstPartySetMetadataMaybeAsync(
     bool force_ignore_top_frame_party,
     base::OnceCallback<void(FirstPartySetMetadata)> callback);
 
+// Converts a string representing the http request method to its enum
+// representation.
+NET_EXPORT CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod
+HttpMethodStringToEnum(const std::string& in);
+
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.
