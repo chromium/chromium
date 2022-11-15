@@ -197,8 +197,13 @@ void MessagePumpEpoll::UnregisterInterest(
 
 bool MessagePumpEpoll::WaitForEpollEvent(TimeDelta timeout) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // `timeout` has microsecond resolution, but timeouts accepted by epoll_wait()
+  // are integral milliseconds. Round up to the next millisecond.
+  // TODO(https://crbug.com/1382894): Consider higher-resolution timeouts.
   const int epoll_timeout =
-      timeout.is_max() ? -1 : saturated_cast<int>(timeout.InMilliseconds());
+      timeout.is_max() ? -1
+                       : saturated_cast<int>(timeout.InMillisecondsRoundedUp());
   epoll_event event;
   const int epoll_result =
       epoll_wait(epoll_.get(), &event, /*maxevents=*/1, epoll_timeout);
