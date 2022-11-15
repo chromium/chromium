@@ -520,8 +520,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
                                  is_upload_save_);
       break;
     case BubbleType::FAILURE:
-      AutofillMetrics::LogCreditCardUploadFeedbackMetric(
-          AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN);
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::INACTIVE:
@@ -583,8 +581,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           GetSyncState());
       break;
     case BubbleType::FAILURE:
-      AutofillMetrics::LogCreditCardUploadFeedbackMetric(
-          AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN);
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::MANAGE_CARDS:

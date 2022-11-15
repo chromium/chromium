@@ -215,17 +215,6 @@ class AutofillMetrics {
     kMaxValue = kDismissedByServerRequestFailure,
   };
 
-  enum CreditCardUploadFeedbackMetric {
-    // The loading indicator animation which indicates uploading is in progress
-    // is successfully shown.
-    CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN,
-    // The credit card icon with the saving failure badge is shown.
-    CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN,
-    // The failure icon is clicked and the save card failure bubble is shown.
-    CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN,
-    NUM_CREDIT_CARD_UPLOAD_FEEDBACK_METRICS,
-  };
-
   // Metrics measuring how well we predict field types.  These metric values are
   // logged for each field in a submitted form for:
   //     - the heuristic prediction
@@ -1114,8 +1103,6 @@ class AutofillMetrics {
       bool is_uploading,
       AutofillClient::SaveCreditCardOptions options);
   static void LogCreditCardFillingInfoBarMetric(InfoBarMetric metric);
-  static void LogCreditCardUploadFeedbackMetric(
-      CreditCardUploadFeedbackMetric metric);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,

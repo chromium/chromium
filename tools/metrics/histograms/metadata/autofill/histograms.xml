@@ -1143,6 +1143,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CreditCardUploadFeedback"
     enum="AutofillCreditCardUploadFeedback" expires_after="2022-12-11">
+  <obsolete>
+    Deprecated 11/22. The feature is not going to be launched.
+  </obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -3585,7 +3588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithCardArtImage"
-    units="units" expires_after="2022-12-12">
+    units="units" expires_after="2023-05-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3595,7 +3598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata"
-    units="units" expires_after="2022-12-12">
+    units="units" expires_after="2023-05-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
