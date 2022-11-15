@@ -263,3 +263,7 @@ Steps to follow:
 > The [PortalActivation] test verifies that permissions are disabled in Portals.
 > [VerifyPermissionsDeniedForPortal](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/permissions/permissions_security_model_interactive_uitest.cc;drc=c662f11e160976c04682f41941aaeccad92ace48;l=429) incapsulates all logic
 > needed for a particular permission verification.
+
+## Add new permission
+
+See [add_new_permission.md](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/add_new_permission.md)
