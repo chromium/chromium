@@ -67,7 +67,7 @@ void ProfileAvatarDownloader::Start() {
   if (loader_factory) {
     fetcher_->Init(
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-        network::mojom::CredentialsMode::kInclude);
+        network::mojom::CredentialsMode::kOmit);
     fetcher_->Start(loader_factory);
   }
 }
