@@ -113,6 +113,8 @@ ts_library("build_ts") {
 generate_grd("build_grd") {
   input_files = [
     "history_clusters/history_clusters.html",
+    "images/bookmarks_empty_dark.svg",
+    "images/bookmarks_empty.svg",
     "images/read_later_empty_dark.svg",
     "images/read_later_empty.svg",
     "reading_list/reading_list.html",

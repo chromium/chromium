@@ -65,6 +65,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"sortReverseAlphabetically", IDS_BOOKMARKS_SORT_REVERSE_ALPHABETICALLY},
       {"sortMenuA11yLabel", IDS_BOOKMARKS_SORT_MENU_A11Y_LABEL},
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
+      {"emptyTitle", IDS_BOOKMARKS_EMPTY_STATE_TITLE},
+      {"emptyBody", IDS_BOOKMARKS_EMPTY_STATE_BODY},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

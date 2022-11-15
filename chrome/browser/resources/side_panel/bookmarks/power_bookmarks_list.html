@@ -2,6 +2,7 @@
   :host {
     --back-button-size: 14px;
     --border-color: var(--google-grey-300);
+    --empty-state-image: url(../images/bookmarks_empty.svg);
     --label-selected-color: var(--google-blue-50);
     --price-tracking-chip-background: var(--google-green-50);
     --price-tracking-discount-color: var(--google-green-800);
@@ -11,6 +12,7 @@
   @media (prefers-color-scheme: dark) {
     :host {
       --border-color: var(--google-grey-700);
+      --empty-state-image: url(../images/bookmarks_empty_dark.svg);
       --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
       --price-tracking-original-color: var(--google-green-200);
@@ -65,6 +67,30 @@
     gap: 4px;
   }
 
+  .empty {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0 48px;
+    text-align: center;
+  }
+
+  .empty-body {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+  }
+
+  .empty-image {
+    content: var(--empty-state-image);
+    margin-bottom: 8px;
+  }
+
+  .empty-title {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+  }
+
   .folder-sort-row {
     align-items: center;
     display: flex;
@@ -73,8 +99,16 @@
     margin: 14px;
   }
 
-  .footer {
+  .footer-or-empty-state {
     border-top: 1px solid var(--border-color);
+  }
+
+  .footer-or-empty-state[empty] {
+    align-items: center;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
   }
 
   .footer-button {
@@ -163,7 +197,7 @@
         aria-label="$i18n{sortMenuA11yLabel}"
         on-click="onShowSortMenuClicked_"></cr-icon-button>
   </div>
-  <div class="bookmarks">
+  <div class="bookmarks" hidden="[[!shownBookmarks_.length]]">
     <template is="dom-repeat" items="[[shownBookmarks_]]">
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
           description="[[getBookmarkDescription_(item, descriptions_.*)]]"
@@ -191,7 +225,12 @@
       </power-bookmark-row>
     </template>
   </div>
-  <div class="footer">
+  <div class="footer-or-empty-state" empty$="[[!shownBookmarks_.length]]">
+    <div class="empty" hidden="[[shownBookmarks_.length]]">
+      <div class="empty-image"></div>
+      <div class="empty-title">$i18n{emptyTitle}</div>
+      <div class="empty-body">$i18n{emptyBody}</div>
+    </div>
     <cr-button class="footer-button" on-click="onAddTabClicked_">
       <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
       $i18n{addCurrentTab}

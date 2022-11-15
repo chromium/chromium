@@ -7198,6 +7198,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_SORT_MENU_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which opens the sort menu in the bookmarks side panel.">
         Sort Options
       </message>
+      <message name="IDS_BOOKMARKS_EMPTY_STATE_TITLE" desc="Title for the bookmarks side panel empty state">
+        You'll find your bookmarks here
+      </message>
+      <message name="IDS_BOOKMARKS_EMPTY_STATE_BODY" desc="Body text for the bookmarks side panel empty state">
+        Bookmark things you want to come back to later
+      </message>
 
       <!-- Read Anything strings -->
       <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->
