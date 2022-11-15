@@ -10,5 +10,5 @@ readonly PRODUCT_NAME
 
 env
 
-"${UNPACK_DIR}/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}" \
+"$1/${PRODUCT_NAME}.app/Contents/MacOS/${PRODUCT_NAME}" \
     ${SERVER_ARGS} ${KS_kServerActionArguments}
