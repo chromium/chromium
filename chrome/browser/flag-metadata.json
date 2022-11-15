@@ -3575,7 +3575,7 @@
   },
   {
     "name": "fast-checkout",
-    "owners": [ "vizcay", "bwolfgang", "jkeitel" ],
+    "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
     "expiry_milestone": 112
   },
   {
@@ -3789,13 +3789,13 @@
   },
   {
     "name": "force-enable-fast-checkout-capabilities",
-    "owners": [ "vizcay", "bwolfgang", "jkeitel" ],
+    "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
     "expiry_milestone": 115
   },
   {
     "name": "force-enable-password-domain-capabilities",
-    "owners": [ "vizcay", "treib", "brunobraga" ],
-    "expiry_milestone": 110
+    "owners": [ "vizcay@google.com", "brunobraga@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "force-gpu-main-thread-to-normal-priority-drdc",
