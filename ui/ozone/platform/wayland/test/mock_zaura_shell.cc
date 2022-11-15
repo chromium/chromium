@@ -82,4 +82,21 @@ MockZAuraShell::MockZAuraShell()
 
 MockZAuraShell::~MockZAuraShell() = default;
 
+void MockZAuraShell::SetBugFixes(std::vector<uint32_t> bug_fixes) {
+  bug_fixes_ = std::move(bug_fixes);
+  MaybeSendBugFixes();
+}
+
+void MockZAuraShell::OnBind() {
+  MaybeSendBugFixes();
+}
+
+void MockZAuraShell::MaybeSendBugFixes() {
+  if (resource() && wl_resource_get_version(resource()) >=
+                        ZAURA_SHELL_BUG_FIX_SINCE_VERSION) {
+    for (const uint32_t bug_fix : bug_fixes_)
+      zaura_shell_send_bug_fix(resource(), bug_fix);
+  }
+}
+
 }  // namespace wl

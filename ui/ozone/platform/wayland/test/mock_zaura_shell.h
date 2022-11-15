@@ -20,6 +20,17 @@ class MockZAuraShell : public GlobalObject {
   MockZAuraShell& operator=(const MockZAuraShell&) = delete;
 
   ~MockZAuraShell() override;
+
+  // Sets bug fixes and sends them out if the object is bound.
+  void SetBugFixes(std::vector<uint32_t> bug_fixes);
+
+ private:
+  void OnBind() override;
+
+  void MaybeSendBugFixes();
+
+  // Bug fixes that shall be sent to the client.
+  std::vector<uint32_t> bug_fixes_;
 };
 
 }  // namespace wl

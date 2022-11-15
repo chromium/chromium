@@ -93,6 +93,8 @@ WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
     : window_(window), connection_(connection), weak_factory_(this) {
   if (!connection->zaura_shell() ||
       connection->zaura_shell()->HasBugFix(1358908)) {
+    // TODO(msisov): if this gets removed at some point, the
+    // WaylandSurfaceFactoryTest can also stop sending this bug fix.
     potential_compositor_buffer_lock = false;
   }
 }
