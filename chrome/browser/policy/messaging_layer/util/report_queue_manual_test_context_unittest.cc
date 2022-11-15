@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 
 #include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -22,45 +23,45 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::WithArgs;
+
 namespace reporting {
 namespace {
-
-using testing::_;
-using testing::Invoke;
-using testing::WithArgs;
 
 class ReportQueueManualTestContextTest : public testing::Test {
  protected:
   const Priority kPriority = Priority::FAST_BATCH;
   const Destination kDestination = Destination::UPLOAD_EVENTS;
   const uint64_t kNumberOfMessagesToEnqueue = 5;
-  const base::TimeDelta kMessageFrequency = base::Seconds(1);
+  const base::TimeDelta kMessagePeriod = base::Seconds(1);
 
   void SetUp() override {
-    task_runner_ =
-        base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits());
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
     mock_report_queue_ =
         std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
             new MockReportQueue(), base::OnTaskRunnerDeleter(task_runner_));
-    auto build_report_queue_cb = base::BindOnce(
-        &ReportQueueManualTestContextTest::BuildReportQueueCallback,
-        base::Unretained(this));
-
-    ReportQueueManualTestContext::SetBuildReportQueueCallbackForTests(
-        std::move(build_report_queue_cb));
 
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("ABCDEF"));
   }
 
-  void BuildReportQueueCallback(
-      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
-      base::OnceCallback<void(
-          StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>)>
-          report_queue_cb) {
-    std::move(report_queue_cb).Run(std::move(mock_report_queue_));
-    dm_token_ = std::move(report_queue_config)->dm_token();
+  StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>> BuildQueue(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config) {
+    EXPECT_TRUE(mock_report_queue_) << "Can be only called once";
+    dm_token_ = report_queue_config->dm_token();
+    return std::move(mock_report_queue_);
   }
+
+  ReportQueueManualTestContext::BuildReportQueueCallback GetQueueBuilder() {
+    return base::BindOnce(&ReportQueueManualTestContextTest::BuildQueue,
+                          base::Unretained(this));
+  }
+
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>
       mock_report_queue_ =
@@ -70,7 +71,6 @@ class ReportQueueManualTestContextTest : public testing::Test {
 
   std::string dm_token_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 // TODO(crbug.com/1383860) Disabled due to flake on Mac.
@@ -91,12 +91,12 @@ TEST_F(ReportQueueManualTestContextTest,
 
   test::TestEvent<Status> completion_event;
   Start<ReportQueueManualTestContext>(
-      kMessageFrequency, kNumberOfMessagesToEnqueue, kDestination, kPriority,
-      completion_event.cb(), task_runner_);
+      kMessagePeriod, kNumberOfMessagesToEnqueue, kDestination, kPriority,
+      completion_event.cb(), task_runner_, GetQueueBuilder());
 
   const Status status = completion_event.result();
   EXPECT_OK(status) << status;
-  EXPECT_THAT(dm_token_, testing::IsEmpty());
+  EXPECT_THAT(dm_token_, IsEmpty());
 }
 
 }  // namespace

@@ -5,7 +5,9 @@
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 
 #include "base/callback.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -19,30 +21,32 @@
 namespace reporting {
 
 ReportQueueManualTestContext::ReportQueueManualTestContext(
-    base::TimeDelta frequency,
+    base::TimeDelta period,
     uint64_t number_of_messages_to_enqueue,
     Destination destination,
     Priority priority,
     CompletionCallback completion_cb,
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+    BuildReportQueueCallback queue_builder)
     : TaskRunnerContext<Status>(std::move(completion_cb),
                                 sequenced_task_runner),
-      frequency_(frequency),
+      period_(period),
       number_of_messages_to_enqueue_(number_of_messages_to_enqueue),
       destination_(destination),
       priority_(priority),
+      queue_builder_(std::move(queue_builder)),
       report_queue_(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr,
-          base::OnTaskRunnerDeleter(sequenced_task_runner))) {}
+          base::OnTaskRunnerDeleter(sequenced_task_runner))) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
-ReportQueueManualTestContext::~ReportQueueManualTestContext() = default;
-
-void ReportQueueManualTestContext::SetBuildReportQueueCallbackForTests(
-    BuildReportQueueCallback build_report_queue_cb) {
-  *GetBuildReportQueueCallback() = std::move(build_report_queue_cb);
+ReportQueueManualTestContext::~ReportQueueManualTestContext() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ReportQueueManualTestContext::OnStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (destination_ == UNDEFINED_DESTINATION) {
     Status invalid_destination = Status(
         error::INVALID_ARGUMENT, "Destination was UNDEFINED_DESTINATION");
@@ -59,92 +63,59 @@ void ReportQueueManualTestContext::OnStart() {
     return;
   }
 
-  Schedule(&ReportQueueManualTestContext::BuildReportQueue,
-           base::Unretained(this));
-}
-
-void ReportQueueManualTestContext::BuildReportQueue() {
-  CheckOnValidSequence();
   ReportQueueConfiguration::PolicyCheckCallback policy_check_cb =
       base::BindRepeating([]() -> Status { return Status::StatusOK(); });
   auto config_result = ReportQueueConfiguration::Create(
-      // using an empty DM token cause device DM tokens are appended by default
-      // during event uploads
-      /*dm_token=*/"", destination_, std::move(policy_check_cb));
+      EventType::kDevice, destination_, std::move(policy_check_cb));
   if (!config_result.ok()) {
     Complete(config_result.status());
     return;
   }
 
-  if (*GetBuildReportQueueCallback()) {
-    std::move(*GetBuildReportQueueCallback())
-        .Run(
-            std::move(config_result.ValueOrDie()),
-            base::BindOnce(&ReportQueueManualTestContext::OnReportQueueResponse,
-                           base::Unretained(this)));
-    return;
-  }
-
-  auto report_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
-      std::move(config_result.ValueOrDie()));
-  Schedule(&ReportQueueManualTestContext::OnReportQueueResponse,
-           base::Unretained(this), std::move(report_queue_result));
-}
-
-void ReportQueueManualTestContext::OnReportQueueResponse(
-    StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
-        report_queue_result) {
+  // Build queue by configuration.
+  DCHECK(queue_builder_) << "Can be only called once";
+  auto report_queue_result =
+      std::move(queue_builder_).Run(std::move(config_result.ValueOrDie()));
   if (!report_queue_result.ok()) {
     Complete(report_queue_result.status());
     return;
   }
 
   report_queue_ = std::move(report_queue_result.ValueOrDie());
-  Schedule(&ReportQueueManualTestContext::ScheduleEnqueue,
-           base::Unretained(this));
+  NextEnqueue();
 }
 
-void ReportQueueManualTestContext::ScheduleEnqueue() {
-  CheckOnValidSequence();
-  if (number_of_messages_to_enqueue_ > 0u &&
-      number_of_messages_to_enqueue_ == number_of_enqueued_messages_) {
+void ReportQueueManualTestContext::NextEnqueue() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (number_of_enqueued_messages_ >= number_of_messages_to_enqueue_) {
     Complete(Status::StatusOK());
     return;
   }
 
-  ScheduleAfter(frequency_, &ReportQueueManualTestContext::Enqueue,
+  ScheduleAfter(period_, &ReportQueueManualTestContext::Enqueue,
                 base::Unretained(this));
 }
 
 void ReportQueueManualTestContext::Enqueue() {
-  CheckOnValidSequence();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   report_queue_->Enqueue(
       base::NumberToString(value_++), priority_,
-      base::BindOnce(&ReportQueueManualTestContext::OnEnqueue,
+      base::BindOnce(&ReportQueueManualTestContext::OnEnqueued,
                      base::Unretained(this)));
   number_of_enqueued_messages_++;
 }
 
-void ReportQueueManualTestContext::OnEnqueue(Status status) {
+void ReportQueueManualTestContext::OnEnqueued(Status status) {
   if (!status.ok()) {
     Complete(status);
     return;
   }
 
-  Schedule(&ReportQueueManualTestContext::ScheduleEnqueue,
-           base::Unretained(this));
+  Schedule(&ReportQueueManualTestContext::NextEnqueue, base::Unretained(this));
 }
 
 void ReportQueueManualTestContext::Complete(Status status) {
   Schedule(&ReportQueueManualTestContext::Response, base::Unretained(this),
            status);
-}
-
-// static
-ReportQueueManualTestContext::BuildReportQueueCallback*
-ReportQueueManualTestContext::GetBuildReportQueueCallback() {
-  static base::NoDestructor<BuildReportQueueCallback> callback{
-      BuildReportQueueCallback()};
-  return callback.get();
 }
 }  // namespace reporting
