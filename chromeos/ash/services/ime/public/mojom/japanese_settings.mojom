@@ -17,55 +17,55 @@ module ash.ime.mojom;
 
 [Stable, Extensible]
 enum InputMode {
-    [Default] ROMAJI = 0,
-    KANA = 1
+    [Default] kRomaji = 0,
+    kKana = 1
 };
 
 [Stable, Extensible]
 enum PunctuationStyle {
-    [Default] KUTEN_TOUTEN = 0,
-    COMMA_PERIOD = 1,
-    KUTEN_PERIOD = 2,
-    COMMA_TOUTEN = 3
+    [Default] kKutenTouten = 0,
+    kCommaPeriod = 1,
+    kKutenPeriod = 2,
+    kCommaTouten = 3
 };
 
 [Stable, Extensible]
 enum SymbolStyle {
-    [Default] CORNER_BRACKET_MIDDLE_DOT = 0,
-    SQUARE_BRACKET_SLASH = 1,
-    CORNER_BRACKET_SLASH = 2,
-    SQUARE_BRACKET_MIDDLE_DOT = 3
+    [Default] kCornerBracketMiddleDot = 0,
+    kSquareBracketSlash = 1,
+    kCornerBracketSlash = 2,
+    kSquareBracketMiddleDot = 3
 };
 
 [Stable, Extensible]
 enum SpaceInputStyle {
-    [Default] INPUT_MODE = 0,
-    FULLWIDTH = 1,
-    HALFWIDTH = 2
+    [Default] kInputMode = 0,
+    kFullwidth = 1,
+    kHalfwidth = 2
 };
 
 [Stable, Extensible]
 enum SelectionShortcut {
-    NO_SHORTCUT = 0,
-    [Default] DIGITS_123456789 = 1,
-    ASDFGHJKL = 2
+    kNoShortcut = 0,
+    [Default] kDigits123456789 = 1,
+    kAsdfghjkl = 2
 };
 
 [Stable, Extensible]
 enum KeymapStyle {
-    [Default] CUSTOM = 0,
-    ATOK = 1,
-    MS_IME = 2,
-    KOTOERI = 3,
-    MOBILE = 4,
-    CHROME_OS = 5
+    [Default] kCustom = 0,
+    kAtok = 1,
+    kMsIme = 2,
+    kKotoeri = 3,
+    kMobile = 4,
+    kChromeOs = 5
 };
 
 [Stable, Extensible]
 enum ShiftKeyModeSwitch {
-    OFF = 0,
-    [Default] ALPHANUMERIC = 1,
-    KATAKANA = 2,
+    kOff = 0,
+    [Default] kAlphanumeric = 1,
+    kKatakana = 2,
 };
 
 [Stable]
