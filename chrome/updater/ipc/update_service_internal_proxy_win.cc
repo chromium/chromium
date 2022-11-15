@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/win/update_service_internal_proxy.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_win.h"
 
 #include <windows.h>
 #include <wrl/client.h>
@@ -18,9 +18,9 @@
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
+#include "chrome/updater/ipc/proxy_impl_base_win.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
-#include "chrome/updater/win/proxy_impl_base.h"
 #include "chrome/updater/win/win_constants.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

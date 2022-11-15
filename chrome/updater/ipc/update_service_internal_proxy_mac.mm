@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/mac/update_service_internal_proxy.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_mac.h"
 
 #import <Foundation/Foundation.h>
 

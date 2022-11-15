@@ -2,25 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_
-#define CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_
-
-#import <Foundation/Foundation.h>
+#ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_WIN_H_
+#define CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_WIN_H_
 
 #include "base/callback_forward.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service_internal.h"
-#include "chrome/updater/updater_scope.h"
-
-@class CRUUpdateServiceInternalProxyImpl;
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace updater {
+
+enum class UpdaterScope;
+class UpdateServiceInternalProxyImpl;
 
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceInternalProxy : public UpdateServiceInternal {
@@ -35,11 +28,9 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
   ~UpdateServiceInternalProxy() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::scoped_nsobject<CRUUpdateServiceInternalProxyImpl> client_;
-  scoped_refptr<base::SequencedTaskRunner> callback_runner_;
+  scoped_refptr<UpdateServiceInternalProxyImpl> impl_;
 };
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_MAC_UPDATE_SERVICE_INTERNAL_PROXY_H_
+#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_INTERNAL_PROXY_WIN_H_
