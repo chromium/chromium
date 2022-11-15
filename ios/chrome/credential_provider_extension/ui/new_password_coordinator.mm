@@ -77,7 +77,7 @@
 
   NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
   NSURL* url = identifier ? [NSURL URLWithString:identifier] : nil;
-  newPasswordViewController.currentHost = url.host;
+  newPasswordViewController.currentHost = url ? url.host : @"";
 
   self.viewController = [[UINavigationController alloc]
       initWithRootViewController:newPasswordViewController];
