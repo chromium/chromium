@@ -398,21 +398,15 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   }
   LayoutUnit TotalTrackSize() const;
 
-  void BuildSets(const ComputedStyle& grid_style,
-                 LayoutUnit grid_available_size);
-  void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
+  void InitializeSets(const ComputedStyle& grid_style,
+                      LayoutUnit grid_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
 
-  // Caches the geometry of definite sets; this is useful when building the sets
-  // of a subgrid since we need to determine whether its available size (i.e.,
-  // the grid area it spans on its parent grid) is definite or not.
-  void CacheDefiniteSetsGeometry(LayoutUnit grid_available_size);
-  // Caches the geometry of the initialized sets' growth limit if they're
-  // definite; this will be used to measure grid item contributions.
-  void CacheInitializedSetsGeometry(LayoutUnit first_set_offset);
-  // Caches the final geometry used to layout grid items.
-  void FinalizeSetsGeometry(LayoutUnit first_set_offset,
-                            LayoutUnit override_gutter_size);
+  // Caches the initial geometry used to compute grid item contributions.
+  void InitializeSetsGeometry(LayoutUnit first_set_offset,
+                              LayoutUnit gutter_size);
+  // Caches the final geometry required to place |NGGridSet| in the grid.
+  void CacheSetsGeometry(LayoutUnit first_set_offset, LayoutUnit gutter_size);
 
   void ResetBaselines();
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
@@ -424,10 +418,14 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   friend class NGGridLayoutAlgorithmTest;
   friend class NGGridTrackCollectionTest;
 
-  // This private version of |BuildSets| is directly used in testing.
-  void BuildSets(const NGGridTrackList& explicit_track_list,
-                 const NGGridTrackList& implicit_track_list,
-                 bool is_available_size_indefinite = true);
+  // This private version of |InitializeSets| is directly used in testing.
+  void InitializeSets(const NGGridTrackList& explicit_track_list,
+                      const NGGridTrackList& implicit_track_list,
+                      LayoutUnit grid_available_size = kIndefiniteSize);
+
+  void AppendSetsForRange(const NGGridTrackList& specified_track_list,
+                          bool is_available_size_indefinite,
+                          NGGridRange* range);
 
   wtf_size_t non_collapsed_track_count_{0};
 

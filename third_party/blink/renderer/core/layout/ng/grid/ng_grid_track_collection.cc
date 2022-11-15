@@ -763,71 +763,41 @@ LayoutUnit NGGridSizingTrackCollection::TotalTrackSize() const {
   return total_track_size - gutter_size_;
 }
 
-void NGGridSizingTrackCollection::CacheDefiniteSetsGeometry(
-    LayoutUnit grid_available_size) {
-  DCHECK(sets_geometry_.empty() && last_indefinite_indices_.empty());
-
-  LayoutUnit current_set_offset;
-  last_indefinite_indices_.push_back(kNotFound);
-  sets_geometry_.emplace_back(current_set_offset, /* track_count */ 0);
-
-  for (const auto& set : sets_) {
-    const auto& track_size = set.track_size;
-
-    if (track_size.IsDefinite()) {
-      DCHECK(!track_size.MinTrackBreadth().HasPercentage() ||
-             grid_available_size != kIndefiniteSize);
-
-      LayoutUnit fixed_breadth = MinimumValueForLength(
-          track_size.MinTrackBreadth().length(), grid_available_size);
-
-      current_set_offset += (fixed_breadth + gutter_size_) * set.track_count;
-      last_indefinite_indices_.push_back(last_indefinite_indices_.back());
-    } else {
-      last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
-    }
-
-    DCHECK_LE(sets_geometry_.back().offset, current_set_offset);
-    sets_geometry_.emplace_back(current_set_offset, set.track_count);
-  }
-}
-
-void NGGridSizingTrackCollection::CacheInitializedSetsGeometry(
-    LayoutUnit first_set_offset) {
-  last_indefinite_indices_.Shrink(0);
-  sets_geometry_.Shrink(0);
-
-  last_indefinite_indices_.push_back(kNotFound);
-  sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
-
-  for (const auto& set : sets_) {
-    if (set.growth_limit == kIndefiniteSize) {
-      last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
-    } else {
-      first_set_offset += set.growth_limit + gutter_size_ * set.track_count;
-      last_indefinite_indices_.push_back(last_indefinite_indices_.back());
-    }
-
-    DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
-    sets_geometry_.emplace_back(first_set_offset, set.track_count);
-  }
-}
-
-void NGGridSizingTrackCollection::FinalizeSetsGeometry(
+void NGGridSizingTrackCollection::InitializeSetsGeometry(
     LayoutUnit first_set_offset,
-    LayoutUnit override_gutter_size) {
-  gutter_size_ = override_gutter_size;
-
+    LayoutUnit gutter_size) {
   last_indefinite_indices_.Shrink(0);
   sets_geometry_.Shrink(0);
 
+  last_indefinite_indices_.push_back(kNotFound);
   sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
 
   for (const auto& set : sets_) {
-    first_set_offset += set.BaseSize() + gutter_size_ * set.track_count;
+    if (set.GrowthLimit() == kIndefiniteSize) {
+      last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
+    } else {
+      first_set_offset += set.GrowthLimit() + set.track_count * gutter_size;
+      last_indefinite_indices_.push_back(last_indefinite_indices_.back());
+    }
+
     DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
     sets_geometry_.emplace_back(first_set_offset, set.track_count);
   }
+  gutter_size_ = gutter_size;
+}
+
+void NGGridSizingTrackCollection::CacheSetsGeometry(LayoutUnit first_set_offset,
+                                                    LayoutUnit gutter_size) {
+  last_indefinite_indices_.clear();
+  sets_geometry_.Shrink(0);
+
+  sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
+  for (const auto& set : sets_) {
+    first_set_offset += set.BaseSize() + set.track_count * gutter_size;
+    DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
+    sets_geometry_.emplace_back(first_set_offset, set.track_count);
+  }
+  gutter_size_ = gutter_size;
 }
 
 void NGGridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {
@@ -861,127 +831,39 @@ void NGGridSizingTrackCollection::SetMinorBaseline(
     baselines_->minor[set_index] = candidate_baseline;
 }
 
-void NGGridSizingTrackCollection::BuildSets(const ComputedStyle& grid_style,
-                                            LayoutUnit grid_available_size) {
+void NGGridSizingTrackCollection::InitializeSets(
+    const ComputedStyle& grid_style,
+    LayoutUnit grid_available_size) {
   const bool is_for_columns = track_direction_ == kForColumns;
 
-  BuildSets(is_for_columns ? grid_style.GridTemplateColumns().TrackList()
-                           : grid_style.GridTemplateRows().TrackList(),
-            is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
-                           : grid_style.GridAutoRows().NGTrackList(),
-            grid_available_size == kIndefiniteSize);
-}
-
-void NGGridSizingTrackCollection::BuildSets(
-    const NGGridTrackList& explicit_track_list,
-    const NGGridTrackList& implicit_track_list,
-    bool is_available_size_indefinite) {
-  properties_.Reset();
-  sets_.Shrink(0);
-
-  for (auto& range : ranges_) {
-    // Notice that |NGGridRange::Reset| does not reset the |kIsCollapsed| or
-    // |kIsImplicit| flags as they're not affected by the set definitions.
-    range.properties.Reset();
-
-    // Collapsed ranges don't produce sets as they will be sized to zero anyway.
-    if (range.IsCollapsed())
-      continue;
-
-    auto CacheSetProperties = [&range](const NGGridSet& set) {
-      const auto& set_track_size = set.track_size;
-
-      // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
-      // sizing function shouldn't happen as it would be normalized to 'auto'.
-      DCHECK(!set_track_size.HasFlexMinTrackBreadth());
-
-      if (set_track_size.HasAutoMinTrackBreadth())
-        range.properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
-
-      if (set_track_size.HasFixedMinTrackBreadth()) {
-        range.properties.SetProperty(
-            TrackSpanProperties::kHasFixedMinimumTrack);
-      }
-
-      if (set_track_size.HasFixedMaxTrackBreadth()) {
-        range.properties.SetProperty(
-            TrackSpanProperties::kHasFixedMaximumTrack);
-      }
-
-      if (set_track_size.HasFlexMaxTrackBreadth()) {
-        range.properties.SetProperty(TrackSpanProperties::kHasFlexibleTrack);
-        range.properties.SetProperty(
-            TrackSpanProperties::kIsDependentOnAvailableSize);
-      }
-
-      if (set_track_size.HasIntrinsicMinTrackBreadth() ||
-          set_track_size.HasIntrinsicMaxTrackBreadth()) {
-        range.properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
-      }
-
-      if (!set_track_size.IsDefinite())
-        range.properties.SetProperty(TrackSpanProperties::kHasNonDefiniteTrack);
-    };
-
-    if (range.repeater_index == kNotFound) {
-      // The only case where a range doesn't have a repeater index is when the
-      // range is in the implicit grid and there are no auto track definitions;
-      // fill the entire range with a single set of 'auto' tracks.
-      DCHECK(range.IsImplicit());
-      CacheSetProperties(sets_.emplace_back(range.track_count));
-    } else {
-      const auto& specified_track_list =
-          range.IsImplicit() ? implicit_track_list : explicit_track_list;
-
-      const wtf_size_t current_repeater_size =
-          specified_track_list.RepeatSize(range.repeater_index);
-      DCHECK_LT(range.repeater_offset, current_repeater_size);
-
-      // The following two variables help compute how many tracks a set element
-      // compresses; suppose we want to print the range, we would circle through
-      // the repeater's track list, starting at the range's repeater offset,
-      // printing every definition until we cover its track count.
-      //
-      // 1. |floor_set_track_count| is the number of times we would return to
-      // the range's repeater offset, meaning that every definition in the
-      // repeater's track list appears at least that many times.
-      const wtf_size_t floor_set_track_count =
-          range.track_count / current_repeater_size;
-
-      // 2. The remaining track count would not complete another iteration over
-      // the entire repeater; this means that the first |remaining_track_count|
-      // definitions appear one more time in the range.
-      const wtf_size_t remaining_track_count =
-          range.track_count % current_repeater_size;
-
-      for (wtf_size_t i = 0; i < range.set_count; ++i) {
-        const wtf_size_t set_track_count =
-            floor_set_track_count + ((i < remaining_track_count) ? 1 : 0);
-        const wtf_size_t set_repeater_offset =
-            (range.repeater_offset + i) % current_repeater_size;
-        const auto& set_track_size = specified_track_list.RepeatTrackSize(
-            range.repeater_index, set_repeater_offset);
-
-        // Record if any of the track sizes depend on the available size; we
-        // need to record any percentage tracks *before* normalization as they
-        // will change to 'auto' if the available size is indefinite.
-        if (set_track_size.HasPercentage()) {
-          range.properties.SetProperty(
-              TrackSpanProperties::kIsDependentOnAvailableSize);
-        }
-
-        CacheSetProperties(sets_.emplace_back(set_track_count, set_track_size,
-                                              is_available_size_indefinite));
-      }
-    }
-    properties_ |= range.properties;
-  }
+  InitializeSets(is_for_columns ? grid_style.GridTemplateColumns().TrackList()
+                                : grid_style.GridTemplateRows().TrackList(),
+                 is_for_columns ? grid_style.GridAutoColumns().NGTrackList()
+                                : grid_style.GridAutoRows().NGTrackList(),
+                 grid_available_size);
 }
 
 void NGGridSizingTrackCollection::InitializeSets(
+    const NGGridTrackList& explicit_track_list,
+    const NGGridTrackList& implicit_track_list,
     LayoutUnit grid_available_size) {
+  properties_.Reset();
+  sets_.Shrink(0);
+  {
+    const bool is_available_size_indefinite =
+        grid_available_size == kIndefiniteSize;
+
+    for (auto& range : ranges_) {
+      AppendSetsForRange(
+          range.IsImplicit() ? implicit_track_list : explicit_track_list,
+          is_available_size_indefinite, &range);
+      properties_ |= range.properties;
+    }
+  }
+
   for (auto& set : sets_) {
     const auto& track_size = set.track_size;
+    DCHECK_NE(track_size.GetType(), kLengthTrackSizing);
 
     if (track_size.IsFitContent()) {
       // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
@@ -1022,6 +904,103 @@ void NGGridSizingTrackCollection::InitializeSets(
       // An intrinsic sizing function: Use an initial base size of zero.
       DCHECK(track_size.HasIntrinsicMinTrackBreadth());
       set.InitBaseSize(LayoutUnit());
+    }
+  }
+}
+
+void NGGridSizingTrackCollection::AppendSetsForRange(
+    const NGGridTrackList& specified_track_list,
+    bool is_available_size_indefinite,
+    NGGridRange* range) {
+  // Notice that |NGGridRange::Reset| does not reset the |kIsCollapsed| or
+  // |kIsImplicit| flags as they're not affected by the set definitions.
+  range->properties.Reset();
+
+  auto CacheLastAppendedSetProperties = [&]() {
+    DCHECK(!sets_.empty());
+    const auto& set_track_size = sets_.back().track_size;
+
+    // From https://drafts.csswg.org/css-grid-2/#algo-terms, a <flex> minimum
+    // sizing function shouldn't happen as it would be normalized to 'auto'.
+    DCHECK(!set_track_size.HasFlexMinTrackBreadth());
+
+    if (set_track_size.HasAutoMinTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
+
+    if (set_track_size.HasFixedMinTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasFixedMinimumTrack);
+
+    if (set_track_size.HasFixedMaxTrackBreadth())
+      range->properties.SetProperty(TrackSpanProperties::kHasFixedMaximumTrack);
+
+    if (set_track_size.HasFlexMaxTrackBreadth()) {
+      range->properties.SetProperty(TrackSpanProperties::kHasFlexibleTrack);
+      range->properties.SetProperty(
+          TrackSpanProperties::kIsDependentOnAvailableSize);
+    }
+
+    if (set_track_size.HasIntrinsicMinTrackBreadth() ||
+        set_track_size.HasIntrinsicMaxTrackBreadth()) {
+      range->properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
+    }
+
+    if (!set_track_size.HasFixedMinTrackBreadth() ||
+        !set_track_size.HasFixedMaxTrackBreadth() ||
+        (set_track_size.MinTrackBreadth().length() !=
+         set_track_size.MaxTrackBreadth().length())) {
+      range->properties.SetProperty(TrackSpanProperties::kHasNonDefiniteTrack);
+    }
+  };
+
+  if (range->repeater_index == kNotFound) {
+    // The only case where a range doesn't have a repeater index is when the
+    // range is in the implicit grid and there are no auto track definitions;
+    // fill the entire range with a single set of 'auto' tracks.
+    DCHECK(range->IsImplicit());
+
+    sets_.emplace_back(range->track_count);
+    CacheLastAppendedSetProperties();
+  } else if (!range->IsCollapsed()) {
+    const wtf_size_t current_repeater_size =
+        specified_track_list.RepeatSize(range->repeater_index);
+    DCHECK_LT(range->repeater_offset, current_repeater_size);
+
+    // The following two variables help compute how many tracks a set element
+    // compresses; suppose we want to print this range, we would circle through
+    // the repeater's track list, starting at the range's repeater offset,
+    // printing every definition until the track count for the range is covered:
+    //
+    // 1. |floor_set_track_count| is the number of times we would return to the
+    // range's repeater offset, meaning that every definition in the repeater's
+    // track list appears at least that many times within the range.
+    const wtf_size_t floor_set_track_count =
+        range->track_count / current_repeater_size;
+
+    // 2. The remaining track count would not complete another iteration over
+    // the entire repeater; this means that the first |remaining_track_count|
+    // definitions appear one more time in the range.
+    const wtf_size_t remaining_track_count =
+        range->track_count % current_repeater_size;
+
+    for (wtf_size_t i = 0; i < range->set_count; ++i) {
+      const wtf_size_t set_track_count =
+          floor_set_track_count + ((i < remaining_track_count) ? 1 : 0);
+      const wtf_size_t set_repeater_offset =
+          (range->repeater_offset + i) % current_repeater_size;
+      const auto& set_track_size = specified_track_list.RepeatTrackSize(
+          range->repeater_index, set_repeater_offset);
+
+      // Record if any of the track sizes depend on the available size; we need
+      // to record any percentage tracks *before* normalization as they will
+      // change to 'auto' if the available size is indefinite.
+      if (set_track_size.HasPercentage()) {
+        range->properties.SetProperty(
+            TrackSpanProperties::kIsDependentOnAvailableSize);
+      }
+
+      sets_.emplace_back(set_track_count, set_track_size,
+                         is_available_size_indefinite);
+      CacheLastAppendedSetProperties();
     }
   }
 }

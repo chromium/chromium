@@ -77,8 +77,7 @@ class NGGridTrackCollectionTest : public NGLayoutTest {
       const NGGridTrackList& explicit_tracks,
       const NGGridTrackList& implicit_tracks,
       NGGridSizingTrackCollection* sizing_collection) {
-    sizing_collection->BuildSets(explicit_tracks, implicit_tracks);
-    sizing_collection->InitializeSets();
+    sizing_collection->InitializeSets(explicit_tracks, implicit_tracks);
   }
 
   const NGGridRangeVector& GetRangesFrom(
