@@ -8,13 +8,12 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 
 namespace media {
 
 // Reports UMA stats for audio delays. The class may be created, deleted and
-// called on different threads, though all calls must be on the same thread. The
+// called on different threads, but all calls must happen sequentially. The
 // user must ensure that no calls are made after destruction.
 class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioDelayStatsReporter {
  public:
@@ -42,9 +41,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioDelayStatsReporter {
   std::vector<int> capture_delays_ms_;
   std::vector<int> render_delays_ms_;
   std::vector<int> total_delays_ms_;
-
-  // Ensures that all function calls are done on the same thread.
-  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace media

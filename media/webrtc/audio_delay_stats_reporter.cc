@@ -41,15 +41,12 @@ AudioDelayStatsReporter::AudioDelayStatsReporter(int variance_window_size)
   capture_delays_ms_.reserve(variance_window_size_);
   render_delays_ms_.reserve(variance_window_size_);
   total_delays_ms_.reserve(variance_window_size_);
-  DETACH_FROM_THREAD(thread_checker_);
 }
 
 AudioDelayStatsReporter::~AudioDelayStatsReporter() {}
 
 void AudioDelayStatsReporter::ReportDelay(base::TimeDelta capture_delay,
                                           base::TimeDelta render_delay) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
   const base::TimeDelta total_delay = capture_delay + render_delay;
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Processing.CaptureDelayMs",
