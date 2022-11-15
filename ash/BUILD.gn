@@ -3420,6 +3420,7 @@ test("ash_pixeltests") {
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
     "system/accessibility/accessibility_detailed_view_pixeltest.cc",
+    "system/bluetooth/bluetooth_detailed_view_legacy_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
   ]
 
@@ -3431,6 +3432,7 @@ test("ash_pixeltests") {
     "//ash/app_list:test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/viz/test:test_support",
