@@ -4997,7 +4997,7 @@ TEST_F(DelegatedTestNonDelegated, TileQuadNearest) {
   TestExpectCandidateFailure(std::move(pass));
 }
 
-#endif  // USE_OZONE
+#endif  // BUILDFLAG(IS_OZONE)
 
 TEST_F(MultiUnderlayTest, DamageWhenDemotingTwoUnderlays) {
   constexpr gfx::Rect kTopLeft(0, 0, 128, 128);
