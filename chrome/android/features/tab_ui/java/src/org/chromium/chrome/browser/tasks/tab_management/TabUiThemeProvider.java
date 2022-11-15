@@ -21,6 +21,7 @@ import com.google.android.material.elevation.ElevationOverlayProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Utility class that provides theme related attributes for Tab UI.
@@ -64,11 +65,10 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
         if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
-            if (isIncognito) {
+            // Use black color for incognito and night mode for folio.
+            if (isIncognito || ColorUtils.inNightMode(context)) {
                 return Color.BLACK;
             }
-            // @TODO(crbug.com/1373630): May change the color for night theme after finalizing the
-            // spec
             return ChromeColors.getSurfaceColor(
                     context, org.chromium.chrome.R.dimen.default_elevation_2);
         } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
