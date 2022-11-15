@@ -1040,6 +1040,10 @@ void CommerceHintAgent::DidCommitProvisionalLoadCallback(
     CommerceHeuristicsData::GetInstance().UpdateVersion(
         base::Version(heuristics->version_number));
   }
+  // TODO(crbug.com/1383422): Add a test for when starting_url_ is invalid
+  // because of multiple continuous DidCommitProvisionalLoad calls.
+  if (!starting_url_.is_valid())
+    return;
   if (IsAddToCart(starting_url_.PathForRequestPiece())) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame());
