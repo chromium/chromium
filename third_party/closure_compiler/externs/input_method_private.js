@@ -332,50 +332,6 @@ chrome.inputMethodPrivate.setSettings = function(engineID, settings, callback) {
 chrome.inputMethodPrivate.setCompositionRange = function(parameters, callback) {};
 
 /**
- * Get the autocorrected word's bounds. Returns an empty range if there is no
- * autocorrected word.
- * @param {{
- *   contextID: number
- * }} parameters
- * @param {function({
- *   start: number,
- *   end: number
- * }): void} callback Called with the bounds of the autocorrect word when the
- *     operation completes. On failure, $(ref:runtime.lastError) is set.
- */
-chrome.inputMethodPrivate.getAutocorrectRange = function(parameters, callback) {};
-
-/**
- * Get the screen coordinates of the autocorrected word's bounds.
- * @param {{
- *   contextID: number
- * }} parameters
- * @param {function({
- *   x: number,
- *   y: number,
- *   width: number,
- *   height: number
- * }): void} callback Called with screen coordinates of the autocorrect word
- *     when the operation completes. On failure, $(ref:runtime.lastError) is
- *     set.
- */
-chrome.inputMethodPrivate.getAutocorrectCharacterBounds = function(parameters, callback) {};
-
-/**
- * Set the autocorrect range and autocorrect word. If this extension does not
- * own the active IME, this fails.
- * @param {{
- *   contextID: number,
- *   autocorrectString: string,
- *   selectionStart: number,
- *   selectionEnd: number
- * }} parameters
- * @param {function(): void=} callback Called when the operation completes. On
- *     failure, chrome.runtime.lastError is set.
- */
-chrome.inputMethodPrivate.setAutocorrectRange = function(parameters, callback) {};
-
-/**
  * Resets the current engine to its initial state. Fires an OnReset event.
  */
 chrome.inputMethodPrivate.reset = function() {};

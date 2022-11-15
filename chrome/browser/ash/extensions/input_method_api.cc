@@ -67,12 +67,6 @@ namespace GetSettings = extensions::api::input_method_private::GetSettings;
 namespace SetSettings = extensions::api::input_method_private::SetSettings;
 namespace SetCompositionRange =
     extensions::api::input_method_private::SetCompositionRange;
-namespace GetAutocorrectRange =
-    extensions::api::input_method_private::GetAutocorrectRange;
-namespace GetAutocorrectCharacterBounds =
-    extensions::api::input_method_private::GetAutocorrectCharacterBounds;
-namespace SetAutocorrectRange =
-    extensions::api::input_method_private::SetAutocorrectRange;
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
@@ -406,49 +400,6 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-InputMethodPrivateGetAutocorrectRangeFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params = GetAutocorrectRange::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  const gfx::Range range =
-      engine->InputMethodEngine::GetAutocorrectRange(params.context_id, &error);
-  base::Value::Dict ret;
-  ret.Set("start", static_cast<int>(range.is_empty() ? 0 : range.start()));
-  ret.Set("end", static_cast<int>(range.is_empty() ? 0 : range.end()));
-  return RespondNow(WithArguments(std::move(ret)));
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params =
-      GetAutocorrectCharacterBounds::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  const gfx::Rect rect =
-      engine->InputMethodEngine::GetAutocorrectCharacterBounds(
-          params.context_id, &error);
-  if (rect.IsEmpty()) {
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-  }
-  base::Value::Dict ret;
-  ret.Set("x", rect.x());
-  ret.Set("y", rect.y());
-  ret.Set("width", rect.width());
-  ret.Set("height", rect.height());
-  return RespondNow(WithArguments(std::move(ret)));
-}
-
-ExtensionFunction::ResponseAction
 InputMethodPrivateGetTextFieldBoundsFunction::Run() {
   std::string error;
   InputMethodEngine* engine =
@@ -469,24 +420,6 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
   ret.Set("width", rect.width());
   ret.Set("height", rect.height());
   return RespondNow(WithArguments(std::move(ret)));
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateSetAutocorrectRangeFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params = SetAutocorrectRange::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  if (!engine->InputMethodEngine::SetAutocorrectRange(
-          params.context_id,
-          gfx::Range(params.selection_start, params.selection_end), &error)) {
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-  }
-  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {

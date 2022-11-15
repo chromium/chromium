@@ -447,43 +447,6 @@ bool InputMethodEngine::SetComposingRange(
       static_cast<uint32_t>(start), static_cast<uint32_t>(end), text_spans);
 }
 
-gfx::Range InputMethodEngine::GetAutocorrectRange(int context_id,
-                                                  std::string* error) {
-  if (!IsActive()) {
-    *error = kErrorNotActive;
-    return gfx::Range();
-  }
-  if (context_id != context_id_ || context_id_ == -1) {
-    *error = base::StringPrintf(
-        "%s request context id = %d, current context id = %d",
-        kErrorWrongContext, context_id, context_id_);
-    return gfx::Range();
-  }
-  return GetAutocorrectRange();
-}
-
-gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds(int context_id,
-                                                           std::string* error) {
-  if (!IsActive()) {
-    *error = kErrorNotActive;
-    return gfx::Rect();
-  }
-  if (context_id != context_id_ || context_id_ == -1) {
-    *error = base::StringPrintf(
-        "%s request context id = %d, current context id = %d",
-        kErrorWrongContext, context_id, context_id_);
-    return gfx::Rect();
-  }
-
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context) {
-    return gfx::Rect();
-  }
-
-  return input_context->GetAutocorrectCharacterBounds();
-}
-
 gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
                                                 std::string* error) {
   if (!IsActive()) {
@@ -504,22 +467,6 @@ gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
   }
 
   return input_context->GetTextFieldBounds();
-}
-
-bool InputMethodEngine::SetAutocorrectRange(int context_id,
-                                            const gfx::Range& range,
-                                            std::string* error) {
-  if (!IsActive()) {
-    *error = kErrorNotActive;
-    return false;
-  }
-  if (context_id != context_id_ || context_id_ == -1) {
-    *error = base::StringPrintf(
-        "%s request context id = %d, current context id = %d",
-        kErrorWrongContext, context_id, context_id_);
-    return false;
-  }
-  return SetAutocorrectRange(range);
 }
 
 bool InputMethodEngine::SetSelectionRange(int context_id,
@@ -1131,28 +1078,6 @@ void InputMethodEngine::UpdateComposition(
     input_context->UpdateCompositionText(composition_text, cursor_pos,
                                          is_visible);
   }
-}
-
-gfx::Range InputMethodEngine::GetAutocorrectRange() {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return gfx::Range();
-  return input_context->GetAutocorrectRange();
-}
-
-bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
-  ui::TextInputTarget* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return false;
-
-  // TODO(b/161490813): Remove SetAutocorrectRange from |InputMethodEngine|.
-  //    The only way to set autocorrect range must be through
-  //    |AutocorrectManager|, otherwise it can conflict with
-  //    |AutocorrectManager| functionalities.
-  input_context->SetAutocorrectRange(range, base::DoNothing());
-  return true;
 }
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,

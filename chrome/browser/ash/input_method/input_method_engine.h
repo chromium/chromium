@@ -188,10 +188,6 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
                          const std::vector<SegmentInfo>& segments,
                          std::string* error);
 
-  gfx::Range GetAutocorrectRange(int context_id, std::string* error);
-
-  gfx::Rect GetAutocorrectCharacterBounds(int context_id, std::string* error);
-
   gfx::Rect GetTextFieldBounds(int context_id, std::string* error);
 
   bool SetAutocorrectRange(int context_id,
@@ -309,15 +305,6 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
 
   // Hides the input view window (from API call).
   void HideInputView();
-
-  // Notifies the InputContextHandler that the autocorrect range should
-  // be updated and the autocorrect text has updated.
-  // Sets the autocorrect range to be `range`. The `range` is in bytes.
-  // TODO(b/171924748): Improve documentation for this function all the way down
-  // the stack.
-  bool SetAutocorrectRange(const gfx::Range& range);
-
-  gfx::Range GetAutocorrectRange();
 
   void NotifyInputMethodExtensionReadyForTesting();
 
