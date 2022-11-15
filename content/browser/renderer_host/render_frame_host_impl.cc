@@ -930,28 +930,28 @@ base::TimeDelta GetSubframeProcessShutdownDelay(
 
 // Returns the "document" URL used for a navigation, which might be different
 // than the commit URL (CommonNavigationParam's URL) for certain cases such as
-// error page and loadDataWithBaseURL() commits.
+// error document and loadDataWithBaseURL() commits.
 GURL GetLastDocumentURL(
     NavigationRequest* request,
     const mojom::DidCommitProvisionalLoadParams& params,
-    bool last_document_is_error_page,
+    bool last_document_is_error_document,
     const RenderFrameHostImpl::RendererURLInfo& renderer_url_info) {
   if (request->DidEncounterError() ||
-      (request->IsSameDocument() && last_document_is_error_page)) {
-    // If the navigation happens on an error page, the document URL is set to
-    // kUnreachableWebDataURL. Note that if a same-document navigation happens
-    // in an error page it's possible for the document URL to have changed, but
-    // the browser has no way of knowing that URL since it isn't exposed in any
-    // way. Additionally, all current known ways to do a same-document
-    // navigation on an error page (history.pushState/replaceState without
-    // changing the URL) won't change the URL, so it's probably OK to keep using
-    // kUnreachableWebDataURL here.
+      (request->IsSameDocument() && last_document_is_error_document)) {
+    // If the navigation happens on an error document, the document URL is set
+    // to kUnreachableWebDataURL. Note that if a same-document navigation
+    // happens in an error document it's possible for the document URL to have
+    // changed, but the browser has no way of knowing that URL since it isn't
+    // exposed in any way. Additionally, all current known ways to do a
+    // same-document navigation on an error document
+    // (history.pushState/replaceState without changing the URL) won't change
+    // the URL, so it's probably OK to keep using kUnreachableWebDataURL here.
     return GURL(kUnreachableWebDataURL);
   }
   if (request->IsLoadDataWithBaseURL()) {
     // loadDataWithBaseURL() navigation can set its own "base URL", which is
     // also used by the renderer as the document URL unless the navigation
-    // failed (which is already accounted for in the error page case above).
+    // failed (which is already accounted for in the error document case above).
     return request->common_params().base_url_for_data_url;
   }
   if (renderer_url_info.was_loaded_from_load_data_with_base_url &&
@@ -2336,7 +2336,7 @@ bool RenderFrameHostImpl::IsErrorDocument() {
   // commit.
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
-  return is_error_page_;
+  return is_error_document_;
 }
 
 DocumentRef RenderFrameHostImpl::GetDocumentRef() {
@@ -3787,7 +3787,7 @@ void RenderFrameHostImpl::DidNavigate(
     last_successful_url_ = params.url;
 
   renderer_url_info_.last_document_url = GetLastDocumentURL(
-      navigation_request, params, is_error_page_, renderer_url_info_);
+      navigation_request, params, is_error_document_, renderer_url_info_);
 
   // Set the last committed HTTP method and POST ID. Note that we're setting
   // this here instead of in DidCommitNewDocument because same-document
@@ -11807,7 +11807,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
     NavigationRequest* navigation_request) {
   // It should be kept in sync with the check in
   // NavigationRequest::DidCommitNavigation.
-  is_error_page_ = navigation_request->DidEncounterError();
+  is_error_document_ = navigation_request->DidEncounterError();
   // Overwrite reporter's reporting source with rfh's reporting source.
   std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter =
       navigation_request->coop_status().TakeCoopReporter();
@@ -12716,14 +12716,14 @@ RendererLoadType CalculateRendererLoadType(NavigationRequest* request,
   const bool has_valid_page_state = blink::PageState::CreateFromEncodedData(
                                         request->commit_params().page_state)
                                         .IsValid();
-  const bool is_error_page = request->DidEncounterError();
+  const bool is_error_document = request->DidEncounterError();
 
   // Predict if the renderer classified the navigation as a "back/forward"
   // navigation (WebFrameLoadType::kBackForward).
   bool will_be_classified_as_back_forward_navigation = false;
-  if (is_error_page) {
-    // For error pages, whenever the navigation has a valid PageState, it will
-    // be considered as a back/forward navigation. This includes history
+  if (is_error_document) {
+    // For error documents, whenever the navigation has a valid PageState, it
+    // will be considered as a back/forward navigation. This includes history
     // navigations and restores. See RenderFrameImpl's CommitFailedNavigation().
     will_be_classified_as_back_forward_navigation = has_valid_page_state;
   } else {
@@ -12740,8 +12740,8 @@ RendererLoadType CalculateRendererLoadType(NavigationRequest* request,
     return RendererLoadType::kBackForward;
   }
 
-  if (!is_error_page && is_reload) {
-    // For non-error pages, if the NavigationType given by the browser is
+  if (!is_error_document && is_reload) {
+    // For non-error documents, if the NavigationType given by the browser is
     // a reload, then the navigation will be classified as a reload.
     return RendererLoadType::kReload;
   }
@@ -12817,7 +12817,7 @@ GURL CalculateLoadingURL(
     NavigationRequest* request,
     const mojom::DidCommitProvisionalLoadParams& params,
     const RenderFrameHostImpl::RendererURLInfo& last_renderer_url_info,
-    bool last_document_is_error_page,
+    bool last_document_is_error_document,
     const GURL& last_committed_url) {
   if (params.url.IsAboutBlank() && params.url.ref_piece() == "blocked") {
     // Some navigations can still be blocked by the renderer during the commit,
@@ -12837,10 +12837,10 @@ GURL CalculateLoadingURL(
   }
 
   if (request->IsSameDocument() &&
-      (last_document_is_error_page ||
+      (last_document_is_error_document ||
        last_renderer_url_info.was_loaded_from_load_data_with_base_url)) {
     // Documents that have an "override" URL (loadDataWithBaseURL navigations,
-    // error pages) will continue using that URL even after same-document
+    // error documents) will continue using that URL even after same-document
     // navigations.
     return last_committed_url;
   }
@@ -12931,14 +12931,15 @@ void RenderFrameHostImpl::
   // - history_list_was_cleared
   // - origin
   // TODO(crbug.com/1131832): Verify more params.
-  // We can know if we're going to be in an error page after this navigation
+  // We can know if we're going to be in an error document after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
-  // navigation on an error page (only possible for renderer-initiated
+  // navigation on an error document (only possible for renderer-initiated
   // navigations).
-  const bool is_error_page = (request->DidEncounterError() ||
-                              (is_error_page_ && request->IsSameDocument()));
+  const bool is_error_document =
+      (request->DidEncounterError() ||
+       (is_error_document_ && request->IsSameDocument()));
 
-  const bool browser_url_is_unreachable = is_error_page;
+  const bool browser_url_is_unreachable = is_error_document;
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -12974,8 +12975,9 @@ void RenderFrameHostImpl::
   const bool should_replace_current_entry =
       request->common_params().should_replace_current_entry;
 
-  const GURL browser_url = CalculateLoadingURL(
-      request, params, renderer_url_info_, is_error_page_, last_committed_url_);
+  const GURL browser_url =
+      CalculateLoadingURL(request, params, renderer_url_info_,
+                          is_error_document_, last_committed_url_);
 
   const RendererLoadType renderer_load_type =
       CalculateRendererLoadType(request, should_replace_current_entry,
@@ -13130,7 +13132,8 @@ void RenderFrameHostImpl::
                         !request->frame_tree_node()->IsMainFrame());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_form_submission",
                         request->IsFormSubmission());
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_error_page", is_error_page);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_error_document",
+                        is_error_document);
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "net_error",
                           request->GetNetErrorCode());
 

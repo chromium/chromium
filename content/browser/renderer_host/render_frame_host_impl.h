@@ -3801,8 +3801,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // HasStickyUserActivation() or HasTransientUserActivation() instead.
   bool last_navigation_started_with_transient_activation_ = false;
 
-  // Whether the last committed navigation is to an error page.
-  bool is_error_page_ = false;
+  // Whether the last committed navigation is to an error document.
+  bool is_error_document_ = false;
 
   // Local root subframes directly own their RenderWidgetHost.
   // Please see comments about the GetLocalRenderWidgetHost() function.
