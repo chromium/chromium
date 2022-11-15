@@ -12,8 +12,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.PendingIntent;
 
-import com.google.common.base.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +24,8 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+
+import java.util.Optional;
 
 /** Tests for {@link FakePasswordCheckupClientHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)

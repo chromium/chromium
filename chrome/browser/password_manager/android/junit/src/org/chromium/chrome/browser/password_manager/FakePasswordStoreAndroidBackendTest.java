@@ -16,8 +16,6 @@ import android.accounts.Account;
 
 import androidx.annotation.Nullable;
 
-import com.google.common.base.Optional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +34,7 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 /**

@@ -15,8 +15,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -53,6 +51,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Optional;
 
 class SafetyCheckMediator
         implements PasswordCheck.Observer, PasswordStoreBridge.PasswordStoreObserver {
@@ -709,6 +708,6 @@ class SafetyCheckMediator
     private Optional<String> getSyncingAccount() {
         return PasswordManagerHelper.hasChosenToSyncPasswords(SyncService.get())
                 ? Optional.of(CoreAccountInfo.getEmailFrom(SyncService.get().getAccountInfo()))
-                : Optional.absent();
+                : Optional.empty();
     }
 }

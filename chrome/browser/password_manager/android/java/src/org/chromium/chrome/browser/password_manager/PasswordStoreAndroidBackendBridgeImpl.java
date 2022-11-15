@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.password_manager;
 import android.accounts.Account;
 import android.content.Context;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -27,6 +25,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 
 /**
  * Java-counterpart of the native PasswordStoreAndroidBackendBridgeImpl. It's part of the password
@@ -131,7 +130,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
-        if (syncingAccount == null) return Optional.absent();
+        if (syncingAccount == null) return Optional.empty();
         return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
     }
 
