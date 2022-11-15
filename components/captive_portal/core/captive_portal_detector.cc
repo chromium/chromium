@@ -36,9 +36,10 @@ void CaptivePortalDetector::DetectCaptivePortal(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!FetchingURL());
-  CHECK(detection_callback_.is_null());
-  CHECK(!detection_callback.is_null());
+  DCHECK(!detection_callback.is_null());
 
+  if (!detection_callback_.is_null())
+    LOG(ERROR) << "DetectCaptivePortal called while request is pending.";
   detection_callback_ = std::move(detection_callback);
 
   StartProbe(traffic_annotation, url);
@@ -83,7 +84,7 @@ void CaptivePortalDetector::OnSimpleLoaderComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kProbe);
   CHECK(FetchingURL());
-  CHECK(!detection_callback_.is_null());
+  DCHECK(!detection_callback_.is_null());
 
   int response_code = 0;
   net::HttpResponseHeaders* headers = nullptr;
