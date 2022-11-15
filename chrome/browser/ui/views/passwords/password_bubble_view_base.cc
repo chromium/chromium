@@ -189,18 +189,14 @@ std::unique_ptr<views::Label> PasswordBubbleViewBase::CreateUsernameLabel(
 // static
 std::unique_ptr<views::Label> PasswordBubbleViewBase::CreatePasswordLabel(
     const password_manager::PasswordForm& form) {
-  std::unique_ptr<views::Label> label;
+  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
+      GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
   if (form.federation_origin.opaque()) {
-    label = std::make_unique<views::Label>(
-        form.password_value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        STYLE_SECONDARY_MONOSPACED);
+    label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
     label->SetObscured(true);
     label->SetElideBehavior(gfx::TRUNCATE);
   } else {
-    label = std::make_unique<views::Label>(
-        l10n_util::GetStringFUTF16(IDS_PASSWORDS_VIA_FEDERATION,
-                                   GetDisplayFederation(form)),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
+    label->SetTextStyle(views::style::STYLE_SECONDARY);
     label->SetElideBehavior(gfx::ELIDE_HEAD);
   }
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
