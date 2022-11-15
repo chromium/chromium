@@ -28,4 +28,6 @@ enum TriggerRegistrationError {
   kAggregatableTriggerDataSourceKeysTooManyKeys,
   kAggregatableTriggerDataSourceKeysKeyWrongType,
   kAggregatableTriggerDataSourceKeysKeyTooLong,
+
+  kEventTriggerDataWrongType,
 };

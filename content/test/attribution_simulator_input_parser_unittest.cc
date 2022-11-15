@@ -1052,7 +1052,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"][0]: must be a dictionary)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"][0]: kEventTriggerDataWrongType)",
         R"json({"triggers":[{
           "Attribution-Reporting-Register-Trigger": {
             "timestamp": "1643235576000",

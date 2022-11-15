@@ -4,8 +4,13 @@
 
 #include "components/attribution_reporting/parsing_utils.h"
 
+#include <stdint.h>
+
+#include <limits>
 #include <string>
 
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -14,7 +19,7 @@
 namespace attribution_reporting {
 namespace {
 
-TEST(AggregationKeyUtilsTest, StringToAggregationKeyPiece) {
+TEST(AttributionReportingParsingUtilsTest, StringToAggregationKeyPiece) {
   const struct {
     const char* string;
     absl::optional<absl::uint128> expected;
@@ -31,11 +36,101 @@ TEST(AggregationKeyUtilsTest, StringToAggregationKeyPiece) {
   }
 }
 
-TEST(AggregationKeyUtilsTest, AggregationKeyIdHasValidLength) {
+TEST(AttributionReportingParsingUtilsTest, AggregationKeyIdHasValidLength) {
   EXPECT_TRUE(AggregationKeyIdHasValidLength(
       std::string(kMaxBytesPerAggregationKeyId, 'a')));
   EXPECT_FALSE(AggregationKeyIdHasValidLength(
       std::string(kMaxBytesPerAggregationKeyId + 1, 'a')));
+}
+
+TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
+  const struct {
+    const char* description;
+    const char* json;
+    absl::optional<uint64_t> expected;
+  } kTestCases[] = {
+      {
+          "missing_key",
+          R"json({})json",
+          absl::nullopt,
+      },
+      {
+          "not_string",
+          R"json({"key":123})json",
+          absl::nullopt,
+      },
+      {
+          "negative",
+          R"json({"key":"-1"})json",
+          absl::nullopt,
+      },
+      {
+          "zero",
+          R"json({"key":"0"})json",
+          0,
+      },
+      {
+          "max",
+          R"json({"key":"18446744073709551615"})json",
+          std::numeric_limits<uint64_t>::max(),
+      },
+      {
+          "out_of_range",
+          R"json({"key":"18446744073709551616"})json",
+          absl::nullopt,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Value value = base::test::ParseJson(test_case.json);
+    EXPECT_EQ(ParseUint64(value.GetDict(), "key"), test_case.expected)
+        << test_case.description;
+  }
+}
+
+TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
+  const struct {
+    const char* description;
+    const char* json;
+    absl::optional<int64_t> expected;
+  } kTestCases[] = {
+      {
+          "missing_key",
+          R"json({})json",
+          absl::nullopt,
+      },
+      {
+          "not_string",
+          R"json({"key":123})json",
+          absl::nullopt,
+      },
+      {
+          "zero",
+          R"json({"key":"0"})json",
+          0,
+      },
+      {
+          "min",
+          R"json({"key":"-9223372036854775808"})json",
+          std::numeric_limits<int64_t>::min(),
+      },
+      {
+          "max",
+          R"json({"key":"9223372036854775807"})json",
+          std::numeric_limits<int64_t>::max(),
+      },
+      {
+          "out_of_range",
+          R"json({"key":"9223372036854775808"})json",
+          absl::nullopt,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    base::Value value = base::test::ParseJson(test_case.json);
+    EXPECT_EQ(ParseInt64(value.GetDict(), "key"), test_case.expected)
+        << test_case.description;
+  }
 }
 
 }  // namespace

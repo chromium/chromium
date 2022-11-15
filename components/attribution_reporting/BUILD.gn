@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
     "bounded_list_unittest.cc",
+    "event_trigger_data_unittest.cc",
     "filters_unittest.cc",
     "os_registration_unittest.cc",
     "parsing_utils_unittest.cc",

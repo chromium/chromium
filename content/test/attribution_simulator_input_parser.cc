@@ -353,36 +353,19 @@ class AttributionSimulatorInputParser {
       return event_triggers;
 
     auto context = PushContext(kKey);
-    ParseList(
-        *values,
-        base::BindLambdaForTesting([&](const base::Value& event_trigger) {
-          if (!EnsureDictionary(event_trigger))
-            return;
+    ParseList(*values,
+              base::BindLambdaForTesting([&](const base::Value& event_trigger) {
+                base::Value event_trigger_copy = event_trigger.Clone();
+                auto data = attribution_reporting::EventTriggerData::FromJSON(
+                    event_trigger_copy);
+                if (!data.has_value()) {
+                  *Error() << data.error();
+                  return;
+                }
 
-          const base::Value::Dict& dict = event_trigger.GetDict();
-
-          uint64_t trigger_data =
-              ParseOptionalUint64(dict, "trigger_data").value_or(0);
-
-          int64_t priority = ParseOptionalInt64(dict, "priority").value_or(0);
-
-          absl::optional<uint64_t> dedup_key =
-              ParseOptionalUint64(dict, "deduplication_key");
-
-          attribution_reporting::Filters filters =
-              ParseFilters(dict, "filters");
-
-          attribution_reporting::Filters not_filters =
-              ParseFilters(dict, "not_filters");
-
-          if (has_error())
-            return;
-
-          event_triggers.emplace_back(trigger_data, priority, dedup_key,
-                                      std::move(filters),
-                                      std::move(not_filters));
-        }),
-        /*max_size=*/attribution_reporting::kMaxEventTriggerData);
+                event_triggers.emplace_back(std::move(*data));
+              }),
+              /*max_size=*/attribution_reporting::kMaxEventTriggerData);
 
     return event_triggers;
   }
@@ -454,15 +437,6 @@ class AttributionSimulatorInputParser {
       return absl::nullopt;
 
     return ParseUint64(value->GetIfString(), key);
-  }
-
-  absl::optional<int64_t> ParseOptionalInt64(const base::Value::Dict& dict,
-                                             base::StringPiece key) {
-    const base::Value* value = dict.Find(key);
-    if (!value)
-      return absl::nullopt;
-
-    return ParseInt64(value->GetIfString(), key);
   }
 
   bool ParseDebugReporting(const base::Value::Dict& dict) {

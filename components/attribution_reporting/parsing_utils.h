@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,6 +22,16 @@ absl::optional<absl::uint128> StringToAggregationKeyPiece(const std::string& s);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool AggregationKeyIdHasValidLength(const std::string& key);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+absl::optional<uint64_t> ParseUint64(const base::Value::Dict& dict,
+                                     base::StringPiece key);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+absl::optional<int64_t> ParseInt64(const base::Value::Dict& dict,
+                                   base::StringPiece key);
+
+int64_t ParsePriority(const base::Value::Dict& dict);
 
 }  // namespace attribution_reporting
 

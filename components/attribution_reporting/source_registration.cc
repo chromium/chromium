@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,28 +26,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-
-absl::optional<uint64_t> ParseUint64(const base::Value::Dict& dict,
-                                     base::StringPiece key) {
-  const std::string* s = dict.FindString(key);
-  if (!s)
-    return absl::nullopt;
-
-  uint64_t value;
-  return base::StringToUint64(*s, &value) ? absl::make_optional(value)
-                                          : absl::nullopt;
-}
-
-absl::optional<int64_t> ParseInt64(const base::Value::Dict& dict,
-                                   base::StringPiece key) {
-  const std::string* s = dict.FindString(key);
-  if (!s)
-    return absl::nullopt;
-
-  int64_t value;
-  return base::StringToInt64(*s, &value) ? absl::make_optional(value)
-                                         : absl::nullopt;
-}
 
 absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
     const base::Value::Dict& registration,
@@ -106,7 +85,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
   result.source_event_id =
       ParseUint64(registration, "source_event_id").value_or(0);
 
-  result.priority = ParseInt64(registration, "priority").value_or(0);
+  result.priority = ParsePriority(registration);
 
   result.expiry = ParseTimeDeltaInSeconds(registration, "expiry");
 
