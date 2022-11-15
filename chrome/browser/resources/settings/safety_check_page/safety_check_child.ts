@@ -16,8 +16,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './safety_check_child.html.js';
@@ -196,6 +197,10 @@ export class SettingsSafetyCheckChildElement extends
   private onRowClickableChanged_() {
     // For cr-actionable-row-style.
     this.toggleAttribute('effectively-disabled_', !this.rowClickable);
+  }
+
+  private sanitizeInnerHtml_(rawString: string): TrustedHTML {
+    return sanitizeInnerHtml(rawString);
   }
 }
 

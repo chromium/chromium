@@ -236,7 +236,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   // </if>
 
   private enterPassphraseLabel_: TrustedHTML;
-  private existingPassphraseLabel_: string;
+  private existingPassphraseLabel_: TrustedHTML;
 
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private collapsibleSectionsInitialized_: boolean;
@@ -566,18 +566,18 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     });
   }
 
-  private computeExistingPassphraseLabel_(): string {
+  private computeExistingPassphraseLabel_(): TrustedHTML {
     if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
-      return '';
+      return window.trustedTypes!.emptyHTML;
     }
 
     if (!this.syncPrefs.explicitPassphraseTime) {
-      return this.i18n('existingPassphraseLabel');
+      return this.i18nAdvanced('existingPassphraseLabel');
     }
 
-    return this.i18n(
-        'existingPassphraseLabelWithDate',
-        this.syncPrefs.explicitPassphraseTime);
+    return this.i18nAdvanced('existingPassphraseLabelWithDate', {
+      substitutions: [this.syncPrefs.explicitPassphraseTime],
+    });
   }
 
   /**

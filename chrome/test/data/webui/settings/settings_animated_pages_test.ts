@@ -8,6 +8,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {setupPopstateListener} from './test_util.js';
+import {getTrustedHtml} from './trusted_html.js';
 
 // clang-format on
 
@@ -46,13 +47,13 @@ suite('settings-animated-pages', function() {
   // Test simple case where the |focusConfig| key captures only the previous
   // route.
   test('FocusSubpageTrigger_SimpleKey', async function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHtml(`
       <settings-animated-pages section="${testRoutes.SEARCH_ENGINES.section}">
         <div route-path="default">
           <button id="subpage-trigger"></button>
         </div>
         <div route-path="${testRoutes.SEARCH_ENGINES.path}"></div>
-      </settings-animated-pages>`;
+      </settings-animated-pages>`);
 
     const animatedPages =
         document.body.querySelector('settings-animated-pages')!;
@@ -75,7 +76,7 @@ suite('settings-animated-pages', function() {
   // route, to differentiate cases where a subpage can have multiple entry
   // points.
   test('FocusSubpageTrigger_FromToKey', async function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHtml(`
       <settings-animated-pages section="${testRoutes.PRIVACY.section}">
         <div route-path="default">
           <button id="subpage-trigger1"></button>
@@ -84,7 +85,7 @@ suite('settings-animated-pages', function() {
           <button id="subpage-trigger2"></button>
         </div>
         <div route-path="${testRoutes.SITE_SETTINGS_COOKIES.path}"></div>
-      </settings-animated-pages>`;
+      </settings-animated-pages>`);
 
     const animatedPages =
         document.body.querySelector('settings-animated-pages')!;
@@ -121,13 +122,13 @@ suite('settings-animated-pages', function() {
   });
 
   test('IgnoresBubblingIronSelect', async function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHtml(`
       <settings-animated-pages section="${testRoutes.PRIVACY.section}">
         <div route-path="default"></div>
         <settings-subpage route-path="${testRoutes.SITE_SETTINGS.path}">
           <div></div>
         </settings-subpage>
-      </settings-animated-pages>`;
+      </settings-animated-pages>`);
 
     const subpage = document.body.querySelector('settings-subpage')!;
     let counter = 0;

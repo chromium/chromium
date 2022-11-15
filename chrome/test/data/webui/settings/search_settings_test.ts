@@ -4,8 +4,10 @@
 
 // clang-format off
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BaseMixin, getSearchManager, SearchManager} from 'chrome://settings/settings.js';
+import {BaseMixin, getSearchManager, SearchManager, getTrustedHTML as getTrustedStaticHtml} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {getTrustedHtml} from './trusted_html.js';
 
 // clang-format on
 
@@ -24,9 +26,10 @@ suite('SearchSettingsTest', function() {
   test('normal highlighting', function() {
     const optionText = 'FooSettingsFoo';
 
-    document.body.innerHTML = `<settings-section hidden-by-search>
+    document.body.innerHTML =
+        getTrustedHtml(`<settings-section hidden-by-search>
            <div id="mydiv">${optionText}</div>
-         </settings-section>`;
+         </settings-section>`);
 
     const section = document.querySelector('settings-section')!;
     const div = document.querySelector('#mydiv')!;
@@ -66,7 +69,8 @@ suite('SearchSettingsTest', function() {
    * bubble.
    */
   test('<select> highlighting', function() {
-    document.body.innerHTML = `<settings-section hidden-by-search>
+    document.body.innerHTML =
+        getTrustedStaticHtml`<settings-section hidden-by-search>
            <select>
              <option>Foo</option>
              <option>Settings</option>
@@ -99,7 +103,8 @@ suite('SearchSettingsTest', function() {
 
   test('ignored elements are ignored', function() {
     const text = 'hello';
-    document.body.innerHTML = `<settings-section hidden-by-search>
+    document.body.innerHTML =
+        getTrustedHtml(`<settings-section hidden-by-search>
            <cr-action-menu>${text}</cr-action-menu>
            <cr-dialog>${text}</cr-dialog>
            <cr-icon-button>${text}</cr-icon-button>
@@ -113,7 +118,7 @@ suite('SearchSettingsTest', function() {
            <content>${text}</content>
            <style>${text}</style>
            <template>${text}</template>
-         </settings-section>`;
+         </settings-section>`);
 
     const section = document.querySelector('settings-section')!;
     assertTrue(section.hiddenBySearch);
@@ -166,7 +171,8 @@ suite('SearchSettingsTest', function() {
 
     const text = 'hello';
 
-    document.body.innerHTML = `<dummy-test-element></dummy-test-element>`;
+    document.body.innerHTML =
+        getTrustedStaticHtml`<dummy-test-element></dummy-test-element>`;
 
     const element =
         document.body.querySelector<DummyTestElement>('dummy-test-element')!;
@@ -197,7 +203,8 @@ suite('SearchSettingsTest', function() {
   // Test that multiple requests for the same text correctly highlight their
   // corresponding part of the tree without affecting other parts of the tree.
   test('multiple simultaneous requests for the same text', function() {
-    document.body.innerHTML = `<settings-section hidden-by-search>
+    document.body.innerHTML =
+        getTrustedStaticHtml`<settings-section hidden-by-search>
            <div><span>Hello there</span></div>
          </settings-section>
          <settings-section hidden-by-search>
@@ -224,9 +231,10 @@ suite('SearchSettingsTest', function() {
   test('highlight removed when text is changed', function() {
     const originalText = 'FooSettingsFoo';
 
-    document.body.innerHTML = `<settings-section hidden-by-search>
+    document.body.innerHTML =
+        getTrustedHtml(`<settings-section hidden-by-search>
           <div id="mydiv">${originalText}</div>
-        </settings-section>`;
+        </settings-section>`);
 
     const section = document.querySelector('settings-section')!;
     const div = document.querySelector('#mydiv')!;
@@ -253,7 +261,7 @@ suite('SearchSettingsTest', function() {
   });
 
   test('match text outside of a settings section', async function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedStaticHtml`
         <div id="mydiv">Match</div>
         <settings-section></settings-section>`;
 
@@ -272,7 +280,7 @@ suite('SearchSettingsTest', function() {
   });
 
   test('associated control causes search highlight bubble', async () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedStaticHtml`
         <settings-section>
           <button></button>
           <settings-subpage>
@@ -288,7 +296,7 @@ suite('SearchSettingsTest', function() {
   });
 
   test('bubble result count', async () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedStaticHtml`
         <settings-section>
           <select>
             <option>nohello</option>
@@ -315,7 +323,7 @@ suite('SearchSettingsTest', function() {
   });
 
   test('diacritics', async () => {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedStaticHtml`
         <settings-section>
           <select>
             <option>año de oro</option>

@@ -143,6 +143,7 @@ non_preprocessed_files = [
   "test_search_engines_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.ts",
   "test_util.ts",
+  "trusted_html.ts",
   "zoom_levels_tests.ts",
 ]
 

@@ -18,6 +18,7 @@ import '../settings_shared.css.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -126,19 +127,20 @@ export class SettingsSignoutDialogElement extends
   }
 
   // <if expr="not chromeos_ash">
-  private getDisconnectExplanationHtml_(domain: string): string {
+  private getDisconnectExplanationHtml_(domain: string): TrustedHTML {
     if (domain) {
-      return loadTimeData.getStringF(
-          'syncDisconnectManagedProfileExplanation',
-          '<span id="managed-by-domain-name">' + domain + '</span>');
+      return sanitizeInnerHtml(loadTimeData.getStringF(
+          'syncDisconnectManagedProfileExplanation', `<span>${domain}</span>`));
     }
-    return loadTimeData.getString('syncDisconnectExplanation');
+    return sanitizeInnerHtml(
+        loadTimeData.getString('syncDisconnectExplanation'));
   }
   // </if>
 
   // <if expr="chromeos_ash">
-  private getDisconnectExplanationHtml_(_domain: string): string {
-    return loadTimeData.getString('syncDisconnectExplanation');
+  private getDisconnectExplanationHtml_(_domain: string): TrustedHTML {
+    return sanitizeInnerHtml(
+        loadTimeData.getString('syncDisconnectExplanation'));
   }
   // </if>
 
