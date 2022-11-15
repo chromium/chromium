@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 
+class PageSwitcherView;
+
 // A dialog for managing stored password and federated login information for a
 // specific site. A user can see the details of the passwords, and edit the
 // stored password note.
@@ -26,10 +28,14 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
   ui::ImageModel GetWindowIcon() override;
+  void AddedToWidget() override;
 
+  std::unique_ptr<views::View> CreatePasswordListTitleView() const;
   std::unique_ptr<views::View> CreateFooterView();
+  std::unique_ptr<views::View> CreatePasswordListView() const;
 
   ItemsBubbleController controller_;
+  raw_ptr<PageSwitcherView> page_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_VIEW_H_
