@@ -12,12 +12,9 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/server/linux/update_service_stub.h"
 #include "chrome/updater/linux/ipc_constants.h"
+#include "chrome/updater/posix/setup.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace updater {
 
@@ -36,19 +33,19 @@ void AppServerLinux::ActiveDutyInternal(
 }
 
 bool AppServerLinux::SwapInNewVersion() {
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(crbug.com/1276117): Install systemd units.
+  return true;
 }
 
 bool AppServerLinux::MigrateLegacyUpdaters(
     base::RepeatingCallback<void(const RegistrationRequest&)>
         register_callback) {
-  NOTIMPLEMENTED();
-  return false;
+  // There is not a legacy update client for Linux.
+  return true;
 }
 
 void AppServerLinux::UninstallSelf() {
-  NOTIMPLEMENTED();
+  UninstallCandidate(updater_scope());
 }
 
 scoped_refptr<App> MakeAppServer() {

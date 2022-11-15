@@ -30,10 +30,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
-#elif BUILDFLAG(IS_MAC)
-#include "chrome/updater/mac/setup/setup.h"
-#elif BUILDFLAG(IS_LINUX)
-#include "chrome/updater/linux/setup/setup.h"
+#elif BUILDFLAG(IS_POSIX)
+#include "chrome/updater/posix/setup.h"
 #endif
 
 namespace updater {

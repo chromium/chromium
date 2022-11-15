@@ -51,7 +51,7 @@
 #include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(noahrose): Enable tests once updater is implemented for Linux
+// TODO(1367437): Enable tests once updater is implemented for Linux
 #if !BUILDFLAG(IS_LINUX)
 
 namespace updater::test {

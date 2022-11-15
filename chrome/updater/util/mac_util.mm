@@ -22,6 +22,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,11 +33,6 @@ constexpr int kLaunchctlExitCodeNoSuchProcess = 3;
 
 constexpr base::FilePath::CharType kZipExePath[] =
     FILE_PATH_LITERAL("/usr/bin/unzip");
-
-base::FilePath GetUpdaterFolderName() {
-  return base::FilePath(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING);
-}
 
 base::FilePath ExecutableFolderPath() {
   return base::FilePath(
@@ -144,13 +140,6 @@ bool UnzipWithExe(const base::FilePath& src_path,
   }
 
   return exit_code <= 1;
-}
-
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
-  if (!path)
-    return absl::nullopt;
-  return path->Append(GetUpdaterFolderName());
 }
 
 absl::optional<base::FilePath> GetExecutableFolderPathForVersion(

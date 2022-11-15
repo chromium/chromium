@@ -27,8 +27,8 @@
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/posix/setup.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 

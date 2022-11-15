@@ -189,7 +189,6 @@ if (is_win || is_mac || is_linux) {
         "mac/install_from_archive.mm",
         "mac/setup/keystone.h",
         "mac/setup/keystone.mm",
-        "mac/setup/setup.h",
         "mac/setup/setup.mm",
         "mac/update_service_internal_proxy.h",
         "mac/update_service_internal_proxy.mm",
@@ -328,7 +327,7 @@ if (is_win || is_mac || is_linux) {
         "device_management/dm_storage_linux.cc",
         "linux/ipc_support.cc",
         "linux/ipc_support.h",
-        "linux/setup/setup.h",
+        "linux/setup/setup.cc",
         "linux/update_service_internal_proxy.cc",
         "linux/update_service_internal_proxy.h",
         "net/network_fetcher_linux.cc",
@@ -571,6 +570,14 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [ "//chrome/common/mac:launchd" ]
+    }
+
+    if (is_posix) {
+      sources += [
+        "posix/setup.h",
+        "util/posix_util.cc",
+        "util/posix_util.h",
+      ]
     }
   }
 

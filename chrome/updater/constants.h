@@ -354,6 +354,12 @@ inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
 // A Mojo remote was unexpectedly disconnected.
 inline constexpr int kErrorMojoDisconnect = 35;
 
+// Failed to copy the updater binary.
+inline constexpr int kErrorFailedToCopyBinary = 36;
+
+// Failed to delete a socket file
+inline constexpr int kErrorFailedToDeleteSocket = 37;
+
 inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.
