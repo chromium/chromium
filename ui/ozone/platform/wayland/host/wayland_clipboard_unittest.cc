@@ -28,7 +28,11 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
+#include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
+#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
+#include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
@@ -62,27 +66,49 @@ ui::PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
   return base::RefCountedBytes::TakeVector(&data_vector);
 }
 
+// This must be called on the server thread.
+wl::TestSelectionDevice* GetSelectionDevice(wl::TestWaylandServerThread* server,
+                                            ClipboardBuffer buffer) {
+  DCHECK(server->task_runner()->BelongsToCurrentThread());
+
+  return buffer == ClipboardBuffer::kSelection
+             ? server->primary_selection_device_manager()->device()
+             : server->data_device_manager()->data_device();
+}
+
+// This must be called on the server thread.
+wl::TestSelectionSource* GetSelectionSource(wl::TestWaylandServerThread* server,
+                                            ClipboardBuffer buffer) {
+  DCHECK(server->task_runner()->BelongsToCurrentThread());
+
+  return buffer == ClipboardBuffer::kSelection
+             ? server->primary_selection_device_manager()->source()
+             : server->data_device_manager()->data_source();
+}
+
 }  // namespace
 
 class WaylandClipboardTestBase : public WaylandTest {
  public:
+  WaylandClipboardTestBase() : WaylandTest(TestServerMode::kAsync) {}
+  WaylandClipboardTestBase(const WaylandClipboardTestBase&) = delete;
+  WaylandClipboardTestBase& operator=(const WaylandClipboardTestBase&) = delete;
+  ~WaylandClipboardTestBase() override = default;
+
   void SetUp() override {
     WaylandTest::SetUp();
 
-    wl_seat_send_capabilities(server_.seat()->resource(),
-                              WL_SEAT_CAPABILITY_POINTER |
-                                  WL_SEAT_CAPABILITY_TOUCH |
-                                  WL_SEAT_CAPABILITY_KEYBOARD);
-    Sync();
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      wl_seat_send_capabilities(server->seat()->resource(),
+                                WL_SEAT_CAPABILITY_POINTER |
+                                    WL_SEAT_CAPABILITY_TOUCH |
+                                    WL_SEAT_CAPABILITY_KEYBOARD);
 
-    pointer_ = server_.seat()->pointer();
-    ASSERT_TRUE(pointer_);
-
-    touch_ = server_.seat()->touch();
-    ASSERT_TRUE(touch_);
-
-    keyboard_ = server_.seat()->keyboard();
-    ASSERT_TRUE(keyboard_);
+      ASSERT_TRUE(server->data_device_manager());
+    });
+    ASSERT_TRUE(connection_->seat()->pointer());
+    ASSERT_TRUE(connection_->seat()->touch());
+    ASSERT_TRUE(connection_->seat()->keyboard());
 
     // As of now, WaylandClipboard::RequestClipboardData is implemented in a
     // blocking way, which requires a roundtrip before attempting the data
@@ -94,12 +120,14 @@ class WaylandClipboardTestBase : public WaylandTest {
     WaylandConnectionTestApi(connection_.get())
         .SetRoundtripClosure(base::BindLambdaForTesting([&]() {
           wl_display_flush(connection_->display());
-          Sync();
+          SyncDisplay();
           base::ThreadPoolInstance::Get()->FlushForTesting();
         }));
 
     clipboard_ = connection_->clipboard();
     ASSERT_TRUE(clipboard_);
+
+    MaybeSetUpXkb();
   }
 
   void TearDown() override {
@@ -112,106 +140,107 @@ class WaylandClipboardTestBase : public WaylandTest {
   // Actual clipboard data reading is performed in the ThreadPool. Also,
   // wl::TestSelection{Source,Offer} currently use ThreadPool task runners.
   void WaitForClipboardTasks() {
-    Sync();
+    SyncDisplay();
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
   void SentPointerButtonPress(const gfx::Point& location) {
-    wl_pointer_send_enter(pointer_->resource(), ++serial_, surface_->resource(),
-                          location.x(), location.y());
-    wl_pointer_send_button(pointer_->resource(), ++serial_, ++timestamp_,
-                           BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
+    PostToServerAndWait(
+        [&location, surface_id = window_->root_surface()->get_surface_id()](
+            wl::TestWaylandServerThread* server) {
+          auto* const pointer = server->seat()->pointer()->resource();
+          auto* const surface =
+              server->GetObject<wl::MockSurface>(surface_id)->resource();
+
+          wl_pointer_send_enter(pointer, server->GetNextSerial(), surface,
+                                wl_fixed_from_int(location.x()),
+                                wl_fixed_from_int(location.y()));
+          wl_pointer_send_button(pointer, server->GetNextSerial(),
+                                 server->GetNextTime(), BTN_LEFT,
+                                 WL_POINTER_BUTTON_STATE_PRESSED);
+        });
   }
   void SendTouchDown(const gfx::Point& location) {
-    wl_touch_send_down(touch_->resource(), ++serial_, ++timestamp_,
-                       surface_->resource(), /*touch_id=*/0,
-                       wl_fixed_from_int(location.x()),
-                       wl_fixed_from_int(location.y()));
-    wl_touch_send_frame(touch_->resource());
+    PostToServerAndWait(
+        [location, surface_id = window_->root_surface()->get_surface_id()](
+            wl::TestWaylandServerThread* server) {
+          auto* const touch = server->seat()->touch()->resource();
+          auto* const surface =
+              server->GetObject<wl::MockSurface>(surface_id)->resource();
+
+          wl_touch_send_down(touch, server->GetNextSerial(),
+                             server->GetNextTime(), surface, 0 /* id */,
+                             wl_fixed_from_int(location.x()),
+                             wl_fixed_from_int(location.y()));
+          wl_touch_send_frame(touch);
+        });
   }
 
   void SendTouchUp() {
-    wl_touch_send_up(touch_->resource(), ++serial_, ++timestamp_,
-                     /*touch_id=*/0);
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      auto* const touch = server->seat()->touch()->resource();
+
+      wl_touch_send_up(touch, server->GetNextSerial(), server->GetNextTime(),
+                       0 /* id */);
+    });
   }
 
   void SendKeyboardKey() {
-    struct wl_array empty;
-    wl_array_init(&empty);
-    wl_keyboard_send_enter(keyboard_->resource(), 1, surface_->resource(),
-                           &empty);
-    wl_array_release(&empty);
-    wl_keyboard_send_key(keyboard_->resource(), 2, 0, 30 /* a */,
-                         WL_KEYBOARD_KEY_STATE_PRESSED);
+    PostToServerAndWait(
+        [surface_id = window_->root_surface()->get_surface_id()](
+            wl::TestWaylandServerThread* server) {
+          auto* const keyboard = server->seat()->keyboard()->resource();
+          auto* const surface =
+              server->GetObject<wl::MockSurface>(surface_id)->resource();
+
+          wl::ScopedWlArray empty({});
+          wl_keyboard_send_enter(keyboard, server->GetNextSerial(), surface,
+                                 empty.get());
+          wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                               server->GetNextTime(), 30 /* a */,
+                               WL_KEYBOARD_KEY_STATE_PRESSED);
+        });
   }
 
-  /* Server objects */
-  raw_ptr<wl::MockPointer> pointer_;
-  raw_ptr<wl::TestTouch> touch_;
-  raw_ptr<wl::TestKeyboard> keyboard_;
-
   raw_ptr<WaylandClipboard> clipboard_ = nullptr;
-
-  uint32_t serial_ = 0;
-  uint32_t timestamp_ = 0;
 };
 
 class WaylandClipboardTest : public WaylandClipboardTestBase {
  public:
   WaylandClipboardTest() = default;
-
   WaylandClipboardTest(const WaylandClipboardTest&) = delete;
   WaylandClipboardTest& operator=(const WaylandClipboardTest&) = delete;
-
   ~WaylandClipboardTest() override = default;
 
   void SetUp() override {
     WaylandClipboardTestBase::SetUp();
 
-    ASSERT_TRUE(server_.data_device_manager());
-    ASSERT_TRUE(GetParam().primary_selection_protocol ==
-                    wl::PrimarySelectionProtocol::kNone ||
-                server_.primary_selection_device_manager());
+    PostToServerAndWait(
+        [primary_selection_protocol = GetParam().primary_selection_protocol](
+            wl::TestWaylandServerThread* server) {
+          ASSERT_TRUE(primary_selection_protocol ==
+                          wl::PrimarySelectionProtocol::kNone ||
+                      server->primary_selection_device_manager());
+        });
 
     // Make sure clipboard instance for the available primary selection protocol
     // gets properly created, ie: the corresponding 'get_device' request is
     // issued, so server-side objects are created prior to test-case specific
     // calls, otherwise tests, such as ReadFromClipboard, would crash.
-    ASSERT_EQ(GetBuffer() == ClipboardBuffer::kSelection,
+    ASSERT_EQ(WhichBufferToUse() == ClipboardBuffer::kSelection,
               !!clipboard_->GetClipboard(ClipboardBuffer::kSelection));
-    Sync();
+    SyncDisplay();
 
     offered_data_.clear();
   }
 
  protected:
-  wl::TestSelectionDevice* GetServerSelectionDevice() {
-    return GetBuffer() == ClipboardBuffer::kSelection
-               ? server_.primary_selection_device_manager()->device()
-               : server_.data_device_manager()->data_device();
-  }
-
-  wl::TestSelectionSource* GetServerSelectionSource() {
-    return GetBuffer() == ClipboardBuffer::kSelection
-               ? server_.primary_selection_device_manager()->source()
-               : server_.data_device_manager()->data_source();
-  }
-
-  ClipboardBuffer GetBuffer() const {
+  ClipboardBuffer WhichBufferToUse() const {
     return GetParam().primary_selection_protocol !=
                    wl::PrimarySelectionProtocol::kNone
                ? ClipboardBuffer::kSelection
                : ClipboardBuffer::kCopyPaste;
-  }
-
-  void ResetServerSelectionSource() {
-    if (GetParam().primary_selection_protocol !=
-        wl::PrimarySelectionProtocol::kNone) {
-      server_.primary_selection_device_manager()->set_source(nullptr);
-    } else {
-      server_.data_device_manager()->set_data_source(nullptr);
-    }
   }
 
   // Fill the clipboard backing store with sample data.
@@ -238,8 +267,11 @@ class CopyPasteOnlyClipboardTest : public WaylandClipboardTestBase {
 
     ASSERT_EQ(wl::PrimarySelectionProtocol::kNone,
               GetParam().primary_selection_protocol);
-    ASSERT_TRUE(server_.data_device_manager());
-    ASSERT_FALSE(server_.primary_selection_device_manager());
+
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      ASSERT_TRUE(server->data_device_manager());
+      ASSERT_FALSE(server->primary_selection_device_manager());
+    });
   }
 };
 
@@ -270,34 +302,58 @@ TEST_P(WaylandClipboardTest, WriteToClipboard) {
 
   // Triggering copy on touch-down event.
   for (auto send_input_event : send_input_event_closures) {
-    ResetServerSelectionSource();
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      if (GetParam().primary_selection_protocol !=
+          wl::PrimarySelectionProtocol::kNone) {
+        server->primary_selection_device_manager()->set_source(nullptr);
+      } else {
+        server->data_device_manager()->set_data_source(nullptr);
+      }
+    });
 
     send_input_event.Run();
-    Sync();
     auto client_selection_serial = connection_->serial_tracker().GetSerial(
         {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
          wl::SerialType::kKeyPress});
     ASSERT_TRUE(client_selection_serial.has_value());
 
     // 1. Offer sample text as selection data.
-    OfferData(GetBuffer(), kSampleClipboardText, {kMimeTypeTextUtf8});
-    Sync();
-    ASSERT_TRUE(GetServerSelectionSource());
-
-    EXPECT_EQ(client_selection_serial->value,
-              GetServerSelectionDevice()->selection_serial());
+    OfferData(WhichBufferToUse(), kSampleClipboardText, {kMimeTypeTextUtf8});
+    SyncDisplay();
 
     // 2. Emulate an external client requesting to read the offered data and
     // make sure the appropriate string gets delivered.
+    // These three objects are accessed from the server thread, but must persist
+    // several server calls, that is why they are allocated here.
     std::string delivered_text;
     base::MockCallback<wl::TestSelectionSource::ReadDataCallback> callback;
-    EXPECT_CALL(callback, Run(_)).WillOnce([&](std::vector<uint8_t>&& data) {
-      delivered_text = std::string(data.begin(), data.end());
+    base::RunLoop run_loop;
+
+    PostToServerAndWait([&delivered_text, &callback,
+                         buffer = WhichBufferToUse(),
+                         serial = client_selection_serial->value,
+                         quit_closure = run_loop.QuitClosure()](
+                            wl::TestWaylandServerThread* server) {
+      ASSERT_TRUE(GetSelectionSource(server, buffer));
+
+      EXPECT_EQ(serial, GetSelectionDevice(server, buffer)->selection_serial());
+
+      EXPECT_CALL(callback, Run(_))
+          .WillOnce(
+              [&delivered_text, quit_closure](std::vector<uint8_t>&& data) {
+                delivered_text = std::string(data.begin(), data.end());
+                quit_closure.Run();
+              });
+
+      GetSelectionSource(server, buffer)
+          ->ReadData(kMimeTypeTextUtf8, callback.Get());
     });
-    GetServerSelectionSource()->ReadData(kMimeTypeTextUtf8, callback.Get());
 
     WaitForClipboardTasks();
-    ASSERT_EQ(kSampleClipboardText, delivered_text);
+
+    PostToServerAndWait([&delivered_text](wl::TestWaylandServerThread* server) {
+      EXPECT_EQ(kSampleClipboardText, delivered_text);
+    });
 
     window_manager->SetPointerFocusedWindow(nullptr);
     window_manager->SetTouchFocusedWindow(nullptr);
@@ -307,49 +363,51 @@ TEST_P(WaylandClipboardTest, WriteToClipboard) {
 
 TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   // 1. Emulate a selection data offer coming in.
-  auto* device = GetServerSelectionDevice();
-  auto* data_offer = device->OnDataOffer();
-  data_offer->OnOffer(kMimeTypeTextUtf8,
-                      ToClipboardData(std::string(kSampleClipboardText)));
-  device->OnSelection(data_offer);
-  Sync();
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        auto* device = GetSelectionDevice(server, buffer);
+        auto* data_offer = device->OnDataOffer();
+        data_offer->OnOffer(kMimeTypeTextUtf8,
+                            ToClipboardData(std::string(kSampleClipboardText)));
+        device->OnSelection(data_offer);
+      });
 
   // 2. Request to read the offered data and check whether the read text matches
   // the previously offered one.
   std::string text;
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
-  EXPECT_CALL(callback, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+  EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
     ASSERT_TRUE(data);
     text = std::string(data->front_as<const char>(), data->size());
   });
 
-  clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
                                    callback.Get());
-  WaitForClipboardTasks();
   EXPECT_EQ(kSampleClipboardText, text);
 }
 
 // Regression test for crbug.com/1183939. Ensures unicode mime types take
 // priority over text/plain when reading text.
 TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
-  auto* data_offer = GetServerSelectionDevice()->OnDataOffer();
-  data_offer->OnOffer(kMimeTypeText,
-                      ToClipboardData(std::string("ascii_text")));
-  data_offer->OnOffer(kMimeTypeTextUtf8,
-                      ToClipboardData(std::string("utf8_text")));
-  GetServerSelectionDevice()->OnSelection(data_offer);
-  Sync();
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
+        data_offer->OnOffer(kMimeTypeText,
+                            ToClipboardData(std::string("ascii_text")));
+        data_offer->OnOffer(kMimeTypeTextUtf8,
+                            ToClipboardData(std::string("utf8_text")));
+        GetSelectionDevice(server, buffer)->OnSelection(data_offer);
+      });
 
   std::string text;
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
-  EXPECT_CALL(callback, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+  EXPECT_CALL(callback, Run(_)).WillOnce([&text](PlatformClipboard::Data data) {
     ASSERT_TRUE(data);
     text = std::string(data->front_as<const char>(), data->size());
   });
 
-  clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
                                    callback.Get());
-  WaitForClipboardTasks();
   EXPECT_EQ("utf8_text", text);
 }
 
@@ -359,25 +417,32 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // data.
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
   EXPECT_CALL(callback, Run(Eq(nullptr))).Times(1);
-  clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
                                    callback.Get());
 }
 
 TEST_P(WaylandClipboardTest, IsSelectionOwner) {
   connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1);
 
-  OfferData(GetBuffer(), kSampleClipboardText, {kMimeTypeTextUtf8});
-  Sync();
-  ASSERT_TRUE(GetServerSelectionSource());
-  ASSERT_TRUE(clipboard_->IsSelectionOwner(GetBuffer()));
+  OfferData(WhichBufferToUse(), kSampleClipboardText, {kMimeTypeTextUtf8});
+
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        ASSERT_TRUE(GetSelectionSource(server, buffer));
+      });
+
+  ASSERT_TRUE(clipboard_->IsSelectionOwner(WhichBufferToUse()));
 
   // The compositor sends OnCancelled whenever another application on the system
   // sets a new selection. It means we are not the application that owns the
   // current selection data.
-  GetServerSelectionSource()->OnCancelled();
-  Sync();
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        GetSelectionSource(server, buffer)->OnCancelled();
+      });
 
-  ASSERT_FALSE(clipboard_->IsSelectionOwner(GetBuffer()));
+  ASSERT_FALSE(clipboard_->IsSelectionOwner(WhichBufferToUse()));
+
   connection_->serial_tracker().ResetSerial(wl::SerialType::kMousePress);
 }
 
@@ -385,15 +450,17 @@ TEST_P(WaylandClipboardTest, IsSelectionOwner) {
 // different clipboard buffers.
 TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
   // Offer a sample text as selection data.
-  auto* data_offer = GetServerSelectionDevice()->OnDataOffer();
-  data_offer->OnOffer(kMimeTypeTextUtf8,
-                      ToClipboardData(std::string(kSampleClipboardText)));
-  GetServerSelectionDevice()->OnSelection(data_offer);
-  Sync();
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
+        data_offer->OnOffer(kMimeTypeTextUtf8,
+                            ToClipboardData(std::string(kSampleClipboardText)));
+        GetSelectionDevice(server, buffer)->OnSelection(data_offer);
+      });
 
   // Post a read request for the other buffer, which will start its execution
   // after the request above.
-  auto other_buffer = GetBuffer() == ClipboardBuffer::kSelection
+  auto other_buffer = WhichBufferToUse() == ClipboardBuffer::kSelection
                           ? ClipboardBuffer::kCopyPaste
                           : ClipboardBuffer::kSelection;
   base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
@@ -413,7 +480,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
     ASSERT_NE(nullptr, data);
     text = std::string(data->front_as<const char>(), data->size());
   });
-  clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
+  clipboard_->RequestClipboardData(WhichBufferToUse(), kMimeTypeTextUtf8,
                                    got_text.Get());
 
   WaitForClipboardTasks();
@@ -425,23 +492,27 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
   base::MockCallback<PlatformClipboard::ClipboardDataChangedCallback>
       clipboard_changed_callback;
   clipboard_->SetClipboardDataChangedCallback(clipboard_changed_callback.Get());
-  const auto buffer = GetBuffer();
+  const auto buffer = WhichBufferToUse();
 
   // 1. For selection offered by an external application.
   EXPECT_CALL(clipboard_changed_callback, Run(buffer)).Times(1);
-  auto* data_offer = GetServerSelectionDevice()->OnDataOffer();
-  data_offer->OnOffer(kMimeTypeTextUtf8,
-                      ToClipboardData(std::string(kSampleClipboardText)));
-  GetServerSelectionDevice()->OnSelection(data_offer);
-  Sync();
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
+        data_offer->OnOffer(kMimeTypeTextUtf8,
+                            ToClipboardData(std::string(kSampleClipboardText)));
+        GetSelectionDevice(server, buffer)->OnSelection(data_offer);
+      });
   EXPECT_FALSE(clipboard_->IsSelectionOwner(buffer));
 
   // 2. For selection offered by Chromium.
   connection_->serial_tracker().UpdateSerial(wl::SerialType::kMousePress, 1);
   EXPECT_CALL(clipboard_changed_callback, Run(buffer)).Times(1);
   OfferData(buffer, kSampleClipboardText, {kMimeTypeTextUtf8});
-  Sync();
-  ASSERT_TRUE(GetServerSelectionSource());
+  PostToServerAndWait(
+      [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
+        ASSERT_TRUE(GetSelectionSource(server, buffer));
+      });
   EXPECT_TRUE(clipboard_->IsSelectionOwner(buffer));
   connection_->serial_tracker().ResetSerial(wl::SerialType::kMousePress);
 }
@@ -470,12 +541,13 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
 // TODO(crbug.com/443355): Re-enable once Clipboard API becomes async.
 TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   // Create an selection data offer containing plain and html mime types.
-  auto* data_device = server_.data_device_manager()->data_device();
-  auto* data_offer = data_device->OnDataOffer();
-  data_offer->OnOffer(kMimeTypeText, ToClipboardData(std::string("text")));
-  data_offer->OnOffer(kMimeTypeHTML, ToClipboardData(std::string("html")));
-  data_device->OnSelection(data_offer);
-  Sync();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_device = server->data_device_manager()->data_device();
+    auto* data_offer = data_device->OnDataOffer();
+    data_offer->OnOffer(kMimeTypeText, ToClipboardData(std::string("text")));
+    data_offer->OnOffer(kMimeTypeHTML, ToClipboardData(std::string("html")));
+    data_device->OnSelection(data_offer);
+  });
 
   // Schedule a clipboard read task (for text/html mime type). As read requests
   // are processed asynchronously, this will actually start when the request
