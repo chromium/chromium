@@ -302,7 +302,6 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/win/titlebar_config.h"
-#include "ui/color/color_switches.h"  // nogncheck
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -9058,13 +9057,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"vc-portrait-relighting", flag_descriptions::kVCPortraitRelightingName,
      flag_descriptions::kVCPortraitRelightingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVCPortraitRelighting)},
-#endif
-
-#if BUILDFLAG(IS_WIN)
-    {"pervasive-system-accent-color",
-     flag_descriptions::kPervasiveSystemAccentColorName,
-     flag_descriptions::kPervasiveSystemAccentColorDescription, kOsWin,
-     SINGLE_VALUE_TYPE(switches::kPervasiveSystemAccentColor)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

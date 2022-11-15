@@ -10,7 +10,6 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
-#include "ui/color/color_switches.h"
 #include "ui/color/color_transform.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
@@ -75,14 +74,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorNativeWindowText] = {
       color_utils::GetSysSkColor(COLOR_WINDOWTEXT)};
 
-  // Use the system accent color as the Chrome accent color, if desired.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPervasiveSystemAccentColor)) {
-    const auto accent_color = AccentColorObserver::Get()->accent_color();
-    if (accent_color.has_value()) {
-      mixer[kColorAccent] =
-          PickGoogleColor({accent_color.value()}, kColorPrimaryBackground);
-    }
+  // Use the system accent color as the Chrome accent color, if present.
+  if (const auto accent_color = AccentColorObserver::Get()->accent_color();
+      accent_color.has_value()) {
+    mixer[kColorAccent] =
+        PickGoogleColor({accent_color.value()}, kColorPrimaryBackground);
   }
 
   if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)

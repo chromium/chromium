@@ -2559,9 +2559,6 @@ extern const char kHardwareSecureDecryptionFallbackDescription[];
 extern const char kMediaFoundationClearName[];
 extern const char kMediaFoundationClearDescription[];
 
-extern const char kPervasiveSystemAccentColorName[];
-extern const char kPervasiveSystemAccentColorDescription[];
-
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 

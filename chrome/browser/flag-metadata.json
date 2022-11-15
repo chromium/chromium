@@ -5595,11 +5595,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "pervasive-system-accent-color",
-    "owners": ["pkasting"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
     "expiry_milestone": 110

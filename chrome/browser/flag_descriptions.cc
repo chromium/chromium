@@ -4461,12 +4461,6 @@ const char kMediaFoundationClearDescription[] =
     "Enable/Disable the use of MediaFoundation for non-protected content "
     "playback on supported systems.";
 
-const char kPervasiveSystemAccentColorName[] = "Pervasive system accent color";
-const char kPervasiveSystemAccentColorDescription[] =
-    "Use the Windows system accent color as the Chrome accent color, if \"Show "
-    "accent color on title bars and windows borders\" is toggled on in the "
-    "Windows system settings.";
-
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =
     "Enable/Disable the usage of WASAPI raw audio capture. When enabled, the "

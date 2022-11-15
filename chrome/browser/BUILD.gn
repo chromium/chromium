@@ -6096,7 +6096,6 @@ static_library("browser") {
       "//ui/aura_extra",
       "//ui/base:fullscreen_win",
       "//ui/color:accent_color_observer",
-      "//ui/color:color_switches",
       "//ui/display/util:util",
     ]
     allow_circular_includes_from +=

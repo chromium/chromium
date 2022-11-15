@@ -29,17 +29,6 @@ source_set("color_headers") {
   ]
 }
 
-component("color_switches") {
-  sources = [
-    "color_switches.cc",
-    "color_switches.h",
-  ]
-
-  defines = [ "IS_COLOR_SWITCHES_IMPL" ]
-
-  public_deps = [ "//base" ]
-}
-
 component("color") {
   sources = [
     "color_metrics.cc",
@@ -174,7 +163,6 @@ component("mixers") {
     sources += [ "win/native_color_mixers_win.cc" ]
     deps += [
       ":accent_color_observer",
-      ":color_switches",
       "//ui/native_theme:features",
     ]
   }
