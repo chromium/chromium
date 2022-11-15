@@ -471,7 +471,7 @@
       "use_goma": true
     }
   },
-  "mac-fieldtrial-rel": {
+  "mac-fieldtrial-tester": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,

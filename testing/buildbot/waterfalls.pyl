@@ -3586,7 +3586,7 @@
           'gtest_tests': 'chromium_mac_gtests',
         },
       },
-      'mac-fieldtrial-rel': {
+      'mac-fieldtrial-tester': {
         'mixins': [
           'mac_12_arm64',
         ],

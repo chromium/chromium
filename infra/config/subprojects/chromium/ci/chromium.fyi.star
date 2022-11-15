@@ -453,13 +453,14 @@ ci.builder(
     os = os.LINUX_DEFAULT,
 )
 
-ci.builder(
-    name = "mac-fieldtrial-rel",
+ci.thin_tester(
+    name = "mac-fieldtrial-tester",
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -472,6 +473,7 @@ ci.builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
+    triggered_by = ["ci/mac-arm64-rel"],
 )
 
 ci.builder(

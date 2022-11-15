@@ -69,9 +69,12 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-fieldtrial-rel",
+    name = "mac-fieldtrial-tester",
     os = os.MAC_DEFAULT,
-    mirrors = ["ci/mac-fieldtrial-rel"],
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac-fieldtrial-tester",
+    ],
 )
 
 try_.builder(
