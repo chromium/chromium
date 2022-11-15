@@ -1151,7 +1151,7 @@ bool ShouldShowSettingsUI() {
     _blockedSites = std::move(blockedSites);
     _passwords = std::move(passwords);
     TableViewModel* model = self.tableViewModel;
-    NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
+    NSMutableIndexSet* sectionIdentifiersToUpdate = [NSMutableIndexSet indexSet];
 
     // Hold in reverse order of section indexes (bottom up of section
     // displayed). If we don't we'll cause a crash.
@@ -1172,7 +1172,7 @@ bool ShouldShowSettingsUI() {
       }
       // If section exists and it should - reload it.
       else if (needsSection && hasSection) {
-        [sectionsToUpdate addIndex:[model sectionForSectionIdentifier:section]];
+        [sectionIdentifiersToUpdate addIndex:section];
       }
       // If section doesn't exist but it should - add it.
       else if (needsSection && !hasSection) {
@@ -1184,6 +1184,16 @@ bool ShouldShowSettingsUI() {
     }
 
     [self updateExportPasswordsButton];
+
+    // After deleting any sections, calculate the indices of sections to be
+    // updated. Doing this before deleting sections will lead to incorrect indices
+    // and possible crashes.
+    NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
+    [sectionIdentifiersToUpdate
+        enumerateIndexesUsingBlock:^(NSUInteger sectionIdentifier, BOOL* stop) {
+          [sectionsToUpdate
+              addIndex:[model sectionForSectionIdentifier:sectionIdentifier]];
+        }];
 
     // Reload items in sections.
     if (sectionsToUpdate.count > 0) {
