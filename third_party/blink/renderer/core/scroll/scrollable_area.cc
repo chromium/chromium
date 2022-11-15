@@ -833,8 +833,14 @@ Node* ScrollableArea::EventTargetNode() const {
   Node* node = box->GetNode();
   if (!node && box->Parent() && box->Parent()->IsLayoutNGFieldset())
     node = box->Parent()->GetNode();
-  if (node && IsA<Element>(node))
-    DCHECK_EQ(box, To<Element>(node)->GetLayoutBoxForScrolling());
+  if (node && IsA<Element>(node)) {
+    const LayoutBox* layout_box_for_scrolling =
+        To<Element>(node)->GetLayoutBoxForScrolling();
+    if (layout_box_for_scrolling)
+      DCHECK_EQ(box, layout_box_for_scrolling);
+    else
+      return nullptr;
+  }
   return node;
 }
 
