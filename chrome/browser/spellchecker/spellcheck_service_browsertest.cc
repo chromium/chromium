@@ -125,14 +125,15 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     prefs_->SetBoolean(spellcheck::prefs::kSpellCheckEnable, enable_spellcheck);
     prefs_->SetString(spellcheck::prefs::kSpellCheckDictionary,
                       single_dictionary);
-    base::ListValue dictionaries_value;
+    base::Value::List dictionaries_value;
     const std::vector<std::string> str_list =
         base::SplitString(multiple_dictionaries, ",", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
     for (const std::string& str : str_list) {
       dictionaries_value.Append(str);
     }
-    prefs_->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries_value);
+    prefs_->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                    std::move(dictionaries_value));
 
     SpellcheckService* spellcheck =
         SpellcheckServiceFactory::GetForContext(renderer_->GetBrowserContext());
@@ -165,14 +166,15 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   }
 
   void SetMultiLingualDictionaries(const std::string& multiple_dictionaries) {
-    base::ListValue dictionaries_value;
+    base::Value::List dictionaries_value;
     const std::vector<std::string> str_list =
         base::SplitString(multiple_dictionaries, ",", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
     for (const std::string& str : str_list) {
       dictionaries_value.Append(str);
     }
-    prefs_->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries_value);
+    prefs_->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                    std::move(dictionaries_value));
   }
 
   std::string GetMultilingualDictionaries() {
@@ -591,8 +593,9 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
 
 // Checks that preferences migrate correctly.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesMigrated) {
-  GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                  base::ListValue());
+  base::Value::List empty_list;
+  GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                      std::move(empty_list));
   GetPrefs()->SetString(spellcheck::prefs::kSpellCheckDictionary, "en-US");
 
   // Create a SpellcheckService which will migrate the preferences.
@@ -615,9 +618,10 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesMigrated) {
 
 // Checks that preferences are not migrated when they shouldn't be.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
-  base::ListValue dictionaries;
+  base::Value::List dictionaries;
   dictionaries.Append("en-US");
-  GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
+  GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                      std::move(dictionaries));
   GetPrefs()->SetString(spellcheck::prefs::kSpellCheckDictionary, "fr");
 
   // Create a SpellcheckService which will migrate the preferences.
@@ -642,9 +646,10 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, PreferencesNotMigrated) {
 // during migration.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                        SpellcheckingDisabledPreferenceMigration) {
-  base::ListValue dictionaries;
+  base::Value::List dictionaries;
   dictionaries.Append("en-US");
-  GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
+  GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                      std::move(dictionaries));
   GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
 
   // Migrate the preferences.
@@ -659,10 +664,11 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 // Make sure preferences get preserved and spellchecking stays enabled.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
                        MultilingualPreferenceNotMigrated) {
-  base::ListValue dictionaries;
+  base::Value::List dictionaries;
   dictionaries.Append("en-US");
   dictionaries.Append("fr");
-  GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionaries);
+  GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                      std::move(dictionaries));
   GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
 
   // Should not migrate any preferences.
