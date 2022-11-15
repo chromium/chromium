@@ -226,6 +226,14 @@ function createOSSettingsRoutes() {
     r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
         r.OS_ACCESSIBILITY, routesMojomWebui.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
         Subpage.kAudioAndCaptions);
+    if (loadTimeData.valueExists(
+            'isAccessibilitySelectToSpeakPageMigrationEnabled') &&
+        loadTimeData.getBoolean(
+            'isAccessibilitySelectToSpeakPageMigrationEnabled')) {
+      r.A11Y_SELECT_TO_SPEAK = createSubpage(
+          r.A11Y_TEXT_TO_SPEECH, routesMojomWebui.SELECT_TO_SPEAK_SUBPAGE_PATH,
+          Subpage.kSelectToSpeak);
+    }
     r.MANAGE_TTS_SETTINGS = createSubpage(
         loadTimeData.getBoolean('isKioskModeActive') ? r.MANAGE_ACCESSIBILITY :
                                                        r.A11Y_TEXT_TO_SPEECH,

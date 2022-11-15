@@ -76509,6 +76509,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1507" label="Keyboard And Text Input Page"/>
   <int value="1508" label="Cursor And Touchpad Page"/>
   <int value="1509" label="Audio And Captions Page"/>
+  <int value="1510" label="Select-to-speak Subpage"/>
   <int value="1700" label="About Chrome OS Details"/>
   <int value="1701" label="Detailed Build Info"/>
   <int value="1800" label="Kerberos Accounts V2"/>
@@ -107199,6 +107200,7 @@ Called by update_scheduler_enums.py.-->
   <int value="2014923527" label="/storage/externalStoragePreferences"/>
   <int value="2030415176" label="/files"/>
   <int value="2121014241" label="/audioAndCaptions"/>
+  <int value="2121014242" label="/textToSpeech/selectToSpeak"/>
   <int value="2136345292" label="/privacy"/>
   <int value="2236117233" label="/cursorAndTouchpad"/>
   <int value="2292642563" label="/androidAppsDetails"/>

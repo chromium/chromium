@@ -65,6 +65,7 @@ web_component_files = [
   "chromeos/os_a11y_page/display_and_magnification_page.ts",
   "chromeos/os_a11y_page/keyboard_and_text_input_page.ts",
   "chromeos/os_a11y_page/os_a11y_page.ts",
+  "chromeos/os_a11y_page/select_to_speak_subpage.ts",
   "chromeos/os_a11y_page/switch_access_action_assignment_dialog.ts",
   "chromeos/os_a11y_page/switch_access_action_assignment_pane.ts",
   "chromeos/os_a11y_page/switch_access_setup_guide_dialog.ts",

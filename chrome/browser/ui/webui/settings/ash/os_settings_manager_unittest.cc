@@ -51,7 +51,9 @@ class OsSettingsManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-      {features::kAccessibilityOSSettingsVisibility}, {});
+        {features::kAccessibilityOSSettingsVisibility,
+         features::kAccessibilitySelectToSpeakPageMigration},
+        {});
 
     ASSERT_TRUE(profile_manager_.SetUp());
     TestingProfile* profile =

@@ -14,6 +14,7 @@ import '../../settings_shared.css.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -63,6 +64,14 @@ class SettingsTextToSpeechPageElement extends
        * has been populated.
        */
       hasKeyboard_: Boolean,
+
+      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilitySelectToSpeakPageMigrationEnabled');
+        },
+      },
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
@@ -162,6 +171,10 @@ class SettingsTextToSpeechPageElement extends
 
   private onSelectToSpeakSettingsTap_(): void {
     this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
+  }
+
+  private onSelectToSpeakTap_(): void {
+    Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 }
 

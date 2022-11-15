@@ -19,6 +19,7 @@ import './display_and_magnification_page.js';
 import './keyboard_and_text_input_page.js';
 import './cursor_and_touchpad_page.js';
 import './audio_and_captions_page.js';
+import './select_to_speak_subpage.js';
 import './switch_access_subpage.js';
 import './tts_subpage.js';
 
@@ -90,6 +91,17 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
         value() {
           return loadTimeData.getBoolean(
               'isAccessibilityOSSettingsVisibilityEnabled');
+        },
+      },
+
+      /**
+       * Whether Select-to-speak page migration is enabled.
+       */
+      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilitySelectToSpeakPageMigrationEnabled');
         },
       },
 
@@ -170,6 +182,10 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     if (routes.A11Y_AUDIO_AND_CAPTIONS) {
       this.addFocusConfig(
           routes.A11Y_AUDIO_AND_CAPTIONS, '#audio-and-captions-page-trigger');
+    }
+    if (routes.A11Y_SELECT_TO_SPEAK) {
+      this.addFocusConfig(
+          routes.A11Y_SELECT_TO_SPEAK, '#select-to-speak-subpage-trigger');
     }
 
     this.addWebUIListener(

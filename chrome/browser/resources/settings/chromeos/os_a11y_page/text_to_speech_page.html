@@ -49,10 +49,21 @@
 </settings-toggle-button>
 <iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
   <div class="sub-item">
-    <cr-link-row id="selectToSpeakSubpageButton"
-        class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-        label="$i18n{selectToSpeakOptionsLabel}" external>
-    </cr-link-row>
+    <template is="dom-if"
+        if="[[isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
+      <cr-link-row id="select-to-speak-subpage-trigger"
+          class="settings-box" on-click="onSelectToSpeakTap_"
+          label="$i18n{selectToSpeakLinkTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if"
+        if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
+      <cr-link-row id="selectToSpeakSubpageButton"
+          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
+          label="$i18n{selectToSpeakOptionsLabel}" external>
+      </cr-link-row>
+    </template>
   </div>
 </iron-collapse>
 

@@ -30,6 +30,7 @@ import './os_a11y_page/display_and_magnification_page.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
 import './os_a11y_page/audio_and_captions_page.js';
+import './os_a11y_page/select_to_speak_subpage.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';
 import './os_a11y_page/switch_access_setup_guide_dialog.js';

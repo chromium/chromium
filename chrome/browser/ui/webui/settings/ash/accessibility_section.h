@@ -54,6 +54,7 @@ class AccessibilitySection : public OsSettingsSection,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
+  void AddSelectToSpeakStrings(content::WebUIDataSource* html_source);
   void UpdateSearchTags();
   void UpdateTextToSpeechVoiceSearchTags();
   void UpdateTextToSpeechEnginesSearchTags();

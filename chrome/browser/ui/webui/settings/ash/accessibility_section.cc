@@ -53,6 +53,7 @@ using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
 using ::chromeos::settings::mojom::kManageAccessibilitySubpagePath;
+using ::chromeos::settings::mojom::kSelectToSpeakSubpagePath;
 using ::chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath;
 using ::chromeos::settings::mojom::kTextToSpeechPagePath;
 using ::chromeos::settings::mojom::kTextToSpeechSubpagePath;
@@ -468,6 +469,10 @@ bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return ::features::IsAccessibilityOSSettingsVisibilityEnabled();
 }
 
+bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
+  return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
+}
+
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return ::features::
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
@@ -758,6 +763,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION_WITHOUT_KEYBOARD},
       {"selectToSpeakDisabledDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION},
+      {"selectToSpeakLinkTitle",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE},
       {"selectToSpeakOptionsLabel",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL},
       {"selectToSpeakTitle", IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE},
@@ -941,6 +948,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityOSSettingsVisibilityEnabled",
                           IsAccessibilityOSSettingsVisibilityEnabled());
 
+  html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
+                          IsAccessibilitySelectToSpeakPageMigrationEnabled());
+
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
@@ -1017,6 +1027,14 @@ void AccessibilitySection::RegisterHierarchy(
         IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE,
         mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
         mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
+    // Select to speak options page.
+    if (IsAccessibilitySelectToSpeakPageMigrationEnabled()) {
+      generator->RegisterTopLevelSubpage(
+          IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE,
+          mojom::Subpage::kSelectToSpeak, mojom::SearchResultIcon::kA11y,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::kSelectToSpeakSubpagePath);
+    }
     // Display and magnification page.
     generator->RegisterTopLevelSubpage(
         IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE,
@@ -1081,6 +1099,7 @@ void AccessibilitySection::RegisterHierarchy(
   RegisterNestedSettingBulk(mojom::Subpage::kTextToSpeech,
                             kTextToSpeechSettings, generator);
 
+  // TODO(crbug.com/1383613): Change some of these to RegisterNestedSubpages.
   // Switch access.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS,
                                      mojom::Subpage::kSwitchAccessOptions,

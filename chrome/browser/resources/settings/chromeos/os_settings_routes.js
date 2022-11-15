@@ -13,6 +13,7 @@ import {Route} from '../router.js';
  *   A11Y_DISPLAY_AND_MAGNIFICATION: !Route,
  *   A11Y_KEYBOARD_AND_TEXT_INPUT: !Route,
  *   A11Y_TEXT_TO_SPEECH: !Route,
+ *   A11Y_SELECT_TO_SPEAK: !Route,
  *   ABOUT: !Route,
  *   ABOUT_ABOUT: !Route,
  *   ACCOUNTS: !Route,
