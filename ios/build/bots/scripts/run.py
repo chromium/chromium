@@ -312,7 +312,8 @@ class Runner():
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
       return 3
-    except test_runner.SimulatorNotFoundError as e:
+    except (test_runner.SimulatorNotFoundError,
+            test_runner.HostIsDownError) as e:
       # This means there's probably some issue in simulator runtime so we don't
       # want to cache it anymore (when it's in new Xcode format).
       self.should_move_xcode_runtime_to_cache = False
