@@ -191,14 +191,6 @@ bool IsAccessibilityOSSettingsVisibilityEnabled() {
       ::features::kAccessibilityOSSettingsVisibility);
 }
 
-BASE_FEATURE(kAccessibilityService,
-             "AccessibilityService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilityServiceEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityService);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,
              "ExperimentalAccessibilityColorEnhancementSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -347,6 +339,15 @@ BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsPdfOcrEnabled() {
   return base::FeatureList::IsEnabled(::features::kPdfOcr);
 }
+
+BASE_FEATURE(kAccessibilityService,
+             "AccessibilityService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityServiceEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityService);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

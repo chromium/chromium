@@ -143,12 +143,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOSSettingsVisibility);
 // Returns true if improved Accessibility OS Settings visibility is enabled.
 AX_BASE_EXPORT bool IsAccessibilityOSSettingsVisibilityEnabled();
 
-// Enables the experimental Accessibility Service.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);
-
-// Returns true if the Accessibility Service enabled.
-AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
-
 // Enables the experimental color enhancements settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityColorEnhancementSettings);
@@ -277,6 +271,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPdfOcr);
 // and the resulting text, together with its layout information, will be added
 // to the accessibility tree.
 AX_BASE_EXPORT bool IsPdfOcrEnabled();
+
+// Enables the experimental Accessibility Service.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);
+
+// Returns true if the Accessibility Service enabled.
+AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
