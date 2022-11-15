@@ -123,8 +123,7 @@ class SubprocessOutputLogger(object):
 
 
 class _TargetHost(object):
-    def __init__(self, build_path, build_ids_path, ports_to_forward, target,
-                 results_directory):
+    def __init__(self, build_path, ports_to_forward, target):
         try:
             self._pkg_repo = None
             self._target = target
@@ -132,14 +131,12 @@ class _TargetHost(object):
                 self._target._log_manager)
             self._ffx_session = self._ffx_session_context.__enter__()
             self._target.Start()
-            self._setup_target(build_path, build_ids_path, ports_to_forward,
-                               results_directory)
+            self._setup_target(build_path, ports_to_forward)
         except:
             self.cleanup()
             raise
 
-    def _setup_target(self, build_path, build_ids_path, ports_to_forward,
-                      results_directory):
+    def _setup_target(self, build_path, ports_to_forward):
         # Tell SSH to forward all server ports from the Fuchsia device to
         # the host.
         forwarding_flags = [
@@ -255,14 +252,12 @@ class FuchsiaPort(base.Port):
             target_args.port = self.get_option('fuchsia_port')
             target_args.node_name = self.get_option('fuchsia_node_name')
             target_args.cpu_cores = self._cpu_cores()
-            target_args.logs_dir = self.results_directory()
+            target_args.logs_dir = self.get_option('logs_dir')
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)
             self._target_host = _TargetHost(self._build_path(),
-                                            self.get_build_ids_path(),
-                                            self.SERVER_PORTS, target,
-                                            self.results_directory())
+                                            self.SERVER_PORTS, target)
 
             if self.get_option('zircon_logging'):
                 klog_proc = self._target_host.run_command(['dlog', '-f'])
