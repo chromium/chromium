@@ -2995,8 +2995,14 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
+// TODO(crbug.com/1384459): Flaky on MSan builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_StartPrintingFails DISABLED_StartPrintingFails
+#else
+#define MAYBE_StartPrintingFails StartPrintingFails
+#endif
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
-                       StartPrintingFails) {
+                       MAYBE_StartPrintingFails) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForErrorsInNewDocument();
@@ -3634,7 +3640,13 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
+// TODO(crbug.com/1384459): Flaky on MSan builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PrintNow DISABLED_PrintNow
+#else
+#define MAYBE_PrintNow PrintNow
+#endif
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
   AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -3666,7 +3678,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   ASSERT_EQ(new_document_called_count(), 0);
 }
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
+// TODO(crbug.com/1384459): Flaky on MSan builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PrintWithPreview DISABLED_PrintWithPreview
+#else
+#define MAYBE_PrintWithPreview PrintWithPreview
+#endif
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
+                       MAYBE_PrintWithPreview) {
   AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
