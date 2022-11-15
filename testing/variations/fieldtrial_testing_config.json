@@ -12539,6 +12539,20 @@
             ]
         }
     ],
+    "WebRTC-Aec3PreEchoConfiguration": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "threshold:0.5,mode:1"
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3TransparentModeHmm": [
         {
             "platforms": [
