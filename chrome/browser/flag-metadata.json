@@ -6126,11 +6126,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "semantic-colors-debug-override",
-    "owners": [ "calamity@chromium.org" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "send-tab-to-self-signin-promo",
     "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
     "expiry_milestone": 107
