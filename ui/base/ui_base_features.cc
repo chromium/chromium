@@ -440,4 +440,12 @@ bool IsLacrosColorManagementEnabled() {
   return base::FeatureList::IsEnabled(kLacrosColorManagement);
 }
 
+BASE_FEATURE(kChromeRefresh2023,
+             "ChromeRefresh2023",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsChromeRefresh2023() {
+  return base::FeatureList::IsEnabled(kChromeRefresh2023);
+}
+
 }  // namespace features
