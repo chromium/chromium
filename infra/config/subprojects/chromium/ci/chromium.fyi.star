@@ -455,7 +455,6 @@ ci.builder(
 
 ci.thin_tester(
     name = "mac-fieldtrial-tester",
-    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
@@ -472,7 +471,6 @@ ci.thin_tester(
         ),
     ),
     cores = None,
-    os = os.MAC_DEFAULT,
     triggered_by = ["ci/mac-arm64-rel"],
 )
 
