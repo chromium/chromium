@@ -51,14 +51,12 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
-#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1280,12 +1278,9 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
 void WebAppPublisherHelper::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::RunOnOsLoginMode run_on_os_login_mode) {
-  provider_->command_manager().ScheduleCommand(
-      RunOnOsLoginCommand::CreateForSetLoginMode(
-          &provider_->registrar(), &provider_->os_integration_manager(),
-          &provider_->sync_bridge(), app_id,
-          ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
-          base::DoNothing()));
+  provider_->scheduler().SetRunOnOsLoginMode(
+      app_id, ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
+      base::DoNothing());
 }
 
 apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(

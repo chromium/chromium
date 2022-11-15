@@ -133,8 +133,7 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
   loop.Run();
   tester.ExpectBucketCount(
       "WebApp.RunOnOsLogin.CommandCompletionState",
@@ -152,8 +151,7 @@ TEST_F(RunOnOsLoginCommandTest, SetRunOnOsLoginModes) {
   base::RunLoop loop1;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kMinimized, loop1.QuitClosure()));
+          app_id, RunOnOsLoginMode::kMinimized, loop1.QuitClosure()));
   loop1.Run();
   tester.ExpectBucketCount(
       "WebApp.RunOnOsLogin.CommandCompletionState",
@@ -188,8 +186,7 @@ TEST_F(RunOnOsLoginCommandTest, SyncRunOnOsLoginModes) {
     base::RunLoop loop;
     provider()->command_manager().ScheduleCommand(
         RunOnOsLoginCommand::CreateForSetLoginMode(
-            &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-            RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
+            app_id, RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
     loop.Run();
   }
 
@@ -290,16 +287,14 @@ TEST_F(RunOnOsLoginCommandTest, RepeatedCallsDoNotCauseRepeatedOSRegistration) {
   base::RunLoop loop1;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop1.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop1.QuitClosure()));
   loop1.Run();
   EXPECT_EQ(1u, os_integration_manager()->num_register_run_on_os_login_calls());
 
   base::RunLoop loop2;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
   loop2.Run();
   // Count should still be 1 because repeated calls cause command to end early
   // as success.
@@ -314,8 +309,7 @@ TEST_F(RunOnOsLoginCommandTest, NotRunDoesNotAtemptOSRegistration) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kNotRun, loop.QuitClosure()));
+          app_id, RunOnOsLoginMode::kNotRun, loop.QuitClosure()));
   loop.Run();
 
   // OS registration should not be attempted if the default state of Run On OS
@@ -337,8 +331,7 @@ TEST_F(RunOnOsLoginCommandTest, SyncCommandAndUninstallOSHooks) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      RunOnOsLoginCommand::CreateForSyncLoginMode(
-          &registrar(), os_integration_manager(), app_id, loop.QuitClosure()));
+      RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, loop.QuitClosure()));
   loop.Run();
 
   // Syncing on a web_app with a Run on OS Login mode of kNotRun will
@@ -357,8 +350,7 @@ TEST_F(RunOnOsLoginCommandTest, AbortOnAppNotLocallyInstalled) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      RunOnOsLoginCommand::CreateForSyncLoginMode(
-          &registrar(), os_integration_manager(), "abc", loop.QuitClosure()));
+      RunOnOsLoginCommand::CreateForSyncLoginMode("abc", loop.QuitClosure()));
   loop.Run();
 
   tester.ExpectBucketCount(
@@ -381,8 +373,7 @@ TEST_F(RunOnOsLoginCommandTest,
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
   loop.Run();
 
   tester.ExpectBucketCount(
@@ -397,8 +388,7 @@ TEST_F(RunOnOsLoginCommandTest,
   base::RunLoop loop1;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop1.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop1.QuitClosure()));
   loop1.Run();
 
   tester.ExpectBucketCount(
@@ -431,8 +421,7 @@ TEST_F(RunOnOsLoginCommandTest, AbortCommandOnPolicyBlockedApp) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop.QuitClosure()));
   loop.Run();
 
   tester.ExpectBucketCount(
@@ -452,8 +441,7 @@ TEST_F(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
   base::RunLoop loop1;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kNotRun, loop1.QuitClosure()));
+          app_id, RunOnOsLoginMode::kNotRun, loop1.QuitClosure()));
   loop1.Run();
 
   // kNotRun should not invoke any calls.
@@ -464,8 +452,7 @@ TEST_F(RunOnOsLoginCommandTest, VerifySetWorksOnAppWithNoStateDefined) {
   base::RunLoop loop2;
   provider()->command_manager().ScheduleCommand(
       RunOnOsLoginCommand::CreateForSetLoginMode(
-          &registrar(), os_integration_manager(), &sync_bridge(), app_id,
-          RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
+          app_id, RunOnOsLoginMode::kWindowed, loop2.QuitClosure()));
   loop2.Run();
 
   // kWindowed should invoke 1 register call.
@@ -496,8 +483,7 @@ TEST_F(RunOnOsLoginCommandTest, VerifySyncWorksOnAppWithNoStateDefined) {
 
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
-      RunOnOsLoginCommand::CreateForSyncLoginMode(
-          &registrar(), os_integration_manager(), app_id, loop.QuitClosure()));
+      RunOnOsLoginCommand::CreateForSyncLoginMode(app_id, loop.QuitClosure()));
   loop.Run();
 
   EXPECT_EQ(0u, os_integration_manager()->num_register_run_on_os_login_calls());

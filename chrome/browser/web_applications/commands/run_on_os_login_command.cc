@@ -23,42 +23,26 @@ namespace web_app {
 
 // static
 std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSetLoginMode(
-    WebAppRegistrar* registrar,
-    OsIntegrationManager* os_integration_manager,
-    WebAppSyncBridge* sync_bridge,
     const AppId& app_id,
     RunOnOsLoginMode login_mode,
     base::OnceClosure callback) {
-  DCHECK(registrar);
-  DCHECK(os_integration_manager);
-  DCHECK(sync_bridge);
-
   return base::WrapUnique(new RunOnOsLoginCommand(
-      app_id, registrar, os_integration_manager, sync_bridge, login_mode,
-      RunOnOsLoginAction::kSetModeInDBAndOS, std::move(callback)));
+      app_id, login_mode, RunOnOsLoginAction::kSetModeInDBAndOS,
+      std::move(callback)));
 }
 
 // static
 std::unique_ptr<RunOnOsLoginCommand>
-RunOnOsLoginCommand::CreateForSyncLoginMode(
-    WebAppRegistrar* registrar,
-    OsIntegrationManager* os_integration_manager,
-    const AppId& app_id,
-    base::OnceClosure callback) {
-  DCHECK(registrar);
-  DCHECK(os_integration_manager);
-
+RunOnOsLoginCommand::CreateForSyncLoginMode(const AppId& app_id,
+                                            base::OnceClosure callback) {
   return base::WrapUnique(new RunOnOsLoginCommand(
-      app_id, registrar, os_integration_manager, /*sync_bridge=*/nullptr,
+      app_id,
       /*login_mode=*/absl::nullopt, RunOnOsLoginAction::kSyncModeFromDBToOS,
       std::move(callback)));
 }
 
 RunOnOsLoginCommand::RunOnOsLoginCommand(
     AppId app_id,
-    WebAppRegistrar* registrar,
-    OsIntegrationManager* os_integration_manager,
-    WebAppSyncBridge* sync_bridge,
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
@@ -66,9 +50,6 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
       app_id_(app_id),
-      registrar_(registrar),
-      os_integration_manager_(os_integration_manager),
-      sync_bridge_(sync_bridge),
       login_mode_(login_mode),
       set_or_sync_mode_(set_or_sync_mode),
       callback_(std::move(callback)) {}
@@ -79,7 +60,9 @@ LockDescription& RunOnOsLoginCommand::lock_description() const {
   return *lock_description_;
 }
 
-void RunOnOsLoginCommand::Start() {
+void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
+  lock_ = std::move(lock);
+
   switch (set_or_sync_mode_) {
     case RunOnOsLoginAction::kSetModeInDBAndOS:
       SetRunOnOsLoginMode();
@@ -144,12 +127,12 @@ void RunOnOsLoginCommand::Abort(
 }
 
 void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
-  if (!registrar_->IsLocallyInstalled(app_id_)) {
+  if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
     Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
     return;
   }
 
-  const auto current_mode = registrar_->GetAppRunOnOsLoginMode(app_id_);
+  const auto current_mode = lock_->registrar().GetAppRunOnOsLoginMode(app_id_);
 
   // Early return if policy does not allow the user to change value, or if the
   // new value is the same as the old value.
@@ -167,25 +150,26 @@ void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
   }
 
   {
-    ScopedRegistryUpdate update(sync_bridge_);
+    ScopedRegistryUpdate update(&lock_->sync_bridge());
     update->UpdateApp(app_id_)->SetRunOnOsLoginMode(login_mode_.value());
   }
-  registrar_->NotifyWebAppRunOnOsLoginModeChanged(app_id_, login_mode_.value());
+  lock_->registrar().NotifyWebAppRunOnOsLoginModeChanged(app_id_,
+                                                         login_mode_.value());
   UpdateRunOnOsLoginModeWithOsIntegration();
 }
 
 void RunOnOsLoginCommand::SyncRunOnOsLoginMode() {
-  if (!registrar_->IsLocallyInstalled(app_id_)) {
+  if (!lock_->registrar().IsLocallyInstalled(app_id_)) {
     Abort(RunOnOsLoginCommandCompletionState::kAppNotLocallyInstalled);
     return;
   }
-  login_mode_ = registrar_->GetAppRunOnOsLoginMode(app_id_).value;
+  login_mode_ = lock_->registrar().GetAppRunOnOsLoginMode(app_id_).value;
   UpdateRunOnOsLoginModeWithOsIntegration();
 }
 
 void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
   absl::optional<RunOnOsLoginMode> os_integration_state =
-      registrar_->GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
+      lock_->registrar().GetExpectedRunOnOsLoginOsIntegrationState(app_id_);
 
   if (os_integration_state && login_mode_.value() == *os_integration_state) {
     RecordCompletionState(
@@ -198,7 +182,7 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
   if (login_mode_.value() == RunOnOsLoginMode::kNotRun) {
     web_app::OsHooksOptions os_hooks;
     os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
-    os_integration_manager_->UninstallOsHooks(
+    lock_->os_integration_manager().UninstallOsHooks(
         app_id_, os_hooks,
         base::BindOnce(&RunOnOsLoginCommand::OnOsHooksSet,
                        weak_factory_.GetWeakPtr()));
@@ -206,7 +190,7 @@ void RunOnOsLoginCommand::UpdateRunOnOsLoginModeWithOsIntegration() {
     web_app::InstallOsHooksOptions install_options;
     install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     install_options.reason = SHORTCUT_CREATION_AUTOMATED;
-    os_integration_manager_->InstallOsHooks(
+    lock_->os_integration_manager().InstallOsHooks(
         app_id_,
         base::BindOnce(&RunOnOsLoginCommand::OnOsHooksSet,
                        weak_factory_.GetWeakPtr()),

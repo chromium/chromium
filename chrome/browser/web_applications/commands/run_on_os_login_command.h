@@ -16,11 +16,9 @@
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
-class WebAppRegistrar;
-class OsIntegrationManager;
-class WebAppSyncBridge;
 
 enum class RunOnOsLoginAction {
   kSetModeInDBAndOS = 0,
@@ -41,34 +39,26 @@ enum class RunOnOsLoginCommandCompletionState {
 // This command persists run on os login data to the web_app DB
 // and/or syncs the run on os login data with the OS integration hooks
 // asynchronously.
-class RunOnOsLoginCommand : public WebAppCommand {
+class RunOnOsLoginCommand : public WebAppCommandTemplate<AppLock> {
  public:
   static std::unique_ptr<RunOnOsLoginCommand> CreateForSetLoginMode(
-      WebAppRegistrar* registrar,
-      OsIntegrationManager* os_integration_manager,
-      WebAppSyncBridge* sync_bridge,
       const AppId& app_id,
       RunOnOsLoginMode login_mode,
       base::OnceClosure callback);
   static std::unique_ptr<RunOnOsLoginCommand> CreateForSyncLoginMode(
-      WebAppRegistrar* registrar,
-      OsIntegrationManager* os_integration_manager,
       const AppId& app_id,
       base::OnceClosure callback);
   ~RunOnOsLoginCommand() override;
 
   LockDescription& lock_description() const override;
 
-  void Start() override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
   void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 
  private:
   RunOnOsLoginCommand(AppId app_id,
-                      WebAppRegistrar* registrar,
-                      OsIntegrationManager* os_integration_manager,
-                      WebAppSyncBridge* sync_bridge,
                       absl::optional<RunOnOsLoginMode> login_mode,
                       RunOnOsLoginAction set_or_sync_mode,
                       base::OnceClosure callback_);
@@ -88,10 +78,9 @@ class RunOnOsLoginCommand : public WebAppCommand {
       RunOnOsLoginCommandCompletionState completion_state);
 
   std::unique_ptr<AppLockDescription> lock_description_;
+  std::unique_ptr<AppLock> lock_;
+
   AppId app_id_;
-  base::raw_ptr<WebAppRegistrar> registrar_;
-  base::raw_ptr<OsIntegrationManager> os_integration_manager_;
-  base::raw_ptr<WebAppSyncBridge> sync_bridge_;
   absl::optional<RunOnOsLoginMode> login_mode_;
   RunOnOsLoginAction set_or_sync_mode_;
   std::string stop_reason_;

@@ -5,8 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
-#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -52,12 +51,10 @@ void AppServiceProxy::SetRunOnOsLoginMode(
   if (app_type == apps::AppType::kWeb) {
     web_app::WebAppProvider* provider =
         web_app::WebAppProvider::GetForWebApps(profile_);
-    provider->command_manager().ScheduleCommand(
-        web_app::RunOnOsLoginCommand::CreateForSetLoginMode(
-            &provider->registrar(), &provider->os_integration_manager(),
-            &provider->sync_bridge(), app_id,
-            web_app::ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
-            base::DoNothing()));
+    provider->scheduler().SetRunOnOsLoginMode(
+        app_id,
+        web_app::ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode),
+        base::DoNothing());
   }
 }
 

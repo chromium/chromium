@@ -22,13 +22,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -364,10 +363,8 @@ void WebAppPolicyManager::ApplyPolicySettings() {
                      weak_ptr_factory_.GetWeakPtr()));
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   for (const AppId& app_id : app_ids_to_sync) {
-    provider->command_manager().ScheduleCommand(
-        RunOnOsLoginCommand::CreateForSyncLoginMode(
-            app_registrar_, os_integration_manager_, app_id,
-            base::BindOnce(callback_for_sync_commands, app_id)));
+    provider->scheduler().SyncRunOnOsLoginMode(
+        app_id, base::BindOnce(callback_for_sync_commands, app_id));
   }
 }
 

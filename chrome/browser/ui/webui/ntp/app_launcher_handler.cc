@@ -54,12 +54,12 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
-#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -1261,11 +1261,8 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::Value::List& args) {
     return;
   }
 
-  web_app_provider_->command_manager().ScheduleCommand(
-      web_app::RunOnOsLoginCommand::CreateForSetLoginMode(
-          &web_app_provider_->registrar(),
-          &web_app_provider_->os_integration_manager(),
-          &web_app_provider_->sync_bridge(), app_id, mode, base::DoNothing()));
+  web_app_provider_->scheduler().SetRunOnOsLoginMode(app_id, mode,
+                                                     base::DoNothing());
 }
 
 void AppLauncherHandler::HandleLaunchDeprecatedAppDialog(

@@ -97,6 +97,16 @@ class WebAppCommandScheduler {
                              const IsolationData& isolation_data,
                              InstallIsolatedWebAppCallback callback);
 
+  // Schedules a command that updates run on os login to provided `login_mode`
+  // for a web app.
+  void SetRunOnOsLoginMode(const AppId& app_id,
+                           RunOnOsLoginMode login_mode,
+                           base::OnceClosure callback);
+
+  // Schedules a command that syncs the run on os login mode from web app DB to
+  // OS.
+  void SyncRunOnOsLoginMode(const AppId& app_id, base::OnceClosure callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 
