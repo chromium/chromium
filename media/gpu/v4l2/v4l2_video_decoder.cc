@@ -240,6 +240,14 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
             .AddCause(V4L2Status(V4L2Status::Codes::kNoProfile)));
     return;
   }
+  if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kAV1 &&
+      !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder)) {
+    VLOGF(1) << "AV1 hardware video decoding is disabled";
+    std::move(init_cb).Run(
+        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+            .AddCause(V4L2Status(V4L2Status::Codes::kNoProfile)));
+    return;
+  }
 
   // Call init_cb
   output_cb_ = std::move(output_cb);

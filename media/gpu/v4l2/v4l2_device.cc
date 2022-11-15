@@ -2148,6 +2148,13 @@ V4L2Device::EnumerateSupportedDecodeProfiles(const size_t num_formats,
         pixelformats + num_formats)
       continue;
 
+    // Skip AV1 decoder profiles if kChromeOSHWAV1Decoder is disabled.
+    if ((pixelformat == V4L2_PIX_FMT_AV1 ||
+         pixelformat == V4L2_PIX_FMT_AV1_FRAME) &&
+        !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder)) {
+      continue;
+    }
+
     VideoDecodeAccelerator::SupportedProfile profile;
     GetSupportedResolution(pixelformat, &profile.min_resolution,
                            &profile.max_resolution);

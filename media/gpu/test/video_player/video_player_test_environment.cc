@@ -55,6 +55,10 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
   combined_disabled_features.push_back(
       media::kVaapiEnforceVideoMinMaxResolution);
 #endif
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  // TODO(b/255626192): remove once enabled by default.
+  combined_enabled_features.push_back(media::kChromeOSHWAV1Decoder);
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   return new VideoPlayerTestEnvironment(
       std::move(video), validator_type, implementation, linear_output,

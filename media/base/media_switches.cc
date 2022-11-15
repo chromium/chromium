@@ -907,7 +907,12 @@ BASE_FEATURE(kUseRealColorSpaceForAndroidVideo,
 // Enable hardware AV1 decoder on ChromeOS.
 BASE_FEATURE(kChromeOSHWAV1Decoder,
              "ChromeOSHWAV1Decoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if defined(ARCH_CPU_X86_FAMILY)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+);
 
 // Enable Variable Bitrate encoding with hardware accelerated encoders on
 // ChromeOS.
