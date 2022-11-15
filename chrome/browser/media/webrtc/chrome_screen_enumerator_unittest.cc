@@ -80,6 +80,29 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
 }
 
+TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
+  std::vector<aura::Window*> screens_list =
+      GenerateScreensList(/*number_of_screens=*/1u);
+  SetRootWindowsForTesting(&screens_list);
+
+  base::RunLoop run_loop;
+  blink::mojom::StreamDevicesSetPtr actual_stream_devices_set;
+  blink::mojom::MediaStreamRequestResult actual_result;
+  enumerator_->EnumerateScreens(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
+      base::BindLambdaForTesting(
+          [&run_loop, &actual_stream_devices_set, &actual_result](
+              const blink::mojom::StreamDevicesSet& stream_devices_set,
+              blink::mojom::MediaStreamRequestResult result) {
+            actual_stream_devices_set = stream_devices_set.Clone();
+            actual_result = result;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_EQ(1u, actual_stream_devices_set->stream_devices.size());
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
+}
+
 TEST_F(ChromeScreenEnumeratorTest, MultipleScreens) {
   std::vector<aura::Window*> screens_list =
       GenerateScreensList(/*number_of_screens=*/6u);
@@ -101,28 +124,5 @@ TEST_F(ChromeScreenEnumeratorTest, MultipleScreens) {
   run_loop.Run();
 
   EXPECT_EQ(6u, actual_stream_devices_set->stream_devices.size());
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
-}
-
-TEST_F(ChromeScreenEnumeratorTest, SingleScreen) {
-  std::vector<aura::Window*> screens_list =
-      GenerateScreensList(/*number_of_screens=*/1u);
-  SetRootWindowsForTesting(&screens_list);
-
-  base::RunLoop run_loop;
-  blink::mojom::StreamDevicesSetPtr actual_stream_devices_set;
-  blink::mojom::MediaStreamRequestResult actual_result;
-  enumerator_->EnumerateScreens(
-      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
-      base::BindLambdaForTesting(
-          [&run_loop, &actual_stream_devices_set, &actual_result](
-              const blink::mojom::StreamDevicesSet& stream_devices_set,
-              blink::mojom::MediaStreamRequestResult result) {
-            actual_stream_devices_set = stream_devices_set.Clone();
-            actual_result = result;
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  EXPECT_EQ(1u, actual_stream_devices_set->stream_devices.size());
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, actual_result);
 }
