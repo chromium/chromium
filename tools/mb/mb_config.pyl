@@ -41,13 +41,13 @@
       'win64-chrome': 'official_goma_x64',
     },
     'chrome.pgo': {
-      'android-arm32-pgo': 'official_goma_android_arm32_pgo',
-      'android-arm64-pgo': 'official_goma_android_arm64_pgo',
-      'linux-pgo': 'official_goma_linux_pgo',
-      'mac-arm-pgo': 'official_goma_mac_arm_pgo',
-      'mac-pgo': 'official_goma_mac_pgo',
-      'win32-pgo': 'official_goma_x86_pgo',
-      'win64-pgo': 'official_goma_x64_pgo',
+      'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
+      'android-arm64-pgo': 'official_reclient_android_arm64_pgo',
+      'linux-pgo': 'official_reclient_linux_pgo',
+      'mac-arm-pgo': 'official_reclient_mac_arm_pgo',
+      'mac-pgo': 'official_reclient_mac_pgo',
+      'win32-pgo': 'official_reclient_x86_pgo',
+      'win64-pgo': 'official_reclient_x64_pgo',
     },
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
@@ -3321,8 +3321,37 @@
        'official', 'reclient',
     ],
 
+    'official_reclient_android_arm32_pgo': [
+      'official', 'reclient', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+    ],
+
+    'official_reclient_android_arm64_pgo': [
+      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+    ],
+
+
+    'official_reclient_linux_pgo': [
+      'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
     'official_reclient_mac_arm': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
+    ],
+
+    'official_reclient_mac_arm_pgo': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_mac_pgo': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_x64_pgo': [
+      'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_x86_pgo': [
+      'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'perfetto_release_bot_reclient': [
