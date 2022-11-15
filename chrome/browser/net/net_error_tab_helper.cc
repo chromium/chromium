@@ -279,8 +279,8 @@ void NetErrorTabHelper::RunNetworkDiagnosticsHelper(
   if (!CanShowNetworkDiagnosticsDialog(web_contents()))
     return;
 
-  if (network_diagnostics_receivers_.GetCurrentTargetFrame() !=
-      web_contents()->GetPrimaryMainFrame()) {
+  if (!network_diagnostics_receivers_.GetCurrentTargetFrame()
+           ->IsInPrimaryMainFrame()) {
     return;
   }
 
