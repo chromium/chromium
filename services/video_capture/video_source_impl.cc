@@ -83,9 +83,9 @@ void VideoSourceImpl::CreatePushSubscription(
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Stop |device_| when lose connection with VideoSourceImpl client.
-  if (device_)
-    device_->StopInProcess();
+  // We need to stop devices when VideoSource remote discarded with active
+  // subscription.
+  device_factory_->StopDeviceInProcess(device_id_);
 
   if (receivers_.empty()) {
     // Note: Invoking this callback may synchronously trigger the destruction of
@@ -121,8 +121,8 @@ void VideoSourceImpl::OnCreateDeviceResponse(
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-    device_ = info.device;
-    device_->StartInProcess(device_start_settings_, broadcaster_.GetWeakPtr());
+    info.device->StartInProcess(device_start_settings_,
+                                broadcaster_.GetWeakPtr());
     device_status_ = DeviceStatus::kStarted;
     if (push_subscriptions_.empty()) {
       StopDeviceAsynchronously();
@@ -130,7 +130,7 @@ void VideoSourceImpl::OnCreateDeviceResponse(
     }
     for (auto& entry : push_subscriptions_) {
       auto& subscription = entry.second;
-      subscription->SetDevice(device_);
+      subscription->SetDevice(info.device);
       subscription->OnDeviceStartSucceededWithSettings(device_start_settings_);
     }
     return;
@@ -191,7 +191,6 @@ void VideoSourceImpl::StopDeviceAsynchronously() {
   // Stop the device by closing the connection to it. Stopping is complete when
   // OnStopDeviceComplete() gets invoked.
   device_factory_->StopDeviceInProcess(device_id_);
-  device_ = nullptr;
   device_status_ = DeviceStatus::kStoppingAsynchronously;
 }
 

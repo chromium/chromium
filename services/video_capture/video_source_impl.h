@@ -82,7 +82,6 @@ class VideoSourceImpl : public mojom::VideoSource {
       push_subscriptions_;
   BroadcastingReceiver broadcaster_;
   DeviceStatus device_status_;
-  raw_ptr<Device> device_;
   media::VideoCaptureParams device_start_settings_;
   bool restart_device_once_when_stop_complete_;
 
