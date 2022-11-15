@@ -674,6 +674,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Backend.ClusterFinalizers.ThreadTime"
+    units="ms" expires_after="2023-03-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the time taken to run all cluster finalizers during a clustering pass,
+    which is performed on a background worker. This does not include any thread
+    hop or queuing delay. Logged when clusters have been calculated based on any
+    request to cluster visits, which could be triggered from several things,
+    including loading the journeys UI, putting a query in the journeys page,
+    etc...
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.ClusterProcessors.ThreadTime"
+    units="ms" expires_after="2023-03-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the time taken to run all cluster processors during a clustering pass,
+    which is performed on a background worker. This does not include any thread
+    hop or queuing delay. Logged when clusters have been calculated based on any
+    request to cluster visits, which could be triggered from several things,
+    including loading the journeys UI, putting a query in the journeys page,
+    etc...
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
     units="number visits" expires_after="2023-10-01">
   <owner>mcrouse@chromium.org</owner>
@@ -703,6 +733,21 @@ chromium-metrics-reviews@google.com.
     Logged when clusters have been calculated based on any request to cluster
     visits, which could be triggered from several things, including loading the
     journeys UI, putting a query in the journeys page, etc...
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.ContextClusterer.ThreadTime"
+    units="ms" expires_after="2023-03-26">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the time taken to run the initial context clustering pass, which is
+    performed on a background worker. This does not include any thread hop or
+    queuing delay. Logged when clusters have been calculated based on any
+    request to cluster visits, which could be triggered from several things,
+    including loading the journeys UI, putting a query in the journeys page,
+    etc...
   </summary>
 </histogram>
 
