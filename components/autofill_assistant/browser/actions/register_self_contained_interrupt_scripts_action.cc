@@ -8,10 +8,15 @@
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_precondition.h"
+#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/cup_factory.h"
 #include "components/autofill_assistant/browser/service/local_script_store.h"
 #include "components/autofill_assistant/browser/service/no_round_trip_service.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 
 namespace autofill_assistant {
 
@@ -75,12 +80,27 @@ void RegisterSelfContainedInterruptScriptsAction::InternalProcessAction(
     script->handle.path = supports_site_script.path();
     script->handle.interrupt = true;
 
+    ServerUrlFetcher server_url_fetcher(
+        ServerUrlFetcher::GetDefaultServerUrl());
+    if (!service_request_sender_to_inject_) {
+      service_request_sender_to_inject_ =
+          std::make_unique<ServiceRequestSenderImpl>(
+              delegate_->GetWebContents()->GetBrowserContext(),
+              delegate_->GetClient()->GetAccessTokenFetcher(),
+              std::make_unique<cup::CUPImplFactory>(),
+              std::make_unique<NativeURLLoaderFactory>(),
+              ApiKeyFetcher().GetAPIKey(delegate_->GetClient()->GetChannel()));
+    }
     delegate_->AddInterruptScript(
         std::move(script),
-        std::make_unique<NoRoundTripService>(std::make_unique<LocalScriptStore>(
-            std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::
-                            MatchInfo::RoutineScript>{routine},
-            /* domain = */ std::string(), supports_site_response)));
+        std::make_unique<NoRoundTripService>(
+            std::make_unique<LocalScriptStore>(
+                std::vector<GetNoRoundTripScriptsByHashPrefixResponseProto::
+                                MatchInfo::RoutineScript>{routine},
+                /* domain = */ std::string(), supports_site_response),
+            std::move(service_request_sender_to_inject_),
+            server_url_fetcher.GetReportProgressEndpoint(),
+            delegate_->GetClient()));
   }
 
   EndAction(ClientStatus(ACTION_APPLIED));

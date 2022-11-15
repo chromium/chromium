@@ -85,8 +85,14 @@ NoRoundTripService::NoRoundTripService(
       request_sender_(std::move(request_sender)) {}
 
 NoRoundTripService::NoRoundTripService(
-    std::unique_ptr<LocalScriptStore> script_store)
-    : client_(nullptr), script_store_(std::move(script_store)) {}
+    std::unique_ptr<LocalScriptStore> script_store,
+    std::unique_ptr<ServiceRequestSender> optional_request_sender,
+    const GURL& optional_progress_endpoint,
+    Client* optional_client)
+    : progress_endpoint_(optional_progress_endpoint),
+      client_(optional_client),
+      script_store_(std::move(script_store)),
+      request_sender_(std::move(optional_request_sender)) {}
 
 NoRoundTripService::~NoRoundTripService() = default;
 
@@ -141,6 +147,13 @@ void NoRoundTripService::GetScriptsForUrl(
     const GURL& url,
     const TriggerContext& trigger_context,
     ServiceRequestSender::ResponseCallback callback) {
+  if (!request_sender_ || !get_scripts_endpoint_.is_valid()) {
+    LOG(ERROR) << __func__
+               << " called but endpoint not supported in this config";
+    std::move(callback).Run(net::HTTP_METHOD_NOT_ALLOWED, "", {});
+    return;
+  }
+
   const std::string request =
       CreateGetNoRoundtripRequest(url, trigger_context.GetScriptParameters());
 
@@ -231,7 +244,10 @@ void NoRoundTripService::ReportProgress(
     const std::string& payload,
     ServiceRequestSender::ResponseCallback callback) {
   if (!client_ || !client_->GetMakeSearchesAndBrowsingBetterEnabled() ||
-      !client_->GetMetricsReportingEnabled()) {
+      !client_->GetMetricsReportingEnabled() || !request_sender_ ||
+      !progress_endpoint_.is_valid()) {
+    // Fail silently if ReportProgress is called but not supported.
+    std::move(callback).Run(net::HTTP_OK, "", {});
     return;
   }
   request_sender_->SendRequest(

@@ -232,6 +232,10 @@ bool Controller::MustUseBackendData() const {
   return client_->MustUseBackendData();
 }
 
+Client* Controller::GetClient() const {
+  return client_.get();
+}
+
 bool Controller::IsXmlSigned(const std::string& xml_string) const {
   return client_->IsXmlSigned(xml_string);
 }

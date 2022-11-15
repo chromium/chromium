@@ -139,6 +139,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowWarning() override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   bool MustUseBackendData() const override;
+  Client* GetClient() const override;
 
   // Checks if given XML is signed or not.
   bool IsXmlSigned(const std::string& xml_string) const override;

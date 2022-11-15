@@ -409,6 +409,47 @@ TEST_F(NoRoundTripServiceTest, GetUserDataFails) {
                            mock_response_callback_.Get());
 }
 
+TEST_F(NoRoundTripServiceTest,
+       ConstructorWithLocalScriptStoreSupportsReportProgress) {
+  auto* mock_request_sender_ptr = mock_request_sender_.get();
+  EXPECT_CALL(
+      *mock_request_sender_ptr,
+      OnSendRequest(GURL("https://example.com/reportProgress"), _, _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "some_response",
+                                   ServiceRequestSender::ResponseInfo{}));
+  NoRoundTripService service(std::make_unique<LocalScriptStore>(
+                                 routines_, domain_, supports_site_response_),
+                             std::move(mock_request_sender_),
+                             GURL("https://example.com/reportProgress"),
+                             &mock_client_);
+  ON_CALL(mock_client_, GetMetricsReportingEnabled).WillByDefault(Return(true));
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "some_response", _));
+  service.ReportProgress({}, {}, mock_response_callback_.Get());
+
+  // ReportProgress should fail silently / do nothing if not supported.
+  EXPECT_CALL(*mock_request_sender_ptr, OnSendRequest).Times(0);
+  EXPECT_CALL(mock_client_, GetMakeSearchesAndBrowsingBetterEnabled)
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, /* response= */ "", _));
+  service.ReportProgress({}, {}, mock_response_callback_.Get());
+}
+
+TEST_F(NoRoundTripServiceTest, GetScriptsFailsSafelyIfNotSupported) {
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_METHOD_NOT_ALLOWED, /* response= */ "", _));
+  GetService().GetScriptsForUrl(GURL("https://example.com"), {},
+                                mock_response_callback_.Get());
+}
+
+TEST_F(NoRoundTripServiceTest, ReportProgressFailsSilentlyIfNotSupported) {
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, /* response= */ "", _));
+  GetService().ReportProgress({}, {}, mock_response_callback_.Get());
+}
+
 }  // namespace
 
 }  // namespace autofill_assistant

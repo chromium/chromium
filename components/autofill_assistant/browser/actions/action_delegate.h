@@ -50,6 +50,7 @@ class UkmRecorder;
 namespace autofill_assistant {
 class Action;
 class BatchElementChecker;
+class Client;
 class ClientSettingsProto;
 class ClientStatus;
 class Details;
@@ -572,6 +573,9 @@ class ActionDelegate {
   // none. This is a way for nested actions to access their parent action.
   // Pointers should not be retained in any fashion.
   virtual const Action* GetCurrentRootAction() const = 0;
+
+  // Returns a pointer to the client.
+  virtual Client* GetClient() const = 0;
 
  protected:
   ActionDelegate() = default;

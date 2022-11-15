@@ -129,6 +129,8 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
     return roundtrip_network_stats_;
   }
 
+  Client* GetClient() const override;
+
  private:
   ClientSettings client_settings_;
   GURL current_url_;

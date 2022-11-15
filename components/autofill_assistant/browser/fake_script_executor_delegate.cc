@@ -197,4 +197,8 @@ void FakeScriptExecutorDelegate::OnActionsResponseReceived(
   roundtrip_network_stats_ = network_stats;
 }
 
+Client* FakeScriptExecutorDelegate::GetClient() const {
+  return nullptr;
+}
+
 }  // namespace autofill_assistant

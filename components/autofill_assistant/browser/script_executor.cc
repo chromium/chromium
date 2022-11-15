@@ -1274,4 +1274,8 @@ const Action* ScriptExecutor::GetCurrentRootAction() const {
   return current_action_;
 }
 
+Client* ScriptExecutor::GetClient() const {
+  return delegate_->GetClient();
+}
+
 }  // namespace autofill_assistant

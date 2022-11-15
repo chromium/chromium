@@ -5,10 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_REGISTER_SELF_CONTAINED_INTERRUPT_SCRIPTS_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_REGISTER_SELF_CONTAINED_INTERRUPT_SCRIPTS_ACTION_H_
 
+#include <memory>
 #include "components/autofill_assistant/browser/actions/action.h"
 
 namespace autofill_assistant {
-// Registers one or multiple self-contained interrupt scripts.
+class ServiceRequestSender;
+
+// Registers one or multiple self-contained interrupt scripts. Self-contained
+// interrupt scripts will never communicate with a backend to fetch scripts or
+// actions, but they are allowed to call the ReportProgress endpoint for MSBB
+// users.
 class RegisterSelfContainedInterruptScriptsAction : public Action {
  public:
   explicit RegisterSelfContainedInterruptScriptsAction(
@@ -22,11 +28,15 @@ class RegisterSelfContainedInterruptScriptsAction : public Action {
       const RegisterSelfContainedInterruptScriptsAction&) = delete;
 
  private:
+  friend class RegisterSelfContainedInterruptScriptsActionTest;
+
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void EndAction(const ClientStatus& status);
 
+  // Only for testing: a service request sender to inject.
+  std::unique_ptr<ServiceRequestSender> service_request_sender_to_inject_;
   ProcessActionCallback callback_;
 };
 

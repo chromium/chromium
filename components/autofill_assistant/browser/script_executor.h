@@ -309,6 +309,7 @@ class ScriptExecutor : public ActionDelegate,
   void AddInterruptScript(std::unique_ptr<Script> interrupt_script,
                           std::unique_ptr<Service> optional_service) override;
   const Action* GetCurrentRootAction() const override;
+  Client* GetClient() const override;
 
  private:
   // TODO(b/220079189): remove this friend declaration.

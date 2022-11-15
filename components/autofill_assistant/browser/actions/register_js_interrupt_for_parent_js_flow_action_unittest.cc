@@ -10,10 +10,15 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/actions/tell_action.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/test_util.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,6 +28,7 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::NiceMock;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -30,6 +36,15 @@ using ::testing::WithArg;
 
 class RegisterJsInterruptForParentJsFlowActionTest : public testing::Test {
  public:
+  void SetUp() override {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    ON_CALL(mock_action_delegate_, GetWebContents)
+        .WillByDefault(Return(web_contents_.get()));
+    ON_CALL(mock_action_delegate_, GetClient)
+        .WillByDefault(Return(&mock_client_));
+  }
+
   void Run() {
     ActionProto action_proto;
     *action_proto.mutable_register_js_interrupt_for_flow() = proto_;
@@ -39,7 +54,12 @@ class RegisterJsInterruptForParentJsFlowActionTest : public testing::Test {
   }
 
  protected:
-  MockActionDelegate mock_action_delegate_;
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  NiceMock<MockActionDelegate> mock_action_delegate_;
+  NiceMock<MockClient> mock_client_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   RegisterJsInterruptForParentJsFlow proto_;
 };

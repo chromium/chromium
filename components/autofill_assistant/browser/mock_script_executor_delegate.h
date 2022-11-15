@@ -26,6 +26,7 @@ class PasswordChangeSuccessTracker;
 }
 
 namespace autofill_assistant {
+class Client;
 
 class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
  public:
@@ -112,6 +113,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
       ExtractValuesFromSingleTagXml,
       const std::vector<std::string>(const std::string& xml_string,
                                      const std::vector<std::string>& keys));
+  MOCK_METHOD(Client*, GetClient, (), (const override));
 
  private:
   ClientSettings client_settings_;

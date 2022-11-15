@@ -36,6 +36,7 @@ class WebContents;
 
 namespace autofill_assistant {
 
+class Client;
 class TriggerContext;
 class UserModel;
 class WebController;
@@ -168,6 +169,9 @@ class ScriptExecutorDelegate {
   // Called when a new action response has been received. Used for metrics.
   virtual void OnActionsResponseReceived(
       const RoundtripNetworkStats& network_stats) = 0;
+
+  // Returns a pointer to the client.
+  virtual Client* GetClient() const = 0;
 
  protected:
   virtual ~ScriptExecutorDelegate() = default;
