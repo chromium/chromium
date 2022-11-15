@@ -388,7 +388,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //   1. IO thread, |ChildProcessImpl::BindReceiver()| (child_thread_impl.cc)
   //   2. IO thread ,|ContentClient::BindChildProcessInterface()|
   //   3. Main thread, |ChildThreadImpl::OnBindReceiver()| (virtual)
-  //   4. Possibly more stpes, depending on the ChildThreadImpl subclass.
+  //   4. Possibly more steps, depending on the ChildThreadImpl subclass.
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
   // Extracts any persistent-memory-allocator used for renderer metrics.
