@@ -619,8 +619,17 @@ bool GPUQueue::UploadContentToTexture(StaticBitmapImage* image,
     options.conversionMatrix = conversion_matrix.data();
   }
 
+  bool use_gpu_uploading = image->IsTextureBacked();
+
+// TODO(crbug.com/1309194): GPU-GPU copy on linux platform requires interop
+// supported. According to the bug, this change will be a long time task.
+// So disable GPU-GPU copy path on linux platform.
+#if BUILDFLAG(IS_LINUX)
+  use_gpu_uploading = false;
+#endif  // BUILDFLAG(IS_LINUX)
+
   // Handling GPU resource.
-  if (image->IsTextureBacked()) {
+  if (use_gpu_uploading) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromStaticBitmapImage(
             GetDawnControlClient(), device_->GetHandle(),
