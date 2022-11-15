@@ -2871,10 +2871,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
   console_observer.SetPattern(kIncognitoWarningPattern);
 
   // Filter out the main frame host of the currently active page.
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   console_observer.SetFilter(base::BindLambdaForTesting(
       [&](const content::WebContentsConsoleObserver::Message& message) {
-        return message.source_frame == rfh;
+        return message.source_frame->IsInPrimaryMainFrame();
       }));
 
   std::string script_result;
