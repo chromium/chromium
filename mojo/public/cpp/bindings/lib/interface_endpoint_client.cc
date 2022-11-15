@@ -913,6 +913,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
                   }
                 }
 
+                info->set_payload_size(message->payload_num_bytes());
+                info->set_data_num_bytes(message->data_num_bytes());
+
                 static const uint8_t* flow_enabled =
                     TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
                 if (!*flow_enabled)
