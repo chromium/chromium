@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.app.Activity;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -18,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -152,6 +157,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean mIsInitPending;
 
     private boolean mIsSecondaryTaskInitPending;
+    private boolean mHasPrimaryTasksSurfaceCreated;
 
     // Listeners used by the contained surfaces (e.g., Explore) to listen to the scroll changes on
     // the main scrollable container of the start surface.
@@ -292,25 +298,27 @@ public class StartSurfaceCoordinator implements StartSurface {
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
             createAndSetStartSurface(excludeQueryTiles);
+            mHasPrimaryTasksSurfaceCreated = true;
         }
 
         TabSwitcher.Controller controller =
                 mTabSwitcher != null ? mTabSwitcher.getController() : mTasksSurface.getController();
         Runnable initializeMVTilesRunnable =
-                mTasksSurface == null ? null : mTasksSurface::initializeMVTiles;
-        View logoContainerView = mTasksSurface == null
-                ? null
-                : mTasksSurface.getView().findViewById(R.id.logo_container);
+                mHasPrimaryTasksSurfaceCreated ? mTasksSurface::initializeMVTiles : null;
+        View logoContainerView = mHasPrimaryTasksSurfaceCreated
+                ? mTasksSurface.getView().findViewById(R.id.logo_container)
+                : null;
         ViewGroup feedPlaceholderParentView =
-                mTasksSurface == null ? null : mTasksSurface.getBodyViewContainer();
+                mHasPrimaryTasksSurfaceCreated ? mTasksSurface.getBodyViewContainer() : null;
         mStartSurfaceMediator = new StartSurfaceMediator(controller, containerView,
                 mTabModelSelector, mPropertyModel,
-                mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
+                mHasPrimaryTasksSurfaceCreated ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
                 this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView);
 
+        mayUpdateLayoutParams(ApiCompatibilityUtils.isInMultiWindowMode(mActivity));
         startSurfaceOneshotSupplier.set(this);
     }
 
@@ -705,12 +713,38 @@ public class StartSurfaceCoordinator implements StartSurface {
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
+        mTasksSurface.initHeaderDragListener();
+        mMultiWindowModeStateDispatcher.addObserver(
+                isInMultiWindowMode -> mayUpdateLayoutParams(isInMultiWindowMode));
 
         mTasksSurfacePropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(mPropertyModel,
                         new TasksSurfaceViewBinder.ViewHolder(
                                 mContainerView, mTasksSurface.getView(), mSwipeRefreshLayout),
                         TasksSurfaceViewBinder::bind);
+    }
+
+    private void mayUpdateLayoutParams(boolean isInMultiWindowMode) {
+        // Set the height of Start surface homepage's tasks_surface_body as wrap_content. We only
+        // update the tasks_surface_body in mTasksSurface since it's Start surface homepage while we
+        // don't change mSecondaryTasksSurface (grid tab switcher).
+        // If Feed placeholder is shown and we set body's height wrap_content, feed articles aren't
+        // rendered on emulator. Thus we need to add the check of whether the place holder is
+        // showing. See https://crbug.com/1208486.
+        if (!mHasPrimaryTasksSurfaceCreated || mStartSurfaceMediator.hasFeedPlaceholderShown()) {
+            return;
+        }
+
+        FrameLayout bodyViewLayout = (FrameLayout) mTasksSurface.getBodyViewContainer();
+        LayoutParams params = bodyViewLayout.getLayoutParams();
+        // Keeps the height to be "match_parent" in multiple window mode. When Feeds is disabled, it
+        // prevents the tasks_surface_body from scrolling above the toolbar and can't be scrolling
+        // down.
+        int heightToSet = isInMultiWindowMode ? MATCH_PARENT : WRAP_CONTENT;
+        if (params.height == heightToSet) return;
+
+        params.height = heightToSet;
+        bodyViewLayout.setLayoutParams(params);
     }
 
     private TabSwitcher.Controller initializeSecondaryTasksSurface() {
