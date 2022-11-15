@@ -1889,67 +1889,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cast.Sender.CastTimeRemainingPercentage" units="%"
-    expires_after="2021-07-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring. A new metrics,
-    &quot;Cast.Sender.Clank.CastTimeRemainingPercentage&quot; now collects the
-    same data but at a different location.
-  </obsolete>
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records the percentage of the video left at the time the remote playback is
-    stopped. This will be recorded when the playback is stopped by the user, or
-    when it's stopped by the cast device.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.Clank.CastTimeRemainingPercentage" units="count"
-    expires_after="2022-12-11">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records the percentage of the video left at the time the remote playback is
-    stopped. This will be recorded when the playback is stopped by the user, or
-    when it's stopped by the cast device. To reduce the number of empty buckets,
-    the result is rounded and a value of 1 means 10%.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.Clank.FullscreenControlsAction"
-    enum="MediaCommand" expires_after="2023-02-19">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Record each interaction with the fullscreen remote playback controls on
-    Clank.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.Clank.NotificationControlsAction"
-    enum="CastNotificationControls" expires_after="2023-04-23">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Record each interaction with the cast notification controls on Clank.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.Clank.SessionTimeWithoutMediaElementPercentage"
-    units="count" expires_after="2022-12-11">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records the ratio of the time the media element was detached from the remote
-    playback session to the total duration of the session (as from when the
-    element has been attached till when the session stopped or disconnected). To
-    reduce the number of empty buckets, the result is rounded and a value of 1
-    means 10%.
-  </summary>
-</histogram>
-
 <histogram name="Cast.Sender.DeviceType" enum="RemotePlaybackDeviceType"
     expires_after="2021-06-01">
   <obsolete>
@@ -2008,7 +1947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
-    enum="RemotePlaybackInitiationLocation" expires_after="2023-04-16">
+    enum="RemotePlaybackInitiationLocation" expires_after="2023-05-11">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

@@ -12,7 +12,6 @@ import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.FlingingController;
 import org.chromium.components.media_router.MediaRouteManager;
 import org.chromium.components.media_router.MediaRouteProvider;
-import org.chromium.components.media_router.MediaRouteUmaRecorder;
 import org.chromium.components.media_router.MediaSource;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.components.media_router.caf.CafBaseMediaRouteProvider;
@@ -44,14 +43,6 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
             String sourceId, String presentationId, String origin, int tabId, int nativeRequestId) {
         mManager.onJoinRouteRequestError(
                 "Remote playback doesn't support joining routes", nativeRequestId);
-    }
-
-    @Override
-    public void detachRoute(String routeId) {
-        super.detachRoute(routeId);
-        MediaRouteUmaRecorder.recordRemoteSessionTimeWithoutMediaElementPercentage(
-                mSessionController.getFlingingController().getApproximateCurrentTime(),
-                mSessionController.getFlingingController().getDuration());
     }
 
     @Override

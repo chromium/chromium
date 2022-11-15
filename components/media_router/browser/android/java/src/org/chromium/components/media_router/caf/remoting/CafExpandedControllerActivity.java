@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.mediarouter.app.MediaRouteButton;
 
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
-import org.chromium.components.media_router.MediaRouteUmaRecorder;
 import org.chromium.components.media_router.R;
 import org.chromium.components.media_router.caf.BaseSessionController;
 import org.chromium.third_party.android.media.MediaController;
@@ -48,8 +47,6 @@ public class CafExpandedControllerActivity
             if (!mSessionController.isConnected()) return;
 
             mSessionController.getSession().getRemoteMediaClient().play();
-            MediaRouteUmaRecorder.recordFullscreenControlsAction(
-                    MediaRouteUmaRecorder.FullScreenControls.RESUME);
         }
 
         @Override
@@ -57,8 +54,6 @@ public class CafExpandedControllerActivity
             if (!mSessionController.isConnected()) return;
 
             mSessionController.getSession().getRemoteMediaClient().pause();
-            MediaRouteUmaRecorder.recordFullscreenControlsAction(
-                    MediaRouteUmaRecorder.FullScreenControls.PAUSE);
         }
 
         @Override
@@ -78,8 +73,6 @@ public class CafExpandedControllerActivity
             if (!mSessionController.isConnected()) return;
 
             mSessionController.getSession().getRemoteMediaClient().seek(pos);
-            MediaRouteUmaRecorder.recordFullscreenControlsAction(
-                    MediaRouteUmaRecorder.FullScreenControls.SEEK);
         }
 
         @Override
