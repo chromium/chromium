@@ -164,7 +164,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
                                           const LocalFrameToken& frame_token,
                                           WebFrame* previous_web_frame,
                                           const FramePolicy&,
-                                          const WebString& name);
+                                          const WebString& name,
+                                          WebView* web_view);
 
   // Creates a new local child of this frame. Similar to the other methods that
   // create frames, the returned frame should be freed by calling Close() when

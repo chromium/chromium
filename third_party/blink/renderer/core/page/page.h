@@ -166,6 +166,13 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // TODO(npm): update the |page_scheduler_| directly in this method.
   void SetMainFrame(Frame*);
   Frame* MainFrame() const { return main_frame_; }
+
+  void SetPreviousMainFrameForLocalSwap(
+      LocalFrame* previous_main_frame_for_local_swap) {
+    previous_main_frame_for_local_swap_ = previous_main_frame_for_local_swap;
+  }
+  Frame* TakePreviousMainFrameForLocalSwap();
+
   // Escape hatch for existing code that assumes that the root frame is
   // always a LocalFrame. With OOPI, this is not always the case. Code that
   // depends on this will generally have to be rewritten to propagate any
@@ -429,7 +436,23 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // each other, thus keeping each other alive. The call to willBeDestroyed()
   // breaks this cycle, so the frame is still properly destroyed once no
   // longer needed.
+  // Note that the main frame can either be a LocalFrame or a RemoteFrame. When
+  // the main frame is a RemoteFrame, it's possible for the RemoteFrame to not
+  // be connected to any RenderFrameProxyHost on the browser side, if the Page
+  // is a new page created for a provisional main frame. In that case, the main
+  // frame is solely used as a placeholder to be swapped out by the provisional
+  // main frame later on.
+  // See comments in `AgentSchedulingGroup::CreateWebView()` for more details.
   Member<Frame> main_frame_;
+
+  // When a Page is created for a provisional main frame, which is intended to
+  // do a local main frame swap when its navigation commits, this will point to
+  // the previous Page's main frame. This is so that the provisional main frame
+  // can trigger the detach and "swap out" the previous Page's main frame. This
+  // is a WeakMember because the lifetime of this page and the previous Page
+  // should be independent. If the previous Page gets destroyed, the provisional
+  // Page can still exist (but the browser might trigger its deletion later on).
+  WeakMember<LocalFrame> previous_main_frame_for_local_swap_;
 
   Member<AgentGroupScheduler> agent_group_scheduler_;
   Member<PageAnimator> animator_;

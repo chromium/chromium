@@ -9310,6 +9310,80 @@ TEST_F(WebFrameSwapTest, SwapMainFrame) {
   EXPECT_EQ("hello", content);
 }
 
+TEST_F(WebFrameSwapTest, SwapMainFrameLocalToLocal) {
+  // Start with a WebView with a local main frame.
+  Frame* original_page_main_frame = WebFrame::ToCoreFrame(*MainFrame());
+  EXPECT_EQ(original_page_main_frame,
+            web_view_helper_.GetWebView()->GetPage()->MainFrame());
+
+  // Set up a new WebView with a placeholder remote frame and a provisional
+  // local frame, to do a local swap with the previous WebView.
+  frame_test_helpers::WebViewHelper new_view_helper;
+  new_view_helper.InitializePlaceholderRemote();
+  WebLocalFrame* provisional_frame =
+      new_view_helper.CreateProvisional(*new_view_helper.RemoteMainFrame());
+  new_view_helper.GetWebView()->GetPage()->SetPreviousMainFrameForLocalSwap(
+      DynamicTo<LocalFrame>(original_page_main_frame));
+  EXPECT_NE(web_view_helper_.GetWebView(), new_view_helper.GetWebView());
+  EXPECT_EQ(WebFrame::ToCoreFrame(*new_view_helper.RemoteMainFrame()),
+            new_view_helper.GetWebView()->GetPage()->MainFrame());
+
+  // Perform a cross-Page main frame swap. This should unload the previous
+  // Page's main LocalFrame, replacing it with a placeholder RemoteFrame. After
+  // that, the placeholder RemoteFrame in the new Page will be swapped out, and
+  // the new main LocalFrame will be swapped in.
+  To<LocalFrame>(WebFrame::ToCoreFrame(*provisional_frame))->SwapIn();
+
+  // The new WebView's main frame is now set to a new main LocalFrame.
+  EXPECT_EQ(WebFrame::ToCoreFrame(*provisional_frame),
+            new_view_helper.GetWebView()->GetPage()->MainFrame());
+
+  // The old WebView's main frame is now a placeholder RemoteFrame that is not
+  // detached.
+  EXPECT_NE(original_page_main_frame,
+            web_view_helper_.GetWebView()->GetPage()->MainFrame());
+  EXPECT_TRUE(original_page_main_frame->IsDetached());
+  EXPECT_TRUE(
+      web_view_helper_.GetWebView()->GetPage()->MainFrame()->IsRemoteFrame());
+}
+
+TEST_F(WebFrameSwapTest, DetachProvisionalLocalFrameAndPlaceholderRemoteFrame) {
+  // Start with a WebView with a local main frame.
+  Frame* original_page_main_frame = WebFrame::ToCoreFrame(*MainFrame());
+  EXPECT_EQ(original_page_main_frame,
+            web_view_helper_.GetWebView()->GetPage()->MainFrame());
+
+  // Set up a new WebView with a placeholder remote frame and a provisional
+  // local frame, that is set to do local swap with the previous WebView.
+  frame_test_helpers::WebViewHelper new_view_helper;
+  new_view_helper.InitializePlaceholderRemote();
+  WebRemoteFrameImpl* remote_frame = new_view_helper.RemoteMainFrame();
+  WebLocalFrameImpl* provisional_local_frame =
+      new_view_helper.CreateProvisional(*remote_frame);
+  new_view_helper.GetWebView()->GetPage()->SetPreviousMainFrameForLocalSwap(
+      DynamicTo<LocalFrame>(original_page_main_frame));
+  EXPECT_NE(web_view_helper_.GetWebView(), new_view_helper.GetWebView());
+  EXPECT_EQ(WebFrame::ToCoreFrame(*remote_frame),
+            new_view_helper.GetWebView()->GetPage()->MainFrame());
+
+  // Detach the new WebView's provisional local main frame before any swapping
+  // happens.
+  provisional_local_frame->Detach();
+  // The detachment should not affect the placeholder RemoteFrame, nor the
+  // previous page.
+  EXPECT_FALSE(
+      WebFrame::ToCoreFrame(*new_view_helper.RemoteMainFrame())->IsDetached());
+  EXPECT_FALSE(
+      WebFrame::ToCoreFrame(*web_view_helper_.LocalMainFrame())->IsDetached());
+
+  // Make sure that shutting down the new WebView does not affect the previous
+  // WebView.
+  new_view_helper.Reset();
+  // The detachment should not affect the previous page too.
+  EXPECT_FALSE(
+      WebFrame::ToCoreFrame(*web_view_helper_.LocalMainFrame())->IsDetached());
+}
+
 TEST_F(WebFrameSwapTest, SwapMainFrameWithPageScaleReset) {
   WebView()->SetDefaultPageScaleLimits(1, 2);
   WebView()->SetPageScaleFactor(1.25);

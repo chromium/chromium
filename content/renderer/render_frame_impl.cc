@@ -1558,6 +1558,7 @@ void RenderFrameImpl::CreateFrame(
         browser_interface_broker,
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
+    blink::WebView* web_view,
     const absl::optional<blink::FrameToken>& previous_frame_token,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     const absl::optional<blink::FrameToken>& parent_frame_token,
@@ -1573,12 +1574,11 @@ void RenderFrameImpl::CreateFrame(
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the `blink::WebView` and RenderFrame for it. The
   // second block uses that to make a RenderWidget, if needed.
-  blink::WebView* web_view = nullptr;
   RenderFrameImpl* render_frame = nullptr;
   blink::WebLocalFrame* web_frame = nullptr;
   if (!previous_frame_token) {
     // TODO(alexmos): This path is currently used only:
-    // 1) When recreating a RenderFrame after a crash.
+    // 1) When recreating a non-main RenderFrame after a crash.
     // 2) In tests that issue this IPC directly.
     // These two cases should be cleaned up to also pass a previous_frame_token,
     // which would allow removing this branch altogether.  See
@@ -1599,7 +1599,13 @@ void RenderFrameImpl::CreateFrame(
           blink::WebFrame::FromFrameToken(previous_sibling_frame_token.value());
     }
 
+    // `web_view` would only be set by the function caller when creating a
+    // provisional local main frame for a new WebView, which is handled in the
+    // other branch of this if clause. Meanwhile, this branch handles subframe
+    // creation case only, and we should use the parent's WebView in that case.
+    CHECK(!web_view);
     web_view = parent_web_frame->View();
+
     // Create the RenderFrame and WebLocalFrame, linking the two.
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
@@ -1632,10 +1638,21 @@ void RenderFrameImpl::CreateFrame(
     if (!previous_web_frame)
       return;
 
-    web_view = previous_web_frame->View();
     // This path is creating a local frame. It may or may not be a local root,
-    // depending if the frame's parent is local or remote. It may also be the
-    // main frame, as in the case where a navigation to the current process'
+    // depending on whether the frame's parent is local or remote. It may also
+    // be the main frame, which will be a provisional frame that can either
+    // replace a remote main frame in the same WebView or a local main frame in
+    // a different WebView.
+    if (web_view) {
+      // When a `web_view` is set by the caller, it must be for a provisional
+      // main frame that will do a local frame swap. In this case, the WebView
+      // must be different from the previous frame's WebView.
+      CHECK(!previous_web_frame->Parent());
+      CHECK_NE(web_view, previous_web_frame->View());
+    } else {
+      // When not set explicitly, reuse the previous frame's WebView.
+      web_view = previous_web_frame->View();
+    }
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
         std::move(browser_interface_broker),
@@ -1643,7 +1660,7 @@ void RenderFrameImpl::CreateFrame(
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(),
         frame_token, previous_web_frame, replicated_state->frame_policy,
-        WebString::FromUTF8(replicated_state->name));
+        WebString::FromUTF8(replicated_state->name), web_view);
     // The new |web_frame| is a main frame iff the previous frame was.
     DCHECK_EQ(!previous_web_frame->Parent(), !web_frame->Parent());
     // Clone the current unique name so web tests that log frame unique names

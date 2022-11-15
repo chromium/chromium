@@ -789,8 +789,43 @@ bool Frame::SwapImpl(
         frame_owner_element->SetEmbeddedContentView(new_local_frame->View());
       }
     } else {
-      Page* other_page = new_local_frame->GetPage();
-      other_page->SetMainFrame(new_local_frame);
+      Page* new_page = new_local_frame->GetPage();
+      if (page != new_page) {
+        // The new frame can only belong to a different Page when doing a main
+        // frame LocalFrame <-> LocalFrame swap, where we want to detach the
+        // LocalFrame of the old Page before swapping in the new provisional
+        // LocalFrame into the new Page.
+        CHECK(IsLocalFrame());
+        // At this point, the old Page's main LocalFrame had already been
+        // detached by the `Detach()` call above, and we should swap in a
+        // placeholder RemoteFrame to ensure the old Page still has a main frame
+        // until it gets deleted later on when its WebView gets deleted. Attach
+        // another placeholder RemoteFrame as the main frame of the old Page.
+        WebRemoteFrame* placeholder_remote_frame = WebRemoteFrame::Create(
+            mojom::blink::TreeScopeType::kDocument, RemoteFrameToken());
+        To<WebRemoteFrameImpl>(placeholder_remote_frame)
+            ->InitializeCoreFrame(
+                *page, /*owner=*/nullptr, /*parent=*/nullptr,
+                /*previous_sibling=*/nullptr, FrameInsertType::kInsertLater,
+                name, &window_agent_factory(), devtools_frame_token_,
+                mojo::NullAssociatedRemote(), mojo::NullAssociatedReceiver());
+        page->SetMainFrame(WebFrame::ToCoreFrame(*placeholder_remote_frame));
+
+        // On the new Page, we still have the placeholder main RemoteFrame,
+        // which needs to be detached before the new provisional LocalFrame can
+        // take its place as the new Page's main frame.
+        CHECK_NE(new_page->MainFrame(), this);
+        CHECK(new_page->MainFrame()->IsRemoteFrame());
+        CHECK(!DynamicTo<RemoteFrame>(new_page->MainFrame())
+                   ->IsRemoteFrameHostRemoteBound());
+        //  Trigger the detachment of the placeholder main RemoteFrame. Note
+        //  that we also use `FrameDetachType::kSwap` here instead of kRemove
+        //  here to avoid triggering destructive action on the new Page and the
+        //  provisional LocalFrame that will be swapped in (e.g. clearing the
+        //  opener, or detaching the main frame's provisional frame).
+        new_page->MainFrame()->Detach(FrameDetachType::kSwap);
+      }
+      new_page->SetMainFrame(new_local_frame);
       // This trace event is needed to detect the main frame of the
       // renderer in telemetry metrics. See crbug.com/692112#c11.
       TRACE_EVENT_INSTANT1("loading", "markAsMainFrame",

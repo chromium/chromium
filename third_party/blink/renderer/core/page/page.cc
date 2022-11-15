@@ -330,6 +330,12 @@ void Page::SetMainFrame(Frame* main_frame) {
   page_scheduler_->SetIsMainFrameLocal(main_frame->IsLocalFrame());
 }
 
+Frame* Page::TakePreviousMainFrameForLocalSwap() {
+  Frame* frame = previous_main_frame_for_local_swap_;
+  previous_main_frame_for_local_swap_ = nullptr;
+  return frame;
+}
+
 LocalFrame* Page::DeprecatedLocalMainFrame() const {
   return To<LocalFrame>(main_frame_.Get());
 }
@@ -944,6 +950,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(link_highlight_);
   visitor->Trace(spatial_navigation_controller_);
   visitor->Trace(main_frame_);
+  visitor->Trace(previous_main_frame_for_local_swap_);
   visitor->Trace(plugin_data_);
   visitor->Trace(validation_message_client_);
   visitor->Trace(plugins_changed_observers_);

@@ -474,6 +474,20 @@ bool RenderViewHostImpl::CreateRenderView(
     local_frame_params->subresource_loader_factories =
         main_rfh->CreateSubresourceLoaderFactoriesForInitialEmptyDocument();
 
+    if (is_speculative_ &&
+        frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
+        frame_tree_node->current_frame_host()->GetSiteInstance()->group() ==
+            &*site_instance_group_) {
+      // The speculative RenderViewHost has the same SiteInstanceGroup as the
+      // current RenderFrameHost. This means when the speculative
+      // RenderFrameHost commits, it must do a local RenderFrame swap with the
+      // previous RenderFrame. Pass down the frame token of the current
+      // RenderFrameHost, so that the speculative RenderFrame can find the right
+      // RenderFrame.
+      local_frame_params->previous_frame_token =
+          frame_tree_node->current_frame_host()->GetFrameToken();
+    }
+
     params->main_frame = mojom::CreateMainFrameUnion::NewLocalParams(
         std::move(local_frame_params));
   } else {

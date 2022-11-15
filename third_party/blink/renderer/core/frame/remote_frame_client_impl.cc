@@ -41,9 +41,10 @@ bool RemoteFrameClientImpl::InShadowTree() const {
 void RemoteFrameClientImpl::Detached(FrameDetachType type) {
   // We only notify the browser process when the frame is being detached for
   // removal, not after a swap.
-  if (type == FrameDetachType::kRemove)
+  if (type == FrameDetachType::kRemove &&
+      web_frame_->GetFrame()->IsRemoteFrameHostRemoteBound()) {
     web_frame_->GetFrame()->GetRemoteFrameHostRemote().Detach();
-
+  }
   web_frame_->Close();
 
   if (web_frame_->Parent()) {

@@ -160,6 +160,7 @@ class RenderFrameImplTest : public RenderViewTest {
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
         TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
+        /*web_view=*/nullptr,
         /*previous_frame_token=*/absl::nullopt,
         /*opener_frame_token=*/absl::nullopt,
         /*parent_frame_token=*/remote_child_token,

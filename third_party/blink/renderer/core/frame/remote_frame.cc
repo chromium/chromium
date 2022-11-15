@@ -478,6 +478,10 @@ void RemoteFrame::ForwardPostMessage(
                                                std::move(transferable_message));
 }
 
+bool RemoteFrame::IsRemoteFrameHostRemoteBound() {
+  return remote_frame_host_remote_.is_bound();
+}
+
 mojom::blink::RemoteFrameHost& RemoteFrame::GetRemoteFrameHostRemote() {
   return *remote_frame_host_remote_.get();
 }

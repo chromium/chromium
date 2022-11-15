@@ -21714,6 +21714,235 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+// Verifies that deletion of speculative RenderFrameHost due to navigation
+// cancellation doesn't crash.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DeleteSpeculativeRenderFrameHostDueToNavigationCancellation_MainFrame) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  // Navigate to the original page.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  if (ShouldCreateNewHostForAllFrames()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing main frame same-site navigation.");
+    // Main frame same-site navigation creates a speculative RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_a);
+    EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1;", url_a)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+
+    // Cancel the navigation. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  }
+
+  if (AreAllSitesIsolatedForTesting() || ShouldCreateNewHostForAllFrames()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing main frame cross-site navigation.");
+    // Main frame cross-site navigation creates a speculative RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_b);
+    EXPECT_TRUE(ExecJs(root, JsReplace("location.href = $1;", url_b)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+    // Cancel the navigation. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  }
+}
+
+// Same as above but for subframes.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DeleteSpeculativeRenderFrameHostDueToNavigationCancellation_Subframe) {
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  // Navigate to a page with an iframe.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child = root->child_at(0);
+
+  if (ShouldCreateNewHostForSameSiteSubframe()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing subframe same-site navigation.");
+    // Subframe same-site navigation creates a speculative RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_a);
+    EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1;", url_a)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(child->render_manager()->speculative_frame_host());
+    // Cancel the navigation. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    child->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    EXPECT_FALSE(child->render_manager()->speculative_frame_host());
+  }
+
+  if (AreAllSitesIsolatedForTesting() ||
+      ShouldCreateNewHostForSameSiteSubframe()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing subframe same-site navigation.");
+    // Subframe cross-site navigation creates a speculative RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_b);
+    EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1;", url_b)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(child->render_manager()->speculative_frame_host());
+    child->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+
+    // Cancel the navigation. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    EXPECT_FALSE(child->render_manager()->speculative_frame_host());
+  }
+}
+
+// Verifies that deletion of speculative RenderFrameHost due to deletion of
+// the frame it's committing in doesn't crash.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DeleteSpeculativeRenderFrameHostDueToFrameDeletion_MainFrame) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  // Navigate to the original page.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* original_root = contents()->GetPrimaryFrameTree().root();
+
+  if (ShouldCreateNewHostForAllFrames()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing main frame same-site navigation.");
+
+    // Open a new window.
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(original_root,
+                       "var w = window.open('" + main_url.spec() + "');"));
+    Shell* new_shell = new_shell_observer.GetShell();
+    ASSERT_NE(new_shell->web_contents(), shell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+    FrameTreeNode* new_window_root =
+        static_cast<WebContentsImpl*>(new_shell->web_contents())
+            ->GetPrimaryFrameTree()
+            .root();
+
+    // Main frame same-site navigation in the new window creates a speculative
+    // RenderFrameHost.
+    TestNavigationManager navigation_manager(new_shell->web_contents(), url_a);
+    EXPECT_TRUE(
+        ExecJs(new_window_root, JsReplace("location.href = $1;", url_a)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(new_window_root->render_manager()->speculative_frame_host());
+
+    // Close the window. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    EXPECT_TRUE(ExecJs(original_root, "w.close()"));
+    navigation_manager.WaitForNavigationFinished();
+    EXPECT_FALSE(navigation_manager.was_committed());
+  }
+
+  if (AreAllSitesIsolatedForTesting() || ShouldCreateNewHostForAllFrames()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing main frame cross-site navigation.");
+
+    // Open a new window.
+    ShellAddedObserver new_shell_observer;
+    EXPECT_TRUE(ExecJs(original_root,
+                       "var w = window.open('" + main_url.spec() + "');"));
+    Shell* new_shell = new_shell_observer.GetShell();
+    ASSERT_NE(new_shell->web_contents(), shell()->web_contents());
+    EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+    FrameTreeNode* new_window_root =
+        static_cast<WebContentsImpl*>(new_shell->web_contents())
+            ->GetPrimaryFrameTree()
+            .root();
+
+    // Main frame cross-site navigation in the new window creates a speculative
+    // RenderFrameHost.
+    TestNavigationManager navigation_manager(new_shell->web_contents(), url_b);
+    EXPECT_TRUE(
+        ExecJs(new_window_root, JsReplace("location.href = $1;", url_b)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(new_window_root->render_manager()->speculative_frame_host());
+
+    // Close the window. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    EXPECT_TRUE(ExecJs(original_root, "w.close()"));
+    navigation_manager.WaitForNavigationFinished();
+    EXPECT_FALSE(navigation_manager.was_committed());
+  }
+}
+
+// Same as above but for subframes.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DeleteSpeculativeRenderFrameHostDueToFrameDeletion_Subframe) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title3.html"));
+  // Navigate to the original page.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  if (ShouldCreateNewHostForSameSiteSubframe()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing subframe same-site navigation.");
+
+    {
+      // Create a new iframe.
+      LoadCommittedCapturer capturer(contents());
+      EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
+      capturer.Wait();
+    }
+
+    // Subframe same-site navigation in the new iframe creates a speculative
+    // RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_a);
+    EXPECT_TRUE(
+        ExecJs(root->child_at(0), JsReplace("location.href = $1;", url_a)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(root->child_at(0)->render_manager()->speculative_frame_host());
+
+    // Close the window. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    EXPECT_TRUE(
+        ExecJs(root, "document.getElementsByTagName('iframe')[0].remove()"));
+    navigation_manager.WaitForNavigationFinished();
+    EXPECT_FALSE(navigation_manager.was_committed());
+  }
+
+  if (AreAllSitesIsolatedForTesting() ||
+      ShouldCreateNewHostForSameSiteSubframe()) {
+    SCOPED_TRACE(testing::Message()
+                 << " Testing subframe cross-site navigation.");
+
+    {
+      // Create a new iframe.
+      LoadCommittedCapturer capturer(contents());
+      EXPECT_TRUE(ExecJs(root, JsReplace(kAddFrameWithSrcScript, main_url)));
+      capturer.Wait();
+    }
+
+    // Subframe cross-site navigation in the new iframe creates a speculative
+    // RenderFrameHost.
+    TestNavigationManager navigation_manager(contents(), url_b);
+    EXPECT_TRUE(
+        ExecJs(root->child_at(0), JsReplace("location.href = $1;", url_b)));
+    EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+    EXPECT_TRUE(root->child_at(0)->render_manager()->speculative_frame_host());
+
+    // Close the iframe. This should trigger the deletion of the
+    // speculative RenderFrameHost.
+    EXPECT_TRUE(
+        ExecJs(root, "document.getElementsByTagName('iframe')[0].remove()"));
+    navigation_manager.WaitForNavigationFinished();
+    EXPECT_FALSE(navigation_manager.was_committed());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,

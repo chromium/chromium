@@ -292,7 +292,6 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
     ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
   }
 
-  DCHECK(remote_frame_host && remote_frame_receiver);
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
       frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
       insert_type, GetRemoteFrameToken(), window_agent_factory, ancestor_widget,

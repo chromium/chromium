@@ -2048,10 +2048,14 @@ void WebViewImpl::DidAttachRemoteMainFrame(
         mojom::blink::RemoteMainFrameHostInterfaceBase> main_frame_host,
     CrossVariantMojoAssociatedReceiver<
         mojom::blink::RemoteMainFrameInterfaceBase> main_frame) {
-  DCHECK(main_frame_host);
-  DCHECK(main_frame);
   DCHECK(!MainFrameImpl());
   DCHECK(!local_main_frame_host_remote_);
+  // Note that we didn't DCHECK the `main_frame_host` and `main_frame`, because
+  // it's possible for those to be null, in case the remote main frame is a
+  // placeholder RemoteFrame that does not have any browser-side counterpart.
+  // This is possible when the WebView is created in preparation for a main
+  // frame LocalFrame <-> LocalFrame swap. See the comments in
+  // `AgentSchedulingGroup::CreateWebView()` for more details.
 
   RemoteFrame* remote_frame = DynamicTo<RemoteFrame>(GetPage()->MainFrame());
   remote_frame->WasAttachedAsRemoteMainFrame(std::move(main_frame));

@@ -60,6 +60,33 @@ static features::MBIMode GetMBIMode() {
              : features::MBIMode::kLegacy;
 }
 
+// Creates a main WebRemoteFrame for `web_view`.
+void CreateRemoteMainFrame(
+    const blink::RemoteFrameToken& frame_token,
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost>
+        remote_frame_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
+        remote_frame_receiver,
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteMainFrameHost>
+        remote_main_frame_host,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrame>
+        remote_main_frame_receiver,
+    base::UnguessableToken& devtools_main_frame_token,
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    blink::WebFrame* opener_frame,
+    blink::WebView* web_view) {
+  blink::WebRemoteFrame::CreateMainFrame(
+      web_view, frame_token, devtools_main_frame_token, opener_frame,
+      std::move(remote_frame_host), std::move(remote_frame_receiver),
+      std::move(replication_state));
+  // Root frame proxy has no ancestors to point to their RenderWidget.
+
+  // The WebRemoteFrame created here was already attached to the Page as its
+  // main frame, so we can call WebView's DidAttachRemoteMainFrame().
+  web_view->DidAttachRemoteMainFrame(std::move(remote_main_frame_host),
+                                     std::move(remote_main_frame_receiver));
+}
+
 // Blink inappropriately makes decisions if there is a WebViewClient set,
 // so currently we need to always create a WebViewClient.
 class SelfOwnedWebViewClient : public blink::WebViewClient {
@@ -293,33 +320,88 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);
 
-  if (local_main_frame) {
-    RenderFrameImpl::CreateMainFrame(
-        *this, web_view, opener_frame,
-        /*is_for_nested_main_frame=*/params->type !=
-            mojom::ViewWidgetType::kTopLevel,
-        /*is_for_scalable_page=*/params->type !=
-            mojom::ViewWidgetType::kFencedFrame,
-        std::move(params->replication_state), params->devtools_main_frame_token,
-        std::move(params->main_frame->get_local_params()));
+  if (!local_main_frame) {
+    // Create a remote main frame.
+    auto remote_params = std::move(params->main_frame->get_remote_params());
+    CreateRemoteMainFrame(
+        remote_params->token,
+        std::move(remote_params->frame_interfaces->frame_host),
+        std::move(remote_params->frame_interfaces->frame_receiver),
+        std::move(remote_params->main_frame_interfaces->main_frame_host),
+        std::move(remote_params->main_frame_interfaces->main_frame),
+        params->devtools_main_frame_token, std::move(params->replication_state),
+        opener_frame, web_view);
   } else {
-    blink::WebRemoteFrame::CreateMainFrame(
-        web_view, params->main_frame->get_remote_params()->token,
-        params->devtools_main_frame_token, opener_frame,
-        std::move(params->main_frame->get_remote_params()
-                      ->frame_interfaces->frame_host),
-        std::move(params->main_frame->get_remote_params()
-                      ->frame_interfaces->frame_receiver),
-        std::move(params->replication_state));
-    // Root frame proxy has no ancestors to point to their RenderWidget.
+    auto local_params = std::move(params->main_frame->get_local_params());
 
-    // The WebRemoteFrame created here was already attached to the Page as its
-    // main frame, so we can call WebView's DidAttachRemoteMainFrame().
-    web_view->DidAttachRemoteMainFrame(
-        std::move(params->main_frame->get_remote_params()
-                      ->main_frame_interfaces->main_frame_host),
-        std::move(params->main_frame->get_remote_params()
-                      ->main_frame_interfaces->main_frame));
+    if (!local_params->previous_frame_token) {
+      // Create a local non-provisional main frame.
+      RenderFrameImpl::CreateMainFrame(
+          *this, web_view, opener_frame,
+          /*is_for_nested_main_frame=*/params->type !=
+              mojom::ViewWidgetType::kTopLevel,
+          /*is_for_scalable_page=*/params->type !=
+              mojom::ViewWidgetType::kFencedFrame,
+          std::move(params->replication_state),
+          params->devtools_main_frame_token, std::move(local_params));
+    } else {
+      // Create a local provisional main frame and a placeholder RemoteFrame as
+      // a placeholder main frame for the new WebView. This can only happen for
+      // provisional frames for main frame navigations that will do a
+      // LocalFrame <-> LocalFrame swap with the previous main frame, which
+      // belongs to a different WebView and blink::Page. For other main
+      // frame navigations, the WebView will be created with a real main
+      // RemoteFrame, and the provisional frame will be created separately
+      // through AgentSchedulingGroup::CreateFrame().
+      //
+      // The new provisional main frame will use the newly created WebView,
+      // but will not be attached to the blink::Page associated with the WebView
+      // yet. Instead, a placeholder main RemoteFrame that is not connected to
+      // any RenderFrameProxyHost on the browser side will be the placeholder
+      // main frame for the new WebView's blink::Page. This is needed because
+      // the WebView needs to have a main frame, but the provisional LocalFrame
+      // can't be attached to the Page yet (as it is still provisional), so
+      // the placeholder main RemoteFrame is used instead. We can't create a
+      // real RemoteFrame, because the navigation is a same-SiteInstanceGroup
+      // navigation (as the previous Page's LocalFrame is in the same renderer
+      // process as the new provisional LocalFrame), which means we can't have a
+      // RenderFrameProxyHost on the browser side for the RemoteFrame to point
+      // to (because the main frame shouldn't have a proxy for the
+      // SiteInstanceGroup it's currently on).
+      //
+      // The provisional LocalFrame will be appointed as the provisional frame
+      // for the placeholder RemoteFrame, while also retaining a pointer to the
+      // previous page's local main frame. When the provisional frame commits,
+      // both the placeholder main RemoteFrame and the previous page's local
+      // frame will be swapped out, and the provisional frame will be swapped in
+      // to become the main frame for the new WebView's blink::Page.
+
+      // Create the placeholder RemoteFrame.
+      CreateRemoteMainFrame(
+          blink::RemoteFrameToken(), mojo::NullAssociatedRemote(),
+          mojo::NullAssociatedReceiver(), mojo::NullAssociatedRemote(),
+          mojo::NullAssociatedReceiver(), params->devtools_main_frame_token,
+          params->replication_state.Clone(), opener_frame, web_view);
+
+      // Create the provisional main frame.
+      RenderFrameImpl::CreateFrame(
+          *this, local_params->frame_token, local_params->routing_id,
+          std::move(local_params->frame),
+          std::move(local_params->interface_broker),
+          std::move(local_params->associated_interface_provider_remote),
+          web_view, local_params->previous_frame_token,
+          params->opener_frame_token,
+          /*parent_frame_token=*/absl::nullopt,
+          /*previous_sibling_frame_token=*/absl::nullopt,
+          params->devtools_main_frame_token,
+          blink::mojom::TreeScopeType::kDocument,
+          std::move(params->replication_state),
+          std::move(local_params->widget_params),
+          /*frame_owner_properties=*/nullptr,
+          local_params->is_on_initial_empty_document,
+          local_params->document_token,
+          std::move(local_params->policy_container));
+    }
   }
 
   // TODO(davidben): Move this state from Blink into content.
@@ -337,10 +419,11 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       *this, params->frame_token, params->routing_id, std::move(params->frame),
       std::move(params->interface_broker),
       std::move(params->associated_interface_provider_remote),
-      params->previous_frame_token, params->opener_frame_token,
-      params->parent_frame_token, params->previous_sibling_frame_token,
-      params->devtools_frame_token, params->tree_scope_type,
-      std::move(params->replication_state), std::move(params->widget_params),
+      /*web_view=*/nullptr, params->previous_frame_token,
+      params->opener_frame_token, params->parent_frame_token,
+      params->previous_sibling_frame_token, params->devtools_frame_token,
+      params->tree_scope_type, std::move(params->replication_state),
+      std::move(params->widget_params),
       std::move(params->frame_owner_properties),
       params->is_on_initial_empty_document, params->document_token,
       std::move(params->policy_container));

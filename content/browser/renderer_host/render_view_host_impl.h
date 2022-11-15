@@ -466,6 +466,12 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   bool registered_with_frame_tree_ = false;
 
+  // Whether the RenderViewHost is a speculative RenderViewHost or not.
+  // Currently this is never set, as the feature is not implemented yet.
+  // TODO(https://crbug.com/1336305): Actually set this value for speculative
+  // RenderViewHosts.
+  bool is_speculative_ = false;
+
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
 };
 

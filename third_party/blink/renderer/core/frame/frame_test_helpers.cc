@@ -482,6 +482,12 @@ WebViewImpl* WebViewHelper::InitializeAndLoad(
   return GetWebView();
 }
 
+WebViewImpl* WebViewHelper::InitializePlaceholderRemote() {
+  return InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
+      nullptr, nullptr, nullptr, mojo::NullAssociatedRemote(),
+      mojo::NullAssociatedReceiver());
+}
+
 WebViewImpl* WebViewHelper::InitializeRemote(
     scoped_refptr<SecurityOrigin> security_origin,
     WebViewClient* web_view_client) {
@@ -492,6 +498,22 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     WebFrame* opener,
     scoped_refptr<SecurityOrigin> security_origin,
     WebViewClient* web_view_client) {
+  return InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
+      opener, security_origin, web_view_client,
+      CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
+          mojo::NullAssociatedRemote()),
+      mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
+          .BindNewEndpointAndPassDedicatedReceiver());
+}
+
+WebViewImpl*
+WebViewHelper::InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
+    WebFrame* opener,
+    scoped_refptr<SecurityOrigin> security_origin,
+    WebViewClient* web_view_client,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+        remote_frame_host,
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver) {
   Reset();
 
   InitializeWebView(web_view_client, nullptr, absl::nullopt);
@@ -504,10 +526,7 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
   WebRemoteFrameImpl::CreateMainFrame(
       web_view_, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), opener,
-      CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
-          mojo::NullAssociatedRemote()),
-      mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
-          .BindNewEndpointAndPassDedicatedReceiver(),
+      std::move(remote_frame_host), std::move(receiver),
       std::move(replication_state));
   return web_view_;
 }
@@ -554,7 +573,7 @@ WebLocalFrameImpl* WebViewHelper::CreateProvisional(
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebLocalFrameImpl>(WebLocalFrame::CreateProvisional(
       client, nullptr, LocalFrameToken(), &old_frame, FramePolicy(),
-      WebFrame::ToCoreFrame(old_frame)->Tree().GetName()));
+      WebFrame::ToCoreFrame(old_frame)->Tree().GetName(), old_frame.View()));
   client->Bind(frame, std::move(owned_client));
 
   // Create a widget, if necessary.

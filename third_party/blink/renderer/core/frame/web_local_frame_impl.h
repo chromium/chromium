@@ -430,9 +430,10 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebLocalFrameClient*,
       InterfaceRegistry*,
       const LocalFrameToken& frame_token,
-      WebFrame*,
+      WebFrame* previous_frame,
       const FramePolicy&,
-      const WebString& name);
+      const WebString& name,
+      WebView* web_view);
 
   WebLocalFrameImpl(base::PassKey<WebLocalFrameImpl>,
                     mojom::blink::TreeScopeType,

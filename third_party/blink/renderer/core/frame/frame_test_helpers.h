@@ -361,17 +361,36 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient* = nullptr,
       void (*update_settings_func)(WebSettings*) = nullptr);
 
+  // Creates and initializes the WebView with a main WebRemoteFrame, but doesn't
+  // bind the RemoteFrame to anything, to simulate the "placeholder RemoteFrame"
+  // case, where a RemoteFrame is created explicitly without a browser-side
+  // counterpart. See the comments in `AgentSchedulingGroup::CreateWebView()`
+  // for more details.
+  WebViewImpl* InitializePlaceholderRemote();
+
   // Same as InitializeRemoteWithOpener(), but always sets the opener to null.
   WebViewImpl* InitializeRemote(scoped_refptr<SecurityOrigin> = nullptr,
                                 WebViewClient* = nullptr);
 
-  // Creates and initializes the WebView with a main WebRemoteFrame. Passing
-  // nullptr as the SecurityOrigin results in a frame with a unique security
-  // origin.
+  // Same as InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(), but
+  // always sets the opener to null and sets the associated remote & receivers
+  // to a stub implementation (instead of not binding anything like
+  // `InitializePlaceholderRemote()`).
   WebViewImpl* InitializeRemoteWithOpener(
       WebFrame* opener,
       scoped_refptr<SecurityOrigin> = nullptr,
       WebViewClient* = nullptr);
+
+  // Creates and initializes the WebView with a main WebRemoteFrame. Passing
+  // nullptr as the SecurityOrigin results in a frame with a unique security
+  // origin.
+  WebViewImpl* InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
+      WebFrame* opener,
+      scoped_refptr<SecurityOrigin>,
+      WebViewClient*,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
 
   // Helper for creating a local child frame of a remote parent frame.
   WebLocalFrameImpl* CreateLocalChild(
