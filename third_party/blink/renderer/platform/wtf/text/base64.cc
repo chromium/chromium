@@ -121,6 +121,15 @@ void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
   }
 }
 
+// https://infra.spec.whatwg.org/#ascii-whitespace
+// Matches the definition of IsHTMLSpace in html_parser_idioms.h.
+template <typename CharType>
+bool IsAsciiWhitespace(CharType character) {
+  return character <= ' ' &&
+         (character == ' ' || character == '\n' || character == '\t' ||
+          character == '\r' || character == '\f');
+}
+
 }  // namespace
 
 String Base64Encode(base::span<const uint8_t> data) {
@@ -149,12 +158,10 @@ void Base64Encode(base::span<const uint8_t> data, Vector<char>& out) {
 }
 
 template <typename T>
-static inline bool Base64DecodeInternal(
-    const T* data,
-    unsigned length,
-    Vector<char>& out,
-    CharacterMatchFunctionPtr should_ignore_character,
-    Base64DecodePolicy policy) {
+static inline bool Base64DecodeInternal(const T* data,
+                                        unsigned length,
+                                        Vector<char>& out,
+                                        Base64DecodePolicy policy) {
   out.clear();
   if (!length)
     return true;
@@ -169,7 +176,7 @@ static inline bool Base64DecodeInternal(
     if (ch == '=') {
       ++equals_sign_count;
       // There should never be more than 2 padding characters.
-      if (policy == kBase64ValidatePadding && equals_sign_count > 2) {
+      if (policy == Base64DecodePolicy::kForgiving && equals_sign_count > 2) {
         had_error = true;
         break;
       }
@@ -180,7 +187,8 @@ static inline bool Base64DecodeInternal(
         break;
       }
       out[out_length++] = kBase64DecMap[ch];
-    } else if (!should_ignore_character || !should_ignore_character(ch)) {
+    } else if (policy == Base64DecodePolicy::kNoPaddingValidation ||
+               !IsAsciiWhitespace(ch)) {
       had_error = true;
       break;
     }
@@ -197,8 +205,8 @@ static inline bool Base64DecodeInternal(
 
   // There should be no padding if length is a multiple of 4.
   // We use (outLength + equalsSignCount) instead of length because we don't
-  // want to account for ignored characters.
-  if (policy == kBase64ValidatePadding && equals_sign_count &&
+  // want to account for ignored ascii whitespace.
+  if (policy == Base64DecodePolicy::kForgiving && equals_sign_count &&
       (out_length + equals_sign_count) % 4)
     return false;
 
@@ -236,33 +244,25 @@ static inline bool Base64DecodeInternal(
   return true;
 }
 
-bool Base64Decode(const char* data, unsigned length, Vector<char>& out) {
-  return Base64DecodeInternal<LChar>(
-      reinterpret_cast<const LChar*>(data), length, out,
-      /*should_ignore_character=*/nullptr, kBase64DoNotValidatePadding);
-}
-
-bool Base64Decode(const String& in,
+bool Base64Decode(const StringView& in,
                   Vector<char>& out,
-                  CharacterMatchFunctionPtr should_ignore_character,
                   Base64DecodePolicy policy) {
   if (in.empty())
-    return Base64DecodeInternal<LChar>(nullptr, 0, out, should_ignore_character,
-                                       policy);
-  if (in.Is8Bit())
+    return Base64DecodeInternal<LChar>(nullptr, 0, out, policy);
+
+  if (in.Is8Bit()) {
     return Base64DecodeInternal<LChar>(in.Characters8(), in.length(), out,
-                                       should_ignore_character, policy);
+                                       policy);
+  }
   return Base64DecodeInternal<UChar>(in.Characters16(), in.length(), out,
-                                     should_ignore_character, policy);
+                                     policy);
 }
 
 bool Base64UnpaddedURLDecode(const String& in, Vector<char>& out) {
   if (in.Contains('+') || in.Contains('/') || in.Contains('='))
     return false;
 
-  return Base64Decode(NormalizeToBase64(in), out,
-                      /*should_ignore_character=*/nullptr,
-                      kBase64DoNotValidatePadding);
+  return Base64Decode(NormalizeToBase64(in), out);
 }
 
 String Base64URLEncode(const char* data, unsigned length) {

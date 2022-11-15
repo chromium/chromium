@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
-#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -134,8 +133,7 @@ String WindowOrWorkerGlobalScope::atob(EventTarget&,
     return String();
   }
   Vector<char> out;
-  if (!Base64Decode(encoded_string, out, IsHTMLSpace<UChar>,
-                    kBase64ValidatePadding)) {
+  if (!Base64Decode(encoded_string, out, Base64DecodePolicy::kForgiving)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidCharacterError,
         "The string to be decoded is not correctly encoded.");
