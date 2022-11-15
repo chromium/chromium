@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -854,23 +855,23 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
   // The element will have a fixed size as well.
   const gfx::Size element_size(350, 100);
 
-  int most_left_x_position = 416;
-  int most_right_x_position = 666;
+  int most_left_x_position =
+      bubble_bounds.x() + BubbleBorder::kVisibleArrowBuffer;
+  int most_right_x_position = bubble_bounds.right() -
+                              BubbleBorder::kVisibleArrowBuffer -
+                              BubbleBorder::kVisibleArrowRadius * 2;
   // The y position of an arrow at the upper edge of the bubble.
-  // Note that insets need to be taken into account and that the arrow is
-  // actually located above the visible edge.
-  int upper_arrow_y_position = 600;
+  int upper_arrow_y_position = bubble_bounds.y();
   // The y position of an arrow at the lower edge of the bubble.
-  int lower_arrow_y_position = 791;
-  // The horizontal center position of the element, corrected by the spatial
-  // extension of the arrow.
-  int horizontal_element_center = 546;
+  int lower_arrow_y_position =
+      bubble_bounds.bottom() - BubbleBorder::kVisibleArrowLength;
 
   struct TestCase {
     gfx::Point element_origin;
     BubbleBorder::Arrow supplied_arrow;
     gfx::Point expected_arrow_position;
     bool expected_arrow_visibility_and_return_value;
+    gfx::Rect expected_bubble_bounds;
   } test_cases[]{
       // First are using the following scenario:
       //
@@ -892,15 +893,18 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
        // The bubble is located above the upper edge. Note that
        // insets need to be taken into account.
        {most_left_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{380, 200},
        BubbleBorder::Arrow::TOP_CENTER,
        // The arrow points to the horizontal center of the element.
        // Note that the spatial extension of the arrow has to be
        // taken into account. The bubble is located above the upper
        // edge. Note that insets need to be taken into account.
-       {horizontal_element_center, upper_arrow_y_position},
-       true},
+       {380 + element_size.width() / 2 - BubbleBorder::kVisibleArrowRadius,
+        upper_arrow_y_position},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{380, 200},
        BubbleBorder::Arrow::TOP_RIGHT,
        // The arrow points to the horizontal center of the element.
@@ -908,7 +912,8 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
        // taken into account. The bubble is located above the upper
        // edge. Note that insets need to be taken into account.
        {most_right_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       // The following tests are using a bubble that is highly displaced from
       // the
       // element:
@@ -929,15 +934,18 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
       {{750, 200},
        BubbleBorder::Arrow::TOP_LEFT,
        {most_right_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{750, 200},
        BubbleBorder::Arrow::TOP_CENTER,
        {most_right_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{750, 200},
        BubbleBorder::Arrow::TOP_RIGHT,
        {most_right_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       // And the reverse scenario:
       //
       //  y=200    -----------------
@@ -956,53 +964,66 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
       {{0, 200},
        BubbleBorder::Arrow::TOP_LEFT,
        {most_left_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{0, 200},
        BubbleBorder::Arrow::TOP_CENTER,
        {most_left_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{0, 200},
        BubbleBorder::Arrow::TOP_RIGHT,
        {most_left_x_position, upper_arrow_y_position},
-       true},
+       true,
+       bubble_bounds + gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       // The following tests use a BOTTOM arrow. This should only replace the
       // upper_arrow_y_position with the lower_arrow_y_position in all tests.
       {{380, 200},
        BubbleBorder::Arrow::BOTTOM_LEFT,
        {most_left_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{380, 200},
        BubbleBorder::Arrow::BOTTOM_CENTER,
-       {horizontal_element_center, lower_arrow_y_position},
-       true},
+       {380 + element_size.width() / 2 - BubbleBorder::kVisibleArrowRadius,
+        lower_arrow_y_position},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{380, 200},
        BubbleBorder::Arrow::BOTTOM_RIGHT,
        {most_right_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{750, 200},
        BubbleBorder::Arrow::BOTTOM_LEFT,
        {most_right_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{750, 200},
        BubbleBorder::Arrow::BOTTOM_CENTER,
        {most_right_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{750, 200},
        BubbleBorder::Arrow::BOTTOM_RIGHT,
        {most_right_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{0, 200},
        BubbleBorder::Arrow::BOTTOM_LEFT,
        {most_left_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{0, 200},
        BubbleBorder::Arrow::BOTTOM_CENTER,
        {most_left_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       {{0, 200},
        BubbleBorder::Arrow::BOTTOM_RIGHT,
        {most_left_x_position, lower_arrow_y_position},
-       true},
+       true,
+       bubble_bounds - gfx::Vector2d(0, BubbleBorder::kVisibleArrowLength)},
       // Now, the horizontal arrow scenario is tested
       //  y=600                            -----------
       //  y=650    -----------------       |         |
@@ -1013,14 +1034,54 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
       //                                   | x=400
       // The arrow is always located on the right side to point towards the
       // vertical center of the element.
-      {{0, 650}, BubbleBorder::Arrow::LEFT_TOP, {400, 691}, true},
-      {{0, 650}, BubbleBorder::Arrow::LEFT_CENTER, {400, 691}, true},
-      {{0, 650}, BubbleBorder::Arrow::LEFT_BOTTOM, {400, 691}, true},
+      {{0, 650},
+       BubbleBorder::Arrow::LEFT_TOP,
+       {bubble_bounds.x(),
+        650 + element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       bubble_bounds + gfx::Vector2d(BubbleBorder::kVisibleArrowLength, 0)},
+      {{0, 650},
+       BubbleBorder::Arrow::LEFT_CENTER,
+       {bubble_bounds.x(),
+        650 + element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       bubble_bounds + gfx::Vector2d(BubbleBorder::kVisibleArrowLength, 0)},
+      {{0, 650},
+       BubbleBorder::Arrow::LEFT_BOTTOM,
+       {bubble_bounds.x(),
+        650 + element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       bubble_bounds + gfx::Vector2d(BubbleBorder::kVisibleArrowLength, 0)},
       // With the element moved to the top of the screen, the arrow should
-      // always be placed at the most top position on the bubble.
-      {{0, 0}, BubbleBorder::Arrow::LEFT_TOP, {400, 614}, true},
-      {{0, 0}, BubbleBorder::Arrow::LEFT_CENTER, {400, 614}, true},
-      {{0, 0}, BubbleBorder::Arrow::LEFT_BOTTOM, {400, 614}, true},
+      // always be placed at the most top position on the bubble, the bubble
+      // position is adjusted as well
+      {{0, 0},
+       BubbleBorder::Arrow::LEFT_TOP,
+       {bubble_bounds.x(),
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       {bubble_bounds.x() + BubbleBorder::kVisibleArrowLength,
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius -
+            BubbleBorder::kVisibleArrowBuffer,
+        bubble_bounds.width(), bubble_bounds.height()}},
+      {{0, 0},
+       BubbleBorder::Arrow::LEFT_CENTER,
+       {bubble_bounds.x(),
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       {bubble_bounds.x() + BubbleBorder::kVisibleArrowLength,
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius -
+            BubbleBorder::kVisibleArrowBuffer,
+        bubble_bounds.width(), bubble_bounds.height()}},
+      {{0, 0},
+       BubbleBorder::Arrow::LEFT_BOTTOM,
+       {bubble_bounds.x(),
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius},
+       true,
+       {bubble_bounds.x() + BubbleBorder::kVisibleArrowLength,
+        element_size.height() / 2 - BubbleBorder::kVisibleArrowRadius -
+            BubbleBorder::kVisibleArrowBuffer,
+        bubble_bounds.width(), bubble_bounds.height()}},
   };
 
   for (auto test_case : test_cases) {
@@ -1028,21 +1089,21 @@ TEST_F(BubbleBorderTest, AddArrowToBubbleCornerAndPointTowardsAnchor) {
     views::BubbleBorder border(BubbleBorder::Arrow::NONE,
                                BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
-    EXPECT_EQ(
-        border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-            {test_case.element_origin, element_size}, true, bubble_bounds_copy),
-        test_case.expected_arrow_visibility_and_return_value);
+    EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
+                  {test_case.element_origin, element_size}, bubble_bounds_copy),
+              test_case.expected_arrow_visibility_and_return_value);
     EXPECT_EQ(border.visible_arrow(),
               test_case.expected_arrow_visibility_and_return_value);
     EXPECT_EQ(border.GetVisibibleArrowRectForTesting().origin(),
               test_case.expected_arrow_position);
     EXPECT_EQ(GetVisibleArrowSize(test_case.supplied_arrow),
               border.GetVisibibleArrowRectForTesting().size());
+    EXPECT_EQ(test_case.expected_bubble_bounds, bubble_bounds_copy);
   }
 }
 
 TEST_F(BubbleBorderTest,
-       AddArrowToBubbleCornerAndPointTowardsAnchorWithInsufficientSpave) {
+       AddArrowToBubbleCornerAndPointTowardsAnchorWithInsufficientSpace) {
   // This bubble bound has uinsufficient width to place an arrow on the top or
   // the bottom.
   const gfx::Rect insufficient_width_bubble_bounds(0, 0, 10, 200);
@@ -1077,7 +1138,7 @@ TEST_F(BubbleBorderTest,
                                BubbleBorder::STANDARD_SHADOW);
     border.set_arrow(test_case.supplied_arrow);
     EXPECT_EQ(border.AddArrowToBubbleCornerAndPointTowardsAnchor(
-                  element_bounds, true, test_case.bubble_bounds),
+                  element_bounds, test_case.bubble_bounds),
               test_case.expected_arrow_visibility_and_return_value);
   }
 }

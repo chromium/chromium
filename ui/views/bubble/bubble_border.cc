@@ -521,21 +521,12 @@ gfx::Size BubbleBorder::GetSizeForContentsSize(
 
 bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     const gfx::Rect& anchor_rect,
-    bool move_bubble_to_add_arrow,
     gfx::Rect& popup_bounds) {
-  // The visible arrow must be set to true to get the right insets for the
-  // subsequent calculations.
-  set_visible_arrow(true);
-
   // This function should only be called for a visible arrow.
   DCHECK(arrow_ != Arrow::NONE && arrow_ != Arrow::FLOAT);
 
   // The total size of the arrow in its normal direction.
   const int kVisibleArrowDiamater = 2 * kVisibleArrowRadius;
-  // The minimum distance the arrow needs to have from the edge of the bubble in
-  // normal direction.
-  const int kArrowEdgeSpacing = kVisibleArrowRadius;
-  const gfx::Insets insets = GetInsets();
 
   // To store the resulting x and y position of the arrow.
   int x_position, y_position;
@@ -554,15 +545,13 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
                    : anchor_rect.x());
 
     // The most left position for the arrow is the left edge of the bubble
-    // plus the inset and the minimum spacing of the arrow from the edge.
-    int leftmost_position_on_bubble =
-        popup_bounds.x() + insets.left() + kArrowEdgeSpacing;
+    // plus the minimum spacing of the arrow from the edge.
+    int leftmost_position_on_bubble = popup_bounds.x() + kVisibleArrowBuffer;
 
-    // Analogous, the most right position is the right side minus the inset,
-    // the diameter of the arrow and the spacing of the arrow from the edge.
-    int rightmost_position_on_bubble = popup_bounds.right() - insets.right() -
-                                       kVisibleArrowDiamater -
-                                       kArrowEdgeSpacing;
+    // Analogous, the most right position is the right side minus the diameter
+    // of the arrow and the spacing of the arrow from the edge.
+    int rightmost_position_on_bubble =
+        popup_bounds.right() - kVisibleArrowDiamater - kVisibleArrowBuffer;
 
     // If the right-most position is smaller than the left-most position, the
     // bubble's width is not sufficient to add an arrow.
@@ -579,23 +568,39 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     // Calculate the y position of the arrow to be either on top of below the
     // bubble.
     y_position = (int{arrow_} & ArrowMask::BOTTOM)
-                     ? popup_bounds.bottom() - insets.bottom()
-                     : popup_bounds.y() + insets.top() - kVisibleArrowLength;
+                     ? popup_bounds.bottom()
+                     : popup_bounds.y() - kVisibleArrowLength;
   } else {
+    // Adjust y position of the popup to keep the arrow pointing exactly in
+    // the middle of the anchor element, still respecting
+    // the |kVisibleArrowBuffer| restrictions.
+    int popup_y_upper_bound = anchor_rect.CenterPoint().y() -
+                              (kVisibleArrowRadius + kVisibleArrowBuffer);
+    int popup_y_lower_bound = anchor_rect.CenterPoint().y() +
+                              (kVisibleArrowRadius + kVisibleArrowBuffer) -
+                              popup_bounds.height();
+
+    // The popup height is not enough to accommodate the arrow.
+    if (popup_y_upper_bound < popup_y_lower_bound) {
+      set_visible_arrow(false);
+      return false;
+    }
+
+    int popup_y_adjusted =
+        base::clamp(popup_bounds.y(), popup_y_lower_bound, popup_y_upper_bound);
+    popup_bounds.set_y(popup_y_adjusted);
+
     // For an horizontal arrow, the x position is either the left or the right
-    // edge of the bubble, taking the inset of the bubble and the length of the
-    // arrow into account.
+    // edge of the bubble, taking the length of the arrow into account.
     x_position = (int{arrow_} & ArrowMask::RIGHT)
-                     ? popup_bounds.right() - insets.right()
-                     : popup_bounds.x() + insets.left() - kVisibleArrowLength;
+                     ? popup_bounds.right()
+                     : popup_bounds.x() - kVisibleArrowLength;
 
     // Calculate the top- and bottom-most position for the bubble.
-    int topmost_position_on_bubble =
-        popup_bounds.y() + insets.top() + kArrowEdgeSpacing;
+    int topmost_position_on_bubble = popup_bounds.y() + kVisibleArrowBuffer;
 
-    int bottommost_position_on_bubble = popup_bounds.bottom() -
-                                        insets.bottom() - kArrowEdgeSpacing -
-                                        kVisibleArrowDiamater;
+    int bottommost_position_on_bubble =
+        popup_bounds.bottom() - kVisibleArrowDiamater - kVisibleArrowBuffer;
 
     // If the top-most position is below the bottom-most position, the bubble
     // has not enough height to place an arrow.
@@ -616,11 +621,16 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
   visible_arrow_rect_.set_size(GetVisibleArrowSize(arrow_));
   visible_arrow_rect_.set_origin({x_position, y_position});
 
-  if (move_bubble_to_add_arrow) {
-    popup_bounds.set_origin(
-        popup_bounds.origin() +
-        GetContentsBoundsOffsetToPlaceVisibleArrow(arrow_, false));
-  }
+  // The arrow is positioned around the popup, but the popup is still in its
+  // original position and the arrow may overlap the anchor element. To make
+  // the whole tandem visually pointing to the anchor it must be shifted
+  // in the opposite direction.
+  gfx::Vector2d popup_offset =
+      GetContentsBoundsOffsetToPlaceVisibleArrow(arrow_, false);
+  popup_bounds.set_origin(popup_bounds.origin() + popup_offset);
+  visible_arrow_rect_.set_origin(visible_arrow_rect_.origin() + popup_offset);
+
+  set_visible_arrow(true);
   return true;
 }
 

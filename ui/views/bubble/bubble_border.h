@@ -242,15 +242,13 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // significant direction, the arrow is placed at the most extreme allowed
   // position that is closest to the targeted point.
   //
-  // If |move_bubble_to_add_arrow| is true, the |bubble_bounds| are displaced to
-  // account for the size of the arrow.
+  // Note that |bubble_bounds| can be slightly shifted to accommodate appended
+  // arrow and make the whole popup visialy pointing to the anchor element.
   //
   // Returns false if the arrow cannot be added due to missing space on the
   // bubble border.
-  bool AddArrowToBubbleCornerAndPointTowardsAnchor(
-      const gfx::Rect& anchor_rect,
-      bool move_bubble_to_add_arrow,
-      gfx::Rect& bubble_bounds);
+  bool AddArrowToBubbleCornerAndPointTowardsAnchor(const gfx::Rect& anchor_rect,
+                                                   gfx::Rect& bubble_bounds);
 
   // Returns a constant reference to the |visible_arrow_rect_| for teseting
   // purposes.
