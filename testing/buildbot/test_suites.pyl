@@ -510,17 +510,6 @@
           'shards': 20,
         },
       },
-      'webview_instrumentation_test_apk_persistent_shell': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'ci_only': True,
-        'test': 'webview_instrumentation_test_apk',
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards': 9,
-        },
-      },
     },
 
     'chrome_public_tests': {
