@@ -2,51 +2,36 @@
 
 <div class="content-area custom-scrollbar">
   <div class="header">
-    <h2>Lorem ipsum Consent</h2>
+    <h2>$i18n{m1ConsentTitle}</h2>
   </div>
   <div class="section cr-secondary-text">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium
-    pulvinar metus non mollis. Quisque placerat eget nisl sit amet
-    facilisis.
+    $i18n{m1ConsentDescription1}
   </div>
   <div class="section cr-secondary-text">
-    Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius non
-    purus vitae, imperdiet porttitor elit. Integer et libero id metus
-    egestas consequat non a ipsum.
+    $i18n{m1ConsentDescription2}
   </div>
   <div class="section cr-secondary-text">
-    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
-    elementum ut venenatis ornare, consequat ac turpis.
-  </div>
-  <div class="section cr-secondary-text">
-    Proin sed purus vestibulum velit convallis suscipit. Aenean aliquam ut
-    velit eget dapibus. Vestibulum orci risus, consectetur non odio
-    vulputate, mattis dignissim purus. Cras id tempor mi.
+    $i18n{m1ConsentDescription3}
   </div>
   <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
-    title="Vestibulum orci risus, consectetur">
-    <div><b>Esed purus vestibulum velit convalli</b></div>
+    title="$i18n{m1ConsentLearnMoreExpandLabel}">
+    <div><b>$i18n{m1ConsentLearnMoreHeading}</b></div>
       <ul class="cr-secondary-text">
-        <li><b>Nulla in tortor:</b> a ligula scelerisque laoreet. Sed sem velit,
-          varius non purus vitae, imperdiet porttitor elit. </li>
-        <li><b>Consectetur adipiscing elit:</b> Duis pretium
-          pulvinar metus non mollis</li>
-        <li><b>Sed purus vestibulum:</b> velit convallis suscipit. Aenean
-          aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non
-          odio vulputate, mattis dignissim purus. Cras id tempor mi.</li>
+        <li>$i18n{m1ConsentLearnMoreBullet1}</li>
+        <li>$i18n{m1ConsentLearnMoreBullet2}</li>
+        <li>$i18n{m1ConsentLearnMoreBullet3}</li>
       </ul>
-      <div class="cr-secondary-text">Esed purus vestibulum velit convalli</div>
+      <div class="cr-secondary-text">$i18n{m1ConsentLearnMoreLink}</div>
   </privacy-sandbox-dialog-learn-more>
   <div class="section cr-secondary-text">
-    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
-    elementum ut venenatis ornare, consequat ac turpis.
+    $i18n{m1ConsentDescription4}
   </div>
 </div>
 <div class="buttons-container">
   <cr-button id="declineButton" on-click="onConsentDeclined_">
-    No
+    $i18n{m1ConsentDeclineButton}
   </cr-button>
   <cr-button id="confirmButton" on-click="onConsentAccepted_">
-    Yes
+    $i18n{m1ConsentAcceptButton}
   </cr-button>
 </div>

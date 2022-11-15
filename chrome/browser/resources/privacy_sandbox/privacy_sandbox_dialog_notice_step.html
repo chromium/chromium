@@ -2,51 +2,37 @@
 
 <div class="content-area custom-scrollbar">
   <div class="header">
-    <h2>Lorem ipsum Notice</h2>
+    <h2>$i18n{m1NoticeEeaTitle}</h2>
   </div>
   <div class="section cr-secondary-text">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium
-    pulvinar metus non mollis. Quisque placerat eget nisl sit amet
-    facilisis.
+    $i18n{m1NoticeEeaDescription1}
   </div>
-  <div class="section cr-secondary-text">
-    Nulla in tortor a ligula scelerisque laoreet. Sed sem velit, varius
-    non purus vitae, imperdiet porttitor elit. Integer et libero id metus
-    egestas consequat non a ipsum.
-  </div>
-  <div class="section cr-secondary-text">
-    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
-    elementum ut venenatis ornare, consequat ac turpis.
-  </div>
-  <div class="section cr-secondary-text">
-    Proin sed purus vestibulum velit convallis suscipit. Aenean aliquam
-    ut velit eget dapibus. Vestibulum orci risus, consectetur non odio
-    vulputate, mattis dignissim purus. Cras id tempor mi.
-  </div>
+  <ul class="cr-secondary-text">
+    <li>$i18n{m1NoticeEeaBullet1}</li>
+    <li>$i18n{m1NoticeEeaBullet2}</li>
+  </ul>
   <privacy-sandbox-dialog-learn-more expanded="{{expanded_}}"
-    title="Vestibulum orci risus, consectetur">
-    <div><b>Esed purus vestibulum velit convalli</b></div>
-      <ul class="cr-secondary-text">
-        <li><b>Nulla in tortor:</b> a ligula scelerisque laoreet. Sed sem velit,
-          varius non purus vitae, imperdiet porttitor elit. </li>
-        <li><b>Consectetur adipiscing elit:</b> Duis pretium
-          pulvinar metus non mollis</li>
-        <li><b>Sed purus vestibulum:</b> velit convallis suscipit. Aenean
-          aliquam ut velit eget dapibus. Vestibulum orci risus, consectetur non
-          odio vulputate, mattis dignissim purus. Cras id tempor mi.</li>
-      </ul>
-      <div class="cr-secondary-text">Esed purus vestibulum velit convalli</div>
+    title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
+    <div><b>$i18n{m1NoticeEeaLearnMoreHeading1}</b></div>
+    <div class="cr-secondary-text">
+      $i18n{m1NoticeEeaLearnMoreDescription}
+    </div>
+    <div><b>$i18n{m1NoticeEeaLearnMoreHeading2}</b></div>
+    <ul class="cr-secondary-text">
+      <li>$i18n{m1NoticeEeaLearnMoreBullet1}</li>
+      <li>$i18n{m1NoticeEeaLearnMoreBullet2}</li>
+      <li>$i18n{m1NoticeEeaLearnMoreBullet3}</li>
+    </ul>
   </privacy-sandbox-dialog-learn-more>
   <div class="section cr-secondary-text">
-    Vestibulum pretium placerat justo vel suscipit. Quisque urna arcu,
-    elementum ut venenatis ornare, consequat ac turpis.
+    $i18n{m1NoticeEeaDescription2}
   </div>
 </div>
 <div class="buttons-container">
   <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
-    Settings
+    $i18n{m1NoticeEeaSettingsButton}
   </cr-button>
   <cr-button id="ackButton" on-click="onNoticeAcknowledge">
-    Ok
+    $i18n{m1NoticeEeaAckButton}
   </cr-button>
 </div>
