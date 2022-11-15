@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/rtc_event_log_output.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/pc/media_session.h"
 #include "third_party/webrtc/pc/session_description.h"
 
@@ -1085,6 +1086,9 @@ bool RTCPeerConnectionHandler::Initialize(
   configuration_.crypto_options->srtp.enable_encrypted_rtp_header_extensions =
       blink::Platform::Current()->IsWebRtcSrtpEncryptedHeadersEnabled();
   configuration_.enable_implicit_rollback = true;
+
+  // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
+  configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);
 
   // Copy all the relevant constraints into `config`.
   CopyConstraintsIntoRtcConfiguration(context, media_constraints,
