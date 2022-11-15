@@ -541,13 +541,9 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
     double bpp) {
-  if (visual_size == 0u &&
-      base::FeatureList::IsEnabled(
-          features::kIncludeInitiallyInvisibleImagesInLCP)) {
-    // We currently initially ignore images that are initially invisible, even
-    // if they later become visible. This is done as an optimization, to reduce
-    // LCP calculation costs. Note that this results in correctness issues:
-    // https://crbug.com/1249622
+  // Don't process the image yet if it is invisible, as it may later become
+  // visible, and potentially eligible to be an LCP candidate.
+  if (visual_size == 0u) {
     return false;
   }
   recorded_images_.insert(record_id);

@@ -760,11 +760,8 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
-  // If IncludeInitiallyInvisibleImagesInLCP is enabled, then the
-  // out-of-viewport image will not have been recorded yet.
-  bool record_invisible_images = !base::FeatureList::IsEnabled(
-      features::kIncludeInitiallyInvisibleImagesInLCP);
-  EXPECT_EQ(ContainerTotalSize(), record_invisible_images ? 2u : 1u);
+  // The out-of-viewport image will not have been recorded yet.
+  EXPECT_EQ(ContainerTotalSize(), 1u);
 
   GetDocument().body()->RemoveChild(GetDocument().getElementById("parent"));
   EXPECT_EQ(ContainerTotalSize(), 0u);

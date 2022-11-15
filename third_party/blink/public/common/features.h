@@ -465,14 +465,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCORSErrorsIssueOnly);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDelayLowPriorityRequestsAccordingToNetworkState);
 
-// When enabled, this turns off an LCP calculation optimization that's ignoring
-// initially invisible images, and resulting in LCP correctness issues. See
-// https://crbug.com/1249622
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIncludeInitiallyInvisibleImagesInLCP);
-
-// When enabled, this includes SVG background images in LCP calculation.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIncludeBackgroundSVGInLCP);
-
 // Number of the requests that can be handled in the tight mode.
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;

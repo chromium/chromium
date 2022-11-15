@@ -1065,14 +1065,6 @@ BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIncludeInitiallyInvisibleImagesInLCP,
-             "IncludeInitiallyInvisibleImagesInLCP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIncludeBackgroundSVGInLCP,
-             "IncludeBackgroundSVGInLCP",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
     &kDelayLowPriorityRequestsAccordingToNetworkState,
     "MaxNumOfThrottleableRequestsInTightMode", 5};

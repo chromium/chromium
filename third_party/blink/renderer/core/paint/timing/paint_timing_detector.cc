@@ -62,11 +62,6 @@ bool IsBackgroundImageContentful(const LayoutObject& object,
       object.IsDocumentElement()) {
     return false;
   }
-
-  DCHECK(!image.IsSVGImage());
-  if (!base::FeatureList::IsEnabled(features::kIncludeBackgroundSVGInLCP) &&
-      image.IsSVGImageForContainer())
-    return false;
   return true;
 }
 
