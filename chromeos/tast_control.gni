@@ -258,7 +258,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1366112
   "crostini.ResizeInstallation.stable",
 
-
   # https://crbug.com/1368586
   "u2fd.WebauthnUsingPassword.tpm1",
   "u2fd.WebauthnUsingPassword.tpm1_lacros",
@@ -298,9 +297,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1361163
   "lacros.AudioPinnedStream.play",
-
-  # b/257865249
-  "policy.*",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
