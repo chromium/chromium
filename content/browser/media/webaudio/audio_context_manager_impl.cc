@@ -91,12 +91,9 @@ void AudioContextManagerImpl::RecordAudibleTime(base::TimeDelta audible_time) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   DCHECK(ukm_recorder);
 
-  // TODO(danakj): SetIsMainFrame(render_frame_host().IsInPrimaryMainFrame()) is
-  // simpler.
   ukm::builders::Media_WebAudio_AudioContext_AudibleTime(
       render_frame_host().GetPageUkmSourceId())
-      .SetIsMainFrame(WebContents::FromRenderFrameHost(&render_frame_host())
-                          ->GetPrimaryMainFrame() == &render_frame_host())
+      .SetIsMainFrame(render_frame_host().IsInPrimaryMainFrame())
       .SetAudibleTime(GetBucketedTimeInMilliseconds(audible_time))
       .Record(ukm_recorder);
 }
