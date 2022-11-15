@@ -458,8 +458,7 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kAvoidUnnecessaryBeforeUnloadCheckPostTask},
-      {features::kAvoidUnnecessaryBeforeUnloadCheckSync});
+      {}, {features::kAvoidUnnecessaryBeforeUnloadCheckSync});
   FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
@@ -480,30 +479,6 @@ TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   EXPECT_FALSE(contents()
                    ->GetPrimaryMainFrame()
                    ->is_waiting_for_beforeunload_completion());
-}
-
-// Verifies BeforeUnloadNotSentToRenderer() is sent to renderer.
-TEST_F(RenderFrameHostImplTest, BeforeUnloadSentToRenderer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
-  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
-  auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL("https://example.com/simple.html"), contents());
-  simulator->set_block_invoking_before_unload_completed_callback(true);
-  simulator->Start();
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-  // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
-  contents()->GetPrimaryMainFrame()->FlushLocalFrameMessages();
-  local_frame.FlushMessages();
-  EXPECT_TRUE(local_frame.was_before_unload_called());
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-  // Needed to avoid DCHECK in mojo if callback is not run.
-  local_frame.RunBeforeUnloadCallback();
 }
 
 class LoadingStateChangedDelegate : public WebContentsDelegate {
@@ -836,9 +811,7 @@ TEST_F(RenderFrameHostImplTest,
        NoBeforeUnloadCheckForBrowserInitiatedSyncTakesPrecedence) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kAvoidUnnecessaryBeforeUnloadCheckSync,
-       features::kAvoidUnnecessaryBeforeUnloadCheckPostTask},
-      {});
+      {features::kAvoidUnnecessaryBeforeUnloadCheckSync}, {});
   contents()->GetController().LoadURLWithParams(
       NavigationController::LoadURLParams(
           GURL("https://example.com/navigation.html")));

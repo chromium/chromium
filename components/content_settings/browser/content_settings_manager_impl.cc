@@ -108,17 +108,6 @@ void OnContentBlockedOnUI(int render_process_id,
                                               render_frame_id, type);
 }
 
-// We may or may not be on the UI thread depending on whether the
-// NavigationThreadingOptimizations feature is enabled.
-// TODO(https://crbug.com/1187753): Clean this up once the feature is
-// shipped and the code path is removed.
-void RunOrPostTaskOnUI(const base::Location& location, base::OnceClosure task) {
-  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
-    std::move(task).Run();
-  else
-    content::GetUIThreadTaskRunner({})->PostTask(location, std::move(task));
-}
-
 }  // namespace
 
 ContentSettingsManagerImpl::~ContentSettingsManagerImpl() = default;
@@ -130,24 +119,15 @@ void ContentSettingsManagerImpl::Create(
         receiver,
     std::unique_ptr<Delegate> delegate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto create = base::BindOnce(
-      &ContentSettingsManagerImpl::CreateOnThread, render_process_host->GetID(),
-      std::move(receiver),
-      delegate->GetCookieSettings(render_process_host->GetBrowserContext()),
-      std::move(delegate));
-  if (base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    if (base::FeatureList::IsEnabled(features::kThreadingOptimizationsOnIO)) {
-      content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
-                                                   std::move(create));
-    } else {
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_BLOCKING})
-          ->PostTask(FROM_HERE, std::move(create));
-    }
-  } else {
-    std::move(create).Run();
-  }
+  base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContentSettingsManagerImpl::CreateOnThread,
+                         render_process_host->GetID(), std::move(receiver),
+                         delegate->GetCookieSettings(
+                             render_process_host->GetBrowserContext()),
+                         std::move(delegate)));
 }
 
 void ContentSettingsManagerImpl::Clone(
@@ -178,7 +158,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
     return;
   }
 
-  RunOrPostTaskOnUI(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NotifyStorageAccess, render_process_id_, render_frame_id,
                      storage_type, url, top_frame_origin, allowed));
@@ -189,9 +169,9 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
 void ContentSettingsManagerImpl::OnContentBlocked(int32_t render_frame_id,
                                                   ContentSettingsType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RunOrPostTaskOnUI(FROM_HERE,
-                    base::BindOnce(&OnContentBlockedOnUI, render_process_id_,
-                                   render_frame_id, type));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OnContentBlockedOnUI, render_process_id_,
+                                render_frame_id, type));
 }
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(

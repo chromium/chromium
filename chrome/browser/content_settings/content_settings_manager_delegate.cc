@@ -55,21 +55,9 @@ void OnFileSystemAccessedInGuestView(int render_process_id,
       url, allowed, std::move(continuation));
 }
 
-// TODO(crbug.com/1187753): Simplify this once NavigationThreadingOptimizations
-// is launched.
-void RunOrPostTaskOnSequence(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(bool)> callback,
-    bool result) {
-  if (task_runner->RunsTasksInCurrentSequence()) {
-    DCHECK(!base::FeatureList::IsEnabled(
-        features::kNavigationThreadingOptimizations));
-    std::move(callback).Run(result);
-    return;
-  }
-
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kNavigationThreadingOptimizations));
+void PostTaskOnSequence(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                        base::OnceCallback<void(bool)> callback,
+                        bool result) {
   task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 #endif
@@ -99,20 +87,14 @@ bool ContentSettingsManagerDelegate::AllowStorageAccess(
                           StorageType::FILE_SYSTEM &&
       extensions::WebViewRendererState::GetInstance()->IsGuest(
           render_process_id)) {
-    base::OnceClosure task = base::BindOnce(
-        &OnFileSystemAccessedInGuestView, render_process_id, render_frame_id,
-        url, allowed,
-        base::BindOnce(&RunOrPostTaskOnSequence,
-                       base::SequencedTaskRunner::GetCurrentDefault(),
-                       std::move(*callback)));
-    // We may or may not be on the UI thread depending on whether the
-    // NavigationThreadingOptimizations feature is enabled.
-    // TODO(https://crbug.com/1187753): Clean this up once the feature is
-    // shipped and the code path is removed.
-    if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
-      std::move(task).Run();
-    else
-      content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &OnFileSystemAccessedInGuestView, render_process_id,
+            render_frame_id, url, allowed,
+            base::BindOnce(&PostTaskOnSequence,
+                           base::SequencedTaskRunner::GetCurrentDefault(),
+                           std::move(*callback))));
 
     return true;
   }

@@ -34,12 +34,9 @@ void PageSpecificContentSettingsDelegate::InitializeRenderer(
   process->GetChannel()->GetRemoteAssociatedInterface(&rc_interface);
   mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager;
-  if (base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    content_settings::ContentSettingsManagerImpl::Create(
-        process, content_settings_manager.InitWithNewPipeAndPassReceiver(),
-        std::make_unique<ContentSettingsManagerDelegate>());
-  }
+  content_settings::ContentSettingsManagerImpl::Create(
+      process, content_settings_manager.InitWithNewPipeAndPassReceiver(),
+      std::make_unique<ContentSettingsManagerDelegate>());
   rc_interface->SetInitialConfiguration(std::move(content_settings_manager));
 }
 

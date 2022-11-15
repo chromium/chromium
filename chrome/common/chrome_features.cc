@@ -396,15 +396,6 @@ BASE_FEATURE(kEarlyLibraryLoad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Under this flag Java bootstrap (aka startup) tasks that are run before native
-// initialization will not be specially prioritized by being posted at the front
-// of the Looper's queue.
-BASE_FEATURE(kElidePrioritizationOfPreNativeBootstrapTasks,
-             "ElidePrioritizationOfPreNativeBootstrapTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enable the restricted web APIs for high-trusted apps.
 BASE_FEATURE(kEnableRestrictedWebApis,
              "EnableRestrictedWebApis",

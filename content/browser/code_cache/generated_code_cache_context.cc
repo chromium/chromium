@@ -41,17 +41,8 @@ GeneratedCodeCacheContext::GetTaskRunner(
 GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    if (base::FeatureList::IsEnabled(features::kThreadingOptimizationsOnIO)) {
-      task_runner_ = GetIOThreadTaskRunner({});
-    } else {
-      task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_BLOCKING});
-    }
-  } else {
-    task_runner_ = GetUIThreadTaskRunner({});
-  }
+  task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::USER_BLOCKING});
 }
 
 void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,

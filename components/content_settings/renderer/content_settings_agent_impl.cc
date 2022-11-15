@@ -169,14 +169,6 @@ void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
   if (frame->Parent())
     return;  // Not a top-level navigation.
 
-  if (!base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    // TODO(crbug.com/1187753): Remove this once it's verified it isn't needed.
-    // ContentSettingsManager was moved to be per-process in
-    // http://crrev.com/c/1949036, so should be safe to remove.
-    content_settings_manager_.reset();
-  }
-
 #if DCHECK_IS_ON()
   GURL url = frame->GetDocument().Url();
   // If we start failing this DCHECK, please makes sure we don't regress

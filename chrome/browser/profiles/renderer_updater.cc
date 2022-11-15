@@ -99,13 +99,10 @@ void RendererUpdater::InitializeRenderer(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
       content_settings_manager;
-  if (base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    content_settings::ContentSettingsManagerImpl::Create(
-        render_process_host,
-        content_settings_manager.InitWithNewPipeAndPassReceiver(),
-        std::make_unique<chrome::ContentSettingsManagerDelegate>());
-  }
+  content_settings::ContentSettingsManagerImpl::Create(
+      render_process_host,
+      content_settings_manager.InitWithNewPipeAndPassReceiver(),
+      std::make_unique<chrome::ContentSettingsManagerDelegate>());
   renderer_configuration->SetInitialConfiguration(
       is_off_the_record_, std::move(chromeos_listener_receiver),
       std::move(content_settings_manager));

@@ -528,10 +528,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTabSwitchMetrics2);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPAnimatedImagesReporting);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEarlyBodyLoad);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEarlyCodeCache);
-
 // If enabled, an absent Origin-Agent-Cluster: header is interpreted as
 // requesting an origin agent cluster, but in the same process.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
@@ -542,15 +538,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
 // kOriginAgentClusterDefaultEnabled above.)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultWarning);
 
-#if BUILDFLAG(IS_ANDROID)
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchAndroidFonts);
-#endif
-
 // Allows pages that support App Install Banners to stay eligible for the
 // back/forward cache.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheAppBanner);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDefaultStyleSheetsEarlyInit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSystemColorChooser);
 

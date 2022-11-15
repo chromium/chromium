@@ -2742,20 +2742,18 @@ void DocumentLoader::CreateParserPostCommit() {
     document->SetEncodingData(data);
   }
 
-  if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad)) {
-    if (frame_ && body_loader_ && !loading_main_document_from_mhtml_archive_ &&
-        !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
-        !is_static_data_ && frame_->IsMainFrame() &&
-        !document->IsPrefetchOnly() && MimeType() == "text/html") {
-      parser_->SetIsPreloading(true);
-      body_loader_->StartLoadingBody(this);
+  if (frame_ && body_loader_ && !loading_main_document_from_mhtml_archive_ &&
+      !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
+      !is_static_data_ && frame_->IsMainFrame() &&
+      !document->IsPrefetchOnly() && MimeType() == "text/html") {
+    parser_->SetIsPreloading(true);
+    body_loader_->StartLoadingBody(this);
 
-      if (!frame_ || !body_loader_)
-        return;
-    }
-
-    frame_->DomWindow()->GetScriptController().UpdateDocument();
+    if (!frame_ || !body_loader_)
+      return;
   }
+
+  frame_->DomWindow()->GetScriptController().UpdateDocument();
 
   GetFrameLoader().DispatchDidClearDocumentOfWindowObject();
 

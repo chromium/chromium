@@ -809,11 +809,6 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
   document_ = init.CreateDocument();
   document_->Initialize();
 
-  // If early body loading is turned on, UpdateDocument() will be called right
-  // after the body starts loading.
-  if (!base::FeatureList::IsEnabled(features::kEarlyBodyLoad))
-    GetScriptController().UpdateDocument();
-
   document_->GetViewportData().UpdateViewportDescription();
 
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();

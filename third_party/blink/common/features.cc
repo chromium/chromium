@@ -1264,14 +1264,6 @@ BASE_FEATURE(kLCPAnimatedImagesReporting,
              "LCPAnimatedImagesReporting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables loading the response body earlier in navigation.
-BASE_FEATURE(kEarlyBodyLoad, "EarlyBodyLoad", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables fetching the code cache earlier in navigation.
-BASE_FEATURE(kEarlyCodeCache,
-             "EarlyCodeCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1280,21 +1272,9 @@ BASE_FEATURE(kOriginAgentClusterDefaultWarning,
              "OriginAgentClusterDefaultWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables prefetching Android fonts on renderer startup.
-BASE_FEATURE(kPrefetchAndroidFonts,
-             "PrefetchAndroidFonts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // TODO(https://crbug.com/1276864): Delete this flag.
 BASE_FEATURE(kBackForwardCacheAppBanner,
              "BackForwardCacheAppBanner",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Initialize CSSDefaultStyleSheets early in renderer startup.
-BASE_FEATURE(kDefaultStyleSheetsEarlyInit,
-             "DefaultStyleSheetsEarlyInit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSystemColorChooser,

@@ -26,9 +26,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.AndroidFontLookup;
-import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content.R;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.mojo.bindings.ExecutorFactory;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MojoException;
@@ -262,12 +260,10 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                 return null;
             }
 
-            if (ContentFeatureList.isEnabled(BlinkFeatures.PREFETCH_ANDROID_FONTS)) {
-                mFetchedFontCache.put(fontUniqueName, fileDescriptor.dup());
-                // The size of the font cache should be at maximum the size of the font name to
-                // query map, since there is a limited number of fonts we fetch from GMS Core.
-                assert mFetchedFontCache.size() <= mFullFontNameToQuery.size();
-            }
+            mFetchedFontCache.put(fontUniqueName, fileDescriptor.dup());
+            // The size of the font cache should be at maximum the size of the font name to
+            // query map, since there is a limited number of fonts we fetch from GMS Core.
+            assert mFetchedFontCache.size() <= mFullFontNameToQuery.size();
             return fileDescriptor;
         } catch (NameNotFoundException | IOException | OutOfMemoryError | RuntimeException e) {
             // We sometimes get CursorWindowAllocationException, but it's a hidden class. So, we

@@ -112,8 +112,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
 
 void FontUniqueNameLookupAndroid::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts) &&
-      RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
+  if (RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled()) {
     EnsureServiceConnected();
     if (android_font_lookup_service_) {
       // WTF::Unretained is safe here because |this| owns

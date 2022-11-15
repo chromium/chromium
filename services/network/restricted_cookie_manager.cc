@@ -443,32 +443,6 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   CookieAccesses* cookie_accesses =
       GetCookieAccessesForURLAndSite(url, site_for_cookies);
 
-  auto add_excluded = [&]() {
-    // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
-    // warning reasons once samesite tightening up is rolled out.
-    for (const auto& cookie_and_access_result : excluded_cookies) {
-      if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
-          !cookie_and_access_result.access_result.status
-               .ExcludedByUserPreferences()) {
-        continue;
-      }
-
-      // Skip sending a notification about this cookie access?
-      if (SkipAccessNotificationForCookieItem(cookie_accesses,
-                                              cookie_and_access_result)) {
-        continue;
-      }
-
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
-              cookie_and_access_result.access_result));
-    }
-  };
-
-  if (!base::FeatureList::IsEnabled(features::kFasterSetCookie))
-    add_excluded();
-
   if (!maybe_included_cookies.empty())
     result.reserve(maybe_included_cookies.size());
   mojom::CookieMatchType match_type = options->match_type;
@@ -494,17 +468,6 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     if (access_result.status.IsInclude()) {
       result.push_back(cookie_item);
     }
-
-    if (!base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
-      // Skip sending a notification about this cookie access?
-      if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie_item)) {
-        continue;
-      }
-
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(cookie), access_result));
-    }
   }
 
   auto notify_observer = [&]() {
@@ -515,9 +478,6 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     }
   };
 
-  if (!base::FeatureList::IsEnabled(features::kFasterSetCookie))
-    notify_observer();
-
   if (!maybe_included_cookies.empty() && IsPartitionedCookiesEnabled()) {
     UMA_HISTOGRAM_COUNTS_100(
         "Net.RestrictedCookieManager.PartitionedCookiesInScript",
@@ -527,28 +487,42 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
                                }));
   }
 
-  std::move(callback).Run(
-      base::FeatureList::IsEnabled(features::kFasterSetCookie)
-          ? result
-          : std::move(result));
+  std::move(callback).Run(result);
 
-  if (base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
-    add_excluded();
-
-    for (auto& cookie : result) {
-      // Skip sending a notification about this cookie access?
-      if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie)) {
-        continue;
-      }
-
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(cookie.cookie),
-              cookie.access_result));
+  // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
+  // warning reasons once samesite tightening up is rolled out.
+  for (const auto& cookie_and_access_result : excluded_cookies) {
+    if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
+        !cookie_and_access_result.access_result.status
+             .ExcludedByUserPreferences()) {
+      continue;
     }
 
-    notify_observer();
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses,
+                                            cookie_and_access_result)) {
+      continue;
+    }
+
+    on_cookies_accessed_result.push_back(
+        mojom::CookieOrLineWithAccessResult::New(
+            mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
+            cookie_and_access_result.access_result));
   }
+
+  for (auto& cookie : result) {
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie)) {
+      continue;
+    }
+
+    on_cookies_accessed_result.push_back(
+        mojom::CookieOrLineWithAccessResult::New(
+            mojom::CookieOrLine::NewCookie(cookie.cookie),
+            cookie.access_result));
+  }
+
+  notify_observer();
 }
 
 void RestrictedCookieManager::SetCanonicalCookie(
@@ -757,10 +731,8 @@ void RestrictedCookieManager::SetCookieFromString(
       BoundSiteForCookies().IsEquivalent(site_for_cookies);
   bool top_frame_origin_ok = top_frame_origin == BoundTopFrameOrigin();
 
-  if (base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
-    std::move(callback).Run(site_for_cookies_ok, top_frame_origin_ok);
-    callback = base::DoNothing();
-  }
+  std::move(callback).Run(site_for_cookies_ok, top_frame_origin_ok);
+  callback = base::DoNothing();
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =

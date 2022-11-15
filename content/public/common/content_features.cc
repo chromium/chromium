@@ -76,9 +76,6 @@ BASE_FEATURE(kAudioServiceSandbox,
 // second is unsafe for Android WebView (and thus entirely disabled via
 // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
 // because the embedder may trigger reentrancy, which cannot be avoided.
-BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckPostTask,
-             "AvoidUnnecessaryBeforeUnloadCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
              "AvoidUnnecessaryBeforeUnloadCheckSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -417,12 +414,6 @@ const base::FeatureParam<base::TimeDelta>
         &kFirstPartySets, "FirstPartySetsNavigationThrottleTimeout",
         base::Seconds(2)};
 
-// Whether to initialize the font manager when the renderer starts on a
-// background thread.
-BASE_FEATURE(kFontManagerEarlyInit,
-             "FontManagerEarlyInit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.
@@ -486,21 +477,6 @@ BASE_FEATURE(kIdleDetection, "IdleDetection", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Historically most navigations required IPC from browser to renderer and
-// from renderer back to browser. This was done to check for before-unload
-// handlers on the current page and occurred regardless of whether a
-// before-unload handler was present. The navigation start time (as used in
-// various metrics) is the time the renderer initiates the IPC back to the
-// browser. If this feature is enabled, the navigation start time takes into
-// account the cost of the IPC from the browser to renderer. More specifically:
-// navigation_start = time_renderer_sends_ipc_to_browser -
-//    (time_renderer_receives_ipc - time_browser_sends_ipc)
-// Note that navigation_start does not take into account the amount of time the
-// renderer spends processing the IPC (that is, executing script).
-BASE_FEATURE(kIncludeIpcOverheadInNavigationStart,
-             "IncludeIpcOverheadInNavigationStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -681,17 +657,6 @@ BASE_FEATURE(kMouseSubframeNoImplicitCapture,
 BASE_FEATURE(kNavigationNetworkResponseQueue,
              "NavigationNetworkResponseQueue",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Preconnects socket at the construction of NavigationRequest.
-BASE_FEATURE(kNavigationRequestPreconnect,
-             "NavigationRequestPreconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables optimizations for renderer->browser mojo calls to avoid waiting on
-// the UI thread during navigation.
-BASE_FEATURE(kNavigationThreadingOptimizations,
-             "NavigationThreadingOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If the network service is enabled, runs it in process.
 BASE_FEATURE(kNetworkServiceInProcess,
@@ -1139,12 +1104,6 @@ BASE_FEATURE(kSyntheticPointerActions,
              "SyntheticPointerActions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether optimizations controlled by kNavigationThreadingOptimizations are
-// moved to the IO thread or a separate background thread.
-BASE_FEATURE(kThreadingOptimizationsOnIO,
-             "ThreadingOptimizationsOnIO",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature allows touch dragging and a context menu to occur
 // simultaneously, with the assumption that the menu is non-modal.  Without this
 // feature, a long-press touch gesture can start either a drag or a context-menu
@@ -1445,14 +1404,6 @@ BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewThrottleBackgroundBeginFrame,
              "WebViewThrottleBackgroundBeginFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Temporarily pauses the compositor early in navigation.
-BASE_FEATURE(kOptimizeEarlyNavigation,
-             "OptimizeEarlyNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kCompositorLockTimeout{
-    &kOptimizeEarlyNavigation, "compositor_lock_timeout",
-    base::Milliseconds(150)};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

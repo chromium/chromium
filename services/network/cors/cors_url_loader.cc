@@ -920,8 +920,7 @@ void CorsURLLoader::StartNetworkRequest() {
         *cache_key, request_, net_log_,
         network_client_receiver_.BindNewPipeAndPassRemote());
     memory_cache_was_used_ = true;
-  } else if (sync_network_loader_factory_ &&
-             base::FeatureList::IsEnabled(features::kURLLoaderSyncClient)) {
+  } else if (sync_network_loader_factory_) {
     sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(
         network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
         request_, network_client_receiver_.BindNewPipeAndPassRemote(),

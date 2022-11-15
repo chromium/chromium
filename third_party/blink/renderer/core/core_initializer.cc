@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/core_initializer.h"
 
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
@@ -165,8 +164,7 @@ void CoreInitializer::Initialize() {
 
   FontGlobalContext::Init();
 
-  if (base::FeatureList::IsEnabled(features::kDefaultStyleSheetsEarlyInit))
-    CSSDefaultStyleSheets::Init();
+  CSSDefaultStyleSheets::Init();
 }
 
 }  // namespace blink

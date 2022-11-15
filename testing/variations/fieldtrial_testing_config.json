@@ -11278,29 +11278,6 @@
             ]
         }
     ],
-    "ThreadingOptimizationsOnIO": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220119",
-                    "enable_features": [
-                        "ThreadingOptimizationsOnIO"
-                    ]
-                }
-            ]
-        }
-    ],
     "TopChromeWebUIUsesSpareRenderer": [
         {
             "platforms": [

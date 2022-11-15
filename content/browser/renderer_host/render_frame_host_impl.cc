@@ -985,9 +985,7 @@ bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled() {
 
 bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
   // Only one of sync or posttask should be used. If both are set, use sync.
-  return base::FeatureList::IsEnabled(
-             features::kAvoidUnnecessaryBeforeUnloadCheckPostTask) &&
-         !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
+  return !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
 }
 
 // Returns true if `host` has the Window Management permission granted.
@@ -4905,11 +4903,6 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
       base::UmaHistogramTimes(
           "Navigation.OnBeforeUnloadBrowserToRendererIpcTime",
           browser_to_renderer_ipc_time_delta);
-    }
-
-    if (!base::FeatureList::IsEnabled(
-            features::kIncludeIpcOverheadInNavigationStart)) {
-      browser_to_renderer_ipc_time_delta = base::TimeDelta();
     }
 
     base::TimeDelta on_before_unload_overhead_time =
@@ -12038,57 +12031,52 @@ void RenderFrameHostImpl::SendCommitNavigation(
   mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
   mojom::CookieManagerInfoPtr cookie_manager_info;
   mojom::StorageInfoPtr storage_info;
-  if (base::FeatureList::IsEnabled(
-          features::kNavigationThreadingOptimizations)) {
-    CreateCodeCacheHostWithIsolationKey(
-        code_cache_host.InitWithNewPipeAndPassReceiver(),
-        navigation_request->isolation_info_for_subresources()
-            .network_isolation_key());
+  CreateCodeCacheHostWithIsolationKey(
+      code_cache_host.InitWithNewPipeAndPassReceiver(),
+      navigation_request->isolation_info_for_subresources()
+          .network_isolation_key());
 
-    url::Origin origin_to_commit =
-        navigation_request->GetOriginToCommit().value();
-    // Make sure the origin of the isolation info and origin to commit match,
-    // otherwise the cookie manager will crash. Sending the cookie manager here
-    // is just an optimization, so it is fine for it to be null in the case
-    // where these don't match.
+  url::Origin origin_to_commit =
+      navigation_request->GetOriginToCommit().value();
+  // Make sure the origin of the isolation info and origin to commit match,
+  // otherwise the cookie manager will crash. Sending the cookie manager here
+  // is just an optimization, so it is fine for it to be null in the case
+  // where these don't match.
 
-    if (net::IsolationInfo::IsFrameSiteEnabled() &&
-        common_params->url.SchemeIsHTTPOrHTTPS() &&
-        !origin_to_commit.opaque() &&
-        navigation_request->isolation_info_for_subresources()
-                .frame_origin()
-                .value() == origin_to_commit) {
-      cookie_manager_info = mojom::CookieManagerInfo::New();
-      cookie_manager_info->origin = origin_to_commit;
-      BindRestrictedCookieManagerWithOrigin(
-          cookie_manager_info->cookie_manager.InitWithNewPipeAndPassReceiver(),
-          navigation_request->isolation_info_for_subresources(),
-          origin_to_commit);
+  if (net::IsolationInfo::IsFrameSiteEnabled() &&
+      common_params->url.SchemeIsHTTPOrHTTPS() && !origin_to_commit.opaque() &&
+      navigation_request->isolation_info_for_subresources()
+              .frame_origin()
+              .value() == origin_to_commit) {
+    cookie_manager_info = mojom::CookieManagerInfo::New();
+    cookie_manager_info->origin = origin_to_commit;
+    BindRestrictedCookieManagerWithOrigin(
+        cookie_manager_info->cookie_manager.InitWithNewPipeAndPassReceiver(),
+        navigation_request->isolation_info_for_subresources(),
+        origin_to_commit);
 
-      // Some tests need the StorageArea interfaces to come through DomStorage,
-      // so ignore the optimizations in those cases.
-      if (!RenderProcessHostImpl::HasDomStorageBinderForTesting()) {
-        storage_info = mojom::StorageInfo::New();
-        // Bind local storage and session storage areas.
-        auto* partition = GetStoragePartition();
-        int process_id = GetProcess()->GetID();
-        partition->OpenLocalStorageForProcess(
-            process_id, commit_params->storage_key,
-            storage_info->local_storage_area.InitWithNewPipeAndPassReceiver());
+    // Some tests need the StorageArea interfaces to come through DomStorage,
+    // so ignore the optimizations in those cases.
+    if (!RenderProcessHostImpl::HasDomStorageBinderForTesting()) {
+      storage_info = mojom::StorageInfo::New();
+      // Bind local storage and session storage areas.
+      auto* partition = GetStoragePartition();
+      int process_id = GetProcess()->GetID();
+      partition->OpenLocalStorageForProcess(
+          process_id, commit_params->storage_key,
+          storage_info->local_storage_area.InitWithNewPipeAndPassReceiver());
 
-        // Session storage must match the default namespace.
-        const std::string& namespace_id =
-            navigation_request->frame_tree_node()
-                ->frame_tree()
-                ->controller()
-                .GetSessionStorageNamespace(
-                    GetSiteInstance()->GetStoragePartitionConfig())
-                ->id();
-        partition->BindSessionStorageAreaForProcess(
-            process_id, commit_params->storage_key, namespace_id,
-            storage_info->session_storage_area
-                .InitWithNewPipeAndPassReceiver());
-      }
+      // Session storage must match the default namespace.
+      const std::string& namespace_id =
+          navigation_request->frame_tree_node()
+              ->frame_tree()
+              ->controller()
+              .GetSessionStorageNamespace(
+                  GetSiteInstance()->GetStoragePartitionConfig())
+              ->id();
+      partition->BindSessionStorageAreaForProcess(
+          process_id, commit_params->storage_key, namespace_id,
+          storage_info->session_storage_area.InitWithNewPipeAndPassReceiver());
     }
   }
 

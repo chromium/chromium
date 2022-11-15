@@ -6698,24 +6698,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   }
 }
 
-class RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest
-    : public RenderFrameHostImplBeforeUnloadBrowserTest {
- public:
-  RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAvoidUnnecessaryBeforeUnloadCheckPostTask);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Ensure that navigating with a frame tree of A(B(A)) results in the right
-// number of beforeunload messages sent when the feature
-// `kAvoidUnnecessaryBeforeUnloadCheckPostTask` is set.
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest,
-    RendererInitiatedNavigationInABA) {
+// number of beforeunload messages sent.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
+                       RendererInitiatedNavigationInABA) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

@@ -378,22 +378,13 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage(
     const url::Origin& cache_storage_origin,
     const std::string& cache_storage_cache_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto task = base::BindOnce(
-      &DidGenerateCacheableMetadataInCacheStorageOnUI, url,
-      expected_response_time, std::move(data), cache_storage_origin,
-      cache_storage_cache_name, render_process_id_,
-      cache_storage_control_for_testing_, mojo::GetBadMessageCallback());
-
-  // This class may or may not be on the UI thread depending on
-  // whether NavigationThreadingOptimizations is enabled.
-  // TODO(crbug.com/1083097): Simplify this code when
-  // the NavigationThreadOptimizations is enabled by default
-  // and the feature is removed.
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI))
-    std::move(task).Run();
-  else
-    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DidGenerateCacheableMetadataInCacheStorageOnUI, url,
+                     expected_response_time, std::move(data),
+                     cache_storage_origin, cache_storage_cache_name,
+                     render_process_id_, cache_storage_control_for_testing_,
+                     mojo::GetBadMessageCallback()));
 }
 
 GeneratedCodeCache* CodeCacheHostImpl::GetCodeCache(

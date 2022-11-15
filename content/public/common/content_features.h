@@ -24,7 +24,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceLaunchOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceSandbox);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckPostTask);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundFetch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCache);
@@ -91,7 +90,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kFirstPartySetsMaxAssociatedSites;
 CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFirstPartySetsNavigationThrottleTimeout;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontManagerEarlyInit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
 #if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);
@@ -105,7 +103,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaSetAutoSelectAllScreens);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGreaseUACH);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdleDetection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInMemoryCodeCache);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kIncludeIpcOverheadInNavigationStart);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledApp);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppProvider);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInstalledAppsInCbd);
@@ -153,8 +150,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoVideoCapture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoVideoCaptureSecondary);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMouseSubframeNoImplicitCapture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationNetworkResponseQueue);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationRequestPreconnect);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationThreadingOptimizations);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimatorWebHoldback);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceInProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNeverSlowMode);
@@ -253,7 +248,6 @@ CONTENT_EXPORT extern const base::FeatureParam<SubframeShutdownDelayType>
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSurfaceSyncFullscreenKillswitch);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSyntheticPointerActions);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kThreadingOptimizationsOnIO);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kTouchDragAndContextMenu);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const base::FeatureParam<int>
@@ -314,10 +308,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebNfc);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebViewThrottleBackgroundBeginFrame);
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kOptimizeEarlyNavigation);
-CONTENT_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kCompositorLockTimeout;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

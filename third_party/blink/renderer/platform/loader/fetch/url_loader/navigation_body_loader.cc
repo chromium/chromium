@@ -534,10 +534,8 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
 void NavigationBodyLoader::
     BindURLLoaderAndStartLoadingResponseBodyIfPossible() {
-  if (!response_body_ && !off_thread_body_reader_) {
-    DCHECK(base::FeatureList::IsEnabled(features::kEarlyBodyLoad));
+  if (!response_body_ && !off_thread_body_reader_)
     return;
-  }
   // Bind the mojo::URLLoaderClient interface in advance, because we will start
   // to read from the data pipe immediately which may potentially postpone the
   // method calls from the remote. That causes the flakiness of some layout

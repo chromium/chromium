@@ -221,46 +221,21 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.FORCE_MAJOR_VERSION_IN_MINOR_POSITION_IN_USER_AGENT,
                     "Force the Chrome major version number to 99 and put the major version"
                             + " number in the minor version position in the User-Agent string."),
-            Flag.baseFeature(NetworkServiceFeatures.URL_LOADER_SYNC_CLIENT,
-                    "Optimizes communication between URLLoader and CorsURLLoader."),
-            Flag.baseFeature(NetworkServiceFeatures.FASTER_SET_COOKIE, "Optimizes cookie access."),
             Flag.baseFeature(NetFeatures.OPTIMIZE_NETWORK_BUFFERS,
                     "Optimizes buffer size for reading from the network or InputStream."),
             Flag.baseFeature(BlinkFeatures.SET_TIMEOUT_WITHOUT_CLAMP,
                     "Enables faster setTimeout(,0) by removing the 1 ms clamping."),
             Flag.baseFeature(BlinkFeatures.PAINT_HOLDING_CROSS_ORIGIN,
                     "Defers the first commit until FCP or timeout for cross-origin navigations."),
-            Flag.baseFeature(BlinkFeatures.EARLY_CODE_CACHE,
-                    "Enables fetching the code cache earlier in navigation."),
             Flag.baseFeature(BlinkFeatures.HTML_PARAM_ELEMENT_URL_SUPPORT,
                     "Enables the <param> element's URL-setting features (this functionality is"
                             + " being deprecated and removed, so ENABLED is the safe/current"
                             + " behavior, and DISABLED is the tested/new behavior)."),
-            Flag.baseFeature(ContentFeatures.NAVIGATION_REQUEST_PRECONNECT,
-                    "Enables preconnecting for frame requests."),
             Flag.baseFeature(ContentFeatures.NAVIGATION_NETWORK_RESPONSE_QUEUE,
                     "Schedules tasks related to the navigation network responses on a higher "
                             + "priority task queue."),
-            Flag.baseFeature(ContentFeatures.FONT_MANAGER_EARLY_INIT,
-                    "Whether to initialize the font manager when the renderer starts on a "
-                            + "background thread."),
-            Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
-                    "Enables prefetching Android fonts on renderer startup."),
-            Flag.baseFeature(BlinkFeatures.EARLY_BODY_LOAD,
-                    "Enables loading the response body earlier in navigation."),
-            Flag.baseFeature(BlinkFeatures.DEFAULT_STYLE_SHEETS_EARLY_INIT,
-                    "Initialize CSSDefaultStyleSheets early in renderer startup."),
-            Flag.baseFeature(ContentFeatures.THREADING_OPTIMIZATIONS_ON_IO,
-                    "Moves navigation threading optimizations to the IO thread."),
             Flag.baseFeature(ContentFeatures.EARLY_ESTABLISH_GPU_CHANNEL,
                     "Enable establishing the GPU channel early in renderer startup."),
-            Flag.baseFeature(ContentFeatures.OPTIMIZE_EARLY_NAVIGATION,
-                    "Temporarily pauses the compositor early in navigation."),
-            Flag.baseFeature(ContentFeatures.INCLUDE_IPC_OVERHEAD_IN_NAVIGATION_START,
-                    "Whether navigation metrics include ipc overhead."),
-            Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_BEFORE_UNLOAD_CHECK_POST_TASK,
-                    "Avoids an unnecessary renderer ipc during navigation for before-unload "
-                            + "handlers."),
             Flag.baseFeature(AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_CONTROL,
                     "Restricts insertion of XRequestedWith header on outgoing requests "
                             + "to those that have been allow-listed through the appropriate "

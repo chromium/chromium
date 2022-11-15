@@ -191,6 +191,11 @@ constexpr base::TimeDelta kDefaultCommitTimeout = base::Seconds(30);
 // Overrideable via SetCommitTimeoutForTesting.
 base::TimeDelta g_commit_timeout = kDefaultCommitTimeout;
 
+#if BUILDFLAG(IS_ANDROID)
+// Timeout for locking the compositor at the beginning of navigation.
+constexpr base::TimeDelta kCompositorLockTimeout = base::Milliseconds(150);
+#endif
+
 // crbug.com/954271: This feature is a part of an ablation study which makes
 // history navigations slower.
 // TODO(altimin): Clean this up after the study finishes.
@@ -1798,8 +1803,7 @@ NavigationRequest::NavigationRequest(
 #if BUILDFLAG(IS_ANDROID)
   RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
       frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
-  if (base::FeatureList::IsEnabled(features::kOptimizeEarlyNavigation) &&
-      NeedsUrlLoader() && IsInPrimaryMainFrame() && host &&
+  if (NeedsUrlLoader() && IsInPrimaryMainFrame() && host &&
       !host->is_hidden() && host->GetView() &&
       host->GetView()->GetNativeView() &&
       host->GetView()->GetNativeView()->GetWindowAndroid()) {
@@ -1808,16 +1812,14 @@ NavigationRequest::NavigationRequest(
     ui::WindowAndroidCompositor* compositor =
         host->GetView()->GetNativeView()->GetWindowAndroid()->GetCompositor();
     if (compositor) {
-      compositor_lock_ =
-          compositor->GetCompositorLock(features::kCompositorLockTimeout.Get());
+      compositor_lock_ = compositor->GetCompositorLock(kCompositorLockTimeout);
     }
   }
 
   navigation_handle_proxy_ = std::make_unique<NavigationHandleProxy>(this);
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kNavigationRequestPreconnect) &&
-      NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
+  if (NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
     BrowserContext* browser_context =
         frame_tree_node_->navigator().controller().GetBrowserContext();
     if (GetContentClient()->browser()->ShouldPreconnectNavigation(

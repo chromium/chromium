@@ -123,7 +123,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &shared_highlighting::kSharedHighlightingAmp,
     &features::kElasticOverscroll,
-    &features::kElidePrioritizationOfPreNativeBootstrapTasks,
     &features::kPrivacyGuideAndroid,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,
