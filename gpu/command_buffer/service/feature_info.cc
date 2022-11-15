@@ -1290,6 +1290,7 @@ void FeatureInfo::InitializeFeatures() {
   //     GL_OES_depth32
 
   if (gfx::HasExtension(extensions, "GL_ANGLE_texture_usage")) {
+    feature_flags_.angle_texture_usage = true;
     AddExtensionString("GL_ANGLE_texture_usage");
     validators_.texture_parameter.AddValue(GL_TEXTURE_USAGE_ANGLE);
   }
