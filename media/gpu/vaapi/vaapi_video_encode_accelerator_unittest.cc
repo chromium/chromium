@@ -589,9 +589,7 @@ class VaapiVideoEncodeAcceleratorTest
           }));
       EXPECT_CALL(*mock_vaapi_wrapper_, ExecuteAndDestroyPendingBuffers(_))
           .WillOnce(Return(true));
-    }
 
-    for (size_t i = 0; i < num_spatial_layers; ++i) {
       const VABufferID kCodedBufferId = kCodedBufferIds[i];
       const uint64_t kEncodedChunkSize = kEncodedChunkSizes[i];
       ASSERT_LE(kEncodedChunkSize, output_buffer_size_);
