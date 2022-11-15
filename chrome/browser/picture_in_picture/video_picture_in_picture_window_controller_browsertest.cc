@@ -1789,7 +1789,8 @@ IN_PROC_BROWSER_TEST_F(
 // calls the Media Session actions "play" and "pause" handler functions.
 IN_PROC_BROWSER_TEST_F(
     MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
-    PlayPauseHandlersCalled) {
+    // TODO(crbug.com/1384370): Re-enable this test
+    DISABLED_PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
