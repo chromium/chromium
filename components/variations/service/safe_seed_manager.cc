@@ -46,7 +46,8 @@ namespace variations {
 // set a threshold that should minimize false-positives.
 // TODO(isherman): Check in with the networking team about their thoughts on how
 // to find a better balance here.
-constexpr int kFetchFailureStreakThreshold = 25;
+constexpr int kFetchFailureStreakSafeSeedThreshold = 25;
+constexpr int kFetchFailureStreakNullSeedThreshold = 50;
 
 SafeSeedManager::SafeSeedManager(PrefService* local_state)
     : local_state_(local_state) {
@@ -71,18 +72,25 @@ void SafeSeedManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kVariationsFailedToFetchSeedStreak, 0);
 }
 
-bool SafeSeedManager::ShouldRunInSafeMode() const {
+SeedType SafeSeedManager::GetSeedType() const {
   // Ignore any number of failures if the --disable-variations-safe-mode flag is
   // set.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVariationsSafeMode)) {
-    return false;
+    return SeedType::kRegularSeed;
   }
   int num_crashes = local_state_->GetInteger(prefs::kVariationsCrashStreak);
   int num_failed_fetches =
       local_state_->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);
-  return num_crashes >= kCrashStreakThreshold ||
-         num_failed_fetches >= kFetchFailureStreakThreshold;
+  if (num_crashes >= kCrashStreakNullSeedThreshold ||
+      num_failed_fetches >= kFetchFailureStreakNullSeedThreshold) {
+    return SeedType::kNullSeed;
+  }
+  if (num_crashes >= kCrashStreakSafeSeedThreshold ||
+      num_failed_fetches >= kFetchFailureStreakSafeSeedThreshold) {
+    return SeedType::kSafeSeed;
+  }
+  return SeedType::kRegularSeed;
 }
 
 void SafeSeedManager::SetActiveSeedState(

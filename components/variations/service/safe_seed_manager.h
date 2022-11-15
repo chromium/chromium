@@ -35,7 +35,14 @@ class VariationsSeedStore;
 // Overall, the only {platform, channel} combinations that spike above 3
 // consecutive crashes are ones with very few users, plus Canary. It's probably
 // not realistic to avoid false positives for these less-stable configurations.
-constexpr int kCrashStreakThreshold = 3;
+constexpr int kCrashStreakSafeSeedThreshold = 3;
+constexpr int kCrashStreakNullSeedThreshold = 6;
+
+enum class SeedType {
+  kRegularSeed,
+  kSafeSeed,
+  kNullSeed,
+};
 
 // The primary class that encapsulates state for managing the safe seed.
 class SafeSeedManager {
@@ -52,9 +59,11 @@ class SafeSeedManager {
   // Registers safe mode prefs in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Returns true iff the client should use the safe seed for variations state.
+  // Returns the type of seed the client should use.  Uses Regular seed by
+  // default, but will use Safe seed, and Null seed after continual crashes or
+  // network fetch failures.
   // Virtual for testing.
-  virtual bool ShouldRunInSafeMode() const;
+  virtual SeedType GetSeedType() const;
 
   // Stores the combined server and client state that control the active
   // variations state. May be called at most once per Chrome app launch. As an

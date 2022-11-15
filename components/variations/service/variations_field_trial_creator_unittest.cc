@@ -154,8 +154,7 @@ class MockSafeSeedManager : public SafeSeedManager {
 
   ~MockSafeSeedManager() override = default;
 
-  // Returns false by default.
-  MOCK_CONST_METHOD0(ShouldRunInSafeMode, bool());
+  MOCK_CONST_METHOD0(GetSeedType, SeedType());
   MOCK_METHOD5(DoSetActiveSeedState,
                void(const std::string& seed_data,
                     const std::string& base64_seed_signature,
@@ -603,8 +602,8 @@ TEST_F(FieldTrialCreatorTest,
     // the active seed state. This is an optimization to avoid saving a safe
     // seed when already running in safe mode.
     NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-    ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
-        .WillByDefault(Return(true));
+    ON_CALL(safe_seed_manager, GetSeedType())
+        .WillByDefault(Return(SeedType::kSafeSeed));
     EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _, _))
         .Times(0);
 
@@ -646,7 +645,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_UnloadableSafeSeedNotUsed) {
   DisableTestingConfig();
 
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kSafeSeed));
 
   // When falling back to client-side defaults, the safe seed manager should not
   // be informed of the active seed state.
@@ -676,7 +676,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSafeSeed_NoLastFetchTime) {
   // active seed state. This is an optimization to avoid saving a safe seed when
   // already running in safe mode.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kSafeSeed));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _, _)).Times(0);
 
   TestVariationsServiceClient variations_service_client;
@@ -711,7 +712,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ExpiredSafeSeed) {
 
   // The safe seed manager should not be informed of the active seed state.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kSafeSeed));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _, _)).Times(0);
 
   TestVariationsServiceClient variations_service_client;
@@ -744,7 +746,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
 
   // The safe seed manager should not be informed of the active seed state.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kSafeSeed));
   EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _, _)).Times(0);
 
   TestVariationsServiceClient variations_service_client;
@@ -763,6 +766,30 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "Variations.SeedUsage", SeedUsage::kSafeSeedForFutureMilestoneNotUsed, 1);
+}
+
+// Verify that no seed is applied when null seed is triggered.
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_NullSeed) {
+  DisableTestingConfig();
+
+  // The safe seed manager should not be informed of the active seed state.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kNullSeed));
+  EXPECT_CALL(safe_seed_manager, DoSetActiveSeedState(_, _, _, _, _)).Times(0);
+
+  TestVariationsServiceClient variations_service_client;
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  // Check that field trials are not created from the null seed.
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(field_trial_creator.SetUpFieldTrials());
+  EXPECT_FALSE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
+
+  // Verify metrics.
+  histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
+                                      SeedUsage::kNullSeedUsed, 1);
 }
 
 TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedPath) {

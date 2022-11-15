@@ -103456,6 +103456,7 @@ Full version information for the fingerprint enum values:
   <int value="9" label="Regular seed for future milestone">No seed used</int>
   <int value="10" label="Safe seed for future milestone">No seed used</int>
   <int value="11" label="Unloadable safe seed">No seed used</int>
+  <int value="12" label="Null seed used">No seed used</int>
 </enum>
 
 <enum name="VaryType">

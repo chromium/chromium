@@ -50,7 +50,8 @@ enum class SeedUsage {
   kRegularSeedForFutureMilestoneNotUsed = 9,
   kSafeSeedForFutureMilestoneNotUsed = 10,
   kUnloadableSafeSeedNotUsed = 11,
-  kMaxValue = kUnloadableSafeSeedNotUsed,
+  kNullSeedUsed = 12,
+  kMaxValue = kNullSeedUsed,
 };
 
 // Denotes a variations seed's expiry state. Exposed for testing.

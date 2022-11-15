@@ -599,11 +599,18 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   base::UmaHistogramEnumeration("Variations.PolicyRestriction",
                                 client_filterable_state->policy_restriction);
 
+  const SeedType seed_type = safe_seed_manager->GetSeedType();
+  // If we have tried safe seed and we still get crashes, try null seed.
+  if (seed_type == SeedType::kNullSeed) {
+    RecordVariationsSeedUsage(SeedUsage::kNullSeedUsed);
+    return false;
+  }
+
   VariationsSeed seed;
 
   std::string seed_data;              // Only set if not in safe mode.
   std::string base64_seed_signature;  // Only set if not in safe mode.
-  const bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
+  const bool run_in_safe_mode = seed_type == SeedType::kSafeSeed;
   const bool seed_loaded =
       run_in_safe_mode
           ? GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get())
