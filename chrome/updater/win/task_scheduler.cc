@@ -138,7 +138,7 @@ Microsoft::WRL::ComPtr<ITaskService> GetTaskService() {
 // folders have a "System" suffix, and User task folders have a "User" suffix.
 std::wstring GetTaskCompanyFolder(UpdaterScope scope) {
   return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
-                       scope == UpdaterScope::kSystem ? L"System " : L"User "});
+                       scope == UpdaterScope::kSystem ? L"System" : L"User"});
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.

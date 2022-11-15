@@ -354,7 +354,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
 
   const std::wstring expected_task_folder = base::StrCat(
       {L"\\" COMPANY_SHORTNAME_STRING,
-       GetTestScope() == UpdaterScope::kSystem ? L"System " : L"User ",
+       GetTestScope() == UpdaterScope::kSystem ? L"System" : L"User",
        L"\\" PRODUCT_FULLNAME_STRING});
   EXPECT_EQ(task_scheduler_->GetTaskSubfolderName(GetTestScope()),
             expected_task_folder);
