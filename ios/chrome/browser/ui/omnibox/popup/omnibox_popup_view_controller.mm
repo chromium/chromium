@@ -41,7 +41,7 @@
 
 namespace {
 const CGFloat kTopAndBottomPadding = 8.0;
-const CGFloat kTopPaddingVariation1 = 8.0;
+const CGFloat kTopPaddingVariation1 = 0.0;
 const CGFloat kTopPaddingVariation2 = 10.0;
 const CGFloat kTopBottomPaddingVariation2Ipad = 16.0;
 const CGFloat kFooterHeightVariation1 = 12.0;
