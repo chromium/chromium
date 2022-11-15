@@ -10,12 +10,18 @@
       '. message        message message .'
       '. mainpage-desc  .       collage .'
       '. .              .       .       .';
-    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+    grid-template-columns: 20px auto 192px auto 20px;
+    grid-template-rows: auto minmax(158px, 220px) 20px 192px auto 20px;
     height: 100%;
   }
 
+  :host([main-page]) #container.pre-ui-change {
+    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
+    grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
+  }
+
   :host([main-page]) #container.zero-state-disabled {
+    grid-template-columns: 20px minmax(0,1fr) 16px 106px 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px auto 106px 24px;
   }
 
@@ -34,15 +40,35 @@
     justify-content: space-between;
   }
 
-  #messageContainer .text {
+  #messageContainer.pre-ui-change .text {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-1-font);
     line-height: 1.5;
     margin-top: 12px;
     text-align: center;
+    width: unset;
+  }
+
+  #messageContainer .text {
+    color: var(--cros-sys-on_primary_container, var(--cros-text-color-secondary));
+    font: var(--cros-body-1-font);
+    line-height: 1.5;
+    margin-top: 56px;
+    text-align: center;
+    width: 128px;
   }
 
   #messageContainer cr-button {
+    margin-bottom: 50px;
+    margin-top: 8px;
+  }
+
+  ambient-zero-state-svg {
+    position: absolute;
+    z-index: -10000;
+  }
+
+  #messageContainer.pre-ui-change cr-button {
     margin-top: 20px;
   }
 
@@ -208,15 +234,29 @@
           $i18n{ambientModeMainPageZeroStateMessage}
         </span>
       </h3>
-      <div id="messageContainer">
-        <span class="text" id="turnOnDescription">
-          $i18n{ambientModeMainPageZeroStateMessage}
-        </span>
-        <cr-button class="primary" on-click="onClickAmbientModeButton_"
-            aria-describedby="turnOnDescription">
-          <div>$i18n{ambientModeTurnOnLabel}</div>
-        </cr-button>
-      </div>
+      <template is="dom-if" if="[[!isAmbientSubpageUIChangeEnabled_()]]">
+        <div id="messageContainer" class="pre-ui-change">
+          <span class="text" id="turnOnDescription">
+            $i18n{ambientModeMainPageZeroStateMessage}
+          </span>
+          <cr-button class="primary" on-click="onClickAmbientModeButton_"
+              aria-describedby="turnOnDescription">
+            <div>$i18n{ambientModeTurnOnLabel}</div>
+          </cr-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[isAmbientSubpageUIChangeEnabled_()]]">
+        <div id="messageContainer">
+          <ambient-zero-state-svg></ambient-zero-state-svg>
+          <span class="text" id="turnOnDescription">
+            $i18n{ambientModeMainPageZeroStateMessageV2}
+          </span>
+          <cr-button class="primary" on-click="onClickAmbientModeButton_"
+              aria-describedby="turnOnDescription">
+            <div>$i18n{ambientModeTurnOnLabel}</div>
+          </cr-button>
+        </div>
+      </template>
     </template>
     <template is="dom-if" if="[[ambientModeEnabled_]]">
       <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums available.

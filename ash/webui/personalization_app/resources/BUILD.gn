@@ -75,6 +75,7 @@ web_component_files = [
   "js/ambient/art_album_dialog_element.ts",
   "js/ambient/ambient_preview_element.ts",
   "js/ambient/ambient_subpage_element.ts",
+  "js/ambient/ambient_zero_state_svg_element.ts",
   "js/ambient/ambient_weather_element.ts",
   "js/ambient/animation_theme_item_element.ts",
   "js/ambient/animation_theme_list_element.ts",

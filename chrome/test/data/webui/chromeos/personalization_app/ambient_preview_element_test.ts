@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {AmbientObserver, AmbientPreview, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -56,7 +57,7 @@ suite('AmbientPreviewTest', function() {
             '#turnOnDescription');
         assertTrue(!!textSpan);
         assertEquals(
-            ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
+            ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessageV2'),
             textSpan.innerText.trim());
       });
 
@@ -181,5 +182,29 @@ suite('AmbientPreviewTest', function() {
     assertEquals(
         topicSource, TopicSource.kGooglePhotos,
         'navigates to google photos topic source');
+  });
+
+  test('displays zero state message before UI change', async () => {
+    // Disables `isAmbientSubpageUIChangeEnabled` to show the previous UI.
+    loadTimeData.overrideValues({['isAmbientSubpageUIChangeEnabled']: false});
+
+    personalizationStore.data.ambient.albums = ambientProvider.albums;
+    personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
+    personalizationStore.data.ambient.ambientModeEnabled = false;
+    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
+        ambientProvider.googlePhotosAlbumsPreviews;
+    ambientPreviewElement = initElement(AmbientPreview);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewElement);
+
+    const messageContainer =
+        ambientPreviewElement.shadowRoot!.getElementById('messageContainer');
+    assertTrue(!!messageContainer);
+    const textSpan =
+        messageContainer.querySelector<HTMLSpanElement>('#turnOnDescription');
+    assertTrue(!!textSpan);
+    assertEquals(
+        ambientPreviewElement.i18n('ambientModeMainPageZeroStateMessage'),
+        textSpan.innerText.trim());
   });
 });

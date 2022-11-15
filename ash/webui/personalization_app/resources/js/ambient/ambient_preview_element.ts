@@ -10,6 +10,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './ambient_zero_state_svg_element.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
@@ -287,6 +288,14 @@ export class AmbientPreview extends WithPersonalizationStore {
             'ambientModeMultipleAlbumsDesc', this.previewAlbums_[1].title,
             this.previewAlbums_.length - 2);
     }
+  }
+
+  /**
+   * Determines whether ambient subpage UI restructure is enabled. Value can be
+   * mocked in tests.
+   */
+  private isAmbientSubpageUIChangeEnabled_(): boolean {
+    return loadTimeData.getBoolean('isAmbientSubpageUIChangeEnabled');
   }
 }
 

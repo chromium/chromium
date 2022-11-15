@@ -2330,6 +2330,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
         Turn the feature on to select screen saver options
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE_V2" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
+        Turn on to select options
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
         Turn on
       </message>

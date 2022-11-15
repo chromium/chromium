@@ -202,6 +202,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_MULTIPLE_ALBUMS_DESC},
       {"ambientModeMainPageZeroStateMessage",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE},
+      {"ambientModeMainPageZeroStateMessageV2",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE_V2},
       {"ambientModeTurnOnLabel",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL},
       {"ariaLabelChangeScreensaver",
