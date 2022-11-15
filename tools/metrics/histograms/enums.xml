@@ -10899,6 +10899,7 @@ Called by update_bad_message_reasons.py.-->
       label="MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED"/>
   <int value="290" label="MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED"/>
   <int value="291" label="MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED"/>
+  <int value="292" label="MSDH_ON_STREAM_STARTED_DISALLOWED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

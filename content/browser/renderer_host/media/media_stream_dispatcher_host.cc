@@ -595,8 +595,13 @@ void MediaStreamDispatcherHost::SetCapturingLinkSecured(
 
 void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!base::FeatureList::IsEnabled(
-      blink::features::kStartMediaStreamCaptureIndicatorInBrowser));
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MSDH_ON_STREAM_STARTED_DISALLOWED);
+    return;
+  }
   media_stream_manager_->OnStreamStarted(label);
 }
 

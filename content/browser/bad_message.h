@@ -316,6 +316,7 @@ enum BadMessageReason {
   MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED = 289,
   MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED = 290,
   MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED = 291,
+  MSDH_ON_STREAM_STARTED_DISALLOWED = 292,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
