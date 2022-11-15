@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
             kFirstPaintAfterBackForwardCacheRestore);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
             kFirstPaintAfterBackForwardCacheRestore);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     web_contents()->WasHidden();
 
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
 
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   // Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
                                    TimingField::kLayoutShift);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -436,7 +436,7 @@ return score;
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(
             kRequestAnimationFrameAfterBackForwardCacheRestore);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
                                    TimingField::kLayoutShift);
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -592,7 +592,7 @@ return score;
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(
 
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
+    EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 

@@ -629,8 +629,7 @@ void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Rect& main_frame_intersection_rect) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  if (render_frame_host ==
-      GetDelegate().GetWebContents()->GetPrimaryMainFrame()) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
     return;
   }

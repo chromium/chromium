@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   // Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
 
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
