@@ -5921,6 +5921,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "remove-crash-infobar",
+    "owners": [ "justincohen", "bling-flags@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "request-desktop-site-additions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 112

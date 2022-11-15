@@ -48,6 +48,10 @@ BASE_FEATURE(kIOSOmniboxUpdatedPopupUI,
              "IOSOmniboxUpdatedPopupUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRemoveCrashInfobar,
+             "RemoveCrashInfobar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kIOSOmniboxUpdatedPopupUIVariationName[] = "PopupUIVariant";
 
 extern const char kIOSOmniboxUpdatedPopupUIVariation1[] = "variant-one";

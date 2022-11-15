@@ -1339,6 +1339,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnablePinnedTabs,
                                     kEnablePinnedTabsVariations,
                                     "EnablePinnedTabs")},
+    {"remove-crash-infobar", flag_descriptions::kRemoveCrashInfobarName,
+     flag_descriptions::kRemoveCrashInfobarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kRemoveCrashInfobar)},
+
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

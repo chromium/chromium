@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 // Feature flag that toggles the SwiftUI omnibox popup implementation.
 BASE_DECLARE_FEATURE(kIOSOmniboxUpdatedPopupUI);
 
+// Feature flag that removes the crash infobar.
+BASE_DECLARE_FEATURE(kRemoveCrashInfobar);
+
 // Parameter name for the parameter controlling which UI variation to use for
 // the SwiftUI omnibox popup.
 extern const char kIOSOmniboxUpdatedPopupUIVariationName[];
