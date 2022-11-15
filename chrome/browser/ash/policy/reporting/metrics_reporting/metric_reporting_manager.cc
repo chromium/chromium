@@ -11,9 +11,11 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
@@ -51,6 +53,11 @@ constexpr char kSamplerPeripheralTelemetry[] = "peripheral_telemetry";
 constexpr char kSamplerDisplaysTelemetry[] = "displays_telemetry";
 
 }  // namespace
+
+// static
+BASE_FEATURE(kEnableAppMetricsReporting,
+             "EnableAppMetricsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) const {
   const user_manager::User* const user =
@@ -113,7 +120,7 @@ void MetricReportingManager::OnLogin(Profile* profile) {
       delegate_->CreateMetricReportQueue(
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
 
-  InitOnAffiliatedLogin();
+  InitOnAffiliatedLogin(profile);
   delayed_init_on_login_timer_.Start(
       FROM_HERE, delegate_->GetInitDelay(),
       base::BindOnce(&MetricReportingManager::DelayedInitOnAffiliatedLogin,
@@ -238,7 +245,7 @@ void MetricReportingManager::DelayedInit() {
                               this, &MetricReportingManager::UploadTelemetry);
 }
 
-void MetricReportingManager::InitOnAffiliatedLogin() {
+void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
   if (delegate_->IsDeprovisioned()) {
     return;
   }
@@ -255,6 +262,15 @@ void MetricReportingManager::InitOnAffiliatedLogin() {
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
       metrics::kReportDeviceNetworkStatusDefaultValue);
   InitPeripheralsCollectors();
+
+  // Start observing app events only if the feature flag is set.
+  if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting)) {
+    auto app_events_observer = AppEventsObserver::CreateForProfile(profile);
+    InitEventObserverManager(
+        std::move(app_events_observer), user_event_report_queue_.get(),
+        /*enable_setting_path=*/::ash::kReportDeviceAppInfo,
+        metrics::kReportDeviceAppInfoDefaultValue);
+  }
 }
 
 void MetricReportingManager::InitTelemetrySamplersOnAffiliatedLogin() {

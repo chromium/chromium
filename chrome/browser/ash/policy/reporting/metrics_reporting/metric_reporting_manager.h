@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -32,6 +33,9 @@ class MetricEventObserverManager;
 class MetricReportQueue;
 class CollectorBase;
 class Sampler;
+
+// Feature flag that can be set to facilitate app metrics reporting.
+BASE_DECLARE_FEATURE(kEnableAppMetricsReporting);
 
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
@@ -94,7 +98,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   // Init samplers, collectors and event observers that need to start after an
   // affiliated user login with no delay, should only be called once on login.
-  void InitOnAffiliatedLogin();
+  void InitOnAffiliatedLogin(Profile* profile);
 
   // Init telemetry samplers that can only be used in affiliated users sessions.
   void InitTelemetrySamplersOnAffiliatedLogin();

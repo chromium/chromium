@@ -50,7 +50,6 @@ AppEventsObserver::AppEventsObserver(
     Profile* profile,
     std::unique_ptr<AppEventsObserver::Delegate> delegate)
     : profile_(profile), delegate_(std::move(delegate)) {
-  DCHECK(profile_);
   if (!delegate_->IsAppServiceAvailableForProfile(profile)) {
     // Profile cannot run apps, so we just return.
     return;

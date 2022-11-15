@@ -54,6 +54,9 @@ constexpr bool kReportDevicePeripheralsDefaultValue = false;
 // Default value for reporting device graphics status.
 constexpr bool kReportDeviceGraphicsStatusDefaultValue = false;
 
+// Default value for reporting device app info and usage.
+constexpr bool kReportDeviceAppInfoDefaultValue = false;
+
 // Returns the default report upload frequency for the current environment.
 const base::TimeDelta GetDefaultReportUploadFrequency();
 
