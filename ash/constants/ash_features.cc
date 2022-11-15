@@ -1772,7 +1772,7 @@ BASE_FEATURE(kReleaseNotesSuggestionChip,
 // settings, for devices running on channels other than "stable."
 BASE_FEATURE(kReleaseTrackUi,
              "ReleaseTrackUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the overview and desk reverse scrolling behaviors are changed
 // and if the user performs the old gestures, a notification or toast will show
