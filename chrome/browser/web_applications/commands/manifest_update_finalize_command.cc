@@ -34,11 +34,7 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
     bool app_identity_update_allowed,
     ManifestWriteCallback write_callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-    WebAppRegistrar* registrar,
-    WebAppInstallFinalizer* install_finalizer,
-    OsIntegrationManager* os_integration_manager,
-    WebAppSyncBridge* sync_bridge)
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
     : lock_description_(
           std::make_unique<AppLockDescription, base::flat_set<AppId>>(
               {app_id})),
@@ -48,11 +44,7 @@ ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
       app_identity_update_allowed_(app_identity_update_allowed),
       write_callback_(std::move(write_callback)),
       keep_alive_(std::move(keep_alive)),
-      profile_keep_alive_(std::move(profile_keep_alive)),
-      registrar_(registrar),
-      install_finalizer_(install_finalizer),
-      os_integration_manager_(os_integration_manager),
-      sync_bridge_(sync_bridge) {}
+      profile_keep_alive_(std::move(profile_keep_alive)) {}
 
 ManifestUpdateFinalizeCommand::~ManifestUpdateFinalizeCommand() = default;
 
@@ -74,21 +66,25 @@ base::Value ManifestUpdateFinalizeCommand::ToDebugValue() const {
   return base::Value(std::move(data));
 }
 
-void ManifestUpdateFinalizeCommand::Start() {
+void ManifestUpdateFinalizeCommand::StartWithLock(
+    std::unique_ptr<AppLock> lock) {
   DCHECK_EQ(stage_, ManifestUpdateStage::kAppWindowsClosed);
 
-  if (!AllowUnpromptedNameUpdate(app_id_, *registrar_) &&
+  lock_ = std::move(lock);
+
+  if (!AllowUnpromptedNameUpdate(app_id_, lock_->registrar()) &&
       !app_identity_update_allowed_) {
     // The app's name must not change due to an automatic update, except for
     // default installed apps (that have been vetted).
     install_info_.title =
-        base::UTF8ToUTF16(registrar_->GetAppShortName(app_id_));
+        base::UTF8ToUTF16(lock_->registrar().GetAppShortName(app_id_));
   }
 
   // Preserve the user's choice of form factor to open the app with.
-  install_info_.user_display_mode = registrar_->GetAppUserDisplayMode(app_id_);
+  install_info_.user_display_mode =
+      lock_->registrar().GetAppUserDisplayMode(app_id_);
   stage_ = ManifestUpdateStage::kPendingFinalizerUpdate;
-  install_finalizer_->FinalizeUpdate(
+  lock_->install_finalizer().FinalizeUpdate(
       install_info_,
       base::BindOnce(&ManifestUpdateFinalizeCommand::OnInstallationComplete,
                      AsWeakPtr()));
@@ -106,10 +102,11 @@ void ManifestUpdateFinalizeCommand::OnInstallationComplete(
   }
 
   DCHECK_EQ(app_id_, app_id);
-  DCHECK(!IsUpdateNeededForManifest(app_id_, install_info_, *registrar_));
+  DCHECK(
+      !IsUpdateNeededForManifest(app_id_, install_info_, lock_->registrar()));
   DCHECK_EQ(code, webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
-  sync_bridge_->SetAppManifestUpdateTime(app_id, base::Time::Now());
+  lock_->sync_bridge().SetAppManifestUpdateTime(app_id, base::Time::Now());
   CompleteCommand(code, ManifestUpdateResult::kAppUpdated);
 }
 

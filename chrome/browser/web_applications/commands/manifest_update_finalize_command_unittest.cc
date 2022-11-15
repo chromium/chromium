@@ -53,9 +53,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     return std::make_unique<ManifestUpdateFinalizeCommand>(
         url, app_id, std::move(install_info), app_identity_update_allowed,
         std::move(callback), std::move(keep_alive),
-        std::move(profile_keep_alive), &provider().registrar(),
-        &provider().install_finalizer(), &provider().os_integration_manager(),
-        &provider().sync_bridge());
+        std::move(profile_keep_alive));
   }
 
   ManifestUpdateResult RunCommandAndGetResult(

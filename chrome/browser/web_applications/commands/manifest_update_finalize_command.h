@@ -24,16 +24,13 @@ enum class InstallResultCode;
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
-class OsIntegrationManager;
-class WebAppInstallFinalizer;
-class WebAppRegistrar;
-class WebAppSyncBridge;
 
 // After all app windows have closed, this command runs to perform the last few
 // steps of writing the data to the DB.
-class ManifestUpdateFinalizeCommand : public WebAppCommand {
+class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
  public:
   using ManifestWriteCallback = base::OnceCallback<
       void(const GURL& url, const AppId& app_id, ManifestUpdateResult result)>;
@@ -45,11 +42,7 @@ class ManifestUpdateFinalizeCommand : public WebAppCommand {
       bool app_identity_update_allowed,
       ManifestWriteCallback write_callback,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      WebAppRegistrar* registrar,
-      WebAppInstallFinalizer* install_finalizer,
-      OsIntegrationManager* os_integration_manager,
-      WebAppSyncBridge* sync_bridge);
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive);
 
   ~ManifestUpdateFinalizeCommand() override;
 
@@ -57,7 +50,7 @@ class ManifestUpdateFinalizeCommand : public WebAppCommand {
   void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
-  void Start() override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
   base::WeakPtr<ManifestUpdateFinalizeCommand> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -71,6 +64,8 @@ class ManifestUpdateFinalizeCommand : public WebAppCommand {
                        ManifestUpdateResult result);
 
   std::unique_ptr<AppLockDescription> lock_description_;
+  std::unique_ptr<AppLock> lock_;
+
   const GURL url_;
   const AppId app_id_;
   WebAppInstallInfo install_info_;
@@ -80,11 +75,6 @@ class ManifestUpdateFinalizeCommand : public WebAppCommand {
   // still happen even though the app window has closed.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-
-  raw_ptr<WebAppRegistrar> registrar_;
-  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  raw_ptr<OsIntegrationManager> os_integration_manager_;
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
 
   ManifestUpdateStage stage_ = ManifestUpdateStage::kAppWindowsClosed;
   base::Value::Dict debug_log_;

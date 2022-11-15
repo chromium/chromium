@@ -161,9 +161,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
       std::make_unique<ManifestUpdateFinalizeCommand>(
           url, app_id, std::move(install_info), app_identity_update_allowed,
           std::move(callback), std::move(keep_alive),
-          std::move(profile_keep_alive), &provider_->registrar(),
-          &provider_->install_finalizer(), &provider_->os_integration_manager(),
-          &provider_->sync_bridge()));
+          std::move(profile_keep_alive)));
 }
 
 void WebAppCommandScheduler::FetchInstallabilityForChromeManagement(
