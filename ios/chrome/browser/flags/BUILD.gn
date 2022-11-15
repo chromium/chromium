@@ -80,6 +80,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
+    "//ios/chrome/browser/ui/tab_switcher/pinned_tabs:features",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/ui/whats_new:feature_flags",
     "//ios/chrome/browser/web:feature_flags",

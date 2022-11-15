@@ -274,13 +274,17 @@ extern const char kEnableFullscreenAPIDescription[];
 extern const char kPasswordsGroupingName[];
 extern const char kPasswordsGroupingDescription[];
 
-// Title and description for the flag to enable open in download
+// Title and description for the flag to enable open in download.
 extern const char kEnableOpenInDownloadName[];
 extern const char kEnableOpenInDownloadDescription[];
 
 // Title and description for the flag to enable the passwords account storage.
 extern const char kEnablePasswordsAccountStorageName[];
 extern const char kEnablePasswordsAccountStorageDescription[];
+
+// Title and description for the flag to enable pinned tabs.
+extern const char kEnablePinnedTabsName[];
+extern const char kEnablePinnedTabsDescription[];
 
 // Title and description for the flag to enable refining data source reload
 // reporting when having a very short attention log.

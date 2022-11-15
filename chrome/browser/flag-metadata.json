@@ -2832,6 +2832,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-pinned-tabs",
+    "owners": [ "ewannpv", "pakzhygitov", "bling-flags@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 116

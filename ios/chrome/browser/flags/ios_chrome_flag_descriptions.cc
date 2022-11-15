@@ -303,6 +303,9 @@ const char kEnablePasswordsAccountStorageDescription[] =
     "Enables storing passwords in a second, Gaia-account-scoped storage for "
     "signed-in but not syncing users";
 
+const char kEnablePinnedTabsName[] = "Enable Pinned Tabs";
+const char kEnablePinnedTabsDescription[] = "Allows users to pin tabs.";
+
 const char kEnableRefineDataSourceReloadReportingName[] =
     "Enable Refine Data Source Reload Reporting";
 const char kEnableRefineDataSourceReloadReportingDescription[] =
