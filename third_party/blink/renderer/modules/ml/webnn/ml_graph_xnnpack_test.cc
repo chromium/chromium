@@ -77,4 +77,62 @@ TEST_F(MLGraphXnnpackTest, SharedXnnpackContextTest) {
   }
 }
 
+TEST_F(MLGraphXnnpackTest, TopoSortOperatorsTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test sorting a graph in the following topology:
+    //   conv2d
+    //     |
+    //    add
+    //     |
+    //   relu
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* conv2d = BuildConv2d(scope, builder, input, filter);
+    auto* bias =
+        BuildConstant(scope, builder, {1}, V8MLOperandType::Enum::kFloat32);
+    auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
+    ASSERT_NE(add, nullptr);
+    auto* relu = builder->relu(add, scope.GetExceptionState());
+    ASSERT_NE(relu, nullptr);
+
+    auto* toposorted_operators =
+        MLGraphXnnpack::GetOperatorsInTopologicalOrder({{"output", relu}});
+    EXPECT_EQ(toposorted_operators->size(), static_cast<wtf_size_t>(3));
+    EXPECT_EQ(toposorted_operators->at(0), conv2d->Operator());
+    EXPECT_EQ(toposorted_operators->at(1), add->Operator());
+    EXPECT_EQ(toposorted_operators->at(2), relu->Operator());
+  }
+  {
+    // Test sorting a graph in the following topology:
+    //      conv2d
+    //      /    \
+    //  conv2d   conv2d
+    //      \   /   \
+    //       add    output
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
+    auto* conv2d_0 = BuildConv2d(scope, builder, input, filter, options);
+    auto* conv2d_1 = BuildConv2d(scope, builder, conv2d_0, filter, options);
+    auto* conv2d_2 = BuildConv2d(scope, builder, conv2d_0, filter, options);
+    auto* add = builder->add(conv2d_1, conv2d_2, scope.GetExceptionState());
+    auto* toposorted_operators = MLGraphXnnpack::GetOperatorsInTopologicalOrder(
+        {{"add", add}, {"output", conv2d_2}});
+    EXPECT_EQ(toposorted_operators->size(), static_cast<wtf_size_t>(4));
+    EXPECT_EQ(toposorted_operators->at(0), conv2d_0->Operator());
+    EXPECT_TRUE((toposorted_operators->at(1) == conv2d_1->Operator() &&
+                 toposorted_operators->at(2) == conv2d_2->Operator()) ||
+                (toposorted_operators->at(1) == conv2d_2->Operator() &&
+                 toposorted_operators->at(2) == conv2d_1->Operator()));
+    EXPECT_EQ(toposorted_operators->at(3), add->Operator());
+  }
+}
+
 }  // namespace blink

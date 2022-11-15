@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/xnnpack/src/include/xnnpack.h"
 
@@ -33,6 +34,15 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
 
   ~MLGraphXnnpack() override;
 
+  // Return the operators in topological order by searching from the named
+  // output operands. It ensures operator 'j' appears before operator 'i' in the
+  // result, if 'i' depends on 'j'.
+
+  // The sorted operators will be used by CreateXnnSubgraphAndRuntime() that
+  // defines the subgraph Nodes for operators in topological order.
+  static HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
+      const MLNamedOperands& named_outputs);
+
  private:
   // Post the XNNPACK subgraph building to a background thread.
   void BuildAsyncImpl(const MLNamedOperands& named_outputs,
@@ -41,7 +51,8 @@ class MODULES_EXPORT MLGraphXnnpack final : public MLGraph {
   // Build the XNNPACK subgraph off the main thread.
   static void BuildOnBackgroundThread(
       CrossThreadPersistent<MLGraphXnnpack> graph,
-      CrossThreadPersistent<MLNamedOperands> named_outputs,
+      CrossThreadPersistent<HeapVector<Member<const MLOperator>>>
+          toposorted_operators,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner);
 
