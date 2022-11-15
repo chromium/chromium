@@ -233,7 +233,8 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
       "SELECT site FROM bounces "
         "WHERE (last_stateful_bounce_time > ? "
         "OR last_stateless_bounce_time > ?) AND "
-        "last_user_interaction_time < ? "
+        "last_user_interaction_time < ? AND "
+        "last_user_interaction_time > 0 "
         "ORDER BY site";
   // clang-format on
 
@@ -260,7 +261,8 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
       "SELECT site FROM bounces "
         "WHERE last_stateful_bounce_time > ? AND "
         "last_site_storage_time > ? AND "
-        "last_user_interaction_time < ? "
+        "last_user_interaction_time < ? AND "
+        "last_user_interaction_time > 0 "
         "ORDER BY site";
   // clang-format on
   DCHECK(db_->IsSQLValid(kReadSql));
@@ -286,7 +288,8 @@ std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
       "SELECT site FROM bounces "
         "WHERE (last_site_storage_time > ? OR "
         "last_stateful_bounce_time > ?) AND "
-        "last_user_interaction_time < ? "
+        "last_user_interaction_time < ? AND "
+        "last_user_interaction_time > 0 "
         "ORDER BY site";
   // clang-format on
   DCHECK(db_->IsSQLValid(kReadSql));

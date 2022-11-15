@@ -169,7 +169,7 @@ INSTANTIATE_TEST_SUITE_P(
                                          ColumnType::kStatefulBounce,
                                          ColumnType::kStatelessBounce)));
 
-// A test class that verifies the behavior of the methods  used to query the
+// A test class that verifies the behavior of the methods used to query the
 // DIPSDatabase for information more efficiently than using DIPSDatabase::Read.
 //
 // Parameterized over whether the db is in memory.
@@ -198,6 +198,19 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
                /*stateful_bounce_times=*/{}, stateless_bounce_times);
   }
 
+ protected:
+  // Rewrites the entries that were wrote in SetUp() to not have interactions.
+  void ClearAllInteractions() {
+    db_->Write("https://storage-only.test", storage_times,
+               /*interaction_times=*/{},
+               /*stateful_bounce_times=*/{}, /*stateless_bounce_times=*/{});
+    db_->Write("https://stateful-bounce.test", storage_times,
+               /*interaction_times=*/{}, stateful_bounce_times,
+               /*stateless_bounce_times=*/{});
+    db_->Write("https://stateless-bounce.test",
+               /*storage_times=*/{}, /*interaction_times=*/{},
+               /*stateful_bounce_times=*/{}, stateless_bounce_times);
+  }
   // For ease of testings if a site has an entry in its `user_interaction`
   // column the timestamp is at t=1 and so on.
   base::Time interaction = Time::FromDoubleT(1);
@@ -220,6 +233,16 @@ class DIPSDatabaseQueryTest : public DIPSDatabaseTest,
   TimestampRange stateful_bounce_times = {stateful_bounce, stateful_bounce};
   TimestampRange stateless_bounce_times = {stateless_bounce, stateless_bounce};
 };
+
+TEST_P(DIPSDatabaseQueryTest, VerifyInteractionsNonNull) {
+  ClearAllInteractions();
+  EXPECT_THAT(db_->GetSitesThatBounced(before_storage, interaction),
+              testing::IsEmpty());
+  EXPECT_THAT(db_->GetSitesThatUsedStorage(before_storage, interaction),
+              testing::IsEmpty());
+  EXPECT_THAT(db_->GetSitesThatBouncedWithState(before_storage, interaction),
+              testing::IsEmpty());
+}
 
 TEST_P(DIPSDatabaseQueryTest, EnsureLastInteractionStrictlyBeforeRangeStart) {
   // Verify that the |last_interaction| shouldn't be greater than |range_start|
