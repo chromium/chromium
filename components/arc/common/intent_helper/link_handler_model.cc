@@ -37,7 +37,7 @@ bool GetQueryValue(const GURL& url,
   url::Component value;
 
   while (url::ExtractQueryKeyValue(str.c_str(), &query, &key, &value)) {
-    if (!value.is_nonempty())
+    if (value.is_empty())
       continue;
     if (str.substr(key.begin, key.len) == key_to_find) {
       if (value.len >= kMaxValueLen)

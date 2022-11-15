@@ -101,7 +101,7 @@ bool DoScheme(const CHAR* spec,
               const Component& scheme,
               CanonOutput* output,
               Component* out_scheme) {
-  if (!scheme.is_nonempty()) {
+  if (scheme.is_empty()) {
     // Scheme is unspecified or empty, convert to empty by appending a colon.
     *out_scheme = Component(output->length(), 0);
     output->push_back(':');

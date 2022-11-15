@@ -357,7 +357,7 @@ void DoHost(const CHAR* spec,
             const Component& host,
             CanonOutput* output,
             CanonHostInfo* host_info) {
-  if (!host.is_nonempty()) {
+  if (host.is_empty()) {
     // Empty hosts don't need anything.
     host_info->family = CanonHostInfo::NEUTRAL;
     host_info->out_host = Component();

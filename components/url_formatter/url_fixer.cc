@@ -289,7 +289,7 @@ void FixupHost(const std::string& text,
 void FixupPort(const std::string& text,
                const url::Component& part,
                std::string* url) {
-  if (!part.is_nonempty())
+  if (part.is_empty())
     return;
 
   // We don't fix up the port at the moment.
@@ -300,7 +300,7 @@ void FixupPort(const std::string& text,
 inline void FixupPath(const std::string& text,
                       const url::Component& part,
                       std::string* url) {
-  if (!part.is_nonempty()) {
+  if (part.is_empty()) {
     // We should always have a path.
     url->append("/");
     return;

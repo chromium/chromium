@@ -347,7 +347,7 @@ void ChromeRequireCTDelegate::AddFilters(
     // the URL.
     url::Parsed parsed;
     std::string ignored_scheme = url_formatter::SegmentURL(pattern, &parsed);
-    if (!parsed.host.is_nonempty())
+    if (parsed.host.is_empty())
       continue;  // If there is no host to match, can't apply the filter.
 
     std::string lc_host = base::ToLowerASCII(

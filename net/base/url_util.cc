@@ -213,7 +213,7 @@ bool ParseHostAndPort(base::StringPiece input, std::string* host, int* port) {
   if (username_component.is_valid() || password_component.is_valid())
     return false;
 
-  if (!hostname_component.is_nonempty())
+  if (hostname_component.is_empty())
     return false;  // Failed parsing.
 
   int parsed_port_number = -1;

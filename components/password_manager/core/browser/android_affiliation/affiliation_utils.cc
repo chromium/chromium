@@ -156,10 +156,10 @@ bool CanonicalizeAndroidFacetURI(const std::string& input_uri,
 
   canonical_output.Complete();
 
-  return success && !input_parsed.password.is_nonempty() &&
-         (!input_parsed.path.is_nonempty() ||
+  return success && input_parsed.password.is_empty() &&
+         (input_parsed.path.is_empty() ||
           ComponentString(input_uri, input_parsed.path) == "/") &&
-         !input_parsed.port.is_nonempty() && !input_parsed.query.is_valid() &&
+         input_parsed.port.is_empty() && !input_parsed.query.is_valid() &&
          !input_parsed.ref.is_valid();
 }
 

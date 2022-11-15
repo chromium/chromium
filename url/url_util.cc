@@ -163,7 +163,7 @@ template<typename CHAR>
 inline bool DoCompareSchemeComponent(const CHAR* spec,
                                      const Component& component,
                                      const char* compare_to) {
-  if (!component.is_nonempty())
+  if (component.is_empty())
     return compare_to[0] == 0;  // When component is empty, match empty scheme.
   return base::EqualsCaseInsensitiveASCII(
       typename CharToStringPiece<CHAR>::Piece(&spec[component.begin],
@@ -178,7 +178,7 @@ bool DoIsInSchemes(const CHAR* spec,
                    const Component& scheme,
                    SchemeType* type,
                    const std::vector<SchemeWithType>& schemes) {
-  if (!scheme.is_nonempty())
+  if (scheme.is_empty())
     return false;  // Empty or invalid schemes are non-standard.
 
   for (const SchemeWithType& scheme_with_type : schemes) {

@@ -255,7 +255,7 @@ bool DoPartialPathInternal(const CHAR* spec,
                            const Component& path,
                            size_t path_begin_in_output,
                            CanonOutput* output) {
-  if (!path.is_nonempty())
+  if (path.is_empty())
     return true;
 
   size_t end = static_cast<size_t>(path.end());

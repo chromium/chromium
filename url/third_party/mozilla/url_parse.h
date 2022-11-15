@@ -24,12 +24,13 @@ struct Component {
     return begin + len;
   }
 
-  // Returns true if this component is valid, meaning the length is given. Even
-  // valid components may be empty to record the fact that they exist.
+  // Returns true if this component is valid, meaning the length is given.
+  // Valid components may be empty to record the fact that they exist.
   bool is_valid() const { return len >= 0; }
 
-  // Returns true if the given component is specified on false, the component
-  // is either empty or invalid.
+  // Determine if the component is empty or not. Empty means the length is
+  // zero or the component is invalid.
+  bool is_empty() const { return len <= 0; }
   bool is_nonempty() const { return len > 0; }
 
   void reset() {

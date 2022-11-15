@@ -44,7 +44,7 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
                                             const Component& component,
                                             uint32_t* number) {
   // Empty components are considered non-numeric.
-  if (!component.is_nonempty())
+  if (component.is_empty())
     return CanonHostInfo::NEUTRAL;
 
   // Figure out the base
@@ -133,7 +133,7 @@ CanonHostInfo::Family DoIPv4AddressToNumber(const CHAR* spec,
     --host.len;
 
   // Do nothing if empty.
-  if (!host.is_nonempty())
+  if (host.is_empty())
     return CanonHostInfo::NEUTRAL;
 
   // Read component values.  The first `existing_components` of them are
@@ -302,7 +302,7 @@ bool DoParseIPv6(const CHAR* spec, const Component& host, IPv6Parsed* parsed) {
   // Zero-out the info.
   parsed->reset();
 
-  if (!host.is_nonempty())
+  if (host.is_empty())
     return false;
 
   // The index for start and end of address range (no brackets).
@@ -447,7 +447,7 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
                            unsigned char address[16]) {
   // Make sure the component is bounded by '[' and ']'.
   int end = host.end();
-  if (!host.is_nonempty() || spec[host.begin] != '[' || spec[end - 1] != ']')
+  if (host.is_empty() || spec[host.begin] != '[' || spec[end - 1] != ']')
     return false;
 
   // Exclude the square brackets.

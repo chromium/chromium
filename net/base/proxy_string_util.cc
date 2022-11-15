@@ -68,7 +68,7 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
                       &username_component, &password_component,
                       &hostname_component, &port_component);
   if (username_component.is_valid() || password_component.is_valid() ||
-      !hostname_component.is_nonempty()) {
+      hostname_component.is_empty()) {
     return ProxyServer();
   }
 
@@ -78,7 +78,7 @@ ProxyServer FromSchemeHostAndPort(ProxyServer::Scheme scheme,
   // Reject inputs like "foo:". /url parsing and canonicalization code generally
   // allows it and treats it the same as a URL without a specified port, but
   // Chrome has traditionally disallowed it in proxy specifications.
-  if (port_component.is_valid() && !port_component.is_nonempty())
+  if (port_component.is_valid() && port_component.is_empty())
     return ProxyServer();
   base::StringPiece port =
       port_component.is_nonempty()

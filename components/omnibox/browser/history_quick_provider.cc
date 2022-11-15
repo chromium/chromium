@@ -175,7 +175,7 @@ absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
   // for these inputs.
   const bool can_have_url_what_you_typed_match_first =
       (autocomplete_input_.type() != metrics::OmniboxInputType::QUERY) &&
-      (!autocomplete_input_.parts().username.is_nonempty() ||
+      (autocomplete_input_.parts().username.is_empty() ||
        autocomplete_input_.parts().password.is_nonempty() ||
        autocomplete_input_.parts().path.is_nonempty());
   if (can_have_url_what_you_typed_match_first) {
@@ -220,13 +220,13 @@ absl::optional<int> HistoryQuickProvider::MaxMatchScore() {
           url_what_you_typed_match_score =
               HistoryURLProvider::kScoreForBestInlineableResult;
         } else if (url_db->IsTypedHost(host, /*scheme=*/nullptr) &&
-                   (!autocomplete_input_.parts().path.is_nonempty() ||
+                   (autocomplete_input_.parts().path.is_empty() ||
                     ((autocomplete_input_.parts().path.len == 1) &&
                      (autocomplete_input_
                           .text()[autocomplete_input_.parts().path.begin] ==
                       '/'))) &&
-                   !autocomplete_input_.parts().query.is_nonempty() &&
-                   !autocomplete_input_.parts().ref.is_nonempty()) {
+                   autocomplete_input_.parts().query.is_empty() &&
+                   autocomplete_input_.parts().ref.is_empty()) {
           // Not visited, but we've seen the host before.
           will_have_url_what_you_typed_match_first = true;
           if (net::registry_controlled_domains::HostHasRegistryControlledDomain(

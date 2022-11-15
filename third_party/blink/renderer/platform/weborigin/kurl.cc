@@ -349,7 +349,7 @@ String KURL::LastPathComponent() const {
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
   // a null string when the path is empty, which we duplicate here.
-  if (!file.is_nonempty())
+  if (file.is_empty())
     return String();
   return ComponentString(file);
 }
@@ -382,7 +382,7 @@ uint16_t KURL::Port() const {
 String KURL::Pass() const {
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
   // a null string when the password is empty, which we duplicate here.
-  if (!parsed_.password.is_nonempty())
+  if (parsed_.password.is_empty())
     return String();
   return ComponentString(parsed_.password);
 }
@@ -461,7 +461,7 @@ bool KURL::SetProtocol(const String& protocol) {
   if (!url::CanonicalizeScheme(new_protocol_utf8.data(),
                                url::Component(0, new_protocol_utf8.size()),
                                &canon_protocol, &protocol_component) ||
-      !protocol_component.is_nonempty())
+      protocol_component.is_empty())
     return false;
 
   DCHECK_EQ(protocol_component.begin, 0);
@@ -771,7 +771,7 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
 }
 
 bool KURL::IsHierarchical() const {
-  if (string_.IsNull() || !parsed_.scheme.is_nonempty())
+  if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;
   return string_.Is8Bit()
              ? url::IsStandard(AsURLChar8Subtle(string_), parsed_.scheme)

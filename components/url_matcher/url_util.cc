@@ -347,7 +347,7 @@ bool FilterToComponents(const std::string& filter,
   }
 
   // According to documentation host can't be empty.
-  if (!parsed.host.is_nonempty())
+  if (parsed.host.is_empty())
     return false;
 
   if (parsed.scheme.is_nonempty())
