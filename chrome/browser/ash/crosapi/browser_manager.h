@@ -592,7 +592,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // crosapi::BrowserManagerObserver:
   void OnLoadComplete(bool launching_at_login_screen,
                       const base::FilePath& path,
-                      LacrosSelection selection);
+                      LacrosSelection selection,
+                      base::Version version);
 
   // Methods for features to register and de-register for needing to keep Lacros
   // alive.

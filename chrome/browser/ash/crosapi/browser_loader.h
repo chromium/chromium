@@ -41,8 +41,8 @@ class BrowserLoader {
   // |callback| is called on completion with the path to the lacros-chrome on
   // success, or an empty filepath on failure, and the loaded lacros selection
   // which is either 'rootfs' or 'stateful'.
-  using LoadCompletionCallback =
-      base::OnceCallback<void(const base::FilePath&, LacrosSelection)>;
+  using LoadCompletionCallback = base::OnceCallback<
+      void(const base::FilePath&, LacrosSelection, base::Version)>;
   virtual void Load(LoadCompletionCallback callback);
 
   // Starts to unload lacros-chrome binary.
@@ -118,6 +118,10 @@ class BrowserLoader {
 
   // Time when the lacros component was loaded.
   base::TimeTicks lacros_start_load_time_;
+
+  // The bundled rootfs lacros-chrome binary version. This is set after the
+  // first async call that checks the installed rootfs lacros version number.
+  absl::optional<base::Version> rootfs_lacros_version_;
 
   base::WeakPtrFactory<BrowserLoader> weak_factory_{this};
 };

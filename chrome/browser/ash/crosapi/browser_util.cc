@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -897,6 +898,25 @@ Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {
       // that the user is on.
       return GetStatefulLacrosChannel();
   }
+}
+
+base::Version GetInstalledLacrosComponentVersion(
+    const component_updater::ComponentUpdateService* component_update_service) {
+  DCHECK(component_update_service);
+
+  const std::vector<component_updater::ComponentInfo>& components =
+      component_update_service->GetComponents();
+  const std::string& lacros_component_id = GetLacrosComponentInfo().crx_id;
+
+  LOG(WARNING) << "Looking for lacros-chrome component with id: "
+               << lacros_component_id;
+  auto it =
+      std::find_if(components.begin(), components.end(),
+                   [&](const component_updater::ComponentInfo& component_info) {
+                     return component_info.id == lacros_component_id;
+                   });
+
+  return it == components.end() ? base::Version() : it->version;
 }
 
 LacrosAvailability GetCachedLacrosAvailabilityForTesting() {

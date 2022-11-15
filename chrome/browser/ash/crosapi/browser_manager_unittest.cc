@@ -210,7 +210,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs);
+                                browser_util::LacrosSelection::kRootfs,
+                                base::Version());
       });
   fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
@@ -251,7 +252,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs);
+                                browser_util::LacrosSelection::kRootfs,
+                                base::Version());
       });
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -275,7 +277,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
         std::move(callback).Run(base::FilePath(kSampleLacrosPath),
-                                browser_util::LacrosSelection::kStateful);
+                                browser_util::LacrosSelection::kStateful,
+                                base::Version());
       });
 
   // On simulated termination, KeepAlive restarts Lacros. Since there is an
@@ -299,7 +302,8 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs);
+                                browser_util::LacrosSelection::kRootfs,
+                                base::Version());
       });
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
@@ -347,7 +351,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs);
+                                browser_util::LacrosSelection::kRootfs,
+                                base::Version());
       });
   fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);

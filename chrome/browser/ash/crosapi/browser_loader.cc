@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/common/channel_info.h"
@@ -246,41 +247,40 @@ void BrowserLoader::OnLoadSelectionMountStateful(
 
   // Proceed to compare the lacros-chrome binary versions in case rootfs
   // lacros-chrome binary is newer than stateful lacros-chrome binary.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&browser_util::GetRootfsLacrosVersionMayBlock,
-                     base::FilePath(kRootfsLacrosPath).Append(kLacrosMetadata)),
-      base::BindOnce(&BrowserLoader::OnLoadVersionSelection,
-                     weak_factory_.GetWeakPtr(), is_stateful_lacros_available,
-                     std::move(callback)));
+  if (rootfs_lacros_version_.has_value()) {
+    BrowserLoader::OnLoadVersionSelection(is_stateful_lacros_available,
+                                          std::move(callback),
+                                          rootfs_lacros_version_.value());
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            &browser_util::GetRootfsLacrosVersionMayBlock,
+            base::FilePath(kRootfsLacrosPath).Append(kLacrosMetadata)),
+        base::BindOnce(&BrowserLoader::OnLoadVersionSelection,
+                       weak_factory_.GetWeakPtr(), is_stateful_lacros_available,
+                       std::move(callback)));
+  }
 }
 
 void BrowserLoader::OnLoadVersionSelection(
     bool is_stateful_lacros_available,
     LoadCompletionCallback callback,
     base::Version rootfs_lacros_version) {
+  if (!rootfs_lacros_version_.has_value() && rootfs_lacros_version.IsValid())
+    rootfs_lacros_version_ = rootfs_lacros_version;
+
   // Compare the rootfs vs stateful lacros-chrome binary versions.
   // If the rootfs lacros-chrome is greater than or equal to the stateful
   // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
   // stateful lacros-chrome update in the background.
-  // TODO(crbug.com/1293250): Clean up the code. Currently, minimizing the risk
-  // for the cherry-pick is prioritized, so the code is more complex than it
-  // should be.
-  base::Version stateful_lacros_version;
-  if (is_stateful_lacros_available) {
-    const auto lacros_component_name =
-        base::UTF8ToUTF16(base::StringPiece(GetLacrosComponentName()));
-    LOG(WARNING) << "Looking for: " << lacros_component_name;
-    for (const auto& component_info :
-         component_update_service_->GetComponents()) {
-      if (component_info.name == lacros_component_name) {
-        // There should be at most one entry, so we immediately breaks the
-        // iteration.
-        stateful_lacros_version = component_info.version;
-        break;
-      }
-    }
-  }
+  // TODO(crbug.com/1293250): Clean up the code. `is_stateful_lacros_available`
+  // is likely not needed here, consider removing this.
+  base::Version stateful_lacros_version =
+      is_stateful_lacros_available
+          ? browser_util::GetInstalledLacrosComponentVersion(
+                component_update_service_)
+          : base::Version();
 
   LOG(WARNING) << "Lacros candidates: rootfs=" << rootfs_lacros_version
                << ", stateful=" << stateful_lacros_version;
@@ -288,7 +288,8 @@ void BrowserLoader::OnLoadVersionSelection(
     // Neither rootfs lacros nor stateful lacros are available.
     // Returning an empty file path to notify error.
     LOG(ERROR) << "No lacros is available";
-    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful);
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful,
+                            base::Version());
     return;
   }
 
@@ -414,7 +415,7 @@ void BrowserLoader::OnLoadComplete(
       path.empty()) {
     LOG(WARNING) << "Error loading lacros component image: "
                  << static_cast<int>(error);
-    std::move(callback).Run(base::FilePath(), selection);
+    std::move(callback).Run(base::FilePath(), selection, base::Version());
     return;
   }
 
@@ -437,9 +438,15 @@ void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
                                          bool lacros_binary_exists) {
   if (!lacros_binary_exists) {
     LOG(ERROR) << "Failed to find chrome binary at " << path;
-    std::move(callback).Run(base::FilePath(), selection);
+    std::move(callback).Run(base::FilePath(), selection, base::Version());
     return;
   }
+
+  base::Version version =
+      selection == LacrosSelection::kStateful
+          ? browser_util::GetInstalledLacrosComponentVersion(
+                component_update_service_)
+          : rootfs_lacros_version_.value_or(base::Version());
 
   base::UmaHistogramMediumTimes(
       "ChromeOS.Lacros.LoadTime",
@@ -447,7 +454,7 @@ void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
 
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path;
-  std::move(callback).Run(path, selection);
+  std::move(callback).Run(path, selection, std::move(version));
 }
 
 void BrowserLoader::OnCheckInstalled(bool was_installed) {

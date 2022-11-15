@@ -26,6 +26,10 @@ class Value;
 class Version;
 }  // namespace base
 
+namespace component_updater {
+class ComponentUpdateService;
+}  // namespace component_updater
+
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -315,6 +319,12 @@ ComponentInfo GetLacrosComponentInfo();
 // Returns the update channel associated with the given loaded lacros selection.
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
+
+// Returns the currently installed version of lacros-chrome managed by the
+// component updater. Will return an empty / invalid version if no lacros
+// component is found.
+base::Version GetInstalledLacrosComponentVersion(
+    const component_updater::ComponentUpdateService* component_update_service);
 
 // Exposed for testing. Sets lacros-availability cache for testing.
 void SetCachedLacrosAvailabilityForTesting(

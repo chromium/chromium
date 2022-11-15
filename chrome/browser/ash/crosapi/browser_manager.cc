@@ -1254,7 +1254,8 @@ void BrowserManager::OnEvent(Events event, const std::string& id) {
 
 void BrowserManager::OnLoadComplete(bool launching_at_login_screen,
                                     const base::FilePath& path,
-                                    LacrosSelection selection) {
+                                    LacrosSelection selection,
+                                    base::Version version) {
   if (shutdown_requested_) {
     LOG(ERROR) << "Load completed after Shutdown() called.";
     return;
