@@ -362,6 +362,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
         TranslateWiFiSecurity(network_state->security_class());
     mojo->wifi->frequency = network_state->frequency();
     mojo->wifi->signal_strength = network_state->signal_strength();
+    mojo->wifi->rssi = network_state->rssi();
     if (shill_dict) {
       mojo->wifi->hidden_ssid =
           shill_dict->FindBoolPath(shill::kWifiHiddenSsid).value_or(false);

@@ -62,45 +62,30 @@ class ArcNetHostImpl : public KeyedService,
   void SetPrefService(PrefService* pref_service);
   void SetCertManager(std::unique_ptr<CertManager> cert_manager);
 
-  // ARC -> Chrome calls:
-
+  // Overridden from mojom::NetHost.
   void GetNetworks(mojom::GetNetworksRequestType type,
                    GetNetworksCallback callback) override;
-
   void GetWifiEnabledState(GetWifiEnabledStateCallback callback) override;
-
   void SetWifiEnabledState(bool is_enabled,
                            SetWifiEnabledStateCallback callback) override;
-
   void StartScan() override;
-
   void CreateNetwork(mojom::WifiConfigurationPtr cfg,
                      CreateNetworkCallback callback) override;
-
   void ForgetNetwork(const std::string& guid,
                      ForgetNetworkCallback callback) override;
-
   void StartConnect(const std::string& guid,
                     StartConnectCallback callback) override;
-
   void StartDisconnect(const std::string& guid,
                        StartDisconnectCallback callback) override;
-
   void AndroidVpnConnected(mojom::AndroidVpnConfigurationPtr cfg) override;
-
   void AndroidVpnStateChanged(mojom::ConnectionStateType state) override;
-
   void AddPasspointCredentials(
       mojom::PasspointCredentialsPtr credentials) override;
-
   void RemovePasspointCredentials(
       mojom::PasspointRemovalPropertiesPtr properties) override;
-
   void SetAlwaysOnVpn(const std::string& vpnPackage, bool lockdown) override;
-
   std::unique_ptr<base::DictionaryValue> TranslateVpnConfigurationToOnc(
       const mojom::AndroidVpnConfiguration& cfg);
-
   void DisconnectHostVpn() override;
 
   // Overridden from ash::NetworkStateHandlerObserver.

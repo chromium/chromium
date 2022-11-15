@@ -70,6 +70,15 @@ bool NetworkState::PropertyChanged(const std::string& key,
     }
     signal_strength_ = signal_strength;
     return true;
+  } else if (key == shill::kWifiSignalStrengthRssiProperty) {
+    int rssi = rssi_;
+    if (!GetIntegerValue(key, value, &rssi))
+      return false;
+    if (rssi == rssi_) {
+      return false;
+    }
+    rssi_ = rssi;
+    return true;
   } else if (key == shill::kStateProperty) {
     std::string connection_state;
     if (!GetStringValue(key, value, &connection_state))

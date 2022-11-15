@@ -132,6 +132,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   void set_signal_strength(int signal_strength) {
     signal_strength_ = signal_strength;
   }
+  int16_t rssi() const { return rssi_; }
+  void set_rssi(int16_t rssi) { rssi_ = rssi; }
   const std::string& bssid() const { return bssid_; }
   int frequency() const { return frequency_; }
   bool blocked_by_policy() const { return blocked_by_policy_; }
@@ -342,6 +344,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
   int signal_strength_ = 0;
+  // Default RSSI value when it is unknown.
+  // This value needs to be sync with shill::WiFiService::SignalLevelMin.
+  int16_t rssi_ = std::numeric_limits<int16_t>::min();
   std::string bssid_;
   int frequency_ = 0;
   bool blocked_by_policy_ = false;
