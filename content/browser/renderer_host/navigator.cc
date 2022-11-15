@@ -629,31 +629,29 @@ void Navigator::DidNavigate(
 
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include
-  // the actual URL navigated to and isn't sent for AUTO_SUBFRAME navigations.
-  if (details.type != NAVIGATION_TYPE_NAV_IGNORE) {
-    DCHECK(delegate_);
-    DCHECK_EQ(!render_frame_host->GetParent(),
-              did_navigate ? details.is_main_frame : false);
-    navigation_request->DidCommitNavigation(
-        params, did_navigate, details.did_replace_entry,
-        details.previous_main_frame_url, details.type);
+  // the actual URL navigated to.
+  DCHECK(delegate_);
+  DCHECK_EQ(!render_frame_host->GetParent(),
+            did_navigate ? details.is_main_frame : false);
+  navigation_request->DidCommitNavigation(
+      params, did_navigate, details.did_replace_entry,
+      details.previous_main_frame_url, details.type);
 
-    // Dispatch PrimaryPageChanged notification when a main frame
-    // non-same-document navigation changes the current Page in the FrameTree.
-    //
-    // We do this here to ensure that this navigation has updated all relevant
-    // properties of RenderFrameHost / Page / Navigation Controller / Navigation
-    // Request (e.g. `RenderFrameHost::GetLastCommittedURL`,
-    // `NavigationRequest::GetHttpStatusCode`) before notifying the observers.
-    // TODO(crbug.com/1275933): Don't dispatch PrimaryPageChanged for initial
-    // empty document navigations.
-    if (!was_within_same_document && render_frame_host->is_main_frame()) {
-      render_frame_host->GetPage().NotifyPageBecameCurrent();
+  // Dispatch PrimaryPageChanged notification when a main frame
+  // non-same-document navigation changes the current Page in the FrameTree.
+  //
+  // We do this here to ensure that this navigation has updated all relevant
+  // properties of RenderFrameHost / Page / Navigation Controller / Navigation
+  // Request (e.g. `RenderFrameHost::GetLastCommittedURL`,
+  // `NavigationRequest::GetHttpStatusCode`) before notifying the observers.
+  // TODO(crbug.com/1275933): Don't dispatch PrimaryPageChanged for initial
+  // empty document navigations.
+  if (!was_within_same_document && render_frame_host->is_main_frame()) {
+    render_frame_host->GetPage().NotifyPageBecameCurrent();
 
-      // Finally reset the `navigation_request` after navigation commit and all
-      // NavigationRequest usages.
-      navigation_request.reset();
-    }
+    // Finally reset the `navigation_request` after navigation commit and all
+    // NavigationRequest usages.
+    navigation_request.reset();
   }
 
   if (did_create_new_document) {

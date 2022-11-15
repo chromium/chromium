@@ -1539,14 +1539,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
         return false;
       }
       break;
-    case NAVIGATION_TYPE_NAV_IGNORE:
-      // If a pending navigation was in progress, this canceled it.  We should
-      // discard it and make sure it is removed from the URL bar.  After that,
-      // there is nothing we can do with this navigation, so we just return to
-      // the caller that nothing has happened.
-      if (pending_entry_)
-        DiscardNonCommittedEntries();
-      return false;
     case NAVIGATION_TYPE_UNKNOWN:
       NOTREACHED();
       break;
@@ -1677,17 +1669,6 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       trace_return.set_return_reason("new entry, no parent, new entry");
       return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
     }
-
-    // When this is a new subframe navigation, we should have a committed page
-    // in which it's a subframe. This may not be the case when an iframe is
-    // navigated on a popup navigated to about:blank (the iframe would be
-    // written into the popup by script on the main page). For these cases,
-    // there isn't any navigation stuff we can do, so just ignore it.
-    if (!GetLastCommittedEntry()) {
-      trace_return.set_return_reason("new entry, no last committed, ignore");
-      return NAVIGATION_TYPE_NAV_IGNORE;
-    }
-
     // Valid subframe navigation.
     trace_return.set_return_reason("new entry, new subframe");
     return NAVIGATION_TYPE_NEW_SUBFRAME;
@@ -1699,30 +1680,14 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   if (rfh->GetParent()) {
     // All manual subframes would be did_create_new_entry and handled above, so
     // we know this is auto.
-    if (GetLastCommittedEntry()) {
-      trace_return.set_return_reason("subframe, last commmited, auto subframe");
-      return NAVIGATION_TYPE_AUTO_SUBFRAME;
-    }
-
-    // We ignore subframes created in non-committed pages; we'd appreciate if
-    // people stopped doing that.
-    trace_return.set_return_reason("subframe, no last commmited, ignore");
-    return NAVIGATION_TYPE_NAV_IGNORE;
+    trace_return.set_return_reason("subframe, last commmited, auto subframe");
+    return NAVIGATION_TYPE_AUTO_SUBFRAME;
   }
 
   const int nav_entry_id = navigation_request->commit_params().nav_entry_id;
   if (nav_entry_id == 0) {
     // This is a renderer-initiated navigation (nav_entry_id == 0), but didn't
     // create a new page.
-
-    // Just like above in the did_create_new_entry case, it's possible to
-    // scribble onto an uncommitted page. Again, there isn't any navigation
-    // stuff that we can do, so ignore it here as well.
-    NavigationEntry* last_committed = GetLastCommittedEntry();
-    if (!last_committed) {
-      trace_return.set_return_reason("nav entry 0, no last committed, ignore");
-      return NAVIGATION_TYPE_NAV_IGNORE;
-    }
 
     // This main frame navigation is not a history navigation (since
     // nav_entry_id is 0), but didn't create a new entry. So this must be a
