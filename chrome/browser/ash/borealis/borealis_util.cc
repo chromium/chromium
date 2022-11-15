@@ -34,7 +34,7 @@ const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
 const base::StringPiece kURLAllowlist[] = {"//store/", "//run/"};
 const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
-const char kProtonVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
+const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 
 const char kInsertCoinSuccessMessage[] = "Success";
@@ -107,7 +107,7 @@ GURL AssembleUrlAsync(std::string owner_id,
   if (borealis::GetCompatToolInfo(owner_id, &output)) {
     compat_tool_info = borealis::ParseCompatToolInfo(game_id, output);
   } else {
-    LOG(WARNING) << "Failed to run get_compat_tool_versions.py:";
+    LOG(WARNING) << "Failed to get compat tool version info:";
     LOG(WARNING) << output;
   }
   json_root.Set(kJSONProtonKey, compat_tool_info.proton);
@@ -245,15 +245,8 @@ CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
       game_id.value() != compat_tool_info.game_id.value()) {
     LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
                  << compat_tool_info.game_id.value();
-    compat_tool_info.proton = kProtonVersionGameMismatch;
-    compat_tool_info.slr = kProtonVersionGameMismatch;
-  } else if (compat_tool_info.game_id.has_value()) {
-    if (compat_tool_info.proton.empty()) {
-      LOG(WARNING) << "Found an unexpected empty Proton version.";
-    }
-    if (compat_tool_info.slr.empty()) {
-      LOG(WARNING) << "Found an unexpected empty SLR version.";
-    }
+    compat_tool_info.proton = kCompatToolVersionGameMismatch;
+    compat_tool_info.slr = kCompatToolVersionGameMismatch;
   }
 
   return compat_tool_info;
