@@ -371,16 +371,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                               /*spatial_rendering*/ true));
 }
 
-// Fails on Linux and Chrome OS: http://crbug.com/1220321.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_VideoTypesWithDynamicRange DISABLED_VideoTypesWithDynamicRange
-#else
-#define MAYBE_VideoTypesWithDynamicRange VideoTypesWithDynamicRange
-#endif
-
 // Cover basic HDR support.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       MAYBE_VideoTypesWithDynamicRange) {
+                       VideoTypesWithDynamicRange) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();
