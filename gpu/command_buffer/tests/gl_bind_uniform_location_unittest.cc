@@ -152,7 +152,13 @@ TEST_P(BindUniformLocationTest, ConflictsDetection) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
-TEST_P(BindUniformLocationTest, Compositor) {
+// TODO(crbug.com/1384328): Flaky on Asan/Lsan builds.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_Compositor DISABLED_Compositor
+#else
+#define MAYBE_Compositor Compositor
+#endif
+TEST_P(BindUniformLocationTest, MAYBE_Compositor) {
   ASSERT_TRUE(
       GLTestHelper::HasExtension("GL_CHROMIUM_bind_uniform_location"));
 
@@ -266,7 +272,6 @@ TEST_P(BindUniformLocationTest, Compositor) {
                                         expected, nullptr));
 
   GLTestHelper::CheckGLError("no errors", __LINE__);
-
 }
 
 TEST_P(BindUniformLocationTest, UnusedUniformUpdate) {
