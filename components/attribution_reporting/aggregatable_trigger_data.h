@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "components/attribution_reporting/bounded_list.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,6 +54,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
   Filters filters_;
   Filters not_filters_;
 };
+
+using AggregatableTriggerDataList =
+    BoundedList<AggregatableTriggerData, kMaxAggregatableTriggerDataPerTrigger>;
 
 }  // namespace attribution_reporting
 

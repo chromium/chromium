@@ -761,12 +761,16 @@ AttributionTrigger TriggerBuilder::Build(
   }
 
   return AttributionTrigger(
-      *attribution_reporting::TriggerRegistration::Create(
+      attribution_reporting::TriggerRegistration(
           reporting_origin_,
           /*filters=*/attribution_reporting::Filters(),
           /*not_filters=*/attribution_reporting::Filters(), debug_key_,
-          aggregatable_dedup_key_, std::move(event_triggers),
-          aggregatable_trigger_data_, aggregatable_values_, debug_reporting_),
+          aggregatable_dedup_key_,
+          *attribution_reporting::EventTriggerDataList::Create(
+              std::move(event_triggers)),
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              aggregatable_trigger_data_),
+          aggregatable_values_, debug_reporting_),
       destination_origin_, is_within_fenced_frame_);
 }
 
@@ -1334,8 +1338,7 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<const SuitableOrigin&> reporting_origin,
     ::testing::Matcher<const attribution_reporting::Filters&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
-    ::testing::Matcher<
-        const std::vector<attribution_reporting::EventTriggerData>&>
+    ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
         event_triggers,
     ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key,
     ::testing::Matcher<bool> debug_reporting)
@@ -1351,24 +1354,22 @@ TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
 ::testing::Matcher<const attribution_reporting::TriggerRegistration&>
 TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
   return AllOf(
-      Property("reporting_origin",
-               &attribution_reporting::TriggerRegistration::reporting_origin,
-               cfg.reporting_origin),
-      Property("filters", &attribution_reporting::TriggerRegistration::filters,
-               cfg.filters),
-      Property("debug_key",
-               &attribution_reporting::TriggerRegistration::debug_key,
-               cfg.debug_key),
-      Property("event_triggers",
-               &attribution_reporting::TriggerRegistration::event_triggers,
-               cfg.event_triggers),
-      Property(
-          "aggregatable_dedup_key",
-          &attribution_reporting::TriggerRegistration::aggregatable_dedup_key,
-          cfg.aggregatable_dedup_key),
-      Property("debug_reporting",
-               &attribution_reporting::TriggerRegistration::debug_reporting,
-               cfg.debug_reporting));
+      Field("reporting_origin",
+            &attribution_reporting::TriggerRegistration::reporting_origin,
+            cfg.reporting_origin),
+      Field("filters", &attribution_reporting::TriggerRegistration::filters,
+            cfg.filters),
+      Field("debug_key", &attribution_reporting::TriggerRegistration::debug_key,
+            cfg.debug_key),
+      Field("event_triggers",
+            &attribution_reporting::TriggerRegistration::event_triggers,
+            cfg.event_triggers),
+      Field("aggregatable_dedup_key",
+            &attribution_reporting::TriggerRegistration::aggregatable_dedup_key,
+            cfg.aggregatable_dedup_key),
+      Field("debug_reporting",
+            &attribution_reporting::TriggerRegistration::debug_reporting,
+            cfg.debug_reporting));
 }
 
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(

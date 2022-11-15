@@ -377,7 +377,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
-                      *attribution_reporting::TriggerRegistration::Create(
+                      attribution_reporting::TriggerRegistration(
                           /*reporting_origin=*/
                           *SuitableOrigin::Deserialize("https://a.r.test"),
                           /*filters=*/
@@ -391,7 +391,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           }),
                           /*debug_key=*/14,
                           /*aggregatable_dedup_key=*/absl::nullopt,
-                          {
+                          *attribution_reporting::EventTriggerDataList::Create({
                               attribution_reporting::EventTriggerData(
                                   /*data=*/10,
                                   /*priority=*/-5,
@@ -410,8 +410,9 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                                   /*dedup_key=*/absl::nullopt,
                                   /*filters=*/AttributionFilters(),
                                   /*not_filters=*/AttributionFilters()),
-                          },
-                          /*aggregatable_trigger_data=*/{},
+                          }),
+                          /*aggregatable_trigger_data=*/
+                          attribution_reporting::AggregatableTriggerDataList(),
                           /*aggregatable_values=*/
                           attribution_reporting::AggregatableValues(),
                           /*debug_reporting=*/false),
@@ -424,15 +425,17 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
-                      *attribution_reporting::TriggerRegistration::Create(
+                      attribution_reporting::TriggerRegistration(
                           /*reporting_origin=*/
                           *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,
                           /*aggregatable_dedup_key=*/absl::nullopt,
-                          /*event_triggers=*/{},
-                          /*aggregatable_trigger_data=*/{},
+                          /*event_triggers=*/
+                          attribution_reporting::EventTriggerDataList(),
+                          /*aggregatable_trigger_data=*/
+                          attribution_reporting::AggregatableTriggerDataList(),
                           /*aggregatable_values=*/
                           attribution_reporting::AggregatableValues(),
                           /*debug_reporting=*/false),
@@ -445,19 +448,24 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           Pair(
               AttributionTriggerAndTime{
                   .trigger = AttributionTrigger(
-                      *attribution_reporting::TriggerRegistration::Create(
+                      attribution_reporting::TriggerRegistration(
                           /*reporting_origin=*/
                           *SuitableOrigin::Deserialize("https://b.r.test"),
                           /*filters=*/AttributionFilters(),
                           /*not_filters=*/AttributionFilters(),
                           /*debug_key=*/absl::nullopt,
                           /*aggregatable_dedup_key=*/789,
-                          /*event_triggers=*/{},
-                          {*attribution_reporting::AggregatableTriggerData::
-                               Create(absl::MakeUint128(/*high=*/0, /*low=*/1),
-                                      /*source_keys=*/{"a"},
-                                      /*filters=*/AttributionFilters(),
-                                      /*not_filters=*/AttributionFilters())},
+                          /*event_triggers=*/
+                          attribution_reporting::EventTriggerDataList(),
+                          *attribution_reporting::AggregatableTriggerDataList::
+                              Create({*attribution_reporting::
+                                          AggregatableTriggerData::Create(
+                                              absl::MakeUint128(/*high=*/0,
+                                                                /*low=*/1),
+                                              /*source_keys=*/{"a"},
+                                              /*filters=*/AttributionFilters(),
+                                              /*not_filters=*/
+                                              AttributionFilters())}),
                           /*aggregatable_values=*/
                           *attribution_reporting::AggregatableValues::Create(
                               {{"a", 1}}),

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,7 +18,6 @@ class uint128;
 }  // namespace absl
 
 namespace attribution_reporting {
-class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
 class FilterData;
@@ -35,7 +35,7 @@ CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
     AttributionSourceType,
     const attribution_reporting::AggregationKeys& keys,
-    const std::vector<attribution_reporting::AggregatableTriggerData>&,
+    const attribution_reporting::AggregatableTriggerDataList&,
     const attribution_reporting::AggregatableValues&);
 
 // Returns a hex string representation of the 128-bit aggregatable key in big

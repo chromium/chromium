@@ -18,6 +18,7 @@ component("attribution_reporting") {
     "aggregatable_values.h",
     "aggregation_keys.cc",
     "aggregation_keys.h",
+    "bounded_list.h",
     "constants.h",
     "event_trigger_data.cc",
     "event_trigger_data.h",
@@ -52,11 +53,11 @@ source_set("unit_tests") {
 
   sources = [
     "aggregation_keys_unittest.cc",
+    "bounded_list_unittest.cc",
     "filters_unittest.cc",
     "os_registration_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
-    "trigger_registration_unittest.cc",
   ]
 
   deps = [

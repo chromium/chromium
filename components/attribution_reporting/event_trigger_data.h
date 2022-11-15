@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "components/attribution_reporting/bounded_list.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,6 +45,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
                    Filters filters,
                    Filters not_filters);
 };
+
+using EventTriggerDataList =
+    BoundedList<EventTriggerData, kMaxEventTriggerData>;
 
 }  // namespace attribution_reporting
 

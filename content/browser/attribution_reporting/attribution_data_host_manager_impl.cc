@@ -104,8 +104,7 @@ void ReportBadMessageInsecureReportingOrigin() {
       "AttributionDataHost: Reporting origin must be secure.");
 }
 
-absl::optional<std::vector<attribution_reporting::AggregatableTriggerData>>
-FromMojo(
+absl::optional<attribution_reporting::AggregatableTriggerDataList> FromMojo(
     std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr> mojo) {
   if (mojo.size() >
       attribution_reporting::kMaxAggregatableTriggerDataPerTrigger) {
@@ -140,7 +139,8 @@ FromMojo(
     aggregatable_trigger_data.push_back(std::move(*data));
   }
 
-  return aggregatable_trigger_data;
+  return attribution_reporting::AggregatableTriggerDataList::Create(
+      std::move(aggregatable_trigger_data));
 }
 
 enum class RegistrationType {
@@ -557,7 +557,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
         std::move(*event_filters), std::move(*not_event_filters));
   }
 
-  absl::optional<std::vector<attribution_reporting::AggregatableTriggerData>>
+  absl::optional<attribution_reporting::AggregatableTriggerDataList>
       aggregatable_trigger_data =
           FromMojo(std::move(data->aggregatable_trigger_data));
   if (!aggregatable_trigger_data.has_value()) {
@@ -580,18 +580,20 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   context.num_data_registered++;
 
-  absl::optional<attribution_reporting::TriggerRegistration> registration =
-      attribution_reporting::TriggerRegistration::Create(
+  auto event_trigger_data_list =
+      attribution_reporting::EventTriggerDataList::Create(
+          std::move(event_triggers));
+  DCHECK(event_trigger_data_list);
+
+  AttributionTrigger trigger(
+      attribution_reporting::TriggerRegistration(
           std::move(*reporting_origin), std::move(*filters),
           std::move(*not_filters), data->debug_key,
-          data->aggregatable_dedup_key, std::move(event_triggers),
+          data->aggregatable_dedup_key, std::move(*event_trigger_data_list),
           std::move(*aggregatable_trigger_data),
-          std::move(*aggregatable_values), data->debug_reporting);
-  DCHECK(registration);
-
-  AttributionTrigger trigger(std::move(*registration),
-                             /*destination_origin=*/context.context_origin,
-                             context.is_within_fenced_frame);
+          std::move(*aggregatable_values), data->debug_reporting),
+      /*destination_origin=*/context.context_origin,
+      context.is_within_fenced_frame);
 
   // Handle the trigger immediately if we're not waiting for any sources to be
   // registered.

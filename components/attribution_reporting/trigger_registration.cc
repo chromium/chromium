@@ -9,12 +9,28 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
-TriggerRegistration::TriggerRegistration(SuitableOrigin reporting_origin)
-    : reporting_origin_(std::move(reporting_origin)) {}
+TriggerRegistration::TriggerRegistration(
+    SuitableOrigin reporting_origin,
+    Filters filters,
+    Filters not_filters,
+    absl::optional<uint64_t> debug_key,
+    absl::optional<uint64_t> aggregatable_dedup_key,
+    EventTriggerDataList event_triggers,
+    AggregatableTriggerDataList aggregatable_trigger_data,
+    AggregatableValues aggregatable_values,
+    bool debug_reporting)
+    : reporting_origin(std::move(reporting_origin)),
+      filters(std::move(filters)),
+      not_filters(std::move(not_filters)),
+      debug_key(debug_key),
+      aggregatable_dedup_key(aggregatable_dedup_key),
+      event_triggers(std::move(event_triggers)),
+      aggregatable_trigger_data(aggregatable_trigger_data),
+      aggregatable_values(std::move(aggregatable_values)),
+      debug_reporting(debug_reporting) {}
 
 TriggerRegistration::~TriggerRegistration() = default;
 
@@ -27,28 +43,5 @@ TriggerRegistration::TriggerRegistration(TriggerRegistration&&) = default;
 
 TriggerRegistration& TriggerRegistration::operator=(TriggerRegistration&&) =
     default;
-
-// static
-absl::optional<TriggerRegistration> TriggerRegistration::Create(
-    SuitableOrigin reporting_origin,
-    Filters filters,
-    Filters not_filters,
-    absl::optional<uint64_t> debug_key,
-    absl::optional<uint64_t> aggregatable_dedup_key,
-    std::vector<EventTriggerData> event_triggers,
-    std::vector<AggregatableTriggerData> aggregatable_trigger_data,
-    AggregatableValues aggregatable_values,
-    bool debug_reporting) {
-  TriggerRegistration result(std::move(reporting_origin));
-  result.filters_ = std::move(filters);
-  result.not_filters_ = std::move(not_filters);
-  result.debug_key_ = debug_key;
-  result.aggregatable_dedup_key_ = aggregatable_dedup_key;
-  result.event_triggers_ = std::move(event_triggers);
-  result.aggregatable_trigger_data_ = std::move(aggregatable_trigger_data);
-  result.aggregatable_values_ = std::move(aggregatable_values);
-  result.debug_reporting_ = debug_reporting;
-  return result;
-}
 
 }  // namespace attribution_reporting

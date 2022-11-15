@@ -167,39 +167,24 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
   auto tie = [](const TriggerRegistration& reg) {
-    return std::make_tuple(reg.reporting_origin(), reg.filters(),
-                           reg.not_filters(), reg.debug_key(),
-                           reg.aggregatable_dedup_key(), reg.event_triggers(),
-                           reg.aggregatable_trigger_data(),
-                           reg.aggregatable_values(), reg.debug_reporting());
+    return std::make_tuple(reg.reporting_origin, reg.filters, reg.not_filters,
+                           reg.debug_key, reg.aggregatable_dedup_key,
+                           reg.event_triggers, reg.aggregatable_trigger_data,
+                           reg.aggregatable_values, reg.debug_reporting);
   };
   return tie(a) == tie(b);
 }
 
 std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {
-  out << "{reporting_origin=" << reg.reporting_origin()
-      << ",filters=" << reg.filters() << ",not_filters=" << reg.not_filters()
+  out << "{reporting_origin=" << reg.reporting_origin
+      << ",filters=" << reg.filters << ",not_filters=" << reg.not_filters
       << ",debug_key=";
-  WriteOptional(out, reg.debug_key()) << ",aggregatable_dedup_key=";
-  WriteOptional(out, reg.aggregatable_dedup_key()) << ",event_triggers=[";
-
-  const char* separator = "";
-  for (const auto& event_trigger : reg.event_triggers()) {
-    out << separator << event_trigger;
-    separator = ", ";
-  }
-
-  out << "],aggregatable_trigger_data=[";
-
-  separator = "";
-  for (const auto& aggregatable_trigger_data :
-       reg.aggregatable_trigger_data()) {
-    out << separator << aggregatable_trigger_data;
-    separator = ", ";
-  }
-
-  out << "],aggregatable_values=" << reg.aggregatable_values()
-      << ",debug_reporting=" << reg.debug_reporting() << "}";
+  WriteOptional(out, reg.debug_key) << ",aggregatable_dedup_key=";
+  WriteOptional(out, reg.aggregatable_dedup_key)
+      << ",event_triggers=" << reg.event_triggers
+      << ",aggregatable_trigger_data=" << reg.aggregatable_trigger_data
+      << ",aggregatable_values=" << reg.aggregatable_values
+      << ",debug_reporting=" << reg.debug_reporting << "}";
 
   return out;
 }

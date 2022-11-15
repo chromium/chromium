@@ -1019,13 +1019,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   const base::Time now = base::Time::Now();
 
   const AttributionTrigger trigger(
-      *attribution_reporting::TriggerRegistration::Create(
+      attribution_reporting::TriggerRegistration(
           *SuitableOrigin::Deserialize("https://r.test"),
           /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
           /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
           /*debug_key=*/1,
           /*aggregatable_dedup_key=*/18,
-          {
+          *attribution_reporting::EventTriggerDataList::Create({
               attribution_reporting::EventTriggerData(
                   /*data=*/2,
                   /*priority=*/3,
@@ -1040,19 +1040,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   /*filters=*/AttributionFilters(),
                   /*not_filters=*/
                   *AttributionFilters::Create({{"e", {"f"}}})),
-          },
-          {*attribution_reporting::AggregatableTriggerData::Create(
-               /*key_piece=*/345,
-               /*source_keys=*/{"a"},
-               /*filters=*/
-               *AttributionFilters::Create({{"c", {"d"}}}),
-               /*not_filters=*/AttributionFilters()),
-           *attribution_reporting::AggregatableTriggerData::Create(
-               /*key_piece=*/678,
-               /*source_keys=*/{"b"},
-               /*filters=*/AttributionFilters(),
-               /*not_filters=*/
-               *AttributionFilters::Create({{"e", {"f"}}}))},
+          }),
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              {*attribution_reporting::AggregatableTriggerData::Create(
+                   /*key_piece=*/345,
+                   /*source_keys=*/{"a"},
+                   /*filters=*/
+                   *AttributionFilters::Create({{"c", {"d"}}}),
+                   /*not_filters=*/AttributionFilters()),
+               *attribution_reporting::AggregatableTriggerData::Create(
+                   /*key_piece=*/678,
+                   /*source_keys=*/{"b"},
+                   /*filters=*/AttributionFilters(),
+                   /*not_filters=*/
+                   *AttributionFilters::Create({{"e", {"f"}}}))}),
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create(
               {{"a", 123}, {"b", 456}}),

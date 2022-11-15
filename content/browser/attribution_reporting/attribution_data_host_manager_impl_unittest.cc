@@ -562,17 +562,19 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                   {"a", {"b"}},
               }),
               Optional(789),
-              ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                              1, 2, Optional(3),
-                              *AttributionFilters::Create({
-                                  {"c", {"d"}},
-                              }),
-                              *AttributionFilters::Create({
-                                  {"e", {"f"}},
-                              }))),
-                          EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                              4, 5, Eq(absl::nullopt), AttributionFilters(),
-                              AttributionFilters()))),
+              EventTriggerDataListMatches(
+                  EventTriggerDataListMatcherConfig(ElementsAre(
+                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          1, 2, Optional(3),
+                          *AttributionFilters::Create({
+                              {"c", {"d"}},
+                          }),
+                          *AttributionFilters::Create({
+                              {"e", {"f"}},
+                          }))),
+                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          4, 5, Eq(absl::nullopt), AttributionFilters(),
+                          AttributionFilters()))))),
               Optional(123),
               /*debug_reporting=*/true)),
           destination_origin))));

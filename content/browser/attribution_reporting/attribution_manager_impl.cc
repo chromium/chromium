@@ -592,9 +592,9 @@ void AttributionManagerImpl::ProcessEvents() {
             [](const AttributionTrigger& trigger) {
               const attribution_reporting::TriggerRegistration& registration =
                   trigger.registration();
-              return registration.debug_key().has_value() ||
-                             registration.debug_reporting()
-                         ? &registration.reporting_origin()
+              return registration.debug_key.has_value() ||
+                             registration.debug_reporting
+                         ? &registration.reporting_origin
                          : nullptr;
             },
         },
@@ -662,7 +662,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
                 this->storage_partition_.get(),
                 ContentBrowserClient::AttributionReportingOperation::kTrigger,
                 /*source_origin=*/nullptr, &*trigger.destination_origin(),
-                &*registration.reporting_origin());
+                &*registration.reporting_origin);
             RecordRegisterConversionAllowed(allowed);
             if (!allowed) {
               this->OnReportStored(
@@ -677,9 +677,9 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             }
 
             absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set && registration.debug_key().has_value()) {
-              cleared_debug_key = registration.debug_key();
-              registration.ClearDebugKey();
+            if (!is_debug_cookie_set && registration.debug_key.has_value()) {
+              cleared_debug_key = registration.debug_key;
+              registration.debug_key.reset();
             }
 
             this->StoreTrigger(std::move(trigger), cleared_debug_key,

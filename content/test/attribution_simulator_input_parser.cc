@@ -325,19 +325,19 @@ class AttributionSimulatorInputParser {
     if (has_error())
       return;
 
-    absl::optional<attribution_reporting::TriggerRegistration> registration =
-        attribution_reporting::TriggerRegistration::Create(
-            std::move(*reporting_origin), std::move(filters),
-            std::move(not_filters), debug_key, aggregatable_dedup_key,
-            std::move(event_triggers), std::move(aggregatable_trigger_data),
-            std::move(aggregatable_values), debug_reporting);
-    DCHECK(registration);
-
     events_.emplace_back(
         AttributionTriggerAndTime{
-            .trigger = AttributionTrigger(std::move(*registration),
-                                          std::move(*destination_origin),
-                                          /*is_within_fenced_frame=*/false),
+            .trigger = AttributionTrigger(
+                attribution_reporting::TriggerRegistration(
+                    std::move(*reporting_origin), std::move(filters),
+                    std::move(not_filters), debug_key, aggregatable_dedup_key,
+                    *attribution_reporting::EventTriggerDataList::Create(
+                        std::move(event_triggers)),
+                    *attribution_reporting::AggregatableTriggerDataList::Create(
+                        std::move(aggregatable_trigger_data)),
+                    std::move(aggregatable_values), debug_reporting),
+                std::move(*destination_origin),
+                /*is_within_fenced_frame=*/false),
             .time = trigger_time,
         },
         std::move(trigger));

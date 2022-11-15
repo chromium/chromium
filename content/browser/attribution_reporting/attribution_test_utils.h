@@ -24,6 +24,9 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/bounded_list.h"
+#include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -58,7 +61,6 @@
 
 namespace attribution_reporting {
 class AggregatableTriggerData;
-struct EventTriggerData;
 class TriggerRegistration;
 }  // namespace attribution_reporting
 
@@ -931,14 +933,39 @@ struct EventTriggerDataMatcherConfig {
 ::testing::Matcher<const attribution_reporting::EventTriggerData&>
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 
+template <typename T>
+struct BoundedListMatcherConfig {
+  ::testing::Matcher<const std::vector<T>&> vec = ::testing::_;
+
+  BoundedListMatcherConfig() = delete;
+  explicit BoundedListMatcherConfig(
+      ::testing::Matcher<const std::vector<T>&> vec = ::testing::_)
+      : vec(std::move(vec)) {}
+
+  ~BoundedListMatcherConfig() = default;
+};
+
+template <typename T, size_t kMaxSize>
+::testing::Matcher<const attribution_reporting::BoundedList<T, kMaxSize>&>
+BoundedListMatches(const BoundedListMatcherConfig<T>& cfg) {
+  return Property("vec", &attribution_reporting::BoundedList<T, kMaxSize>::vec,
+                  cfg.vec);
+}
+
+using EventTriggerDataListMatcherConfig =
+    BoundedListMatcherConfig<attribution_reporting::EventTriggerData>;
+
+constexpr auto EventTriggerDataListMatches =
+    BoundedListMatches<attribution_reporting::EventTriggerData,
+                       attribution_reporting::kMaxEventTriggerData>;
+
 struct TriggerRegistrationMatcherConfig {
   ::testing::Matcher<const attribution_reporting::SuitableOrigin&>
       reporting_origin = ::testing::_;
   ::testing::Matcher<const attribution_reporting::Filters&> filters =
       ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
-  ::testing::Matcher<
-      const std::vector<attribution_reporting::EventTriggerData>&>
+  ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
       event_triggers = ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
       ::testing::_;
@@ -951,8 +978,7 @@ struct TriggerRegistrationMatcherConfig {
       ::testing::Matcher<const attribution_reporting::Filters&> filters =
           ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
-      ::testing::Matcher<
-          const std::vector<attribution_reporting::EventTriggerData>&>
+      ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
           event_triggers = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
           ::testing::_,

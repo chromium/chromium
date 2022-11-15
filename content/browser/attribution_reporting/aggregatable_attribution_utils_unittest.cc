@@ -87,7 +87,9 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           *source_filter_data, AttributionSourceType::kEvent, *source,
-          aggregatable_trigger_data, aggregatable_values);
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              std::move(aggregatable_trigger_data)),
+          aggregatable_values);
 
   // "key3" is not present as no value is found.
   EXPECT_THAT(

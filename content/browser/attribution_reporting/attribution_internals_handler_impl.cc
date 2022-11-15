@@ -469,7 +469,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     auto web_ui_log = attribution_internals::mojom::ClearedDebugKey::New();
     web_ui_log->cleared_debug_key = WebUIDebugKey(cleared_debug_key.value());
     web_ui_log->time = result.trigger_time().ToJsTime();
-    web_ui_log->reporting_origin = registration.reporting_origin();
+    web_ui_log->reporting_origin = registration.reporting_origin;
     web_ui_log->cleared_from = SourceOrTrigger::kTrigger;
 
     for (auto& observer : observers_) {
@@ -479,16 +479,16 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   auto web_ui_trigger = attribution_internals::mojom::WebUITrigger::New();
   web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
   web_ui_trigger->destination_origin = trigger.destination_origin();
-  web_ui_trigger->reporting_origin = registration.reporting_origin();
-  web_ui_trigger->filters = registration.filters().filter_values();
-  web_ui_trigger->not_filters = registration.not_filters().filter_values();
-  web_ui_trigger->debug_key = WebUIDebugKey(registration.debug_key());
+  web_ui_trigger->reporting_origin = registration.reporting_origin;
+  web_ui_trigger->filters = registration.filters.filter_values();
+  web_ui_trigger->not_filters = registration.not_filters.filter_values();
+  web_ui_trigger->debug_key = WebUIDebugKey(registration.debug_key);
   web_ui_trigger->event_level_status =
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =
       GetWebUITriggerStatus(result.aggregatable_status());
 
-  for (const auto& event_trigger : registration.event_triggers()) {
+  for (const auto& event_trigger : registration.event_triggers.vec()) {
     web_ui_trigger->event_triggers.emplace_back(
         absl::in_place,
         /*data=*/event_trigger.data,
@@ -499,7 +499,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   }
 
   for (const auto& aggregatable_trigger_data :
-       registration.aggregatable_trigger_data()) {
+       registration.aggregatable_trigger_data.vec()) {
     web_ui_trigger->aggregatable_triggers.emplace_back(
         absl::in_place,
         /*key_piece=*/
@@ -514,9 +514,9 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   }
 
   web_ui_trigger->aggregatable_values =
-      registration.aggregatable_values().values();
+      registration.aggregatable_values.values();
   web_ui_trigger->aggregatable_dedup_key =
-      CreateWebUIDedupKey(registration.aggregatable_dedup_key());
+      CreateWebUIDedupKey(registration.aggregatable_dedup_key);
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());
