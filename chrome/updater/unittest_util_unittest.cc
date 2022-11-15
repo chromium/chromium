@@ -80,6 +80,14 @@ TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
   const base::FilePath path_not_found(FILE_PATH_LITERAL("path-not-found"));
   EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(path_not_found));
 
+  // Create something in temp so that `DeleteFileAndEmptyParentDirectories()`
+  // does not delete the temp directory of this process because it is empty.
+  base::ScopedTempDir a_temp_dir;
+  ASSERT_TRUE(a_temp_dir.CreateUniqueTempDir());
+
+  base::FilePath temp_path;
+  ASSERT_TRUE(GetTempDir(&temp_path));
+
   // Create and delete the following path "some_dir/dir_in_dir/file_in_dir".
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -90,6 +98,7 @@ TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
   EXPECT_TRUE(CreateTemporaryFileInDir(dir_in_dir, &file_in_dir));
   EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(file_in_dir));
   EXPECT_FALSE(base::DirectoryExists(temp_dir.GetPath()));
+  EXPECT_TRUE(base::DirectoryExists(temp_path));
 }
 
 }  // namespace updater::test
