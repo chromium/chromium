@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
@@ -41,8 +40,8 @@ class MetricReportingControllerTest : public ::testing::Test {
 
 TEST_F(MetricReportingControllerTest, InvalidPath_DefaultDisabled) {
   MetricReportingController controller(settings_.get(), "invalid/path",
-                                       /*setting_enabled_default_value=*/false,
-                                       enable_cb_, disable_cb_);
+                                       /*setting_enabled_default_value=*/false);
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
   EXPECT_EQ(enable_count_, 0);
   EXPECT_EQ(disable_count_, 0);
@@ -50,8 +49,8 @@ TEST_F(MetricReportingControllerTest, InvalidPath_DefaultDisabled) {
 
 TEST_F(MetricReportingControllerTest, InvalidPath_DefaultEnabled) {
   MetricReportingController controller(settings_.get(), "invalid/path",
-                                       /*setting_enabled_default_value=*/true,
-                                       enable_cb_, disable_cb_);
+                                       /*setting_enabled_default_value=*/true);
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
   EXPECT_EQ(enable_count_, 1);
   EXPECT_EQ(disable_count_, 0);
@@ -62,8 +61,8 @@ TEST_F(MetricReportingControllerTest, TrustedCheck) {
   settings_->SetIsTrusted(false);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
-                                       /*setting_enabled_default_value=*/false,
-                                       enable_cb_, disable_cb_);
+                                       /*setting_enabled_default_value=*/false);
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
   EXPECT_EQ(enable_count_, 0);
   EXPECT_EQ(disable_count_, 0);
@@ -78,8 +77,8 @@ TEST_F(MetricReportingControllerTest, InitiallyEnabled) {
   settings_->SetBoolean(kSettingPath, true);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
-                                       /*setting_enabled_default_value=*/false,
-                                       enable_cb_, disable_cb_);
+                                       /*setting_enabled_default_value=*/false);
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
   // Only enable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);
@@ -104,8 +103,8 @@ TEST_F(MetricReportingControllerTest, InitiallyDisabled) {
   settings_->SetBoolean(kSettingPath, false);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
-                                       /*setting_enabled_default_value=*/false,
-                                       enable_cb_, disable_cb_);
+                                       /*setting_enabled_default_value=*/false);
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
   // No callbacks are called.
   EXPECT_EQ(enable_count_, 0);
@@ -126,5 +125,50 @@ TEST_F(MetricReportingControllerTest, InitiallyDisabled) {
   EXPECT_EQ(disable_count_, 1);
 }
 
+TEST_F(MetricReportingControllerTest, SetCallbackAfterEnable) {
+  settings_->SetBoolean(kSettingPath, false);
+
+  MetricReportingController controller(settings_.get(), kSettingPath,
+                                       /*setting_enabled_default_value=*/false);
+
+  // Change to enable.
+  settings_->SetBoolean(kSettingPath, true);
+
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
+
+  // Only enable_cb_ is called.
+  EXPECT_EQ(enable_count_, 1);
+  EXPECT_EQ(disable_count_, 0);
+
+  // Change to disable.
+  settings_->SetBoolean(kSettingPath, false);
+
+  // Only disable_cb_ is called.
+  EXPECT_EQ(enable_count_, 1);
+  EXPECT_EQ(disable_count_, 1);
+}
+
+TEST_F(MetricReportingControllerTest, SetCallbackAfterDisable) {
+  settings_->SetBoolean(kSettingPath, true);
+
+  MetricReportingController controller(settings_.get(), kSettingPath,
+                                       /*setting_enabled_default_value=*/false);
+
+  // Change to disable.
+  settings_->SetBoolean(kSettingPath, false);
+
+  controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
+
+  // No callbacks are called.
+  EXPECT_EQ(enable_count_, 0);
+  EXPECT_EQ(disable_count_, 0);
+
+  // Change to enable.
+  settings_->SetBoolean(kSettingPath, true);
+
+  // Only enable_cb_ is called.
+  EXPECT_EQ(enable_count_, 1);
+  EXPECT_EQ(disable_count_, 0);
+}
 }  // namespace
 }  // namespace reporting

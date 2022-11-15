@@ -4,7 +4,9 @@
 
 #include "components/reporting/metrics/metric_reporting_controller.h"
 
-#include "base/bind.h"
+#include <utility>
+
+#include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -14,14 +16,10 @@ namespace reporting {
 MetricReportingController::MetricReportingController(
     ReportingSettings* reporting_settings,
     const std::string& setting_path,
-    bool setting_enabled_default_value,
-    base::RepeatingClosure on_setting_enabled,
-    base::RepeatingClosure on_setting_disabled)
+    bool setting_enabled_default_value)
     : reporting_settings_(reporting_settings),
       setting_path_(setting_path),
-      setting_enabled_default_value_(setting_enabled_default_value),
-      on_setting_enabled_(std::move(on_setting_enabled)),
-      on_setting_disabled_(std::move(on_setting_disabled)) {
+      setting_enabled_default_value_(setting_enabled_default_value) {
   UpdateSetting();
 
   subscription_ = reporting_settings_->AddSettingsObserver(
@@ -32,6 +30,18 @@ MetricReportingController::MetricReportingController(
 
 MetricReportingController::~MetricReportingController() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void MetricReportingController::SetSettingUpdateCb(
+    base::RepeatingClosure on_setting_enabled,
+    base::RepeatingClosure on_setting_disabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  on_setting_enabled_ = std::move(on_setting_enabled);
+  on_setting_disabled_ = std::move(on_setting_disabled);
+  if (setting_enabled_) {
+    on_setting_enabled_.Run();
+  }
 }
 
 void MetricReportingController::UpdateSetting() {

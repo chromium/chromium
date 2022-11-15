@@ -45,7 +45,8 @@ MetricEventObserverManager::MetricEventObserverManager(
                          std::move(on_event_observed_cb)));
 
   reporting_controller_ = std::make_unique<MetricReportingController>(
-      reporting_settings, enable_setting_path, setting_enabled_default_value,
+      reporting_settings, enable_setting_path, setting_enabled_default_value);
+  reporting_controller_->SetSettingUpdateCb(
       base::BindRepeating(&MetricEventObserverManager::SetReportingEnabled,
                           base::Unretained(this),
                           /*is_enabled=*/true),

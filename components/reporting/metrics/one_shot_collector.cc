@@ -31,7 +31,8 @@ OneShotCollector::OneShotCollector(
       metric_report_queue_(metric_report_queue),
       on_data_reported_(std::move(on_data_reported)) {
   reporting_controller_ = std::make_unique<MetricReportingController>(
-      reporting_settings, setting_path, setting_enabled_default_value,
+      reporting_settings, setting_path, setting_enabled_default_value);
+  reporting_controller_->SetSettingUpdateCb(
       base::BindRepeating(&OneShotCollector::Collect, base::Unretained(this)));
 }
 

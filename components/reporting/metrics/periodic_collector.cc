@@ -41,11 +41,13 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
       reporting_controller_(std::make_unique<MetricReportingController>(
           reporting_settings,
           enable_setting_path,
-          setting_enabled_default_value,
-          base::BindRepeating(&PeriodicCollector::StartPeriodicCollection,
-                              base::Unretained(this)),
-          base::BindRepeating(&PeriodicCollector::StopPeriodicCollection,
-                              base::Unretained(this)))) {}
+          setting_enabled_default_value)) {
+  reporting_controller_->SetSettingUpdateCb(
+      base::BindRepeating(&PeriodicCollector::StartPeriodicCollection,
+                          base::Unretained(this)),
+      base::BindRepeating(&PeriodicCollector::StopPeriodicCollection,
+                          base::Unretained(this)));
+}
 
 PeriodicCollector::~PeriodicCollector() = default;
 

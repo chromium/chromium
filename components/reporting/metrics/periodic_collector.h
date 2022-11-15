@@ -50,9 +50,9 @@ class PeriodicCollector : public CollectorBase {
 
   const raw_ptr<MetricReportQueue> metric_report_queue_;
 
-  // `rate_controller_` should be initialized before `reporting_controller_` as
-  // initializing `reporting_controller` will trigger `rate_controller_` call if
-  // the setting is enabled.
+  // `rate_controller_` should be initialized before the setting update
+  // callbacks of `reporting_controller_` are set, as `reporting_controller`
+  // will trigger `rate_controller_` call if the setting is enabled.
   const std::unique_ptr<MetricRateController> rate_controller_;
   const std::unique_ptr<MetricReportingController> reporting_controller_;
 };
