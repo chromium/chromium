@@ -2370,6 +2370,7 @@
 <translation id="3143515551205905069">ସିଙ୍କ୍‌ ବାତିଲ୍‍ କରନ୍ତୁ</translation>
 <translation id="3143754809889689516">ଆରମ୍ଭରୁ ଚଲାନ୍ତୁ</translation>
 <translation id="3144647712221361880">ଏହିପରି ଭାବେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="3144896554017119333">ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
 <translation id="3149510190863420837">Chrome ଆପ୍ସ</translation>
 <translation id="3150693969729403281">ବର୍ତ୍ତମାନ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
 <translation id="3150927491400159470">ହାର୍ଡ ରିଲୋଡ୍</translation>
@@ -2478,6 +2479,7 @@
 <translation id="3268451620468152448">ଖୋଲାଥିବା ଟାବ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3269093882174072735">ଛବିକୁ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> ଦେଖାନ୍ତୁ ନାହିଁ</translation>
+<translation id="3269175001434213183">ଆପଣଙ୍କ ଷ୍ଟଫର ବେକଅପ ନେବା ପାଇଁ ସିଙ୍କ ଚାଲୁ କରି ଯେ କୌଣସି ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3269612321104318480">ହାଲୁକା ଟିଲ୍ ଓ ଧଳା</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="326999365752735949">diff ଡାଉନ୍‍‍ଲୋଡ୍ ହେଉଛି</translation>
@@ -4275,6 +4277,7 @@
 <translation id="4950993567860689081">ଆପଣଙ୍କ ସେସନ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲକୁ ଡିଲିଟ କରିପାରିବେ ଏବଂ ଆପଣଙ୍କ ନେଟୱାର୍କ ଟ୍ରାଫିକକୁ ମଧ୍ୟ ମନିଟର କରିପାରିବେ।</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ଏକ ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
+<translation id="4951966678293618079">ଏହି ସାଇଟ ପାଇଁ କେବେ ବି ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="4953808748584563296">ଡିଫଲ୍ଟ ଅରେଞ୍ଜ ଅବତାର</translation>
 <translation id="4955710816792587366">ଆପଣଙ୍କର ପିନ୍‌ ନମ୍ବର ବାଛନ୍ତୁ</translation>
 <translation id="4959262764292427323">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରାଯାଇଛି ତେଣୁ ଆପଣ ସେଗୁଡ଼ିକୁ ଯେକୌଣସି ଡିଭାଇସ୍‌ରେ ବ୍ୟବହାର କରିପାରିବେ</translation>
@@ -4304,6 +4307,7 @@
 <translation id="4981449534399733132">ସିଙ୍କ୍ ହୋଇଥିବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍ ଏବଂ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିବାକୁ, <ph name="BEGIN_LINK" />ସାଇନ୍ ଇନ୍ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="4982111327868342436">ଯେ କୌଣସି ଡିଭାଇସରେ ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4982236238228587209">ଡିଭାଇସ୍ ସଫ୍ଟୱେୟାର</translation>
+<translation id="4986706507552097681">ସେଟିଂସରେ କଣ ସିଙ୍କ କରିବାକୁ ହେବ ତାହା ଆପଣ ସର୍ବଦା ବାଛି ପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସେବାଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="4986728572522335985">ଏହା ସୁରକ୍ଷା କୀ’ର PIN ସମେତ ଏଥିରେ ଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ କରିଦେବ</translation>
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
 <translation id="49896407730300355">c&amp;ounterclockwise ଘୂରାନ୍ତୁ</translation>

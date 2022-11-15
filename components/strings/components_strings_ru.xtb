@@ -354,6 +354,7 @@
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Возможны разные действия. Нажимайте Tab для переключения между ними.</translation>
 <translation id="1800473098294731951">B9</translation>
+<translation id="1801812870656502108">Реквизиты виртуальной карты</translation>
 <translation id="1803020234906945288">Здоровое питание</translation>
 <translation id="1803264062614276815">Владелец карты</translation>
 <translation id="1803351196216024260">Разрешено отправлять запрос на использование микрофона</translation>
@@ -447,6 +448,7 @@
 <translation id="2059202684901022309">22 x 34 дюйма</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 вариант}one{# вариант}few{# варианта}many{# вариантов}other{# варианта}}</translation>
 <translation id="2066915425250589881">запросить ее удаление</translation>
+<translation id="2066969741541525119">Сайт, который вы хотите открыть, заблокирован вашей организацией</translation>
 <translation id="2068528718802935086">Младенцы и маленькие дети</translation>
 <translation id="2071156619270205202">Указанный номер нельзя использовать для виртуальной карты.</translation>
 <translation id="2071692954027939183">Уведомления заблокированы автоматически, потому что вы обычно запрещаете их показ.</translation>
@@ -501,6 +503,7 @@
 <translation id="2188375229972301266">Несколько отверстий снизу</translation>
 <translation id="219906046732893612">Ремонт дома</translation>
 <translation id="2202020181578195191">Недопустимый формат года.</translation>
+<translation id="2202627062836089804">на задней стороне карты</translation>
 <translation id="22081806969704220">Лоток 3</translation>
 <translation id="2210794033760923560">Загрузить отчет</translation>
 <translation id="2212735316055980242">Политика для устройства не найдена</translation>
@@ -983,6 +986,7 @@
 <translation id="350069200438440499">Имя файла:</translation>
 <translation id="3507936815618196901">Создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры</translation>
 <translation id="3512163584740124171">Действует правило с более высоким приоритетом.</translation>
+<translation id="3515972145999192222">Домен <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> был заблокирован вашей организацией, так как нарушает правила. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="35172538073169599">Кнопка "Управление адресами". Нажмите Ввод, чтобы добавить и изменить адреса в настройках Chrome.</translation>
 <translation id="3518941727116570328">Обработка нескольких объектов</translation>
 <translation id="3525130752944427905">10 x 14 дюймов</translation>
@@ -1057,6 +1061,7 @@
 <translation id="3678342917559046352">Недействительное расширение. Допускается одно из следующих значений: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Открыть страницу в новом окне в режиме инкогнито (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Данные сертификата</translation>
+<translation id="3693327506115126094">Выберите способ подтверждения личности</translation>
 <translation id="3699374065820972102">Touch ID используется, чтобы указывать пароли</translation>
 <translation id="3701427423622901115">Сброс подтвержден.</translation>
 <translation id="3704162925118123524">Возможно, вам нужно перейти на страницу входа используемой сети.</translation>
@@ -1141,6 +1146,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991">Сайт <ph name="URL" /> собирается воспроизвести защищенный контент. Ваше устройство пройдет проверку в Google, и этот сайт сможет получать к нему доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
+<translation id="3921869355029467742">Ввести защитный код</translation>
 <translation id="3927932062596804919">Запретить</translation>
 <translation id="393316646445601645">Интернет и телекоммуникации</translation>
 <translation id="3939773374150895049">Использовать WebAuthn вместо CVC-кода?</translation>
@@ -1387,6 +1393,7 @@
 <translation id="4524805452350978254">Изменить</translation>
 <translation id="4526465106919207193">Люди и общество</translation>
 <translation id="4530347922939905757">SMS</translation>
+<translation id="4531477351494678589">Номер виртуальной карты:</translation>
 <translation id="4540780316273593836">Ошибка</translation>
 <translation id="4541810033354695636">Дополненная реальность</translation>
 <translation id="4542971377163063093">Лоток 6</translation>
@@ -1396,6 +1403,7 @@
 <translation id="4567686777917670400">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chromium на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="457875822857220463">Доставка</translation>
 <translation id="4582204425268416675">Удалить карту</translation>
+<translation id="4582595824823167856">Получить SMS</translation>
 <translation id="4587425331216688090">Удалить адрес из Chrome?</translation>
 <translation id="459089498662672729">Администратор не рекомендует вставлять сюда контент со страницы <ph name="ORIGIN_NAME" />.</translation>
 <translation id="4592951414987517459">Соединение с <ph name="DOMAIN" /> зашифровано с помощью современных наборов шифров.</translation>
@@ -1407,6 +1415,7 @@
 <translation id="4606870351894164739">Эффектный</translation>
 <translation id="4607603470419975064">Кнопка "Посмотреть советы по работе с Chrome". Чтобы узнать больше о функциях Chrome, нажмите Ввод.</translation>
 <translation id="4607608436550361748">Посмотреть советы по работе с Chrome</translation>
+<translation id="460848736049414407">Заблокировано администратором</translation>
 <translation id="4610279718074907952">Этот сайт входит в группу <ph name="SET_OWNER" /> и может отслеживать ваши действия</translation>
 <translation id="4617273035598175554">ПО для графики и анимации</translation>
 <translation id="4622292761762557753">Все равно передать</translation>
@@ -1421,6 +1430,7 @@
 <translation id="4646534391647090355">Перейти сейчас</translation>
 <translation id="4648262692072505866">Хеш должен быть в формате SHA-256.</translation>
 <translation id="4652266463001779298">Запрещено</translation>
+<translation id="4652440160515225514">Этот сайт был заблокирован вашей организацией, так как нарушает правила.</translation>
 <translation id="4653167719759882810">Слияния и приобретения</translation>
 <translation id="4658638640878098064">Скоба в левом верхнем углу</translation>
 <translation id="4660119392514473465">Ваши действия в режиме инкогнито будут недоступны другим пользователям этого устройства. Однако закладки, скачанные файлы и объекты из списка для чтения сохранятся.</translation>
@@ -1873,6 +1883,7 @@
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
 <translation id="5772086939108830423">Использовать ключ доступа на другом устройстве</translation>
 <translation id="5776313857861697733">Приоритет</translation>
+<translation id="5776574724412881956">Виртуальная карта не указана? Нажмите на ее реквизиты, чтобы скопировать их в буфер обмена. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Эксперимент включен</translation>
 <translation id="578305955206182703">Янтарный</translation>
 <translation id="57838592816432529">Отключить звук</translation>
@@ -2002,6 +2013,7 @@
 <translation id="6116338172782435947">Просмотр текста и изображений, скопированных в буфер обмена</translation>
 <translation id="6118782133429281336">Список источников пуст.</translation>
 <translation id="6120179357481664955">Запомнить идентификатор UPI?</translation>
+<translation id="6122181661879998141">на передней стороне карты</translation>
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6126565365696310362">Конверт Chinese 2</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
@@ -2368,6 +2380,7 @@
 <translation id="7108634116785509031">Сайт <ph name="HOST" /> запрашивает доступ к камере.</translation>
 <translation id="7108819624672055576">Разрешено расширением</translation>
 <translation id="7111012039238467737">(действительный)</translation>
+<translation id="7112327784801341716">Если вы видите устаревшие данные, обратитесь в свой банк.</translation>
 <translation id="7118618213916969306">Поиск по адресу <ph name="SHORT_URL" /> из буфера обмена</translation>
 <translation id="7119414471315195487">Закройте другие вкладки и программы.</translation>
 <translation id="7129355289156517987">Когда вы закроете все вкладки инкогнито в Chromium, с этого устройства будет удалена связанная с ними информация:
@@ -2671,6 +2684,7 @@
 <translation id="7798389633136518089">Правило игнорируется, так как оно задано не из облачного источника.</translation>
 <translation id="7800304661137206267">Соединение зашифровано с помощью <ph name="CIPHER" />, для аутентификации сообщений используется <ph name="MAC" />, для обмена ключами используется <ph name="KX" />.</translation>
 <translation id="7802523362929240268">Сайт безопасен</translation>
+<translation id="7802989406998618639">Введите <ph name="NUMBER_OF_DIGITS" />-значный защитный код (его можно найти <ph name="SIDE_OF_CARD" />), чтобы банк подтвердил вашу личность.</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
 <translation id="7805571567667010077">Управляется вашей организацией</translation>
 <translation id="7805768142964895445">Состояние</translation>
@@ -2905,6 +2919,7 @@
 <translation id="8437238597147034694">&amp;Отменить перемещение</translation>
 <translation id="8438476240229491014">Запомнить настройку</translation>
 <translation id="8438786541497918448">Использовать камеру и микрофон?</translation>
+<translation id="8438923942245957911">Этот сайт помечен вашей организацией</translation>
 <translation id="8443613539889492016">Рэп и хип-хоп</translation>
 <translation id="8444543005280733648">Компьютерные сети</translation>
 <translation id="8446884382197647889">Подробнее...</translation>
@@ -2998,6 +3013,7 @@
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8726549941689275341">Размер страницы:</translation>
 <translation id="8730621377337864115">Готово</translation>
+<translation id="8731268612289859741">Защитный код</translation>
 <translation id="8731544501227493793">Кнопка "Управление паролями". Нажмите Ввод, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="8734529307927223492">Вашим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" /></translation>
 <translation id="8736059027199600831">30 x 40 дюймов</translation>
@@ -3103,6 +3119,7 @@
 <translation id="9005998258318286617">Не удалось загрузить PDF-документ.</translation>
 <translation id="9008178007718859630">Обустройство дома и отделка помещений</translation>
 <translation id="9008201768610948239">Пропустить</translation>
+<translation id="9018120810758822233">Введите защитный код для карты "<ph name="CREDIT_CARD" />"</translation>
 <translation id="901834265349196618">электронная почта</translation>
 <translation id="9020200922353704812">Необходимо указать платежный адрес карты</translation>
 <translation id="9020542370529661692">Эта страница переведена на <ph name="TARGET_LANGUAGE" />.</translation>

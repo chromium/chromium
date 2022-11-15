@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Kad niža cijena bude dostupna, primit ćete obavijest u otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Minijatura za pregled lista za dijeljenje.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da biste primili obavijest u otvorenoj kartici kad niža cijena bude dostupna, uključite obavijesti u postavkama.</translation>
 <translation id="3940195383040445971">Prati cijene na karticama</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
 <translation id="5558362125926932819">Zatvori grupu kartica koja sadrži sljedeći broj kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Kartice su grupirane (njih <ph name="TAB_COUNT" />)</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> veza iz Chromea}one{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}few{<ph name="TABS_COUNT_MANY" /> veze iz Chromea}other{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}}</translation>
 <translation id="575494663145460764">Želite li primati obavijesti o padu cijena?</translation>
 <translation id="58326064309361797">Povucite kartice da biste ih grupirali</translation>
 <translation id="5846292395804797011">Zatvori grupu <ph name="TITLE_OF_GROUP" /> koja sadrži sljedeći broj kartica: <ph name="NUMBER_OF_TABS" /></translation>

@@ -175,6 +175,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1862380676329487333">Oppdater og logg av</translation>
 <translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
 <translation id="1869497990620230175">Hurtigfiler</translation>
+<translation id="1871703283152909317">Slå på begge tilgangene</translation>
 <translation id="1879018240766558464">Inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
 <translation id="1882897271359938046">Speiler <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@ Koble enheten til strøm.</translation>
 <translation id="6095008505822982596">Lesehastighet</translation>
 <translation id="6099678161144790572">Redigert den siste måneden</translation>
 <translation id="6103838137565245112">system</translation>
+<translation id="6107292179555508368">Mikrofon- og kameratilgang er avslått på denne enheten</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6116825164611323644">Kameratilgang er avslått på denne enheten</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@ Koble enheten til strøm.</translation>
 <translation id="6259254695169772643">Bruk pekepennen til å velge</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveres …</translation>
 <translation id="6274202259872570803">Skjermopptak</translation>
+<translation id="6282694724099204652">Slå på tilgangene for å tillate at apper og nettsider med tillatelsen bruker mikrofonen(e) og kameraet/kameraene på denne enheten.</translation>
 <translation id="6283712521836204486">Ikke forstyrr er av.</translation>
 <translation id="6284232397434400372">Oppløsningen er endret</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan legges til på nytt senere med tillatelse fra en forelder.</translation>

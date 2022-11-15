@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Du blir varslet når det finnes en lavere pris på en åpen fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Miniatyrbilde for forhåndsvisning av delingsark</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="3882834874697329510">For å bli varslet når det finnes en lavere pris på en åpen fane, slå på varsler i Innstillinger.</translation>
 <translation id="3940195383040445971">Spor priser på faner</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
 <translation id="5558362125926932819">Lukk fanegruppe med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> faner er gruppert.</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> linker fra Chrome}}</translation>
 <translation id="575494663145460764">Vil du ha varsler om avslag?</translation>
 <translation id="58326064309361797">Dra faner for å gruppere dem</translation>
 <translation id="5846292395804797011">Lukk <ph name="TITLE_OF_GROUP" />-gruppen med <ph name="NUMBER_OF_TABS" /> faner</translation>

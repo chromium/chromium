@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">คุณจะได้รับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">ภาพแบบย่อตัวอย่างชีตที่แชร์</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="3882834874697329510">หากต้องการรับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่ ให้เปิดการแจ้งเตือนในการตั้งค่า</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5558362125926932819">ปิดกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="5580090775658607195">จัดกลุ่มไว้ <ph name="TAB_COUNT" /> แท็บ</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ลิงก์จาก Chrome}other{<ph name="TABS_COUNT_MANY" /> ลิงก์จาก Chrome}}</translation>
 <translation id="575494663145460764">รับการแจ้งเตือนการลดราคาไหม</translation>
 <translation id="58326064309361797">ลากแท็บเพื่อจัดกลุ่ม</translation>
 <translation id="5846292395804797011">เลือกกลุ่ม <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
