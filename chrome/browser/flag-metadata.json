@@ -2122,7 +2122,7 @@
   {
     "name": "enable-desktop-pwas-launch-handler",
     "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
