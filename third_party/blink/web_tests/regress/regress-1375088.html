@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Regression tests for crbug.com/1375088</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  if (!navigator.gpu) {
+    // {navigator.gpu} is required for this test.
+    // If it does not exist, we end the test immediately.
+    return;
+  }
+
+  // Wait for the document body to be available.
+  await new Promise(resolve => {
+    onload = resolve;
+  });
+
+  // Verify that requestAdapter() in worker doesn't crash by GC.
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  iframe.srcdoc = `<!doctype html>
+<script>
+  async function runInWorker() {
+    navigator.gpu.requestAdapter();
+    postMessage('');
+  }
+
+  const blob = new Blob([runInWorker.toString()], {type: "text/javascript"});
+  const worker = new Worker(URL.createObjectURL(blob));
+
+  worker.onmessage = () => {
+    worker.terminate();
+  };
+
+  // Keep reloading because the error doesn't always happen
+  setTimeout(() => {
+    location.reload();
+  }, 100);
+<\/script>
+`;
+
+  // If no crashing within three seconds, the test passed.
+  // When it fails, it'll be flaky but that's better than
+  // not catching a regression at all.
+  await new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, 3000);
+  });
+}, 'Regression test for crbug.com/1375088');
+</script>

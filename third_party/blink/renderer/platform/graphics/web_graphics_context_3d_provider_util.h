@@ -37,6 +37,13 @@ CreateOffscreenGraphicsContext3DProvider(
 PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
 CreateWebGPUGraphicsContext3DProvider(const KURL& url);
 
+// Asynchronously creates a WebGPUGraphicsContext3DProvider on any thread.
+PLATFORM_EXPORT void CreateWebGPUGraphicsContext3DProviderAsync(
+    const KURL& url,
+    scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
+    base::OnceCallback<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
+        callback);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_UTIL_H_
