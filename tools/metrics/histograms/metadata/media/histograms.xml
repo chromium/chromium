@@ -1548,7 +1548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererMissedDeadline" units="%"
-    expires_after="2023-05-07">
+    expires_after="2023-05-14">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Compositing.Browser.GPUMemoryForTilingsInKb" units="Kb"
-    expires_after="2023-03-12">
+    expires_after="2023-05-14">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>sky@chromium.org</owner>
