@@ -38,12 +38,6 @@ declare_args() {
       use_partition_alloc && use_partition_alloc_as_malloc_default
 }
 
-if (!use_partition_alloc) {
-  assert(
-      !use_partition_alloc_as_malloc,
-      "Can't use PartitionAlloc-Everywhere when PartitionAlloc is wholly disabled")
-}
-
 declare_args() {
   use_freeslot_bitmap = false
 
@@ -125,6 +119,7 @@ if (is_nacl) {
   assert(!use_partition_alloc, "PartitionAlloc doesn't build on NaCl")
 }
 if (!use_partition_alloc) {
+  use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
   enable_mte_checked_ptr_support = false
   put_ref_count_in_previous_slot = false
