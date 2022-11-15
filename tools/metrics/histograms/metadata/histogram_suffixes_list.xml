@@ -10080,8 +10080,6 @@ chromium-metrics-reviews@google.com.
              (small)."/>
   <suffix name="UncompressedChromeArchive"
       label="uncompressed archive: chrome.7z holding install dir (big)."/>
-  <affected-histogram name="Setup.Install.LzmaUnPackNTSTATUS"/>
-  <affected-histogram name="Setup.Install.LzmaUnPackResult"/>
   <affected-histogram name="Setup.Install.LzmaUnPackStatus"/>
 </histogram_suffixes>
 
