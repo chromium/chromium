@@ -16,7 +16,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Function;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankTracker;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -130,6 +129,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI.

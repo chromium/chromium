@@ -12,11 +12,12 @@ import android.view.VelocityTracker;
 import androidx.core.view.MotionEventCompat;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.HeightStatus;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * Handling touch events for resizing the Window.

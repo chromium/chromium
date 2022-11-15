@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -37,6 +36,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.OptimizedFrameLayout;
+
+import java.util.function.BooleanSupplier;
 
 /** The tab switcher mode top toolbar */
 public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout

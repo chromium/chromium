@@ -4,7 +4,7 @@
 
 package org.chromium.components.autofill_assistant;
 
-import org.chromium.base.supplier.BooleanSupplier;
+import java.util.function.BooleanSupplier;
 
 /**
  * Determines whether 'Make Searches and Browsing Better' is enabled.

@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BooleanSupplier;
 
 /**
  * Records how long CCTs are open and the cause of closing. The open time is logged only if CCTs

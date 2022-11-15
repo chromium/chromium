@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.jank_tracker.JankTracker;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
@@ -51,6 +50,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.BooleanSupplier;
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
  */

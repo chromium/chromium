@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.Predicate;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -38,6 +37,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.function.Predicate;
 
 /**
  * Unit tests for {@link MinimizeAppAndCloseTabBackPressHandler}.

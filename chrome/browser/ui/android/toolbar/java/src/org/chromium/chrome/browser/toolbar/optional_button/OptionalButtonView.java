@@ -37,7 +37,6 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.R;
@@ -48,6 +47,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BooleanSupplier;
 
 /**
  * Toolbar button that performs animated transitions between icons.

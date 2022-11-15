@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 
 import org.chromium.base.jank_tracker.JankTracker;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -41,6 +40,8 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a

@@ -24,7 +24,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.BackPressHelper;
@@ -43,6 +42,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * Handles the First Run Experience sequences shown to the user launching Chrome for the first time.
