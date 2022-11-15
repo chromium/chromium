@@ -55,6 +55,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
     "bounded_list_unittest.cc",
     "filters_unittest.cc",

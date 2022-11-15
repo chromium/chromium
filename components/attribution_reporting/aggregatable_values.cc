@@ -7,21 +7,34 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_tree.h"
 #include "base/ranges/algorithm.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
 namespace {
 
+using ::attribution_reporting::mojom::TriggerRegistrationError;
+
+bool KeyIdHasValidLength(const std::string& key) {
+  return key.size() <= kMaxBytesPerAggregationKeyId;
+}
+
+bool IsValueInRange(int value) {
+  return value > 0 && value <= kMaxAggregatableValue;
+}
+
 bool IsValid(const AggregatableValues::Values& values) {
   if (values.size() > kMaxAggregationKeysPerSourceOrTrigger)
     return false;
 
   return base::ranges::all_of(values, [](const auto& value) {
-    return value.first.size() <= kMaxBytesPerAggregationKeyId &&
-           value.second > 0 && value.second <= kMaxAggregatableValue;
+    return KeyIdHasValidLength(value.first) && IsValueInRange(value.second);
   });
 }
 
@@ -33,6 +46,48 @@ absl::optional<AggregatableValues> AggregatableValues::Create(Values values) {
     return absl::nullopt;
 
   return AggregatableValues(std::move(values));
+}
+
+// static
+base::expected<AggregatableValues, mojom::TriggerRegistrationError>
+AggregatableValues::FromJSON(const base::Value* input_value) {
+  if (!input_value)
+    return AggregatableValues();
+
+  const base::Value::Dict* dict = input_value->GetIfDict();
+  if (!dict) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableValuesWrongType);
+  }
+
+  if (dict->size() > kMaxAggregationKeysPerSourceOrTrigger) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregatableValuesTooManyKeys);
+  }
+
+  Values::container_type container;
+
+  for (auto [id, key_value] : *dict) {
+    if (!KeyIdHasValidLength(id)) {
+      return base::unexpected(
+          TriggerRegistrationError::kAggregatableValuesKeyTooLong);
+    }
+
+    absl::optional<int> int_value = key_value.GetIfInt();
+    if (!int_value.has_value()) {
+      return base::unexpected(
+          TriggerRegistrationError::kAggregatableValuesValueWrongType);
+    }
+
+    if (!IsValueInRange(*int_value)) {
+      return base::unexpected(
+          TriggerRegistrationError::kAggregatableValuesValueOutOfRange);
+    }
+
+    container.emplace_back(id, *int_value);
+  }
+
+  return AggregatableValues(Values(base::sorted_unique, std::move(container)));
 }
 
 AggregatableValues::AggregatableValues() = default;

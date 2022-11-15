@@ -11,7 +11,13 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/types/expected.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -20,6 +26,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
   using Values = base::flat_map<std::string, uint32_t>;
 
   static absl::optional<AggregatableValues> Create(Values);
+
+  static base::expected<AggregatableValues, mojom::TriggerRegistrationError>
+  FromJSON(const base::Value*);
 
   AggregatableValues();
 

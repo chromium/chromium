@@ -1024,7 +1024,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]: must be a dictionary)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]: kAggregatableValuesWrongType)",
         R"json({"triggers": [{
           "Attribution-Reporting-Register-Trigger": {
             "timestamp": "1643235576000",
@@ -1035,7 +1035,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]["a"]: must be a positive integer)",
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_values"]: kAggregatableValuesValueOutOfRange)",
         R"json({"triggers": [{
           "Attribution-Reporting-Register-Trigger": {
             "timestamp": "1643235576000",

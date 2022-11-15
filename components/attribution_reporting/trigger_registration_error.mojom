@@ -12,4 +12,10 @@ enum TriggerRegistrationError {
   kFiltersListTooLong,
   kFiltersValueWrongType,
   kFiltersValueTooLong,
+
+  kAggregatableValuesWrongType,
+  kAggregatableValuesTooManyKeys,
+  kAggregatableValuesKeyTooLong,
+  kAggregatableValuesValueWrongType,
+  kAggregatableValuesValueOutOfRange,
 };

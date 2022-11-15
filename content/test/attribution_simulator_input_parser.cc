@@ -651,34 +651,15 @@ class AttributionSimulatorInputParser {
       const base::Value::Dict& dict) {
     static constexpr char kKey[] = "aggregatable_values";
 
-    const base::Value* value = dict.Find(kKey);
-    if (!value)
-      return attribution_reporting::AggregatableValues();
-
     auto context = PushContext(kKey);
 
-    if (!EnsureDictionary(*value))
-      return attribution_reporting::AggregatableValues();
+    auto aggregatable_values =
+        attribution_reporting::AggregatableValues::FromJSON(dict.Find(kKey));
+    if (aggregatable_values.has_value())
+      return *aggregatable_values;
 
-    attribution_reporting::AggregatableValues::Values::container_type container;
-
-    for (auto [id, key_value] : value->GetDict()) {
-      auto key_context = PushContext(id);
-      if (!key_value.is_int() || key_value.GetInt() <= 0) {
-        *Error() << "must be a positive integer";
-      } else {
-        container.emplace_back(id, key_value.GetInt());
-      }
-    }
-
-    absl::optional<attribution_reporting::AggregatableValues>
-        aggregatable_values = attribution_reporting::AggregatableValues::Create(
-            std::move(container));
-    if (!aggregatable_values.has_value())
-      *Error() << "invalid";
-
-    return aggregatable_values.value_or(
-        attribution_reporting::AggregatableValues());
+    *Error() << aggregatable_values.error();
+    return attribution_reporting::AggregatableValues();
   }
 
   bool EnsureDictionary(const base::Value& value) {
