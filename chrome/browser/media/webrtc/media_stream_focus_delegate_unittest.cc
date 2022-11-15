@@ -10,6 +10,30 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using testing::_;
+using testing::Return;
+
+namespace {
+
+const content::DesktopMediaID kDesktopMediaIDWindow =
+    content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                            content::DesktopMediaID::kNullId);
+
+class MockWindowCapturer : public webrtc::DesktopCapturer {
+ public:
+  MockWindowCapturer() = default;
+  ~MockWindowCapturer() override = default;
+
+  MOCK_METHOD0(FocusOnSelectedSource, bool());
+  MOCK_METHOD1(SelectSource, bool(webrtc::DesktopCapturer::SourceId));
+
+  void Start(Callback* callback) override {}
+  void CaptureFrame() override {}
+};
+
+}  // namespace
 
 class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
  public:
@@ -44,6 +68,11 @@ class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
                 bool is_from_microtask = false,
                 bool is_from_timer = false) {
     delegate_->SetFocus(media_id, focus, is_from_microtask, is_from_timer);
+  }
+
+  void SetWindowCapturer(MockWindowCapturer* window_capturer) {
+    delegate_->SetWindowCapturerForTesting(
+        base::WrapUnique<MockWindowCapturer>(window_capturer));
   }
 
  protected:
@@ -90,4 +119,24 @@ TEST_F(MediaStreamFocusDelegateTest, ChangeOfTabClosesFocusWindow) {
   EXPECT_EQ(browser()->tab_strip_model()->active_index(), 2);
 }
 
-// TODO(crbug.com/1215480): Add tests for window-focus.
+TEST_F(MediaStreamFocusDelegateTest, SelectedSourceFocusesWindow) {
+  // Setup.
+  raw_ptr<MockWindowCapturer> window_capturer = new MockWindowCapturer();
+  SetWindowCapturer(window_capturer);
+
+  ON_CALL(*window_capturer, SelectSource(_)).WillByDefault(Return(true));
+  EXPECT_CALL(*window_capturer, SelectSource(_)).Times(1);
+  EXPECT_CALL(*window_capturer, FocusOnSelectedSource()).Times(1);
+  SetFocus(kDesktopMediaIDWindow, true);
+}
+
+TEST_F(MediaStreamFocusDelegateTest, NotSelectedSourceDoesNotFocusWindow) {
+  // Setup.
+  raw_ptr<MockWindowCapturer> window_capturer = new MockWindowCapturer();
+  SetWindowCapturer(window_capturer);
+
+  ON_CALL(*window_capturer, SelectSource(_)).WillByDefault(Return(false));
+  EXPECT_CALL(*window_capturer, SelectSource(_)).Times(1);
+  EXPECT_CALL(*window_capturer, FocusOnSelectedSource()).Times(0);
+  SetFocus(kDesktopMediaIDWindow, true);
+}

@@ -165,8 +165,10 @@ void MediaStreamFocusDelegate::FocusWindow(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
-      webrtc::DesktopCapturer::CreateWindowCapturer(
-          content::desktop_capture::CreateDesktopCaptureOptions());
+      window_capturer_for_testing_ != nullptr
+          ? std::move(window_capturer_for_testing_)
+          : webrtc::DesktopCapturer::CreateWindowCapturer(
+                content::desktop_capture::CreateDesktopCaptureOptions());
   if (window_capturer && window_capturer->SelectSource(media_id.id)) {
     window_capturer->FocusOnSelectedSource();
   }
