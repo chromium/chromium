@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
@@ -542,6 +543,58 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_showReadingList];
   [provider_ keyCommand_goToTabGrid];
   [provider_ keyCommand_clearBrowsingData];
+}
+
+// Checks the openNewTab logic based on a regular browser state.
+TEST_F(KeyCommandsProviderTest, OpenNewTab_RegularBrowserState) {
+  id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  provider_.dispatcher = handler;
+  id newTabCommand = [OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+    return command.shouldFocusOmnibox == YES && command.inIncognito == NO;
+  }];
+  OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
+
+  [provider_ keyCommand_openNewTab];
+}
+
+// Checks the openNewTab logic based on an incognito browser state.
+TEST_F(KeyCommandsProviderTest, OpenNewTab_IncognitoBrowserState) {
+  ChromeBrowserState* incognito_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+  id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  provider_.dispatcher = handler;
+  id newTabCommand = [OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+    return command.shouldFocusOmnibox == YES && command.inIncognito == YES;
+  }];
+  OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
+
+  [provider_ keyCommand_openNewTab];
+}
+
+// Checks that openNewRegularTab opens a tab in the regular browser state.
+TEST_F(KeyCommandsProviderTest, OpenNewRegularTab) {
+  id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  provider_.dispatcher = handler;
+  id newTabCommand = [OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+    return command.shouldFocusOmnibox == YES && command.inIncognito == NO;
+  }];
+  OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
+
+  [provider_ keyCommand_openNewTab];
+}
+
+// Checks that openNewIncognitoTab opens a tab in the Incognito browser state.
+TEST_F(KeyCommandsProviderTest, OpenNewIncognitoTab) {
+  id handler = OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  provider_.dispatcher = handler;
+  id newTabCommand = [OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+    return command.shouldFocusOmnibox == YES && command.inIncognito == YES;
+  }];
+  OCMExpect([provider_.dispatcher openURLInNewTab:newTabCommand]);
+
+  [provider_ keyCommand_openNewIncognitoTab];
 }
 
 // Checks the next/previous tab actions work OK.
