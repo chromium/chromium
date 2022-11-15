@@ -44,14 +44,6 @@ class ASH_PUBLIC_EXPORT ImeControllerClient {
   // caps lock.
   virtual void SetCapsLockEnabled(bool enabled) = 0;
 
-  // Notifies the mirroring state change to the client where IME lives (e.g.
-  // Chrome), so that the IME can behave according to the state.
-  virtual void UpdateMirroringState(bool enabled) = 0;
-
-  // Notifies the casting state change to the client where IME lives (e.g.
-  // Chrome), so that the IME can behave according to the state.
-  virtual void UpdateCastingState(bool enabled) = 0;
-
   // Overrides the keyboard keyset (emoji, handwriting or voice). If keyset is
   // 'kNone', we switch to the default keyset. Because this is asynchronous,
   // any code that needs the keyset to be updated first must use the callback.

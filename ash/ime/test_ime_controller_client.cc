@@ -42,14 +42,6 @@ void TestImeControllerClient::OverrideKeyboardKeyset(
   std::move(callback).Run();
 }
 
-void TestImeControllerClient::UpdateMirroringState(bool enabled) {
-  is_mirroring_ = enabled;
-}
-
-void TestImeControllerClient::UpdateCastingState(bool enabled) {
-  is_casting_ = enabled;
-}
-
 void TestImeControllerClient::ShowModeIndicator() {
   ++show_mode_indicator_count_;
 }

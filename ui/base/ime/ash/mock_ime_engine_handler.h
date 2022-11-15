@@ -43,8 +43,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEEngineHandler
                           uint32_t cursor_pos,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
-  void SetMirroringEnabled(bool mirroring_enabled) override;
-  void SetCastingEnabled(bool casting_enabled) override;
   bool IsReadyForTesting() override;
 
   const std::string& GetActiveComponentId() const;

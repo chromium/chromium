@@ -62,21 +62,7 @@ bool ImeControllerImpl::IsCurrentImeVisible() const {
 }
 
 void ImeControllerImpl::SetClient(ImeControllerClient* client) {
-  if (client_) {
-    if (CastConfigController::Get())
-      CastConfigController::Get()->RemoveObserver(this);
-    Shell::Get()->display_manager()->RemoveObserver(this);
-    Shell::Get()->system_tray_notifier()->RemoveScreenCaptureObserver(this);
-  }
-
   client_ = client;
-
-  if (client_) {
-    if (CastConfigController::Get())
-      CastConfigController::Get()->AddObserver(this);
-    Shell::Get()->system_tray_notifier()->AddScreenCaptureObserver(this);
-    Shell::Get()->display_manager()->AddObserver(this);
-  }
 }
 
 bool ImeControllerImpl::CanSwitchIme() const {
@@ -218,28 +204,6 @@ void ImeControllerImpl::ShowModeIndicator(
   mi_view->ShowAndFadeOut();
 }
 
-void ImeControllerImpl::OnDisplayMetricsChanged(const display::Display& display,
-                                                uint32_t changed_metrics) {
-  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_MIRROR_STATE) {
-    Shell* shell = Shell::Get();
-    client_->UpdateMirroringState(shell->display_manager()->IsInMirrorMode());
-  }
-}
-
-void ImeControllerImpl::OnDevicesUpdated(
-    const std::vector<SinkAndRoute>& devices) {
-  DCHECK(client_);
-
-  bool casting_desktop = false;
-  for (const auto& receiver : devices) {
-    if (receiver.route.content_source == ContentSource::kDesktop) {
-      casting_desktop = true;
-      break;
-    }
-  }
-  client_->UpdateCastingState(casting_desktop);
-}
-
 void ImeControllerImpl::SetCapsLockEnabled(bool caps_enabled) {
   is_caps_lock_enabled_ = caps_enabled;
 
@@ -298,17 +262,6 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;
-}
-
-void ImeControllerImpl::OnScreenCaptureStart(
-    base::OnceClosure stop_callback,
-    const base::RepeatingClosure& source_callback,
-    const std::u16string& screen_capture_status) {
-  client_->UpdateCastingState(true);
-}
-
-void ImeControllerImpl::OnScreenCaptureStop() {
-  client_->UpdateCastingState(false);
 }
 
 }  // namespace ash

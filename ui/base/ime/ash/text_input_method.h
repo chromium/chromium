@@ -160,10 +160,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
   virtual void AssistiveWindowChanged(
       const ash::ime::AssistiveWindow& window) = 0;
 
-  // Sets the mirroring/casting enable states.
-  virtual void SetMirroringEnabled(bool mirroring_enabled) = 0;
-  virtual void SetCastingEnabled(bool casting_enabled) = 0;
-
   // Returns whether the IME is ready to accept key events for testing.
   virtual bool IsReadyForTesting() = 0;
 };

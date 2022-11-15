@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/input_method_engine_observer.h"
+#include "chrome/browser/ash/input_method/screen_projection_change_monitor.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -244,8 +245,6 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   void AssistiveWindowButtonClicked(
       const ui::ime::AssistiveWindowButton& button) override;
   void AssistiveWindowChanged(const ash::ime::AssistiveWindow& window) override;
-  void SetMirroringEnabled(bool mirroring_enabled) override;
-  void SetCastingEnabled(bool casting_enabled) override;
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   bool IsReadyForTesting() override;
 
@@ -341,6 +340,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   void MenuItemToProperty(const InputMethodManager::MenuItem& item,
                           ui::ime::InputMethodMenuItem* property);
 
+  void OnScreenProjectionChanged(bool is_projected);
+
   // The current candidate window.
   ui::CandidateWindow candidate_window_;
 
@@ -355,12 +356,6 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
 
   // Mapping of candidate id to index.
   std::map<int, int> candidate_indexes_;
-
-  // Whether the screen is in mirroring mode.
-  bool is_mirroring_ = false;
-
-  // Whether the desktop is being casted.
-  bool is_casting_ = false;
 
   ui::TextInputType current_input_type_;
 
@@ -399,6 +394,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::Value::Dict input_method_settings_snapshot_;
+
+  ScreenProjectionChangeMonitor screen_projection_change_monitor_;
 
   bool is_ready_for_testing_ = false;
 

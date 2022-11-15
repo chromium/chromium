@@ -104,20 +104,6 @@ void ImeControllerClientImpl::SetCapsLockEnabled(bool caps_enabled) {
     keyboard->SetCapsLockEnabled(caps_enabled);
 }
 
-void ImeControllerClientImpl::UpdateMirroringState(bool mirroring_enabled) {
-  ui::TextInputMethod* ime_engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
-  if (ime_engine)
-    ime_engine->SetMirroringEnabled(mirroring_enabled);
-}
-
-void ImeControllerClientImpl::UpdateCastingState(bool casting_enabled) {
-  ui::TextInputMethod* ime_engine =
-      ui::IMEBridge::Get()->GetCurrentEngineHandler();
-  if (ime_engine)
-    ime_engine->SetCastingEnabled(casting_enabled);
-}
-
 void ImeControllerClientImpl::OverrideKeyboardKeyset(
     ash::input_method::ImeKeyset keyset,
     OverrideKeyboardKeysetCallback callback) {

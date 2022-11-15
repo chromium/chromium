@@ -94,7 +94,12 @@ InputMethodEngine::InputMethodEngine()
       profile_(nullptr),
       composition_changed_(false),
       commit_text_changed_(false),
-      pref_change_registrar_(nullptr) {}
+      pref_change_registrar_(nullptr),
+      // This is safe because the callback does not outlive
+      // screen_projection_change_monitor_, which is a member of this class.
+      screen_projection_change_monitor_(
+          base::BindRepeating(&InputMethodEngine::OnScreenProjectionChanged,
+                              base::Unretained(this))) {}
 
 InputMethodEngine::~InputMethodEngine() = default;
 
@@ -235,7 +240,7 @@ bool InputMethodEngine::SendKeyEvents(int context_id,
     properties[ui::kPropertyFromVK] =
         std::vector<uint8_t>(ui::kPropertyFromVKSize);
     properties[ui::kPropertyFromVK][ui::kPropertyFromVKIsMirroringIndex] =
-        (uint8_t)is_mirroring_;
+        static_cast<uint8_t>(screen_projection_change_monitor_.is_mirroring());
     event_copy.SetProperties(properties);
 
     ui::TextInputTarget* input_context =
@@ -691,20 +696,6 @@ void InputMethodEngine::AssistiveWindowChanged(
   observer_->OnAssistiveWindowChanged(window);
 }
 
-void InputMethodEngine::SetMirroringEnabled(bool mirroring_enabled) {
-  if (mirroring_enabled != is_mirroring_) {
-    is_mirroring_ = mirroring_enabled;
-    observer_->OnScreenProjectionChanged(is_mirroring_ || is_casting_);
-  }
-}
-
-void InputMethodEngine::SetCastingEnabled(bool casting_enabled) {
-  if (casting_enabled != is_casting_) {
-    is_casting_ = casting_enabled;
-    observer_->OnScreenProjectionChanged(is_mirroring_ || is_casting_);
-  }
-}
-
 ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
     const {
   // Callers expect a nullptr when the keyboard is disabled. See
@@ -1113,6 +1104,12 @@ void InputMethodEngine::MenuItemToProperty(
   }
 
   // TODO(nona): Support item.children.
+}
+
+void InputMethodEngine::OnScreenProjectionChanged(bool is_projected) {
+  if (observer_) {
+    observer_->OnScreenProjectionChanged(is_projected);
+  }
 }
 
 void InputMethodEngine::NotifyInputMethodExtensionReadyForTesting() {

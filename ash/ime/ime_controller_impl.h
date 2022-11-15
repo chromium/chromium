@@ -9,18 +9,15 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
-#include "ash/system/privacy/screen_capture_observer.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/ash/ime_keyset.h"
-#include "ui/display/display_observer.h"
 
 namespace ui {
 class Accelerator;
@@ -32,10 +29,7 @@ class ModeIndicatorObserver;
 
 // Connects ash IME users (e.g. the system tray) to the IME implementation,
 // which might live in Chrome browser or in a separate mojo service.
-class ASH_EXPORT ImeControllerImpl : public ImeController,
-                                     public display::DisplayObserver,
-                                     public CastConfigController::Observer,
-                                     public ScreenCaptureObserver {
+class ASH_EXPORT ImeControllerImpl : public ImeController {
  public:
   class Observer {
    public:
@@ -117,20 +111,6 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   // The anchor bounds is in the universal screen coordinates in DIP.
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
                          const std::u16string& ime_short_name) override;
-
-  // display::DisplayObserver:
-  void OnDisplayMetricsChanged(const display::Display& display,
-                               uint32_t changed_metrics) override;
-
-  // CastConfigController::Observer:
-  void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
-
-  // ScreenCaptureObserver:
-  void OnScreenCaptureStart(
-      base::OnceClosure stop_callback,
-      const base::RepeatingClosure& source_callback,
-      const std::u16string& screen_capture_status) override;
-  void OnScreenCaptureStop() override;
 
   // Synchronously returns the cached caps lock state.
   bool IsCapsLockEnabled() const;

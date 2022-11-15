@@ -50,8 +50,8 @@ class MockInputMethodEngine : public ui::TextInputMethod {
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
   void AssistiveWindowChanged(const ash::ime::AssistiveWindow& window) override;
-  void SetMirroringEnabled(bool mirroring_enabled) override;
-  void SetCastingEnabled(bool casting_enabled) override;
+  void SetMirroringEnabled(bool mirroring_enabled);
+  void SetCastingEnabled(bool casting_enabled);
   bool IsReadyForTesting() override;
 
   const std::string& GetActiveComponentId() const;

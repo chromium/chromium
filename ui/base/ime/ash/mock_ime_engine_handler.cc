@@ -80,10 +80,6 @@ void MockIMEEngineHandler::SetSurroundingText(const std::u16string& text,
   last_set_surrounding_anchor_pos_ = anchor_pos;
 }
 
-void MockIMEEngineHandler::SetMirroringEnabled(bool mirroring_enabled) {}
-
-void MockIMEEngineHandler::SetCastingEnabled(bool casting_enabled) {}
-
 bool MockIMEEngineHandler::IsReadyForTesting() {
   return true;
 }
