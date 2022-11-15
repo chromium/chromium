@@ -11,18 +11,18 @@ import shutil
 import sys
 
 
-def get_archive_name(archive_prefix):
-  return archive_prefix + '.tgz'
+def get_archive_name(archive_prefix, release):
+  return '%s-%s.tgz' % (archive_prefix, release)
 
 
-def main(archive_prefix, archive_dir, target_dir, stamp_dir=None):
+def main(archive_prefix, release, archive_dir, target_dir, stamp_dir=None):
   shutil.rmtree(target_dir, ignore_errors=True)
 
   os.mkdir(target_dir)
   subprocess.check_call([
       'tar',
       '-zxf',
-      os.path.join(archive_dir, get_archive_name(archive_prefix)),
+      os.path.join(archive_dir, get_archive_name(archive_prefix, release)),
       '-C',
       target_dir])
   stamp_file = os.path.join(stamp_dir or target_dir, '%s.txt' % archive_prefix)
@@ -32,7 +32,7 @@ def main(archive_prefix, archive_dir, target_dir, stamp_dir=None):
     with open(os.path.join(stamp_dir, '%s.d' % archive_prefix), 'w') as f:
       f.write('%s: %s' % (
           stamp_file, os.path.join(archive_dir,
-                                   get_archive_name(archive_prefix))))
+                                   get_archive_name(archive_prefix, release))))
   return 0
 
 

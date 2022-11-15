@@ -41,6 +41,7 @@ if (prebuilt_instrumented_libraries_available) {
     depfile = "$target_out_dir/$archive_prefix.d"
     args = [
       archive_prefix,
+      instrumented_libraries_release,
       rebase_path("binaries", root_build_dir),
       rebase_path(root_out_dir + "/instrumented_libraries_prebuilt",
                   root_build_dir),
