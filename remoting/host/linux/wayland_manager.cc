@@ -51,11 +51,44 @@ void WaylandManager::OnDesktopCapturerMetadata(
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (capturer_metadata_callback_)
+  if (capturer_metadata_callback_) {
     capturer_metadata_callback_.Run(std::move(metadata));
-  else
+  } else {
     LOG(ERROR) << "Expected the capturer metadata observer to have register "
                << "a callback by now";
+  }
+}
+
+void WaylandManager::AddClipboardMetadataCallback(
+    DesktopMetadataCallback callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::AddClipboardMetadataCallback,
+                       base::Unretained(this),
+                       base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                          std::move(callback))));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  clipboard_metadata_callback_ = std::move(callback);
+}
+
+void WaylandManager::OnClipboardMetadata(
+    webrtc::DesktopCaptureMetadata metadata) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnClipboardMetadata,
+                                  base::Unretained(this), std::move(metadata)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (clipboard_metadata_callback_) {
+    clipboard_metadata_callback_.Run(std::move(metadata));
+  } else {
+    LOG(WARNING) << "Expected the clipboard observer to have registered "
+                 << "a callback by now";
+  }
 }
 
 void WaylandManager::AddUpdateScreenResolutionCallback(
@@ -83,11 +116,12 @@ void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (screen_resolution_callback_)
+  if (screen_resolution_callback_) {
     screen_resolution_callback_.Run(std::move(resolution), screen_id);
-  else
+  } else {
     LOG(WARNING) << "Expected the screen resolution observer to have register "
                  << "a callback by now";
+  }
 }
 
 void WaylandManager::SetKeyboardLayoutCallback(

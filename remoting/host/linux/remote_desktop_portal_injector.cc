@@ -16,8 +16,7 @@
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/scoped_glib.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
 
-namespace remoting {
-namespace xdg_portal {
+namespace remoting::xdg_portal {
 
 using webrtc::Scoped;
 
@@ -145,5 +144,4 @@ void RemoteDesktopPortalInjector::SetSessionDetails(
   pipewire_stream_node_id_ = session_details.pipewire_stream_node_id;
 }
 
-}  // namespace xdg_portal
-}  // namespace remoting
+}  // namespace remoting::xdg_portal

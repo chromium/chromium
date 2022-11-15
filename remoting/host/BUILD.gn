@@ -517,6 +517,12 @@ static_library("common") {
     defines += [ "REMOTING_USE_WAYLAND" ]
     sources += [
       "input_injector_constants_linux.h",
+      "linux/clipboard_portal.cc",
+      "linux/clipboard_portal.h",
+      "linux/clipboard_portal_injector.cc",
+      "linux/clipboard_portal_injector.h",
+      "linux/clipboard_wayland.cc",
+      "linux/clipboard_wayland.h",
       "linux/desktop_display_info_loader_wayland.cc",
       "linux/desktop_resizer_wayland.cc",
       "linux/input_injector_wayland.cc",

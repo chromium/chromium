@@ -14,10 +14,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/linux/clipboard_portal.h"
+#include "remoting/host/linux/wayland_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/xdg_desktop_portal_utils.h"
 
-namespace remoting {
-namespace xdg_portal {
+namespace remoting::xdg_portal {
 namespace {
 
 constexpr char kRemoteDesktopInterfaceName[] =
@@ -44,6 +45,7 @@ RemoteDesktopPortal::RemoteDesktopPortal(
   screencast_portal_ = std::make_unique<webrtc::ScreenCastPortal>(
       webrtc::CaptureType::kScreen, this, OnScreenCastPortalProxyRequested,
       OnSourcesRequestResponseSignal, this);
+  clipboard_portal_ = std::make_unique<xdg_portal::ClipboardPortal>(this);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -59,6 +61,8 @@ void RemoteDesktopPortal::Stop() {
   }
   if (screencast_portal_)
     screencast_portal_.reset();
+  if (clipboard_portal_)
+    clipboard_portal_.reset();
   UnsubscribeSignalHandlers();
   webrtc::xdg_portal::TearDownSession(std::move(session_handle_), proxy_,
                                       cancellable_, connection_);
@@ -88,6 +92,8 @@ void RemoteDesktopPortal::Start() {
   cancellable_ = g_cancellable_new();
   screencast_portal_->SetSessionDetails({.cancellable = cancellable_});
   screencast_portal_->Start();
+  clipboard_portal_->SetSessionDetails({.cancellable = cancellable_});
+  clipboard_portal_->Start();
 
   HOST_LOG << "Starting remote desktop portal";
   webrtc::xdg_portal::RequestSessionProxy(kRemoteDesktopInterfaceName,
@@ -216,6 +222,11 @@ void RemoteDesktopPortal::RequestSources() {
   screencast_portal_->SourcesRequest();
 }
 
+void RemoteDesktopPortal::RequestClipboard() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  clipboard_portal_->RequestClipboard();
+}
+
 // static
 void RemoteDesktopPortal::OnDevicesRequestImpl(GDBusConnection* connection,
                                                const gchar* sender_name,
@@ -236,7 +247,7 @@ void RemoteDesktopPortal::OnDevicesRequestImpl(GDBusConnection* connection,
     return;
   }
 
-  that->RequestSources();
+  that->RequestClipboard();
 }
 
 void RemoteDesktopPortal::SelectDevices() {
@@ -282,6 +293,9 @@ void RemoteDesktopPortal::OnSessionRequestResponseSignal(
       that->session_handle_, that->session_closed_signal_id_);
   that->screencast_portal_->SetSessionDetails(
       {.session_handle = that->session_handle_});
+  that->clipboard_portal_->SetSessionDetails(
+      {.session_handle = that->session_handle_});
+
   that->SelectDevices();
 }
 
@@ -423,5 +437,17 @@ void RemoteDesktopPortal::OnScreenCastSessionClosed() {
   notifier_->OnScreenCastSessionClosed();
 }
 
-}  // namespace xdg_portal
-}  // namespace remoting
+void RemoteDesktopPortal::OnClipboardPortalDone(
+    webrtc::xdg_portal::RequestResponse result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  clipboard_portal_status_ = result;
+
+  if (result == RequestResponse::kSuccess) {
+    WaylandManager::Get()->OnClipboardMetadata(
+        {.session_details = clipboard_portal_->GetSessionDetails()});
+  }
+
+  RequestSources();
+}
+
+}  // namespace remoting::xdg_portal
