@@ -25,7 +25,6 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
@@ -1148,10 +1147,6 @@ public class TabPersistentStore {
 
         saveListToFile(getStateDirectory(), mPersistencePolicy.getStateFileName(), listData);
         mLastSavedMetadata = listData;
-        if (LibraryLoader.getInstance().isInitialized()) {
-            RecordHistogram.recordCount1MHistogram(
-                    "Android.TabPersistentStore.MetadataFileSize", listData.length);
-        }
     }
 
     /**

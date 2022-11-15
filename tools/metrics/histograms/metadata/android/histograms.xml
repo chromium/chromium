@@ -3647,13 +3647,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.TabPersistentStore.MetadataFileSize" units="units"
-    expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>The number of bytes written for the tab metadata file.</summary>
-</histogram>
-
 <histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
     expires_after="2023-04-16">
   <owner>gauravjj@google.com</owner>

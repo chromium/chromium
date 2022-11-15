@@ -922,15 +922,6 @@ chromium-metrics-reviews@google.com.
   <summary>Time taken by the engine to handle a key event.</summary>
 </histogram>
 
-<histogram name="InputMethod.MatchesSystemLanguage" enum="BooleanMatched"
-    expires_after="2019-01-30">
-  <owner>aurimas@chromium.org</owner>
-  <summary>
-    Whether the currently selected keyboard language matches the system
-    language. Recorded once with every cold start of Chrome for Android.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.ModeChangeKeyAction" enum="ModeChangeKeyAction"
     expires_after="2019-12-31">
   <owner>shend@chromium.org</owner>

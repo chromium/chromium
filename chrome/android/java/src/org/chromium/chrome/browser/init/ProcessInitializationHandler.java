@@ -8,7 +8,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.SystemClock;
 import android.text.format.DateUtils;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -122,7 +121,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Handles the initialization dependences of the browser process.  This is meant to handle the
@@ -491,14 +489,10 @@ public class ProcessInitializationHandler {
              */
             private static final long LOGCAT_RELEVANCE_THRESHOLD_IN_HOURS = 12;
 
-            private long mAsyncTaskStartTime;
-
             @Override
             protected Void doInBackground() {
                 try {
                     TraceEvent.begin("ChromeBrowserInitializer.onDeferredStartup.doInBackground");
-                    mAsyncTaskStartTime = SystemClock.uptimeMillis();
-
                     initCrashReporting();
 
                     // Initialize the WebappRegistry if it's not already initialized. Must be in
@@ -527,10 +521,6 @@ public class ProcessInitializationHandler {
             protected void onPostExecute(Void params) {
                 // Must be run on the UI thread after the WebappRegistry has been completely warmed.
                 WebappRegistry.getInstance().unregisterOldWebapps(System.currentTimeMillis());
-
-                RecordHistogram.recordLongTimesHistogram(
-                        "UMA.Debug.EnableCrashUpload.DeferredStartUpAsyncTaskDuration",
-                        SystemClock.uptimeMillis() - mAsyncTaskStartTime);
             }
 
             /**
@@ -699,13 +689,5 @@ public class ProcessInitializationHandler {
             }
         }
         RecordHistogram.recordCount1MHistogram("InputMethod.ActiveCount", uniqueLanguages.size());
-
-        InputMethodSubtype currentSubtype = imm.getCurrentInputMethodSubtype();
-        Locale systemLocale = Locale.getDefault();
-        if (currentSubtype != null && currentSubtype.getLocale() != null && systemLocale != null) {
-            String keyboardLanguage = currentSubtype.getLocale().split("_")[0];
-            boolean match = systemLocale.getLanguage().equalsIgnoreCase(keyboardLanguage);
-            RecordHistogram.recordBooleanHistogram("InputMethod.MatchesSystemLanguage", match);
-        }
     }
 }
