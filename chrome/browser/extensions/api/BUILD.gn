@@ -10,15 +10,25 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
+# This should be:
+# The set of all targets needed to build out the extension API implementations
+# and any necessary steps to register or instantiate them.
+# Embedders should usually depend on this.
+# Right now, there's currently a number of other targets that are (not ideally)
+# sharded out. See https://crbug.com/883570.
 group("api") {
   public_deps = [ "//chrome/browser/extensions/api:api_implementations" ]
 }
 
+# The collection of API implementations.
 group("api_implementations") {
   # TODO(crbug.com/1381603): Add more API implementations here.
   public_deps = [ "//chrome/browser/extensions/api/scripting" ]
 }
 
+# The step necessary to generate the code to register the corresponding
+# ExtensionFunctions in order to map the function string name with their
+# implementation.
 function_registration("api_registration") {
   sources = chrome_extensions_api_schema_sources +
             chrome_extensions_api_uncompiled_sources

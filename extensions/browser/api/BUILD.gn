@@ -10,7 +10,8 @@ import("//tools/json_schema_compiler/json_schema_api.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-# The set of all targets needed to build out the extension API implementations.
+# The set of all targets needed to build out the extension API implementations
+# and any necessary steps to register or instantiate them.
 # Embedders should usually depend on this.
 group("api") {
   public_deps = [
@@ -89,6 +90,7 @@ source_set("bulk_api_implementation") {
   }
 }
 
+# The collection of API implementations.
 group("api_implementations") {
   public_deps = [
     "//extensions/browser:browser_sources",
@@ -147,6 +149,8 @@ group("api_implementations") {
   }
 }
 
+# A helper to instantiate all keyed service factories needed for any extension
+# APIs.
 source_set("api_keyed_service_factories") {
   sources = [
     "api_browser_context_keyed_service_factories.cc",
@@ -162,6 +166,9 @@ source_set("api_keyed_service_factories") {
   ]
 }
 
+# The step necessary to generate the code to register the corresponding
+# ExtensionFunctions in order to map the function string name with their
+# implementation.
 function_registration("api_registration") {
   sources = extensions_api_schema_files + extensions_api_uncompiled_sources
   impl_dir = "//extensions/browser/api"

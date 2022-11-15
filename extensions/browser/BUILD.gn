@@ -9,8 +9,14 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions)
 
-# TODO(devlin): Document these build targets and the scope each.
-
+# The overarching "build all the things" for the browser side of the
+# //extensions module. In particular, this includes:
+# - The core extensions system
+# - The API implementations for the given platform and gn args
+# - The glue to fit them together (though some of this is left to the
+#   embedder).
+# Typically, embedders should depend on this, rather than any of the
+# subtargets.
 group("browser") {
   public_deps = [
     "//extensions/browser:browser_context_keyed_service_factories",
@@ -23,7 +29,8 @@ group("browser") {
   ]
 }
 
-# Isolate the instantiation of BrowserContextKeyedServiceFactories.
+# A group of helpers to instantiate the set of all browser context keyed service
+# factories, including both the API methods and core system services.
 source_set("browser_context_keyed_service_factories") {
   visibility = [ ":*" ]
 
@@ -38,6 +45,8 @@ source_set("browser_context_keyed_service_factories") {
   ]
 }
 
+# A helper to instantiate all the necessary core system keyed services
+# factories.
 source_set("core_keyed_service_factories") {
   visibility = [ ":*" ]
 
@@ -54,6 +63,11 @@ source_set("core_keyed_service_factories") {
   ]
 }
 
+# The set of all sources that are related to the core extensions system.
+# Ideally, this would be isolated from all API targets (so that APIs are "leaf
+# nodes" and could be easily toggled on-and-off through dependencies for
+# different platforms).
+# See also https://crbug.com/883570.
 source_set("browser_sources") {
   visibility = [ "./*" ]
 
@@ -62,7 +76,8 @@ source_set("browser_sources") {
     "activity.h",
     "allowlist_state.h",
 
-    # TODO(ghazale): anything under api/ should be moved out of this target.
+    # TODO(https://crbug.com/883570): Anything under api/ should be moved out of
+    # this target.
     "api/activity_log/web_request_constants.cc",
     "api/activity_log/web_request_constants.h",
     "api/api_resource.cc",
@@ -684,6 +699,10 @@ source_set("core_api_provider") {
   ]
 }
 
+# The set of all browsertests for anything defined under the
+# //extensions/browser module. Note that, unlike the production build targets
+# above, this is a monolithic target that includes all tests for both the core
+# system and relevant APIs.
 source_set("browser_tests") {
   testonly = true
   sources = [
@@ -766,6 +785,7 @@ source_set("browser_tests") {
   }
 }
 
+# The set of sources that are needed for both browser and unit tests.
 source_set("test_support") {
   testonly = true
   sources = [
@@ -829,6 +849,10 @@ source_set("test_support") {
   }
 }
 
+# The set of all unittests for anything defined under the //extensions/browser
+# module. Note that, unlike the production build targets above, this is a
+# monolithic target that includes all tests for both the core system and
+# relevant APIs.
 source_set("unit_tests") {
   testonly = true
   sources = [
