@@ -9,9 +9,8 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestWallpaperProvider extends
-    TestBrowserProxy<WallpaperProviderInterface> implements
-        WallpaperProviderInterface {
+export class TestWallpaperProvider extends TestBrowserProxy implements
+    WallpaperProviderInterface {
   constructor() {
     super([
       'makeTransparent',

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
 /** @return {!Array<string>} */
 export function getFakeAccountsList() {

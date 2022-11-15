@@ -7,7 +7,7 @@ import {BluetoothInternalsHandlerReceiver} from 'chrome://bluetooth-internals/bl
 import {DeviceCallbackRouter} from 'chrome://bluetooth-internals/device.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * A BluetoothInternalsHandler for the chrome://bluetooth-internals

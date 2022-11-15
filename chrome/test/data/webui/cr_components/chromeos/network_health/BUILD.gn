@@ -57,5 +57,6 @@ js_library("fake_network_diagnostics_routines") {
     "../../../chromeos:chai_assert",
     "//ash/webui/common/resources/network_health:network_diagnostics",
     "//chromeos/services/network_health/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/js:assert",
   ]
 }

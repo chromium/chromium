@@ -6,9 +6,8 @@ import {BacklightColor, KeyboardBacklightObserverInterface, KeyboardBacklightObs
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestKeyboardBacklightProvider extends
-    TestBrowserProxy<KeyboardBacklightProviderInterface> implements
-        KeyboardBacklightProviderInterface {
+export class TestKeyboardBacklightProvider extends TestBrowserProxy implements
+    KeyboardBacklightProviderInterface {
   public backlightColor: BacklightColor = BacklightColor.kBlue;
 
   constructor() {

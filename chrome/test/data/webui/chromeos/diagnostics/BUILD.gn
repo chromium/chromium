@@ -238,7 +238,7 @@ js_library("fake_system_routine_controller_test") {
 
 js_library("frequency_channel_utils_test") {
   deps = [
-    "../../:chai_assert",
+    "..:chai_assert",
     "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
     "//ash/webui/diagnostics_ui/resources:frequency_channel_utils",
   ]
@@ -479,7 +479,7 @@ js_library("system_page_test") {
 
 js_library("test_diagnostics_browser_proxy") {
   deps = [
-    "../..:test_browser_proxy",
+    "..:test_browser_proxy",
     "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
     "//ash/webui/diagnostics_ui/resources:diagnostics_browser_proxy",
   ]

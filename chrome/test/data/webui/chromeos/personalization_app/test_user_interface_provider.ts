@@ -7,8 +7,8 @@ import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buff
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestUserProvider extends
-    TestBrowserProxy<UserProviderInterface> implements UserProviderInterface {
+export class TestUserProvider extends TestBrowserProxy implements
+    UserProviderInterface {
   public defaultUserImages: DefaultUserImage[] = [
     {
       index: 8,

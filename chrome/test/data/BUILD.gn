@@ -59,7 +59,7 @@ group("closure_compile") {
     "extensions/api_test/file_system_provider/service_worker:closure_compile",
   ]
 
-  if (!is_android) {
+  if (is_chromeos_ash) {
     deps += [ "webui:closure_compile" ]
   }
 }

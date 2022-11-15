@@ -4,7 +4,7 @@
 
 /** @fileoverview Contains fake implementations of mojo interfaces. */
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from '../chromeos/test_browser_proxy.js';
 
 /**
  * @implements {nearbyShare.mojom.ConfirmationManagerInterface}

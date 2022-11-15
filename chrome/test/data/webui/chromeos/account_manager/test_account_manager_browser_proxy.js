@@ -4,7 +4,7 @@
 
 import {AccountManagerBrowserProxy} from 'chrome://account-migration-welcome/account_manager_browser_proxy.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
 /** @implements {AccountManagerBrowserProxy} */
 export class TestAccountManagerBrowserProxy extends TestBrowserProxy {

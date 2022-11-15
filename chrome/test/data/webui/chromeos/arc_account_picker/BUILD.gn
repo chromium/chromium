@@ -36,7 +36,7 @@ js_library("arc_account_picker_test") {
 
 js_library("test_util") {
   deps = [
-    "../..:test_browser_proxy",
+    "..:test_browser_proxy",
     "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_browser_proxy",
   ]
 }

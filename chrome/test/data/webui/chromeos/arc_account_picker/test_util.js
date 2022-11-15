@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Account, ArcAccountPickerBrowserProxy, ArcAccountPickerBrowserProxyImpl} from 'chrome://chrome-signin/arc_account_picker/arc_account_picker_browser_proxy.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
 /**
  * @param {!TestArcAccountPickerBrowserProxy} testBrowserProxy

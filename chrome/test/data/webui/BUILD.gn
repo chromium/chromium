@@ -13,7 +13,6 @@ import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_definitions.gni")
@@ -298,10 +297,9 @@ if (include_js_tests) {
   }
 }
 
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-  if (is_chromeos_ash) {
-    deps += [
+if (is_chromeos_ash) {
+  group("closure_compile") {
+    deps = [
       "chromeos:closure_compile",
       "cr_components/chromeos:closure_compile",
       "nearby_share:closure_compile",
@@ -309,15 +307,6 @@ group("closure_compile") {
       "settings/chromeos:closure_compile",
     ]
   }
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  deps = [ ":test_browser_proxy" ]
-}
-
-js_library("test_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:promise_resolver" ]
 }
 
 grit("resources") {
@@ -364,20 +353,17 @@ generate_grd("build_web_ui_test_mojo_grdp") {
 }
 
 # TypeScript related targets
-
-checked_in_dts_files = [ "test_browser_proxy.d.ts" ]
-
 if (is_chromeos_ash) {
-  checked_in_dts_files += [ "chromeos/chai_assert.d.ts" ]
-}
+  checked_in_dts_files = [ "chromeos/chai_assert.d.ts" ]
 
-# Copies checked-in .d.ts files to the preprocess folder so that they are
-# discovered by TSC the same way generated .d.ts files are.
-preprocess_if_expr("copy_checked_in_dts_files") {
-  in_folder = "./"
-  in_files = checked_in_dts_files
-  out_folder = "$target_gen_dir/tsc"
-  visibility = [ ":build_ts" ]
+  # Copies checked-in .d.ts files to the preprocess folder so that they are
+  # discovered by TSC the same way generated .d.ts files are.
+  preprocess_if_expr("copy_checked_in_dts_files") {
+    in_folder = "./"
+    in_files = checked_in_dts_files
+    out_folder = "$target_gen_dir/tsc"
+    visibility = [ ":build_ts" ]
+  }
 }
 
 generate_definitions_js_files = [ "mojo_webui_test_support.js" ]
@@ -402,9 +388,6 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  path_mappings = [ "chrome://webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
   in_files = [
     "chai_assert.ts",
     "chrome_timeticks_test.ts",
@@ -418,6 +401,7 @@ ts_library("build_ts") {
     "mock_timer_test.ts",
     "polymer_test_util.ts",
     "text_defaults_test.ts",
+    "test_browser_proxy.ts",
     "test_plural_string_proxy.ts",
     "test_store_ts.ts",
     "test_util.ts",
@@ -428,12 +412,12 @@ ts_library("build_ts") {
   }
 
   deps = [ "//ui/webui/resources:library" ]
-  extra_deps = [
-    ":copy_checked_in_dts_files",
-    ":generate_definitions",
-  ]
+  extra_deps = [ ":generate_definitions" ]
   if (is_chromeos_ash) {
-    extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
+    extra_deps += [
+      ":copy_checked_in_dts_files",
+      "//ash/webui/common/resources:generate_definitions",
+    ]
   }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
@@ -442,8 +426,10 @@ ts_library("build_ts") {
   ]
 
   # Checked-in .d.ts files.
-  foreach(_file, checked_in_dts_files) {
-    definitions += [ "$target_gen_dir/tsc/$_file" ]
+  if (is_chromeos_ash) {
+    foreach(_file, checked_in_dts_files) {
+      definitions += [ "$target_gen_dir/tsc/$_file" ]
+    }
   }
 
   # Auto-generated .d.ts files.
@@ -463,7 +449,6 @@ generate_grd("build_grd") {
   input_files = [
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
-    "test_browser_proxy.js",
     "usb_internals_test.js",
 
     "invalidations/invalidations_test.js",
@@ -474,11 +459,13 @@ generate_grd("build_grd") {
       "chromeos/chai_assert.js",
       "chromeos/mock_controller.js",
       "chromeos/mock_controller.m.js",
+      "chromeos/test_browser_proxy.js",
       "chromeos/test_store.js",
       "chromeos/test_util.js",
       "chromeos/arc_account_picker/test_util.js",
       "chromeos/ash_common/i18n_behavior_test.js",
       "chromeos/fake_network_config_mojom.js",
+      "set_time_dialog_test.js",
     ]
   }
 

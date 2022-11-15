@@ -12,7 +12,7 @@ import 'chrome://resources/ash/common/multidevice_setup/setup_succeeded_page.js'
 
 import {BrowserProxyImpl} from 'chrome://resources/ash/common/multidevice_setup/multidevice_setup_browser_proxy.js';
 
-import {TestBrowserProxy} from '../../../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * @implements {BrowserProxy}

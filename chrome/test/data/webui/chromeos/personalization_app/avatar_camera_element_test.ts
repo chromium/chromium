@@ -55,8 +55,8 @@ class MockWebcamUtils extends TestBrowserProxy implements WebcamUtilsInterface {
   }
 }
 
-class MockGetUserMediaProxy extends
-    TestBrowserProxy<GetUserMediaProxy> implements GetUserMediaProxy {
+class MockGetUserMediaProxy extends TestBrowserProxy implements
+    GetUserMediaProxy {
   mediaStream = new MediaStream();
 
   constructor() {

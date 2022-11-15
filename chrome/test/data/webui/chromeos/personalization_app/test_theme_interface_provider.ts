@@ -5,8 +5,8 @@
 import {ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface} from 'chrome://personalization/js/personalization_app.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestThemeProvider extends
-    TestBrowserProxy<ThemeProviderInterface> implements ThemeProviderInterface {
+export class TestThemeProvider extends TestBrowserProxy implements
+    ThemeProviderInterface {
   constructor() {
     super([
       'setThemeObserver',
