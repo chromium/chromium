@@ -9,6 +9,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -392,6 +393,7 @@ class RTCVideoEncoderTest
   base::Thread encoder_thread_;
 
  private:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
   std::unique_ptr<EncodedImageCallbackWrapper> callback_wrapper_;
   base::WaitableEvent idle_waiter_;
