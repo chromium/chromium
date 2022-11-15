@@ -261,28 +261,39 @@ If you want to remove support for another reason, please reach out to someone in
 to ensure this is okay. The general preference is to leave policies as
 deprecated, but still supported.
 
-When removing support for a policy, update `supported_on` to correctly list the
-last milestone the policy is supported on. Please also set 'deprecated' to True
-if the policy skipped past the deprecation state.
-
-### Steps
-1. Update `YourPolicyName.yaml`, marking the policy as no longer supported.
-   Also marking as deprecated if not previously done.
-1. Update the related test in the `policy_test_cases.json`.
-    - If the policy is going to be removed in the current milestone, remove the
-      the test at the same time.
-    - If the policy is going to be removed in the future milestone, remove the
-      test **after** policy support ended.
-1. Remove the policy handling code.
+When removing support for a policy:
+1. Update `YourPolicyName.yaml` to mark the poilcy as no longer supported.
+   - Update `supported_on` to correctly list the last milestone the policy is
+     supported on.
+   - Set 'deprecated' to True if the policy skipped past the deprecation state.
+1. If the last milestone lies in the future file a bug to clean up the policy
+   supporting code as soon as the milestone has been reached. Set its next action
+   date to a date shortly after the expected branch date for that version. Add a
+   comment in the yaml file with the bug number for reference.
+1. Lastly after the last supported version has been branched:
+   - remove all the code that implements the policy behavior as shown in the
+     [Examples](#examples) section below after the milestone has been reached.
+   - Update the related test in the `policy_test_cases.json` by clearing the
+     the test for that policy.
 1. Notify chromium-enterprise@chromium.org to ensure this removal of support is
    mentioned in the enterprise release notes.
 
 ## Examples
 
-Here is an example based on the instructions above. It's a good, simple place to
-get started:
-[https://chromium-review.googlesource.com/c/chromium/src/+/1742209](https://chromium-review.googlesource.com/c/chromium/src/+/1742209)
-
+- Here is an example for adding a new policy. It's a good, simple place to
+  get started:
+  [https://chromium-review.googlesource.com/c/chromium/src/+/4004453](https://chromium-review.googlesource.com/c/chromium/src/+/4004453)
+- This is an example for the clean-up CL needed to remove a deprecated, escape
+  hatch policy. As mentioned in the section
+  [Removing support for a policy](#removing-support-for-a-policy).
+  [https://chromium-review.googlesource.com/c/chromium/src/+/3551442](https://chromium-review.googlesource.com/c/chromium/src/+/3551442)
+  (Note: The example above has been created prior to the policy_templates.json
+  to individual yaml files but it still shows clearly how to modify the policy
+  definition. We will update the document again as soon as we have a good clean
+  sample containing yaml file policy removal.)
+- This is an example of a CL that sets the expiration date of a policy in a
+  future milestone:
+  [https://chromium-review.googlesource.com/c/chromium/src/+/4022055](https://chromium-review.googlesource.com/c/chromium/src/+/4022055)
 
 ## Modifying existing policies
 
