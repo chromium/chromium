@@ -8714,19 +8714,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kDebugHistoryInterventionNoUserActivation)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"smart-lock-sign-in-removed",
-     flag_descriptions::kSmartLockSignInRemovedName,
-     flag_descriptions::kSmartLockSignInRemovedDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSmartLockSignInRemoved)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"smart-lock-ui-revamp", flag_descriptions::kSmartLockUIRevampName,
-     flag_descriptions::kSmartLockUIRevampDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSmartLockUIRevamp)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-phone-hub-call-notification",
      flag_descriptions::kPhoneHubCallNotificationName,
      flag_descriptions::kPhoneHubCallNotificationDescription, kOsCrOS,
