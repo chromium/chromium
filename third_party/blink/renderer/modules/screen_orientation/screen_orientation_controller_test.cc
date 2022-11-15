@@ -231,7 +231,7 @@ TEST_F(ScreenOrientationControllerTest, PageVisibilityCrash) {
       WebString::FromUTF8("visible_iframe.html"));
 
   frame_test_helpers::CreateTestWebFrameWidgetCallback create_widget_callback =
-      base::BindRepeating(
+      WTF::BindRepeating(
           &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
               ScreenInfoWebFrameWidget>);
   frame_test_helpers::WebViewHelper web_view_helper(create_widget_callback);
