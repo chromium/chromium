@@ -3374,9 +3374,6 @@ extern const char kReleaseTrackUiDescription[];
 extern const char kArcWindowPredictorName[];
 extern const char kArcWindowPredictorDescription[];
 
-extern const char kArcInputOverlayName[];
-extern const char kArcInputOverlayDescription[];
-
 extern const char kArcInputOverlayNameBeta[];
 extern const char kArcInputOverlayDescriptionBeta[];
 

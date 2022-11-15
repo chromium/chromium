@@ -244,8 +244,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcIioSensorBridge::GetForBrowserContext(profile);
   ArcImeService::GetForBrowserContext(profile);
   ArcInputMethodManagerService::GetForBrowserContext(profile);
-  if (ash::features::IsArcInputOverlayEnabled())
-    ArcInputOverlayManager::GetForBrowserContext(profile);
+  ArcInputOverlayManager::GetForBrowserContext(profile);
   ArcInstanceThrottle::GetForBrowserContext(profile);
   {
     auto* intent_helper = ArcIntentHelperBridge::GetForBrowserContext(profile);

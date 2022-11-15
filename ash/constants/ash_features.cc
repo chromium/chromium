@@ -152,11 +152,6 @@ BASE_FEATURE(kArcFuseBoxFileSharing,
              "ArcFuseBoxFileSharing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable support for ARC Input Overlay Alpha.
-BASE_FEATURE(kArcInputOverlay,
-             "ArcInputOverlay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable support for ARC Input Overlay Beta.
 BASE_FEATURE(kArcInputOverlayBeta,
              "ArcInputOverlayBeta",
@@ -2310,10 +2305,6 @@ bool IsAppNotificationsPageEnabled() {
 
 bool IsArcFuseBoxFileSharingEnabled() {
   return base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
-}
-
-bool IsArcInputOverlayEnabled() {
-  return base::FeatureList::IsEnabled(kArcInputOverlay);
 }
 
 bool IsArcInputOverlayBetaEnabled() {

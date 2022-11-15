@@ -5870,11 +5870,6 @@ const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
 
-const char kArcInputOverlayName[] = "Enable ARC Input Overlay";
-const char kArcInputOverlayDescription[] =
-    "Enables the input overlay feature for some Android game apps, "
-    "so it can play with a keyboard and a mouse instead of touch screen";
-
 const char kArcInputOverlayNameBeta[] = "Enable ARC Input Overlay Beta";
 const char kArcInputOverlayDescriptionBeta[] =
     "Enable more features based on ARC Input Overlay Alpha, "
