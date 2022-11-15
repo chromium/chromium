@@ -30,6 +30,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -41,19 +43,30 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.Origin;
 
 /**
  * Integration tests involving several classes in Custom Tabs content layer, checking that urls are
  * properly loaded in Custom Tabs in different conditions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+@EnableFeatures({ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS})
 public class CustomTabActivityUrlLoadingTest {
     public static final String PASSWORD_CHANGE_USERNAME = "Peter";
+
+    @Implements(Origin.class)
+    public static class ShadowOrigin {
+        @Implementation
+        public static Origin createOpaqueOrigin() {
+            return null;
+        }
+    }
 
     @Rule
     public final CustomTabActivityContentTestEnvironment env =

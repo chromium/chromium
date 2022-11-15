@@ -60,6 +60,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -1840,6 +1841,62 @@ public class CustomTabActivityTest {
             });
         });
         eventHelper.waitForCallback(0);
+    }
+
+    private void doOpaqueOriginTest(boolean enabled, boolean prefetch) throws Exception {
+        TestWebServer webServer = createTestWebServer();
+        String url = webServer.setResponse("/ok.html", "<html>ok</html>", null);
+        CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        Context context = InstrumentationRegistry.getInstrumentation()
+                                  .getTargetContext()
+                                  .getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        connection.newSession(token);
+
+        if (prefetch) {
+            setCanUseHiddenTabForSession(connection, token, true);
+            Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat(connection.getHiddenTab(), Matchers.notNullValue());
+            });
+            Tab hiddenTab = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { return connection.getHiddenTab(); });
+            ChromeTabUtils.waitForTabPageLoaded(hiddenTab, url);
+        } else {
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        }
+        String actualHeader = webServer.getLastRequest("/ok.html").headerValue("Sec-Fetch-Site");
+        assertEquals(enabled ? "cross-site" : "none", actualHeader);
+        webServer.shutdown();
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    public void testOpaqueOriginFromPrefetch_Enabled() throws Exception {
+        doOpaqueOriginTest(true, true);
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    public void testOpaqueOriginFromPrefetch_Disabled() throws Exception {
+        doOpaqueOriginTest(false, true);
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    public void testOpaqueOriginFromIntent_Enabled() throws Exception {
+        doOpaqueOriginTest(true, false);
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)
+    public void testOpaqueOriginFromIntent_Disabled() throws Exception {
+        doOpaqueOriginTest(false, false);
     }
 
     /** Asserts that the Overlay Panel is set to allow or not allow ever hiding the Toolbar. */

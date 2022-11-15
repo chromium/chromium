@@ -19,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,6 +32,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.Origin;
 
 /**
  * Holds a hidden tab which may be used to preload pages before a CustomTabActivity is launched.
@@ -126,6 +128,11 @@ public class HiddenTabHolder {
         if (referrer == null) referrer = "";
         if (!referrer.isEmpty()) {
             loadParams.setReferrer(new Referrer(referrer, ReferrerPolicy.DEFAULT));
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)) {
+            // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
+            // avoid sending same-site cookies.
+            loadParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
         }
 
         loadParams.setTransitionType(PageTransition.LINK | PageTransition.FROM_API);

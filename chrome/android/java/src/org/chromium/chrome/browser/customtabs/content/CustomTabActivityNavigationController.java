@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -45,6 +46,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -200,6 +202,12 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
         params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(
                 mIntentDataProvider.getIntent(), transition));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPAQUE_ORIGIN_FOR_INCOMING_INTENTS)) {
+            // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
+            // avoid sending same-site cookies.
+            params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        }
 
         tab.loadUrl(params);
     }
