@@ -126,6 +126,8 @@ crbug.com/1383609 [ android android-sm-a135m ] GpuProcess_css3d [ Failure ]
 crbug.com/1383609 [ android android-sm-a235m ] GpuProcess_canvas2d [ Failure ]
 crbug.com/1383609 [ android android-sm-a235m ] GpuProcess_css3d [ Failure ]
 
+crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
