@@ -25,7 +25,6 @@ import androidx.collection.ArraySet;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.chromium.base.Function;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -41,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * CachedZeroSuggestionsManager manages caching and restoring zero suggestions.

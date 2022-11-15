@@ -4,9 +4,8 @@
 
 package org.chromium.chromecast.base;
 
-import org.chromium.base.Function;
-
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Represents a structure containing an instance of both A and B.

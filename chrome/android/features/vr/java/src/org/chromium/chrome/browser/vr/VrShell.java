@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import com.google.vr.ndk.base.AndroidCompat;
 import com.google.vr.ndk.base.GvrLayout;
 
-import org.chromium.base.Function;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -81,6 +80,7 @@ import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 /**
  * This view extends from GvrLayout which wraps a GLSurfaceView that renders VR shell.

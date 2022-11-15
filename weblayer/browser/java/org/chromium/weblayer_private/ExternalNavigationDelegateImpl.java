@@ -10,7 +10,6 @@ import android.content.pm.ResolveInfo;
 import android.os.RemoteException;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Function;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
@@ -23,6 +22,7 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * WebLayer's implementation of the {@link ExternalNavigationDelegate}.

@@ -4,12 +4,11 @@
 
 package org.chromium.chromecast.base;
 
-import org.chromium.base.Function;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * An Observable with exactly one activation at a time, which provides a way to mutate the

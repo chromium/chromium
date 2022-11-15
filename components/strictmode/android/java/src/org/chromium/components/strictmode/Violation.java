@@ -4,9 +4,8 @@
 
 package org.chromium.components.strictmode;
 
-import org.chromium.base.Function;
-
 import java.util.List;
+import java.util.function.Function;
 
 /** Violation that occurred. */
 public class Violation {

@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
-import org.chromium.base.Function;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 

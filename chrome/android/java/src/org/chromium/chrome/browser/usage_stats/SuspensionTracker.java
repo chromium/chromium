@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
-import org.chromium.base.Function;
 import org.chromium.base.Promise;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Class that tracks which sites are currently suspended.

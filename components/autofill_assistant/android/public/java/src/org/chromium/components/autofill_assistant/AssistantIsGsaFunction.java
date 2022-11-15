@@ -6,7 +6,7 @@ package org.chromium.components.autofill_assistant;
 
 import android.app.Activity;
 
-import org.chromium.base.Function;
+import java.util.function.Function;
 
 /**
  * Determines whether the activity was launched by GSA.

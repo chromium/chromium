@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -22,6 +21,7 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * This class contains the logic to determine effective navigation/redirect.

@@ -15,7 +15,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Function;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -31,6 +30,8 @@ import org.chromium.components.autofill_assistant.metrics.DropOutReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Function;
 
 /** Facade for starting Autofill Assistant on a tab. */
 public class AutofillAssistantFacade {

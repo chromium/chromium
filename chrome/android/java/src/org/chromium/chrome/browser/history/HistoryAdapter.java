@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.Function;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
@@ -30,6 +29,7 @@ import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Bridges the user's browsing history and the UI used to display it.

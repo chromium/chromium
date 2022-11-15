@@ -11,7 +11,6 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Function;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -21,6 +20,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A delegate for {@link ExternalNavigationHandler}.

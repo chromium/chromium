@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A Promise class to be used as a placeholder for a result that will be provided asynchronously.
