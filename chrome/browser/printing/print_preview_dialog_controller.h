@@ -96,17 +96,17 @@ class PrintPreviewDialogController
   // the initiator or preview WebContents is closed.
   void WebContentsDestroyed(content::WebContents* contents) override;
 
-  // Handles the commit of a navigation entry for `contents`. This is observed
-  // when the renderer for either WebContents is navigated to a different page.
-  void NavigationEntryCommitted(
+  // Handles the commit of a navigation for `contents`. This is observed when
+  // the renderer for either WebContents is navigated to a different page.
+  void DidFinishNavigation(
       content::WebContents* contents,
-      const content::LoadCommittedDetails& details) override;
+      content::NavigationHandle* navigation_handle) override;
 
-  // Helpers for NavigationEntryCommitted().
+  // Helpers for DidFinishNavigation().
   void OnInitiatorNavigated(content::WebContents* initiator,
-                            const content::LoadCommittedDetails& details);
+                            content::NavigationHandle* navigation_handle);
   void OnPreviewDialogNavigated(content::WebContents* preview_dialog,
-                                const content::LoadCommittedDetails& details);
+                                content::NavigationHandle* navigation_handle);
 
   // Creates a new print preview dialog.
   content::WebContents* CreatePrintPreviewDialog(

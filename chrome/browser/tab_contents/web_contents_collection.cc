@@ -30,9 +30,9 @@ class WebContentsCollection::ForwardingWebContentsObserver
     observer_->RenderProcessGone(web_contents(), status);
   }
 
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override {
-    observer_->NavigationEntryCommitted(web_contents(), load_details);
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    observer_->DidFinishNavigation(web_contents(), navigation_handle);
   }
 
   // The observer that callbacks should forward to, annotating the
