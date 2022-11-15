@@ -26,11 +26,6 @@ class PopoverData final : public GarbageCollected<PopoverData> {
   PopoverData(const PopoverData&) = delete;
   PopoverData& operator=(const PopoverData&) = delete;
 
-  bool hadDefaultOpenWhenParsed() const { return had_defaultopen_when_parsed_; }
-  void setHadDefaultOpenWhenParsed(bool value) {
-    had_defaultopen_when_parsed_ = value;
-  }
-
   PopoverVisibilityState visibilityState() const { return visibility_state_; }
   void setVisibilityState(PopoverVisibilityState visibility_state) {
     visibility_state_ = visibility_state;
@@ -91,7 +86,6 @@ class PopoverData final : public GarbageCollected<PopoverData> {
   }
 
  private:
-  bool had_defaultopen_when_parsed_ = false;
   PopoverVisibilityState visibility_state_ = PopoverVisibilityState::kHidden;
   PopoverValueType type_ = PopoverValueType::kNone;
   WeakMember<Element> invoker_;

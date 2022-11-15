@@ -264,9 +264,7 @@ interface FontData
 # on any platform.
 interface HTMLElement : Element
 	  method hidePopover
-	  setter defaultOpen
 	  method showPopover
-	  getter defaultOpen
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential

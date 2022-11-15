@@ -3221,7 +3221,6 @@ interface HTMLElement : Element
     getter autofocus
     getter contentEditable
     getter dataset
-    getter defaultOpen
     getter dir
     getter draggable
     getter editContext
@@ -3363,7 +3362,6 @@ interface HTMLElement : Element
     setter autocapitalize
     setter autofocus
     setter contentEditable
-    setter defaultOpen
     setter dir
     setter draggable
     setter editContext
