@@ -42,6 +42,13 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
     command_list.Append(CreateCommandValue(browser_action, active));
   }
 
+  extensions::Command action;
+  if (command_service->GetExtensionActionCommand(
+          extension_->id(), extensions::ActionInfo::TYPE_ACTION,
+          extensions::CommandService::ALL, &action, &active)) {
+    command_list.Append(CreateCommandValue(action, active));
+  }
+
   extensions::Command page_action;
   if (command_service->GetExtensionActionCommand(
           extension_->id(), extensions::ActionInfo::TYPE_PAGE,

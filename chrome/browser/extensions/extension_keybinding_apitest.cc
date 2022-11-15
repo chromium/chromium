@@ -1146,6 +1146,62 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   EXPECT_TRUE(click_listener.WaitUntilSatisfied());
 }
 
+// This test validates that commands.getAll() returns commands associated with
+// a registered [page/browser] action.
+IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, GetAllReturnsActionCommand) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const ActionInfo::Type action_type = GetParam();
+
+  // Load a test extension that has a command for the current action type.
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Extension Commands Get All Test",
+      "manifest_version": %d,
+      "version": "0.1",
+      "commands": {
+        "%s": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+5"
+          }
+        }
+      },
+      "%s": {},
+      "background": { %s }
+    }
+  )";
+  constexpr char kBackgroundScriptTemplate[] = R"(
+      var platformBinding =
+        /Mac/.test(navigator.platform) ? '⇧⌘5' : 'Ctrl+Shift+5';
+      chrome.commands.getAll(function(commands) {
+        chrome.test.assertEq(1, commands.length);
+
+        chrome.test.assertEq("%s",            commands[0].name);
+        chrome.test.assertEq("",              commands[0].description);
+        chrome.test.assertEq(platformBinding, commands[0].shortcut);
+
+        chrome.test.notifyPass();
+      });
+  )";
+  const char* background_specification =
+      action_type == ActionInfo::TYPE_ACTION
+          ? R"("service_worker": "background.js")"
+          : R"("scripts": ["background.js"])";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, GetManifestVersionForActionType(action_type),
+      GetCommandKeyForActionType(action_type),
+      ActionInfo::GetManifestKeyForActionType(action_type),
+      background_specification));
+  test_dir.WriteFile(
+      FILE_PATH_LITERAL("background.js"),
+      base::StringPrintf(kBackgroundScriptTemplate,
+                         GetCommandKeyForActionType(action_type)));
+
+  EXPECT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
 // Tests that triggering a command associated with an action opens an
 // extension's popup.
 IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
