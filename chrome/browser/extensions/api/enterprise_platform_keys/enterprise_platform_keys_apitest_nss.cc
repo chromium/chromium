@@ -5,6 +5,7 @@
 #include <cryptohi.h>
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -13,6 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -271,6 +273,13 @@ class EnterprisePlatformKeysTest
            user_status() == UserStatus::MANAGED_AFFILIATED_DOMAIN;
   }
 
+  void AddScreenplayTag() {
+    static base::NoDestructor<std::map<std::string, std::string>> tag;
+    tag->insert(std::pair<std::string, std::string>(
+        "feature_id", "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6"));
+    RecordPropertyFromMap(*tag);
+  }
+
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 
  private:
@@ -294,10 +303,12 @@ class EnterprisePlatformKeysTest
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
+  AddScreenplayTag();
   RunPreTest();
 }
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
+  AddScreenplayTag();
   {
     base::RunLoop loop;
     NssServiceFactory::GetForContext(profile())
@@ -426,6 +437,13 @@ class EnterprisePlatformKeysLoginScreenTest
     return &extension_force_install_mixin_;
   }
 
+  void AddScreenplayTag() {
+    static base::NoDestructor<std::map<std::string, std::string>> tag;
+    tag->insert(std::pair<std::string, std::string>(
+        "feature_id", "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6"));
+    RecordPropertyFromMap(*tag);
+  }
+
  private:
   void SetUp() override {
     ash::platform_keys::PlatformKeysServiceFactory::GetInstance()
@@ -463,6 +481,7 @@ class EnterprisePlatformKeysLoginScreenTest
 };
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {
+  AddScreenplayTag();
   base::DictionaryValue config;
   config.SetStringKey("customArg",
                       BuildCustomArg(/*user_session_test=*/false,
