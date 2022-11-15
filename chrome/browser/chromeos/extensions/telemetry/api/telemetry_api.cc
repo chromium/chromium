@@ -19,6 +19,7 @@
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -175,14 +176,22 @@ void OsTelemetryGetInternetConnectivityInfoFunction::OnResult(
   }
   auto& network_info = ptr->network_result->get_network_health();
 
-  // TODO(b/249246037): This is not part of the converter since we will need to
-  // check permissions here for additional fields like MAC address that we want
-  // to add soon. Add the permission here as soon as it is available.
   api::os_telemetry::InternetConnectivityInfo result;
   for (auto& network : network_info->networks) {
+    absl::optional<std::string> mac_address;
+    if (extension()->permissions_data()->HasAPIPermission(
+            extensions::mojom::APIPermissionID::
+                kChromeOSTelemetryNetworkInformation)) {
+      mac_address = std::move(network->mac_address);
+    }
+
     auto converted_network =
         converters::ConvertPtr<api::os_telemetry::NetworkInfo>(
             std::move(network));
+
+    if (mac_address && !mac_address->empty()) {
+      converted_network.mac_address = std::move(mac_address);
+    }
 
     // Don't include networks with an undefined type.
     if (converted_network.type !=

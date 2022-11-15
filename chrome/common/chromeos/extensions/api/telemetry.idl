@@ -117,6 +117,7 @@ namespace os.telemetry {
   dictionary NetworkInfo {
     NetworkType? type;
     NetworkState? state;
+    DOMString? macAddress;
     DOMString? ipv4Address;
     DOMString[] ipv6Addresses;
     double? signalStrength;

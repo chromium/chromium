@@ -719,6 +719,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
       auto network = chromeos::network_health::mojom::Network::New();
       network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
       network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+      network->mac_address = "00:00:5e:00:53:af";
       network->ipv4_address = "1.1.1.1";
       network->ipv6_addresses = {"FE80:CD00:0000:0CDE:1257:0000:211E:729C"};
       network->signal_strength =
@@ -731,6 +732,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           chromeos::network_config::mojom::NetworkType::kAll;
       invalid_network->state =
           chromeos::network_health::mojom::NetworkState::kOnline;
+      invalid_network->mac_address = "00:00:5e:00:53:fu";
       invalid_network->ipv4_address = "2.2.2.2";
       invalid_network->ipv6_addresses = {
           "FE80:0000:CD00:729C:0CDE:1257:0000:211E"};
@@ -764,6 +766,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
         const network_result = result.networks[0];
         chrome.test.assertEq('wifi', network_result.type);
         chrome.test.assertEq('online', network_result.state);
+        chrome.test.assertEq('00:00:5e:00:53:af', network_result.macAddress);
         chrome.test.assertEq('1.1.1.1', network_result.ipv4Address);
         chrome.test.assertEq(['FE80:CD00:0000:0CDE:1257:0000:211E:729C'],
           network_result.ipv6Addresses);
@@ -1207,17 +1210,19 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
+class TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
  public:
-  TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest() = default;
-  ~TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest() override =
+  TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest() =
       default;
+  ~TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest()
+      override = default;
 
-  TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest(
+  TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest(
       const BaseTelemetryExtensionBrowserTest&) = delete;
-  TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest& operator=(
-      const TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest&) =
+  TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest&
+  operator=(
+      const TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest&) =
       delete;
 
  protected:
@@ -1246,7 +1251,7 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
+    TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
     GetBatteryInfoWithoutSerialNumberPermission) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
@@ -1327,7 +1332,69 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
+    TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
+    GetOemInternetConnectivityWithoutPermission) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+
+    {
+      auto network = chromeos::network_health::mojom::Network::New();
+      network->type = chromeos::network_config::mojom::NetworkType::kWiFi;
+      network->state = chromeos::network_health::mojom::NetworkState::kOnline;
+      network->mac_address = "00:00:5e:00:53:af";
+      network->ipv4_address = "1.1.1.1";
+      network->ipv6_addresses = {"FE80:CD00:0000:0CDE:1257:0000:211E:729C"};
+      network->signal_strength =
+          chromeos::network_health::mojom::UInt32Value::New(100);
+
+      auto network_info =
+          chromeos::network_health::mojom::NetworkHealthState::New();
+      network_info->networks.push_back(std::move(network));
+
+      telemetry_info->network_result =
+          crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
+              std::move(network_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kNetwork});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getInternetConnectivityInfo() {
+        const result = await chrome.os.telemetry.getInternetConnectivityInfo();
+        chrome.test.assertEq(1, result.networks.length);
+
+        const network_result = result.networks[0];
+        chrome.test.assertEq('wifi', network_result.type);
+        chrome.test.assertEq('online', network_result.state);
+        chrome.test.assertEq('1.1.1.1', network_result.ipv4Address);
+        chrome.test.assertEq(null, network_result.macAddress);
+        chrome.test.assertEq(['FE80:CD00:0000:0CDE:1257:0000:211E:729C'],
+          network_result.ipv6Addresses);
+        chrome.test.assertEq(100, network_result.signalStrength);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
@@ -1358,7 +1425,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
+    TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If Probe interface is not available on this version of ash-chrome, this
