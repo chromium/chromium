@@ -60,30 +60,24 @@ class CONTENT_EXPORT PassthroughTouchEventQueueClient {
 class CONTENT_EXPORT PassthroughTouchEventQueue {
  public:
   struct CONTENT_EXPORT Config {
-    Config()
-        : desktop_touch_ack_timeout_delay(base::Milliseconds(200)),
-          mobile_touch_ack_timeout_delay(base::Milliseconds(1000)),
-          touch_ack_timeout_supported(false),
-          skip_touch_filter(base::FeatureList::IsEnabled(
-              blink::features::kSkipTouchEventFilter)),
-          events_to_always_forward(kSkipTouchEventFilterType.Get()) {}
-
     // Touch ack timeout delay for desktop sites. If zero, timeout behavior
     // is disabled for such sites. Defaults to 200ms.
-    base::TimeDelta desktop_touch_ack_timeout_delay;
+    base::TimeDelta desktop_touch_ack_timeout_delay = base::Milliseconds(200);
 
     // Touch ack timeout delay for mobile sites. If zero, timeout behavior
     // is disabled for such sites. Defaults to 1000ms.
-    base::TimeDelta mobile_touch_ack_timeout_delay;
+    base::TimeDelta mobile_touch_ack_timeout_delay = base::Milliseconds(1000);
 
     // Whether the platform supports touch ack timeout behavior.
     // Defaults to false (disabled).
-    bool touch_ack_timeout_supported;
+    bool touch_ack_timeout_supported = false;
 
     // Whether we should allow events to bypass normal queue filter rules.
-    bool skip_touch_filter;
+    bool skip_touch_filter =
+        base::FeatureList::IsEnabled(blink::features::kSkipTouchEventFilter);
+
     // What events types are allowed to bypass the filter.
-    std::string events_to_always_forward;
+    std::string events_to_always_forward = kSkipTouchEventFilterType.Get();
   };
 
   PassthroughTouchEventQueue(PassthroughTouchEventQueueClient* client,

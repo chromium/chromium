@@ -13,19 +13,8 @@
 namespace content {
 namespace {
 
-// Default time allowance for the touch ack delay before the touch sequence is
-// cancelled, depending on whether the site has a mobile-friendly viewport.
-// Note that these constants are effective only when the timeout is supported.
-const int kDesktopTouchAckTimeoutDelayMs = 200;
-const int kMobileTouchAckTimeoutDelayMs = 1000;
-
 PassthroughTouchEventQueue::Config GetTouchEventQueueConfig() {
   PassthroughTouchEventQueue::Config config;
-
-  config.desktop_touch_ack_timeout_delay =
-      base::Milliseconds(kDesktopTouchAckTimeoutDelayMs);
-  config.mobile_touch_ack_timeout_delay =
-      base::Milliseconds(kMobileTouchAckTimeoutDelayMs);
 
 #if BUILDFLAG(IS_ANDROID)
   // For historical reasons only Android enables the touch ack timeout.
