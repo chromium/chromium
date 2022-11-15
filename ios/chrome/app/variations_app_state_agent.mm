@@ -7,10 +7,12 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/rand_util.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_field_trial_creator.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
 #import "components/version_info/version_info.h"
@@ -32,8 +34,15 @@ const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
 const char kIOSChromeVariationsTrialDefaultGroup[] = "Default";
 const char kIOSChromeVariationsTrialControlGroup[] = "Control-v1";
 const char kIOSChromeVariationsTrialEnabledGroup[] = "Enabled-v1";
+// Histogram name for seed expiry.
+const char kIOSSeedExpiryHistogram[] = "IOS.Variations.CreateTrials.SeedExpiry";
 
 namespace {
+
+using ::variations::HasSeedExpiredSinceTime;
+using ::variations::VariationsSeedExpiry;
+using ::variations::VariationsSeedStore;
+using ::version_info::Channel;
 
 // The NSUserDefault key to store the time the last seed is fetched.
 NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
@@ -58,12 +67,12 @@ enum class IOSChromeVariationsGroup {
 // NOTE: The value will be updated during the incremental rollout period.
 int GetGroupWeight() {
   switch (GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-    case version_info::Channel::BETA:
+    case Channel::UNKNOWN:
+    case Channel::CANARY:
+    case Channel::DEV:
+    case Channel::BETA:
       return 0;
-    case version_info::Channel::STABLE:
+    case Channel::STABLE:
       return 0;
   }
 }
@@ -76,18 +85,19 @@ base::Time GetLastVariationsSeedFetchTime() {
   return base::Time::FromDoubleT(timestamp);
 }
 
-// Record Variations.SeedFreshness metric according whether there is a seed in
-// the variations seed store fetched by a previous run, and if there is, whether
-// it is expired.
-// TODO(crbug.com/1380164): Implement this method.
-void RecordSeedFreshness(base::Time time) {
+// Records metric for `kIOSSeedExpiryHistogram` according whether there is a
+// seed in the variations seed store fetched by a previous run, and if there is,
+// whether it is expired.
+void RecordSeedExpiry(base::Time time) {
+  VariationsSeedExpiry expiry;
   if (time.is_null()) {
-    // TODO(crbug.com/1380164): Seed doesn't exist. Log metric.
-  } else if (variations::HasSeedExpiredSinceTime(time)) {
-    // TODO(crbug.com/1380164): Seed expired. Log metric.
+    expiry = VariationsSeedExpiry::kFetchTimeMissing;
+  } else if (HasSeedExpiredSinceTime(time)) {
+    expiry = VariationsSeedExpiry::kExpired;
   } else {
-    // TODO(crbug.com/1380164): Seed unexpired. Log metric.
+    expiry = VariationsSeedExpiry::kNotExpired;
   }
+  base::UmaHistogramEnumeration(kIOSSeedExpiryHistogram, expiry);
 }
 
 // Creates and returns a one-time randomized trial group assignment with regards
@@ -222,7 +232,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     _group = firstRun ? CreateOneTimeExperimentGroupAssignment(
                             enabledGroupWeight, controlGroupWeight)
                       : IOSChromeVariationsGroup::kNotFirstRun;
-    RecordSeedFreshness(lastSeedFetchTime);
+    RecordSeedExpiry(lastSeedFetchTime);
     if (_group == IOSChromeVariationsGroup::kEnabled) {
       _fetcher = fetcher;
       _fetcher.delegate = self;

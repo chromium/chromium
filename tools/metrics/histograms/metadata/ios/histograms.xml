@@ -1961,10 +1961,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Variations.CreateTrials.SeedExpiry"
+    enum="VariationsSeedExpiry" expires_after="2023-05-11">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the state of the variations seed stored from a previous launch of
+    Chrome iOS, e.g. not expired. Recorded after the seed is loaded and before
+    trials are created from the seed. Note that seeds for which this metric is
+    recorded may not be applied, e.g. when the seed has expired.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Variations.FirstRun.SeedFetchResult"
     enum="VariationsSeedFetchResult" expires_after="2023-05-09">
   <owner>ginnyhuang@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The result of attempting to fetch an initial variations seed during iOS
     Chrome first run. Records both the HTTP code and various error values in one
@@ -1975,7 +1987,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.Variations.FirstRun.SeedFetchTime" units="ms"
     expires_after="2023-05-09">
   <owner>ginnyhuang@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
   <summary>
     The latency of fetching an initial variations seed during iOS Chrome first
     run. Only considers cases where an HTTP 200 result was received.

@@ -7,9 +7,11 @@
 
 #import "base/metrics/field_trial.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/variations/pref_names.h"
+#import "components/variations/service/variations_field_trial_creator.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -27,11 +29,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// TODO(crbug.com/1380164): Remove after freshness logging is implemented.
-namespace {
-NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
-}  // namespace
 
 // Helper object that manages initStage transitions for the mock app state used
 // in VariationsAppStateAgentTest.
@@ -76,7 +73,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
   ~VariationsAppStateAgentTest() override {
     @autoreleasepool {
       [[NSUserDefaults standardUserDefaults]
-          removeObjectForKey:kLastVariationsSeedFetchTimeKey];
+          removeObjectForKey:@"kLastVariationsSeedFetchTime"];
       state_ = nil;
       mock_fetcher_ = nil;
       [mock_app_state_ stopMocking];
@@ -161,6 +158,12 @@ class VariationsAppStateAgentTest : public PlatformTest {
               group_name);
   }
 
+  // Verify that the expiry status is logged in UMA.
+  void ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry expiry) {
+    histogram_tester_.ExpectUniqueSample(kIOSSeedExpiryHistogram, expiry, 1);
+  }
+
   // Gets the current scene state to simulate activation level transitions.
   SceneState* GetSceneState() { return scene_state_; }
 
@@ -173,6 +176,7 @@ class VariationsAppStateAgentTest : public PlatformTest {
   SceneState* scene_state_;
   id mock_app_state_;
   StateForMockAppState* state_;
+  base::HistogramTester histogram_tester_;
 };
 
 #pragma mark - Test cases
@@ -184,6 +188,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
 TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   // Start the agent.
   VariationsAppStateAgent* agent = CreateAgentThatFetches();
+  ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry::kFetchTimeMissing);
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   // Verify that the app agent would NOT transitioned to the next init stage if
   // the seed fetch hasn't completed.
@@ -192,7 +198,6 @@ TEST_F(VariationsAppStateAgentTest, EnableSeedFetchOnFirstRun) {
   // seed fetch has completed.
   SimulateFetchCompletion(agent);
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
   TransitionAgentToStage(
       agent,
       static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
@@ -211,11 +216,12 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnNonFirstRun) {
   VariationsAppStateAgent* agent =
       CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
                   /*percentage_enabled=*/100, /*percentage_control=*/0);
+  ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry::kFetchTimeMissing);
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
   EXPECT_FALSE(
       base::FieldTrialList::IsTrialActive(kIOSChromeVariationsTrialName));
 }
@@ -229,11 +235,12 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInControlGroup) {
   VariationsAppStateAgent* agent =
       CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
                   /*percentage_enabled=*/0, /*percentage_control=*/100);
+  ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry::kFetchTimeMissing);
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
   TransitionAgentToStage(
       agent,
       static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
@@ -250,11 +257,12 @@ TEST_F(VariationsAppStateAgentTest, DisableSeedFetchOnFirstRunInDefaultGroup) {
   VariationsAppStateAgent* agent =
       CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
                   /*percentage_enabled=*/0, /*percentage_control=*/0);
+  ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry::kFetchTimeMissing);
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
   TransitionAgentToStage(
       agent,
       static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1));
@@ -272,11 +280,12 @@ TEST_F(VariationsAppStateAgentTest,
       /*fre=*/true,
       /*lastSeedFetchTime=*/base::Time::NowFromSystemTime() - base::Days(1),
       /*percentage_enabled=*/100, /*percentage_control=*/0);
+  ExpectThatSeedExpiryMetricLogged(
+      variations::VariationsSeedExpiry::kNotExpired);
   TransitionAgentToStage(agent, InitStageVariationsSeed);
   // Verify that the app agent would transitioned to the next init stage even if
   // the seed fetch hasn't completed.
   EXPECT_TRUE(IsAppStateQueueTransitionToNextInitStageInvoked());
-  // TODO(crbug.com/1380164): Test that first run metric is logged.
 }
 
 // Tests that the agent immediately transitions to the next stage from
@@ -365,10 +374,8 @@ TEST_F(VariationsAppStateAgentTest, SavesLastSeedFetchTimeOnBackgrounding) {
   //  Simulate backgrounding and launch again.
   [agent sceneState:GetSceneState()
       transitionedToActivationLevel:SceneActivationLevelBackground];
-  agent = CreateAgentThatDoesNotFetch();
-  TransitionAgentToStage(agent, InitStageVariationsSeed);
-  double stored_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:kLastVariationsSeedFetchTimeKey];
-  EXPECT_EQ(base::Time::FromDoubleT(stored_value), last_fetch_time);
-  // TODO(crbug.com/1380164): Test freshness logging.
+  agent = [[VariationsAppStateAgent alloc] init];
+  histogram_tester_.ExpectUniqueSample(
+      kIOSSeedExpiryHistogram, variations::VariationsSeedExpiry::kNotExpired,
+      2);
 }

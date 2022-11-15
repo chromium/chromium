@@ -83,6 +83,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/variations",
+    "//components/variations/service",
     "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",

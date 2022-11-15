@@ -20,6 +20,9 @@ extern const char kIOSChromeVariationsTrialControlGroup[];
 // Name for the enabled group.
 extern const char kIOSChromeVariationsTrialEnabledGroup[];
 
+// Histogram name for seed expiry.
+extern const char kIOSSeedExpiryHistogram[];
+
 @interface VariationsAppStateAgent (Testing)
 
 // Initializer that takes an existing fetcher and the enabled and control
