@@ -382,28 +382,42 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
 
   if (pre_paint_info.is_first_for_node) {
     if (allow_update) {
-      if (fragment_data->FragmentID() < fragment_id)
+      if (fragment_data->FragmentID() < fragment_id) {
         fragment_data->ClearNextFragment();
-    } else {
-      DCHECK_EQ(fragment_data->FragmentID(), fragment_id);
+      } else {
+        // We're at the first fragment. Mark all additional FragmentData
+        // objects, so that we can tell that they have been kept from a previous
+        // pre-paint pass.
+        for (FragmentData* next = fragment_data->NextFragment(); next;
+             next = next->NextFragment())
+          next->SetNeedsUpdate(true);
+      }
     }
   } else {
     FragmentData* last_fragment = nullptr;
+    // If fragment_data->NeedsUpdate() is true, a fragment ID mismatch is
+    // possible. Otherwise just loop through the FragmentData entries until we
+    // find the matching ID (or reach the end). The IDs are in ascending order,
+    // but they may not always be contiguous, as some nodes may lack a fragment
+    // representation certain fragmentainers.
     do {
-      if (fragment_data->FragmentID() >= fragment_id)
+      if (fragment_data->FragmentID() == fragment_id)
         break;
+      if (fragment_data->NeedsUpdate()) {
+        // Fragment ID mismatch. In some cases (typically when out-of-flow
+        // layout inserts fragmentainers on its own) we might skip a container
+        // in a given fragmentainer. We can re-use this FragmentData entry and
+        // just update the fragment ID. The important thing here is that we stop
+        // even if the ID is lower than what we're looking for.
+        DCHECK(allow_update);
+        break;
+      }
+      DCHECK_LT(fragment_data->FragmentID(), fragment_id);
       last_fragment = fragment_data;
       fragment_data = fragment_data->NextFragment();
     } while (fragment_data);
-    if (fragment_data) {
-      if (fragment_data->FragmentID() != fragment_id) {
-        // There are entries for fragmentainers after this one, but none for
-        // this one. Remove the fragment tail.
-        DCHECK(allow_update);
-        DCHECK_GT(fragment_data->FragmentID(), fragment_id);
-        fragment_data->ClearNextFragment();
-      }
-    } else {
+
+    if (!fragment_data) {
       // We don't need any additional fragments for culled inlines - unless this
       // is the highlighted link (in which case even culled inlines get paint
       // effects).
@@ -426,11 +440,12 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   }
 
   if (allow_update) {
+    fragment_data->SetNeedsUpdate(false);
     fragment_data->SetFragmentID(fragment_id);
-
     if (needs_paint_properties)
       fragment_data->EnsurePaintProperties();
   } else {
+    DCHECK(!fragment_data->NeedsUpdate());
     DCHECK_EQ(fragment_data->FragmentID(), fragment_id);
     DCHECK(!needs_paint_properties || fragment_data->PaintProperties());
   }

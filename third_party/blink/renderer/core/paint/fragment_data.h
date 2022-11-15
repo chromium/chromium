@@ -79,6 +79,16 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     EnsureRareData().fragment_id = id;
   }
 
+  bool NeedsUpdate() const { return rare_data_ && rare_data_->needs_update; }
+  void SetNeedsUpdate(bool b) {
+    if (!rare_data_ && !b)
+      return;
+    // We never need to mark the first FragmentData in the chain, and, if there
+    // actually are multiple fragments, we'll have rare_data_.
+    DCHECK(rare_data_);
+    rare_data_->needs_update = b;
+  }
+
   LayoutUnit LogicalTopInFlowThread() const {
 #if DCHECK_IS_ON()
     DCHECK(!rare_data_ || rare_data_->has_set_flow_thread_offset_ ||
@@ -228,6 +238,8 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     CullRect contents_cull_rect_;
     Member<FragmentData> next_fragment_;
     wtf_size_t fragment_id = 0;
+
+    bool needs_update = false;
 
 #if DCHECK_IS_ON()
     // Legacy block fragmentation sets the flow thread offset for each
