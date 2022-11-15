@@ -70,7 +70,6 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -628,13 +627,8 @@ void SystemTrayClientImpl::ShowArcVpnCreate(const std::string& app_id) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-        app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-        app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+      app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
 }
 
 void SystemTrayClientImpl::ShowSettingsSimUnlock() {

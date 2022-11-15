@@ -24,7 +24,6 @@
 #include "components/favicon/core/large_icon_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -202,15 +201,9 @@ void AppServiceAppResult::Launch(int event_flags,
     }
   }
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    proxy->Launch(app_id(), event_flags, launch_source,
-                  std::make_unique<apps::WindowInfo>(
-                      controller()->GetAppListDisplayId()));
-  } else {
-    proxy->Launch(app_id(), event_flags,
-                  apps::ConvertLaunchSourceToMojomLaunchSource(launch_source),
-                  apps::MakeWindowInfo(controller()->GetAppListDisplayId()));
-  }
+  proxy->Launch(
+      app_id(), event_flags, launch_source,
+      std::make_unique<apps::WindowInfo>(controller()->GetAppListDisplayId()));
 }
 
 void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {

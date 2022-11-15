@@ -35,7 +35,6 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "net/base/url_util.h"
@@ -165,16 +164,9 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   // Launch apps with AppServiceProxy.Launch.
   if (proxy->AppRegistryCache().GetAppType(app_id) != apps::AppType::kUnknown) {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->Launch(app_id, event_flags,
-                    ShelfLaunchSourceToAppsLaunchSource(source),
-                    std::make_unique<apps::WindowInfo>(display_id));
-    } else {
-      proxy->Launch(app_id, event_flags,
-                    apps::ConvertLaunchSourceToMojomLaunchSource(
-                        ShelfLaunchSourceToAppsLaunchSource(source)),
-                    apps::MakeWindowInfo(display_id));
-    }
+    proxy->Launch(app_id, event_flags,
+                  ShelfLaunchSourceToAppsLaunchSource(source),
+                  std::make_unique<apps::WindowInfo>(display_id));
     return;
   }
 

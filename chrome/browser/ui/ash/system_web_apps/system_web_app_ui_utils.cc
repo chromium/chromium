@@ -34,7 +34,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -175,15 +174,8 @@ void LaunchSystemWebAppAsync(Profile* profile,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    app_service->Launch(*app_id, event_flags, params.launch_source,
-                        std::move(window_info));
-  } else {
-    app_service->Launch(
-        *app_id, event_flags,
-        apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-        apps::ConvertWindowInfoToMojomWindowInfo(window_info));
-  }
+  app_service->Launch(*app_id, event_flags, params.launch_source,
+                      std::move(window_info));
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,

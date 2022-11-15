@@ -47,10 +47,8 @@
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/display.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -663,15 +661,8 @@ void ArcAppQueueRestoreHandler::LaunchAppWindow(const std::string& app_id,
                                apps::LaunchSource::kFromFullRestore,
                                std::move(window_info), base::DoNothing());
   } else {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->Launch(app_id, app_restore_data->event_flag.value(),
-                    apps::LaunchSource::kFromFullRestore,
-                    std::move(window_info));
-    } else {
-      proxy->Launch(app_id, app_restore_data->event_flag.value(),
-                    apps::mojom::LaunchSource::kFromFullRestore,
-                    ConvertWindowInfoToMojomWindowInfo(window_info));
-    }
+    proxy->Launch(app_id, app_restore_data->event_flag.value(),
+                  apps::LaunchSource::kFromFullRestore, std::move(window_info));
   }
 
   if (!HasRestoreData())

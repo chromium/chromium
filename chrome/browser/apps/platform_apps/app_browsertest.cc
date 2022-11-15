@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
       ->Launch(file_manager->id(),
                apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                    true /* prefer_container */),
-               apps::mojom::LaunchSource::kFromTest);
+               apps::LaunchSource::kFromTest);
 
   while (!base::Contains(opener_app_ids_, file_manager->id())) {
     content::RunAllPendingInMessageLoop();

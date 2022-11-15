@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 
 namespace {
 
@@ -256,17 +254,10 @@ void AppServiceAppItem::ResetIsNewInstall() {
 void AppServiceAppItem::Launch(int event_flags,
                                apps::LaunchSource launch_source) {
   ResetIsNewInstall();
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
-        id(), event_flags, launch_source,
-        std::make_unique<apps::WindowInfo>(
-            GetController()->GetAppListDisplayId()));
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
-        id(), event_flags,
-        apps::ConvertLaunchSourceToMojomLaunchSource(launch_source),
-        apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
+      id(), event_flags, launch_source,
+      std::make_unique<apps::WindowInfo>(
+          GetController()->GetAppListDisplayId()));
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {

@@ -53,12 +53,10 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/app_runtime.h"
@@ -219,13 +217,8 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
         app_id, ui::EF_NONE, apps_util::CreateCreateNoteIntent(),
         apps::LaunchSource::kFromShelf, nullptr, base::DoNothing());
   } else {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-          app_id, ui::EF_NONE, apps::LaunchSource::kFromShelf);
-    } else {
-      apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-          app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromShelf);
-    }
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        app_id, ui::EF_NONE, apps::LaunchSource::kFromShelf);
   }
 
   return NoteTakingHelper::LaunchResult::WEB_APP_SUCCESS;

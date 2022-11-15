@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -267,13 +266,8 @@ KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 void KeyboardShortcutResult::Open(int event_flags) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,
-                  apps::LaunchSource::kFromAppListQuery, nullptr);
-  } else {
-    proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,
-                  apps::mojom::LaunchSource::kFromAppListQuery, nullptr);
-  }
+  proxy->Launch(ash::kInternalAppIdKeyboardShortcutViewer, event_flags,
+                apps::LaunchSource::kFromAppListQuery, nullptr);
 }
 
 double KeyboardShortcutResult::CalculateRelevance(

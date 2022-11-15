@@ -301,33 +301,6 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
       });
 }
 
-void AppServiceProxyBase::Launch(const std::string& app_id,
-                                 int32_t event_flags,
-                                 apps::mojom::LaunchSource mojom_launch_source,
-                                 apps::mojom::WindowInfoPtr window_info) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, event_flags, mojom_launch_source,
-                 &window_info](const apps::AppUpdate& update) {
-          if (MaybeShowLaunchPreventionDialog(update)) {
-            return;
-          }
-
-          apps::LaunchSource launch_source =
-              ConvertMojomLaunchSourceToLaunchSource(mojom_launch_source);
-          RecordAppLaunch(update.AppId(), launch_source);
-          RecordAppPlatformMetrics(profile_, update, launch_source,
-                                   apps::LaunchContainer::kLaunchContainerNone);
-
-          app_service_->Launch(ConvertAppTypeToMojomAppType(update.AppType()),
-                               update.AppId(), event_flags, mojom_launch_source,
-                               std::move(window_info));
-
-          PerformPostLaunchTasks(launch_source);
-        });
-  }
-}
-
 void AppServiceProxyBase::LaunchAppWithFiles(
     const std::string& app_id,
     int32_t event_flags,

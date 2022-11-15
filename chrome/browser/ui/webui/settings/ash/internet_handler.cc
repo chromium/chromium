@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -138,14 +137,8 @@ void InternetHandler::AddThirdPartyVpn(const base::Value::List& args) {
   if (arc_app_list_prefs && arc_app_list_prefs->GetApp(app_id)) {
     DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
         profile_));
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
-          app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
-    } else {
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
-          app_id, ui::EF_NONE,
-          apps::mojom::LaunchSource::kFromParentalControls);
-    }
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
+        app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
     return;
   }
 

@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_context_menu.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
@@ -104,16 +103,9 @@ void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
   if (filtered_windows.size() == 0) {
     apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
         ProfileManager::GetPrimaryUserProfile());
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->Launch(app_id(), event->flags(),
-                    ShelfLaunchSourceToAppsLaunchSource(source),
-                    /*window_info=*/nullptr);
-    } else {
-      proxy->Launch(app_id(), event->flags(),
-                    apps::ConvertLaunchSourceToMojomLaunchSource(
-                        ShelfLaunchSourceToAppsLaunchSource(source)),
-                    /*window_info=*/nullptr);
-    }
+    proxy->Launch(app_id(), event->flags(),
+                  ShelfLaunchSourceToAppsLaunchSource(source),
+                  /*window_info=*/nullptr);
 
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;

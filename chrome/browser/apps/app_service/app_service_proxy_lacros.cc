@@ -143,15 +143,6 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
       this, app_id, event_flags, launch_source, display::kInvalidDisplayId));
 }
 
-void AppServiceProxyLacros::Launch(const std::string& app_id,
-                                   int32_t event_flags,
-                                   apps::mojom::LaunchSource launch_source,
-                                   apps::mojom::WindowInfoPtr window_info) {
-  Launch(app_id, event_flags,
-         ConvertMojomLaunchSourceToLaunchSource(launch_source),
-         ConvertMojomWindowInfoToWindowInfo(window_info));
-}
-
 void AppServiceProxyLacros::LaunchAppWithFiles(
     const std::string& app_id,
     int32_t event_flags,

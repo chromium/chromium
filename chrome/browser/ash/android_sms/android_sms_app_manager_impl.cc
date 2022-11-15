@@ -21,7 +21,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 
 namespace ash {
 namespace android_sms {
@@ -47,19 +46,11 @@ AndroidSmsAppManagerImpl::PwaDelegate::~PwaDelegate() = default;
 
 void AndroidSmsAppManagerImpl::PwaDelegate::OpenApp(Profile* profile,
                                                     const std::string& app_id) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-        app_id,
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            false /* preferred_containner */),
-        apps::LaunchSource::kFromChromeInternal);
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
-        app_id,
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            false /* preferred_containner */),
-        apps::mojom::LaunchSource::kFromChromeInternal);
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+      app_id,
+      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                          false /* preferred_containner */),
+      apps::LaunchSource::kFromChromeInternal);
 }
 
 bool AndroidSmsAppManagerImpl::PwaDelegate::TransferItemAttributes(
