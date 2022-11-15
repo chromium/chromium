@@ -2426,7 +2426,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                  "  \"filename\": {"
                                  "    \"previous\": \"\","
                                  "    \"current\": \"%s\"}}]",
-                                 result_id, GetFilename("file").c_str())));
+                                 result_id, GetFilename("file.txt").c_str())));
   ASSERT_TRUE(WaitFor(downloads::OnChanged::kEventName,
                       base::StringPrintf(
                           "[{\"id\": %d,"

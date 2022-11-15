@@ -1814,6 +1814,32 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsDefaultPath) {
   RunTestCase(test_case, base::FilePath(), item.get());
 }
 
+// Test that relative paths returned by extensions are always relative to the
+// default downloads path.
+TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsLocalFile) {
+  const DownloadTestCase kNotifyExtensionsTestCases[] = {
+      {AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS,
+#if BUILDFLAG(IS_WIN)
+       "file:///usr/local/xyz",
+#else
+       "file:///c:/usr/local/xyz",
+#endif  // BUILDFLAG(IS_WIN)
+       "text/plain", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("overridden/xyz"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD}};
+
+  base::FilePath overridden_path(FILE_PATH_LITERAL("overridden/foo.txt"));
+  EXPECT_CALL(*delegate(), NotifyExtensions_(_, _, _))
+      .WillRepeatedly(WithArg<2>(ScheduleCallback2(
+          overridden_path, DownloadPathReservationTracker::UNIQUIFY)));
+  RunTestCasesWithActiveItem(kNotifyExtensionsTestCases,
+                             std::size(kNotifyExtensionsTestCases));
+}
+
 TEST_F(DownloadTargetDeterminerTest, InitialVirtualPathUnsafe) {
   const base::FilePath::CharType* kInitialPath =
       FILE_PATH_LITERAL("some_path/bar.html");
