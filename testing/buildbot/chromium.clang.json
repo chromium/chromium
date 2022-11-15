@@ -5086,7 +5086,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter"
         ],
         "merge": {
           "args": [
@@ -5943,7 +5944,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.crashpad_tests.filter"
         ],
         "merge": {
           "args": [
@@ -6296,7 +6298,8 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.gl_tests.filter"
         ],
         "merge": {
           "args": [
@@ -6958,7 +6961,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.services_unittests.filter"
         ],
         "merge": {
           "args": [

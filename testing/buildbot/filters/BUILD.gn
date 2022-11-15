@@ -32,6 +32,7 @@ source_set("base_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator.base_unittests.filter",
+    "//testing/buildbot/filters/android.pie_tot.base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
   ]
 }
@@ -167,6 +168,7 @@ source_set("crashpad_tests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator_11.crashpad_tests.filter",
     "//testing/buildbot/filters/android.emulator_12.crashpad_tests.filter",
+    "//testing/buildbot/filters/android.pie_tot.crashpad_tests.filter",
   ]
 }
 
@@ -213,7 +215,10 @@ source_set("views_unittests_filters") {
 source_set("services_unittests_filters") {
   testonly = true
 
-  data = [ "//testing/buildbot/filters/fuchsia.services_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.pie_tot.services_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.services_unittests.filter",
+  ]
 }
 
 source_set("ui_base_unittests_filters") {
@@ -257,6 +262,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.emulator_12.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_n.gl_tests.filter",
     "//testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
+    "//testing/buildbot/filters/android.pie_tot.gl_tests.filter",
     "//testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
     "//testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
   ]

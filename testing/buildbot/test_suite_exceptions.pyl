@@ -144,6 +144,11 @@
   },
   'base_unittests': {
     'modifications': {
+      'ToTAndroid': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter',
+        ],
+      },
       'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
@@ -1988,6 +1993,11 @@
       'Mac Builder Next': {
         'experiment_percentage': 100,
       },
+      'ToTAndroid': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.crashpad_tests.filter',
+        ],
+      },
       'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
@@ -2249,6 +2259,11 @@
       'Android FYI Release (Samsung A23)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter',
+        ],
+      },
+      'ToTAndroid': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
       'android-11-x86-rel': {
@@ -3236,6 +3251,11 @@
         'swarming': {
           'quickrun_shards': 2,
         },
+      },
+      'ToTAndroid': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.services_unittests.filter',
+        ]
       },
       'android-11-x86-rel': {
         'args': [
