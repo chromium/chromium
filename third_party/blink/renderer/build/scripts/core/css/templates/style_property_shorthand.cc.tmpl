@@ -104,7 +104,7 @@ void getMatchingShorthandsForLonghand(
   {% for longhand_enum_key, shorthands in longhands_dictionary.items() %}
     case CSSPropertyID::{{longhand_enum_key}}: {
       {% for shorthand in shorthands %}
-        {% if shorthand.is_internal or shorthand.runtime_flag or shorthand.in_origin_trial %}
+        {% if not shorthand.known_exposed %}
       if (CSSProperty::Get(CSSPropertyID::{{shorthand.enum_key}}).IsWebExposed())
         result->UncheckedAppend({{shorthand.name.to_lower_camel_case()}}Shorthand());
         {% else %}

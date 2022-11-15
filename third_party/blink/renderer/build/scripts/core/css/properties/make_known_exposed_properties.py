@@ -16,14 +16,9 @@ class KnownExposedPropertiesWriter(json5_generator.Writer):
         properties = (
             css_properties.CSSProperties(json5_file_paths)).properties_including_aliases
 
-        known_exposed_properties = []
-        for property in properties:
-            if not property.is_internal and \
-               not property.runtime_flag and \
-               not property.in_origin_trial:
-                known_exposed_properties.append(property.enum_key)
-
-        self._known_exposed_properties = known_exposed_properties
+        self._known_exposed_properties = [
+            p.enum_key for p in properties if p.known_exposed
+        ]
 
         self._outputs = {
             'known_exposed_properties.cc': self.generate_list,

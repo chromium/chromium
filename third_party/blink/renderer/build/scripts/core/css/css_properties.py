@@ -82,6 +82,8 @@ def validate_property(prop, props_by_name):
             'Internal aliases not supported [%s]' % name
     assert not prop.mutable or prop.field_template == 'monotonic_flag',\
         'mutable requires field_template:monotonic_flag [%s]' % name
+    assert not prop.in_origin_trial or prop.runtime_flag,\
+        'Property participates in origin trial, but has no runtime flag'
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -448,6 +450,11 @@ class CSSProperties(object):
 
         self.set_derived_visited_attributes(property_)
         self.set_derived_surrogate_attributes(property_)
+
+        # Known-exposed properties are those that are unconditionally
+        # exposed to authors.
+        property_.known_exposed = not property_.is_internal \
+            and not property_.runtime_flag \
 
     @property
     def default_parameters(self):
