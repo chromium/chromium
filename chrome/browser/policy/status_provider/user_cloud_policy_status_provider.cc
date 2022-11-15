@@ -27,6 +27,5 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   GetUserAffiliationStatus(&dict, profile_);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
   SetDomainInUserStatus(dict);
-  SetProfileId(&dict, profile_);
   return dict;
 }

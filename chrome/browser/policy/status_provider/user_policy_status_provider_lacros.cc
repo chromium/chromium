@@ -56,6 +56,5 @@ base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
                policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
   SetDomainInUserStatus(dict);
-  SetProfileId(&dict, profile_);
   return dict;
 }
