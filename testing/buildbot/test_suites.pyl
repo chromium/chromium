@@ -993,7 +993,7 @@
     'chromium_gtests_for_win_and_linux_only': {
     },
 
-    'chromium_junit_tests_no_swarming': {
+    'chromium_junit_tests': {
       'android_webview_junit_tests': {
         'remove_mixins': [
           'nougat-x86-emulator',
@@ -1015,133 +1015,6 @@
         ],
       },
       'chrome_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'components_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'content_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'device_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'junit_unit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'keyboard_accessory_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'media_base_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'module_installer_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'net_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'paint_preview_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'password_check_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'password_manager_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'services_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'touch_to_fill_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'ui_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'webapk_client_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'webapk_shell_apk_h2o_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'webapk_shell_apk_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-    },
-
-    'chromium_junit_tests_scripts': {
-      'chrome_junit_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter',
-        ],
-        'mixins': [
-          'x86-64',
-          'linux-bionic',
-          'junit-swarming',
-        ],
-        'remove_mixins': [
-          'emulator-4-cores',
-          'nougat-x86-emulator',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
-    # TODO(crbug.com/1320434): remove this once all junit tests are migrated
-    'chromium_junit_tests_some_swarming': {
-      'android_webview_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'base_junit_tests': {
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'build_junit_tests':{
-        'remove_mixins': [
-          'nougat-x86-emulator',
-        ],
-      },
-      'chrome_java_test_pagecontroller_junit_tests': {
         'remove_mixins': [
           'nougat-x86-emulator',
         ],
@@ -6480,7 +6353,6 @@
 
     'nougat_isolated_scripts': [
       'android_isolated_scripts',
-      'chromium_junit_tests_scripts',
       'components_perftests_isolated_scripts',
       'monochrome_public_apk_checker_isolated_script',
       'telemetry_android_minidump_unittests_isolated_scripts',

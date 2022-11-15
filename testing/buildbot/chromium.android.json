@@ -31653,36 +31653,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.nougat-x86-rel.chrome_junit_tests.filter"
-        ],
-        "isolate_name": "chrome_junit_tests",
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "chrome_junit_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cores": "8",
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04",
-              "pool": "chromium.tests"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/",
-        "use_isolated_scripts_api": true
-      },
-      {
-        "args": [
           "--gtest-benchmark-name=components_perftests",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
@@ -31969,6 +31939,17 @@
         "swarming": {},
         "test": "chrome_java_test_pagecontroller_junit_tests",
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
+      },
+      {
+        "isolate_profile_data": true,
+        "name": "chrome_junit_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "chrome_junit_tests",
+        "test_id_prefix": "ninja://chrome/android:chrome_junit_tests/"
       },
       {
         "isolate_profile_data": true,

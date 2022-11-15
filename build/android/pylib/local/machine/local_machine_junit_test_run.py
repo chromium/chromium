@@ -61,13 +61,13 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def SetUp(self):
     pass
 
-  def _GetFilterArgs(self, shard_test_filter=None):
+  def _GetFilterArgs(self, test_filter_override=None):
     ret = []
-    if shard_test_filter:
-      ret += ['-gtest-filter', ':'.join(shard_test_filter)]
-
-    for test_filter in self._test_instance.test_filters:
-      ret += ['-gtest-filter', test_filter]
+    if test_filter_override:
+      ret += ['-gtest-filter', ':'.join(test_filter_override)]
+    elif self._test_instance.test_filters:
+      for test_filter in self._test_instance.test_filters:
+        ret += ['-gtest-filter', test_filter]
 
     if self._test_instance.package_filter:
       ret += ['-package-filter', self._test_instance.package_filter]
@@ -84,8 +84,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     jar_args_list = [['-json-results-file', result_file]
                      for result_file in json_result_file_paths]
     for index, jar_arg in enumerate(jar_args_list):
-      shard_test_filter = group_test_list[index] if shards > 1 else None
-      jar_arg += self._GetFilterArgs(shard_test_filter)
+      test_filter_override = group_test_list[index] if shards > 1 else None
+      jar_arg += self._GetFilterArgs(test_filter_override)
 
     return jar_args_list
 
@@ -155,7 +155,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   def RunTests(self, results, raw_logs_fh=None):
     # This avoids searching through the classparth jars for tests classes,
     # which takes about 1-2 seconds.
-    if (self._test_instance.shards == 1
+    # Do not shard when a test filter is present since we do not know at this
+    # point which tests will be filtered out.
+    if (self._test_instance.shards == 1 or self._test_instance.test_filters
         or self._test_instance.suite in _EXCLUDED_SUITES):
       test_classes = []
       shards = 1

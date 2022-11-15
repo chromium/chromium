@@ -574,7 +574,7 @@
           'microdump_stackwalk',
         ],
         'test_suites': {
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'junit_tests': 'chromium_junit_tests',
         },
       },
       'Android arm64 Builder (dbg)': {},
@@ -740,7 +740,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'android_marshmallow_gtests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'junit_tests': 'chromium_junit_tests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
         },
         'os_type': 'android',
@@ -968,7 +968,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_nougat_emulator_gtests',
-          'junit_tests': 'chromium_junit_tests_some_swarming',
+          'junit_tests': 'chromium_junit_tests',
           'isolated_scripts': 'nougat_isolated_scripts',
           'scripts': 'chromium_android_scripts',
         },
@@ -1542,7 +1542,7 @@
         # This mirrors 'android-lollipop-arm-rel'.
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'junit_tests': 'chromium_junit_tests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script_and_sizes',
         },
         'os_type': 'android',
@@ -2958,7 +2958,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_coverage_gtests',
-          'junit_tests': 'chromium_junit_tests_no_swarming',
+          'junit_tests': 'chromium_junit_tests',
         },
         'os_type': 'android',
       },

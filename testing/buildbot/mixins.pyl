@@ -635,14 +635,6 @@
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
-  'junit-swarming': {
-    'swarming': {
-      'dimensions': {
-        'cores': '8',
-        'pool': 'chromium.tests',
-      },
-    },
-  },
   'kitkat-x86-emulator': {
     '$mixin_append': {
       'args': [
