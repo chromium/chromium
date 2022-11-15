@@ -1,7 +1,7 @@
 {
   "mac-updater-try-builder-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -11,7 +11,7 @@
   "mac-updater-try-builder-rel": {
     "gn_args": {
       "dcheck_always_on": true,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -20,7 +20,7 @@
   },
   "win-updater-try-builder-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -30,7 +30,7 @@
   "win-updater-try-builder-rel": {
     "gn_args": {
       "dcheck_always_on": true,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,

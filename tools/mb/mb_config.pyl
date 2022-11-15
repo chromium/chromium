@@ -4695,7 +4695,7 @@
     },
 
     'updater_on_win_mac': {
-      'gn_args': 'enable_chromium_updater=true',
+      'gn_args': 'enable_updater=true',
     },
 
     'use_android_rust_toolchain': {

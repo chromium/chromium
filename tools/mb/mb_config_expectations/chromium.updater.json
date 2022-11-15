@@ -1,7 +1,7 @@
 {
   "mac-updater-builder-arm64-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -12,7 +12,7 @@
   "mac-updater-builder-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -21,7 +21,7 @@
   },
   "mac-updater-builder-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -31,7 +31,7 @@
   "mac-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "use_remoteexec": true
@@ -39,7 +39,7 @@
   },
   "win-updater-builder-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 1,
@@ -49,7 +49,7 @@
   "win-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "use_remoteexec": true
@@ -57,7 +57,7 @@
   },
   "win32-updater-builder-dbg": {
     "gn_args": {
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": true,
       "symbol_level": 0,
@@ -68,7 +68,7 @@
   "win32-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_chromium_updater": true,
+      "enable_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "x86",

@@ -6,5 +6,5 @@ import("//build/config/chrome_build.gni")
 
 declare_args() {
   # By default, only branded builds integrate with automatic updates.
-  enable_chromium_updater = is_chrome_branded
+  enable_updater = is_chrome_branded
 }
