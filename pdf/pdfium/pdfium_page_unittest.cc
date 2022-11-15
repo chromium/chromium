@@ -847,15 +847,7 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
   }
 };
 
-// TODO(crbug.com/1379872): The thumbnails generated on macOS with ARM64 will
-// have small discrepancies due to floating point calculation. Need to add the
-// correct expectations for this test before re-enable it.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-#define MAYBE_GenerateThumbnail DISABLED_GenerateThumbnail
-#else
-#define MAYBE_GenerateThumbnail GenerateThumbnail
-#endif
-TEST_P(PDFiumPageThumbnailTest, MAYBE_GenerateThumbnail) {
+TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
@@ -882,10 +874,15 @@ TEST_P(PDFiumPageThumbnailTest, MAYBE_GenerateThumbnail) {
       {6, 2, {46, 1399}},  // Super tall
   };
 
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  std::string file_name =
+      GetParam() ? "variable_page_sizes_mac_arm64" : "variable_page_sizes";
+#else
+  std::string file_name = "variable_page_sizes";
+#endif
   for (const auto& params : kGenerateThumbnailTestParams) {
     TestGenerateThumbnail(*engine, params.page_index, params.device_pixel_ratio,
-                          params.expected_thumbnail_size,
-                          "variable_page_sizes");
+                          params.expected_thumbnail_size, file_name);
   }
 }
 
