@@ -1410,6 +1410,8 @@ source_set("browser") {
     "portal/portal_navigation_throttle.h",
     "preloading/anchor_element_interaction_host_impl.cc",
     "preloading/anchor_element_interaction_host_impl.h",
+    "preloading/preconnector.cc",
+    "preloading/preconnector.h",
     "preloading/prefetch/prefetch_canary_checker.cc",
     "preloading/prefetch/prefetch_canary_checker.h",
     "preloading/prefetch/prefetch_container.cc",
