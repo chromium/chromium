@@ -743,7 +743,34 @@ public class TabGroupUiMediatorUnitTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
-    public void tabClosureUndone_UiNotVisible_NotShowingOverviewMode() {
+    public void tabClosureUndone_UiNotVisible_NotShowingOverviewMode_TabNotInGroup() {
+        // Assume mTab1 is selected. Since mTab1 is now a single tab, the strip is invisible.
+        initAndAssertProperties(mTab1);
+        // OverviewMode is hiding by default.
+        assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(false));
+
+        // Simulate mTab2 and mTab3 being undone from closure with mTab1 still selected.
+        doReturn(new ArrayList<>(Arrays.asList(mTab2, mTab3)))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB2_ID);
+        doReturn(new ArrayList<>(Arrays.asList(mTab2, mTab3)))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB3_ID);
+        doReturn(new ArrayList<>(Arrays.asList(mTab1)))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB1_ID);
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+
+        mTabModelObserverArgumentCaptor.getValue().tabClosureUndone(mTab2);
+        mTabModelObserverArgumentCaptor.getValue().tabClosureUndone(mTab3);
+
+        // Strip should remain invisible.
+        assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(false));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    public void tabClosureUndone_UiNotVisible_NotShowingOverviewMode_TabInGroup() {
         // Assume mTab1 is selected. Since mTab1 is now a single tab, the strip is invisible.
         initAndAssertProperties(mTab1);
         // OverviewMode is hiding by default.
@@ -754,7 +781,11 @@ public class TabGroupUiMediatorUnitTest {
         TabImpl newTab = prepareTab(TAB4_ID, TAB4_ID);
         doReturn(new ArrayList<>(Arrays.asList(mTab1, newTab)))
                 .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB1_ID);
+        doReturn(new ArrayList<>(Arrays.asList(mTab1, newTab)))
+                .when(mTabGroupModelFilter)
                 .getRelatedTabList(TAB4_ID);
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
 
         mTabModelObserverArgumentCaptor.getValue().tabClosureUndone(newTab);
 
