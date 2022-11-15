@@ -13,6 +13,7 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/common/api/webcam_private.h"
 
 namespace extensions {
 
@@ -30,8 +31,9 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
 
   ~WebcamPrivateAPI() override;
 
-  Webcam* GetWebcam(const std::string& extension_id,
-                    const std::string& device_id);
+  void GetWebcam(const std::string& extension_id,
+                 const std::string& webcam_id,
+                 base::OnceCallback<void(Webcam*)> callback);
 
   bool OpenSerialWebcam(
       const std::string& extension_id,
@@ -43,6 +45,17 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
  private:
   friend class BrowserContextKeyedAPIFactory<WebcamPrivateAPI>;
 
+  void OnGotDeviceIdOnUIThread(const std::string& extension_id,
+                               const std::string& webcam_id,
+                               base::OnceCallback<void(Webcam*)> callback,
+                               const absl::optional<std::string>& device_id);
+
+  static void GetDeviceIdOnIOThread(
+      std::string salt,
+      url::Origin security_origin,
+      std::string hmac_device_id,
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
+
   void OnOpenSerialWebcam(
       const std::string& extension_id,
       const std::string& device_path,
@@ -50,11 +63,6 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
       const base::RepeatingCallback<void(const std::string&, bool)>& callback,
       bool success);
 
-  // Note: This function does not work for serial devices. Do not use this
-  // function for serial devices.
-  bool GetDeviceId(const std::string& extension_id,
-                   const std::string& webcam_id,
-                   std::string* device_id);
   std::string GetWebcamId(const std::string& extension_id,
                           const std::string& device_id);
 
@@ -137,6 +145,9 @@ class WebcamPrivateSetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void OnWebcam(
+      std::unique_ptr<extensions::api::webcam_private::Set::Params> params,
+      Webcam* webcam);
   void OnSetWebcamParameters(bool success);
 
   int pending_num_set_webcam_param_requests_ = 0;
@@ -171,6 +182,7 @@ class WebcamPrivateGetFunction : public ExtensionFunction {
     AUTOFOCUSSTATE_OFF,
   };
 
+  void OnWebcam(Webcam* webcam);
   void OnGetWebcamParameters(InquiryType type,
                              bool success,
                              int value,
@@ -213,6 +225,9 @@ class WebcamPrivateResetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void OnWebcam(
+      std::unique_ptr<extensions::api::webcam_private::Reset::Params> params,
+      Webcam* webcam);
   void OnResetWebcam(bool success);
 };
 
@@ -233,6 +248,7 @@ class WebcamPrivateSetHomeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void OnWebcam(Webcam* webcam);
   void OnSetHomeWebcam(bool success);
 };
 
@@ -255,6 +271,7 @@ class WebcamPrivateRestoreCameraPresetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void OnWebcam(int preset_number, Webcam* webcam);
   void OnRestoreCameraPresetWebcam(bool success);
 };
 
@@ -277,6 +294,7 @@ class WebcamPrivateSetCameraPresetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void OnWebcam(int preset_number, Webcam* webcam);
   void OnSetCameraPresetWebcam(bool success);
 };
 

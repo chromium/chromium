@@ -35,14 +35,6 @@ CONTENT_EXPORT bool DoesMediaDeviceIDMatchHMAC(
     const std::string& device_guid,
     const std::string& raw_unique_id);
 
-// This function is deprecated. Use the callback version below instead.
-CONTENT_EXPORT bool GetMediaDeviceIDForHMAC(
-    blink::mojom::MediaStreamType stream_type,
-    const std::string& salt,
-    const url::Origin& security_origin,
-    const std::string& source_id,
-    std::string* device_id);
-
 // Returns the raw device ID for the given HMAC |hmac_device_id| for the given
 // |security_origin| and |salt|. The result is passed via |callback| on the
 // task runner where this function is called. If |hmac_device_id| is not a
