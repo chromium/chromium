@@ -13,7 +13,6 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
@@ -220,7 +219,7 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
             boolean isBComplete = AutofillAddress.checkAddressCompletionStatus(
                                           b, AutofillAddress.CompletenessCheckType.NORMAL)
                     == AutofillAddress.CompletionStatus.COMPLETE;
-            return ApiCompatibilityUtils.compareBoolean(isBComplete, isAComplete);
+            return Boolean.compare(isBComplete, isAComplete);
         });
 
         mCardIssuerNetworks = new HashMap<>();

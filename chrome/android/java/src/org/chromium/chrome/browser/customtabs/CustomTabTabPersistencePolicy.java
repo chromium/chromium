@@ -14,7 +14,6 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -233,7 +232,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
                 // Sort such that older files (those with an lower timestamp number) are at the
                 // end of the sorted listed.
-                return ApiCompatibilityUtils.compareLong(rhsModifiedTime, lhsModifiedTime);
+                return Long.compare(rhsModifiedTime, lhsModifiedTime);
             }
         });
 

@@ -31,7 +31,6 @@ import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 
 import java.io.File;
@@ -93,7 +92,7 @@ public class UiUtils {
                     imManager.getEnabledInputMethodSubtypeList(enabledMethods.get(i), true);
             if (subtypes == null) continue;
             for (int j = 0; j < subtypes.size(); j++) {
-                String locale = ApiCompatibilityUtils.getLocale(subtypes.get(j));
+                String locale = subtypes.get(j).getLanguageTag();
                 if (!TextUtils.isEmpty(locale)) locales.add(locale);
             }
         }

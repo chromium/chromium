@@ -144,8 +144,7 @@ public class ClipboardImpl
             if (!(text instanceof Spanned)) return null;
             Spanned spanned = (Spanned) text;
             if (hasStyleSpan(spanned)) {
-                return ApiCompatibilityUtils.toHtml(
-                        spanned, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                return Html.toHtml(spanned, Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
             }
         }
         return null;
