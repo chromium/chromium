@@ -424,24 +424,36 @@ void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
   state_.account_info = account_info;
   state_.engine = engine;
 
-  // Since there was no state changes during engine initialization, now the
-  // state is known and no user action required.
-  if (state_.required_user_action ==
-      RequiredUserAction::kUnknownDuringInitialization) {
-    UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
-    RefreshIsRecoverabilityDegraded();
-  }
-
-  // This indicates OnTrustedVaultKeyRequired() was called as part of the
-  // engine's initialization.
-  if (state_.required_user_action ==
-      RequiredUserAction::kFetchingTrustedVaultKeys) {
-    FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
-  }
-
-  // Attempt decryption with bootstrap token if necessary.
-  if (state_.required_user_action == RequiredUserAction::kPassphraseRequired) {
-    MaybeSetDecryptionKeyFromBootstrapToken();
+  switch (state_.required_user_action) {
+    case RequiredUserAction::kNone:
+      // It was already established during initialization that there's nothing
+      // to do, which is possible for some passphrase types, but not others
+      // (including |kTrustedVaultPassphrase|.
+      DCHECK_NE(state_.cached_passphrase_type,
+                PassphraseType::kTrustedVaultPassphrase);
+      break;
+    case RequiredUserAction::kUnknownDuringInitialization:
+      // Since there was no state changes during engine initialization, now the
+      // state is known and no user action required.
+      UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
+      RefreshIsRecoverabilityDegraded();
+      break;
+    case RequiredUserAction::kFetchingTrustedVaultKeys:
+      // This indicates OnTrustedVaultKeyRequired() was called as part of the
+      // engine's initialization.
+      FetchTrustedVaultKeys(/*is_second_fetch_attempt=*/false);
+      break;
+    case RequiredUserAction::kPassphraseRequired:
+      // Attempt decryption with bootstrap token if necessary.
+      MaybeSetDecryptionKeyFromBootstrapToken();
+      break;
+    case RequiredUserAction::kTrustedVaultKeyRequired:
+    case RequiredUserAction::kTrustedVaultKeyRequiredButFetching:
+    case RequiredUserAction::kTrustedVaultRecoverabilityDegraded:
+      // Neither keys nor the recoverability state are fetched during engine
+      // initialization.
+      NOTREACHED();
+      break;
   }
 }
 
@@ -541,7 +553,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyRequired() {
     // If SetSyncEngine() hasn't been called yet, it means
     // OnTrustedVaultKeyRequired() was called as part of the engine's
     // initialization. Fetching the keys is not useful right now because there
-    // is known engine to feed the keys to, so let's defer fetching until
+    // is no engine to feed the keys to, so let's defer fetching until
     // SetSyncEngine() is called.
     return;
   }
@@ -564,6 +576,7 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
       break;
   }
 
+  DCHECK(state_.engine);
   UpdateRequiredUserActionAndNotify(RequiredUserAction::kNone);
   RefreshIsRecoverabilityDegraded();
 
@@ -603,6 +616,11 @@ void SyncServiceCrypto::OnPassphraseTypeChanged(PassphraseType type,
   state_.cached_explicit_passphrase_time = passphrase_time;
 
   // Clear recoverability degraded state in case a custom passphrase was set.
+  // Note that the opposite transition (into degraded recoverability) isn't
+  // handled here, i.e. RefreshIsRecoverabilityDegraded() isn't invoked, as
+  // it can be safely assumed that in practice either of
+  // OnTrustedVaultKeyRequired() or OnTrustedVaultKeyAccepted() will eventually
+  // be invoked.
   if (type != PassphraseType::kTrustedVaultPassphrase &&
       state_.required_user_action ==
           RequiredUserAction::kTrustedVaultRecoverabilityDegraded) {
@@ -640,6 +658,11 @@ void SyncServiceCrypto::OnTrustedVaultKeysChanged() {
 }
 
 void SyncServiceCrypto::OnTrustedVaultRecoverabilityChanged() {
+  // Ignore calls during engine initialization, as decoverability will be
+  // refreshed in SetSyncEngine().
+  if (!state_.engine) {
+    return;
+  }
   RefreshIsRecoverabilityDegraded();
 }
 
@@ -775,6 +798,8 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
 }
 
 void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
+  DCHECK(state_.engine);
+
   if (state_.cached_passphrase_type !=
       PassphraseType::kTrustedVaultPassphrase) {
     return;
