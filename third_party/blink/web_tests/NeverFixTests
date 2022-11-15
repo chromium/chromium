@@ -1574,15 +1574,6 @@ crbug.com/626703 [ Win ] external/wpt/payment-method-basic-card/billing-address-
 # Ctrl and mouse wheel scroll will not make page zoom on Mac
 crbug.com/1047176 [ Mac ] fast/events/wheel/wheelevent-ctrl.html [ Skip ]
 
-# The following tests are temporarily skipped. See the associated bugs.
-# Actually they should not be in this file because they are temporary.
-crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/detached.https.window.html [ Skip ]
-crbug.com/1150938 virtual/force-eager/external/wpt/measure-memory/window-open.mix.https.window.html [ Skip ]
-crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/main-frame-and-worker.https.window.html [ Skip ]
-crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.window.html [ Skip ]
-crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html [ Skip ]
-crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.https.any.sharedworker.html [ Skip ]
-
 crbug.com/630342 virtual/mse-1mb-buffers/http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-default-buffers.html [ Skip ]
 
 # No good way to automate this test yet
