@@ -169,12 +169,16 @@ if (is_win || is_mac || is_linux) {
     ]
 
     if (is_posix) {
-      sources += [ "remove_uninstalled_apps_task_posix.cc" ]
+      sources += [
+        "activity_impl_posix.cc",
+        "activity_impl_util_posix.h",
+        "remove_uninstalled_apps_task_posix.cc",
+      ]
     }
 
     if (is_mac) {
       sources += [
-        "activity_impl_mac.cc",
+        "activity_impl_util_mac.cc",
         "app/app_install_mac.mm",
         "app/server/mac/app_server.h",
         "app/server/mac/server.h",
@@ -319,7 +323,7 @@ if (is_win || is_mac || is_linux) {
 
     if (is_linux) {
       sources += [
-        "activity_impl_linux.cc",
+        "activity_impl_util_linux.cc",
         "app/server/linux/server.cc",
         "app/server/linux/server.h",
         "app/server/linux/update_service_stub.cc",
