@@ -1276,13 +1276,13 @@ window.addEventListener('load', function() {
   }
 }, false);
 
-window.addEventListener('hashchange', function() {
+window.addEventListener('hashchange', async function() {
   const bkgnd = chrome.extension.getBackgroundPage();
 
   // Save the sticky state when a user first focuses the panel.
-  if (bkgnd['ChromeVox'] &&
-      (location.hash === '#fullscreen' || location.hash === '#focus')) {
-    Panel.originalStickyState_ = bkgnd['ChromeVox']['isStickyPrefOn'];
+  if (location.hash === '#fullscreen' || location.hash === '#focus') {
+    Panel.originalStickyState_ =
+        await BackgroundBridge.ChromeVoxPrefs.getStickyPref();
   }
 
   // If the original sticky state was on when we first entered the panel, toggle

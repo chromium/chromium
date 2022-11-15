@@ -56,6 +56,7 @@ BridgeConstants.ChromeVoxPrefs = {
   TARGET: 'ChromeVoxPrefs',
   Action: {
     GET_PREFS: 'getPrefs',
+    GET_STICKY_PREF: 'getStickyPref',
     SET_LOGGING_PREFS: 'setLoggingPrefs',
     SET_PREF: 'setPref',
   },

@@ -13,7 +13,6 @@ import {TtsInterface} from '../common/tts_interface.js';
 
 export class ChromeVox {}
 
-// Constants
 /**
  * @type {TtsInterface}
  */

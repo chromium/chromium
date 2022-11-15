@@ -56,6 +56,10 @@ export class ChromeVoxPrefs {
         () => ChromeVoxPrefs.instance.getPrefs());
     BridgeHelper.registerHandler(
         BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.GET_STICKY_PREF,
+        () => ChromeVoxPrefs.isStickyPrefOn);
+    BridgeHelper.registerHandler(
+        BridgeConstants.ChromeVoxPrefs.TARGET,
         BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
         (key, value) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
     BridgeHelper.registerHandler(

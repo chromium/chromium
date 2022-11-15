@@ -66,6 +66,13 @@ BackgroundBridge.ChromeVoxPrefs = {
         BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS);
   },
 
+  /** @return {!Promise<boolean>} */
+  async getStickyPref() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.GET_STICKY_PREF);
+  },
+
   /**
    * Set the value of a pref of logging options.
    * @param {string} key The pref key.
