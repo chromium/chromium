@@ -642,17 +642,19 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
   if (params_.entry_point() ==
           ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun ||
       params_.entry_point() == ProfilePicker::EntryPoint::kFirstRun) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return std::make_unique<FirstRunFlowControllerLacros>(
-        /*host=*/this, std::move(clear_host_callback), picker_profile,
+    auto first_run_exited_callback =
         base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
                        // Unretained ok because the controller is owned
                        // by this through `initialized_steps_`.
-                       base::Unretained(&params_)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                       base::Unretained(&params_));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return std::make_unique<FirstRunFlowControllerLacros>(
+        /*host=*/this, std::move(clear_host_callback), picker_profile,
+        std::move(first_run_exited_callback));
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
     return std::make_unique<FirstRunFlowControllerDice>(
-        /*host=*/this, std::move(clear_host_callback), picker_profile);
+        /*host=*/this, std::move(clear_host_callback), picker_profile,
+        std::move(first_run_exited_callback));
 #endif
   }
 

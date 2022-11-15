@@ -183,6 +183,7 @@ void FirstRunFlowControllerLacros::ExitFlowAndRun(
   // We don't call `FinishFlowAndRunInBrowser()` directly, as
   // `first_run_exited_callback_` should make a browser window available when
   // it runs. If there is no browser, then we will create it as a fallback.
+  // TODO(crbug.com/1383969): Races with Ash to open a window. Find another way.
   auto finish_flow_callback =
       base::BindOnce(&FirstRunFlowControllerLacros::FinishFlowAndRunInBrowser,
                      // Unretained ok: the flow will be closed when we run

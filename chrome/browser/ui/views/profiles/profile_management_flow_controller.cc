@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -88,12 +89,8 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
     PostHostClearedCallback post_host_cleared_callback) {
   DCHECK(clear_host_callback_.value());  // The host shouldn't be cleared yet.
 
-  // TODO(crbug.com/1370485): Update when we have a more elegant way to ignore
-  // the incoming argument.
   base::OnceCallback<void(Profile*)> post_browser_open_callback =
-      base::BindOnce([](Profile* absorb_arg) {
-      }).Then(std::move(clear_host_callback_.value()));
-
+      base::IgnoreArgs<Profile*>(std::move(clear_host_callback_.value()));
   if (!post_host_cleared_callback->is_null()) {
     post_browser_open_callback =
         std::move(post_browser_open_callback)

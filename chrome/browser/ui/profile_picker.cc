@@ -134,7 +134,6 @@ void ProfilePicker::Params::NotifyFirstRunExited(
 }
 
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   LOG(WARNING) << "Checking window reusability from entry point "
                << static_cast<int>(entry_point_) << " to "
                << static_cast<int>(other.entry_point());
@@ -150,10 +149,6 @@ bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
     return false;
   }
   return profile_path_ == other.profile_path_;
-#else
-  DCHECK_EQ(profile_path_, other.profile_path_);
-  return true;
-#endif
 }
 
 ProfilePicker::Params::Params(EntryPoint entry_point,

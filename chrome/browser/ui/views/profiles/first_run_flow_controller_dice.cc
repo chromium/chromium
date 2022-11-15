@@ -140,11 +140,13 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
 FirstRunFlowControllerDice::FirstRunFlowControllerDice(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
-    Profile* profile)
+    Profile* profile,
+    ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
     : ProfileManagementFlowController(host,
                                       std::move(clear_host_callback),
                                       Step::kIntro),
-      profile_(profile) {
+      profile_(profile),
+      first_run_exited_callback_(std::move(first_run_exited_callback)) {
   RegisterStep(
       initial_step(),
       CreateIntroStep(host,
@@ -158,7 +160,12 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() = default;
 
 void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
   if (!sign_in) {
-    FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
+    std::move(first_run_exited_callback_)
+        .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
+             base::BindOnce(
+                 &FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+                 weak_ptr_factory_.GetWeakPtr(), profile_,
+                 PostHostClearedCallback()));
     return;
   }
 

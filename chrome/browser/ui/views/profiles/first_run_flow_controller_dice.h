@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 
@@ -25,15 +26,18 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowController {
  public:
   // Profile management flow controller that will run the FRE for `profile` in
   // `host`.
-  FirstRunFlowControllerDice(ProfilePickerWebContentsHost* host,
-                             ClearHostClosure clear_host_callback,
-                             Profile* profile);
+  FirstRunFlowControllerDice(
+      ProfilePickerWebContentsHost* host,
+      ClearHostClosure clear_host_callback,
+      Profile* profile,
+      ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
   ~FirstRunFlowControllerDice() override;
 
  private:
   void HandleIntroSigninChoice(bool sign_in);
 
   const raw_ptr<Profile> profile_;
+  ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
   base::WeakPtrFactory<FirstRunFlowControllerDice> weak_ptr_factory_{this};
 };
 
