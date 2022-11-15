@@ -817,6 +817,9 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmName[];
 extern const char kFedCmDescription[];
 
+extern const char kFedCmWithoutThirdPartyCookiesName[];
+extern const char kFedCmWithoutThirdPartyCookiesDescription[];
+
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
 

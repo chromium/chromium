@@ -1456,6 +1456,11 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
+const char kFedCmWithoutThirdPartyCookiesName[] =
+    "FedCmWithoutThirdPartyCookies";
+const char kFedCmWithoutThirdPartyCookiesDescription[] =
+    "Allows the FedCM API to be enabled when third party cookies are disabled.";
+
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
     "Allows the FedCM API to send performance measurement to the metrics "

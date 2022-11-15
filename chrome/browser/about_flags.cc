@@ -8406,6 +8406,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
 
+    {"fedcm-without-third-party-cookies",
+     flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
+     flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
+
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},

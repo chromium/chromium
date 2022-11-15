@@ -58876,6 +58876,7 @@ from previous Chrome versions.
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
+  <int value="-1499989506" label="FedCmWithoutThirdPartyCookies:disabled"/>
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
   <int value="-1498582719"
       label="ColorProviderRedirectionForThemeProvider:enabled"/>
@@ -63838,6 +63839,7 @@ from previous Chrome versions.
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
   <int value="1436115897" label="OsSettingsSearchFeedback:enabled"/>
+  <int value="1436409565" label="FedCmWithoutThirdPartyCookies:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>
   <int value="1437413720" label="CooperativeScheduling:disabled"/>
   <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>

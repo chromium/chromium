@@ -204,4 +204,10 @@ BASE_FEATURE(kFlexOrgManagementDisclosure,
              "FlexOrgManagementDisclosure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Enables usage of the FedCM API without third party cookies at the same time.
+BASE_FEATURE(kFedCmWithoutThirdPartyCookies,
+             "FedCmWithoutThirdPartyCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

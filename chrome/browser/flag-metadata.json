@@ -3619,6 +3619,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-without-third-party-cookies",
+    "owners": ["tanzachary", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "feed-ablation",
     "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
     "expiry_milestone": 105

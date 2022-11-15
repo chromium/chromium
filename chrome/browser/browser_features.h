@@ -76,6 +76,8 @@ BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 
+BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
