@@ -37,13 +37,16 @@ AttributionReport GetReport(
     base::Time source_time,
     base::Time trigger_time,
     base::TimeDelta expiry = kDefaultExpiry,
+    base::TimeDelta report_window = kDefaultExpiry,
     AttributionSourceType source_type = AttributionSourceType::kNavigation) {
-  return ReportBuilder(AttributionInfoBuilder(SourceBuilder(source_time)
-                                                  .SetExpiry(expiry)
-                                                  .SetSourceType(source_type)
-                                                  .BuildStored())
-                           .SetTime(trigger_time)
-                           .Build())
+  return ReportBuilder(
+             AttributionInfoBuilder(SourceBuilder(source_time)
+                                        .SetExpiry(expiry)
+                                        .SetEventReportWindow(report_window)
+                                        .SetSourceType(source_type)
+                                        .BuildStored())
+                 .SetTime(trigger_time)
+                 .Build())
       .Build();
 }
 
@@ -143,14 +146,14 @@ TEST(AttributionStorageDelegateImplTest,
 }
 
 TEST(AttributionStorageDelegateImplTest,
-     ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
+     ImpressionExpiryBeforeTwoDayWindow_ExpiryUsed) {
   base::Time source_time = base::Time::Now();
   base::Time trigger_time = source_time + base::Hours(1);
 
   // Set the impression to expire before the two day window.
   const AttributionReport report = GetReport(source_time, trigger_time,
                                              /*expiry=*/base::Hours(2));
-  EXPECT_EQ(source_time + base::Days(2) + base::Hours(1),
+  EXPECT_EQ(source_time + base::Hours(3),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
@@ -188,13 +191,14 @@ TEST(AttributionStorageDelegateImplTest,
 }
 
 TEST(AttributionStorageDelegateImplTest,
-     SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
+     SourceTypeEvent_ExpiryLessThanTwoDays_ExpiryUsed) {
   base::Time source_time = base::Time::Now();
   base::Time trigger_time = source_time + base::Days(3);
   const AttributionReport report =
       GetReport(source_time, trigger_time,
-                /*expiry=*/base::Days(1), AttributionSourceType::kEvent);
-  EXPECT_EQ(source_time + base::Days(2) + base::Hours(1),
+                /*expiry=*/base::Days(1),
+                /*report_window=*/base::Days(1), AttributionSourceType::kEvent);
+  EXPECT_EQ(source_time + base::Days(1) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),
                 report.attribution_info().time));
@@ -206,7 +210,23 @@ TEST(AttributionStorageDelegateImplTest,
   base::Time trigger_time = source_time + base::Days(3);
   const AttributionReport report =
       GetReport(source_time, trigger_time,
-                /*expiry=*/base::Days(4), AttributionSourceType::kEvent);
+                /*expiry=*/base::Days(4),
+                /*report_window=*/base::Days(4), AttributionSourceType::kEvent);
+  EXPECT_EQ(source_time + base::Days(4) + base::Hours(1),
+            AttributionStorageDelegateImpl().GetEventLevelReportTime(
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionEventReportWindowBeforeExpiry_ReportWindowUsed) {
+  base::Time source_time = base::Time::Now();
+  base::Time trigger_time = source_time + base::Days(3);
+
+  // Set the impression to expire before the two day window.
+  const AttributionReport report = GetReport(source_time, trigger_time,
+                                             /*expiry=*/base::Days(5),
+                                             /*report_window=*/base::Days(4));
   EXPECT_EQ(source_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetEventLevelReportTime(
                 report.attribution_info().source.common_info(),

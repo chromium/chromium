@@ -19503,6 +19503,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="No matching source filter data"/>
   <int value="9" label="Not registered"/>
   <int value="10" label="Prohibited by browser policy"/>
+  <int value="11" label="Report window has passed"/>
 </enum>
 
 <enum name="ConversionDataHandleStatus">
@@ -19565,6 +19566,7 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="No matching configurations"/>
   <int value="13" label="Excessive reports"/>
   <int value="14" label="Falsely attributed source"/>
+  <int value="15" label="Report window has passed"/>
 </enum>
 
 <enum name="ConversionStorageSourceStatus">

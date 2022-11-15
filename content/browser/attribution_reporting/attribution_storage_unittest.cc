@@ -309,6 +309,33 @@ TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
 
+TEST_F(AttributionStorageTest, ImpressionReportWindowPassed_NoReportGenerated) {
+  storage()->StoreSource(
+      SourceBuilder().SetEventReportWindow(base::Milliseconds(2)).Build());
+  task_environment_.FastForwardBy(base::Milliseconds(3));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kReportWindowPassed,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+}
+
+TEST_F(AttributionStorageTest,
+       AggregatableReportWindowPassed_NoReportGenerated) {
+  SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
+
+  storage()->StoreSource(
+      source_builder.SetAggregatableReportWindow(base::Milliseconds(2))
+          .Build());
+
+  task_environment_.FastForwardBy(base::Milliseconds(3));
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          DefaultAggregatableTriggerBuilder().Build()),
+      AllOf(CreateReportEventLevelStatusIs(
+                AttributionTrigger::EventLevelResult::kSuccess),
+            CreateReportAggregatableStatusIs(
+                AttributionTrigger::AggregatableResult::kReportWindowPassed)));
+}
+
 TEST_F(AttributionStorageTest, ImpressionExpired_ConversionsStoredPrior) {
   storage()->StoreSource(
       SourceBuilder().SetExpiry(base::Milliseconds(4)).Build());

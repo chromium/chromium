@@ -1024,6 +1024,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kFalselyAttributedSource:
       out << "falselyAttributedSource";
       break;
+    case AttributionTrigger::EventLevelResult::kReportWindowPassed:
+      out << "reportWindowPassed";
+      break;
   }
   return out;
 }
@@ -1067,6 +1070,9 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case AttributionTrigger::AggregatableResult::kDeduplicated:
       out << "deduplicated";
+      break;
+    case AttributionTrigger::AggregatableResult::kReportWindowPassed:
+      out << "reportWindowPassed";
       break;
   }
   return out;

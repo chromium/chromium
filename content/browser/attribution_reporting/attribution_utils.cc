@@ -38,13 +38,7 @@ base::span<const base::TimeDelta> EarlyDeadlines(
 }
 
 base::TimeDelta ExpiryDeadline(const CommonSourceInfo& source) {
-  base::TimeDelta expiry_deadline = source.expiry_time() - source.source_time();
-
-  constexpr base::TimeDelta kMinExpiryDeadline = base::Days(2);
-  if (expiry_deadline < kMinExpiryDeadline)
-    expiry_deadline = kMinExpiryDeadline;
-
-  return expiry_deadline;
+  return source.event_report_window_time() - source.source_time();
 }
 
 base::Time ReportTimeFromDeadline(base::Time source_time,

@@ -1144,6 +1144,9 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   const CommonSourceInfo& common_info = attribution_info.source.common_info();
 
+  if (attribution_info.time > common_info.event_report_window_time())
+    return EventLevelResult::kReportWindowPassed;
+
   const AttributionSourceType source_type = common_info.source_type();
 
   auto event_trigger = base::ranges::find_if(
@@ -2790,11 +2793,15 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
+  const CommonSourceInfo& common_info = attribution_info.source.common_info();
+
+  if (attribution_info.time > common_info.aggregatable_report_window_time())
+    return AggregatableResult::kReportWindowPassed;
+
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          attribution_info.source.common_info().filter_data(),
-          attribution_info.source.common_info().source_type(),
-          attribution_info.source.common_info().aggregation_keys(),
+          common_info.filter_data(), common_info.source_type(),
+          common_info.aggregation_keys(),
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
   if (contributions.empty())

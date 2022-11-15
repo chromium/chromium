@@ -422,6 +422,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
       case AttributionTrigger::EventLevelResult::kExcessiveReports:
       case AttributionTrigger::EventLevelResult::kFalselyAttributedSource:
+      case AttributionTrigger::EventLevelResult::kReportWindowPassed:
         event_level_reason << result.event_level_status();
         break;
     }
@@ -442,6 +443,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::AggregatableResult::kNoHistograms:
       case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
       case AttributionTrigger::AggregatableResult::kDeduplicated:
+      case AttributionTrigger::AggregatableResult::kReportWindowPassed:
         aggregatable_reason << result.aggregatable_status();
         break;
     }

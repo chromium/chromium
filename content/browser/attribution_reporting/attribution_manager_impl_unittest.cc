@@ -1046,10 +1046,10 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "Conversions.CreateReportStatus5",
+      "Conversions.CreateReportStatus6",
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.CreateReportStatus2",
+      "Conversions.AggregatableReport.CreateReportStatus3",
       AttributionTrigger::AggregatableResult::kNotRegistered, 1);
 }
 

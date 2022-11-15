@@ -173,19 +173,18 @@ void RecordStoreSourceStatus(AttributionStorage::StoreSourceResult result) {
 }
 
 void RecordCreateReportStatus(CreateReportResult result) {
-  static_assert(
-      AttributionTrigger::EventLevelResult::kMaxValue ==
-          AttributionTrigger::EventLevelResult::kFalselyAttributedSource,
-      "Bump version of Conversions.CreateReportStatus5 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus5",
+  static_assert(AttributionTrigger::EventLevelResult::kMaxValue ==
+                    AttributionTrigger::EventLevelResult::kReportWindowPassed,
+                "Bump version of Conversions.CreateReportStatus6 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus6",
                                 result.event_level_status());
   static_assert(
       AttributionTrigger::AggregatableResult::kMaxValue ==
-          AttributionTrigger::AggregatableResult::kDeduplicated,
-      "Bump version of Conversions.AggregatableReport.CreateReportStatus2 "
+          AttributionTrigger::AggregatableResult::kReportWindowPassed,
+      "Bump version of Conversions.AggregatableReport.CreateReportStatus3 "
       "histogram.");
   base::UmaHistogramEnumeration(
-      "Conversions.AggregatableReport.CreateReportStatus2",
+      "Conversions.AggregatableReport.CreateReportStatus3",
       result.aggregatable_status());
 }
 

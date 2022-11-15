@@ -3367,7 +3367,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableReport.CreateReportStatus2"
+<histogram name="Conversions.AggregatableReport.CreateReportStatus3"
     enum="ConversionCreateAggregatableReportStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -3633,7 +3633,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.CreateReportStatus5"
+<histogram name="Conversions.CreateReportStatus6"
     enum="ConversionStorageCreateReportStatus" expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

@@ -61,6 +61,7 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kSuccess:
     case EventLevelResult::kProhibitedByBrowserPolicy:
     case EventLevelResult::kSuccessDroppedLowerPriority:
+    case EventLevelResult::kReportWindowPassed:
       return absl::nullopt;
     case EventLevelResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
@@ -107,6 +108,7 @@ absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
     case AggregatableResult::kSuccess:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
+    case AggregatableResult::kReportWindowPassed:
       return absl::nullopt;
     case AggregatableResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,

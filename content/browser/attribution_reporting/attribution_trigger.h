@@ -38,7 +38,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kNoMatchingConfigurations = 12,
     kExcessiveReports = 13,
     kFalselyAttributedSource = 14,
-    kMaxValue = kFalselyAttributedSource,
+    kReportWindowPassed = 15,
+    kMaxValue = kReportWindowPassed,
   };
 
   // Represents the potential aggregatable outcomes from attempting to register
@@ -59,7 +60,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kNotRegistered = 9,
     kProhibitedByBrowserPolicy = 10,
     kDeduplicated = 11,
-    kMaxValue = kDeduplicated,
+    kReportWindowPassed = 12,
+    kMaxValue = kReportWindowPassed,
   };
 
   AttributionTrigger(attribution_reporting::TriggerRegistration registration,

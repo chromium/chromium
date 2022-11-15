@@ -158,6 +158,7 @@ struct WebUITrigger {
     kExcessiveReportingOrigins,
     kProhibitedByBrowserPolicy,
     kDeduplicated,
+    kReportWindowPassed,
 
     // Event-level statuses:
     kLowPriority,

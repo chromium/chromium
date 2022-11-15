@@ -424,6 +424,8 @@ WebUITriggerStatus GetWebUITriggerStatus(EventLevelStatus status) {
       return WebUITriggerStatus::kNoMatchingConfigurations;
     case EventLevelStatus::kExcessiveReports:
       return WebUITriggerStatus::kExcessiveEventLevelReports;
+    case EventLevelStatus::kReportWindowPassed:
+      return WebUITriggerStatus::kReportWindowPassed;
   }
 }
 
@@ -453,6 +455,8 @@ WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
       return WebUITriggerStatus::kProhibitedByBrowserPolicy;
     case AggregatableStatus::kDeduplicated:
       return WebUITriggerStatus::kDeduplicated;
+    case AggregatableStatus::kReportWindowPassed:
+      return WebUITriggerStatus::kReportWindowPassed;
   }
 }
 

@@ -991,6 +991,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: Excessive reporting origins';
     case WebUITrigger_Status.kDeduplicated:
       return 'Failure: Deduplicated against an earlier report';
+    case WebUITrigger_Status.kReportWindowPassed:
+      return 'Failure: Report window has passed';
     case WebUITrigger_Status.kLowPriority:
       return 'Failure: Priority too low';
     case WebUITrigger_Status.kNoised:
