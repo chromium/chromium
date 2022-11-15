@@ -5,7 +5,6 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/bind.h"
-#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
@@ -25,61 +24,6 @@
 namespace optimization_guide {
 
 namespace {
-
-// Returns search metadata if |url| is a valid Search URL according to
-// |template_url_service|.
-absl::optional<SearchMetadata> ExtractSearchMetadata(
-    TemplateURLService* template_url_service,
-    const GURL& url) {
-  if (!template_url_service)
-    return absl::nullopt;
-
-  if (!template_url_service->loaded()) {
-    if (switches::ShouldLogPageContentAnnotationsInput()) {
-      LOG(ERROR) << "Template URL Service not loaded";
-    }
-    return absl::nullopt;
-  }
-
-  const TemplateURL* template_url =
-      template_url_service->GetTemplateURLForHost(url.host());
-  const SearchTermsData& search_terms_data =
-      template_url_service->search_terms_data();
-
-  std::u16string search_terms;
-  bool is_valid_search_url = template_url &&
-                             template_url->ExtractSearchTermsFromURL(
-                                 url, search_terms_data, &search_terms) &&
-                             !search_terms.empty();
-  if (!is_valid_search_url) {
-    if (switches::ShouldLogPageContentAnnotationsInput()) {
-      LOG(ERROR) << "Url " << url << " is not a valid search URL";
-      LOG(ERROR) << "Matching TemplateURL instances for host: "
-                 << template_url_service->GetTemplateURLCountForHostForLogging(
-                        url.host());
-    }
-    return absl::nullopt;
-  }
-
-  const std::u16string& normalized_search_query =
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
-  TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
-  const TemplateURLRef& search_url_ref = template_url->url_ref();
-  if (!search_url_ref.SupportsReplacement(search_terms_data)) {
-    if (switches::ShouldLogPageContentAnnotationsInput()) {
-      LOG(ERROR) << "Url " << url << " does not support replacement";
-    }
-    return absl::nullopt;
-  }
-
-  if (switches::ShouldLogPageContentAnnotationsInput()) {
-    LOG(ERROR) << "Url " << url << " is a valid search URL";
-  }
-  return SearchMetadata{
-      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
-                                             search_terms_data)),
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false))};
-}
 
 // Data scoped to a single page. PageData has the same lifetime as the page's
 // main document. Contains information for whether we annotated the title for
@@ -181,16 +125,17 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
   // Persist search metadata, if applicable if it's a Google search URL or if
   // it's a search-y URL as determined by the TemplateURLService if the flag is
   // enabled.
-  if (is_google_search_url ||
-      optimization_guide::features::
-          ShouldPersistSearchMetadataForNonGoogleSearches()) {
+  if (template_url_service_ &&
+      (is_google_search_url ||
+       optimization_guide::features::
+           ShouldPersistSearchMetadataForNonGoogleSearches())) {
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageContentAnnotations."
         "TemplateURLServiceLoadedAtNavigationFinish",
-        template_url_service_ && template_url_service_->loaded());
+        template_url_service_->loaded());
 
-    absl::optional<SearchMetadata> search_metadata = ExtractSearchMetadata(
-        template_url_service_, navigation_handle->GetURL());
+    auto search_metadata = template_url_service_->ExtractSearchMetadata(
+        navigation_handle->GetURL());
     if (search_metadata) {
       if (page_data) {
         page_data->set_annotation_was_requested();
@@ -198,8 +143,6 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
       history_visit.text_to_annotate =
           base::UTF16ToUTF8(search_metadata->search_terms);
       page_content_annotations_service_->Annotate(history_visit);
-      page_content_annotations_service_->PersistSearchMetadata(
-          history_visit, *search_metadata);
 
       if (switches::ShouldLogPageContentAnnotationsInput()) {
         LOG(ERROR) << "Annotating search terms: \n"

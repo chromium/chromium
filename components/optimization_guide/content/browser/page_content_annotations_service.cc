@@ -5,13 +5,14 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
 #include "base/barrier_closure.h"
-#include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
@@ -73,19 +74,22 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider,
     history::HistoryService* history_service,
+    TemplateURLService* template_url_service,
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : min_page_category_score_to_persist_(
           features::GetMinimumPageCategoryScoreToPersist()),
+      history_service_(history_service),
+      template_url_service_(template_url_service),
       last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
       optimization_guide_logger_(optimization_guide_logger) {
   DCHECK(optimization_guide_model_provider);
-  DCHECK(history_service);
-  history_service_ = history_service;
+  DCHECK(history_service_);
+  history_service_observation_.Observe(history_service_);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_model_provider);
@@ -330,17 +334,6 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
 #endif
 }
 
-void PageContentAnnotationsService::PersistSearchMetadata(
-    const HistoryVisit& visit,
-    const SearchMetadata& search_metadata) {
-  QueryURL(visit,
-           base::BindOnce(&history::HistoryService::AddSearchMetadataForVisit,
-                          history_service_->AsWeakPtr(),
-                          search_metadata.normalized_url,
-                          search_metadata.search_terms),
-           PageContentAnnotationsType::kSearchMetadata);
-}
-
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {
@@ -509,6 +502,30 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #else
   std::move(callback).Run(absl::nullopt);
 #endif
+}
+
+void PageContentAnnotationsService::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::URLRow& url_row,
+    const history::VisitRow& visit_row) {
+  DCHECK_EQ(history_service, history_service_);
+
+  if (!template_url_service_) {
+    // `template_url_service_` is only nullptr in unit tests.
+    return;
+  }
+
+  if (optimization_guide::features::
+          ShouldPersistSearchMetadataForNonGoogleSearches() ||
+      google_util::IsGoogleSearchUrl(url_row.url())) {
+    auto search_metadata =
+        template_url_service_->ExtractSearchMetadata(url_row.url());
+    if (search_metadata) {
+      history_service_->AddSearchMetadataForVisit(
+          search_metadata->normalized_url, search_metadata->search_terms,
+          visit_row.visit_id);
+    }
+  }
 }
 
 void PageContentAnnotationsService::PersistRemotePageMetadata(

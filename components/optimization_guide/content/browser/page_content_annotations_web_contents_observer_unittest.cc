@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
@@ -17,7 +16,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +46,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                                       optimization_guide_model_provider,
                                       history_service,
                                       nullptr,
+                                      nullptr,
                                       base::FilePath(),
                                       nullptr,
                                       nullptr) {}
@@ -75,15 +75,6 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_related_searches_extraction_request_;
   }
 
-  void PersistSearchMetadata(const HistoryVisit& visit,
-                             const SearchMetadata& search_metadata) override {
-    last_search_metadata_ = search_metadata;
-  }
-
-  absl::optional<SearchMetadata> last_search_metadata_persisted() const {
-    return last_search_metadata_;
-  }
-
   void PersistRemotePageMetadata(
       const HistoryVisit& visit,
       const proto::PageEntitiesMetadata& page_metadata) override {
@@ -99,7 +90,6 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
-  absl::optional<SearchMetadata> last_search_metadata_;
   absl::optional<proto::PageEntitiesMetadata> last_page_metadata_;
 };
 
@@ -295,13 +285,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
             GURL("http://default-engine.com/search?q=a"));
   EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
 
-  absl::optional<SearchMetadata> last_search_metadata_persisted =
-      service()->last_search_metadata_persisted();
-  ASSERT_TRUE(last_search_metadata_persisted.has_value());
-  EXPECT_EQ(last_search_metadata_persisted->normalized_url,
-            GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
-
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations."
       "TemplateURLServiceLoadedAtNavigationFinish",
@@ -323,13 +306,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_EQ(last_annotation_request->url,
             GURL("http://non-default-engine.com/?q=a"));
   EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
-
-  absl::optional<SearchMetadata> last_search_metadata_persisted =
-      service()->last_search_metadata_persisted();
-  ASSERT_TRUE(last_search_metadata_persisted.has_value());
-  EXPECT_EQ(last_search_metadata_persisted->normalized_url,
-            GURL("http://non-default-engine.com/?q=a"));
-  EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations."
@@ -429,11 +405,6 @@ TEST_F(
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
                                       u"newtitle");
   EXPECT_FALSE(service()->last_annotation_request());
-
-  // Search metadata should not be persisted.
-  absl::optional<SearchMetadata> last_search_metadata_persisted =
-      service()->last_search_metadata_persisted();
-  ASSERT_FALSE(last_search_metadata_persisted.has_value());
 }
 
 TEST_F(
@@ -451,11 +422,6 @@ TEST_F(
   std::u16string title(u"Title");
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
                                       title);
-
-  // We don't know what the search terms are so no search metadata is persisted.
-  absl::optional<SearchMetadata> last_search_metadata_persisted =
-      service()->last_search_metadata_persisted();
-  ASSERT_FALSE(last_search_metadata_persisted.has_value());
 
   // The title should be what is requested to be annotated.
   absl::optional<HistoryVisit> last_annotation_request =

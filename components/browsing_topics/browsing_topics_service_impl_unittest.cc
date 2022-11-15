@@ -8,6 +8,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -209,7 +210,7 @@ class BrowsingTopicsServiceImplTest
     page_content_annotations_service_ =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
             "en-US", optimization_guide_model_provider_.get(),
-            history_service_.get(), nullptr, base::FilePath(), nullptr,
+            history_service_.get(), nullptr, nullptr, base::FilePath(), nullptr,
             nullptr);
 
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(

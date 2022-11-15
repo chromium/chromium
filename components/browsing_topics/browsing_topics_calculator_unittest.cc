@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -85,7 +86,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     page_content_annotations_service_ =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
             "en-US", optimization_guide_model_provider_.get(),
-            history_service_.get(), nullptr, base::FilePath(), nullptr,
+            history_service_.get(), nullptr, nullptr, base::FilePath(), nullptr,
             nullptr);
 
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(

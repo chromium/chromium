@@ -14,14 +14,14 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
 #include "components/continuous_search/browser/search_result_extractor_client_status.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/search_engines/template_url_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -78,12 +79,6 @@ struct HistoryVisit {
   };
 };
 
-// The information about a search visit to store in HistoryService.
-struct SearchMetadata {
-  GURL normalized_url;
-  std::u16string search_terms;
-};
-
 // The type of page content annotations stored in the history database.
 enum class PageContentAnnotationsType {
   kUnknown = 0,
@@ -100,12 +95,14 @@ enum class PageContentAnnotationsType {
 
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService,
-                                      public EntityMetadataProvider {
+                                      public EntityMetadataProvider,
+                                      public history::HistoryServiceObserver {
  public:
   PageContentAnnotationsService(
       const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service,
+      TemplateURLService* template_url_service,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
@@ -139,6 +136,11 @@ class PageContentAnnotationsService : public KeyedService,
   void GetMetadataForEntityId(
       const std::string& entity_id,
       EntityMetadataRetrievedCallback callback) override;
+
+  // history::HistoryServiceObserver:
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::URLRow& url_row,
+                    const history::VisitRow& visit_row) override;
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
@@ -209,10 +211,6 @@ class PageContentAnnotationsService : public KeyedService,
       content::WebContents* web_contents,
       int64_t navigation_id);
 
-  // Persist |search_metadata| for |visit| in |history_service_|.
-  virtual void PersistSearchMetadata(const HistoryVisit& visit,
-                                     const SearchMetadata& search_metadata);
-
   // Requests |search_result_extractor_client_| to extract related searches from
   // the Google SRP DOM associated with |web_contents|.
   //
@@ -273,7 +271,13 @@ class PageContentAnnotationsService : public KeyedService,
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.
-  raw_ptr<history::HistoryService> history_service_;
+  const raw_ptr<history::HistoryService> history_service_;
+  // Not owned and must outlive |this|. Can be nullptr in tests only.
+  const raw_ptr<TemplateURLService> template_url_service_;
+  // The scoped observation to the HistoryService.
+  base::ScopedObservation<history::HistoryService,
+                          PageContentAnnotationsService>
+      history_service_observation_{this};
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
   // The client of continuous_search::mojom::SearchResultExtractor interface

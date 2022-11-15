@@ -395,7 +395,8 @@ class BrowsingTopicsInternalsBrowserTest
     auto page_content_annotations_service =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
             "en-US", optimization_guide_model_providers_.at(profile).get(),
-            history_service, nullptr, base::FilePath(), nullptr, nullptr);
+            history_service, nullptr, nullptr, base::FilePath(), nullptr,
+            nullptr);
 
     page_content_annotations_service->OverridePageContentAnnotatorForTesting(
         &test_page_content_annotator_);

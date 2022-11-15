@@ -18,10 +18,13 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search_engines/template_url_fetcher_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/features.h"
@@ -89,6 +92,7 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
     : ProfileKeyedServiceFactory("PageContentAnnotationsService") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
@@ -113,11 +117,13 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS);
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
   if (optimization_guide_keyed_service && history_service) {
     return new optimization_guide::PageContentAnnotationsService(
         g_browser_process->GetApplicationLocale(),
-        optimization_guide_keyed_service, history_service, proto_db_provider,
-        profile_path,
+        optimization_guide_keyed_service, history_service, template_url_service,
+        proto_db_provider, profile_path,
         optimization_guide_keyed_service->GetOptimizationGuideLogger(),
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));

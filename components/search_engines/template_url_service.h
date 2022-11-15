@@ -104,6 +104,12 @@ class TemplateURLService : public WebDataServiceConsumer,
     bool is_keyword_transition;
   };
 
+  // Search metadata that's often used to persist into History.
+  struct SearchMetadata {
+    GURL normalized_url;
+    std::u16string search_terms;
+  };
+
   // Values for an enumerated histogram used to track TemplateURL edge cases.
   // These are persisted. Do not re-number.
   enum SearchTemplateURLEvent {
@@ -313,6 +319,9 @@ class TemplateURLService : public WebDataServiceConsumer,
   GURL GenerateSearchURLForDefaultSearchProvider(
       const std::u16string& search_terms) const;
 
+  // Returns search metadata if |url| is a valid Search URL.
+  absl::optional<SearchMetadata> ExtractSearchMetadata(const GURL& url) const;
+
   // Returns true if the default search provider supports the side search
   // feature.
   bool IsSideSearchSupportedForDefaultSearchProvider() const;
@@ -399,7 +408,7 @@ class TemplateURLService : public WebDataServiceConsumer,
 #endif
 
   // Whether or not the keywords have been loaded.
-  bool loaded() { return loaded_; }
+  bool loaded() const { return loaded_; }
 
   // Notification that the keywords have been loaded.
   // This is invoked from WebDataService, and should not be directly
