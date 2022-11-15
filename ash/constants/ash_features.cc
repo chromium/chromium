@@ -1423,6 +1423,9 @@ BASE_FEATURE(kMojoDBusRelay,
              "MojoDBusRelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the full apps list in Phone Hub bubble.
+BASE_FEATURE(kEcheLauncher, "EcheLauncher", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for multilingual assistive typing on ChromeOS.
 BASE_FEATURE(kMultilingualTyping,
              "MultilingualTyping",
@@ -2786,6 +2789,10 @@ bool IsMicMuteNotificationsEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
+}
+
+bool IsEcheLauncherEnabled() {
+  return base::FeatureList::IsEnabled(kEcheLauncher);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {

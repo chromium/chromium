@@ -37,6 +37,8 @@ class ASH_EXPORT PhoneHubRecentAppsView
                            SingleRecentAppButtonsView);
   FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
                            MultipleRecentAppButtonsView);
+  FRIEND_TEST_ALL_PREFIXES(RecentAppButtonsViewTest,
+                           MultipleRecentAppButtonsWithMoreAppsButtonView);
 
   class PlaceholderView;
 
@@ -59,6 +61,9 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
   // Update the view to reflect the most recently opened apps.
   void Update();
+
+  // Switch to full apps list view.
+  void SwitchToFullAppsList();
 
   RecentAppButtonsView* recent_app_buttons_view_ = nullptr;
   std::vector<views::View*> recent_app_button_list_;

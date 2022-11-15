@@ -241,6 +241,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "phone_hub_camera_roll_menu_download.icon",
     "phone_hub_default_favicon.icon",
     "phone_hub_enable_hotspot.icon",
+    "phone_hub_full_apps_list.icon",
     "phone_hub_locate_phone.icon",
     "phone_hub_mobile_no_connection.icon",
     "phone_hub_mobile_no_sim.icon",

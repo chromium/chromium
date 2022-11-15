@@ -1532,6 +1532,9 @@ Style notes:
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE" desc="Title of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
         Recent apps
       </message>
+      <message name="IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE" desc="Text indicates that the button is to display full apps list.">
+        More apps
+      </message> 
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER" desc="The placeholder of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
         When you stream your phone’s apps, they will appear here
       </message>

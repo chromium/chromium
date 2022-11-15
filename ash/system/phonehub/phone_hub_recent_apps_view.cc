@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
@@ -44,6 +47,9 @@ constexpr auto kContentTextLabelInsetsDip =
 
 // Typography.
 constexpr int kHeaderTextFontSizeDip = 15;
+
+// Max number of apps can be shown with more apps button
+constexpr int kMaxAppsWithMoreAppsButton = 5;
 
 class HeaderView : public views::Label {
  public:
@@ -155,6 +161,7 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
                       [](int width, const auto* v) {
                         return width + v->GetPreferredSize().width();
                       });
+
   int spacing = 0;
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width -
@@ -206,6 +213,23 @@ void PhoneHubRecentAppsView::Update() {
           recent_apps_interaction_handler_->FetchRecentAppMetadataList();
 
       for (const auto& recent_app : recent_apps_list) {
+        if (features::IsEcheLauncherEnabled() &&
+            recent_app_button_list_.size() == kMaxAppsWithMoreAppsButton) {
+          auto moreAppsButton = std::make_unique<PillButton>(
+              base::BindRepeating(&PhoneHubRecentAppsView::SwitchToFullAppsList,
+                                  base::Unretained(this)),
+              std::u16string(), PillButton::Type::kDefaultWithIconLeading,
+              &kPhoneHubFullAppsListIcon);
+          moreAppsButton->SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
+          moreAppsButton->SetAccessibleName(l10n_util::GetStringUTF16(
+              IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
+          recent_app_button_list_.push_back(
+              recent_app_buttons_view_->AddRecentAppButton(
+                  std::move(moreAppsButton)));
+          break;
+        }
+
         auto pressed_callback = base::BindRepeating(
             &phonehub::RecentAppsInteractionHandler::NotifyRecentAppClicked,
             base::Unretained(recent_apps_interaction_handler_), recent_app);
@@ -215,6 +239,7 @@ void PhoneHubRecentAppsView::Update() {
                     recent_app.icon, recent_app.visible_app_name,
                     pressed_callback)));
       }
+
       recent_app_buttons_view_->SetVisible(true);
       placeholder_view_->SetVisible(false);
       SetVisible(true);
@@ -222,5 +247,8 @@ void PhoneHubRecentAppsView::Update() {
   }
   PreferredSizeChanged();
 }
+
+// TODO(b/259160267): Add function when full apps list view is ready.
+void PhoneHubRecentAppsView::SwitchToFullAppsList() {}
 
 }  // namespace ash

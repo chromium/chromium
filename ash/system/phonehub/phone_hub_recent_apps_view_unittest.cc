@@ -6,8 +6,11 @@
 
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/notification.h"
+#include "ash/constants/ash_features.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
@@ -33,6 +36,10 @@ class RecentAppButtonsViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheLauncher},
+        /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
         &fake_recent_apps_interaction_handler_);
@@ -70,6 +77,7 @@ class RecentAppButtonsViewTest : public AshTestBase {
   std::unique_ptr<PhoneHubRecentAppsView> phone_hub_recent_apps_view_;
   phonehub::FakeRecentAppsInteractionHandler
       fake_recent_apps_interaction_handler_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(RecentAppButtonsViewTest, TaskViewVisibility) {
@@ -122,6 +130,42 @@ TEST_F(RecentAppButtonsViewTest, MultipleRecentAppButtonsView) {
   }
 
   size_t expected_number_of_button_be_clicked = 3;
+  EXPECT_EQ(expected_number_of_button_be_clicked,
+            PackageNameToClickCount(kPackageName));
+}
+
+TEST_F(RecentAppButtonsViewTest,
+       MultipleRecentAppButtonsWithMoreAppsButtonView) {
+  NotifyRecentAppAddedOrUpdated();
+  NotifyRecentAppAddedOrUpdated();
+  NotifyRecentAppAddedOrUpdated();
+  NotifyRecentAppAddedOrUpdated();
+  NotifyRecentAppAddedOrUpdated();
+  NotifyRecentAppAddedOrUpdated();
+  FeatureStateChanged(FeatureState::kEnabledByUser);
+  recent_apps_view()->Update();
+
+  size_t expected_recent_app_button = 6;
+  EXPECT_EQ(expected_recent_app_button,
+            recent_apps_view()->recent_app_buttons_view_->children().size());
+
+  for (std::size_t i = 0;
+       i != recent_apps_view()->recent_app_buttons_view_->children().size();
+       i++) {
+    auto* child = recent_apps_view()->recent_app_buttons_view_->children()[i];
+    if (i == 5) {
+      PillButton* more_apps_button = static_cast<PillButton*>(child);
+      views::test::ButtonTestApi(more_apps_button)
+          .NotifyClick(ui::test::TestEvent());
+      break;
+    }
+    PhoneHubRecentAppButton* recent_app =
+        static_cast<PhoneHubRecentAppButton*>(child);
+    // Simulate clicking button using placeholder event.
+    views::test::ButtonTestApi(recent_app).NotifyClick(ui::test::TestEvent());
+  }
+
+  size_t expected_number_of_button_be_clicked = 5;
   EXPECT_EQ(expected_number_of_button_be_clicked,
             PackageNameToClickCount(kPackageName));
 }
