@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -38,15 +37,9 @@ void AppListSyncableServiceTestBase::RemoveAllExistingItems() {
     existing_item_ids.emplace_back(pair.first);
   }
 
-  AppListModelUpdater* model_updater = GetModelUpdater();
   for (std::string& id : existing_item_ids) {
     app_list_syncable_service()->RemoveItem(id, /*is_uninstall=*/true);
   }
-
-  // Delete all default page breaks.
-  for (size_t i = 0; i < app_list::kDefaultPageBreakAppIdsLength; ++i)
-    model_updater->RemoveItem(app_list::kDefaultPageBreakAppIds[i],
-                              /*is_uninstall=*/true);
 
   content::RunAllTasksUntilIdle();
 }

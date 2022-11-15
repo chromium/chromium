@@ -41,15 +41,6 @@ void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   for (Profile* profile : test_->GetAllProfiles()) {
     extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
         true /* extensions_enabled */);
-    if (test_->UseVerifier() && profile == test_->verifier()) {
-      // The default page break items are only installed for first-time users.
-      // The verifier() profile doesn't get initialized with remote sync data,
-      // and hence the default page breaks are not installed for it. We have to
-      // install them manually to avoid a mismatch when comparing the verifier()
-      // against other client profiles.
-      app_list::AppListSyncableServiceFactory::GetForProfile(profile)
-          ->InstallDefaultPageBreaksForTest();
-    }
   }
 
   setup_completed_ = true;

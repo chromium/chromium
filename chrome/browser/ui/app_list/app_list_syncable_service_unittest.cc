@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/test/app_list_syncable_service_test_base.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
@@ -601,10 +600,6 @@ TEST_F(AppListSyncableServiceTest, InitialMerge) {
   EXPECT_EQ("ordinal", GetSyncItem(kItemId2)->item_ordinal.ToDebugString());
   EXPECT_EQ("pinordinal",
             GetSyncItem(kItemId2)->item_pin_ordinal.ToDebugString());
-
-  // Default page breaks are not installed for non-first time users that don't
-  // have them in their sync.
-  EXPECT_FALSE(GetSyncItem(kDefaultPageBreak1));
 }
 
 class AppListInternalAppSyncableServiceTest
@@ -622,63 +617,6 @@ class AppListInternalAppSyncableServiceTest
 
   ~AppListInternalAppSyncableServiceTest() override = default;
 };
-
-TEST_F(AppListInternalAppSyncableServiceTest, ExistingDefaultPageBreak) {
-  // Non-first time users have items in their remote sync data.
-  syncer::SyncDataList sync_list;
-  sync_list.push_back(CreateAppRemoteData(
-      kDefaultPageBreak1, "page_break_1", "", "ordinal", "pinordinal",
-      sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
-
-  app_list_syncable_service()->MergeDataAndStartSyncing(
-      syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
-  content::RunAllTasksUntilIdle();
-
-  // Existing page break item in remote sync will be added, and its data will be
-  // updated with the item's remote sync data.
-  auto* page_break_sync_item = GetSyncItem(kDefaultPageBreak1);
-  ASSERT_TRUE(page_break_sync_item);
-  EXPECT_EQ(page_break_sync_item->item_type,
-            sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
-  EXPECT_EQ("page_break_1", page_break_sync_item->item_name);
-  EXPECT_EQ("", page_break_sync_item->parent_id);
-  EXPECT_EQ("ordinal", page_break_sync_item->item_ordinal.ToDebugString());
-  EXPECT_EQ("pinordinal",
-            page_break_sync_item->item_pin_ordinal.ToDebugString());
-}
-
-TEST_F(AppListInternalAppSyncableServiceTest, DefaultPageBreakFirstTimeUser) {
-  // Empty sync list simulates a first time user.
-  syncer::SyncDataList sync_list;
-
-  app_list_syncable_service()->MergeDataAndStartSyncing(
-      syncer::APP_LIST, sync_list,
-      std::make_unique<syncer::FakeSyncChangeProcessor>(),
-      std::make_unique<syncer::SyncErrorFactoryMock>());
-  content::RunAllTasksUntilIdle();
-
-  auto* page_break_sync_item = GetSyncItem(kDefaultPageBreak1);
-  ASSERT_TRUE(page_break_sync_item);
-  EXPECT_EQ(page_break_sync_item->item_type,
-            sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
-
-  // Since internal apps are added by default, we'll use the settings apps to
-  // test the ordering.
-  auto* settings_app_sync_item = GetSyncItem(web_app::kOsSettingsAppId);
-  auto* hosted_app_sync_item = GetSyncItem(kHostedAppId);
-  ASSERT_TRUE(settings_app_sync_item);
-  ASSERT_TRUE(hosted_app_sync_item);
-
-  // The default page break should be between the hosted app, and the settings
-  // app; i.e. the hosted app is in the first page, and the settings app is in
-  // the second page.
-  EXPECT_TRUE(page_break_sync_item->item_ordinal.LessThan(
-      settings_app_sync_item->item_ordinal));
-  EXPECT_TRUE(page_break_sync_item->item_ordinal.GreaterThan(
-      hosted_app_sync_item->item_ordinal));
-}
 
 TEST_F(AppListSyncableServiceTest, InitialMerge_BadData) {
   const syncer::SyncDataList sync_list = CreateBadAppRemoteData(kDefault);
@@ -3539,16 +3477,18 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   const std::string kItemId2 = CreateNextAppId(kItemId1);
   sync_list.push_back(
       CreateAppRemoteData(kItemId2, "A", "", GetLastPositionString(), kUnset));
+  const std::string kPageBreak1 = CreateNextAppId(kItemId2);
   sync_list.push_back(CreateAppRemoteData(
-      kDefaultPageBreak1, "page_break_1", "", GetLastPositionString(), kUnset,
+      kPageBreak1, "page_break_1", "", GetLastPositionString(), kUnset,
       sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
-  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  const std::string kItemId3 = CreateNextAppId(kPageBreak1);
   sync_list.push_back(
       CreateAppRemoteData(kItemId3, "C", "", GetLastPositionString(), kUnset));
+  const std::string kPageBreak2 = CreateNextAppId(kItemId3);
   sync_list.push_back(CreateAppRemoteData(
-      kDefaultPageBreak1, "page_break_2", "", GetLastPositionString(), kUnset,
+      kPageBreak2, "page_break_2", "", GetLastPositionString(), kUnset,
       sync_pb::AppListSpecifics_AppListItemType_TYPE_PAGE_BREAK));
-  const std::string kItemId4 = CreateNextAppId(kItemId3);
+  const std::string kItemId4 = CreateNextAppId(kPageBreak2);
   sync_list.push_back(
       CreateAppRemoteData(kItemId4, "D", "", GetLastPositionString(), kUnset));
 

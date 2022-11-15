@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -157,9 +156,6 @@ void GetDefault(std::vector<std::string>* app_ids) {
     extension_misc::kGooglePhotosAppId,
 
     web_app::kStadiaAppId,
-
-    // First default page break
-    app_list::kDefaultPageBreak1,
 
     arc::kGoogleMapsAppId,
     web_app::kGoogleMapsAppId,
