@@ -184,23 +184,30 @@ VolumeManagerCommon.VolumeError = {
   TIMEOUT: 'timeout',
 
   /* System events */
-  UNKNOWN: 'error_unknown',
-  INTERNAL: 'error_internal',
-  INVALID_ARGUMENT: 'error_invalid_argument',
-  INVALID_PATH: 'error_invalid_path',
-  ALREADY_MOUNTED: 'error_path_already_mounted',
-  CANCELLED: 'error_cancelled',
-  PATH_NOT_MOUNTED: 'error_path_not_mounted',
-  DIRECTORY_CREATION_FAILED: 'error_directory_creation_failed',
-  INVALID_MOUNT_OPTIONS: 'error_invalid_mount_options',
-  INSUFFICIENT_PERMISSIONS: 'error_insufficient_permissions',
-  MOUNT_PROGRAM_NOT_FOUND: 'error_mount_program_not_found',
-  MOUNT_PROGRAM_FAILED: 'error_mount_program_failed',
-  INVALID_DEVICE_PATH: 'error_invalid_device_path',
-  UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
-  UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
-  NEED_PASSWORD: 'error_need_password',
-  BUSY: 'error_busy',
+  UNKNOWN_ERROR: chrome.fileManagerPrivate.MountError.UNKNOWN_ERROR,
+  INTERNAL_ERROR: chrome.fileManagerPrivate.MountError.INTERNAL_ERROR,
+  INVALID_ARGUMENT: chrome.fileManagerPrivate.MountError.INVALID_ARGUMENT,
+  INVALID_PATH: chrome.fileManagerPrivate.MountError.INVALID_PATH,
+  PATH_ALREADY_MOUNTED:
+      chrome.fileManagerPrivate.MountError.PATH_ALREADY_MOUNTED,
+  PATH_NOT_MOUNTED: chrome.fileManagerPrivate.MountError.PATH_NOT_MOUNTED,
+  DIRECTORY_CREATION_FAILED:
+      chrome.fileManagerPrivate.MountError.DIRECTORY_CREATION_FAILED,
+  INVALID_MOUNT_OPTIONS:
+      chrome.fileManagerPrivate.MountError.INVALID_MOUNT_OPTIONS,
+  INSUFFICIENT_PERMISSIONS:
+      chrome.fileManagerPrivate.MountError.INSUFFICIENT_PERMISSIONS,
+  MOUNT_PROGRAM_NOT_FOUND:
+      chrome.fileManagerPrivate.MountError.MOUNT_PROGRAM_NOT_FOUND,
+  MOUNT_PROGRAM_FAILED:
+      chrome.fileManagerPrivate.MountError.MOUNT_PROGRAM_FAILED,
+  INVALID_DEVICE_PATH: chrome.fileManagerPrivate.MountError.INVALID_DEVICE_PATH,
+  UNKNOWN_FILESYSTEM: chrome.fileManagerPrivate.MountError.UNKNOWN_FILESYSTEM,
+  UNSUPPORTED_FILESYSTEM:
+      chrome.fileManagerPrivate.MountError.UNSUPPORTED_FILESYSTEM,
+  NEED_PASSWORD: chrome.fileManagerPrivate.MountError.NEED_PASSWORD,
+  CANCELLED: chrome.fileManagerPrivate.MountError.CANCELLED,
+  BUSY: chrome.fileManagerPrivate.MountError.BUSY,
 };
 Object.freeze(VolumeManagerCommon.VolumeError);
 

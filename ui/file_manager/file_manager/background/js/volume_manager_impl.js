@@ -272,7 +272,7 @@ export class VolumeManagerImpl extends EventTarget {
             return;
           }
 
-          case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
+          case VolumeManagerCommon.VolumeError.PATH_ALREADY_MOUNTED: {
             console.warn(
                 `Cannot mount (redacted): Already mounted as '${volumeId}'`);
             console.debug(`Cannot mount '${sourcePath}': Already mounted as '${

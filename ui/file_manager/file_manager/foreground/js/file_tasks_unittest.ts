@@ -663,7 +663,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
-    return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL);
+    return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL_ERROR);
   };
 
   // Mount archive.

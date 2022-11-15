@@ -338,7 +338,7 @@ export class FileManagerBase {
    */
   onMountCompletedInternal_(event) {
     const statusOK = event.status === 'success' ||
-        event.status === 'error_path_already_mounted';
+        event.status === VolumeManagerCommon.VolumeError.PATH_ALREADY_MOUNTED;
     const volumeTypeOK = event.volumeMetadata.volumeType ===
             VolumeManagerCommon.VolumeType.PROVIDED &&
         event.volumeMetadata.source === VolumeManagerCommon.Source.FILE;

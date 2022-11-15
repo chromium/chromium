@@ -57,8 +57,8 @@ chrome.fileManagerPrivate.DriveOfflineReason = {
 
 /** @enum {string} */
 chrome.fileManagerPrivate.MountCondition = {
-  ERROR_UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
-  ERROR_UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
+  UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
+  UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
 };
 
 /** @enum {string} */
@@ -77,23 +77,23 @@ chrome.fileManagerPrivate.MountCompletedEventType = {
 chrome.fileManagerPrivate.MountError = {
   SUCCESS: 'success',
   IN_PROGRESS: 'in_progress',
-  ERROR_UNKNOWN: 'error_unknown',
-  ERROR_INTERNAL: 'error_internal',
-  ERROR_INVALID_ARGUMENT: 'error_invalid_argument',
-  ERROR_INVALID_PATH: 'error_invalid_path',
-  ERROR_PATH_ALREADY_MOUNTED: 'error_path_already_mounted',
-  ERROR_PATH_NOT_MOUNTED: 'error_path_not_mounted',
-  ERROR_DIRECTORY_CREATION_FAILED: 'error_directory_creation_failed',
-  ERROR_INVALID_MOUNT_OPTIONS: 'error_invalid_mount_options',
-  ERROR_INSUFFICIENT_PERMISSIONS: 'error_insufficient_permissions',
-  ERROR_MOUNT_PROGRAM_NOT_FOUND: 'error_mount_program_not_found',
-  ERROR_MOUNT_PROGRAM_FAILED: 'error_mount_program_failed',
-  ERROR_INVALID_DEVICE_PATH: 'error_invalid_device_path',
-  ERROR_UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
-  ERROR_UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
-  ERROR_NEED_PASSWORD: 'error_need_password',
-  ERROR_CANCELLED: 'error_cancelled',
-  ERROR_BUSY: 'error_busy',
+  UNKNOWN_ERROR: 'error_unknown',
+  INTERNAL_ERROR: 'error_internal',
+  INVALID_ARGUMENT: 'error_invalid_argument',
+  INVALID_PATH: 'error_invalid_path',
+  PATH_ALREADY_MOUNTED: 'error_path_already_mounted',
+  PATH_NOT_MOUNTED: 'error_path_not_mounted',
+  DIRECTORY_CREATION_FAILED: 'error_directory_creation_failed',
+  INVALID_MOUNT_OPTIONS: 'error_invalid_mount_options',
+  INSUFFICIENT_PERMISSIONS: 'error_insufficient_permissions',
+  MOUNT_PROGRAM_NOT_FOUND: 'error_mount_program_not_found',
+  MOUNT_PROGRAM_FAILED: 'error_mount_program_failed',
+  INVALID_DEVICE_PATH: 'error_invalid_device_path',
+  UNKNOWN_FILESYSTEM: 'error_unknown_filesystem',
+  UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
+  NEED_PASSWORD: 'error_need_password',
+  CANCELLED: 'error_cancelled',
+  BUSY: 'error_busy',
 };
 
 /** @enum {string} */
