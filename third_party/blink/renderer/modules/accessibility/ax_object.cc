@@ -3507,6 +3507,10 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
     return false;
 
+  // NOT focusable: disabled child tree owners (no content area).
+  if (IsChildTreeOwner())
+    return !IsDisabled();
+
   // NOT focusable: disabled form controls.
   if (IsDisabledFormControl(elem))
     return false;

@@ -53,6 +53,10 @@ bool ShouldHaveChildTree(const ui::AXNode& node) {
     DCHECK(!data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
     return false;  // A disabled child tree owner won't have a child tree.
   }
+
+  if (node.IsInvisibleOrIgnored())
+    return false;
+
   // If has a child tree owner role or a child tree id, then expect some
   // child tree content. In some cases IsChildTreeOwner(role) will be false,
   // if an ARIA role was used, e.g. <iframe role="region">.
