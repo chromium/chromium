@@ -7,10 +7,16 @@
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/browser_process.h"
+#include "components/user_manager/known_user.h"
+#endif
+
 AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return AccountId::FromNonCanonicalEmail(account_info.email, account_info.gaia,
-                                          AccountType::GOOGLE);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return known_user.GetAccountId(account_info.email, account_info.gaia,
+                                 AccountType::GOOGLE);
 #else
   if (account_info.email.empty() || account_info.gaia.empty())
     return EmptyAccountId();
