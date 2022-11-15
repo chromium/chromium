@@ -64,26 +64,8 @@ template <bool is_once,
           typename R,
           typename... UnboundArgs,
           typename... BoundArgs>
-std::conditional_t<is_once,
-                   OnceCallback<R(UnboundArgs...)>,
-                   RepeatingCallback<R(UnboundArgs...)>>
-ToDoNothingCallback(DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t) {
-  return std::apply(
-      [](auto&&... args) {
-        if constexpr (is_once) {
-          return base::BindOnce(
-              [](TransformToUnwrappedType<is_once, BoundArgs>...,
-                 UnboundArgs...) {},
-              std::move(args)...);
-        } else {
-          return base::BindRepeating(
-              [](TransformToUnwrappedType<is_once, BoundArgs>...,
-                 UnboundArgs...) {},
-              std::move(args)...);
-        }
-      },
-      std::move(t.bound_args));
-}
+auto ToDoNothingCallback(
+    DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t);
 
 }  // namespace internal
 
@@ -479,6 +461,35 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
 
   internal::BindStateHolder holder_;
 };
+
+namespace internal {
+
+// Helper for the `DoNothingWithBoundArgs()` implementation.
+// Unlike the other helpers, this cannot be easily moved to callback_internal.h,
+// since it depends on `BindOnce()` and `BindRepeating()`.
+template <bool is_once,
+          typename R,
+          typename... UnboundArgs,
+          typename... BoundArgs>
+auto ToDoNothingCallback(
+    DoNothingCallbackTag::WithBoundArguments<BoundArgs...> t) {
+  return std::apply(
+      [](auto&&... args) {
+        if constexpr (is_once) {
+          return BindOnce([](TransformToUnwrappedType<is_once, BoundArgs>...,
+                             UnboundArgs...) {},
+                          std::move(args)...);
+        } else {
+          return BindRepeating(
+              [](TransformToUnwrappedType<is_once, BoundArgs>...,
+                 UnboundArgs...) {},
+              std::move(args)...);
+        }
+      },
+      std::move(t.bound_args));
+}
+
+}  // namespace internal
 
 }  // namespace base
 
