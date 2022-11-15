@@ -72,30 +72,27 @@ class PLATFORM_EXPORT Length {
     kContent  // only valid for flex-basis
   };
 
-  Length() : value_(0), quirk_(false), type_(kAuto) {}
+  Length() : value_(0), type_(kAuto) {}
 
-  explicit Length(Length::Type t) : value_(0), quirk_(false), type_(t) {
+  explicit Length(Length::Type t) : value_(0), type_(t) {
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(int v, Length::Type t, bool q = false)
-      : value_(v), quirk_(q), type_(t), round_to_int_(true) {
+  Length(int v, Length::Type t) : value_(v), type_(t), round_to_int_(true) {
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(LayoutUnit v, Length::Type t, bool q = false)
-      : value_(v.ToFloat()), quirk_(q), type_(t) {
+  Length(LayoutUnit v, Length::Type t) : value_(v.ToFloat()), type_(t) {
     DCHECK(std::isfinite(v.ToFloat()));
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(float v, Length::Type t, bool q = false)
-      : value_(v), quirk_(q), type_(t) {
+  Length(float v, Length::Type t) : value_(v), type_(t) {
     DCHECK(std::isfinite(v));
     DCHECK_NE(t, kCalculated);
   }
 
-  Length(double v, Length::Type t, bool q = false) : quirk_(q), type_(t) {
+  Length(double v, Length::Type t) : type_(t) {
     DCHECK(std::isfinite(v));
     value_ = ClampTo<float>(v);
   }
@@ -338,7 +335,7 @@ class PLATFORM_EXPORT Length {
     // Otherwise. Must be zero if not in use (e.g., for kAuto or kNone).
     float value_;
   };
-  bool quirk_;
+  bool quirk_ = false;
   unsigned char type_;
 
   // This only affects BrokenLegacyMultiplyBy()
