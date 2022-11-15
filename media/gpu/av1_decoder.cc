@@ -191,8 +191,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::Decode() {
 AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!parser_) {
-    DLOG(ERROR) << "Decode() is called before SetStream()";
-    return kDecodeError;
+    DLOG(WARNING) << "Decode() is called before SetStream()";
+    return kRanOutOfStreamData;
   }
   while (parser_->HasData() || current_frame_header_) {
     base::ScopedClosureRunner clear_current_frame(
