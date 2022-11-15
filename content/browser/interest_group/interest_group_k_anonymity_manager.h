@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_K_ANONYMITY_MANAGER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_K_ANONYMITY_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
@@ -73,6 +74,13 @@ class InterestGroupKAnonymityManager {
   raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   raw_ptr<KAnonymityServiceDelegate> k_anonymity_service_;
+
+  // We keep track of joins in progress because the joins that haven't completed
+  // are still marked as eligible but it would be incorrect to join them
+  // multiple times. We don't do this for query because the size of the request
+  // could expose membership in overlapping groups through traffic analysis.
+  base::flat_set<std::string> joins_in_progress;
+
   base::WeakPtrFactory<InterestGroupKAnonymityManager> weak_ptr_factory_;
 };
 

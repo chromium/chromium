@@ -101,6 +101,9 @@ void InterestGroupKAnonymityManager::RegisterIDAsJoined(
     const std::string& key) {
   if (!k_anonymity_service_)
     return;
+  if (joins_in_progress.contains(key))
+    return;
+  joins_in_progress.insert(key);
   interest_group_manager_->GetLastKAnonymityReported(
       key,
       base::BindOnce(&InterestGroupKAnonymityManager::OnGotLastReportedTime,
@@ -110,14 +113,17 @@ void InterestGroupKAnonymityManager::RegisterIDAsJoined(
 void InterestGroupKAnonymityManager::OnGotLastReportedTime(
     std::string key,
     absl::optional<base::Time> last_update_time) {
-  DCHECK(last_update_time);
-  if (!last_update_time)
+  if (!last_update_time) {
+    joins_in_progress.erase(key);
     return;
+  }
 
   // If it has been long enough since we last joined
   if (base::Time::Now() < last_update_time.value_or(base::Time()) +
-                              k_anonymity_service_->GetJoinInterval())
+                              k_anonymity_service_->GetJoinInterval()) {
+    joins_in_progress.erase(key);
     return;
+  }
 
   k_anonymity_service_->JoinSet(
       key, base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
@@ -128,6 +134,7 @@ void InterestGroupKAnonymityManager::JoinSetCallback(std::string key,
                                                      bool status) {
   // Update the time regardless of status until we verify the server is stable.
   interest_group_manager_->UpdateLastKAnonymityReported(key);
+  joins_in_progress.erase(key);
 }
 
 }  // namespace content
