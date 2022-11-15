@@ -2296,6 +2296,7 @@ test("content_unittests") {
     "../browser/preloading/prefetch/prefetch_type_unittest.cc",
     "../browser/preloading/prefetch/prefetch_url_loader_interceptor_unittest.cc",
     "../browser/preloading/prefetch/proxy_lookup_client_impl_unittest.cc",
+    "../browser/preloading/prefetcher_unittest.cc",
     "../browser/preloading/prerender/prerender_host_registry_unittest.cc",
     "../browser/preloading/prerender/prerender_host_unittest.cc",
     "../browser/preloading/prerender/prerender_metrics_unittest.cc",

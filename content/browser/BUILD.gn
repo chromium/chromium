@@ -1449,6 +1449,8 @@ source_set("browser") {
     "preloading/prefetch/prefetched_mainframe_response_container.h",
     "preloading/prefetch/proxy_lookup_client_impl.cc",
     "preloading/prefetch/proxy_lookup_client_impl.h",
+    "preloading/prefetcher.cc",
+    "preloading/prefetcher.h",
     "preloading/preloading.cc",
     "preloading/preloading.h",
     "preloading/preloading_attempt_impl.cc",

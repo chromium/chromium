@@ -140,8 +140,11 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
 
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
-  PrefetchDocumentManager::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame())
-      ->ProcessCandidates(candidates, /*devtools_observer=*/nullptr);
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &GetPrimaryMainFrame());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
 
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.
@@ -165,6 +168,29 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   ASSERT_EQ(candidates.size(), 2U);
   EXPECT_EQ(candidates[0]->url, GetCrossOriginUrl("/candidate4.html"));
   EXPECT_EQ(candidates[1]->url, GetCrossOriginUrl("/candidate5.html"));
+
+  // Check IsPrefetchAttemptFailedOrDiscarded method
+  // Discarded candidate
+  EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetCrossOriginUrl("/candidate4.html")));
+  // URLs that were not processed
+  EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetSameOriginUrl("/random_page.html")));
+  // Prefetches with no status yet
+  EXPECT_FALSE(prefetch_urls[0]->HasPrefetchStatus());
+  EXPECT_FALSE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetCrossOriginUrl("/candidate1.html")));
+  // Prefetches with status
+  prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_FALSE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetCrossOriginUrl("/candidate1.html")));
+  prefetch_urls[0]->SetPrefetchStatus(
+      PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+  EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetCrossOriginUrl("/candidate1.html")));
+  prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNetError);
+  EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
+      GetCrossOriginUrl("/candidate1.html")));
 }
 
 }  // namespace

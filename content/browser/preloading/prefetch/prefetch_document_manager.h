@@ -85,6 +85,9 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // load is received.
   void OnPrefetchSuccessful();
 
+  // Whether the prefetch attempt for target |url| failed or discarded
+  bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
+
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
  private:
