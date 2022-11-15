@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/common/image_util.h"

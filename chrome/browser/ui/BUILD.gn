@@ -2199,8 +2199,6 @@ static_library("ui") {
       "app_list/search/search_metrics_manager.h",
       "app_list/search/search_provider.cc",
       "app_list/search/search_provider.h",
-      "app_list/search/search_tags_util.cc",
-      "app_list/search/search_tags_util.h",
       "app_list/search/util/ftrl_optimizer.cc",
       "app_list/search/util/ftrl_optimizer.h",
       "app_list/search/util/mrfu_cache.cc",

@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_UTIL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 class GURL;
@@ -50,6 +53,10 @@ constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
 // Some omnibox answers overtrigger on short queries. This controls the minimum
 // query length before they are displayed.
 constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
+
+// Returns the tag vector for the given text type.
+ash::SearchResultTags TagsForText(const std::u16string& text,
+                                  crosapi::mojom::SearchResult::TextType type);
 
 // Whether this URL points to a Drive location.
 bool IsDriveUrl(const GURL& url);

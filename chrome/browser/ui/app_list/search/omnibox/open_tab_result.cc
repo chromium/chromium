@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox/omnibox_util.h"
-#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"

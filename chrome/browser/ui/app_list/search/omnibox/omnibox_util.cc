@@ -13,6 +13,28 @@
 
 namespace app_list {
 
+using CrosApiSearchResult = crosapi::mojom::SearchResult;
+
+ash::SearchResultTags TagsForText(const std::u16string& text,
+                                  CrosApiSearchResult::TextType type) {
+  ash::SearchResultTags tags;
+  const auto length = text.length();
+  switch (type) {
+    case CrosApiSearchResult::TextType::kPositive:
+      tags.emplace_back(ash::SearchResultTag::GREEN, 0, length);
+      break;
+    case CrosApiSearchResult::TextType::kNegative:
+      tags.emplace_back(ash::SearchResultTag::RED, 0, length);
+      break;
+    case CrosApiSearchResult::TextType::kUrl:
+      tags.emplace_back(ash::SearchResultTag::URL, 0, length);
+      break;
+    default:
+      break;
+  }
+  return tags;
+}
+
 bool IsDriveUrl(const GURL& url) {
   // Returns true if the |url| points to a Drive Web host.
   const std::string& host = url.host();
