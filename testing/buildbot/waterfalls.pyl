@@ -3297,12 +3297,6 @@
           'scripts': 'test_traffic_annotation_auditor_script',
         },
       },
-      'linux-ash-chromium-builder-fyi-rel': {
-        'additional_compile_targets': [
-          'chrome',
-          'test_ash_chrome',
-        ],
-      },
       'linux-backuprefptr-x64-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_dangling_pointer_detection_gtests',

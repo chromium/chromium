@@ -1069,17 +1069,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-ash-chromium-builder-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "target_os": "chromeos",
-      "use_remoteexec": true
-    }
-  },
   "linux-backuprefptr-x64-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

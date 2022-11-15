@@ -334,47 +334,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-ash-chromium-builder-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "default",
-        short_name = "lcr",
-    ),
-    os = os.LINUX_DEFAULT,
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "archive_datas": [
-                {
-                    "files": [
-                        "chrome",
-                        "chrome_100_percent.pak",
-                        "chrome_200_percent.pak",
-                        "chrome_crashpad_handler",
-                        "headless_lib_data.pak",
-                        "headless_lib_strings.pak",
-                        "icudtl.dat",
-                        "libminigbm.so",
-                        "nacl_helper",
-                        "nacl_irt_x86_64.nexe",
-                        "resources.pak",
-                        "snapshot_blob.bin",
-                        "test_ash_chrome",
-                    ],
-                    "dirs": ["locales", "swiftshader"],
-                    "gcs_bucket": "ash-chromium-on-linux-prebuilts",
-                    "gcs_path": "x86_64/{%position%}/ash-chromium.zip",
-                    "archive_type": "ARCHIVE_TYPE_ZIP",
-                    "latest_upload": {
-                        "gcs_path": "x86_64/latest/ash-chromium.txt",
-                        "gcs_file_content": "{%position%}",
-                    },
-                },
-            ],
-        },
-    },
-)
-
-ci.builder(
     name = "linux-lacros-tester-rel-reviver",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
