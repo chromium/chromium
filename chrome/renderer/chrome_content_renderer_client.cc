@@ -492,6 +492,10 @@ void ChromeContentRendererClient::RenderThreadStarted() {
     // to the fetch API.
     WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(
         isolated_app_scheme);
+    WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
+        isolated_app_scheme);
+    WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
+        isolated_app_scheme);
   }
 
   // The Instant process can only display the content but not read it.  Other
