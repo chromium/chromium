@@ -43,6 +43,10 @@ class SyncSetupInProgressHandle {
 
   ~SyncSetupInProgressHandle();
 
+  SyncSetupInProgressHandle(const SyncSetupInProgressHandle&) = delete;
+  SyncSetupInProgressHandle& operator=(const SyncSetupInProgressHandle&) =
+      delete;
+
  private:
   base::OnceClosure on_destroy_;
 };
