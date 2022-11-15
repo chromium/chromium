@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_THROTTLE_H_
 #define COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_THROTTLE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "url/gurl.h"
 
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -16,8 +16,8 @@ class ProtocolHandlerRegistry;
 
 class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
  public:
-  explicit ProtocolHandlerThrottle(const ProtocolHandlerRegistry&);
-  ~ProtocolHandlerThrottle() override = default;
+  explicit ProtocolHandlerThrottle(ProtocolHandlerRegistry&);
+  ~ProtocolHandlerThrottle() override;
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
@@ -35,9 +35,9 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
   // translated url.
   void TranslateUrl(GURL& url);
   // The ProtocolHandlerRegistry instance is a KeyedService which ownership is
-  // managed by the BrowseContext.
-  raw_ptr<const ProtocolHandlerRegistry, DanglingUntriaged>
-      protocol_handler_registry_;
+  // managed by the BrowserContext. BrowserContext can be destroyed before this
+  // throttle.
+  base::WeakPtr<ProtocolHandlerRegistry> protocol_handler_registry_;
 };
 
 }  // namespace custom_handlers

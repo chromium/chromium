@@ -714,6 +714,10 @@ void ProtocolHandlerRegistry::SetIsLoading(bool is_loading) {
   is_loading_ = is_loading;
 }
 
+base::WeakPtr<ProtocolHandlerRegistry> ProtocolHandlerRegistry::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ProtocolHandlerRegistry::AddPredefinedHandler(
     const ProtocolHandler& handler) {
   DCHECK(!is_loaded_);  // Must be called prior InitProtocolSettings.

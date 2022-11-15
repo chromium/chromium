@@ -218,6 +218,8 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   void SetIsLoading(bool is_loading);
 
+  base::WeakPtr<ProtocolHandlerRegistry> GetWeakPtr();
+
  private:
   friend class base::DeleteHelper<ProtocolHandlerRegistry>;
   friend struct content::BrowserThread::DeleteOnThread<

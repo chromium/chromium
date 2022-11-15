@@ -10,8 +10,10 @@
 namespace custom_handlers {
 
 ProtocolHandlerThrottle::ProtocolHandlerThrottle(
-    const custom_handlers::ProtocolHandlerRegistry& protocol_handler_registry)
-    : protocol_handler_registry_(&protocol_handler_registry) {}
+    custom_handlers::ProtocolHandlerRegistry& protocol_handler_registry)
+    : protocol_handler_registry_(protocol_handler_registry.GetWeakPtr()) {}
+
+ProtocolHandlerThrottle::~ProtocolHandlerThrottle() = default;
 
 void ProtocolHandlerThrottle::WillStartRequest(
     network::ResourceRequest* request,
@@ -31,9 +33,11 @@ void ProtocolHandlerThrottle::WillRedirectRequest(
 
 void ProtocolHandlerThrottle::TranslateUrl(GURL& url) {
   // TODO(jfernandez): We should use scheme_piece instead, which would imply
-  // adadpting the ProtocolHandlerRegistry code to use StringPiece.
-  if (!protocol_handler_registry_->IsHandledProtocol(url.scheme()))
+  // adapting the ProtocolHandlerRegistry code to use StringPiece.
+  if (!protocol_handler_registry_ ||
+      !protocol_handler_registry_->IsHandledProtocol(url.scheme())) {
     return;
+  }
   GURL translated_url = protocol_handler_registry_->Translate(url);
   if (!translated_url.is_empty())
     url = translated_url;
