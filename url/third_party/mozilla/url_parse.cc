@@ -217,7 +217,7 @@ void ParsePath(const CHAR* spec,
     ref->reset();
     return;
   }
-  DCHECK(path.len > 0) << "We should never have 0 length paths";
+  DCHECK(path.is_nonempty()) << "We should never have 0 length paths";
 
   // Search for first occurrence of either ? or #.
   int query_separator = -1;  // Index of the '?'

@@ -89,8 +89,8 @@ struct FileSystemURLParseCase {
 bool ComponentMatches(const char* input,
                       const char* reference,
                       const Component& component) {
-  // If the component is nonexistent (length == -1), it should begin at 0.
-  EXPECT_TRUE(component.len >= 0 || component.len == -1);
+  // Check that the -1 sentinel is the only allowed negative value.
+  EXPECT_TRUE(component.is_valid() || component.len == -1);
 
   // Begin should be valid.
   EXPECT_LE(0, component.begin);
@@ -98,7 +98,7 @@ bool ComponentMatches(const char* input,
   // A NULL reference means the component should be nonexistent.
   if (!reference)
     return component.len == -1;
-  if (component.len < 0)
+  if (!component.is_valid())
     return false;  // Reference is not NULL but we don't have anything
 
   if (strlen(reference) != static_cast<size_t>(component.len))

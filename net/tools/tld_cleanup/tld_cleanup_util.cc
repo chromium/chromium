@@ -115,7 +115,7 @@ NormalizeResult NormalizeRule(std::string* domain, Rule* rule) {
   GURL gurl(url);
   const std::string& spec = gurl.possibly_invalid_spec();
   url::Component host = gurl.parsed_for_possibly_invalid_spec().host;
-  if (host.len < 0) {
+  if (!host.is_valid()) {
     LOG(ERROR) << "Ignoring rule that couldn't be normalized: " << *domain;
     return kError;
   }

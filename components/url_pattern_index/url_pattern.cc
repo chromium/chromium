@@ -312,7 +312,7 @@ base::StringPiece UrlPattern::UrlInfo::GetLowerCaseSpec() const {
 }
 
 base::StringPiece UrlPattern::UrlInfo::GetStringHost() const {
-  if (host().len <= 0)
+  if (host().is_empty())
     return base::StringPiece();
   return base::StringPiece(&spec_[host().begin], host().len);
 }

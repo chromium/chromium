@@ -106,7 +106,7 @@ void DoCanonicalizeQuery(const CHAR* spec,
                          CharsetConverter* converter,
                          CanonOutput* output,
                          Component* out_query) {
-  if (query.len < 0) {
+  if (!query.is_valid()) {
     *out_query = Component();
     return;
   }

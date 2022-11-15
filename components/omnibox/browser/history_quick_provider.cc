@@ -310,7 +310,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.contents = url_formatter::FormatUrl(
         info.url(),
         AutocompleteMatch::GetFormatTypes(
-            autocomplete_input_.parts().scheme.len > 0 ||
+            autocomplete_input_.parts().scheme.is_nonempty() ||
                 history_match.match_in_scheme,
             history_match.match_in_subdomain),
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);

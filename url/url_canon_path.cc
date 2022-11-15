@@ -407,7 +407,7 @@ bool DoPath(const CHAR* spec,
             Component* out_path) {
   bool success = true;
   out_path->begin = output->length();
-  if (path.len > 0) {
+  if (path.is_nonempty()) {
     // Write out an initial slash if the input has none. If we just parse a URL
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file

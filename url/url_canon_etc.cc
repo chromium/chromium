@@ -169,7 +169,7 @@ bool DoUserInfo(const CHAR* username_spec,
                 CanonOutput* output,
                 Component* out_username,
                 Component* out_password) {
-  if (username.len <= 0 && password.len <= 0) {
+  if (username.is_empty() && password.is_empty()) {
     // Common case: no user info. We strip empty username/passwords.
     *out_username = Component();
     *out_password = Component();
@@ -178,7 +178,7 @@ bool DoUserInfo(const CHAR* username_spec,
 
   // Write the username.
   out_username->begin = output->length();
-  if (username.len > 0) {
+  if (username.is_nonempty()) {
     // This will escape characters not valid for the username.
     AppendStringOfType(&username_spec[username.begin],
                        static_cast<size_t>(username.len), CHAR_USERINFO,
@@ -188,7 +188,7 @@ bool DoUserInfo(const CHAR* username_spec,
 
   // When there is a password, we need the separator. Note that we strip
   // empty but specified passwords.
-  if (password.len > 0) {
+  if (password.is_nonempty()) {
     output->push_back(':');
     out_password->begin = output->length();
     AppendStringOfType(&password_spec[password.begin],

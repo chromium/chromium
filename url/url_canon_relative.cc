@@ -239,7 +239,7 @@ void CopyOneComponent(const char* source,
                       const Component& source_component,
                       CanonOutput* output,
                       Component* output_component) {
-  if (source_component.len < 0) {
+  if (!source_component.is_valid()) {
     // This component is not present.
     *output_component = Component();
     return;
@@ -323,7 +323,7 @@ bool DoResolveRelativePath(const char* base_url,
                               std::max({path.end(), query.end(), ref.end()}));
   output->Append(base_url, base_parsed.path.begin);
 
-  if (path.len > 0) {
+  if (path.is_nonempty()) {
     // The path is replaced or modified.
     int true_path_begin = output->length();
 
@@ -492,7 +492,7 @@ bool DoResolveRelativeURL(const char* base_url,
   // paths (even the default path of "/" is OK).
   //
   // We allow hosts with no length so we can handle file URLs, for example.
-  if (base_parsed.path.len <= 0) {
+  if (base_parsed.path.is_empty()) {
     // On error, return the input (resolving a relative URL on a non-relative
     // base = the base).
     int base_len = base_parsed.Length();
@@ -501,7 +501,7 @@ bool DoResolveRelativeURL(const char* base_url,
     return false;
   }
 
-  if (relative_component.len <= 0) {
+  if (relative_component.is_empty()) {
     // Empty relative URL, leave unchanged, only removing the ref component.
     int base_len = base_parsed.Length();
     base_len -= base_parsed.ref.len + 1;

@@ -1127,7 +1127,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
           client()->GetSchemeClassifier(), &inline_autocomplete_offset);
 
   const auto format_types = AutocompleteMatch::GetFormatTypes(
-      params.input.parts().scheme.len > 0 || !params.trim_http ||
+      params.input.parts().scheme.is_nonempty() || !params.trim_http ||
           history_match.match_in_scheme,
       history_match.match_in_subdomain);
   match.contents = url_formatter::FormatUrl(info.url(), format_types,

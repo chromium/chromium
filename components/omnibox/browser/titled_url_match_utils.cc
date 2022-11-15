@@ -66,7 +66,8 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
                                         titled_url_match.url_match_positions,
                                         &match_in_scheme, &match_in_subdomain);
   auto format_types = AutocompleteMatch::GetFormatTypes(
-      input.parts().scheme.len > 0 || match_in_scheme, match_in_subdomain);
+      input.parts().scheme.is_nonempty() || match_in_scheme,
+      match_in_subdomain);
   const std::u16string formatted_url = url_formatter::FormatUrl(
       url, format_types, base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 

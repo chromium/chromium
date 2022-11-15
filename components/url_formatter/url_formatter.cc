@@ -695,7 +695,7 @@ std::u16string FormatUrlWithAdjustments(
   } else if ((format_types & kFormatUrlOmitTrailingSlashOnBareHostname) &&
              CanStripTrailingSlash(url)) {
     // Omit the path, which is a single trailing slash. There's no query or ref.
-    if (parsed.path.len > 0) {
+    if (parsed.path.is_nonempty()) {
       adjustments->push_back(base::OffsetAdjuster::Adjustment(
           parsed.path.begin, parsed.path.len, 0));
     }

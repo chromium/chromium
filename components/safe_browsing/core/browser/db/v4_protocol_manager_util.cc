@@ -469,7 +469,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 3. In hostname, remove all leading and trailing dots.
   base::StringPiece host;
-  if (parsed.host.len > 0)
+  if (parsed.host.is_nonempty())
     host = base::StringPiece(url_unescaped_str.data() + parsed.host.begin,
                              parsed.host.len);
 
@@ -482,7 +482,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 5. In path, replace runs of consecutive slashes with a single slash.
   base::StringPiece path;
-  if (parsed.path.len > 0)
+  if (parsed.path.is_nonempty())
     path = base::StringPiece(url_unescaped_str.data() + parsed.path.begin,
                              parsed.path.len);
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
@@ -513,15 +513,15 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   url::ParseStandardURL(escaped_canon_url_str.data(),
                         escaped_canon_url_str.length(), &final_parsed);
 
-  if (canonicalized_hostname && final_parsed.host.len > 0) {
+  if (canonicalized_hostname && final_parsed.host.is_nonempty()) {
     *canonicalized_hostname = escaped_canon_url_str.substr(
         final_parsed.host.begin, final_parsed.host.len);
   }
-  if (canonicalized_path && final_parsed.path.len > 0) {
+  if (canonicalized_path && final_parsed.path.is_nonempty()) {
     *canonicalized_path = escaped_canon_url_str.substr(final_parsed.path.begin,
                                                        final_parsed.path.len);
   }
-  if (canonicalized_query && final_parsed.query.len > 0) {
+  if (canonicalized_query && final_parsed.query.is_nonempty()) {
     *canonicalized_query = escaped_canon_url_str.substr(
         final_parsed.query.begin, final_parsed.query.len);
   }

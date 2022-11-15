@@ -411,9 +411,9 @@ std::string GURL::ExtractFileName() const {
 }
 
 base::StringPiece GURL::PathForRequestPiece() const {
-  DCHECK(parsed_.path.len > 0)
+  DCHECK(parsed_.path.is_nonempty())
       << "Canonical path for requests should be non-empty";
-  if (parsed_.ref.len >= 0) {
+  if (parsed_.ref.is_valid()) {
     // Clip off the reference when it exists. The reference starts after the
     // #-sign, so we have to subtract one to also remove it.
     return base::StringPiece(&spec_[parsed_.path.begin],
@@ -455,7 +455,7 @@ base::StringPiece GURL::GetContentPiece() const {
   if (!is_valid_)
     return base::StringPiece();
   url::Component content_component = parsed_.GetContent();
-  if (!SchemeIs(url::kJavaScriptScheme) && parsed_.ref.len >= 0)
+  if (!SchemeIs(url::kJavaScriptScheme) && parsed_.ref.is_valid())
     content_component.len -= parsed_.ref.len + 1;
   return ComponentStringPiece(content_component);
 }

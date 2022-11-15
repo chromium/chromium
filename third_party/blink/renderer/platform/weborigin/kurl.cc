@@ -325,7 +325,7 @@ bool KURL::ProtocolIsInHTTPFamily() const {
 bool KURL::HasPath() const {
   // Note that http://www.google.com/" has a path, the path is "/". This can
   // return false only for invalid or nonstandard URLs.
-  return parsed_.path.len >= 0;
+  return parsed_.path.is_valid();
 }
 
 String KURL::LastPathComponent() const {
@@ -337,7 +337,7 @@ String KURL::LastPathComponent() const {
   // the GoogleURL library. For "/foo/bar/" the library will return the empty
   // string, but WebCore wants "bar".
   url::Component path = parsed_.path;
-  if (path.len > 0 && string_[path.end() - 1] == '/')
+  if (path.is_nonempty() && string_[path.end() - 1] == '/')
     path.len--;
 
   url::Component file;
@@ -364,7 +364,7 @@ String KURL::Host() const {
 }
 
 uint16_t KURL::Port() const {
-  if (!is_valid_ || parsed_.port.len <= 0)
+  if (!is_valid_ || parsed_.port.is_empty())
     return 0;
   DCHECK(!string_.IsNull());
   int port = string_.Is8Bit()
@@ -401,7 +401,7 @@ String KURL::FragmentIdentifier() const {
 }
 
 bool KURL::HasFragmentIdentifier() const {
-  return parsed_.ref.len >= 0;
+  return parsed_.ref.is_valid();
 }
 
 String KURL::BaseAsString() const {
@@ -410,9 +410,10 @@ String KURL::BaseAsString() const {
 }
 
 String KURL::Query() const {
-  if (parsed_.query.len >= 0)
+  if (parsed_.query.is_valid())
     return ComponentString(parsed_.query);
 
+  // TODO(tsepez): not reachable?
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
   // an empty string when the query is empty rather than a null (not sure
   // which is right).
@@ -487,7 +488,8 @@ bool KURL::SetProtocol(const String& protocol) {
     // 3. If url includes credentials or has a non-null port, and buffer is
     //    "file", then return.
     if (new_protocol_is_file && !old_protocol_is_file &&
-        (HasPort() || parsed_.username.len > 0 || parsed_.password.len > 0)) {
+        (HasPort() || parsed_.username.is_nonempty() ||
+         parsed_.password.is_nonempty())) {
       // This fails silently, which is weird, but necessary to give the expected
       // behaviour when setting location.protocol. See
       // https://html.spec.whatwg.org/multipage/history.html#dom-location-protocol.
@@ -496,7 +498,7 @@ bool KURL::SetProtocol(const String& protocol) {
 
     // 4. If url’s scheme is "file" and its host is an empty host, then return.
     if (!new_protocol_is_file && old_protocol_is_file &&
-        parsed_.host.len <= 0) {
+        parsed_.host.is_empty()) {
       // This fails silently as above.
       return true;
     }
@@ -783,11 +785,11 @@ bool EqualIgnoringFragmentIdentifier(const KURL& a, const KURL& b) {
   // begin (if it exists) points to the character *after* the '#', so we need
   // to subtract one.
   int a_length = a.string_.length();
-  if (a.parsed_.ref.len >= 0)
+  if (a.parsed_.ref.is_valid())
     a_length = a.parsed_.ref.begin - 1;
 
   int b_length = b.string_.length();
-  if (b.parsed_.ref.len >= 0)
+  if (b.parsed_.ref.is_valid())
     b_length = b.parsed_.ref.begin - 1;
 
   if (a_length != b_length)
@@ -965,8 +967,9 @@ StringView KURL::StringViewForInvalidComponent() const {
 }
 
 StringView KURL::ComponentStringView(const url::Component& component) const {
-  if (!is_valid_ || component.len <= 0)
+  if (!is_valid_ || component.is_empty())
     return StringViewForInvalidComponent();
+
   // begin and len are in terms of bytes which do not match
   // if string() is UTF-16 and input contains non-ASCII characters.
   // However, the only part in urlString that can contain non-ASCII
@@ -975,7 +978,6 @@ StringView KURL::ComponentStringView(const url::Component& component) const {
   // byte) will be longer than what's needed by 'mid'. However, mid
   // truncates len to avoid go past the end of a string so that we can
   // get away without doing anything here.
-
   int max_length = GetString().length() - component.begin;
   return StringView(GetString(), component.begin,
                     component.len > max_length ? max_length : component.len);
