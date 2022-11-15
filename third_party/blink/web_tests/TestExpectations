@@ -6936,3 +6936,7 @@ crbug.com/1301942 external/wpt/priority-hints/service-worker-fetch-request-prior
 
 # Sheriff 2022-11-31
 crbug.com/1383527 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
+
+# Sheriff 2022-11-15
+crbug.com/1383990 [ Mac ] external/wpt/html/dom/idlharness.worker.html [ Failure Skip ]
+crbug.com/1383989 [ Mac ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html [ Failure Skip ]
