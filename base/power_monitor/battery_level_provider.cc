@@ -40,6 +40,12 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
         absl::make_optional(battery_details.front().full_charged_capacity);
     state.charge_unit =
         absl::make_optional(battery_details.front().charge_unit);
+#if BUILDFLAG(IS_WIN)
+    state.battery_discharge_granularity =
+        battery_details.front().battery_discharge_granularity;
+    state.max_battery_discharge_granularity =
+        battery_details.front().max_battery_discharge_granularity;
+#endif  // BUILDFLAG(IS_WIN)
   }
   state.capture_time = base::TimeTicks::Now();
 

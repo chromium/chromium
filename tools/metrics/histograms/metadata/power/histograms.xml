@@ -775,6 +775,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeGranularity" units="MWh"
+    expires_after="2023-03-12">
+  <owner>pmonette@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The granularity of the current battery discharge rate value as reported by
+    the operating system, if available. The battery discharge value can become
+    more precise as the charge level of the battery decreases. This histogram
+    reflects this precision.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    Reported only on Windows, when a single battery is installed and the
+    operating system says that the unit is mWh.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryDischargeGranularityAvailable"
+    enum="BooleanAvailable" expires_after="2023-03-12">
+  <owner>pmonette@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The availability of the battery discharge granularity. If true,
+    Power.BatteryDischargeGranularity is reported for this client.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    Reported only on Windows, when a single battery is installed and the
+    operating system says that the unit is mWh.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeMode2{UsageScenario}"
     enum="BatteryDischargeMode" expires_after="2023-03-31">
   <owner>etiennep@chromium.org</owner>
@@ -1929,6 +1967,25 @@ chromium-metrics-reviews@google.com.
   <summary>
     Thermal state of the user's machine as reported by macOS's [NSProcessInfo
     thermalState]. Sampled once per minute.
+  </summary>
+</histogram>
+
+<histogram name="Power.MaxBatteryDischargeGranularity" units="MWh"
+    expires_after="2023-03-12">
+  <owner>pmonette@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The maximum granularity of the battery discharge rate as reported by the
+    operating system, if available. This value is independant of the current
+    battery capacity.
+
+    This is reported at the end of every valid 1 minute interval. An invalid
+    interval is one that deviate too much from 1 minute, which can be caused by
+    the computer going to sleep, or the OS sending multiple notifications in a
+    row.
+
+    Reported only on Windows, when a single battery is installed and the
+    operating system says that the unit is mWh.
   </summary>
 </histogram>
 

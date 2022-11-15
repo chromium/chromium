@@ -240,19 +240,36 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
       previous_battery_state, new_battery_state, interval_duration);
 
 #if BUILDFLAG(IS_WIN)
-  // Report battery max capacity. We suspect that the max capacity is 100 for a
-  // significant portion of clients on Windows, which doesn't provide sufficient
-  // granularity (the battery typically discharges by less than 1% per 2
-  // minutes). This histogram will allow us to validate the hypothesis.
-  if (new_battery_state.has_value()) {
-    CHECK_EQ(new_battery_state->full_charged_capacity.has_value(),
-             new_battery_state->charge_unit.has_value());
-    if (new_battery_state->full_charged_capacity.has_value() &&
-        new_battery_state->charge_unit.value() ==
-            base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
-      base::UmaHistogramCounts10000(
-          "Power.BatteryMaxCapacity",
-          new_battery_state->full_charged_capacity.value());
+  if (new_battery_state.has_value() &&
+      new_battery_state->charge_unit.has_value() &&
+      new_battery_state->charge_unit.value() ==
+          base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
+    CHECK(new_battery_state->full_charged_capacity.has_value());
+    // Report battery max capacity. We suspect that the max capacity is 100 for
+    // a significant portion of clients on Windows, which doesn't provide
+    // sufficient granularity (the battery typically discharges by less than 1%
+    // per 2 minutes). This histogram will allow us to validate the hypothesis.
+    base::UmaHistogramCounts10000(
+        "Power.BatteryMaxCapacity",
+        new_battery_state->full_charged_capacity.value());
+
+    base::UmaHistogramBoolean(
+        "Power. BatteryDischargeGranularityAvailable",
+        new_battery_state->battery_discharge_granularity.has_value());
+
+    DCHECK_EQ(new_battery_state->battery_discharge_granularity.has_value(),
+              new_battery_state->max_battery_discharge_granularity.has_value());
+    if (new_battery_state->battery_discharge_granularity.has_value()) {
+      base::UmaHistogramCustomCounts(
+          "Power.BatteryDischargeGranularity",
+          new_battery_state->battery_discharge_granularity.value(),
+          /*min=*/0, /*exclusive_max=*/20000,
+          /*buckets=*/50);
+      base::UmaHistogramCustomCounts(
+          "Power.MaxBatteryDischargeGranularity",
+          new_battery_state->max_battery_discharge_granularity.value(),
+          /*min=*/0, /*exclusive_max=*/20000,
+          /*buckets=*/50);
     }
   }
 #endif

@@ -37,7 +37,7 @@ constexpr const char* kBatteryDischargeModeHistogramName =
 constexpr double kTolerableTimeElapsedRatio = 0.10;
 constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
 
-base::BatteryLevelProvider::BatteryState MakeBatteryDischarginState(
+base::BatteryLevelProvider::BatteryState MakeBatteryDischargingState(
     int battery_percent) {
   return base::BatteryLevelProvider::BatteryState{
       .battery_count = 1,
@@ -225,7 +225,7 @@ class PowerMetricsReporterUnitTest : public PowerMetricsReporterUnitTestBase {
   std::unique_ptr<base::BatteryLevelProvider> CreateBatteryLevelProvider()
       override {
     // Start with a half-full battery
-    battery_states_.push(MakeBatteryDischarginState(50));
+    battery_states_.push(MakeBatteryDischargingState(50));
     auto battery_provider =
         std::make_unique<FakeBatteryLevelProvider>(&battery_states_);
     return std::move(battery_provider);
@@ -273,7 +273,7 @@ TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
 
 TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   process_monitor_.SetMetricsToReturn(GetFakeProcessMetrics());
-  battery_states_.push(MakeBatteryDischarginState(30));
+  battery_states_.push(MakeBatteryDischargingState(30));
 
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
@@ -296,7 +296,7 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
 #if BUILDFLAG(IS_MAC)
 TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms_EndToEnd) {
   process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischarginState(30));
+  battery_states_.push(MakeBatteryDischargingState(30));
 
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
@@ -332,7 +332,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
   process_monitor_.SetMetricsToReturn(aggregated_process_metrics);
 
   // Pretend that the battery has dropped by 2%.
-  battery_states_.push(MakeBatteryDischarginState(48));
+  battery_states_.push(MakeBatteryDischargingState(48));
 
   const base::TimeDelta kTooLate =
       kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift +
@@ -351,7 +351,7 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
   process_monitor_.SetMetricsToReturn(aggregated_process_metrics);
 
   // Pretend that the battery has dropped by 2%.
-  battery_states_.push(MakeBatteryDischarginState(48));
+  battery_states_.push(MakeBatteryDischargingState(48));
 
   const base::TimeDelta kLate =
       kLongPowerMetricsIntervalDuration * kTolerablePositiveDrift -
@@ -378,7 +378,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 
   // Pretend that the battery has dropped by 20% in 2 minutes, for a rate of
   // 10% per minute.
-  battery_states_.push(MakeBatteryDischarginState(30));
+  battery_states_.push(MakeBatteryDischargingState(30));
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.uptime_at_interval_end = base::Hours(++fake_value);
@@ -506,7 +506,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
   fake_metrics.energy_impact = 44;
 #endif
   process_monitor_.SetMetricsToReturn(fake_metrics);
-  battery_states_.push(MakeBatteryDischarginState(50));
+  battery_states_.push(MakeBatteryDischargingState(50));
 
   const ukm::SourceId kTestSourceId =
       ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
@@ -678,7 +678,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
   power_metrics_reporter_->battery_state_for_testing()->current_capacity = 100;
 
   process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischarginState(100));
+  battery_states_.push(MakeBatteryDischargingState(100));
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
@@ -707,7 +707,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   process_monitor_.SetMetricsToReturn({});
 
   // Set the new battery state at 75%.
-  battery_states_.push(MakeBatteryDischarginState(75));
+  battery_states_.push(MakeBatteryDischargingState(75));
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.source_id_for_longest_visible_origin =
@@ -734,7 +734,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
   process_monitor_.SetMetricsToReturn(GetFakeProcessMetrics());
-  battery_states_.push(MakeBatteryDischarginState(50));
+  battery_states_.push(MakeBatteryDischargingState(50));
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.max_tab_count = 0;
@@ -758,7 +758,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
 
 TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
   process_monitor_.SetMetricsToReturn(GetFakeProcessMetrics());
-  battery_states_.push(MakeBatteryDischarginState(50));
+  battery_states_.push(MakeBatteryDischargingState(50));
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
   fake_interval_data.time_playing_video_full_screen_single_monitor =
@@ -782,7 +782,7 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
   process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischarginState(50));
+  battery_states_.push(MakeBatteryDischargingState(50));
 
   UsageScenarioDataStore::IntervalData fake_interval_data = {};
   fake_interval_data.sleep_events = 1;
@@ -803,7 +803,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
 // advances and resource coalition data is available.
 TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
   process_monitor_.SetMetricsToReturn({});
-  battery_states_.push(MakeBatteryDischarginState(30));
+  battery_states_.push(MakeBatteryDischargingState(30));
 
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
@@ -828,3 +828,22 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
       "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeGranularity) {
+  const uint32_t kGranularity = 20;
+  const uint32_t kMaxGranularity = 30;
+
+  battery_states_.push(base::BatteryLevelProvider::BatteryState{
+      .full_charged_capacity = 100,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      .battery_discharge_granularity = kGranularity,
+      .max_battery_discharge_granularity = kMaxGranularity});
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
+
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeGranularity",
+                                       kGranularity, 1);
+  histogram_tester_.ExpectUniqueSample("Power.MaxBatteryDischargeGranularity",
+                                       kMaxGranularity, 1);
+}
+#endif  // BUILDFLAG(IS_WIN)
