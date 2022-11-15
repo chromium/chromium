@@ -74,7 +74,8 @@ struct MEDIA_EXPORT AudioDeviceDescription {
       const std::string& real_device_name);
 
   // This prepends localized "Default" or "Communications" strings to
-  // default and communications device names in |device_descriptions|.
+  // default and communications device names in |device_descriptions|, and
+  // sanitizes devices known to contain users' names etc.
   static void LocalizeDeviceDescriptions(
       std::vector<AudioDeviceDescription>* device_descriptions);
 

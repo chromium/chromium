@@ -309,11 +309,7 @@ String MediaStreamTrackImpl::id() const {
 }
 
 String MediaStreamTrackImpl::label() const {
-  String label = component_->GetSourceName();
-  if (label.Contains("AirPods")) {
-    label = "AirPods";
-  }
-  return label;
+  return component_->GetSourceName();
 }
 
 bool MediaStreamTrackImpl::enabled() const {

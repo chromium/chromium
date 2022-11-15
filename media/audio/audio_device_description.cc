@@ -19,6 +19,19 @@ const char AudioDeviceDescription::kLoopbackInputDeviceId[] = "loopback";
 const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
     "loopbackWithMute";
 
+namespace {
+constexpr char kAirpodsNameSubstring[] = "AirPods";
+
+// Sanitize names which are known to contain the user's name, such as AirPods'
+// default name. See crbug.com/1163072 and crbug.com/1293761.
+void RedactDeviceName(std::string& name) {
+  if (name.find(kAirpodsNameSubstring) != std::string::npos) {
+    name = kAirpodsNameSubstring;
+  }
+}
+
+}  // namespace
+
 // static
 bool AudioDeviceDescription::IsDefaultDevice(const std::string& device_id) {
   return device_id.empty() ||
@@ -92,6 +105,8 @@ std::string AudioDeviceDescription::GetCommunicationsDeviceName(
 void AudioDeviceDescription::LocalizeDeviceDescriptions(
     AudioDeviceDescriptions* device_descriptions) {
   for (auto& description : *device_descriptions) {
+    RedactDeviceName(description.device_name);
+
     if (media::AudioDeviceDescription::IsDefaultDevice(description.unique_id)) {
       description.device_name =
           media::AudioDeviceDescription::GetDefaultDeviceName(

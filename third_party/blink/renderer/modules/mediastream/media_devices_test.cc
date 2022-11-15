@@ -93,7 +93,7 @@ class MockMediaDevicesDispatcherHost final
           .push_back(device_info);
 
       device_info.device_id = kFakeAudioInputDeviceId2;
-      device_info.label = "X's AirPods";
+      device_info.label = "Fake Audio Input 2";
       device_info.group_id = kFakeCommonGroupId2;
       enumeration[static_cast<size_t>(
                       blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT)]
@@ -148,7 +148,7 @@ class MockMediaDevicesDispatcherHost final
           .push_back(device_info);
 
       device_info.device_id = kFakeAudioOutputDeviceId2;
-      device_info.label = "X's AirPods";
+      device_info.label = "Fake Audio Input 2";
       device_info.group_id = kFakeCommonGroupId2;
       enumeration[static_cast<size_t>(
                       blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
@@ -387,7 +387,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   EXPECT_FALSE(device->label().empty());
   EXPECT_FALSE(device->groupId().empty());
 
-  // Audio input device with Airpods label.
+  // Audio input device with second matched output ID
   device = device_infos()[1];
   EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audioinput", device->kind());
@@ -421,7 +421,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   EXPECT_FALSE(device->label().empty());
   EXPECT_FALSE(device->groupId().empty());
 
-  // Audio output device with Airpods label.
+  // Second audio output device
   device = device_infos()[6];
   EXPECT_FALSE(device->deviceId().empty());
   EXPECT_EQ("audiooutput", device->kind());
@@ -432,14 +432,6 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[3]->groupId());
   EXPECT_EQ(device_infos()[0]->groupId(), device_infos()[5]->groupId());
   EXPECT_NE(device_infos()[2]->groupId(), device_infos()[5]->groupId());
-
-  // Verify device labels do not expose user's information.
-  EXPECT_EQ(device_infos()[1]->label(), "AirPods");
-  EXPECT_EQ(device_infos()[6]->label(), "AirPods");
-
-  // Verify the code does not change non-sensitive device labels.
-  EXPECT_EQ(device_infos()[0]->label(), "Fake Audio Input 1");
-  EXPECT_EQ(device_infos()[3]->label(), "Fake Video Input 1");
 }
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
