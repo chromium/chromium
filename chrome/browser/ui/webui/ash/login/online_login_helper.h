@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
-#include "chromeos/ash/components/login/auth/cryptohome_authenticator.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"

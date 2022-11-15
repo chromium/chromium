@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/cryptohome_authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"

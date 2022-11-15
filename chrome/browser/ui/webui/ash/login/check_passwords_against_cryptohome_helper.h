@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_CHECK_PASSWORDS_AGAINST_CRYPTOHOME_HELPER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_CHECK_PASSWORDS_AGAINST_CRYPTOHOME_HELPER_H_
 
+#include "base/callback.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
-#include "chromeos/ash/components/login/auth/cryptohome_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
 
