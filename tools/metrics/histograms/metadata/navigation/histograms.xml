@@ -1418,7 +1418,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PrerenderTriggerType}"
-    units="ms" expires_after="2022-11-27">
+    units="ms" expires_after="2023-04-27">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>asamidoi@chromium.org</owner>
