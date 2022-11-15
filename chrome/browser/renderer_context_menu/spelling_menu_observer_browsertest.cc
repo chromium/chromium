@@ -41,10 +41,10 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     if (!spellcheck::WindowsVersionSupportsSpellchecker())
       return;
 
-    base::ListValue dictionary;
+    base::Value::List dictionary;
     dictionary.Append("en-US");
-    menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                            dictionary);
+    menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                                std::move(dictionary));
     // Use SetTestingFactoryAndUse to force creation and initialization of
     // SpellcheckService using the TestingProfile browser context.
     SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -143,10 +143,10 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     menu()->GetPrefs()->SetBoolean(
         spellcheck::prefs::kSpellCheckUseSpellingService, true);
     // Force a non-empty and non-"en" locale so SUGGEST is available.
-    base::ListValue dictionary;
+    base::Value::List dictionary;
     dictionary.Append("fr");
-    menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                            dictionary);
+    menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                                std::move(dictionary));
 
     ASSERT_TRUE(SpellingServiceClient::IsAvailable(
         menu()->GetBrowserContext(), SpellingServiceClient::SUGGEST));
@@ -392,9 +392,9 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, EnableSpellingService) {
   menu()->GetPrefs()->SetBoolean(
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
-  base::ListValue dictionary;
-  menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                          dictionary);
+  base::Value::List dictionary;
+  menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                              std::move(dictionary));
 
   // Pick word that Windows platform spellcheck has no suggestions for.
   InitMenu("missssspelling", nullptr);
@@ -438,10 +438,10 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Force a non-empty locale so SPELLCHECK is available.
-  base::ListValue dictionary;
+  base::Value::List dictionary;
   dictionary.Append("en");
-  menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                          dictionary);
+  menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                              std::move(dictionary));
 
   EXPECT_TRUE(SpellingServiceClient::IsAvailable(
       menu()->GetBrowserContext(), SpellingServiceClient::SPELLCHECK));
@@ -505,10 +505,10 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
       spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
   // Force a non-empty locale so SUGGEST normally would be available.
-  base::ListValue dictionary;
+  base::Value::List dictionary;
   dictionary.Append("en");
-  menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                          dictionary);
+  menu()->GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                              std::move(dictionary));
 
   EXPECT_FALSE(SpellingServiceClient::IsAvailable(
       menu()->GetBrowserContext(), SpellingServiceClient::SUGGEST));
