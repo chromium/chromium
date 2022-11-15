@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-cast-receiver-rel",
+              "builder": "fuchsia-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -19,12 +19,14 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "fuchsia"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "fuchsia_x64"
+                  "fuchsia_arm64",
+                  "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
               }
@@ -35,7 +37,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-cast-receiver-rel",
+          "builder": "fuchsia-arm64-rel",
           "project": "chromium"
         }
       ]

@@ -77,7 +77,7 @@ try_.orchestrator_builder(
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
     mirrors = [
-        "ci/fuchsia-x64-cast-receiver-rel",
+        "ci/fuchsia-arm64-rel",
     ],
     experiments = {
         "enable_weetbix_queries": 100,

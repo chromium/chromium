@@ -45,6 +45,10 @@
         {
           "builder": "fuchsia-arm64-rel",
           "group": "tryserver.chromium.fuchsia"
+        },
+        {
+          "builder": "fuchsia-arm64-rel-orchestrator",
+          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }
