@@ -279,13 +279,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebRtcStatsPerfBrowserTest,
-    MANUAL_RunsAudioAndVideoCallCollectingMetrics_AudioCodec_ISAC) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  RunsAudioAndVideoCallCollectingMetricsWithAudioCodec("ISAC");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    WebRtcStatsPerfBrowserTest,
     MANUAL_RunsAudioAndVideoCallCollectingMetrics_AudioCodec_G722) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   RunsAudioAndVideoCallCollectingMetricsWithAudioCodec("G722");
