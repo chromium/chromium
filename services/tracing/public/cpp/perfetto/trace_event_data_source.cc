@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/process/current_process.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -1275,7 +1276,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
     return;
   }
 
-  std::string process_name = TraceLog::GetInstance()->process_name();
+  std::string process_name = base::CurrentProcess::GetInstance().GetName({});
 
   TracePacketHandle trace_packet = writer->NewTracePacket();
 
@@ -1307,7 +1308,7 @@ void TraceEventDataSource::EmitTrackDescriptor() {
 
   ChromeProcessDescriptor* chrome_process =
       track_descriptor->set_chrome_process();
-  auto process_type = GetProcessType(process_name);
+  auto process_type = base::CurrentProcess::GetInstance().GetType({});
   if (process_type != ChromeProcessDescriptor::PROCESS_UNSPECIFIED) {
     chrome_process->set_process_type(process_type);
   }

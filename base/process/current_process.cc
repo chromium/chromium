@@ -122,7 +122,7 @@ void CurrentProcess::SetProcessNameAndType(const std::string& process_name,
                         std::memory_order_relaxed);
   }
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  trace_event::TraceLog::GetInstance()->set_process_name(process_name);
+  trace_event::TraceLog::GetInstance()->OnSetProcessName(process_name);
 #endif
 }
 

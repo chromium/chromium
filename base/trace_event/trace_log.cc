@@ -2207,12 +2207,7 @@ void TraceLog::SetProcessSortIndex(int sort_index) {
   process_sort_index_ = sort_index;
 }
 
-void TraceLog::set_process_name(const std::string& process_name) {
-  {
-    AutoLock lock(lock_);
-    process_name_ = process_name;
-  }
-
+void TraceLog::OnSetProcessName(const std::string& process_name) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (perfetto::Tracing::IsInitialized()) {
     auto track = perfetto::ProcessTrack::Current();

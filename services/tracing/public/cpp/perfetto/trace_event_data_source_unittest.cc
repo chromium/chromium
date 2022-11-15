@@ -18,6 +18,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
+#include "base/process/current_process.h"
+#include "base/process/current_process_test.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/common/task_annotator.h"
@@ -68,6 +70,8 @@ namespace tracing {
 namespace {
 
 constexpr char kTestProcess[] = "Browser";
+base::CurrentProcessType kTestProcessType =
+    base::CurrentProcessType::PROCESS_BROWSER;
 constexpr char kTestThread[] = "CrTestMain";
 constexpr const char kCategoryGroup[] = "browser";
 
@@ -101,9 +105,10 @@ class TraceEventDataSourceTest
     old_thread_name_ =
         base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
     base::ThreadIdNameManager::GetInstance()->SetName(kTestThread);
-    old_process_name_ =
-        base::trace_event::TraceLog::GetInstance()->process_name();
-    base::trace_event::TraceLog::GetInstance()->set_process_name(kTestProcess);
+    old_process_name_ = base::test::CurrentProcessForTest::GetName();
+    old_process_type_ = base::test::CurrentProcessForTest::GetType();
+    base::CurrentProcess::GetInstance().SetProcessNameAndType(kTestProcess,
+                                                              kTestProcessType);
     base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(
         false);
 
@@ -143,8 +148,8 @@ class TraceEventDataSourceTest
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
     base::ThreadIdNameManager::GetInstance()->SetName(old_thread_name_);
-    base::trace_event::TraceLog::GetInstance()->set_process_name(
-        old_process_name_);
+    base::CurrentProcess::GetInstance().SetProcessNameAndType(
+        old_process_name_, old_process_type_);
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TracingUnitTest::TearDown();
@@ -873,6 +878,7 @@ class TraceEventDataSourceTest
 
   std::string old_thread_name_;
   std::string old_process_name_;
+  base::CurrentProcessType old_process_type_;
 };
 
 void HasMetadataValue(const perfetto::protos::ChromeMetadata& entry,

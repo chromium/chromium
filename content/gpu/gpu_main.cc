@@ -17,6 +17,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
+#include "base/process/current_process.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -191,7 +192,8 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 // Main function for starting the Gpu process.
 int GpuMain(MainFunctionParams parameters) {
   TRACE_EVENT0("gpu", "GpuMain");
-  base::trace_event::TraceLog::GetInstance()->set_process_name("GPU Process");
+  base::CurrentProcess::GetInstance().SetProcessType(
+      base::CurrentProcessType::PROCESS_GPU);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventGpuProcessSortIndex);
 

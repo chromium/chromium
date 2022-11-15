@@ -6,89 +6,9 @@
 
 #include "base/strings/pattern.h"
 
-using ::perfetto::protos::pbzero::ChromeProcessDescriptor;
 using ::perfetto::protos::pbzero::ChromeThreadDescriptor;
 
 namespace tracing {
-
-struct ProcessType {
-  const char* name;
-  ChromeProcessDescriptor::ProcessType type;
-};
-
-constexpr ProcessType kProcessTypes[] = {
-    {"Browser", ChromeProcessDescriptor::PROCESS_BROWSER},
-    {"Renderer", ChromeProcessDescriptor::PROCESS_RENDERER},
-    {"Extension Renderer", ChromeProcessDescriptor::PROCESS_RENDERER_EXTENSION},
-    {"GPU Process", ChromeProcessDescriptor::PROCESS_GPU},
-    {"HeadlessBrowser", ChromeProcessDescriptor::PROCESS_BROWSER},
-    {"PPAPI Process", ChromeProcessDescriptor::PROCESS_PPAPI_PLUGIN},
-    {"PPAPI Broker Process", ChromeProcessDescriptor::PROCESS_PPAPI_BROKER},
-    {"Service: network.mojom.NetworkService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_NETWORK},
-    {"Service: tracing.mojom.TracingService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_TRACING},
-    {"Service: storage.mojom.StorageService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_STORAGE},
-    {"Service: audio.mojom.AudioService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_AUDIO},
-    {"Service: data_decoder.mojom.DataDecoderService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_DATA_DECODER},
-    {"Service: chrome.mojom.UtilWin",
-     ChromeProcessDescriptor::PROCESS_SERVICE_UTIL_WIN},
-    {"Service: proxy_resolver.mojom.ProxyResolverFactory",
-     ChromeProcessDescriptor::PROCESS_SERVICE_PROXY_RESOLVER},
-    {"Service: media.mojom.CdmService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_CDM},
-    {"Service: video_capture.mojom.VideoCaptureService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_VIDEO_CAPTURE},
-    {"Service: unzip.mojom.Unzipper",
-     ChromeProcessDescriptor::PROCESS_SERVICE_UNZIPPER},
-    {"Service: mirroring.mojom.MirroringService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_MIRRORING},
-    {"Service: patch.mojom.FilePatcher",
-     ChromeProcessDescriptor::PROCESS_SERVICE_FILEPATCHER},
-    {"Service: chromeos.tts.mojom.TtsService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_TTS},
-    {"Service: printing.mojom.PrintingService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_PRINTING},
-    {"Service: quarantine.mojom.Quarantine",
-     ChromeProcessDescriptor::PROCESS_SERVICE_QUARANTINE},
-    {"Service: ash.local_search_service.mojom.LocalSearchService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_CROS_LOCALSEARCH},
-    {"Service: ash.assistant.mojom.AssistantAudioDecoderFactory",
-     ChromeProcessDescriptor::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER},
-    {"Service: chrome.mojom.FileUtilService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_FILEUTIL},
-    {"Service: printing.mojom.PrintCompositor",
-     ChromeProcessDescriptor::PROCESS_SERVICE_PRINTCOMPOSITOR},
-    {"Service: paint_preview.mojom.PaintPreviewCompositorCollection",
-     ChromeProcessDescriptor::PROCESS_SERVICE_PAINTPREVIEW},
-    {"Service: media.mojom.SpeechRecognitionService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_SPEECHRECOGNITION},
-    {"Service: device.mojom.XRDeviceService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_XRDEVICE},
-    {"Service: chrome.mojom.UtilReadIcon",
-     ChromeProcessDescriptor::PROCESS_SERVICE_READICON},
-    {"Service: language_detection.mojom.LanguageDetectionService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_LANGUAGEDETECTION},
-    {"Service: sharing.mojom.Sharing",
-     ChromeProcessDescriptor::PROCESS_SERVICE_SHARING},
-    {"Service: chrome.mojom.MediaParserFactory",
-     ChromeProcessDescriptor::PROCESS_SERVICE_MEDIAPARSER},
-    {"Service: qrcode_generator.mojom.QRCodeGeneratorService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_QRCODEGENERATOR},
-    {"Service: chrome.mojom.ProfileImport",
-     ChromeProcessDescriptor::PROCESS_SERVICE_PROFILEIMPORT},
-    {"Service: ash.ime.mojom.ImeService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_IME},
-    {"Service: recording.mojom.RecordingService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_RECORDING},
-    {"Service: shape_detection.mojom.ShapeDetectionService",
-     ChromeProcessDescriptor::PROCESS_SERVICE_SHAPEDETECTION},
-    // Catch-all, should be after all the "Service:" entries.
-    {"Service:*", ChromeProcessDescriptor::PROCESS_UTILITY},
-};
 
 struct ThreadType {
   const char* name;
@@ -149,16 +69,6 @@ constexpr ThreadType kThreadTypes[] = {
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
     {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
 };
-
-ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
-  for (size_t i = 0; i < std::size(kProcessTypes); ++i) {
-    if (base::MatchPattern(name, kProcessTypes[i].name)) {
-      return kProcessTypes[i].type;
-    }
-  }
-
-  return ChromeProcessDescriptor::PROCESS_UNSPECIFIED;
-}
 
 ChromeThreadDescriptor::ThreadType GetThreadType(
     const char* const thread_name) {

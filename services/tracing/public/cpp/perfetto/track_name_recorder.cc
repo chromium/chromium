@@ -6,6 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/no_destructor.h"
+#include "base/process/current_process.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -21,7 +22,6 @@
 #endif
 
 namespace tracing {
-namespace {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // Set the track descriptor for the current process.
@@ -30,9 +30,9 @@ void SetProcessTrackDescriptor(int64_t process_start_timestamp) {
 
   const auto* trace_log = base::trace_event::TraceLog::GetInstance();
   int process_id = trace_log->process_id();
-  std::string process_name = trace_log->process_name();
+  std::string process_name = base::CurrentProcess::GetInstance().GetName({});
   auto process_type = static_cast<ChromeProcessDescriptor::ProcessType>(
-      GetProcessType(process_name));
+      base::CurrentProcess::GetInstance().GetType({}));
 
   // We record a few (string) fields here that are stripped for background
   // tracing. We rely on the post-process privacy filtering to remove them.
@@ -80,6 +80,8 @@ void SetProcessTrackDescriptor(int64_t process_start_timestamp) {
                                            std::move(process_track_desc));
 }
 
+namespace {
+
 void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
   using perfetto::protos::gen::ChromeThreadDescriptor;
 
@@ -115,9 +117,9 @@ void SetThreadTrackDescriptors() {
   auto thread_track = perfetto::ThreadTrack::Current();
   FillThreadTrack(thread_track, thread_name);
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 }  // namespace
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 absl::optional<uint64_t> GetTraceCrashId() {
   static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(

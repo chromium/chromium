@@ -381,10 +381,6 @@ class BASE_EXPORT TraceLog :
                         TraceEventHandle handle);
 
   ProcessId process_id() const { return process_id_; }
-  std::string process_name() const {
-    AutoLock lock(lock_);
-    return process_name_;
-  }
 
   std::unordered_map<int, std::string> process_labels() const {
     AutoLock lock(lock_);
@@ -415,13 +411,8 @@ class BASE_EXPORT TraceLog :
   // on their sort index, ascending, then by their name, and then tid.
   void SetProcessSortIndex(int sort_index);
 
-  // Sets the name of the process.
-  void set_process_name(const std::string& process_name);
-
-  bool IsProcessNameEmpty() const {
-    AutoLock lock(lock_);
-    return process_name_.empty();
-  }
+  // Helper function to set process_name in base::CurrentProcess.
+  void OnSetProcessName(const std::string& process_name);
 
   // Processes can have labels in addition to their names. Use labels, for
   // instance, to list out the web page titles that a process is handling.
@@ -608,7 +599,6 @@ class BASE_EXPORT TraceLog :
   std::vector<IncrementalStateObserver*> incremental_state_observers_
       GUARDED_BY(observers_lock_);
 
-  std::string process_name_;
   std::unordered_map<int, std::string> process_labels_;
   int process_sort_index_;
   std::unordered_map<PlatformThreadId, int> thread_sort_indices_;

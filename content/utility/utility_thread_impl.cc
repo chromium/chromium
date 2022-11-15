@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/process/current_process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_log.h"
@@ -56,9 +57,10 @@ class ServiceBinderImpl {
     base::debug::SetCrashKeyString(service_name_crash_key, service_name);
 
     // Traces should also indicate the service name.
-    auto* trace_log = base::trace_event::TraceLog::GetInstance();
-    if (trace_log->IsProcessNameEmpty())
-      trace_log->set_process_name("Service: " + service_name);
+    if (base::CurrentProcess::GetInstance().IsProcessNameEmpty()) {
+      base::CurrentProcess::GetInstance().SetProcessType(
+          GetCurrentProcessType(service_name));
+    }
 
     // Ensure the ServiceFactory is (lazily) initialized.
     if (!io_thread_services_) {
@@ -261,6 +263,72 @@ void UtilityThreadImpl::RunServiceDeprecated(
     mojo::ScopedMessagePipeHandle service_pipe) {
   DCHECK(service_factory_);
   service_factory_->RunService(service_name, std::move(service_pipe));
+}
+
+constexpr ServiceCurrentProcessType kCurrentProcessTypes[] = {
+    {"network.mojom.NetworkService",
+     CurrentProcessType::PROCESS_SERVICE_NETWORK},
+    {"tracing.mojom.TracingService",
+     CurrentProcessType::PROCESS_SERVICE_TRACING},
+    {"storage.mojom.StorageService",
+     CurrentProcessType::PROCESS_SERVICE_STORAGE},
+    {"audio.mojom.AudioService", CurrentProcessType::PROCESS_SERVICE_AUDIO},
+    {"data_decoder.mojom.DataDecoderService",
+     CurrentProcessType::PROCESS_SERVICE_DATA_DECODER},
+    {"chrome.mojom.UtilWin", CurrentProcessType::PROCESS_SERVICE_UTIL_WIN},
+    {"proxy_resolver.mojom.ProxyResolverFactory",
+     CurrentProcessType::PROCESS_SERVICE_PROXY_RESOLVER},
+    {"media.mojom.CdmService", CurrentProcessType::PROCESS_SERVICE_CDM},
+    {"video_capture.mojom.VideoCaptureService",
+     CurrentProcessType::PROCESS_SERVICE_VIDEO_CAPTURE},
+    {"unzip.mojom.Unzipper", CurrentProcessType::PROCESS_SERVICE_UNZIPPER},
+    {"mirroring.mojom.MirroringService",
+     CurrentProcessType::PROCESS_SERVICE_MIRRORING},
+    {"patch.mojom.FilePatcher",
+     CurrentProcessType::PROCESS_SERVICE_FILEPATCHER},
+    {"chromeos.tts.mojom.TtsService", CurrentProcessType::PROCESS_SERVICE_TTS},
+    {"printing.mojom.PrintingService",
+     CurrentProcessType::PROCESS_SERVICE_PRINTING},
+    {"quarantine.mojom.Quarantine",
+     CurrentProcessType::PROCESS_SERVICE_QUARANTINE},
+    {"ash.local_search_service.mojom.LocalSearchService",
+     CurrentProcessType::PROCESS_SERVICE_CROS_LOCALSEARCH},
+    {"ash.assistant.mojom.AssistantAudioDecoderFactory",
+     CurrentProcessType::PROCESS_SERVICE_CROS_ASSISTANT_AUDIO_DECODER},
+    {"chrome.mojom.FileUtilService",
+     CurrentProcessType::PROCESS_SERVICE_FILEUTIL},
+    {"printing.mojom.PrintCompositor",
+     CurrentProcessType::PROCESS_SERVICE_PRINTCOMPOSITOR},
+    {"paint_preview.mojom.PaintPreviewCompositorCollection",
+     CurrentProcessType::PROCESS_SERVICE_PAINTPREVIEW},
+    {"media.mojom.SpeechRecognitionService",
+     CurrentProcessType::PROCESS_SERVICE_SPEECHRECOGNITION},
+    {"device.mojom.XRDeviceService",
+     CurrentProcessType::PROCESS_SERVICE_XRDEVICE},
+    {"chrome.mojom.UtilReadIcon", CurrentProcessType::PROCESS_SERVICE_READICON},
+    {"language_detection.mojom.LanguageDetectionService",
+     CurrentProcessType::PROCESS_SERVICE_LANGUAGEDETECTION},
+    {"sharing.mojom.Sharing", CurrentProcessType::PROCESS_SERVICE_SHARING},
+    {"chrome.mojom.MediaParserFactory",
+     CurrentProcessType::PROCESS_SERVICE_MEDIAPARSER},
+    {"qrcode_generator.mojom.QRCodeGeneratorService",
+     CurrentProcessType::PROCESS_SERVICE_QRCODEGENERATOR},
+    {"chrome.mojom.ProfileImport",
+     CurrentProcessType::PROCESS_SERVICE_PROFILEIMPORT},
+    {"ash.ime.mojom.ImeService", CurrentProcessType::PROCESS_SERVICE_IME},
+    {"recording.mojom.RecordingService",
+     CurrentProcessType::PROCESS_SERVICE_RECORDING},
+    {"shape_detection.mojom.ShapeDetectionService",
+     CurrentProcessType::PROCESS_SERVICE_SHAPEDETECTION},
+};
+
+CurrentProcessType GetCurrentProcessType(const std::string& name) {
+  for (auto kCurrentProcessType : kCurrentProcessTypes) {
+    if (name == kCurrentProcessType.name) {
+      return kCurrentProcessType.type;
+    }
+  }
+  return CurrentProcessType::PROCESS_UTILITY;
 }
 
 }  // namespace content

@@ -5,17 +5,12 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACE_STRING_LOOKUP_H_
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACE_STRING_LOOKUP_H_
 
-#include <string>
-
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_thread_descriptor.pbzero.h"
 
 namespace tracing {
 
 perfetto::protos::pbzero::ChromeThreadDescriptor::ThreadType GetThreadType(
     const char* const thread_name);
-perfetto::protos::pbzero::ChromeProcessDescriptor::ProcessType GetProcessType(
-    const std::string& name);
 
 }  // namespace tracing
 

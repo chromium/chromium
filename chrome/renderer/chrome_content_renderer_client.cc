@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/process/current_process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -405,8 +406,8 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   if (is_extension) {
     // The process name was set to "Renderer" in RendererMain(). Update it to
     // "Extension Renderer" to highlight that it's hosting an extension.
-    base::trace_event::TraceLog::GetInstance()->set_process_name(
-        "Extension Renderer");
+    base::CurrentProcess::GetInstance().SetProcessType(
+        base::CurrentProcessType::PROCESS_RENDERER_EXTENSION);
   }
 
 #if BUILDFLAG(IS_WIN)

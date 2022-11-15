@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
+#include "base/process/current_process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -138,7 +139,8 @@ int PpapiPluginMain(MainFunctionParams parameters) {
 
   base::SingleThreadTaskExecutor main_thread_task_executor;
   base::PlatformThread::SetName("CrPPAPIMain");
-  base::trace_event::TraceLog::GetInstance()->set_process_name("PPAPI Process");
+  base::CurrentProcess::GetInstance().SetProcessType(
+      base::CurrentProcessType::PROCESS_PPAPI_PLUGIN);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventPpapiProcessSortIndex);
 

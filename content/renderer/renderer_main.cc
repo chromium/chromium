@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pending_task.h"
+#include "base/process/current_process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -133,7 +134,8 @@ int RendererMain(MainFunctionParams parameters) {
   // expect synchronous events around the main loop of a thread.
   TRACE_EVENT_INSTANT0("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD);
 
-  base::trace_event::TraceLog::GetInstance()->set_process_name("Renderer");
+  base::CurrentProcess::GetInstance().SetProcessType(
+      base::CurrentProcessType::PROCESS_RENDERER);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventRendererProcessSortIndex);
 

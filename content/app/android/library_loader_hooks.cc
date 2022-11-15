@@ -6,6 +6,7 @@
 
 #include "base/android/reached_code_profiler.h"
 #include "base/logging.h"
+#include "base/process/current_process.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/url_schemes.h"
@@ -29,7 +30,8 @@ bool LibraryLoaded(JNIEnv* env,
           base::android::LibraryProcessType::PROCESS_BROWSER ||
       library_process_type ==
           base::android::LibraryProcessType::PROCESS_WEBVIEW) {
-    base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
+    base::CurrentProcess::GetInstance().SetProcessType(
+        base::CurrentProcessType::PROCESS_BROWSER);
   }
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);

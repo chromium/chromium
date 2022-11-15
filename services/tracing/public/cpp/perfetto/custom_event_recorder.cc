@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/process/current_process.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
@@ -101,8 +102,7 @@ void CustomEventRecorder::EmitRecurringUpdates() {
   }
 #if BUILDFLAG(IS_ANDROID)
   static const ChromeProcessDescriptor::ProcessType process_type =
-      GetProcessType(
-          base::trace_event::TraceLog::GetInstance()->process_name());
+      base::CurrentProcess::GetInstance().GetType({});
   if (process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
     auto state = base::android::ApplicationStatusListener::GetState();
     TRACE_APPLICATION_STATE(state);

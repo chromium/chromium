@@ -13,6 +13,12 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/buildflag.h"
 
+namespace tracing {
+class TraceEventDataSource;
+class CustomEventRecorder;
+void SetProcessTrackDescriptor(int64_t process_start_timestamp);
+}  // namespace tracing
+
 namespace base {
 namespace test {
 class CurrentProcessForTest;
@@ -41,6 +47,10 @@ class BASE_EXPORT CurrentProcess {
    private:
     TypeKey() = default;
     friend class ::base::test::CurrentProcessForTest;
+    friend class ::tracing::TraceEventDataSource;
+    friend class ::tracing::CustomEventRecorder;
+    friend void ::tracing::SetProcessTrackDescriptor(
+        int64_t process_start_timestamp);
   };
   // Returns an enum corresponding to the type of the current process (e.g.
   // browser / renderer / utility / etc). It can be used in metrics or tracing
@@ -60,6 +70,9 @@ class BASE_EXPORT CurrentProcess {
    private:
     NameKey() = default;
     friend class ::base::test::CurrentProcessForTest;
+    friend class ::tracing::TraceEventDataSource;
+    friend void ::tracing::SetProcessTrackDescriptor(
+        int64_t process_start_timestamp);
   };
   std::string GetName(NameKey key) {
     AutoLock lock(lock_);

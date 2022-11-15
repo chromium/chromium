@@ -17,6 +17,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/process/current_process.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -233,7 +234,8 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
   if (!process_type.empty())
     return std::move(main_function_params);
 
-  base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
+  base::CurrentProcess::GetInstance().SetProcessType(
+      base::CurrentProcessType::PROCESS_BROWSER);
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 
