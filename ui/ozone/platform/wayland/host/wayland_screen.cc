@@ -202,23 +202,31 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   changed_display.UpdateWorkAreaFromInsets(metrics.insets);
 
   gfx::DisplayColorSpaces color_spaces;
+  color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
+                                      image_format_alpha_.value());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* wayland_output =
       connection_->wayland_output_manager()->GetOutput(metrics.output_id);
   auto* color_management_output =
       wayland_output ? wayland_output->color_management_output() : nullptr;
 
-  if (color_management_output && color_management_output->gfx_color_space()) {
-    auto* gfx_color = color_management_output->gfx_color_space();
-    color_spaces = display::CreateDisplayColorSpaces(
-        *gfx_color, image_format_hdr_ == gfx::BufferFormat::RGBA_1010102, {});
-  } else {
-    color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
-                                        image_format_alpha_.value());
+  if (color_management_output && color_management_output->gfx_color_space() &&
+      color_management_output->gfx_color_space()->IsHDR()) {
+    // Only use display color space to determine if HDR is supported.
+    // LaCrOS will use generic color spaces for blending and compositing.
+    color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kHDR, true,
+        gfx::ColorSpace::CreateExtendedSRGB10Bit(), *image_format_hdr_);
+    color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kHDR, false,
+        gfx::ColorSpace::CreateExtendedSRGB10Bit(), *image_format_hdr_);
+    color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kWideColorGamut, true,
+        gfx::ColorSpace::CreateDisplayP3D65(), image_format_alpha_.value());
+    color_spaces.SetOutputColorSpaceAndBufferFormat(
+        gfx::ContentColorUsage::kWideColorGamut, false,
+        gfx::ColorSpace::CreateDisplayP3D65(), image_format_no_alpha_.value());
   }
-#else
-  color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
-                                      image_format_alpha_.value());
 #endif
 
   changed_display.set_color_spaces(color_spaces);
