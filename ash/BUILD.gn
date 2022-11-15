@@ -3415,6 +3415,7 @@ test("ash_pixeltests") {
     "fullscreen_pixeltest.cc",
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
+    "system/accessibility/accessibility_detailed_view_pixeltest.cc",
     "test/pixel/demo_ash_pixel_diff_test.cc",
   ]
 
