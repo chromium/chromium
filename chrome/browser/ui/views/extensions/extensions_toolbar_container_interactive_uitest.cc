@@ -768,9 +768,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // Access to |url| should have been withheld.
   blocked_action_waiter.WaitAndReset();
   EXPECT_TRUE(runner->WantsToRun(extension()));
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension());
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  extensions::PermissionsManager* permissions_manager =
+      extensions::PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
@@ -794,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // to run.
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   injection_listener.Reset();
-  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_has_access, GetActionTooltip());
   EXPECT_FALSE(runner->WantsToRun(extension()));
 
@@ -808,7 +809,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   }
   blocked_action_waiter.WaitAndReset();
   EXPECT_TRUE(runner->WantsToRun(extension()));
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
@@ -822,7 +824,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // Permissions to the extension shouldn't have been granted, and the extension
   // should still be in wants-to-run state.
   EXPECT_TRUE(runner->WantsToRun(extension()));
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 }
@@ -859,9 +862,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // Access to |url| should have been withheld.
   blocked_action_waiter.WaitAndReset();
   EXPECT_TRUE(runner->WantsToRun(extension()));
-  extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
-                                                                extension());
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  extensions::PermissionsManager* permissions_manager =
+      extensions::PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
@@ -877,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
       0 /* event_flags */);
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   EXPECT_FALSE(runner->WantsToRun(extension()));
-  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension(), url));
   EXPECT_EQ(tooltip_has_access, GetActionTooltip());
 }
 

@@ -150,6 +150,23 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
+  // Returns true if the associated extension can be affected by
+  // runtime host permissions.
+  bool CanAffectExtension(const Extension& extension) const;
+
+  // Returns true if the extension has been explicitly granted permission to run
+  // on the origin of `url`. This will return true if any permission includes
+  // access to the origin of |url|, even if the permission includes others
+  // (such as *://*.com/*) or is restricted to a path (that is, an extension
+  // with permission for https://google.com/maps will return true for
+  // https://google.com). Note: This checks any runtime-granted permissions,
+  // which includes both granted optional permissions and permissions granted
+  // through the runtime host permissions feature.
+  // This may only be called for extensions that can be affected (i.e., for
+  // which CanAffectExtension() returns true). Anything else will DCHECK.
+  bool HasGrantedHostPermission(const Extension& extension,
+                                const GURL& url) const;
+
   // Returns true if the `extension` has runtime granted permission patterns
   // that are sufficiently broad enough to be functionally similar to all sites
   // access.

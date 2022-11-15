@@ -610,10 +610,10 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
   DCHECK_NE(current_access, new_access);
 
   const GURL& url = web_contents()->GetLastCommittedURL();
+  ScriptingPermissionsModifier modifier(browser_context_, extension);
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser_context_);
-  ScriptingPermissionsModifier modifier(browser_context_, extension);
-  DCHECK(modifier.CanAffectExtension());
+  DCHECK(permissions_manager->CanAffectExtension(*extension));
 
   switch (new_access) {
     case SitePermissionsHelper::SiteAccess::kOnClick:
@@ -622,7 +622,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
       // already being withheld.
       modifier.SetWithholdHostPermissions(true);
-      if (modifier.HasGrantedHostPermission(url))
+      if (permissions_manager->HasGrantedHostPermission(*extension, url))
         modifier.RemoveGrantedHostPermission(url);
       break;
     case SitePermissionsHelper::SiteAccess::kOnSite:
@@ -631,7 +631,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
       // already being withheld.
       modifier.SetWithholdHostPermissions(true);
-      if (!modifier.HasGrantedHostPermission(url))
+      if (!permissions_manager->HasGrantedHostPermission(*extension, url))
         modifier.GrantHostPermission(url);
       break;
     case SitePermissionsHelper::SiteAccess::kOnAllSites:

@@ -1492,26 +1492,34 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
-  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(extension->id()));
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
 
   const GURL kExampleCom("https://example.com/");
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kExampleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
   RunAddHostPermission(profile(), *extension, "https://example.com/*",
                        /*should_succeed=*/true, nullptr);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kExampleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
 
   const GURL kGoogleCom("https://google.com");
   const GURL kMapsGoogleCom("https://maps.google.com/");
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kMapsGoogleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                             kMapsGoogleCom));
   RunAddHostPermission(profile(), *extension, "https://*.google.com/*",
                        /*should_succeed=*/true, nullptr);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kMapsGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMapsGoogleCom));
 
   RunAddHostPermission(profile(), *extension, kInvalidHost,
                        /*should_succeed=*/false, kInvalidHostError);
@@ -1530,15 +1538,18 @@ TEST_F(DeveloperPrivateApiUnitTest, GrantHostPermission) {
   RunAddHostPermission(profile(), *extension, chrome_host.spec(),
                        /*should_succeed=*/false, kInvalidHostError);
 
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(chrome_host));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, chrome_host));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddPermission("<all_urls>").Build();
   service()->AddExtension(extension.get());
-  EXPECT_FALSE(PermissionsManager::Get(browser()->profile())
-                   ->HasWithheldHostPermissions(extension->id()));
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(
+      permissions_manager->HasWithheldHostPermissions(extension->id()));
 
   ScriptingPermissionsModifier modifier(profile(), extension.get());
   modifier.SetWithholdHostPermissions(true);
@@ -1566,7 +1577,8 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
 
   const GURL kExampleCom("https://example.com");
   modifier.GrantHostPermission(kExampleCom);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kExampleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
 
   // Path of the pattern must exactly match "/*".
   run_remove_host_permission("https://example.com/", false, kInvalidHostError);
@@ -1577,10 +1589,12 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   run_remove_host_permission("https://example.com/*foobar", false,
                              kInvalidHostError);
   run_remove_host_permission(kInvalidHost, false, kInvalidHostError);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kExampleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
 
   run_remove_host_permission("https://example.com/*", true, nullptr);
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kExampleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kExampleCom));
 
   URLPattern new_pattern(Extension::kValidHostPermissionSchemes,
                          "https://*.google.com/*");
@@ -1591,12 +1605,16 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
 
   const GURL kGoogleCom("https://google.com/");
   const GURL kMapsGoogleCom("https://maps.google.com/");
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kMapsGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                            kMapsGoogleCom));
 
   run_remove_host_permission("https://*.google.com/*", true, nullptr);
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kMapsGoogleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension,
+                                                             kMapsGoogleCom));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, UpdateHostAccess) {
@@ -1635,11 +1653,13 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_CLICK");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   // NOTE(devlin): It's a bit unfortunate that by cycling between host access
   // settings, a user loses any stored state. This would be painful if the user
@@ -1660,7 +1680,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // this is likely okay.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,
@@ -1678,16 +1699,19 @@ TEST_F(DeveloperPrivateApiUnitTest,
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   modifier.GrantHostPermission(example_com);
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_ALL_SITES");
   EXPECT_FALSE(
       permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,
@@ -1720,16 +1744,19 @@ TEST_F(DeveloperPrivateApiUnitTest,
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser()->profile());
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kChromiumCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kChromiumCom));
 
   // Changing to specific sites should now remove the broad pattern, leaving
   // only the google match pattern.
   RunUpdateHostAccess(*extension, "ON_SPECIFIC_SITES");
   EXPECT_TRUE(permissions_manager->HasWithheldHostPermissions(extension->id()));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kGoogleCom));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kChromiumCom));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kGoogleCom));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kChromiumCom));
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,

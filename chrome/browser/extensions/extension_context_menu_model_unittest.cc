@@ -920,9 +920,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   // Since we want to test the page access submenu, verify the site permission
   // is set to "customize by extension"  by default and the page access submenu
   // is visible.
-  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
-                url::Origin::Create(kActiveUrl)),
-            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_EQ(
+      permissions_manager->GetUserSiteSetting(url::Origin::Create(kActiveUrl)),
+      PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kEnabled);
 
   // Initial state: The extension should be in "run on click" mode.
@@ -933,9 +934,11 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   // Initial state: The extension should have all permissions withheld, so
   // shouldn't be allowed to run on the active url or another arbitrary url, and
   // should have withheld permissions.
-  ScriptingPermissionsModifier permissions_modifier(profile(), extension);
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(kOtherUrl));
+
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
   const PermissionsData* permissions = extension->permissions_data();
   EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
 
@@ -954,8 +957,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
 
   // The extension should have access to the active url, but not to another
   // arbitrary url, and the extension should still have withheld permissions.
-  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
   EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
 
   // Since the extension has permission, it should have ran.
@@ -993,8 +998,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
 
   // The extension should be able to run on any url, and shouldn't have any
   // withheld permissions.
-  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
   EXPECT_TRUE(permissions->withheld_permissions().IsEmpty());
 
   // It should have ran again.
@@ -1032,8 +1039,10 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kOnAllSitesAction));
 
   // We should return to the initial state - no access.
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
   EXPECT_FALSE(permissions->withheld_permissions().IsEmpty());
 
   // And the extension shouldn't have ran.
@@ -1348,9 +1357,10 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
 
-  ScriptingPermissionsModifier modifier(profile(), extension);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
 
   // Change mode to "Run on site".
   menu.ExecuteCommand(kOnSite, 0);
@@ -1360,8 +1370,10 @@ TEST_F(ExtensionContextMenuModelTest,
 
   // The extension should have access to the active url, but not to another
   // arbitrary url.
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
 }
 
 // Test that changing to 'run on click' while having a broad pattern which
@@ -1417,9 +1429,12 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
 
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kOrgUrl));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOrgUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
 
   // Change extension to run "on click". Since we are revoking permissions, we
   // need to automatically accept the reload page bubble.
@@ -1435,9 +1450,12 @@ TEST_F(ExtensionContextMenuModelTest,
 
   // The broad org pattern should have been removed, but the explicit google
   // pattern should still remain.
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kActiveUrl));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kOrgUrl));
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kActiveUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOrgUrl));
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, kOtherUrl));
 }
 
 TEST_F(ExtensionContextMenuModelTest,

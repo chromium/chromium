@@ -394,6 +394,32 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   return extension_access;
 }
 
+bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
+  // Certain extensions are always exempt from having permissions withheld.
+  if (!util::CanWithholdPermissionsFromExtension(extension))
+    return false;
+
+  // The extension can be affected if it currently has host permissions, or if
+  // it did and they are actively withheld.
+  return !extension.permissions_data()
+              ->active_permissions()
+              .effective_hosts()
+              .is_empty() ||
+         !extension.permissions_data()
+              ->withheld_permissions()
+              .effective_hosts()
+              .is_empty();
+}
+
+bool PermissionsManager::HasGrantedHostPermission(const Extension& extension,
+                                                  const GURL& url) const {
+  DCHECK(CanAffectExtension(extension));
+
+  return GetRuntimePermissionsFromPrefs(extension)
+      ->effective_hosts()
+      .MatchesSecurityOrigin(url);
+}
+
 bool PermissionsManager::HasBroadGrantedHostPermissions(
     const Extension& extension) {
   // Don't consider API permissions in this case.

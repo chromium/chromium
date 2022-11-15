@@ -456,8 +456,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
 
   const GURL kUrl("https://www.google.com/");
   const GURL kUrl2("https://www.chromium.org/");
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl2));
+
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kUrl2));
 
   const PermissionsData* permissions_data = extension->permissions_data();
   auto get_page_access = [&permissions_data](const GURL& url) {
@@ -476,8 +479,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
   }
 
   modifier.GrantHostPermission(kUrl);
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(kUrl));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl2));
+  EXPECT_TRUE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kUrl2));
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed, get_page_access(kUrl));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kUrl2));
   {
@@ -488,8 +492,9 @@ TEST_F(ScriptingPermissionsModifierUnitTest, GrantHostPermission) {
   }
 
   modifier.RemoveGrantedHostPermission(kUrl);
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl));
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(kUrl2));
+  EXPECT_FALSE(permissions_manager->HasGrantedHostPermission(*extension, kUrl));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, kUrl2));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kUrl));
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld, get_page_access(kUrl2));
   {
@@ -763,17 +768,22 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
         PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
                       URLPatternSet({pattern}), URLPatternSet()));
 
-    EXPECT_TRUE(modifier.HasGrantedHostPermission(google_com));
-    EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
+    PermissionsManager* permissions_manager =
+        PermissionsManager::Get(profile());
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, google_com));
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, example_com));
 
     // Now removing the broad patterns should leave it only with the explicit
     // google permission.
     modifier.RemoveBroadGrantedHostPermissions();
-    EXPECT_TRUE(modifier.HasGrantedHostPermission(google_com));
-    EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
+    EXPECT_TRUE(
+        permissions_manager->HasGrantedHostPermission(*extension, google_com));
     EXPECT_FALSE(
-        PermissionsManager::Get(profile())->HasBroadGrantedHostPermissions(
-            *extension));
+        permissions_manager->HasGrantedHostPermission(*extension, example_com));
+    EXPECT_FALSE(
+        permissions_manager->HasBroadGrantedHostPermissions(*extension));
   }
 }
 
@@ -1051,9 +1061,12 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
   // Removing example.com access should result in *.com access being revoked,
   // since that is the pattern that grants access to example.com.
   const GURL example_com("https://www.example.com");
-  EXPECT_TRUE(modifier.HasGrantedHostPermission(example_com));
+  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
+  EXPECT_TRUE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
   modifier.RemoveGrantedHostPermission(example_com);
-  EXPECT_FALSE(modifier.HasGrantedHostPermission(example_com));
+  EXPECT_FALSE(
+      permissions_manager->HasGrantedHostPermission(*extension, example_com));
   EXPECT_TRUE(ExtensionPrefs::Get(profile())
                   ->GetRuntimeGrantedPermissions(extension->id())
                   ->explicit_hosts()
