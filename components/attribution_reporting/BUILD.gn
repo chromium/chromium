@@ -115,5 +115,5 @@ fuzzer_test("source_registration_fuzzer") {
     "//third_party/libprotobuf-mutator",
   ]
   seed_corpus =
-      "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus/"
+      "//components/attribution_reporting/source_registration_fuzzer_corpus"
 }
