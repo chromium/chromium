@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
-#define CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
+#ifndef COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_
+#define COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_
 
 #include "base/callback.h"
 #include "components/url_rewrite/renderer/url_request_rules_receiver.h"
@@ -13,7 +13,7 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace chromecast {
+namespace cast_receiver {
 
 // This class provides URL request rewrite rules by binding a
 // UrlRequestRulesReceiver mojo interface and listening for updates from
@@ -43,6 +43,6 @@ class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
   base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
 };
 
-}  // namespace chromecast
+}  // namespace cast_receiver
 
-#endif  // CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
+#endif  // COMPONENTS_CAST_RECEIVER_RENDERER_PUBLIC_URL_REWRITE_RULES_PROVIDER_H_

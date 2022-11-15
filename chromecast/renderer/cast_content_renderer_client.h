@@ -20,9 +20,12 @@
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace cast_receiver {
+class UrlRewriteRulesProvider;
+}  // namespace cast_receiver
+
 namespace chromecast {
 class MemoryPressureObserverImpl;
-class UrlRewriteRulesProvider;
 namespace media {
 class MediaCapsObserverImpl;
 class SupportedCodecProfileLevelsMemo;
@@ -124,8 +127,10 @@ class CastContentRendererClient
 
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
 
+  // TODO(crbug.com/1382903): Clean this up by moving RenderFrame details
+  // into cast_receiver.
   base::flat_map<int /* render_frame_id */,
-                 std::unique_ptr<UrlRewriteRulesProvider>>
+                 std::unique_ptr<cast_receiver::UrlRewriteRulesProvider>>
       url_rewrite_rules_providers_;
   std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
 };

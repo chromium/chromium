@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/renderer/url_rewrite_rules_provider.h"
+#include "components/cast_receiver/renderer/public/url_rewrite_rules_provider.h"
 
 #include "base/bind.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
-namespace chromecast {
+namespace cast_receiver {
 
 UrlRewriteRulesProvider::UrlRewriteRulesProvider(
     content::RenderFrame* render_frame,
@@ -32,4 +32,4 @@ void UrlRewriteRulesProvider::OnDestruct() {
   std::move(on_render_frame_deleted_callback_).Run(routing_id());
 }
 
-}  // namespace chromecast
+}  // namespace cast_receiver

@@ -36,14 +36,13 @@ cast_source_set("renderer") {
     "queryable_data_store.h",
     "settings_ui_bindings.cc",
     "settings_ui_bindings.h",
-    "url_rewrite_rules_provider.cc",
-    "url_rewrite_rules_provider.h",
   ]
 
   public_deps = [
     "//chromecast:chromecast_buildflags",
     "//chromecast/browser/mojom",
     "//chromecast/common/mojom",
+    "//components/cast_receiver/renderer",
     "//components/url_rewrite/common",
     "//content/public/renderer",
     "//media",

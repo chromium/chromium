@@ -3,6 +3,7 @@ include_rules = [
   "+chromecast/common",
   "+chromecast/crash",
   "+chromecast/media",
+  "+components/cast_receiver/renderer",
   "+components/cdm/renderer",
   "+components/guest_view/renderer",
   "+components/media_control/renderer",

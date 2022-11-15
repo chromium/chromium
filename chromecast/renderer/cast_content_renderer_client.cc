@@ -22,7 +22,7 @@
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
-#include "chromecast/renderer/url_rewrite_rules_provider.h"
+#include "components/cast_receiver/renderer/public/url_rewrite_rules_provider.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
@@ -166,7 +166,7 @@ void CastContentRendererClient::RenderFrameCreated(
   // CastContentRendererClient should be alive.
   url_rewrite_rules_providers_.emplace(
       render_frame->GetRoutingID(),
-      std::make_unique<UrlRewriteRulesProvider>(
+      std::make_unique<cast_receiver::UrlRewriteRulesProvider>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
                          base::Unretained(this))));
