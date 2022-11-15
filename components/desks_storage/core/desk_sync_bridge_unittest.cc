@@ -935,14 +935,9 @@ TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1)),
-                            GURL(base::StringPrintf(kTestUrlFormat, 2))})
-                  .SetIsLacros(false)
-                  .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
-                      kBrowserWindowId))
-                  .Build())
+          .AddAshBrowserAppWindow(kBrowserWindowId,
+                                  {GURL(base::StringPrintf(kTestUrlFormat, 1)),
+                                   GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
   EXPECT_THAT(
@@ -961,14 +956,9 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1)),
-                            GURL(base::StringPrintf(kTestUrlFormat, 2))})
-                  .SetIsLacros(true)
-                  .SetGenericBuilder(SavedDeskGenericAppBuilder().SetWindowId(
-                      kBrowserWindowId))
-                  .Build())
+          .AddLacrosBrowserAppWindow(
+              kBrowserWindowId, {GURL(base::StringPrintf(kTestUrlFormat, 1)),
+                                 GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
   EXPECT_THAT(
@@ -984,14 +974,8 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1))})
-                  .SetIsLacros(false)
-                  .SetIsApp(true)
-                  .SetGenericBuilder(
-                      SavedDeskGenericAppBuilder().SetWindowId(kPwaWindowId))
-                  .Build())
+          .AddAshPwaAppWindow(kPwaWindowId,
+                              base::StringPrintf(kTestUrlFormat, 1))
           .Build();
 
   EXPECT_THAT(
@@ -1007,14 +991,8 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(
-              SavedDeskBrowserBuilder()
-                  .SetUrls({GURL(base::StringPrintf(kTestUrlFormat, 1))})
-                  .SetIsLacros(true)
-                  .SetIsApp(true)
-                  .SetGenericBuilder(
-                      SavedDeskGenericAppBuilder().SetWindowId(kPwaWindowId))
-                  .Build())
+          .AddLacrosPwaAppWindow(kPwaWindowId,
+                                 base::StringPrintf(kTestUrlFormat, 1))
           .Build();
 
   EXPECT_THAT(
@@ -1030,10 +1008,8 @@ TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(SavedDeskGenericAppBuilder()
-                            .SetAppId(desk_test_util::kTestChromeAppId)
-                            .SetWindowId(kChromeAppWindowId)
-                            .Build())
+          .AddChromeAppWindow(kChromeAppWindowId,
+                              desk_test_util::kTestChromeAppId)
           .Build();
 
   EXPECT_THAT(
@@ -1050,10 +1026,8 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(SavedDeskGenericAppBuilder()
-                            .SetAppId(desk_test_util::kTestLacrosChromeAppId)
-                            .SetWindowId(kChromeAppWindowId)
-                            .Build())
+          .AddChromeAppWindow(kChromeAppWindowId,
+                              desk_test_util::kTestLacrosChromeAppId)
           .Build();
 
   EXPECT_THAT(
@@ -1071,14 +1045,10 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
       SavedDeskBuilder()
           .SetUuid(base::StringPrintf(kUuidFormat, kDefaultTemplateIndex))
           .SetName(base::StringPrintf(kNameFormat, kDefaultTemplateIndex))
-          .AddAppWindow(SavedDeskGenericAppBuilder()
-                            .SetWindowId(kChromeAppWindowId)
-                            .SetAppId(desk_test_util::kTestChromeAppId)
-                            .Build())
-          .AddAppWindow(SavedDeskGenericAppBuilder()
-                            .SetWindowId(kUnsupportedAppWindowId)
-                            .SetAppId(desk_test_util::kTestUnsupportedAppId)
-                            .Build())
+          .AddChromeAppWindow(kChromeAppWindowId,
+                              desk_test_util::kTestChromeAppId)
+          .AddGenericAppWindow(kUnsupportedAppWindowId,
+                               desk_test_util::kTestUnsupportedAppId)
           .Build();
 
   EXPECT_THAT(
