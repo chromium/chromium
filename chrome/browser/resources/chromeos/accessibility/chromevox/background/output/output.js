@@ -680,28 +680,6 @@ export class Output {
   }
 
   /** @override */
-  formatState_(data, token) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    if (node.state) {
-      Object.getOwnPropertyNames(node.state).forEach(state => {
-        const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
-        if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
-          formatLog.writeToken(token);
-          this.format_({
-            node,
-            outputFormat: '$' + state,
-            outputBuffer: buff,
-            outputFormatLogger: formatLog,
-          });
-        }
-      });
-    }
-  }
-
-  /** @override */
   formatFind_(data, token, tree) {
     const buff = data.outputBuffer;
     const formatLog = data.outputFormatLogger;

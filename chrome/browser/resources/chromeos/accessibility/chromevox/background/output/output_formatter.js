@@ -66,7 +66,7 @@ export class OutputFormatter {
     } else if (token === 'pressed') {
       this.formatPressed_(this.params_, token);
     } else if (token === 'state') {
-      this.output_.formatState_(this.params_, token);
+      this.formatState_(this.params_, token);
     } else if (token === 'find') {
       this.output_.formatFind_(this.params_, token, tree);
     } else if (token === 'descendants') {
@@ -372,6 +372,32 @@ export class OutputFormatter {
         outputFormat: '@' + msg,
         outputBuffer: buff,
         outputFormatLogger: formatLog,
+      });
+    }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @private
+   */
+  formatState_(data, token) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    if (node.state) {
+      Object.getOwnPropertyNames(node.state).forEach(state => {
+        const stateInfo = outputTypes.OUTPUT_STATE_INFO[state];
+        if (stateInfo && !stateInfo.isRoleSpecific && stateInfo.on) {
+          formatLog.writeToken(token);
+          this.output_.format_({
+            node,
+            outputFormat: '$' + state,
+            outputBuffer: buff,
+            outputFormatLogger: formatLog,
+          });
+        }
       });
     }
   }
