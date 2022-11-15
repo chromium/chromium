@@ -275,7 +275,10 @@ action("xctest_runner_without_arm64e") {
     xcode_version,
   ]
 
+  # When running under ASan, the ASan runtime library must be packaged alongside
+  # the test runner binary.
+  deps = [ "//build/config/sanitizers:deps" ]
   if (use_system_xcode && (use_goma || use_remoteexec)) {
-    deps = [ ":copy_xctrunner_app" ]
+    deps += [ ":copy_xctrunner_app" ]
   }
 }

@@ -311,8 +311,21 @@ class EgtestsAppTest(test_runner_test.TestCase):
     with self.assertRaises(test_runner.XCTestPlugInNotFoundError):
       egtest._xctest_path()
 
+  @mock.patch('os.listdir', autospec=True)
+  def test_additional_inserted_libs(self, mock_listdir):
+    mock_listdir.return_value = [
+        'random_file', 'main_binary', 'libclang_rt.asan_iossim_dynamic.dylib'
+    ]
+    egtest = test_apps.EgtestsApp(_TEST_APP_PATH)
+    self.assertEqual([
+        '__PLATFORMS__/iPhoneSimulator.platform/Developer/usr/lib/' +
+        'libXCTestBundleInject.dylib',
+        '@executable_path/libclang_rt.asan_iossim_dynamic.dylib'
+    ], egtest._additional_inserted_libs())
+
   def test_xctestRunNode_without_filter(self):
     self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
     egtest_node = test_apps.EgtestsApp(
         _TEST_APP_PATH).fill_xctestrun_node()['test_app_module']
     self.assertNotIn('OnlyTestIdentifiers', egtest_node)
@@ -320,6 +333,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
 
   def test_xctestRunNode_with_filter_only_identifiers(self):
     self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
     filtered_tests = [
         'TestCase1/testMethod1', 'TestCase1/testMethod2',
         'TestCase2/testMethod1', 'TestCase1/testMethod2'
@@ -332,6 +346,7 @@ class EgtestsAppTest(test_runner_test.TestCase):
 
   def test_xctestRunNode_with_filter_skip_identifiers(self):
     self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    self.mock(test_apps.EgtestsApp, '_additional_inserted_libs', lambda _: [])
     skipped_tests = [
         'TestCase1/testMethod1', 'TestCase1/testMethod2',
         'TestCase2/testMethod1', 'TestCase1/testMethod2'
@@ -341,6 +356,17 @@ class EgtestsAppTest(test_runner_test.TestCase):
         excluded_tests=skipped_tests).fill_xctestrun_node()['test_app_module']
     self.assertEqual(skipped_tests, egtest_node['SkipTestIdentifiers'])
     self.assertNotIn('OnlyTestIdentifiers', egtest_node)
+
+  def test_xctestRunNode_with_additional_inserted_libs(self):
+    asan_dylib = '@executable_path/libclang_rt.asan_iossim_dynamic.dylib'
+    self.mock(test_apps.EgtestsApp, '_xctest_path', lambda _: 'xctest-path')
+    self.mock(test_apps.EgtestsApp,
+              '_additional_inserted_libs', lambda _: [asan_dylib])
+    egtest_node = test_apps.EgtestsApp(
+        _TEST_APP_PATH).fill_xctestrun_node()['test_app_module']
+    self.assertEqual(
+        asan_dylib,
+        egtest_node['TestingEnvironmentVariables']['DYLD_INSERT_LIBRARIES'])
 
 
 if __name__ == '__main__':
