@@ -4,11 +4,15 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/checkbox_group.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/icon_switch.h"
 #include "ash/style/radio_button_group.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -43,6 +47,27 @@ std::unique_ptr<views::Widget> CreateWidgetWithComponent(
 }  // namespace
 
 using SystemComponentsTest = AshTestBase;
+
+TEST_F(SystemComponentsTest, IconButtonWithBackgroundColorIdDoesNotCrash) {
+  // Create an IconButton with an explicit background color ID.
+  auto icon_button = std::make_unique<IconButton>(
+      IconButton::PressedCallback(), IconButton::Type::kSmall, &kTestIcon,
+      u"button 1",
+      /*is_toggleable=*/false, /*has_border=*/false);
+  auto* icon_button_ptr = icon_button.get();
+  icon_button->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
+  auto widget = CreateWidgetWithComponent(std::move(icon_button));
+
+  // Schedule a paint for the button.
+  icon_button_ptr->SchedulePaint();
+  EXPECT_TRUE(views::ViewTestApi(icon_button_ptr).needs_paint());
+
+  // Spin the message loop so the button paints.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(views::ViewTestApi(icon_button_ptr).needs_paint());
+
+  // No crash.
+}
 
 TEST_F(SystemComponentsTest, IconSwitch) {
   auto icon_switch = std::make_unique<IconSwitch>();

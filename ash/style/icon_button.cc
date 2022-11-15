@@ -262,7 +262,7 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
     SkColor normal_background_color;
     if (background_color_id_) {
       normal_background_color =
-          color_provider->GetColor(background_toggled_color_id_.value());
+          color_provider->GetColor(background_color_id_.value());
     } else {
       normal_background_color =
           background_color_.value_or(color_provider->GetColor(
