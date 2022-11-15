@@ -285,33 +285,45 @@ class InputInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest, TouchScreenSingleInternal) {
+IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
+                       TouchScreenMultipleInternal) {
   static constexpr char kSampleLibrary[] = "SampleLibrary";
   static constexpr char kSampleDevice[] = "SampleDevice";
+  static constexpr char kSampleDevice2[] = "SampleDevice2";
   static constexpr int kTouchPoints = 10;
+  static constexpr int kTouchPoints2 = 5;
 
-  auto input_device = cros_healthd::TouchscreenDevice::New(
+  // Create the test result.
+  auto input_device_first = cros_healthd::TouchscreenDevice::New(
       cros_healthd::InputDevice::New(
           kSampleDevice, cros_healthd::InputDevice_ConnectionType::kInternal,
           /*physical_location*/ "", /*is_enabled*/ true),
       kTouchPoints, /*has_stylus*/ true,
       /*has_stylus_garage_switch*/ false);
+  auto input_device_second = cros_healthd::TouchscreenDevice::New(
+      cros_healthd::InputDevice::New(
+          kSampleDevice2, cros_healthd::InputDevice_ConnectionType::kInternal,
+          /*physical_location*/ "", /*is_enabled*/ true),
+      kTouchPoints2, /*has_stylus*/ false,
+      /*has_stylus_garage_switch*/ false);
   std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices;
-  touchscreen_devices.push_back(std::move(input_device));
-
+  touchscreen_devices.push_back(std::move(input_device_first));
+  touchscreen_devices.push_back(std::move(input_device_second));
   auto input_result = ::reporting::test::CreateInputResult(
       kSampleLibrary, std::move(touchscreen_devices));
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(input_result);
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordTouchScreenInfo));
+
+  // Assertions
   auto [priority, record] = observer.GetNextEnqueuedRecord();
   auto info_data = AssertInfo(priority, record).info_data();
   ASSERT_TRUE(info_data.has_touch_screen_info());
   ASSERT_TRUE(info_data.touch_screen_info().has_library_name());
   EXPECT_THAT(info_data.touch_screen_info().library_name(),
               StrEq(kSampleLibrary));
-  ASSERT_EQ(info_data.touch_screen_info().touch_screen_devices().size(), 1);
+  ASSERT_EQ(info_data.touch_screen_info().touch_screen_devices().size(), 2);
   EXPECT_THAT(
       info_data.touch_screen_info().touch_screen_devices(0).display_name(),
       StrEq(kSampleDevice));
@@ -320,6 +332,14 @@ IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest, TouchScreenSingleInternal) {
       Eq(kTouchPoints));
   EXPECT_TRUE(
       info_data.touch_screen_info().touch_screen_devices(0).has_stylus());
+  EXPECT_THAT(
+      info_data.touch_screen_info().touch_screen_devices(1).display_name(),
+      StrEq(kSampleDevice2));
+  EXPECT_THAT(
+      info_data.touch_screen_info().touch_screen_devices(1).touch_points(),
+      Eq(kTouchPoints2));
+  EXPECT_FALSE(
+      info_data.touch_screen_info().touch_screen_devices(1).has_stylus());
 }
 
 // ---- Display ----
