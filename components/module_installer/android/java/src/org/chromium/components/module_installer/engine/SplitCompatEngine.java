@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,16 +59,17 @@ class SplitCompatEngine implements InstallEngine {
     public void install(String moduleName, InstallListener listener) {
         ThreadUtils.assertOnUiThread();
 
-        if (sSessions.containsKey(moduleName)) {
-            sSessions.get(moduleName).add(listener);
+        List<InstallListener> listeners = sSessions.get(moduleName);
+        if (listeners != null) {
+            listeners.add(listener);
             return;
         }
 
         registerUpdateListener();
 
-        sSessions.put(moduleName, new ArrayList<InstallListener>() {
-            { add(listener); }
-        });
+        listeners = new ArrayList<>();
+        listeners.add(listener);
+        sSessions.put(moduleName, listeners);
 
         SplitInstallRequest request = mFacade.createSplitInstallRequest(moduleName);
 
@@ -80,8 +80,6 @@ class SplitCompatEngine implements InstallEngine {
                     ex instanceof SplitInstallException
                             ? ((SplitInstallException) ex).getErrorCode()
                             : mFacade.getLogger().getUnknownRequestErrorCode());
-
-            String message = String.format(Locale.US, "Request Exception: %s", ex.getMessage());
             notifyListeners(moduleName, false);
         });
 
