@@ -89,6 +89,7 @@ WebAppSettingsUI::WebAppSettingsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kAppSettingsResources, kAppSettingsResourcesSize),
       IDR_APP_SETTINGS_WEB_APP_SETTINGS_HTML);
+  webui::EnableTrustedTypesCSP(html_source);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);
