@@ -18,6 +18,12 @@ declare_args() {
   # Design document: https://goo.gle/chrome-for-testing
   is_chrome_for_testing_branded = false
 
+  # Whether to use internal Chrome for Testing (CfT) icons.
+  # If set to true, use Google-internal icons, otherwise fall back to Chromium icons.
+  #
+  # This flag can only be set to true for CfT builds.
+  use_internal_chrome_for_testing_icons = false
+
   # Set to true to enable settings for high end Android devices, typically
   # enhancing speed at the expense of resources such as binary sizes and memory.
   is_high_end_android = false
@@ -27,13 +33,21 @@ assert(
     !is_chrome_for_testing_branded || !is_chrome_branded,
     "Chrome for Testing (`is_chrome_for_testing_branded`) requires Chromium flavor (`is_chrome_branded = False`)")
 
+assert(
+    is_chrome_for_testing_branded || !use_internal_chrome_for_testing_icons,
+    "Use of internal Chrome for Testing icons (`use_internal_chrome_for_testing_icons`) requires CfT flavor (`is_chrome_for_testing_branded = True`)")
+
 declare_args() {
   # Refers to the subdirectory for branding in various places including
   # chrome/app/theme.
   #
   # `branding_path_product` must not contain slashes.
   if (is_chrome_for_testing_branded) {
-    branding_path_component = "google_chrome/google_chrome_for_testing"
+    if (use_internal_chrome_for_testing_icons) {
+      branding_path_component = "google_chrome/google_chrome_for_testing"
+    } else {
+      branding_path_component = "chromium"
+    }
     branding_path_product = "chromium"
   } else if (is_chrome_branded) {
     branding_path_component = "google_chrome"
