@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,6 +22,8 @@ struct AttestationFlowAdaptive::GetCertificateParams {
   bool force_new_key;
   ::attestation::KeyType key_crypto_type;
   std::string key_name;
+  absl::optional<AttestationFlow::CertProfileSpecificData>
+      profile_specific_data;
 };
 
 // Consructs the object with `AttestationFlowTypeDecider` and
@@ -62,6 +65,7 @@ void AttestationFlowAdaptive::GetCertificate(
       /*.force_new_key=*/force_new_key,
       /*.key_crypto_type=*/key_crypto_type,
       /*.key_name=*/key_name,
+      /*.profile_specific_data=*/profile_specific_data,
   };
 
   auto status_reporter = std::make_unique<AttestationFlowStatusReporter>();
@@ -105,7 +109,7 @@ void AttestationFlowAdaptive::StartGetCertificate(
         /*force_new_key=*/params.force_new_key,
         /*key_crypto_type=*/params.key_crypto_type,
         /*key_name=*/params.key_name,
-        /*profile_specific_data=*/absl::nullopt,
+        /*profile_specific_data=*/params.profile_specific_data,
         /*callback=*/
         base::BindOnce(
             &AttestationFlowAdaptive::OnGetCertificateWithFallbackFlow,
@@ -121,7 +125,7 @@ void AttestationFlowAdaptive::StartGetCertificate(
       /*request_origin=*/params.request_origin,
       /*force_new_key=*/params.force_new_key,
       /*key_crypto_type=*/params.key_crypto_type, /*key_name=*/params.key_name,
-      /*profile_specific_data=*/absl::nullopt,
+      /*profile_specific_data=*/params.profile_specific_data,
       /*callback=*/
       base::BindOnce(&AttestationFlowAdaptive::OnGetCertificateWithDefaultFlow,
                      weak_factory_.GetWeakPtr(), params,
