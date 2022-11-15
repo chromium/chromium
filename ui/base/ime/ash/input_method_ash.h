@@ -173,9 +173,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Hides the composition text.
   void HidePreeditText();
 
-  // Whether the focused text input client supports inline composition.
-  bool CanComposeInline() const;
-
   TextInputMethod::InputContext GetInputContext() const;
 
   // Called from the engine when it completes processing.

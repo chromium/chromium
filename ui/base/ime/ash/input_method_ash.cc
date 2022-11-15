@@ -775,7 +775,7 @@ void InputMethodAsh::CommitText(
   if (!GetTextInputClient())
     return;
 
-  if (!CanComposeInline()) {
+  if (!GetTextInputClient()->CanComposeInline()) {
     // Hides the candidate window for preedit text.
     UpdateCompositionText(CompositionText(), 0, false);
   }
@@ -809,7 +809,7 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
   if (IsTextInputTypeNone())
     return;
 
-  if (!CanComposeInline()) {
+  if (!GetTextInputClient()->CanComposeInline()) {
     ash::IMECandidateWindowHandlerInterface* candidate_window =
         ui::IMEBridge::Get()->GetCandidateWindowHandler();
     if (candidate_window)
@@ -864,11 +864,6 @@ void InputMethodAsh::HidePreeditText() {
     }
     composition_changed_ = false;
   }
-}
-
-bool InputMethodAsh::CanComposeInline() const {
-  TextInputClient* client = GetTextInputClient();
-  return client ? client->CanComposeInline() : true;
 }
 
 TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
