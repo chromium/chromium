@@ -134,7 +134,7 @@ arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
   // TODO(sstan): Consider multi display case.
   if (!window_info)
     return nullptr;
-  auto disp = display::Display::GetDefaultDisplay();
+  auto disp = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (window_info->display_id != display::kInvalidDisplayId) {
     display::Screen::GetScreen()->GetDisplayWithDisplayId(
         window_info->display_id, &disp);
