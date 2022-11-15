@@ -235,6 +235,8 @@ component("ash") {
     "ambient/util/ambient_util.cc",
     "ambient/util/ambient_util.h",
     "animation/animation_change_type.h",
+    "app_list/app_list_public_test_util.cc",
+    "app_list/app_list_public_test_util.h",
     "ash_export.h",
     "ash_interfaces.cc",
     "ash_prefs.cc",

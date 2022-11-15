@@ -11,6 +11,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/app_list/app_list_public_test_util.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
@@ -3839,6 +3840,26 @@ ExtensionFunction::ResponseAction AutotestPrivateGetShelfItemsFunction::Run() {
 
   return RespondNow(ArgumentList(
       api::autotest_private::GetShelfItems::Results::Create(result_items)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetLauncherSearchBoxStateFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetLauncherSearchBoxStateFunction::
+    AutotestPrivateGetLauncherSearchBoxStateFunction() = default;
+
+AutotestPrivateGetLauncherSearchBoxStateFunction::
+    ~AutotestPrivateGetLauncherSearchBoxStateFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetLauncherSearchBoxStateFunction::Run() {
+  DVLOG(1) << "AutotestPrivateGetLauncherSearchBoxStateFunction";
+
+  api::autotest_private::LauncherSearchBoxState launcher_search_box_state;
+  launcher_search_box_state.ghost_text = ash::GetSearchBoxGhostTextForTest();
+
+  return RespondNow(WithArguments(launcher_search_box_state.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

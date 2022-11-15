@@ -8,47 +8,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
-
-class TestResult : public ChromeSearchResult {
- public:
-  // TestResult is used by many test suites. Each test suite operates on
-  // different members of ChromeSearchResult. This set of constructors aims to
-  //
-  // (a) generalize across the use cases (to minimize constructor number) and
-  // (b) retain flexibility (to keep points-of-use from becoming cumbersome).
-  TestResult() = default;
-
-  TestResult(const std::string& id,
-             ResultType result_type = ResultType::kUnknown,
-             Category category = Category::kUnknown,
-             double display_score = 0.0,
-             double normalized_relevance = 0.0);
-
-  TestResult(const std::string& id,
-             double relevance,
-             double normalized_relevance = 0.0,
-             DisplayType display_type = DisplayType::kNone,
-             bool best_match = false);
-
-  TestResult(const std::string& id,
-             DisplayType display_type,
-             Category category,
-             int best_match_rank,
-             double relevance,
-             double ftrl_result_score);
-
-  ~TestResult() override;
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-};
 
 class RankerTestBase : public testing::Test {
  public:
