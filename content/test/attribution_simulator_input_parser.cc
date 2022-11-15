@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -30,6 +31,7 @@
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -533,37 +535,17 @@ class AttributionSimulatorInputParser {
                                               base::StringPiece key) {
     auto context = PushContext(key);
 
-    const base::Value* value = dict.Find(key);
-    if (!value)
-      return attribution_reporting::Filters();
+    absl::optional<base::Value> value =
+        dict.Find(key) ? absl::make_optional(dict.Find(key)->Clone())
+                       : absl::nullopt;
 
-    if (!EnsureDictionary(*value))
-      return attribution_reporting::Filters();
+    auto filters =
+        attribution_reporting::Filters::FromJSON(base::OptionalToPtr(value));
+    if (filters.has_value())
+      return *filters;
 
-    attribution_reporting::FilterValues::container_type container;
-    for (auto [filter, values_list] : value->GetDict()) {
-      auto filter_context = PushContext(filter);
-      std::vector<std::string> values;
-
-      ParseList(values_list,
-                base::BindLambdaForTesting([&](const base::Value& value) {
-                  if (!value.is_string()) {
-                    *Error() << "must be a string";
-                  } else {
-                    values.emplace_back(value.GetString());
-                  }
-                }));
-
-      container.emplace_back(filter, std::move(values));
-    }
-
-    absl::optional<attribution_reporting::Filters> filters =
-        attribution_reporting::Filters::Create(std::move(container));
-    // TODO(apaseltiner): Provide more detailed information.
-    if (!filters)
-      *Error() << "invalid";
-
-    return std::move(filters).value_or(attribution_reporting::Filters());
+    *Error() << filters.error();
+    return attribution_reporting::Filters();
   }
 
   absl::uint128 ParseAggregationKey(const base::Value& key_value) {

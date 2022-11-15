@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -65,6 +66,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
  public:
   // Filters are allowed to contain a `source_type` filter.
   static absl::optional<Filters> Create(FilterValues);
+
+  static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
+      base::Value*);
 
   Filters();
 

@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,6 +28,7 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 FilterValues CreateFilterValues(size_t n) {
   FilterValues filter_values;
@@ -36,6 +38,128 @@ FilterValues CreateFilterValues(size_t n) {
   CHECK_EQ(filter_values.size(), n);
   return filter_values;
 }
+
+base::Value MakeFilterValuesWithKeys(size_t n) {
+  base::Value::Dict dict;
+  for (size_t i = 0; i < n; ++i) {
+    dict.Set(base::NumberToString(i), base::Value::List());
+  }
+  return base::Value(std::move(dict));
+}
+
+base::Value MakeFilterValuesWithKeyLength(size_t n) {
+  base::Value::Dict dict;
+  dict.Set(std::string(n, 'a'), base::Value::List());
+  return base::Value(std::move(dict));
+}
+
+base::Value MakeFilterValuesWithValues(size_t n) {
+  base::Value::List list;
+  for (size_t i = 0; i < n; ++i) {
+    list.Append("x");
+  }
+
+  base::Value::Dict dict;
+  dict.Set("a", std::move(list));
+  return base::Value(std::move(dict));
+}
+
+base::Value MakeFilterValuesWithValueLength(size_t n) {
+  base::Value::List list;
+  list.Append(std::string(n, 'a'));
+
+  base::Value::Dict dict;
+  dict.Set("a", std::move(list));
+  return base::Value(std::move(dict));
+}
+
+const struct {
+  const char* description;
+  absl::optional<base::Value> json;
+  base::expected<FilterData, SourceRegistrationError> expected_filter_data;
+  base::expected<Filters, TriggerRegistrationError> expected_filters;
+} kTestCases[] = {
+    {
+        "Null",
+        absl::nullopt,
+        FilterData(),
+        Filters(),
+    },
+    {
+        "empty",
+        base::Value(base::Value::Dict()),
+        FilterData(),
+        Filters(),
+    },
+    {
+        "multiple",
+        base::test::ParseJson(R"json({
+            "a": ["b"],
+            "c": ["e", "d"],
+            "f": []
+          })json"),
+        *FilterData::Create({
+            {"a", {"b"}},
+            {"c", {"e", "d"}},
+            {"f", {}},
+        }),
+        *Filters::Create({
+            {"a", {"b"}},
+            {"c", {"e", "d"}},
+            {"f", {}},
+        }),
+    },
+    {
+        "source_type_key",
+        base::test::ParseJson(R"json({
+          "source_type": ["a"]
+        })json"),
+        base::unexpected(SourceRegistrationError::kFilterDataHasSourceTypeKey),
+        *Filters::Create({{"source_type", {"a"}}}),
+    },
+    {
+        "not_dictionary",
+        base::Value(base::Value::List()),
+        base::unexpected(SourceRegistrationError::kFilterDataWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+    },
+    {
+        "value_not_array",
+        base::test::ParseJson(R"json({"a": true})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataListWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersListWrongType),
+    },
+    {
+        "array_element_not_string",
+        base::test::ParseJson(R"json({"a": [true]})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataValueWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
+    },
+    {
+        "too_many_keys",
+        MakeFilterValuesWithKeys(51),
+        base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys),
+        base::unexpected(TriggerRegistrationError::kFiltersTooManyKeys),
+    },
+    {
+        "key_too_long",
+        MakeFilterValuesWithKeyLength(26),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong),
+        base::unexpected(TriggerRegistrationError::kFiltersKeyTooLong),
+    },
+    {
+        "too_many_values",
+        MakeFilterValuesWithValues(51),
+        base::unexpected(SourceRegistrationError::kFilterDataListTooLong),
+        base::unexpected(TriggerRegistrationError::kFiltersListTooLong),
+    },
+    {
+        "value_too_long",
+        MakeFilterValuesWithValueLength(26),
+        base::unexpected(SourceRegistrationError::kFilterDataValueTooLong),
+        base::unexpected(TriggerRegistrationError::kFiltersValueTooLong),
+    },
+};
 
 TEST(FilterDataTest, Create_ProhibitsSourceTypeFilter) {
   EXPECT_FALSE(FilterData::Create({{"source_type", {"event"}}}));
@@ -62,136 +186,32 @@ TEST(FiltersTest, Create_LimitsFilterCount) {
 }
 
 TEST(FilterDataTest, FromJSON) {
-  const auto make_filter_data_with_keys = [](size_t n) {
-    base::Value::Dict dict;
-    for (size_t i = 0; i < n; ++i) {
-      dict.Set(base::NumberToString(i), base::Value::List());
-    }
-    return base::Value(std::move(dict));
-  };
-
-  const auto make_filter_data_with_key_length = [](size_t n) {
-    base::Value::Dict dict;
-    dict.Set(std::string(n, 'a'), base::Value::List());
-    return base::Value(std::move(dict));
-  };
-
-  const auto make_filter_data_with_values = [](size_t n) {
-    base::Value::List list;
-    for (size_t i = 0; i < n; ++i) {
-      list.Append("x");
-    }
-
-    base::Value::Dict dict;
-    dict.Set("a", std::move(list));
-    return base::Value(std::move(dict));
-  };
-
-  const auto make_filter_data_with_value_length = [](size_t n) {
-    base::Value::List list;
-    list.Append(std::string(n, 'a'));
-
-    base::Value::Dict dict;
-    dict.Set("a", std::move(list));
-    return base::Value(std::move(dict));
-  };
-
-  struct {
-    const char* description;
-    absl::optional<base::Value> json;
-    base::expected<FilterData, SourceRegistrationError> expected;
-  } kTestCases[] = {
-      {
-          "Null",
-          absl::nullopt,
-          FilterData(),
-      },
-      {
-          "empty",
-          base::Value(base::Value::Dict()),
-          FilterData(),
-      },
-      {
-          "multiple",
-          base::test::ParseJson(R"json({
-            "a": ["b"],
-            "c": ["e", "d"],
-            "f": []
-          })json"),
-          *FilterData::Create({
-              {"a", {"b"}},
-              {"c", {"e", "d"}},
-              {"f", {}},
-          }),
-      },
-      {
-          "forbidden_key",
-          base::test::ParseJson(R"json({
-          "source_type": ["a"]
-        })json"),
-          base::unexpected(
-              SourceRegistrationError::kFilterDataHasSourceTypeKey),
-      },
-      {
-          "not_dictionary",
-          base::Value(base::Value::List()),
-          base::unexpected(SourceRegistrationError::kFilterDataWrongType),
-      },
-      {
-          "value_not_array",
-          base::test::ParseJson(R"json({"a": true})json"),
-          base::unexpected(SourceRegistrationError::kFilterDataListWrongType),
-      },
-      {
-          "array_element_not_string",
-          base::test::ParseJson(R"json({"a": [true]})json"),
-          base::unexpected(SourceRegistrationError::kFilterDataValueWrongType),
-      },
-      {
-          "too_many_keys",
-          make_filter_data_with_keys(51),
-          base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys),
-      },
-      {
-          "key_too_long",
-          make_filter_data_with_key_length(26),
-          base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong),
-      },
-      {
-          "too_many_values",
-          make_filter_data_with_values(51),
-          base::unexpected(SourceRegistrationError::kFilterDataListTooLong),
-      },
-      {
-          "value_too_long",
-          make_filter_data_with_value_length(26),
-          base::unexpected(SourceRegistrationError::kFilterDataValueTooLong),
-      },
-  };
-
   for (auto& test_case : kTestCases) {
-    EXPECT_EQ(FilterData::FromJSON(base::OptionalToPtr(test_case.json)),
-              test_case.expected)
+    absl::optional<base::Value> json_copy =
+        test_case.json ? absl::make_optional(test_case.json->Clone())
+                       : absl::nullopt;
+    EXPECT_EQ(FilterData::FromJSON(base::OptionalToPtr(json_copy)),
+              test_case.expected_filter_data)
         << test_case.description;
   }
 
   {
-    base::Value json = make_filter_data_with_keys(50);
+    base::Value json = MakeFilterValuesWithKeys(50);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
   }
 
   {
-    base::Value json = make_filter_data_with_key_length(25);
+    base::Value json = MakeFilterValuesWithKeyLength(25);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
   }
 
   {
-    base::Value json = make_filter_data_with_values(50);
+    base::Value json = MakeFilterValuesWithValues(50);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
   }
 
   {
-    base::Value json = make_filter_data_with_value_length(25);
+    base::Value json = MakeFilterValuesWithValueLength(25);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
   }
 }
@@ -216,6 +236,37 @@ TEST(FilterDataTest, FromJSON_RecordsMetrics) {
 
   EXPECT_THAT(histograms.GetAllSamples("Conversions.ValuesPerFilter"),
               ElementsAre(Bucket(0, 1), Bucket(1, 2), Bucket(3, 1)));
+}
+
+TEST(FiltersTest, FromJSON) {
+  for (auto& test_case : kTestCases) {
+    absl::optional<base::Value> json_copy =
+        test_case.json ? absl::make_optional(test_case.json->Clone())
+                       : absl::nullopt;
+    EXPECT_EQ(Filters::FromJSON(base::OptionalToPtr(json_copy)),
+              test_case.expected_filters)
+        << test_case.description;
+  }
+
+  {
+    base::Value json = MakeFilterValuesWithKeys(50);
+    EXPECT_TRUE(Filters::FromJSON(&json).has_value());
+  }
+
+  {
+    base::Value json = MakeFilterValuesWithKeyLength(25);
+    EXPECT_TRUE(Filters::FromJSON(&json).has_value());
+  }
+
+  {
+    base::Value json = MakeFilterValuesWithValues(50);
+    EXPECT_TRUE(Filters::FromJSON(&json).has_value());
+  }
+
+  {
+    base::Value json = MakeFilterValuesWithValueLength(25);
+    EXPECT_TRUE(Filters::FromJSON(&json).has_value());
+  }
 }
 
 }  // namespace

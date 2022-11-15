@@ -14,7 +14,7 @@ html_to_wrapper("html_wrapper_files") {
 # ts_library.
 copy("copy_files") {
   deps = [
-    "//components/attribution_reporting:source_registration_error_mojom_webui_js",
+    "//components/attribution_reporting:mojom_webui_js",
     "//content/browser/attribution_reporting:internals_mojo_bindings_webui_js",
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
   ]

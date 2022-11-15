@@ -922,6 +922,24 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["filters"]: kFiltersWrongType)",
+        R"json({"triggers": [{
+          "Attribution-Reporting-Register-Trigger": {
+            "filters": ""
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["not_filters"]: kFiltersListWrongType)",
+        R"json({"triggers": [{
+          "Attribution-Reporting-Register-Trigger": {
+            "not_filters": {
+              "a": "x"
+            }
+          }
+        }]})json",
+    },
+    {
         R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["event_trigger_data"]: must be a list)",
         R"json({"triggers": [{
           "Attribution-Reporting-Register-Trigger": {
