@@ -148,6 +148,27 @@ void CompareTrafficCounters(
   }
 }
 
+void AddSimSlotInfoToList(base::Value::List& ordered_sim_slot_info_list,
+                          const std::string& eid,
+                          const std::string& iccid,
+                          bool primary = false) {
+  base::Value::Dict item;
+  item.Set(shill::kSIMSlotInfoEID, eid);
+  item.Set(shill::kSIMSlotInfoICCID, iccid);
+  item.Set(shill::kSIMSlotInfoPrimary, primary);
+  ordered_sim_slot_info_list.Append(std::move(item));
+}
+
+bool ContainsVpnDeviceState(
+    std::vector<mojom::DeviceStatePropertiesPtr> devices) {
+  for (auto& device : devices) {
+    if (device->type == mojom::NetworkType::kVPN) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string CreateApnShillDict() {
   TestApnData test_apn_data;
   test_apn_data.access_point_name = kCellularTestApn1;
@@ -161,6 +182,43 @@ std::string CreateApnShillDict() {
   test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
   return test_apn_data.AsApnShillDict();
 }
+
+bool OncApnHasId(const base::Value::Dict& apn) {
+  if (const std::string* id = apn.FindString(::onc::cellular_apn::kId)) {
+    return re2::RE2::FullMatch(*id, kApnIdRegex);
+  }
+  return false;
+}
+
+bool UserApnsMatch(const std::vector<TestApnData*>& expected_apns,
+                   const base::Value::List& actual_apns,
+                   bool has_state_field,
+                   bool is_password_masked) {
+  if (expected_apns.size() != actual_apns.size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < expected_apns.size(); i++) {
+    DCHECK(actual_apns[i].is_dict());
+    const base::Value::Dict& actual_apn = actual_apns[i].GetDict();
+    if (!OncApnHasId(actual_apn)) {
+      return false;
+    }
+    if (!expected_apns[i]->OncApnEquals(actual_apn, has_state_field,
+                                        is_password_masked)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool MojoApnHasId(const mojom::ApnPropertiesPtr& apn) {
+  if (!apn->id.has_value()) {
+    return false;
+  }
+  return re2::RE2::FullMatch(*apn->id, kApnIdRegex);
+}
+
 }  // namespace
 
 class CrosNetworkConfigTest : public testing::Test {
@@ -261,17 +319,6 @@ class CrosNetworkConfigTest : public testing::Test {
         ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
         /*global_network_config=*/base::DictionaryValue());
     base::RunLoop().RunUntilIdle();
-  }
-
-  void AddSimSlotInfoToList(base::Value::List& ordered_sim_slot_info_list,
-                            const std::string& eid,
-                            const std::string& iccid,
-                            bool primary = false) {
-    base::Value::Dict item;
-    item.Set(shill::kSIMSlotInfoEID, eid);
-    item.Set(shill::kSIMSlotInfoICCID, iccid);
-    item.Set(shill::kSIMSlotInfoPrimary, primary);
-    ordered_sim_slot_info_list.Append(std::move(item));
   }
 
   void SetupNetworks() {
@@ -692,16 +739,6 @@ class CrosNetworkConfigTest : public testing::Test {
     return result;
   }
 
-  bool ContainsVpnDeviceState(
-      std::vector<mojom::DeviceStatePropertiesPtr> devices) {
-    for (auto& device : devices) {
-      if (device->type == mojom::NetworkType::kVPN) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellularScanning(
       CellularInhibitor::InhibitReason inhibit_reason) {
     base::RunLoop run_loop;
@@ -779,33 +816,9 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
-  bool OncApnHasId(const base::Value::Dict& apn) {
-    if (const std::string* id = apn.FindString(::onc::cellular_apn::kId)) {
-      return re2::RE2::FullMatch(*id, kApnIdRegex);
-    }
-    return false;
-  }
-
-  bool UserApnsMatch(const std::vector<TestApnData*>& expected_apns,
-                     const base::Value::List& actual_apns,
-                     bool has_state_field,
-                     bool is_password_masked) {
-    if (expected_apns.size() != actual_apns.size()) {
-      return false;
-    }
-
-    for (size_t i = 0; i < expected_apns.size(); i++) {
-      DCHECK(actual_apns[i].is_dict());
-      const base::Value::Dict& actual_apn = actual_apns[i].GetDict();
-      if (!OncApnHasId(actual_apn)) {
-        return false;
-      }
-      if (!expected_apns[i]->OncApnEquals(actual_apn, has_state_field,
-                                          is_password_masked)) {
-        return false;
-      }
-    }
-    return true;
+  void CreateCustomApn(const std::string& guid, mojom::ApnPropertiesPtr apn) {
+    cros_network_config()->CreateCustomApn(guid, std::move(apn));
+    base::RunLoop().RunUntilIdle();
   }
 
   bool UserApnsInNetworkMetadataStoreMatch(
@@ -845,13 +858,6 @@ class CrosNetworkConfigTest : public testing::Test {
                          /*is_password_masked=*/true);
   }
 
-  bool MojoApnHasId(const mojom::ApnPropertiesPtr& apn) {
-    if (!apn->id.has_value()) {
-      return false;
-    }
-    return re2::RE2::FullMatch(*apn->id, kApnIdRegex);
-  }
-
   bool UserApnsInManagedPropertiesMatch(
       const std::vector<TestApnData*>& expected_apns) {
     mojom::ManagedPropertiesPtr props = GetManagedProperties(kCellularGuid);
@@ -880,11 +886,6 @@ class CrosNetworkConfigTest : public testing::Test {
       }
     }
     return true;
-  }
-
-  void CreateCustomApn(const std::string& guid, mojom::ApnPropertiesPtr apn) {
-    cros_network_config()->CreateCustomApn(guid, std::move(apn));
-    base::RunLoop().RunUntilIdle();
   }
 
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
