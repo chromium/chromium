@@ -684,21 +684,6 @@ source_set("browser_sources") {
   ]
 }
 
-# NOTE: This is separate from ":browser" because it depends on
-# //extensions/browser/api:api_registration, which in turn depends on
-# :browser.
-source_set("core_api_provider") {
-  sources = [
-    "core_extensions_browser_api_provider.cc",
-    "core_extensions_browser_api_provider.h",
-  ]
-
-  deps = [
-    ":browser",
-    "//extensions/browser/api:api_registration",
-  ]
-}
-
 # The set of all browsertests for anything defined under the
 # //extensions/browser module. Note that, unlike the production build targets
 # above, this is a monolithic target that includes all tests for both the core

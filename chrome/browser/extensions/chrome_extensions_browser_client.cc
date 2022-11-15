@@ -68,7 +68,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
-#include "extensions/browser/core_extensions_browser_api_provider.h"
+#include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"

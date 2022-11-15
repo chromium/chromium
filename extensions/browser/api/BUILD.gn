@@ -16,6 +16,7 @@ assert(enable_extensions,
 group("api") {
   public_deps = [
     "//extensions/browser/api:api_implementations",
+    "//extensions/browser/api:api_provider",
     "//extensions/browser/api:api_registration",
   ]
 }
@@ -163,6 +164,19 @@ source_set("api_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser/api",
     "//extensions/browser/api:api_implementations",
+  ]
+}
+
+# The "glue" layer that adds relevant API registrations to the extensions
+# client.
+source_set("api_provider") {
+  sources = [
+    "core_extensions_browser_api_provider.cc",
+    "core_extensions_browser_api_provider.h",
+  ]
+  deps = [
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api:api_registration",
   ]
 }
 

@@ -910,7 +910,6 @@ static_library("extensions") {
     "//device/fido",
     "//extensions:extensions_resources",
     "//extensions/browser",
-    "//extensions/browser:core_api_provider",
     "//extensions/browser/updater",
     "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",

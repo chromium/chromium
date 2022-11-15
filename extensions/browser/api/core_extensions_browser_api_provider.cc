@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/core_extensions_browser_api_provider.h"
+#include "extensions/browser/api/core_extensions_browser_api_provider.h"
 
 #include "extensions/browser/api/generated_api_registration.h"
 

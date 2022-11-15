@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
-#define EXTENSIONS_BROWSER_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
+#ifndef EXTENSIONS_BROWSER_API_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
+#define EXTENSIONS_BROWSER_API_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
 
 #include "extensions/browser/extensions_browser_api_provider.h"
 
@@ -23,4 +23,4 @@ class CoreExtensionsBrowserAPIProvider : public ExtensionsBrowserAPIProvider {
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
+#endif  // EXTENSIONS_BROWSER_API_CORE_EXTENSIONS_BROWSER_API_PROVIDER_H_
