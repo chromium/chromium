@@ -49,7 +49,8 @@ void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
       /*priority=*/FAST_BATCH, base::BindOnce([](Status status) {
         LOG(WARNING) << "Heartbeat Event completed with status: " << status;
       }),
-      base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
 }
 
 }  // namespace reporting

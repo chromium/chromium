@@ -12,7 +12,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/util/backoff_settings.h"
@@ -28,7 +28,7 @@ void ReportQueueFactory::Create(EventType event_type,
                                 Destination destination,
                                 SuccessCallback success_cb,
                                 int64_t reserved_space) {
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
+  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
   auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
@@ -85,7 +85,7 @@ ReportQueueFactory::CreateTrySetCallback(
     SuccessCallback success_cb,
     std::unique_ptr<::net::BackoffEntry> backoff_entry) {
   return base::BindPostTask(
-      base::ThreadTaskRunnerHandle::Get(),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&ReportQueueFactory::TrySetReportQueue,
                      std::move(success_cb)));
 }

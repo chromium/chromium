@@ -258,7 +258,7 @@ ReportingClient::ReportingClient()
                     base::BindRepeating(&ReportingClient::AsyncStartUploader),
                     std::move(storage_created_cb));
               }),
-          base::ThreadTaskRunnerHandle::Get()) {
+          base::SequencedTaskRunner::GetCurrentDefault()) {
 }
 
 ReportingClient::~ReportingClient() = default;
