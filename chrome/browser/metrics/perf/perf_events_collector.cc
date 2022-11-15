@@ -117,7 +117,7 @@ void ExtractVersionNumbers(const std::string& version,
 
 // Returns if a micro-architecture supports the cycles:ppp event.
 bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
-  return uarch == "Goldmont" || uarch == "GoldmontPlus" ||
+  return uarch == "Goldmont" || uarch == "GoldmontPlus" || uarch == "Tremont" ||
          uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake";
 }
 
@@ -133,7 +133,7 @@ bool KernelReleaseHasPEBSFlushingFix(const std::string& release) {
 // Returns if a micro-architecture supports LBR callgraph profiling.
 bool MicroarchitectureHasLBRCallgraph(const std::string& uarch) {
   return uarch == "Haswell" || uarch == "Broadwell" || uarch == "Skylake" ||
-         uarch == "Kabylake" || uarch == "Tigerlake";
+         uarch == "Kabylake" || uarch == "Tigerlake" || uarch == "Tremont";
 }
 
 // Returns if a kernel release supports LBR callgraph profiling.
@@ -273,14 +273,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Tigerlake" || cpu_uarch == "Silvermont" ||
       cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
       cpu_uarch == "GoldmontPlus" || cpu_uarch == "Tremont") {
-    if (cpu_uarch == "Tremont") {
-      cmds.emplace_back(WeightAndValue(12.5, itlb_miss_cycles_cmd));
-      cmds.emplace_back(WeightAndValue(12.5, dtlb_miss_cycles_cmd));
-    } else {
-      cmds.emplace_back(WeightAndValue(15.0, lbr_cmd));
-      cmds.emplace_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
-      cmds.emplace_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
-    }
+    cmds.emplace_back(WeightAndValue(15.0, lbr_cmd));
+    cmds.emplace_back(WeightAndValue(5.0, itlb_miss_cycles_cmd));
+    cmds.emplace_back(WeightAndValue(5.0, dtlb_miss_cycles_cmd));
     // Record precise events on last level cache misses whenever the hardware
     // supports.
     if (cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus" ||

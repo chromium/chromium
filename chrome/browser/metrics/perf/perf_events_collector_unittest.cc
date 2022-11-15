@@ -665,15 +665,14 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpuModel(cpuid, "");
   ASSERT_GE(cmds.size(), 2UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesHGCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPHGCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphHGCmd);
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPHGCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
-  // No LBR callstacks because the microarchitecture doesn't support it.
-  EXPECT_FALSE(base::Contains(cmds, kPerfLBRCallgraphCmd,
-                              &RandomSelector::WeightAndValue::value));
-  EXPECT_FALSE(base::Contains(cmds, kPerfLBRCmdAtom,
-                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfLBRCallgraphPPPCmd,
+                             &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfLBRCmd,
+                             &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfLLCMissesPreciseCmd,
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdTremont,
