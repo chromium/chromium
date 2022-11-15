@@ -256,7 +256,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         int mMaxReportedScrollPercentage;
 
         void onScrollStarted(boolean isDirectionUp) {
-            assert !mIsScrollActive;
+            // We shouldn't get an |onScrollStarted()| call while a scroll is still in progress,
+            // but it can happen. Call |onScrollEnded()| to make sure we're in a valid state.
+            if (mIsScrollActive) onScrollEnded();
             mIsScrollActive = true;
             mIsDirectionUp = isDirectionUp;
         }
