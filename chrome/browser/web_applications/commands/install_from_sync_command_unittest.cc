@@ -123,8 +123,7 @@ class InstallFromSyncTest : public WebAppTest {
       InstallFromSyncCommand::Params params,
       OnceInstallCallback install_callback) {
     return std::make_unique<InstallFromSyncCommand>(
-        &url_loader(), profile(), &provider()->install_finalizer(),
-        &provider()->registrar(), std::move(data_retriever), params,
+        &url_loader(), profile(), std::move(data_retriever), params,
         std::move(install_callback));
   }
 

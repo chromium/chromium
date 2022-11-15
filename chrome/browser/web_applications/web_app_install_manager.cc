@@ -165,8 +165,8 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
           web_app->sync_fallback_data().icon_infos);
       command_manager_->ScheduleCommand(
           std::make_unique<InstallFromSyncCommand>(
-              url_loader_.get(), profile_, finalizer_.get(), registrar_.get(),
-              data_retriever_factory_.Run(), params, callback));
+              url_loader_.get(), profile_, data_retriever_factory_.Run(),
+              params, callback));
     }
   }
 }

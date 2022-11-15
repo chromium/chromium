@@ -74,8 +74,6 @@ InstallFromSyncCommand::Params::Params(const Params&) = default;
 InstallFromSyncCommand::InstallFromSyncCommand(
     WebAppUrlLoader* url_loader,
     Profile* profile,
-    WebAppInstallFinalizer* finalizer,
-    WebAppRegistrar* registrar,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     const Params& params,
     OnceInstallCallback install_callback)
@@ -84,8 +82,6 @@ InstallFromSyncCommand::InstallFromSyncCommand(
                            base::flat_set<AppId>>({params.app_id})),
       url_loader_(url_loader),
       profile_(profile),
-      finalizer_(finalizer),
-      registrar_(registrar),
       data_retriever_(std::move(data_retriever)),
       params_(params),
       install_callback_(std::move(install_callback)),
@@ -133,9 +129,12 @@ LockDescription& InstallFromSyncCommand::lock_description() const {
   return *lock_description_;
 }
 
-void InstallFromSyncCommand::Start() {
+void InstallFromSyncCommand::StartWithLock(
+    std::unique_ptr<SharedWebContentsWithAppLock> lock) {
+  lock_ = std::move(lock);
+
   url_loader_->LoadUrl(
-      params_.start_url, shared_web_contents(),
+      params_.start_url, &lock_->shared_web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo,
@@ -174,7 +173,7 @@ void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
   }
 
   data_retriever_->GetWebAppInstallInfo(
-      shared_web_contents(),
+      &lock_->shared_web_contents(),
       base::BindOnce(&InstallFromSyncCommand::OnGetWebAppInstallInfo,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -198,7 +197,7 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
   fallback_install_info_->mobile_capable = install_info_->mobile_capable;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      shared_web_contents(), /*bypass_service_worker_check=*/true,
+      &lock_->shared_web_contents(), /*bypass_service_worker_check=*/true,
       base::BindOnce(&InstallFromSyncCommand::OnDidPerformInstallableCheck,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -238,7 +237,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
 
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
-      shared_web_contents(), std::move(icon_urls),
+      &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/manifest_has_icons,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -264,7 +263,7 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
   install_error_log_entry_.LogDownloadedIconsErrors(
       *current_info, result, icons_map, icons_http_results);
 
-  finalizer_->FinalizeInstall(
+  lock_->install_finalizer().FinalizeInstall(
       *current_info, GetFinalizerOptionForSyncInstall(),
       base::BindOnce(&InstallFromSyncCommand::OnInstallFinalized,
                      weak_ptr_factory_.GetWeakPtr(), mode));
@@ -299,7 +298,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   // list.
   // TODO(dmurph): Also use favicons. https://crbug.com/1328977.
   data_retriever_->GetIcons(
-      shared_web_contents(), std::move(icon_urls),
+      &lock_->shared_web_contents(), std::move(icon_urls),
       /*skip_page_favicons=*/true,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -27,13 +27,13 @@ struct WebAppInstallInfo;
 namespace web_app {
 
 class LockDescription;
+class SharedWebContentsWithAppLock;
 class SharedWebContentsWithAppLockDescription;
-class WebAppInstallFinalizer;
 class WebAppDataRetriever;
-class WebAppRegistrar;
 enum class WebAppUrlLoaderResult;
 
-class InstallFromSyncCommand : public WebAppCommand {
+class InstallFromSyncCommand
+    : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
  public:
   struct Params {
     Params() = delete;
@@ -62,8 +62,6 @@ class InstallFromSyncCommand : public WebAppCommand {
   InstallFromSyncCommand(
       WebAppUrlLoader* url_loader,
       Profile* profile,
-      WebAppInstallFinalizer* finalizer,
-      WebAppRegistrar* registrar,
       std::unique_ptr<WebAppDataRetriever> web_app_data_retriever,
       const Params& params,
       OnceInstallCallback install_callback);
@@ -77,7 +75,8 @@ class InstallFromSyncCommand : public WebAppCommand {
 
   void OnShutdown() override;
 
-  void Start() override;
+  void StartWithLock(
+      std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
 
   void SetFallbackTriggeredForTesting(
       base::OnceCallback<void(webapps::InstallResultCode code)> callback);
@@ -111,10 +110,10 @@ class InstallFromSyncCommand : public WebAppCommand {
                               webapps::InstallResultCode code);
 
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+
   const base::raw_ptr<WebAppUrlLoader> url_loader_;
   const base::raw_ptr<Profile> profile_;
-  const base::raw_ptr<WebAppInstallFinalizer> finalizer_;
-  const base::raw_ptr<WebAppRegistrar> registrar_;
   const std::unique_ptr<WebAppDataRetriever> data_retriever_;
   const Params params_;
   OnceInstallCallback install_callback_;

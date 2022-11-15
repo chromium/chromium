@@ -47,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
                       96)});
   provider->command_manager().ScheduleCommand(
       std::make_unique<InstallFromSyncCommand>(
-          url_loader.get(), profile(), &provider->install_finalizer(),
-          &provider->registrar(), std::make_unique<WebAppDataRetriever>(),
+          url_loader.get(), profile(), std::make_unique<WebAppDataRetriever>(),
           params,
           base::BindLambdaForTesting(
               [&](const AppId& app_id, webapps::InstallResultCode code) {
@@ -88,9 +87,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
                         96)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
-            url_loader.get(), profile(), &provider->install_finalizer(),
-            &provider->registrar(), std::make_unique<WebAppDataRetriever>(),
-            params,
+            url_loader.get(), profile(),
+            std::make_unique<WebAppDataRetriever>(), params,
             base::BindLambdaForTesting([&](const AppId& app_id,
                                            webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -106,9 +104,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
                         96)});
     provider->command_manager().ScheduleCommand(
         std::make_unique<InstallFromSyncCommand>(
-            url_loader.get(), profile(), &provider->install_finalizer(),
-            &provider->registrar(), std::make_unique<WebAppDataRetriever>(),
-            params,
+            url_loader.get(), profile(),
+            std::make_unique<WebAppDataRetriever>(), params,
             base::BindLambdaForTesting([&](const AppId& app_id,
                                            webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
