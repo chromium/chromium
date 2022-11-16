@@ -54,7 +54,7 @@ void ReadAnythingUI::CreatePageHandler(
     mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver) {
   DCHECK(page);
   read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
-      std::move(page), std::move(receiver));
+      std::move(page), std::move(receiver), web_ui());
   if (embedder())
     embedder()->ShowUI();
 }

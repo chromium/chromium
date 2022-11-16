@@ -41,7 +41,8 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
 
   ReadAnythingPageHandler(
       mojo::PendingRemote<read_anything::mojom::Page> page,
-      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver,
+      content::WebUI* web_ui);
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
   ~ReadAnythingPageHandler() override;
@@ -54,7 +55,12 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
       const ui::AXTreeUpdate& snapshot,
       const std::vector<ui::AXNodeID>& content_node_ids) override;
   void OnReadAnythingThemeChanged(
-      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
+      std::string& font_name,
+      double font_scale,
+      ui::ColorId foreground_color_id,
+      ui::ColorId background_color_id,
+      read_anything::mojom::Spacing line_spacing,
+      read_anything::mojom::Spacing letter_spacing) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
@@ -63,10 +69,12 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<ReadAnythingPageHandler::Delegate> delegate_;
 
-  raw_ptr<Browser> browser_;
+  const raw_ptr<Browser> browser_;
 
-  mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
-  mojo::Remote<read_anything::mojom::Page> page_;
+  const mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
+  const mojo::Remote<read_anything::mojom::Page> page_;
+
+  const raw_ptr<content::WebUI> web_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_PAGE_HANDLER_H_

@@ -115,6 +115,12 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   coordinator_->AddModelObserver(this);
 }
 
+// After this view is added to the widget, we have access to the color provider
+// to apply the initial theme skcolors.
+void ReadAnythingToolbarView::AddedToWidget() {
+  ChangeColorsCallback();
+}
+
 void ReadAnythingToolbarView::DecreaseFontSizeCallback() {
   if (delegate_)
     delegate_->OnFontSizeChanged(/* increase = */ false);
@@ -151,26 +157,41 @@ void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
 }
 
 void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
-    read_anything::mojom::ReadAnythingThemePtr new_theme) {
-  SetBackground(views::CreateSolidBackground(new_theme->background_color));
+    std::string& font_name,
+    double font_scale,
+    ui::ColorId foreground_color_id,
+    ui::ColorId background_color_id,
+    read_anything::mojom::Spacing line_spacing,
+    read_anything::mojom::Spacing letter_spacing) {
+  if (!GetColorProvider())
+    return;
+
+  const SkColor background_skcolor =
+      GetColorProvider()->GetColor(background_color_id);
+  const SkColor foreground_skcolor =
+      GetColorProvider()->GetColor(foreground_color_id);
+
+  SetBackground(views::CreateSolidBackground(background_skcolor));
   font_combobox_->SetBackground(
-      views::CreateSolidBackground(new_theme->background_color));
+      views::CreateSolidBackground(background_skcolor));
   colors_combobox_->SetBackground(
-      views::CreateSolidBackground(new_theme->background_color));
+      views::CreateSolidBackground(background_skcolor));
   lines_combobox_->SetBackground(
-      views::CreateSolidBackground(new_theme->background_color));
+      views::CreateSolidBackground(background_skcolor));
   letter_spacing_combobox_->SetBackground(
-      views::CreateSolidBackground(new_theme->background_color));
+      views::CreateSolidBackground(background_skcolor));
 
   decrease_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
-      kTextDecreaseIcon, kSmallIconSize, new_theme->foreground_color));
+      kTextDecreaseIcon, kSmallIconSize, foreground_skcolor));
 
   increase_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
-      kTextIncreaseIcon, kLargeIconSize, new_theme->foreground_color));
+      kTextIncreaseIcon, kLargeIconSize, foreground_skcolor));
 
   for (views::Separator* separator : separators_) {
-    separator->SetColorId(delegate_->GetForegroundColorId());
+    separator->SetColorId(foreground_color_id);
   }
+
+  delegate_->SetIconColorIds(foreground_color_id);
 }
 
 std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
@@ -187,7 +208,6 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
   separator_container->SetLayoutManager(std::move(separator_layout_manager));
 
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColorId(delegate_->GetForegroundColorId());
   separators_.push_back(
       separator_container->AddChildView(std::move(separator)));
 
