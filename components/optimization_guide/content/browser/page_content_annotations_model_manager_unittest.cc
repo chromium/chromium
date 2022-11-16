@@ -167,7 +167,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
         AnnotationType::kContentVisibility, base::DoNothing());
     // If the feature flag is disabled, the executor won't have been created so
     // skip everything else.
-    if (!model_manager()->page_visibility_model_executor_)
+    if (!model_manager()->page_visibility_model_handler_)
       return;
 
     base::FilePath source_root_dir;
@@ -182,7 +182,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
             .SetModelFilePath(model_file_path)
             .SetModelMetadata(model_metadata)
             .Build();
-    model_manager()->page_visibility_model_executor_->OnModelUpdated(
+    model_manager()->page_visibility_model_handler_->OnModelUpdated(
         proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, *model_info);
     RunUntilIdle();
   }

@@ -55,6 +55,8 @@ static_library("model_executor") {
       "bert_model_executor.cc",
       "bert_model_executor.h",
       "model_execution_timeout_watchdog.h",
+      "page_visibility_model_executor.cc",
+      "page_visibility_model_executor.h",
       "tflite_model_executor.h",
     ]
   }
@@ -75,6 +77,7 @@ static_library("model_executor") {
   }
   deps = [
     ":features",
+    ":machine_learning",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//net",
@@ -91,12 +94,15 @@ mojom("interfaces") {
 if (build_with_tflite_lib) {
   static_library("machine_learning") {
     sources = [
+      "page_visibility_op_resolver.cc",
+      "page_visibility_op_resolver.h",
       "tflite_op_resolver.cc",
       "tflite_op_resolver.h",
     ]
     deps = [
       ":features",
       "//components/optimization_guide:machine_learning_tflite_buildflags",
+      "//third_party/tensorflow_models:tflite_custom_ops",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
     ]
@@ -203,8 +209,8 @@ static_library("core") {
       "page_entities_model_executor.h",
       "page_topics_model_executor.cc",
       "page_topics_model_executor.h",
-      "page_visibility_model_executor.cc",
-      "page_visibility_model_executor.h",
+      "page_visibility_model_handler.cc",
+      "page_visibility_model_handler.h",
     ]
     if (build_with_internal_optimization_guide) {
       sources += [
@@ -391,7 +397,7 @@ source_set("unit_tests") {
       "model_validator_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
       "page_topics_model_executor_unittest.cc",
-      "page_visibility_model_executor_unittest.cc",
+      "page_visibility_model_handler_unittest.cc",
       "tflite_model_executor_unittest.cc",
     ]
     if (build_with_internal_optimization_guide) {

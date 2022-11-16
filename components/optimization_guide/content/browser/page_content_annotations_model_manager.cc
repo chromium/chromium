@@ -111,14 +111,13 @@ void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
   if (!features::PageVisibilityBatchAnnotationsEnabled())
     return;
 
-  if (page_visibility_model_executor_)
+  if (page_visibility_model_handler_)
     return;
 
-  page_visibility_model_executor_ =
-      std::make_unique<PageVisibilityModelExecutor>(
-          optimization_guide_model_provider,
-          base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-          absl::nullopt);
+  page_visibility_model_handler_ = std::make_unique<PageVisibilityModelHandler>(
+      optimization_guide_model_provider,
+      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
+      absl::nullopt);
 }
 
 void PageContentAnnotationsModelManager::GetMetadataForEntityId(
@@ -151,8 +150,8 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
     // No-op if the executor is already setup.
     SetUpPageVisibilityModel(optimization_guide_model_provider_);
 
-    if (page_visibility_model_executor_) {
-      page_visibility_model_executor_->AddOnModelUpdatedCallback(
+    if (page_visibility_model_handler_) {
+      page_visibility_model_handler_->AddOnModelUpdatedCallback(
           base::BindOnce(std::move(callback), true));
       return;
     }
@@ -179,8 +178,8 @@ PageContentAnnotationsModelManager::GetModelInfoForType(
     return page_topics_model_executor_->GetModelInfo();
   }
   if (type == AnnotationType::kContentVisibility &&
-      page_visibility_model_executor_) {
-    return page_visibility_model_executor_->GetModelInfo();
+      page_visibility_model_handler_) {
+    return page_visibility_model_handler_->GetModelInfo();
   }
   if (type == AnnotationType::kPageEntities && page_entities_model_executor_) {
     return page_entities_model_executor_->GetModelInfo();
@@ -223,8 +222,8 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     if (page_topics_model_executor_) {
       page_topics_model_executor_->UnloadModel();
     }
-    if (page_visibility_model_executor_) {
-      page_visibility_model_executor_->UnloadModel();
+    if (page_visibility_model_handler_) {
+      page_visibility_model_handler_->UnloadModel();
     }
     return;
   }
@@ -246,8 +245,8 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     page_topics_model_executor_->UnloadModel();
   }
   if (job->type() != AnnotationType::kContentVisibility &&
-      page_visibility_model_executor_) {
-    page_visibility_model_executor_->UnloadModel();
+      page_visibility_model_handler_) {
+    page_visibility_model_handler_->UnloadModel();
   }
 
   if (job->type() == AnnotationType::kPageTopics) {
@@ -264,14 +263,14 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
   }
 
   if (job->type() == AnnotationType::kContentVisibility) {
-    if (!page_visibility_model_executor_) {
+    if (!page_visibility_model_handler_) {
       job->FillWithNullOutputs();
       job->OnComplete();
       job.reset();
       std::move(on_job_complete_callback).Run();
       return;
     }
-    page_visibility_model_executor_->ExecuteJob(
+    page_visibility_model_handler_->ExecuteJob(
         std::move(on_job_complete_callback), std::move(job));
     return;
   }
