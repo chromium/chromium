@@ -1038,6 +1038,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - UIResponder
 
+// To always be able to register key commands, the VC must be able to become
+// first responder.
 - (BOOL)canBecomeFirstResponder {
   return YES;
 }

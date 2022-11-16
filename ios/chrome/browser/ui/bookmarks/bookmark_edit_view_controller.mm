@@ -693,7 +693,13 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
 #pragma mark - UIResponder
 
-- (NSArray*)keyCommands {
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
   return @[ UIKeyCommand.cr_close ];
 }
 

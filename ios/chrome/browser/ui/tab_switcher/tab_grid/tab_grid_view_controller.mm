@@ -2515,6 +2515,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - UIResponder
 
+// To always be able to register key commands via -keyCommands, the VC must be
+// able to become first responder.
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
 - (NSArray<UIKeyCommand*>*)keyCommands {
   if (IsKeyboardShortcutsMenuEnabled()) {
     // Other key commands are already declared in the menu.
