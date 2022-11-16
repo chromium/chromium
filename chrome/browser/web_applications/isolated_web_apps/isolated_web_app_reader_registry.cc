@@ -157,59 +157,36 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-        read_error) {
+        read_integrity_block_and_metadata_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto cache_entry_it = reader_cache_.Find(web_bundle_path);
   DCHECK(cache_entry_it != reader_cache_.End());
   DCHECK_EQ(cache_entry_it->second.state, Cache::Entry::State::kPending);
 
-  // Get all pending requests and set the pending requests of the cache entry to
-  // an empty vector.
-  std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
-      pending_requests;
-  cache_entry_it->second.pending_requests.swap(pending_requests);
-
-  if (read_error.has_value()) {
-    std::string error_message = absl::visit(
-        base::Overloaded{
-            [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                   error) {
-              return base::StringPrintf("Failed to parse integrity block: %s",
-                                        error->message.c_str());
-            },
-            [](const SignedWebBundleReader::AbortedByCaller& error) {
-              return base::StringPrintf(
-                  "Public keys of the Isolated Web App are untrusted: %s",
-                  error.message.c_str());
-            },
-            [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                   error) {
-              return base::StringPrintf("Failed to verify signatures: %s",
-                                        error.message.c_str());
-            },
-            [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
-              return base::StringPrintf("Failed to parse metadata: %s",
-                                        error->message.c_str());
-            }},
-        *read_error);
-    for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(
-          base::unexpected(ReadResponseError::ForOtherError(error_message)));
-    }
-    reader_cache_.Erase(cache_entry_it);
-    return;
+  absl::optional<ReadResponseError> error;
+  if (read_integrity_block_and_metadata_error.has_value()) {
+    error =
+        ReadResponseError::ForError(*read_integrity_block_and_metadata_error);
   }
 
   SignedWebBundleReader& reader = cache_entry_it->second.GetReader();
 
-  if (auto error = validator_->ValidateMetadata(
-          web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries());
-      error.has_value()) {
+  if (!error.has_value()) {
+    if (auto error_message = validator_->ValidateMetadata(
+            web_bundle_id, reader.GetPrimaryURL(), reader.GetEntries());
+        error_message.has_value()) {
+      error = ReadResponseError::ForMetadataValidationError(*error_message);
+    }
+  }
+
+  std::vector<std::pair<network::ResourceRequest, ReadResponseCallback>>
+      pending_requests =
+          std::exchange(cache_entry_it->second.pending_requests, {});
+
+  if (error.has_value()) {
     for (auto& [resource_request, callback] : pending_requests) {
-      std::move(callback).Run(
-          base::unexpected(ReadResponseError::ForOtherError(base::StringPrintf(
-              "Failed to validate metadata: %s", error->c_str()))));
+      std::move(callback).Run(base::unexpected(*error));
     }
     reader_cache_.Erase(cache_entry_it);
     return;
@@ -263,20 +240,9 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
     base::expected<web_package::mojom::BundleResponsePtr,
                    SignedWebBundleReader::ReadResponseError> response_head) {
   if (!response_head.has_value()) {
-    switch (response_head.error().type) {
-      case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
-      case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
-        std::move(callback).Run(
-            base::unexpected(ReadResponseError::ForOtherError(
-                base::StringPrintf("Failed to parse response head: %s",
-                                   response_head.error().message.c_str()))));
-        return;
-      case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
-        std::move(callback).Run(
-            base::unexpected(ReadResponseError::ForResponseNotFound(
-                response_head.error().message)));
-        return;
-    }
+    std::move(callback).Run(
+        base::unexpected(ReadResponseError::ForError(response_head.error())));
+    return;
   }
   // Since `this` owns `reader`, we only pass a weak reference to it to the
   // `Response` object. If `this` deletes `reader`, it makes sense that the
@@ -307,6 +273,58 @@ void IsolatedWebAppReaderRegistry::Response::ReadBody(
   }
   reader_->ReadResponseBody(head_->Clone(), std::move(producer_handle),
                             std::move(callback));
+}
+
+// static
+IsolatedWebAppReaderRegistry::ReadResponseError
+IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
+    const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
+  return ForOtherError(absl::visit(
+      base::Overloaded{
+          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
+                 error) {
+            return base::StringPrintf("Failed to parse integrity block: %s",
+                                      error->message.c_str());
+          },
+          [](const SignedWebBundleReader::AbortedByCaller& error) {
+            return base::StringPrintf("Failed to validate integrity block: %s",
+                                      error.message.c_str());
+          },
+          [](const web_package::SignedWebBundleSignatureVerifier::Error&
+                 error) {
+            return base::StringPrintf("Failed to verify signatures: %s",
+                                      error.message.c_str());
+          },
+          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
+            return base::StringPrintf("Failed to parse metadata: %s",
+                                      error->message.c_str());
+          }},
+      error));
+}
+
+// static
+IsolatedWebAppReaderRegistry::ReadResponseError
+IsolatedWebAppReaderRegistry::ReadResponseError::ForMetadataValidationError(
+    const std::string& error) {
+  return ForOtherError(
+      base::StringPrintf("Failed to validate metadata: %s", error.c_str()));
+}
+
+// static
+IsolatedWebAppReaderRegistry::ReadResponseError
+IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
+    const SignedWebBundleReader::ReadResponseError& error) {
+  switch (error.type) {
+    case SignedWebBundleReader::ReadResponseError::Type::kParserInternalError:
+      return ForOtherError(base::StringPrintf(
+          "Failed to parse response head: %s", error.message.c_str()));
+    case SignedWebBundleReader::ReadResponseError::Type::kFormatError:
+      return ForOtherError(base::StringPrintf(
+          "Failed to parse response head: %s", error.message.c_str()));
+    case SignedWebBundleReader::ReadResponseError::Type::kResponseNotFound:
+      return ForResponseNotFound(base::StringPrintf(
+          "Failed to read response: %s", error.message.c_str()));
+  }
 }
 
 IsolatedWebAppReaderRegistry::Cache::Cache() = default;

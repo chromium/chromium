@@ -89,6 +89,19 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       kResponseNotFound,
     };
 
+    static ReadResponseError ForError(
+        const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error);
+
+    static ReadResponseError ForMetadataValidationError(
+        const std::string& error);
+
+    static ReadResponseError ForError(
+        const SignedWebBundleReader::ReadResponseError& error);
+
+    Type type;
+    std::string message;
+
+   private:
     static ReadResponseError ForOtherError(const std::string& message) {
       return ReadResponseError(Type::kOtherError, message);
     }
@@ -97,10 +110,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       return ReadResponseError(Type::kResponseNotFound, message);
     }
 
-    Type type;
-    std::string message;
-
-   private:
     ReadResponseError(Type type, const std::string& message)
         : type(type), message(message) {}
   };
@@ -137,7 +146,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
       absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-          read_error);
+          read_integrity_block_and_metadata_error);
 
   void DoReadResponse(SignedWebBundleReader& reader,
                       network::ResourceRequest resource_request,

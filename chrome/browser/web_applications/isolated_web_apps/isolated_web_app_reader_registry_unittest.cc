@@ -289,7 +289,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
       result.error().type,
       IsolatedWebAppReaderRegistry::ReadResponseError::Type::kResponseNotFound);
   EXPECT_EQ(result.error().message,
-            "The Web Bundle does not contain a response for the provided URL: "
+            "Failed to read response: The Web Bundle does not contain a "
+            "response for the provided URL: "
             "isolated-app://"
             "aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/foo");
 }
@@ -432,7 +433,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
             "Failed to parse integrity block: test error");
 }
 
-TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
+TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
@@ -455,7 +456,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
   EXPECT_EQ(result.error().type,
             IsolatedWebAppReaderRegistry::ReadResponseError::Type::kOtherError);
   EXPECT_EQ(result.error().message,
-            "Public keys of the Isolated Web App are untrusted: test error");
+            "Failed to validate integrity block: test error");
 }
 
 class IsolatedWebAppReaderRegistrySignatureVerificationErrorTest
