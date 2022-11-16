@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
-import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
+import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedPageRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -24,7 +24,7 @@ import {$$, assertNotStyle, assertStyle, keydown} from './most_visited_test_supp
 let mostVisited: MostVisitedElement;
 let windowProxy: MostVisitedWindowProxy&TestBrowserProxy;
 let handler: MostVisitedPageHandlerRemote&TestBrowserProxy;
-let callbackRouterRemote: MostVisitedPageCallbackRouter;
+let callbackRouterRemote: MostVisitedPageRemote;
 let mediaListenerWideWidth: FakeMediaQueryList;
 let mediaListenerMediumWidth: FakeMediaQueryList;
 let mediaListener: Function;

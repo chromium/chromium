@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {counterfactualLoad, LensUploadDialogElement, Module, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -23,7 +23,7 @@ suite('NewTabPageAppTest', () => {
   let app: AppElement;
   let windowProxy: TestBrowserProxy;
   let handler: TestBrowserProxy;
-  let callbackRouterRemote: PageHandlerRemote&PageInterface;
+  let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
   let moduleRegistry: TestBrowserProxy;
   let backgroundManager: TestBrowserProxy;

@@ -12,6 +12,7 @@
 // @see //third_party/blink/renderer/core/mojo/mojo.idl
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 declare global {
   enum MojoResult {
@@ -57,30 +58,134 @@ declare global {
 export namespace mojo {
   namespace internal {
     namespace interfaceSupport {
-
       interface Endpoint {}
+
+      function getEndpointForReceiver(handle: MojoHandle|Endpoint): Endpoint;
+
+      function bind(handle: Endpoint, name: string, scope: string): void;
+
+      interface ConnectionErrorEventRouter {
+        addListener(listener: Function): number;
+        removeListener(id: number): boolean;
+        dispatchErrorEvent(): void;
+      }
 
       interface PendingReceiver {
         readonly handle: Endpoint;
       }
 
-      function getEndpointForReceiver(handle: Endpoint): Endpoint;
+      type RequestType = new(handle: Endpoint) => PendingReceiver;
 
-      interface InterfaceRemoteBaseWrapper<T> {
+      class InterfaceRemoteBase<T> {
+        constructor(requestType: RequestType, handle: Endpoint|undefined);
+        get endpoint(): Endpoint;
+        bindNewPipeAndPassReceiver(): PendingReceiver;
+        bindHandle(handle: MojoHandle|Endpoint): void;
+        associateAndPassReceiver(): PendingReceiver;
+        unbind(): void;
+        close(): void;
+        getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
+        sendMessage(
+            ordinal: number, paramStruct: mojo.internal.MojomType,
+            maybeResponseStruct: mojo.internal.MojomType|null,
+            args: any[]): Promise<any>;
+      }
+
+      class InterfaceRemoteBaseWrapper<T> {
+        constructor(remote: InterfaceRemoteBase<T>);
         bindNewPipeAndPassReceiver(): T;
+        associateAndPassReceiver(): T;
+        isBound(): boolean;
         close(): void;
+        flushForTesting(): Promise<void>;
       }
 
-      interface InterfaceCallbackReceiver {
+      class CallbackRouter {
+        getNextId(): number;
+        removeListener(id: number): boolean;
+      }
+
+      class InterfaceCallbackReceiver {
+        constructor(router: CallbackRouter);
         addListener(listener: Function): number;
+        createReceiverHandler(expectsResponse: boolean): Function;
       }
 
-      interface InterfaceReceiverHelper<T> {
+      type RemoteType<T> = new(handle: MojoHandle|Endpoint) => T;
+
+      class InterfaceReceiverHelperInternal<T> {
+        constructor(remoteType: RemoteType<T>);
+        registerHandler(
+            ordinal: number, paramStruct: mojo.internal.MojomType,
+            responseStruct: mojo.internal.MojomType|null,
+            handler: Function): void;
+        getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
+      }
+
+      class InterfaceReceiverHelper<T> {
+        constructor(helper: InterfaceReceiverHelperInternal<T>);
+        bindHandle(handle: MojoHandle|Endpoint): void;
         bindNewPipeAndPassRemote(): T;
+        associateAndPassRemote(): T;
         close(): void;
+        flushForTesting(): Promise<void>;
       }
     }
 
     interface MojomType {}
+    class Bool implements MojomType {}
+    class Int8 implements MojomType {}
+    class Uint8 implements MojomType {}
+    class Int16 implements MojomType {}
+    class Uint16 implements MojomType {}
+    class Int32 implements MojomType {}
+    class Uint32 implements MojomType {}
+    class Int64 implements MojomType {}
+    class Uint64 implements MojomType {}
+    class Float implements MojomType {}
+    class Double implements MojomType {}
+    class Handle implements MojomType {}
+    class String implements MojomType {}
+
+    function Array(elementType: MojomType, elementNullable: boolean): MojomType;
+    function Map(
+        keyType: MojomType, valueType: MojomType,
+        valueNullable: boolean): MojomType;
+    function Enum(): MojomType;
+
+    interface StructFieldSpec {
+      name: string;
+      packedOffset: number;
+      packedBitOffset: number;
+      type: MojomType;
+      defaultValue: any;
+      nullable: boolean;
+      minVersion: number;
+    }
+
+    function StructField(
+        name: string, packedOffset: number, packedBitOffset: number,
+        type: MojomType, defaultValue: any, nullable: boolean,
+        minVersion?: number): StructFieldSpec;
+
+    function Struct(
+        objectToBlessAsType: object, name: string, fields: StructFieldSpec[],
+        versionData: number[][]): void;
+
+    interface UnionFieldSpec {
+      name?: string;
+      ordinal: number;
+      nullable?: boolean;
+      type: MojomType;
+    }
+
+    function Union(
+        objectToBlessAsUnion: object, name: string,
+        fields: {[key: string]: any}): void;
+
+    function InterfaceProxy(type: {name: string}): MojomType;
+    function InterfaceRequest(type: {name: string}): MojomType;
+    function AssociatedInterfaceProxy(type: {name: string}): MojomType;
+    function AssociatedInterfaceRequest(type: {name: string}): MojomType;
   }
 }

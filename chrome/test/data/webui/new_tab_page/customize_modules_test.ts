@@ -8,7 +8,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {ChromeCartProxy, CustomizeModulesElement, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -19,7 +19,7 @@ import {assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeModulesTest', () => {
   let handler: TestBrowserProxy;
-  let callbackRouterRemote: PageHandlerRemote&PageInterface;
+  let callbackRouterRemote: PageRemote;
   let moduleRegistry: TestBrowserProxy;
   let metrics: MetricsTracker;
   let cartHandler: TestBrowserProxy;
