@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -82,18 +81,9 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container);
 int GetSessionIdForRestoreFromWebContents(
     const content::WebContents* web_contents);
 
-// Helper to create apps::mojom::WindowInfoPtr using |display_id|, which is the
-// id of the display from which the app is launched.
-// TODO(crbug.com/1253250): Remove. Prefer the non mojom WindowInfo.
-apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper to convert apps::mojom::WindowInfoPtr to arc::mojom::WindowInfoPtr.
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info);
-
-// TODO(crbug.com/1253250): Remove. Prefer the non mojom MakeArcWindowInfo.
-arc::mojom::WindowInfoPtr MakeArcWindowInfo(
-    apps::mojom::WindowInfoPtr window_info);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

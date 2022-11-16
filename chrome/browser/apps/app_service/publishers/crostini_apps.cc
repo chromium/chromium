@@ -212,7 +212,6 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,
                                          /*prefer_container=*/false);
-  auto window_info = apps::MakeWindowInfo(params.display_id);
   if (params.intent) {
     LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
                         params.launch_source,

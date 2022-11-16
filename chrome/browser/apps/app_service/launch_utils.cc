@@ -345,12 +345,6 @@ int GetSessionIdForRestoreFromWebContents(
   return browser->session_id().id();
 }
 
-apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
-  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
-  window_info->display_id = display_id;
-  return window_info;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   if (!window_info) {
@@ -367,23 +361,6 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(WindowInfoPtr window_info) {
   return arc_window_info;
 }
 
-arc::mojom::WindowInfoPtr MakeArcWindowInfo(
-    apps::mojom::WindowInfoPtr window_info) {
-  if (!window_info) {
-    return nullptr;
-  }
-
-  arc::mojom::WindowInfoPtr arc_window_info = arc::mojom::WindowInfo::New();
-  arc_window_info->window_id = window_info->window_id;
-  arc_window_info->state = window_info->state;
-  arc_window_info->display_id = window_info->display_id;
-  if (window_info->bounds) {
-    gfx::Rect rect{window_info->bounds->x, window_info->bounds->y,
-                   window_info->bounds->width, window_info->bounds->height};
-    arc_window_info->bounds = rect;
-  }
-  return arc_window_info;
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

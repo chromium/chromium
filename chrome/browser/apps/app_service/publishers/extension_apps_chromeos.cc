@@ -206,10 +206,9 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
     // TODO(petermarshall): Set Arc flag as above?
     auto event_flags = apps::GetEventFlags(params.disposition,
                                            /*prefer_container=*/false);
-    auto window_info = apps::MakeWindowInfo(params.display_id);
     LaunchExtension(params.app_id, event_flags, std::move(params.intent),
                     params.launch_source,
-                    ConvertMojomWindowInfoToWindowInfo(window_info),
+                    std::make_unique<WindowInfo>(params.display_id),
                     base::DoNothing());
   }
 }

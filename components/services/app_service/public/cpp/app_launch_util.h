@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_LAUNCH_UTIL_H_
 
+#include "base/component_export.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,16 +93,6 @@ using WindowInfoPtr = std::unique_ptr<WindowInfo>;
 COMPONENT_EXPORT(APP_TYPES)
 ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
     LaunchSource launch_source);
-
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(APP_TYPES)
-WindowInfoPtr ConvertMojomWindowInfoToWindowInfo(
-    const apps::mojom::WindowInfoPtr& mojom_window_info);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::WindowInfoPtr ConvertWindowInfoToMojomWindowInfo(
-    const WindowInfoPtr& mojom_window_info);
 
 }  // namespace apps
 

@@ -383,24 +383,6 @@ struct CapabilityAccess {
   // components/services/app_service/public/cpp/access_update.*
 };
 
-// The window bounds information.
-struct Rect {
-  int32 x;
-  int32 y;
-  int32 width;
-  int32 height;
-};
-
-// The window information to launch an app.
-// DEPRECATED. Please use the WindowInfo struct in
-// components/services/app_service/public/cpp/app_launch_util.h.
-struct WindowInfo {
-  int32 window_id = -1;
-  int32 state = 0;
-  int64 display_id = -1;
-  Rect? bounds;
-};
-
 // The window mode that each app will open in.
 enum WindowMode {
   kUnknown = 0,

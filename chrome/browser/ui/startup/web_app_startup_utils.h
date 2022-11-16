@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 #define CHROME_BROWSER_UI_STARTUP_WEB_APP_STARTUP_UTILS_H_
 
+#include "base/functional/callback_internal.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
