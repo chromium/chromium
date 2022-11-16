@@ -13,14 +13,15 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
-// A class to create Easy unlock cryptohome keys for the given user and devices.
+// TODO(b/227674947) : Remove this class as a part of cleanup;
+//  A class to create Easy unlock cryptohome keys for the given user and
+//  devices.
 class EasyUnlockCreateKeysOperation {
  public:
   using CreateKeysCallback = base::OnceCallback<void(bool success)>;
@@ -42,26 +43,8 @@ class EasyUnlockCreateKeysOperation {
   const UserContext& user_context() const { return user_context_; }
 
  private:
-  class ChallengeCreator;
-
-  void CreateKeyForDeviceAtIndex(size_t index);
-  void OnChallengeCreated(size_t index, bool success);
-  void OnGetSystemSalt(size_t index, const std::string& system_salt);
-  void OnKeyCreated(size_t index,
-                    const Key& user_key,
-                    absl::optional<::user_data_auth::AddKeyReply> reply);
-
   UserContext user_context_;
-  std::string tpm_public_key_;
-  EasyUnlockDeviceKeyDataList devices_;
   CreateKeysCallback callback_;
-
-  // Index of the key to be created.
-  size_t key_creation_index_;
-
-  std::unique_ptr<ChallengeCreator> challenge_creator_;
-
-  base::WeakPtrFactory<EasyUnlockCreateKeysOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

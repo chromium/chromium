@@ -13,12 +13,11 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
-class EasyUnlockCreateKeysOperation;
-class EasyUnlockRemoveKeysOperation;
 
-// The refresh keys operation replaces the existing keys in cryptohome with a
-// new list of keys. This operation is a simple sequence of the create and
-// remove keys operations.
+// TODO(b/227674947) : Remove this class as a part of cleanup;
+//  The refresh keys operation replaces the existing keys in cryptohome with a
+//  new list of keys. This operation is a simple sequence of the create and
+//  remove keys operations.
 class EasyUnlockRefreshKeysOperation {
  public:
   using RefreshKeysCallback = base::OnceCallback<void(bool success)>;
@@ -37,19 +36,7 @@ class EasyUnlockRefreshKeysOperation {
   void Start();
 
  private:
-  void OnKeysCreated(bool success);
-  void RemoveKeysStartingFromIndex(size_t key_index);
-  void OnKeysRemoved(bool success);
-
-  UserContext user_context_;
-  std::string tpm_public_key_;
-  EasyUnlockDeviceKeyDataList devices_;
   RefreshKeysCallback callback_;
-
-  std::unique_ptr<EasyUnlockCreateKeysOperation> create_keys_operation_;
-  std::unique_ptr<EasyUnlockRemoveKeysOperation> remove_keys_operation_;
-
-  base::WeakPtrFactory<EasyUnlockRefreshKeysOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

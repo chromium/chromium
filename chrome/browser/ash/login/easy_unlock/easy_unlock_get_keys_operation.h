@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,6 +17,7 @@
 
 namespace ash {
 
+// TODO(b/227674947) : Remove this class as a part of cleanup;
 class EasyUnlockGetKeysOperation {
  public:
   using GetKeysCallback =
@@ -37,23 +37,9 @@ class EasyUnlockGetKeysOperation {
   void Start();
 
  private:
-  // Called once when the cryptohome service is available.
-  void OnCryptohomeAvailable(bool available);
-
-  // Asynchronously requests data for `key_index_` from cryptohome.
-  void GetKeyData();
-
-  // Callback for GetKeyData(). Updates `devices_`, increments `key_index_`, and
-  // calls GetKeyData() again.
-  void OnGetKeyData(absl::optional<user_data_auth::GetKeyDataReply> reply);
-
-  UserContext user_context_;
   GetKeysCallback callback_;
 
-  size_t key_index_;
   EasyUnlockDeviceKeyDataList devices_;
-
-  base::WeakPtrFactory<EasyUnlockGetKeysOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
