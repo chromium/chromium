@@ -10,13 +10,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
+
 namespace blink::mojom {
 class AttributionDataHost;
 }  // namespace blink::mojom
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -24,9 +24,6 @@ struct AttributionInputEvent;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
-//
-// TODO(crbug.com/1383580): Replace `url::Origin` with
-// `attribution_reporting::SuitableOrigin`.
 class AttributionDataHostManager {
  public:
   virtual ~AttributionDataHostManager() = default;
@@ -36,7 +33,7 @@ class AttributionDataHostManager {
   // navigation.
   virtual void RegisterDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      url::Origin context_origin,
+      attribution_reporting::SuitableOrigin context_origin,
       bool is_within_fenced_frame) = 0;
 
   // Registers a new data host which is associated with a navigation. The
@@ -55,8 +52,8 @@ class AttributionDataHostManager {
   virtual void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
       std::string header_value,
-      url::Origin reporting_origin,
-      const url::Origin& source_origin,
+      attribution_reporting::SuitableOrigin reporting_origin,
+      const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event) = 0;
 
   // Notifies the manager that we have received a navigation for a given data
@@ -64,8 +61,7 @@ class AttributionDataHostManager {
   // available for a given data host.
   virtual void NotifyNavigationForDataHost(
       const blink::AttributionSrcToken& attribution_src_token,
-      const url::Origin& source_origin,
-      const url::Origin& destination_origin) = 0;
+      const attribution_reporting::SuitableOrigin& source_origin) = 0;
 
   // Notifies the manager that a navigation associated with a data host failed
   // and should no longer be tracked.

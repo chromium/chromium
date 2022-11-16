@@ -16,11 +16,12 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
 
 namespace content {
 
@@ -73,10 +74,11 @@ class CONTENT_EXPORT AttributionHost
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // Returns the top frame origin corresponding to the current target frame.
-  // Returns nullptr and reports a bad message if the top frame origin is not
-  // potentially trustworthy or the current target frame is not a secure
+  // Returns `absl::nullopt` and reports a bad message if the top frame origin
+  // is not potentially trustworthy or the current target frame is not a secure
   // context.
-  [[nodiscard]] const url::Origin* TopFrameOriginForSecureContext();
+  absl::optional<attribution_reporting::SuitableOrigin>
+  TopFrameOriginForSecureContext();
 
   // Notifies the `AttributionDataHostManager` that a navigation with an
   // associated `AttributionDataHost` failed, if necessary.

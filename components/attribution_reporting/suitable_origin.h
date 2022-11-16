@@ -14,6 +14,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
+class GURL;
+
 namespace attribution_reporting {
 
 // A thin wrapper around `url::Origin` that enforces invariants required for an
@@ -32,6 +34,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SuitableOrigin {
   static bool IsSuitable(const url::Origin&);
 
   static absl::optional<SuitableOrigin> Create(url::Origin);
+
+  static absl::optional<SuitableOrigin> Create(const GURL&);
 
   // Creates a `SuitableOrigin` from the given string, which is first converted
   // to a `GURL`, then to a `url::Origin`, and then subject to this class's

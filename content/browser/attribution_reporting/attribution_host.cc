@@ -43,6 +43,8 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
+
 // Abstraction that wraps an iterator to a map. When this goes out of the scope,
 // the underlying iterator is erased from the map. This is useful for control
 // flows where map cleanup needs to occur regardless of additional early exit
@@ -69,7 +71,7 @@ class ScopedMapDeleter {
 }  // namespace
 
 struct AttributionHost::NavigationInfo {
-  url::Origin source_origin;
+  SuitableOrigin source_origin;
   AttributionInputEvent input_event;
 };
 
@@ -134,14 +136,18 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // implicit ordering: a navigation with an impression attached won't be
   // processed after a navigation commit in the initiator RFH, so reading the
   // origin off is safe at the start of the navigation.
-  const url::Origin& initiator_root_frame_origin =
-      initiator_frame_host->frame_tree_node()
-          ->frame_tree()
-          ->root()
-          ->current_origin();
+  absl::optional<SuitableOrigin> initiator_root_frame_origin =
+      SuitableOrigin::Create(initiator_frame_host->frame_tree_node()
+                                 ->frame_tree()
+                                 ->root()
+                                 ->current_origin());
+
+  if (!initiator_root_frame_origin)
+    return;
+
   navigation_info_map_.emplace(
       navigation_handle->GetNavigationId(),
-      NavigationInfo{.source_origin = initiator_root_frame_origin,
+      NavigationInfo{.source_origin = std::move(*initiator_root_frame_origin),
                      .input_event = AttributionHost::FromWebContents(
                                         WebContents::FromRenderFrameHost(
                                             initiator_frame_host))
@@ -171,8 +177,6 @@ void AttributionHost::DidRedirectNavigation(
   if (!data_host_manager)
     return;
 
-  const url::Origin& source_origin = it->second.source_origin;
-
   const std::vector<GURL>& redirect_chain =
       navigation_handle->GetRedirectChain();
 
@@ -183,13 +187,16 @@ void AttributionHost::DidRedirectNavigation(
   // initiating this redirect. At this point, the navigation handle reflects the
   // URL being navigated to, so instead use the second to last URL in the
   // redirect chain.
-  url::Origin reporting_origin =
-      url::Origin::Create(redirect_chain[redirect_chain.size() - 2]);
+  absl::optional<SuitableOrigin> reporting_origin =
+      SuitableOrigin::Create(redirect_chain[redirect_chain.size() - 2]);
+
+  if (!reporting_origin)
+    return;
 
   data_host_manager->NotifyNavigationRedirectRegistration(
       navigation_handle->GetImpression()->attribution_src_token,
-      std::move(source_header), std::move(reporting_origin), source_origin,
-      it->second.input_event);
+      std::move(source_header), std::move(*reporting_origin),
+      it->second.source_origin, it->second.input_event);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -233,7 +240,7 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     MaybeNotifyFailedSourceNavigation(navigation_handle);
     return;
   }
-  const url::Origin& source_origin =
+  const SuitableOrigin& source_origin =
       (*navigation_source_origin_it.get())->second.source_origin;
 
   DCHECK(navigation_handle->GetImpression());
@@ -246,8 +253,13 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   const url::Origin& destination_origin =
       navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
 
-  data_host_manager->NotifyNavigationForDataHost(
-      impression.attribution_src_token, source_origin, destination_origin);
+  if (SuitableOrigin::IsSuitable(destination_origin)) {
+    data_host_manager->NotifyNavigationForDataHost(
+        impression.attribution_src_token, source_origin);
+  } else {
+    data_host_manager->NotifyNavigationFailure(
+        impression.attribution_src_token);
+  }
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
@@ -269,7 +281,8 @@ void AttributionHost::MaybeNotifyFailedSourceNavigation(
   data_host_manager->NotifyNavigationFailure(impression->attribution_src_token);
 }
 
-const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
+absl::optional<SuitableOrigin>
+AttributionHost::TopFrameOriginForSecureContext() {
   RenderFrameHostImpl* render_frame_host =
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame());
 
@@ -291,11 +304,14 @@ const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
     base::debug::DumpWithoutCrashing();
   };
 
+  absl::optional<SuitableOrigin> suitable_top_frame_origin =
+      SuitableOrigin::Create(top_frame_origin);
+
   // TODO(crbug.com/1378749): Invoke mojo::ReportBadMessage here when we can be
   // sure honest renderers won't hit this path.
-  if (!attribution_reporting::SuitableOrigin::IsSuitable(top_frame_origin)) {
+  if (!suitable_top_frame_origin) {
     dump_without_crashing();
-    return nullptr;
+    return absl::nullopt;
   }
 
   // TODO(crbug.com/1378492): Invoke mojo::ReportBadMessage here when we can be
@@ -305,10 +321,10 @@ const url::Origin* AttributionHost::TopFrameOriginForSecureContext() {
            ->policies()
            .is_web_secure_context) {
     dump_without_crashing();
-    return nullptr;
+    return absl::nullopt;
   }
 
-  return &top_frame_origin;
+  return suitable_top_frame_origin;
 }
 
 void AttributionHost::RegisterDataHost(
@@ -324,12 +340,13 @@ void AttributionHost::RegisterDataHost(
   if (!data_host_manager)
     return;
 
-  const url::Origin* top_frame_origin = TopFrameOriginForSecureContext();
+  absl::optional<SuitableOrigin> top_frame_origin =
+      TopFrameOriginForSecureContext();
   if (!top_frame_origin)
     return;
 
   data_host_manager->RegisterDataHost(
-      std::move(data_host), *top_frame_origin,
+      std::move(data_host), std::move(*top_frame_origin),
       receivers_.GetCurrentTargetFrame()->IsNestedWithinFencedFrame());
 }
 

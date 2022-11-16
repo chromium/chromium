@@ -30,9 +30,14 @@ absl::optional<SuitableOrigin> SuitableOrigin::Create(url::Origin origin) {
 }
 
 // static
+absl::optional<SuitableOrigin> SuitableOrigin::Create(const GURL& url) {
+  return Create(url::Origin::Create(url));
+}
+
+// static
 absl::optional<SuitableOrigin> SuitableOrigin::Deserialize(
     base::StringPiece str) {
-  return Create(url::Origin::Create(GURL(str)));
+  return Create(GURL(str));
 }
 
 SuitableOrigin::SuitableOrigin(url::Origin origin)

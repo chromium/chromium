@@ -172,7 +172,7 @@ class MockDataHostManager : public AttributionDataHostManager {
       void,
       RegisterDataHost,
       (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-       url::Origin context_origin,
+       attribution_reporting::SuitableOrigin context_origin,
        bool is_within_fenced_frame),
       (override));
 
@@ -188,16 +188,15 @@ class MockDataHostManager : public AttributionDataHostManager {
               NotifyNavigationRedirectRegistration,
               (const blink::AttributionSrcToken& attribution_src_token,
                std::string header_value,
-               url::Origin reporting_origin,
-               const url::Origin& source_origin,
+               attribution_reporting::SuitableOrigin reporting_origin,
+               const attribution_reporting::SuitableOrigin& source_origin,
                AttributionInputEvent input_event),
               (override));
 
   MOCK_METHOD(void,
               NotifyNavigationForDataHost,
               (const blink::AttributionSrcToken& attribution_src_token,
-               const url::Origin& source_origin,
-               const url::Origin& destination_origin),
+               const attribution_reporting::SuitableOrigin& source_origin),
               (override));
 
   MOCK_METHOD(void,

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -45,6 +46,8 @@ class AttributionHostTestPeer {
 };
 
 namespace {
+
+using ::attribution_reporting::SuitableOrigin;
 
 using testing::_;
 using testing::Return;
@@ -120,11 +123,11 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
 TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationForDataHost(
-                  impression.attribution_src_token,
-                  url::Origin::Create(GURL("https://secure_impression.com")),
-                  url::Origin::Create(GURL(kConversionUrl))));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationForDataHost(
+          impression.attribution_src_token,
+          *SuitableOrigin::Deserialize("https://secure_impression.com")));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -258,25 +261,25 @@ const char kLocalHost[] = "http://localhost";
 struct OriginTrustworthyChecksTestCase {
   const char* source_origin;
   const char* destination_origin;
-  bool impression_expected;
+  bool expected_valid;
 };
 
 const OriginTrustworthyChecksTestCase kOriginTrustworthyChecksTestCases[] = {
     {.source_origin = kLocalHost,
      .destination_origin = kLocalHost,
-     .impression_expected = true},
+     .expected_valid = true},
     {.source_origin = "http://127.0.0.1",
      .destination_origin = "http://127.0.0.1",
-     .impression_expected = true},
+     .expected_valid = true},
     {.source_origin = kLocalHost,
      .destination_origin = "http://insecure.com",
-     .impression_expected = true},
+     .expected_valid = false},
     {.source_origin = "http://insecure.com",
      .destination_origin = kLocalHost,
-     .impression_expected = true},
+     .expected_valid = false},
     {.source_origin = "https://secure.com",
      .destination_origin = "https://secure.com",
-     .impression_expected = true},
+     .expected_valid = true},
 };
 
 class AttributionHostOriginTrustworthyChecksTest
@@ -289,8 +292,11 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
        ImpressionNavigation_OriginTrustworthyChecksPerformed) {
   const OriginTrustworthyChecksTestCase& test_case = GetParam();
 
-  EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost)
-      .Times(test_case.impression_expected);
+  if (test_case.expected_valid) {
+    EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationForDataHost);
+  } else {
+    EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationFailure);
+  }
 
   contents()->NavigateAndCommit(GURL(test_case.source_origin));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -309,7 +315,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
                        /*is_within_fenced_frame=*/false));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
@@ -394,7 +400,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
 TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
                        /*is_within_fenced_frame=*/false));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));
@@ -449,7 +455,7 @@ TEST_F(AttributionHostTest,
 TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   EXPECT_CALL(
       *mock_data_host_manager(),
-      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example")),
+      RegisterDataHost(_, *SuitableOrigin::Deserialize("https://top.example"),
                        /*is_within_fenced_frame=*/true));
 
   contents()->NavigateAndCommit(GURL("https://top.example"));

@@ -235,15 +235,11 @@ AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
 
 void AttributionDataHostManagerImpl::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    url::Origin context_origin,
+    SuitableOrigin context_origin,
     bool is_within_fenced_frame) {
-  auto suitable_context_origin =
-      SuitableOrigin::Create(std::move(context_origin));
-  DCHECK(suitable_context_origin);
-
   receivers_.Add(
       this, std::move(data_host),
-      FrozenContext{.context_origin = std::move(*suitable_context_origin),
+      FrozenContext{.context_origin = std::move(context_origin),
                     .source_type = AttributionSourceType::kEvent,
                     .register_time = base::TimeTicks::Now(),
                     .is_within_fenced_frame = is_within_fenced_frame});
@@ -272,31 +268,22 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
 void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const blink::AttributionSrcToken& attribution_src_token,
     std::string header_value,
-    url::Origin reporting_origin,
-    const url::Origin& source_origin,
+    SuitableOrigin reporting_origin,
+    const SuitableOrigin& source_origin,
     AttributionInputEvent input_event) {
-  auto suitable_source_origin = SuitableOrigin::Create(source_origin);
-  auto suitable_reporting_origin =
-      SuitableOrigin::Create(std::move(reporting_origin));
-
-  if (!suitable_source_origin || !suitable_reporting_origin)
-    return;
-
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, *suitable_reporting_origin,
-        SourceRegistrationError::kInvalidJson);
+        header_value, reporting_origin, SourceRegistrationError::kInvalidJson);
     return;
   }
 
   auto [it, inserted] = redirect_registrations_.try_emplace(
-      attribution_src_token,
-      NavigationRedirectSourceRegistrations{
-          .source_origin = std::move(*suitable_source_origin),
-          .register_time = base::TimeTicks::Now(),
-          .input_event = input_event});
+      attribution_src_token, NavigationRedirectSourceRegistrations{
+                                 .source_origin = source_origin,
+                                 .register_time = base::TimeTicks::Now(),
+                                 .input_event = input_event});
   DCHECK(!it->second.navigation_complete);
 
   // Treat ongoing redirect registrations within a chain as a data host for the
@@ -312,28 +299,19 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(*suitable_reporting_origin), header_value));
+                     std::move(reporting_origin), header_value));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     const blink::AttributionSrcToken& attribution_src_token,
-    const url::Origin& source_origin,
-    const url::Origin& destination_origin) {
-  auto suitable_source_origin = SuitableOrigin::Create(source_origin);
-
-  if (!suitable_source_origin ||
-      !SuitableOrigin::IsSuitable(destination_origin)) {
-    NotifyNavigationFailure(attribution_src_token);
-    return;
-  }
-
+    const SuitableOrigin& source_origin) {
   auto it = navigation_data_host_map_.find(attribution_src_token);
 
   if (it != navigation_data_host_map_.end()) {
     // Source navigations need to navigate the primary main frame to be valid.
     receivers_.Add(
         this, std::move(it->second.data_host),
-        FrozenContext{.context_origin = std::move(*suitable_source_origin),
+        FrozenContext{.context_origin = source_origin,
                       .source_type = AttributionSourceType::kNavigation,
                       .register_time = it->second.register_time,
                       .is_within_fenced_frame = false,
