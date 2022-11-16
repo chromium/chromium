@@ -167,6 +167,10 @@ BASE_DECLARE_FEATURE(kSyncPauseUponAnyPersistentAuthError);
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 
+// If enabled, Sync will not use a primary account that doesn't have a refresh
+// token. (This state should only ever occur temporarily during signout.)
+BASE_DECLARE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

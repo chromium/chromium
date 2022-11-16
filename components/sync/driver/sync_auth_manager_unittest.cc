@@ -179,15 +179,15 @@ TEST_F(SyncAuthManagerTest, NotifiesOfSignoutBeforeAccessTokenIsGone) {
   });
   identity_env()->ClearPrimaryAccount();
   // After the signout is complete, the access token should be gone.
-  EXPECT_TRUE(
+  EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
+  ASSERT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Unconsented primary accounts (aka secondary accounts) are only supported on
-// Win/Mac/Linux.
+// Unconsented primary accounts are only supported on Win/Mac/Linux.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
+TEST_F(SyncAuthManagerTest, ForwardsUnconsentedAccountEvents) {
   base::MockCallback<AccountStateChangedCallback> account_state_changed;
   base::MockCallback<CredentialsChangedCallback> credentials_changed;
   EXPECT_CALL(account_state_changed, Run()).Times(0);
@@ -199,7 +199,7 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
   ASSERT_TRUE(
       auth_manager->GetActiveAccountInfo().account_info.account_id.empty());
 
-  // Make a non-primary account available with both a refresh token and cookie.
+  // Make a primary account available without Sync consent.
   EXPECT_CALL(account_state_changed, Run());
   AccountInfo account_info = identity_env()->MakePrimaryAccountAvailable(
       "test@email.com", signin::ConsentLevel::kSignin);
@@ -208,7 +208,7 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
   EXPECT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
             account_info.account_id);
 
-  // Make the account primary.
+  // Make the account Sync-consented.
   EXPECT_CALL(account_state_changed, Run());
   signin::PrimaryAccountMutator* primary_account_mutator =
       identity_env()->identity_manager()->GetPrimaryAccountMutator();
@@ -222,7 +222,7 @@ TEST_F(SyncAuthManagerTest, ForwardsSecondaryAccountEvents) {
 
 // ChromeOS doesn't support sign-out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignout) {
+TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignoutWithRefreshTokenRemoval) {
   // Start out already signed in before the SyncAuthManager is created.
   CoreAccountId account_id =
       identity_env()
@@ -242,14 +242,46 @@ TEST_F(SyncAuthManagerTest, ClearsAuthErrorOnSignout) {
   // Sign out of the account.
   // The ordering of removing the refresh token and the actual sign-out is
   // undefined, see comment on IdentityManager::Observer. Here, explicitly
-  // revoke the refresh token first to force an auth error.
+  // revoke the refresh token first (see also other test below which does *not*
+  // remove the refresh token first).
   identity_env()->RemoveRefreshTokenForPrimaryAccount();
 
-  ASSERT_NE(auth_manager->GetLastAuthError().state(),
+  // Note: Things are now in an intermediate state, where the primary account
+  // still exists, but doesn't have a refresh token anymore. It doesn't really
+  // matter whether the auth error is still there at this point.
+
+  // Actually signing out, i.e. removing the primary account, should clear the
+  // auth error, since it's now not meaningful anymore.
+  identity_env()->ClearPrimaryAccount();
+  EXPECT_EQ(auth_manager->GetLastAuthError().state(),
+            GoogleServiceAuthError::NONE);
+}
+
+TEST_F(SyncAuthManagerTest,
+       ClearsAuthErrorOnSignoutWithoutRefreshTokenRemoval) {
+  // Start out already signed in before the SyncAuthManager is created.
+  CoreAccountId account_id =
+      identity_env()
+          ->MakePrimaryAccountAvailable("test@email.com",
+                                        signin::ConsentLevel::kSync)
+          .account_id;
+
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+
+  auth_manager->RegisterForAuthNotifications();
+
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_id);
+  ASSERT_EQ(auth_manager->GetLastAuthError().state(),
             GoogleServiceAuthError::NONE);
 
-  // Now actually sign out, i.e. remove the primary account. This should clear
-  // the auth error, since it's now not meaningful anymore.
+  // Sign out of the account.
+  // The ordering of removing the refresh token and the actual sign-out is
+  // undefined, see comment on IdentityManager::Observer. Here, do *not* remove
+  // the refresh token first (see also other test above which does remove it).
+
+  // Signing out, i.e. removing the primary account, should clear the auth
+  // error, since it's now not meaningful anymore.
   identity_env()->ClearPrimaryAccount();
   EXPECT_EQ(auth_manager->GetLastAuthError().state(),
             GoogleServiceAuthError::NONE);
@@ -276,7 +308,7 @@ TEST_F(SyncAuthManagerTest, DoesNotClearAuthErrorOnSyncDisable) {
   auth_manager->ConnectionOpened();
 
   // Force an auth error by revoking the refresh token.
-  identity_env()->RemoveRefreshTokenForPrimaryAccount();
+  identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   ASSERT_NE(auth_manager->GetLastAuthError().state(),
             GoogleServiceAuthError::NONE);
 
@@ -330,8 +362,11 @@ TEST_F(SyncAuthManagerTest, ForwardsCredentialsEvents) {
 
   // Revoking the refresh token should also cause the access token to get
   // dropped.
-  EXPECT_CALL(credentials_changed, Run());
-  identity_env()->RemoveRefreshTokenForPrimaryAccount();
+  // Note: On ChromeOS-Ash, setting an invalid refresh token causes 2
+  // "credentials changed" events, one for the token change itself, and another
+  // one for the auth error caused by the invalid token.
+  EXPECT_CALL(credentials_changed, Run()).Times(testing::AtLeast(1));
+  identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
 }
 
@@ -668,7 +703,7 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnRefreshTokenRemoval) {
   EXPECT_CALL(access_token_requested, Run()).Times(0);
   identity_env()->SetCallbackForNextAccessTokenRequest(
       access_token_requested.Get());
-  identity_env()->RemoveRefreshTokenForPrimaryAccount();
+  identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
 
   // Should immediately drop the access token and expose an auth error.
   EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
@@ -864,7 +899,7 @@ TEST_F(SyncAuthManagerTest, PrimaryAccountWithNoSyncConsent) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Primary account with no sync consent is not supported on Android and iOS.
-// On crOS the unconsented primary account can't be changed or removed, but can
+// On CrOS the unconsented primary account can't be changed or removed, but can
 // be granted sync consent.
 TEST_F(SyncAuthManagerTest, PicksNewPrimaryAccountWithSyncConsent) {
   std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();

@@ -111,7 +111,8 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
                                            : signin::ConsentLevel::kSync;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   identity_test_env_.ClearPrimaryAccount();
-  account_info = identity_test_env_.SetPrimaryAccount(email, consent_level);
+  account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
 #else
   // In ChromeOS-Ash, clearing/resetting the primary account is not supported.
   // So if an account already exists, reuse it (and make sure it matches).
@@ -120,7 +121,8 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
         consent_level);
     ASSERT_EQ(account_info.email, email);
   } else {
-    account_info = identity_test_env_.SetPrimaryAccount(email, consent_level);
+    account_info =
+        identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
   }
 #endif
   sync_service_.SetAccountInfo(account_info);

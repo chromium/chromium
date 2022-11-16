@@ -387,6 +387,9 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
     return;
   }
 
+  // TODO(crbug.com/1383912): If kSyncIgnoreAccountWithoutRefreshToken sticks,
+  // the code below can be removed.
+
   // If we're still here, then that means Chrome is still signed in to this
   // account. Keep Sync alive but set an auth error.
   DCHECK_EQ(
