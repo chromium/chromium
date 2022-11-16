@@ -496,34 +496,6 @@ TEST_F(CrosHealthdServiceConnectionTest, SetBindNetworkDiagnosticsRoutines) {
   run_loop.Run();
 }
 
-// Test that we can probe telemetry info.
-TEST_F(CrosHealthdServiceConnectionTest, ProbeTelemetryInfo) {
-  auto response = mojom::TelemetryInfo::New();
-  FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(response);
-  base::RunLoop run_loop;
-  ServiceConnection::GetInstance()->ProbeTelemetryInfo(
-      {}, base::BindLambdaForTesting([&](mojom::TelemetryInfoPtr info) {
-        EXPECT_EQ(info, response);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-// Test that we can request process info.
-TEST_F(CrosHealthdServiceConnectionTest, ProbeProcessInfo) {
-  auto response =
-      mojom::ProcessResult::NewProcessInfo(mojom::ProcessInfo::New());
-  FakeCrosHealthd::Get()->SetProbeProcessInfoResponseForTesting(response);
-  base::RunLoop run_loop;
-  ServiceConnection::GetInstance()->ProbeProcessInfo(
-      /*process_id=*/13,
-      base::BindLambdaForTesting([&](mojom::ProcessResultPtr result) {
-        EXPECT_EQ(result, response);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
 // Test that we can get diagnostics service.
 TEST_F(CrosHealthdServiceConnectionTest, GetDiagnosticsService) {
   auto* service = ServiceConnection::GetInstance()->GetDiagnosticsService();

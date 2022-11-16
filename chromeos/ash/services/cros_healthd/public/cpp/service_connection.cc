@@ -62,18 +62,6 @@ class ServiceConnectionImpl : public ServiceConnection {
           pending_observer) override;
   void AddUsbObserver(mojo::PendingRemote<mojom::CrosHealthdUsbObserver>
                           pending_observer) override;
-  void ProbeTelemetryInfo(
-      const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
-      mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback)
-      override;
-  void ProbeProcessInfo(pid_t process_id,
-                        mojom::CrosHealthdProbeService::ProbeProcessInfoCallback
-                            callback) override;
-  void ProbeMultipleProcessInfo(
-      const absl::optional<std::vector<uint32_t>>& process_ids,
-      bool ignore_single_process_info,
-      mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback callback)
-      override;
 
   mojom::CrosHealthdDiagnosticsService* GetDiagnosticsService() override;
   mojom::CrosHealthdProbeService* GetProbeService() override;
@@ -198,35 +186,6 @@ void ServiceConnectionImpl::AddUsbObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
   cros_healthd_event_service_->AddUsbObserver(std::move(pending_observer));
-}
-
-void ServiceConnectionImpl::ProbeTelemetryInfo(
-    const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
-    mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindCrosHealthdProbeServiceIfNeeded();
-  cros_healthd_probe_service_->ProbeTelemetryInfo(categories_to_test,
-                                                  std::move(callback));
-}
-
-void ServiceConnectionImpl::ProbeProcessInfo(
-    pid_t process_id,
-    mojom::CrosHealthdProbeService::ProbeProcessInfoCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(process_id > 0);
-  BindCrosHealthdProbeServiceIfNeeded();
-  cros_healthd_probe_service_->ProbeProcessInfo(
-      static_cast<uint32_t>(process_id), std::move(callback));
-}
-
-void ServiceConnectionImpl::ProbeMultipleProcessInfo(
-    const absl::optional<std::vector<uint32_t>>& process_ids,
-    bool ignore_single_process_info,
-    mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindCrosHealthdProbeServiceIfNeeded();
-  cros_healthd_probe_service_->ProbeMultipleProcessInfo(
-      process_ids, ignore_single_process_info, std::move(callback));
 }
 
 mojom::CrosHealthdDiagnosticsService*

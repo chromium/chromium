@@ -580,9 +580,11 @@ void CrosHealthdMetricSampler::MaybeCollect(OptionalMetricCallback callback) {
   auto healthd_callback =
       base::BindOnce(OnHealthdInfoReceived, std::move(callback),
                      probe_category_, metric_type_);
-  ash::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
-      std::vector<cros_healthd::ProbeCategoryEnum>{probe_category_},
-      std::move(healthd_callback));
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          std::vector<cros_healthd::ProbeCategoryEnum>{probe_category_},
+          std::move(healthd_callback));
 }
 
 }  // namespace reporting

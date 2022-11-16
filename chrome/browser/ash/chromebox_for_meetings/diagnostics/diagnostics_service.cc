@@ -48,23 +48,26 @@ bool DiagnosticsService::IsInitialized() {
 
 void DiagnosticsService::GetCrosHealthdTelemetry(
     GetCrosHealthdTelemetryCallback callback) {
-  cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
-      {cros_healthd::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
-       cros_healthd::mojom::ProbeCategoryEnum::kCpu,
-       cros_healthd::mojom::ProbeCategoryEnum::kTimezone,
-       cros_healthd::mojom::ProbeCategoryEnum::kMemory,
-       cros_healthd::mojom::ProbeCategoryEnum::kFan,
-       cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
-       cros_healthd::mojom::ProbeCategoryEnum::kSystem,
-       cros_healthd::mojom::ProbeCategoryEnum::kNetwork},
-      std::move(callback));
+  cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          {cros_healthd::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices,
+           cros_healthd::mojom::ProbeCategoryEnum::kCpu,
+           cros_healthd::mojom::ProbeCategoryEnum::kTimezone,
+           cros_healthd::mojom::ProbeCategoryEnum::kMemory,
+           cros_healthd::mojom::ProbeCategoryEnum::kFan,
+           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
+           cros_healthd::mojom::ProbeCategoryEnum::kSystem,
+           cros_healthd::mojom::ProbeCategoryEnum::kNetwork},
+          std::move(callback));
 }
 
 void DiagnosticsService::GetCrosHealthdProcessInfo(
     uint32_t pid,
     GetCrosHealthdProcessInfoCallback callback) {
-  cros_healthd::ServiceConnection::GetInstance()->ProbeProcessInfo(
-      static_cast<pid_t>(pid), std::move(callback));
+  cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeProcessInfo(static_cast<pid_t>(pid), std::move(callback));
 }
 
 bool DiagnosticsService::ServiceRequestReceived(

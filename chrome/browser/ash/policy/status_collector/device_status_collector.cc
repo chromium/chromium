@@ -2159,11 +2159,13 @@ void DeviceStatusCollector::FetchCrosHealthdData(
   auto sample = std::make_unique<SampledData>();
   sample->timestamp = base::Time::Now();
 
-  ash::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
-      probe_categories,
-      base::BindOnce(&DeviceStatusCollector::SampleProbeData,
-                     weak_factory_.GetWeakPtr(), std::move(sample),
-                     std::move(completion_callback)));
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          probe_categories,
+          base::BindOnce(&DeviceStatusCollector::SampleProbeData,
+                         weak_factory_.GetWeakPtr(), std::move(sample),
+                         std::move(completion_callback)));
 }
 
 void DeviceStatusCollector::OnProbeDataFetched(

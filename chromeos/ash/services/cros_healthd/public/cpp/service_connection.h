@@ -38,7 +38,7 @@ class ServiceConnection {
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
   // TODO(b/256946276): remove these wrapper functions for
-  // |CrosHealthdProbeService| and |CrosHealthdEventService|.
+  // |CrosHealthdEventService|.
   // Subscribes to cros_healthd's Bluetooth-related events. See
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
@@ -86,29 +86,6 @@ class ServiceConnection {
   // details.
   virtual void AddUsbObserver(
       mojo::PendingRemote<mojom::CrosHealthdUsbObserver> pending_observer) = 0;
-
-  // Gathers pieces of information about the platform. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void ProbeTelemetryInfo(
-      const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
-      mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback) = 0;
-
-  // Gathers information about a particular process on the device. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void ProbeProcessInfo(
-      pid_t process_id,
-      mojom::CrosHealthdProbeService::ProbeProcessInfoCallback callback) = 0;
-
-  // Gathers information about multiple/ all processes on the device. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void ProbeMultipleProcessInfo(
-      const absl::optional<std::vector<uint32_t>>& process_ids,
-      bool ignore_single_process_info,
-      mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback
-          callback) = 0;
 
   // Gets the interface for the bound diagnostics service. In production, this
   // implementation is provided by cros_healthd. To customize mojo disconnect
