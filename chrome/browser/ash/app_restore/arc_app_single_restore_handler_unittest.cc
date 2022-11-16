@@ -85,7 +85,7 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
 TEST_F(ArcAppSingleRestoreHandlerTest, NotLaunchIfShelfNotReady) {
   ArcAppSingleRestoreHandler handler;
   handler.LaunchGhostWindowWithApp(
-      profile(), "not_exist_app_id", 0 /*event_flags*/,
+      profile(), "not_exist_app_id", nullptr, 0 /*event_flags*/,
       arc::GhostWindowType::kAppLaunch, arc::mojom::WindowInfoPtr());
   ASSERT_FALSE(handler.app_id_.has_value());
 }
@@ -101,9 +101,9 @@ TEST_F(ArcAppSingleRestoreHandlerTest, PendingLaunchIfShelfHasReady) {
 
   handler.OnShelfReady();
   handler.ghost_window_handler_ = window_handler();
-  handler.LaunchGhostWindowWithApp(profile(), fake_app_id, 0 /*event_flags*/,
-                                   arc::GhostWindowType::kAppLaunch,
-                                   std::move(window_info));
+  handler.LaunchGhostWindowWithApp(
+      profile(), fake_app_id, nullptr, 0 /*event_flags*/,
+      arc::GhostWindowType::kAppLaunch, std::move(window_info));
   ASSERT_TRUE(handler.app_id_.has_value());
   ASSERT_TRUE(handler.IsAppPendingRestore(fake_app_id));
   ASSERT_FALSE(handler.IsAppPendingRestore(fake_app_id + "_not_equal_real_id"));

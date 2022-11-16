@@ -494,7 +494,7 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
       window_info->window_id = arc_session_id;
       chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
           app_id, std::make_unique<ArcShelfSpinnerItemController>(
-                      app_id, app_restore_data->event_flag.value(),
+                      app_id, nullptr, app_restore_data->event_flag.value(),
                       arc::UserInteractionType::APP_STARTED_FROM_FULL_RESTORE,
                       apps::MakeArcWindowInfo(std::move(window_info))));
     }

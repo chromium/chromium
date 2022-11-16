@@ -31,6 +31,7 @@ class WindowPredictor {
       Profile* profile,
       const std::string& app_id,
       const ArcAppListPrefs::AppInfo& app_info,
+      const apps::IntentPtr& intent,
       int event_flags,
       GhostWindowType window_type,
       const arc::mojom::WindowInfoPtr& window_info);

@@ -12,13 +12,16 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "components/app_restore/app_restore_utils.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 
 ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
     const std::string& arc_app_id,
+    apps::IntentPtr intent,
     int event_flags,
     arc::UserInteractionType user_interaction_type,
     arc::mojom::WindowInfoPtr window_info)
     : ShelfSpinnerItemController(arc_app_id),
+      intent_(std::move(intent)),
       event_flags_(event_flags),
       user_interaction_type_(user_interaction_type),
       request_time_(base::TimeTicks::Now()),
@@ -92,11 +95,15 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
   // Embed deferred time only for app launches. Don't modify shortcuts.
   // Shortcuts do not have activity so they are not compatible.
   if (!app_info.shortcut) {
-    const std::string launch_intent = arc::GetLaunchIntent(
-        app_info.package_name, app_info.activity,
-        {arc::CreateIntentTicksExtraParam(
-            arc::kRequestDeferredStartTimeParamKey, request_time_)});
-    arc::LaunchAppWithIntent(observed_profile_, arc_app_id, launch_intent,
+    if (!intent_) {
+      intent_ = std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
+      intent_->categories.push_back(arc::kCategoryLauncher);
+      intent_->activity_name = app_info.activity;
+    }
+    intent_->extras[arc::kRequestDeferredStartTimeParamKey] =
+        base::NumberToString(
+            (request_time_ - base::TimeTicks()).InMilliseconds());
+    arc::LaunchAppWithIntent(observed_profile_, arc_app_id, std::move(intent_),
                              event_flags_, user_interaction_type_,
                              std::move(window_info_));
   } else {

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::app_restore {
@@ -34,6 +35,7 @@ class ArcAppSingleRestoreHandler
   // parameters. It's expected only called once.
   void LaunchGhostWindowWithApp(Profile* profile,
                                 const std::string& app_id,
+                                apps::IntentPtr intent,
                                 int event_flags,
                                 arc::GhostWindowType window_type,
                                 arc::mojom::WindowInfoPtr window_info);
@@ -64,6 +66,7 @@ class ArcAppSingleRestoreHandler
   absl::optional<std::string> app_id_;
   bool is_cancelled_ = false;
 
+  apps::IntentPtr intent_;
   int32_t event_flags_;
   int32_t window_id_;
   apps::WindowInfoPtr window_info_;

@@ -87,6 +87,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
     Profile* profile,
     const std::string& arc_app_id,
     const ArcAppListPrefs::AppInfo& app_info,
+    const apps::IntentPtr& intent,
     int event_flags,
     GhostWindowType window_type,
     const arc::mojom::WindowInfoPtr& window_info) {
@@ -117,9 +118,9 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
       PredictAppWindowInfo(app_info, window_info.Clone());
 
   arc_task_handler->GetWindowPredictorArcAppRestoreHandler(launch_counter)
-      ->LaunchGhostWindowWithApp(profile, arc_app_id, event_flags,
-                                 GhostWindowType::kAppLaunch,
-                                 std::move(predict_window_info));
+      ->LaunchGhostWindowWithApp(
+          profile, arc_app_id, intent ? intent->Clone() : nullptr, event_flags,
+          GhostWindowType::kAppLaunch, std::move(predict_window_info));
 
   base::UmaHistogramEnumeration(kWindowPredictorLaunchHistogram,
                                 WindowPredictorLaunchType::kSuccess);

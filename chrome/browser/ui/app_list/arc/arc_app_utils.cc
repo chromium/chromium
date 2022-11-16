@@ -32,6 +32,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -60,6 +61,7 @@
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -130,12 +132,12 @@ void NotifyAppLaunchObservers(content::BrowserContext* context,
   }
 }
 
-bool Launch(content::BrowserContext* context,
+bool Launch(Profile* profile,
             const std::string& app_id,
-            const absl::optional<std::string>& intent,
+            apps::IntentPtr intent,
             int event_flags,
             arc::mojom::WindowInfoPtr window_info) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context);
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
   CHECK(prefs);
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
@@ -164,15 +166,46 @@ bool Launch(content::BrowserContext* context,
 
   // Unthrottle the ARC instance before launching an ARC app. This is done
   // to minimize lag on an app launch.
-  NotifyAppLaunchObservers(context, *app_info);
+  NotifyAppLaunchObservers(profile, *app_info);
 
-  if (app_info->shortcut || intent.has_value()) {
-    const std::string intent_uri = intent.value_or(app_info->intent_uri);
-    if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentWithWindowInfo)) {
-      app_instance->LaunchIntentWithWindowInfo(intent_uri,
-                                               std::move(window_info));
+  if (app_info->shortcut || intent) {
+    const std::string intent_uri =
+        intent ? apps_util::CreateLaunchIntent(app_info->package_name, intent)
+               : app_info->intent_uri;
+    if (intent_uri.empty()) {
+      // If |intent| can't be converted to a string, call the HandleIntent
+      // interface.
+      arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
+      activity->package_name = app_info->package_name;
+      if (intent->activity_name.has_value() &&
+          !intent->activity_name.value().empty()) {
+        activity->activity_name = intent->activity_name.value();
+      }
+
+      auto arc_intent =
+          apps_util::ConvertAppServiceToArcIntent(std::move(intent));
+
+      if (!arc_intent) {
+        LOG(ERROR) << "Launch App failed, launch intent is not valid";
+        return false;
+      }
+
+      arc::mojom::IntentHelperInstance* instance =
+          GET_INTENT_HELPER_INSTANCE(HandleIntentWithWindowInfo);
+      if (instance) {
+        instance->HandleIntentWithWindowInfo(
+            std::move(arc_intent), std::move(activity), std::move(window_info));
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      // If |intent| can be converted to a string, call the Launch interface.
+      if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentWithWindowInfo)) {
+        app_instance->LaunchIntentWithWindowInfo(intent_uri,
+                                                 std::move(window_info));
+      } else {
+        return false;
+      }
     }
   } else {
     if (auto* app_instance = GET_APP_INSTANCE(LaunchAppWithWindowInfo)) {
@@ -256,7 +289,7 @@ bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                arc::UserInteractionType user_action) {
-  return LaunchAppWithIntent(context, app_id, absl::nullopt /* launch_intent */,
+  return LaunchAppWithIntent(context, app_id, nullptr /* launch_intent */,
                              event_flags, user_action,
                              MakeWindowInfo(display::kInvalidDisplayId));
 }
@@ -266,17 +299,16 @@ bool LaunchApp(content::BrowserContext* context,
                int event_flags,
                arc::UserInteractionType user_action,
                arc::mojom::WindowInfoPtr window_info) {
-  return LaunchAppWithIntent(context, app_id, absl::nullopt /* launch_intent */,
+  return LaunchAppWithIntent(context, app_id, nullptr /* launch_intent */,
                              event_flags, user_action, std::move(window_info));
 }
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,
-                         const absl::optional<std::string>& launch_intent,
+                         apps::IntentPtr launch_intent,
                          int event_flags,
                          arc::UserInteractionType user_action,
                          arc::mojom::WindowInfoPtr window_info) {
-  DCHECK(!launch_intent.has_value() || !launch_intent->empty());
   if (user_action != UserInteractionType::NOT_USER_INITIATED)
     arc::ArcMetricsService::RecordArcUserInteraction(context, user_action);
 
@@ -324,7 +356,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  absl::optional<std::string> launch_intent_to_send = launch_intent;
+  apps::IntentPtr launch_intent_to_send = std::move(launch_intent);
 
   // Some apps need fixup when ARC version upgrade e.g. from ARC P to ARC R.
   // Before fixup finishes, the |app_info->ready| is true but not launchable.
@@ -379,8 +411,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     if (IsFixupWindowEnabled() && app_info->need_fixup) {
       // TODO(sstan): Use different UI after UX design finalized.
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-              profile, app_id, *app_info, event_flags, GhostWindowType::kFixup,
-              window_info)) {
+              profile, app_id, *app_info, launch_intent_to_send, event_flags,
+              GhostWindowType::kFixup, window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }
@@ -389,7 +421,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     } else if (full_restore::features::IsArcWindowPredictorEnabled() &&
                arc::GetArcAndroidSdkVersionAsInt() >= arc::kArcVersionR) {
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-              profile, app_id, *app_info, event_flags,
+              profile, app_id, *app_info, launch_intent_to_send, event_flags,
               GhostWindowType::kAppLaunch, window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
@@ -402,9 +434,9 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     // chrome_controller may be null in tests.
     if (chrome_controller) {
       chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
-          app_id,
-          std::make_unique<ArcShelfSpinnerItemController>(
-              app_id, event_flags, user_action, std::move(window_info)));
+          app_id, std::make_unique<ArcShelfSpinnerItemController>(
+                      app_id, std::move(launch_intent_to_send), event_flags,
+                      user_action, std::move(window_info)));
 
       // On some boards, ARC is booted with a restricted set of resources by
       // default to avoid slowing down Chrome's user session restoration.
@@ -417,22 +449,21 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   } else if (app_id == kPlayStoreAppId) {
     // Record launch request time in order to track Play Store default launch
     // performance.
-    const std::vector<std::string> extra = {base::StringPrintf(
-        "%s=%" PRId64, kRequestStartTimeParamKey,
-        (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds())};
     if (!launch_intent_to_send) {
       launch_intent_to_send =
-          GetLaunchIntent(kPlayStorePackage, kPlayStoreActivity, extra);
-    } else {
-      launch_intent_to_send =
-          AppendLaunchIntent(launch_intent_to_send.value(), extra);
+          std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
+      launch_intent_to_send->categories.push_back(kCategoryLauncher);
+      launch_intent_to_send->activity_name = kPlayStoreActivity;
     }
+    launch_intent_to_send->extras[kRequestStartTimeParamKey] =
+        base::NumberToString(
+            (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
   } else if (IsInstantResponseOpenEnabled() &&
              !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
                                                                  app_id)) {
     // For some devices, launch ghost window and app at the same time.
     if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-            profile, app_id, *app_info, event_flags,
+            profile, app_id, *app_info, launch_intent_to_send, event_flags,
             GhostWindowType::kAppLaunch, window_info)) {
       return true;
     }
@@ -440,7 +471,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   }
 
   arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
-  return Launch(context, app_id, launch_intent_to_send, event_flags,
+  return Launch(profile, app_id, std::move(launch_intent_to_send), event_flags,
                 std::move(window_info));
 }
 

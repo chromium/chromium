@@ -14,6 +14,7 @@
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +76,7 @@ bool LaunchApp(content::BrowserContext* context,
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,
-                         const absl::optional<std::string>& launch_intent,
+                         apps::IntentPtr launch_intent,
                          int event_flags,
                          UserInteractionType user_action,
                          arc::mojom::WindowInfoPtr window_info);

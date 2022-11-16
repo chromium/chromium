@@ -795,21 +795,21 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     return;
   }
 
-  if (app_info->ready) {
-    arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
-    activity->package_name = app_info->package_name;
-    if (intent->activity_name.has_value() &&
-        !intent->activity_name.value().empty()) {
-      activity->activity_name = intent->activity_name.value();
-    }
+  arc::mojom::ActivityNamePtr activity = arc::mojom::ActivityName::New();
+  activity->package_name = app_info->package_name;
+  if (intent->activity_name.has_value() &&
+      !intent->activity_name.value().empty()) {
+    activity->activity_name = intent->activity_name.value();
+  }
 
-    auto new_window_info = SetSessionId(std::move(window_info));
-    int32_t session_id = new_window_info->window_id;
-    int64_t display_id = new_window_info->display_id;
+  auto new_window_info = SetSessionId(std::move(window_info));
+  int32_t session_id = new_window_info->window_id;
+  int64_t display_id = new_window_info->display_id;
 
-    // Check if the intent has files, and whether the intent has a mime type or
-    // all the individual files have mime types.
-    if (IntentHasFilesAndMimeTypes(intent)) {
+  // Check if the intent has files, and whether the intent has a mime type or
+  // all the individual files have mime types.
+  if (IntentHasFilesAndMimeTypes(intent)) {
+    if (app_info->ready) {
       std::vector<GURL> file_urls;
       for (const auto& file : intent->files) {
         file_urls.push_back(file->url);
@@ -827,60 +827,17 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
                              std::move(callback))));
       return;
     }
-
+  } else {
     auto intent_for_full_restore = intent->Clone();
 
-    std::string intent_str =
-        apps_util::CreateLaunchIntent(app_info->package_name, intent);
-    if (!intent_str.empty()) {
-      // If |intent| can be converted to a string, call the Launch interface.
-      if (!arc::LaunchAppWithIntent(
-              profile_, app_id, intent_str, event_flags,
-              user_interaction_type.value(),
-              MakeArcWindowInfo(std::move(new_window_info)))) {
-        VLOG(2) << "Failed to launch app: " + app_id + ".";
-        std::move(callback).Run(LaunchResult(State::FAILED));
-        return;
-      }
-    } else {
-      // If |intent| can't be converted to a string, call the HandleIntent
-      // interface.
-      auto arc_intent =
-          apps_util::ConvertAppServiceToArcIntent(std::move(intent));
-
-      if (!arc_intent) {
-        LOG(ERROR) << "Launch App failed, launch intent is not valid";
-        std::move(callback).Run(LaunchResult(State::FAILED));
-        return;
-      }
-
-      auto* arc_service_manager = arc::ArcServiceManager::Get();
-      if (!arc_service_manager) {
-        std::move(callback).Run(LaunchResult(State::FAILED));
-        return;
-      }
-
-      arc::mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
-          arc_service_manager->arc_bridge_service()->intent_helper(),
-          HandleIntentWithWindowInfo);
-      if (instance) {
-        instance->HandleIntentWithWindowInfo(
-            std::move(arc_intent), std::move(activity),
-            MakeArcWindowInfo(std::move(new_window_info)));
-      } else {
-        instance = ARC_GET_INSTANCE_FOR_METHOD(
-            arc_service_manager->arc_bridge_service()->intent_helper(),
-            HandleIntent);
-        if (!instance) {
-          std::move(callback).Run(LaunchResult(State::FAILED));
-          return;
-        }
-
-        instance->HandleIntent(std::move(arc_intent), std::move(activity));
-      }
+    if (!arc::LaunchAppWithIntent(
+            profile_, app_id, std::move(intent), event_flags,
+            user_interaction_type.value(),
+            MakeArcWindowInfo(std::move(new_window_info)))) {
+      VLOG(2) << "Failed to launch app: " + app_id + ".";
+      std::move(callback).Run(LaunchResult(State::FAILED));
+      return;
     }
-
-    prefs->SetLastLaunchTime(app_id);
 
     full_restore::SaveAppLaunchInfo(
         profile_->GetPath(),

@@ -28,6 +28,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
                                       public arc::ArcSessionManagerObserver {
  public:
   ArcShelfSpinnerItemController(const std::string& arc_app_id,
+                                apps::IntentPtr intent,
                                 int event_flags,
                                 arc::UserInteractionType user_interaction_type,
                                 arc::mojom::WindowInfoPtr window_info);
@@ -61,6 +62,8 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   // Returns true if this item is created by full restore. Otherwise, returns
   // false.
   bool IsCreatedByFullRestore();
+
+  apps::IntentPtr intent_;
 
   // The flags of the event that caused the ARC app to be activated. These will
   // be propagated to the launch event once the app is actually launched.
