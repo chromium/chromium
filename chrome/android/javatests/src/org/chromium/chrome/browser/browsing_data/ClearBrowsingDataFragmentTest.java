@@ -206,8 +206,7 @@ public class ClearBrowsingDataFragmentTest {
     @Test
     @MediumTest
     public void testTabsSwitcher() {
-        Set<Integer> allOptions = ClearBrowsingDataFragment.getAllOptions();
-        setDataTypesToClear(allOptions.toArray(new Integer[allOptions.size()]));
+        setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
         // Set "Advanced" as the user's cached preference.
         when(mBrowsingDataBridgeMock.getLastClearBrowsingDataTab(any())).thenReturn(1);
 
@@ -244,8 +243,7 @@ public class ClearBrowsingDataFragmentTest {
     @Test
     @MediumTest
     public void testClearingEverything() {
-        Set<Integer> allOptions = ClearBrowsingDataFragment.getAllOptions();
-        setDataTypesToClear(allOptions.toArray(new Integer[allOptions.size()]));
+        setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
 
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
