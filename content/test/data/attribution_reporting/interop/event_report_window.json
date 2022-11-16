@@ -1,0 +1,181 @@
+{
+  "description": "Event-level report not created if report window has passed",
+  "input": {
+    "sources": [
+      {
+        "timestamp": "1643235573000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "event_report_window": "86400",
+              "aggregation_keys": {
+                "a": "0x159"
+              }
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      // Should result in an event-level report and an aggregatable report.
+      {
+        "timestamp": "1643235574000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ],
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 123
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an event-level report and an aggregatable report.
+      {
+        "timestamp": "1643321973000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ],
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 456
+              }
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report, but not event-level report as
+      // event report window has passed.
+      {
+        "timestamp": "1643321974000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ],
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 789
+              }
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643325573000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "2"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643325573000"
+      }
+    ],
+    "aggregatable_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 123
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239174000"
+      },
+      {
+        "payload": {
+           "attribution_destination": "https://destination.test",
+           "histograms": [ {
+              "key": "0x559",
+              "value": 456
+           } ]
+        },
+        "report_time": "1643325573000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+     },
+     {
+      "payload": {
+         "attribution_destination": "https://destination.test",
+         "histograms": [ {
+            "key": "0x559",
+            "value": 789
+         } ]
+      },
+      "report_time": "1643325574000",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+   }
+    ]
+  }
+}
