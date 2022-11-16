@@ -6,32 +6,55 @@
  * They tell the runtime linker a list of addresses to post-process after
    loading the executable into memory.
  * There are several types of relocations, but >99% of them are "relative"
-   relocations and are created any time a global variable or constant is
-   initialized with the address of something.
-   * This includes vtables, function pointers, and string literals, but not
-     `char[]`.
+   relocations and are created any time a global symbol or compile-time
+   initialized static local is initialized with the address of something, and
+   the compiler cannot optimize away the relocation (e.g. for pointers where
+   not all uses are visible, or for values that are passed to functions that
+   are not inlined).
+   
+ 
+Examples of things that require relative relocations:
+
+```C++
+// Pointer to yourself.
+extern const void* const kUserDataKey = &kUserDataKey;
+// Array of pointers.
+extern const char* const kMemoryDumpAllowedArgs[] = {"dumps", nullptr};
+// Array of structs that contain one or more pointers.
+extern const StringPiece kStrings[] = {"one, "two"};
+```
+
+Vtables are arrays of function pointers, and so require relative relocations.
+However, on some Chrome platforms we use a non-standard ABI that uses offsets
+rather than pointers in order to remove the relocations overhead
+([crbug/589384]).
+
+[crbug/589384]: https://crbug.com/589384
 
 ### Linux & Android Relocations (ELF Format)
- * Relocations are stored in sections of type: `REL`, `RELA`, [`APS2`][APS2], or
-   [`RELR`][RELR].
  * Relocations are stored in sections named: `.rel.dyn`, `.rel.plt`,
    `.rela.dyn`, or `.rela.plt`.
- * For `REL` and `RELA`, each relocation is stored using either 2 or 3 words,
-   based on the architecture.
- * For `RELR` and `APS2`, relative relocations are compressed.
-   * [`APS2`][APS2]: Somewhat involved compression which trades off runtime
-     performance for smaller file size.
-   * [`RELR`][RELR]: Supported in Android P+. Smaller and simpler than `APS2`.
-     * `RELR` is [used by default][cros] on Chrome OS.
- * As of Oct 2019, Chrome on Android (arm32) has about 390,000 of them.
-
+ * Relocations are stored in sections of type: `REL`, `RELA`, [`APS2`][APS2], or
+   [`RELR`][RELR].
+   * `REL` is default for arm32. It uses two words to per relocation: `address`,
+     `flags`.
+   * `RELA` is default for arm64. It uses three words per relocation: `address`,
+     `flags`, `addend`.
+   * [`APS2`][APS2] is what Chrome for Android uses. It stores the same fields
+     as REL` / `RELA`, but uses variable length ints (LEB128) and run-length
+     encoding.
+   * [`RELR`][RELR] is what [Chrome OS uses], and is supported in Android P+
+     ([tracking bug for enabling]). It encodes only relative relocations and
+     uses a bitmask to do so (which works well since all symbols that require
+     relocations live in `.data.rel.ro`).
+ 
 [APS2]: android_native_libraries.md#Packed-Relocations
-[RELR]: https://reviews.llvm.org/D48247
-[cros]: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1210982
+[RELR]: https://maskray.me/blog/2021-10-31-relative-relocations-and-relr
+[tracking bug for enabling]: https://bugs.chromium.org/p/chromium/issues/detail?id=895194
+[Chrome OS uses]: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1210982
 
 ### Windows Relocations (PE Format)
- * For PE files, relocations are stored in per-code-page
-   [`.reloc` sections][win_relocs].
+ * For PE files, relocations are stored in the [`.reloc` section][win_relocs].
  * Each relocation is stored using 2 bytes. Each `.reloc` section has a small
    overhead as well.
  * 64-bit executables have fewer relocations thanks to the ability to use
@@ -52,7 +75,10 @@
 [relr_bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=895194
 
 ### Memory Overhead
- * On Windows, there is [almost no memory overhead] from relocations.
+ * On Windows, relocations are applied by the kernel during page faults. There
+   is therefore [almost no memory overhead] from relocations, as the memory they
+   are applied to is still considered "clean" memory and shared between
+   processes.
  * On Linux and Android, memory with relocations cannot be loaded read-only and
    result in dirty memory. 99% of these symbols live in `.data.rel.ro`, which as
    of Oct 2019 is ~6.5MiB on Linux and ~2MiB on Android. `.data.rel.ro` is data
@@ -70,11 +96,12 @@
 [relro_sharing]: android_native_libraries.md#relro-sharing
 
 ### Start-up Time
- * On Windows, relocations are applied just-in-time on page faults, and are
-   backed by the PE file (not the pagefile).
+ * On Windows, relocations are applied just-in-time, and so their overhead is
+   both small and difficult to measure.
  * On other platforms, the runtime linker applies all relocations upfront.
  * On low-end Android, it can take ~100ms (measured on a first-gen Android Go
    devices with APS2 relocations).
+   * On a Pixel 4a, it's ~50ms, and with RELR relocations, it's closer to 15ms.
  * On Linux, it's [closer to 20ms][zygote].
 
 ## How do I see them?
@@ -117,11 +144,12 @@ Here's a simpler example:
 
 ```c++
 // No pointer, no relocation. Just 5 bytes of character data.
-const char kText[] = "asdf";
+extern const char kText[] = "asdf";
 
 // Requires pointer, relocation, and character data.
 // In most cases there is no advantage to pointers for strings.
-const char* const kText = "asdf";
+// When not "extern", the compiler can often figure out how to avoid the relocation.
+extern const char* const kText = "asdf";
 ```
 
 Another thing to look out for:
