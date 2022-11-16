@@ -255,11 +255,12 @@ IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SingleWindowTest) {
 // Timing out either all the time, or infrequently, apparently because
 // they're too slow, on the following configurations:
 //   Windows Debug
+//   Windows Release (https://crbug.com/1376441)
 //   Linux Chromium OS ASAN LSAN Tests (1)
 //   Linux TSAN Tests
 // See crbug.com/771119
 // TODO(https://crbug.com/1317446): Fix and enable on Fuchsia.
-#if (BUILDFLAG(IS_WIN) && !defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) ||                       \
     ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                      \
      defined(THREAD_SANITIZER)) ||                                           \
     BUILDFLAG(IS_FUCHSIA)
