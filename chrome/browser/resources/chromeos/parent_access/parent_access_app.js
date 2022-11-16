@@ -47,6 +47,7 @@ class ParentAccessApp extends PolymerElement {
       this.currentScreen_ = Screens.AFTER_FLOW;
       /** @type {CrViewManagerElement} */ (this.$.viewManager)
           .switchView(this.currentScreen_);
+      this.shadowRoot.querySelector('parent-access-after').onShowAfterScreen();
     });
 
     // TODO(b/200187536): Show offline screen if device is offline.

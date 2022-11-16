@@ -2,7 +2,7 @@
   .action-button {
     margin-inline-start: 8px;
   }
-  
+
   #after-screen {
     background-color: var(--cros-bg-color-elevation-1);
     box-sizing: border-box;
@@ -12,10 +12,11 @@
     justify-content: flex-start;
     padding: 26px 24px 20px;
   }
-  
+
   #after-screen-buttons {
     display: flex;
-    justify-content: flex-end;
+    /* Allows the button that appears first visually to be last in tab order */
+    flex-direction: row-reverse; 
     margin-top: auto; /* position at end of flexbox */
     width: 100%;
   }
@@ -31,11 +32,11 @@
   </img>
   <div id="after-screen-body"></div>
   <div id="after-screen-buttons">
-    <cr-button class="decline-button" on-click="onParentDeclined_">
-      $i18n{denyButtonText}
-    </cr-button>
     <cr-button class="action-button" on-click="onParentApproved_">
       $i18n{approveButtonText}
+    </cr-button>
+    <cr-button class="decline-button" on-click="onParentDeclined_">
+      $i18n{denyButtonText}
     </cr-button>
   </div>
 </div>

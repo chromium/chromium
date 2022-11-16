@@ -31,6 +31,10 @@ class ParentAccessAfter extends PolymerElement {
     this.renderFlowSpecificContent_();
   }
 
+  onShowAfterScreen() {
+    this.shadowRoot.querySelector('.action-button').focus();
+  }
+
   /**
    * Renders the correct after screen based on the ParentAccessParams flowtype.
    * @private
