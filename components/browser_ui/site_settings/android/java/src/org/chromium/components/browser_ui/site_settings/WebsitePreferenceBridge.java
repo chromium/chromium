@@ -253,7 +253,8 @@ public class WebsitePreferenceBridge {
      * (Allow/BlockThirdPartyIncognito/BlockThirdParty/Block) setting.
      */
     public static boolean requiresFourStateContentSetting(
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType int contentSettingsType, SiteSettingsDelegate delegate) {
+        if (delegate.isPrivacySandboxSettings4Enabled()) return false;
         return contentSettingsType == ContentSettingsType.COOKIES;
     }
 

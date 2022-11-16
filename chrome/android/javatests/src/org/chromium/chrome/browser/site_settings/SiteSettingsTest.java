@@ -1260,7 +1260,16 @@ public class SiteSettingsTest {
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
     }
 
-    // TODO(b/254415173): Add tests for site data and third-party cookies page.
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
+    public void testOnlyExpectedPreferencesSiteData() {
+        testExpectedPreferences(SiteSettingsCategory.Type.SITE_DATA, BINARY_TOGGLE_WITH_EXCEPTION,
+                BINARY_TOGGLE_WITH_EXCEPTION);
+    }
+
+    // TODO(b/254415173): Add tests for third-party cookies page.
 
     @Test
     @SmallTest
@@ -2252,11 +2261,12 @@ public class SiteSettingsTest {
                     singleCategorySettings.findPreference(SingleCategorySettings.BINARY_TOGGLE_KEY);
             assert toggle != null;
 
+            var delegate = new ChromeSiteSettingsDelegate(
+                    toggle.getContext(), Profile.getLastUsedRegularProfile());
+
             Assert.assertEquals("Preference title is not set correctly.",
                     singleCategorySettings.getResources().getString(
-                            ContentSettingsResources.getTitle(mContentSettingsType,
-                                    new ChromeSiteSettingsDelegate(toggle.getContext(),
-                                            Profile.getLastUsedRegularProfile()))),
+                            ContentSettingsResources.getTitle(mContentSettingsType, delegate)),
                     toggle.getTitle());
             assertNotNull("Enabled summary text should not be null.", toggle.getSummaryOn());
             assertNotNull("Disabled summary text should not be null.", toggle.getSummaryOff());
@@ -2264,8 +2274,10 @@ public class SiteSettingsTest {
             String summary = mIsCategoryEnabled ? toggle.getSummaryOn().toString()
                                                 : toggle.getSummaryOff().toString();
             String expected = singleCategorySettings.getResources().getString(mIsCategoryEnabled
-                            ? ContentSettingsResources.getEnabledSummary(mContentSettingsType)
-                            : ContentSettingsResources.getDisabledSummary(mContentSettingsType));
+                            ? ContentSettingsResources.getEnabledSummary(
+                                    mContentSettingsType, delegate)
+                            : ContentSettingsResources.getDisabledSummary(
+                                    mContentSettingsType, delegate));
             Assert.assertEquals(
                     "Summary text in state <" + mIsCategoryEnabled + "> does not match.", expected,
                     summary);

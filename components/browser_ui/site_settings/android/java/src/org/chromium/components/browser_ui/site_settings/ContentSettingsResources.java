@@ -88,7 +88,7 @@ public class ContentSettingsResources {
     /**
      * Returns the ResourceItem for a ContentSettingsType.
      * @param delegate A site settings delegate to check feature states. Only needs to be passed
-     *                 to access Cookie icon or title.
+     *                 to access Cookie icon, title or summary.
      */
     private static ResourceItem getResourceItem(int contentType, SiteSettingsDelegate delegate) {
         switch (contentType) {
@@ -147,17 +147,22 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_clipboard_blocked);
 
             case ContentSettingsType.COOKIES:
-                return new ResourceItem(delegate == null
-                                ? 0
-                                : (delegate.isPrivacySandboxSettings4Enabled()
-                                                ? R.drawable.gm_database_24
-                                                : R.drawable.permission_cookie),
-                        delegate == null ? 0
-                                         : (delegate.isPrivacySandboxSettings4Enabled()
-                                                         ? R.string.site_data_page_title
-                                                         : R.string.cookies_title),
+                if (delegate == null) {
+                    return new ResourceItem(
+                            0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
+                }
+                return new ResourceItem(delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.drawable.gm_database_24
+                                : R.drawable.permission_cookie,
+                        delegate.isPrivacySandboxSettings4Enabled() ? R.string.site_data_page_title
+                                                                    : R.string.cookies_title,
                         ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        R.string.website_settings_category_cookie_allowed, 0);
+                        delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.string.website_settings_category_site_data_page_allow_radio_label
+                                : R.string.website_settings_category_cookie_allowed,
+                        delegate.isPrivacySandboxSettings4Enabled()
+                                ? R.string.website_settings_category_site_data_page_block_radio_label
+                                : 0);
 
             case ContentSettingsType.REQUEST_DESKTOP_SITE:
                 return new ResourceItem(R.drawable.ic_desktop_windows, R.string.desktop_site_title,
@@ -466,15 +471,15 @@ public class ContentSettingsResources {
     /**
      * Returns the summary (resource id) to show when the content type is enabled.
      */
-    public static int getEnabledSummary(int contentType) {
-        return getResourceItem(contentType, null).getEnabledSummary();
+    public static int getEnabledSummary(int contentType, SiteSettingsDelegate delegate) {
+        return getResourceItem(contentType, delegate).getEnabledSummary();
     }
 
     /**
      * Returns the summary (resource id) to show when the content type is disabled.
      */
-    public static int getDisabledSummary(int contentType) {
-        return getResourceItem(contentType, null).getDisabledSummary();
+    public static int getDisabledSummary(int contentType, SiteSettingsDelegate delegate) {
+        return getResourceItem(contentType, delegate).getDisabledSummary();
     }
 
     /**

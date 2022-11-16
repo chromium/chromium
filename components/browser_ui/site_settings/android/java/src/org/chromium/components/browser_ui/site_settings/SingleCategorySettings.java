@@ -352,8 +352,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         int contentType = mCategory.getContentSettingsType();
         mRequiresTriStateSetting =
                 WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
-        mRequiresFourStateSetting =
-                WebsitePreferenceBridge.requiresFourStateContentSetting(contentType);
+        mRequiresFourStateSetting = WebsitePreferenceBridge.requiresFourStateContentSetting(
+                contentType, getSiteSettingsDelegate());
 
         ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 
@@ -626,6 +626,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         ? R.string.website_settings_add_site_description_cookies_block
                         : R.string.website_settings_add_site_description_cookies_allow;
             }
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SITE_DATA) {
+            resource = WebsitePreferenceBridge.isCategoryEnabled(
+                               browserContextHandle, ContentSettingsType.COOKIES)
+                    ? R.string.website_settings_add_site_description_site_data_block
+                    : R.string.website_settings_add_site_description_site_data_allow;
         } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
             assert WebsitePreferenceBridge.isCategoryEnabled(
                     browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
@@ -723,27 +728,29 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
+        @ContentSettingsType
+        int type = mCategory.getContentSettingsType();
         boolean allowSpecifyingExceptions = false;
-        if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC
-                && !WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.BACKGROUND_SYNC)) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS
-                && !WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.AUTOMATIC_DOWNLOADS)) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && ContentFeatureList.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-            allowSpecifyingExceptions = true;
+
+        switch (mCategory.getType()) {
+            case SiteSettingsCategory.Type.SOUND:
+            case SiteSettingsCategory.Type.JAVASCRIPT:
+            case SiteSettingsCategory.Type.COOKIES:
+            case SiteSettingsCategory.Type.SITE_DATA:
+            case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
+                allowSpecifyingExceptions = true;
+                break;
+            case SiteSettingsCategory.Type.BACKGROUND_SYNC:
+            case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
+                allowSpecifyingExceptions =
+                        !WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, type);
+                break;
+            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
+                allowSpecifyingExceptions = ContentFeatureList.isEnabled(
+                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS);
+                break;
+            default:
+                break;
         }
         if (allowSpecifyingExceptions) {
             getPreferenceScreen().addPreference(new AddExceptionPreference(getStyledContext(),
@@ -1118,9 +1125,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
             binaryToggle.setSummaryOn(ContentSettingsResources.getGeolocationAllowedSummary());
         } else {
-            binaryToggle.setSummaryOn(ContentSettingsResources.getEnabledSummary(contentType));
+            binaryToggle.setSummaryOn(ContentSettingsResources.getEnabledSummary(
+                    contentType, getSiteSettingsDelegate()));
         }
-        binaryToggle.setSummaryOff(ContentSettingsResources.getDisabledSummary(contentType));
+        binaryToggle.setSummaryOff(ContentSettingsResources.getDisabledSummary(
+                contentType, getSiteSettingsDelegate()));
 
         binaryToggle.setManagedPreferenceDelegate(new SingleCategoryManagedPreferenceDelegate(
                 getSiteSettingsDelegate().getManagedPreferenceDelegate()));
