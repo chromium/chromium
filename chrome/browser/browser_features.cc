@@ -146,6 +146,29 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
 #endif
 );
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, a blue border is drawn around shared tabs on ChromeOS.
+// If disabled, the blue border is not used on ChromeOS.
+//
+// Motivation:
+//  The blue border behavior used to cause problems on ChromeOS - see
+//  crbug.com/1320262 for Ash (fixed) and crbug.com/1030925 for Lacros
+//  (relatively old bug -- we would like to observe whether it's still
+//  there). This flag is introduced as means of disabling this feature in case
+//  of possible future regressions.
+//
+// TODO(crbug.com/1251999): Remove this flag once we confirm that blue border
+// works fine on ChromeOS.
+BASE_FEATURE(kTabCaptureBlueBorderCrOS,
+             "TabCaptureBlueBorderCrOS",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+#endif
+
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.
 BASE_FEATURE(kWebUsbDeviceDetection,

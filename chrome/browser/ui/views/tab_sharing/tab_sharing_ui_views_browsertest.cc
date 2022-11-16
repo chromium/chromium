@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,7 +42,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -137,7 +139,7 @@ const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
 const policy::DlpContentRestrictionSet kScreenshareRestrictionSet(
     policy::DlpContentRestriction::kScreenShare,
     policy::DlpRulesManager::Level::kBlock);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -146,7 +148,11 @@ class TabSharingUIViewsBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   TabSharingUIViewsBrowserTest()
-      : favicons_used_for_switch_to_tab_button_(GetParam()) {}
+      : favicons_used_for_switch_to_tab_button_(GetParam()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -196,10 +202,6 @@ class TabSharingUIViewsBrowserTest
     DCHECK((capturing_tab != kNullTabIndex && captured_tab != kNullTabIndex) ||
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-    has_border = false;
-#endif
     views::Widget* contents_border = GetContentsBorder(browser);
     EXPECT_EQ(has_border, contents_border != nullptr);
     auto capture_indicator = GetCaptureIndicator();
@@ -316,7 +318,7 @@ class TabSharingUIViewsBrowserTest
   void ApplyDlpForAllUsers() {
     TabSharingUIViews::ApplyDlpForAllUsersForTesting();
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   void OnStartSharing(const content::DesktopMediaID& media_id) {
@@ -326,6 +328,10 @@ class TabSharingUIViewsBrowserTest
                             base::Unretained(this)),
         std::vector<content::DesktopMediaID>{});
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList features_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const bool favicons_used_for_switch_to_tab_button_;
 
@@ -456,8 +462,6 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
 }
 
-// TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        BorderWidgetShouldCloseWhenBrowserCloses) {
   Browser* new_browser = CreateBrowser(browser()->profile());
@@ -478,7 +482,6 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   CloseBrowserSynchronously(new_browser);
   EXPECT_FALSE(contents_border_weakptr);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        CloseTabInIncognitoBrowser) {
@@ -640,11 +643,15 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
            /*infobar_count=*/1, /*has_border=*/true,
            /*tab_with_disabled_button=*/kNullTabIndex);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
  public:
-  MultipleTabSharingUIViewsBrowserTest() {}
+#if BUILDFLAG(IS_CHROMEOS)
+  MultipleTabSharingUIViewsBrowserTest() {
+    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void CreateUIsAndStartSharing(Browser* browser,
                                 int capturing_tab,
@@ -674,6 +681,10 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList features_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   std::vector<std::unique_ptr<TabSharingUI>> tab_sharing_ui_views_;
 };
 
@@ -696,10 +707,6 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
         capture_indicator->IsBeingMirrored(GetWebContents(browser(), i)));
 
   views::Widget* contents_border = GetContentsBorder(browser());
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
-  EXPECT_EQ(nullptr, contents_border);
-#else
   // The capturing tab, which is not itself being captured, does not have
   // the contents-border.
   ActivateTab(browser(), 0);
@@ -710,7 +717,6 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
     ActivateTab(browser(), i);
     ASSERT_TRUE(contents_border->IsVisible());
   }
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {

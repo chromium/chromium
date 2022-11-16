@@ -46,8 +46,8 @@
 #include "ui/views/window/client_view.h"
 
 using views::View;
-using web_modal::WebContentsModalDialogHost;
 using web_modal::ModalDialogHostObserver;
+using web_modal::WebContentsModalDialogHost;
 
 namespace {
 
@@ -81,8 +81,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
  public:
   explicit WebContentsModalDialogHostViews(
       BrowserViewLayout* browser_view_layout)
-          : browser_view_layout_(browser_view_layout) {
-  }
+      : browser_view_layout_(browser_view_layout) {}
 
   WebContentsModalDialogHostViews(const WebContentsModalDialogHostViews&) =
       delete;
@@ -180,8 +179,7 @@ BrowserViewLayout::BrowserViewLayout(
 
 BrowserViewLayout::~BrowserViewLayout() = default;
 
-WebContentsModalDialogHost*
-    BrowserViewLayout::GetWebContentsModalDialogHost() {
+WebContentsModalDialogHost* BrowserViewLayout::GetWebContentsModalDialogHost() {
   return dialog_host_.get();
 }
 
@@ -257,8 +255,8 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   views::View* parent = browser_view_->parent();
 
   gfx::Point point_in_browser_view_coords(point);
-  views::View::ConvertPointToTarget(
-      parent, browser_view_, &point_in_browser_view_coords);
+  views::View::ConvertPointToTarget(parent, browser_view_,
+                                    &point_in_browser_view_coords);
 
   // Let the frame handle any events that fall within the bounds of the window
   // controls overlay.
@@ -559,8 +557,7 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
   // |contents_container_| contains web page contents and devtools.
   // See browser_view.h for details.
-  gfx::Rect contents_container_bounds(vertical_layout_rect_.x(),
-                                      top,
+  gfx::Rect contents_container_bounds(vertical_layout_rect_.x(), top,
                                       vertical_layout_rect_.width(),
                                       std::max(0, bottom - top));
   if (webui_tab_strip_ && webui_tab_strip_->GetVisible()) {
@@ -737,7 +734,14 @@ void BrowserViewLayout::LayoutContentBorder() {
   }
 
   gfx::Point contents_top_left;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
+#else
+  // On Ash placing the border widget on top of the contents container
+  // does not require an offset -- see crbug.com/1030925.
+  contents_top_left =
+      gfx::Point(contents_container_->x(), contents_container_->y());
+#endif
 
   gfx::Rect rect;
   if (dynamic_content_border_bounds_) {
