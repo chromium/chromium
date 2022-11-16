@@ -565,7 +565,8 @@
       "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/891460
       "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/891460
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/891460
-    ]
+    ],
+    "platforms": ["chromeos", "lacros"]
   },
   "management": [
     {

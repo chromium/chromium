@@ -113,7 +113,10 @@ group("api_implementations") {
   ]
 
   if (is_chromeos) {
-    public_deps += [ "//extensions/browser/api/virtual_keyboard" ]
+    public_deps += [
+      "//extensions/browser/api/virtual_keyboard",
+      "//extensions/browser/api/webcam_private",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -122,7 +125,6 @@ group("api_implementations") {
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/lock_screen_data",
       "//extensions/browser/api/media_perception_private",
-      "//extensions/browser/api/webcam_private",
     ]
   }
 }

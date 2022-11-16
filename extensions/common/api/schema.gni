@@ -78,8 +78,11 @@ if (is_chromeos_ash) {
     "diagnostics.idl",
     "lock_screen_data.idl",
     "media_perception_private.idl",
-    "webcam_private.idl",
   ]
+}
+
+if (is_chromeos) {
+  extensions_api_schema_files_ += [ "webcam_private.idl" ]
 }
 
 extensions_api_schema_files =
