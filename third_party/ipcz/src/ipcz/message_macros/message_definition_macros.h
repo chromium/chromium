@@ -12,6 +12,7 @@
 
 #define IPCZ_MSG_BEGIN(name, id_decl, version_decl)                        \
   name::name() = default;                                                  \
+  name::name(decltype(kIncoming)) : MessageWithParams(kIncoming) {}        \
   name::~name() = default;                                                 \
   bool name::Deserialize(const DriverTransport::RawMessage& message,       \
                          const DriverTransport& transport) {               \

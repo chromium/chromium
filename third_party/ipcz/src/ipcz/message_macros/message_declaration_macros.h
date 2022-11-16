@@ -17,6 +17,7 @@
     id_decl;                                                     \
     version_decl;                                                \
     name();                                                      \
+    explicit name(decltype(kIncoming));                          \
     ~name();                                                     \
     bool Deserialize(const DriverTransport::RawMessage& message, \
                      const DriverTransport& transport);          \

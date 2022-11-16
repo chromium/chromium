@@ -290,7 +290,7 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
     Parcel parcel;
     parcel.AllocateData(kParcelSize, /*allow_partial=*/false,
                         &links.second->memory());
-    if (parcel.data_fragment().is_null()) {
+    if (!parcel.has_data_fragment()) {
       break;
     }
 

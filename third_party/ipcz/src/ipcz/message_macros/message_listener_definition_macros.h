@@ -30,7 +30,7 @@
 
 #define IPCZ_MSG_BEGIN(name, id_decl, version_decl)     \
   case name::kId: {                                     \
-    name message;                                       \
+    name message(Message::kIncoming);                   \
     if (!message.Deserialize(raw_message, transport)) { \
       return false;                                     \
     }                                                   \

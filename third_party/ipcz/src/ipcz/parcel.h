@@ -8,15 +8,19 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "ipcz/api_object.h"
 #include "ipcz/fragment.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message.h"
 #include "ipcz/sequence_number.h"
+#include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -39,15 +43,25 @@ class Parcel {
 
   // Indicates whether this Parcel is empty, meaning its data and objects have
   // been fully consumed.
-  bool empty() const { return data_view_.empty() && objects_view_.empty(); }
+  bool empty() const { return data_view().empty() && objects_view().empty(); }
 
+  // Sets this Parcel's data to the contents of `data`. Any prior data in the
+  // Parcel is discarded.
   void SetInlinedData(std::vector<uint8_t> data);
+
+  // Sets this Parcel's data to the contents of `data_view`, backed by a subset
+  // of the memory within `buffer`. Any prior data in the Parcel is discarded.
+  void SetDataFromMessage(Message::ReceivedDataBuffer buffer,
+                          absl::Span<uint8_t> data_view);
+
+  // Attaches the given set of `objects` to this Parcel.
   void SetObjects(std::vector<Ref<APIObject>> objects);
 
-  // Allocates `num_bytes` of storage for this parcel's data. If `memory` is
+  // Allocates `num_bytes` of storage for this Parcel's data. If `memory` is
   // non-null then its fragment pool is the preferred allocation source.
-  // Otherwise memory is allocated on the heap, and the data placed therein will
-  // be inlined within any message that transmits this parcel.
+  // Otherwise memory is allocated and zero-initialized on the heap, and the
+  // data placed therein will be inlined within any message that transmits this
+  // parcel.
   //
   // If `memory` is non-null and `allow_partial` is true, this may allocate less
   // memory than requested if some reasonable amount of space is still available
@@ -55,6 +69,9 @@ class Parcel {
   //
   // Upon return, data_view() references the allocated memory wherever it
   // resides.
+  //
+  // If the Parcel had any data attached prior to this call, it is discarded and
+  // replaced with the newly allocated storage.
   void AllocateData(size_t num_bytes,
                     bool allow_partial,
                     NodeLinkMemory* memory);
@@ -70,20 +87,30 @@ class Parcel {
   }
   const Ref<NodeLink>& remote_source() const { return remote_source_; }
 
-  absl::Span<uint8_t> data_view() { return data_view_; }
-  absl::Span<const uint8_t> data_view() const { return data_view_; }
+  absl::Span<uint8_t> data_view() { return data_.view; }
+  absl::Span<const uint8_t> data_view() const { return data_.view; }
 
   size_t data_size() const { return data_view().size(); }
 
-  const Fragment& data_fragment() const { return data_fragment_; }
+  bool has_data_fragment() const {
+    return absl::holds_alternative<DataFragment>(data_.storage);
+  }
+  const Fragment& data_fragment() const {
+    ABSL_ASSERT(has_data_fragment());
+    return absl::get<DataFragment>(data_.storage).fragment();
+  }
   const Ref<NodeLinkMemory>& data_fragment_memory() const {
-    return data_fragment_memory_;
+    ABSL_ASSERT(has_data_fragment());
+    return absl::get<DataFragment>(data_.storage).memory();
   }
 
-  absl::Span<Ref<APIObject>> objects_view() { return objects_view_; }
-  absl::Span<const Ref<APIObject>> objects_view() const {
-    return objects_view_;
+  absl::Span<Ref<APIObject>> objects_view() const {
+    if (!objects_) {
+      return {};
+    }
+    return objects_->view;
   }
+
   size_t num_objects() const { return objects_view().size(); }
 
   // Commits `num_bytes` of data to this Parcel's data fragment. This MUST be
@@ -127,26 +154,84 @@ class Parcel {
     uint32_t reserved;
   };
 
+  // Holds a Fragment and a reference to its backing memory. Used when a
+  // Parcel's data lives in shared memory. This implements exclusive ownership
+  // of the underlying fragment, and upon destruction it releases the fragment
+  // back into the memory pool.
+  class DataFragment {
+   public:
+    DataFragment() = default;
+    DataFragment(Ref<NodeLinkMemory> memory, const Fragment& fragment)
+        : memory_(std::move(memory)), fragment_(fragment) {
+      // Parcels can only be given data fragments which are already addressable.
+      ABSL_ASSERT(is_valid());
+    }
+    DataFragment(DataFragment&& other);
+    DataFragment& operator=(DataFragment&& other);
+    ~DataFragment();
+
+    bool is_valid() const { return memory_ && fragment_.is_addressable(); }
+
+    const Fragment& fragment() const { return fragment_; }
+    const Ref<NodeLinkMemory>& memory() const { return memory_; }
+
+    [[nodiscard]] Fragment release();
+    void reset();
+
+   private:
+    Ref<NodeLinkMemory> memory_;
+    Fragment fragment_;
+  };
+
+  // A variant backing type for the parcel's data. Data may be in shared memory,
+  // heap-allocated and initialized from within the Parcel, or heap-allocated by
+  // a received Message and moved into the Parcel from there.
+  using DataStorage = absl::variant<absl::monostate,
+                                    DataFragment,
+                                    std::vector<uint8_t>,
+                                    Message::ReceivedDataBuffer>;
+
+  // Groups a DataStorage with a view into its data. This defines its own move
+  // construction and assignment operators to ensure that moved-from data is
+  // cleared. Note that the view may reference only a subset of the data within
+  // the DataStorage. This subset is considered the Parcel's data.
+  struct DataStorageWithView {
+    DataStorageWithView() = default;
+    DataStorageWithView(DataStorageWithView&& other);
+    DataStorageWithView& operator=(DataStorageWithView&& other);
+    ~DataStorageWithView() = default;
+
+    DataStorage storage;
+    absl::Span<uint8_t> view;
+  };
+
+  // Groups a vector of object attachments along with a view into that vector.
+  // Note that the view may reference only a subset of the elements within the
+  // vector if some objects have been removed or not-yet-attached.
+  struct ObjectStorageWithView {
+    ObjectStorageWithView() = default;
+    ObjectStorageWithView(const ObjectStorageWithView&) = delete;
+    ObjectStorageWithView& operator=(const ObjectStorageWithView&) = delete;
+    ~ObjectStorageWithView() = default;
+
+    std::vector<Ref<APIObject>> storage;
+    absl::Span<Ref<APIObject>> view;
+  };
+
   SequenceNumber sequence_number_{0};
 
   // If this Parcel was received from a remote node, this tracks the NodeLink
   // which received it.
   Ref<NodeLink> remote_source_;
 
-  // A copy of the parcel's data, owned by the Parcel itself. Used only if
-  // `data_fragment_` is null.
-  std::vector<uint8_t> inlined_data_;
+  // Concrete storage for the parcel's data, along with a view the data not yet
+  // consumed.
+  DataStorageWithView data_;
 
-  // If non-null, a shared memory fragment which contains this parcel's data.
-  Fragment data_fragment_;
-  Ref<NodeLinkMemory> data_fragment_memory_;
-
-  // The set of APIObjects attached to this parcel.
-  std::vector<Ref<APIObject>> objects_;
-
-  // Views into any unconsumed data and objects.
-  absl::Span<uint8_t> data_view_;
-  absl::Span<Ref<APIObject>> objects_view_;
+  // The set of APIObjects attached to this parcel, and a view of the objects
+  // not yet consumed from it. Heap-allocated to keep Parcels small in the
+  // common case of no object attachments.
+  std::unique_ptr<ObjectStorageWithView> objects_;
 };
 
 }  // namespace ipcz
