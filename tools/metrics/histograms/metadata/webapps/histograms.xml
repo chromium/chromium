@@ -1079,6 +1079,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
+    enum="BooleanSuccess" expires_after="2023-06-30">
+  <owner>qjw@chromium.org</owner>
+  <owner>dominicschulz@chromium.org</owner>
+  <summary>
+    Records whether system web app icons are healthy for each user session that
+    has system web apps installed. Failure indicates that at least one app has
+    missing or fallback icons.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Uninstall.IconDataSuccess" enum="BooleanSuccess"
     expires_after="2022-09-01">
   <owner>dmurph@chromium.org</owner>

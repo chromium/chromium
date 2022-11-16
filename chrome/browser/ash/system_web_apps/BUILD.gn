@@ -13,6 +13,7 @@ source_set("system_web_apps") {
     "color_helpers.h",
     "system_web_app_background_task.cc",
     "system_web_app_background_task.h",
+    "system_web_app_icon_checker.h",
     "system_web_app_manager.cc",
     "system_web_app_manager.h",
     "system_web_app_manager_factory.cc",

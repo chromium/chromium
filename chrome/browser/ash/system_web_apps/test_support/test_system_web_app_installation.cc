@@ -23,6 +23,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -354,6 +356,20 @@ GenerateWebAppInstallInfoForTestAppUntrusted() {
   auto info = GenerateWebAppInstallInfoForTestApp();
   info->start_url = GURL("chrome-untrusted://test-system-app/pwa.html");
   info->scope = GURL("chrome-untrusted://test-system-app/");
+  return info;
+}
+
+std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoWithValidIcons() {
+  const SquareSizePx icon_size = 256;
+  auto info = GenerateWebAppInstallInfoForTestApp();
+  info->manifest_icons.emplace_back(info->start_url.Resolve("test.png"),
+                                    icon_size);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(icon_size, icon_size, true);
+  bitmap.eraseColor(SK_ColorBLUE);
+  info->icon_bitmaps.any[icon_size] = bitmap;
+
   return info;
 }
 
@@ -783,6 +799,19 @@ TestSystemWebAppInstallation::SetUpAppWithColors(
             info->dark_mode_background_color = dark_mode_background_color;
             return info;
           }));
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithValidIcons() {
+  auto delegate = std::make_unique<UnittestingSystemAppDelegate>(
+      SystemWebAppType::SETTINGS, "Test",
+      GURL("chrome://test-system-app/pwa.html"), base::BindRepeating([]() {
+        return GenerateWebAppInstallInfoWithValidIcons();
+      }));
+
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
 }

@@ -31,6 +31,14 @@ class WebAppIconDiagnostic {
     bool has_empty_icon_file = false;
     bool has_missing_icon_file = false;
     // TODO(https://crbug.com/1353659): Add more checks.
+
+    // Keep attributes in sync with operator<< and IsAnyFallbackUsed.
+    bool IsAnyFallbackUsed() const {
+      return has_empty_downloaded_icon_sizes || has_generated_icon_flag ||
+             has_generated_icon_flag_false_negative ||
+             has_generated_icon_bitmap || has_empty_icon_bitmap ||
+             has_empty_icon_file || has_missing_icon_file;
+    }
   };
 
   WebAppIconDiagnostic(Profile* profile, AppId app_id);
@@ -69,6 +77,9 @@ class WebAppIconDiagnostic {
 
   base::WeakPtrFactory<WebAppIconDiagnostic> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const WebAppIconDiagnostic::Result result);
 
 }  // namespace web_app
 

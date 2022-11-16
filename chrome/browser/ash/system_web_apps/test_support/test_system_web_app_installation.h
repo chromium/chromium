@@ -217,6 +217,8 @@ class TestSystemWebAppInstallation {
       absl::optional<SkColor> background_color,
       absl::optional<SkColor> dark_mode_background_color);
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithValidIcons();
+
   ~TestSystemWebAppInstallation();
 
   void WaitForAppInstall();

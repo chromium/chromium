@@ -16,6 +16,7 @@
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -143,13 +144,16 @@ class SystemWebAppManager : public KeyedService,
     return *on_tasks_started_;
   }
 
+  // Returns the OneShotEvent that is fired after icon checks are complete.
+  const base::OneShotEvent& on_icon_check_completed() const {
+    return *on_icon_check_completed_;
+  }
+
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
   const SystemWebAppDelegateMap& system_app_delegates() const {
     return system_app_delegates_;
   }
-
-  base::WeakPtr<SystemWebAppManager> GetWeakPtr();
 
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
@@ -159,7 +163,7 @@ class SystemWebAppManager : public KeyedService,
   // enabled, this method does nothing, and system apps will be reinstalled.
   void SetUpdatePolicyForTesting(UpdatePolicy policy);
 
-  void ResetOnAppsSynchronizedForTesting();
+  void ResetForTesting();
 
   // Get the timers. Only use this for testing.
   const std::vector<std::unique_ptr<SystemWebAppBackgroundTask>>&
@@ -202,6 +206,8 @@ class SystemWebAppManager : public KeyedService,
 
   void StartBackgroundTasks() const;
 
+  void OnIconCheckResult(SystemWebAppIconChecker::IconState result);
+
   // web_app::WebAppUiManagerObserver:
   void OnReadyToCommitNavigation(
       const web_app::AppId& app_id,
@@ -218,6 +224,7 @@ class SystemWebAppManager : public KeyedService,
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
   std::unique_ptr<base::OneShotEvent> on_tasks_started_;
+  std::unique_ptr<base::OneShotEvent> on_icon_check_completed_;
 
   bool shutting_down_ = false;
 
@@ -239,6 +246,10 @@ class SystemWebAppManager : public KeyedService,
   base::ScopedObservation<web_app::WebAppUiManager,
                           web_app::WebAppUiManagerObserver>
       ui_manager_observation_{this};
+
+  // Always a valid pointer, has the same lifecycle as `this` in production.
+  // Might be reset in tests.
+  std::unique_ptr<SystemWebAppIconChecker> icon_checker_;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };

@@ -85,11 +85,11 @@ struct SystemAppData {
 class SystemWebAppWaiter {
  public:
   explicit SystemWebAppWaiter(SystemWebAppManager* system_web_app_manager) {
-    system_web_app_manager->ResetOnAppsSynchronizedForTesting();
+    system_web_app_manager->ResetForTesting();
     system_web_app_manager->on_apps_synchronized().Post(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          // Wait one execution loop for on_apps_synchronized() to be
-          // called on all listeners.
+          // Wait one execution loop for on_apps_synchronized() to be called on
+          // all listeners.
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, run_loop_.QuitClosure());
         }));
@@ -736,20 +736,28 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
 
   // Bump the version number, and an update will trigger, and force
   // reinstallation of both apps.
+  //
   system_web_app_manager().set_current_version(base::Version("2.0.0.0"));
-  externally_managed_app_manager().SetDropRequestsForTesting(true);
-  // Can't use the normal method because RunLoop::Run goes until
-  // on_app_synchronized is called, and this fails, never calling that.
-  system_web_app_manager().Start();
-  base::RunLoop().RunUntilIdle();
-  externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
 
+  // We use RunUntilIdle because the install requests are dropped, so
+  // on_app_synchronized() won't be called.
+  externally_managed_app_manager().SetDropRequestsForTesting(true);
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
+  system_web_app_manager().Start();
+  base::RunLoop().RunUntilIdle();
+
+  externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
@@ -766,6 +774,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   // If we don't abandon at the same version, it doesn't even attempt another
   // request
   externally_managed_app_manager().SetDropRequestsForTesting(false);
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().set_current_version(base::Version("2.0.0.0"));
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
@@ -773,6 +782,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
   EXPECT_EQ(5u, install_requests.size());
 
   // Bump the version, and it works.
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().set_current_version(base::Version("3.0.0.0"));
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
@@ -810,18 +820,25 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
   // reinstallation of both apps.
   system_web_app_manager().set_current_locale("en/au");
   externally_managed_app_manager().SetDropRequestsForTesting(true);
-  // Can't use the normal method because RunLoop::Run goes until
-  // on_app_synchronized is called, and this fails, never calling that.
-  system_web_app_manager().Start();
-  base::RunLoop().RunUntilIdle();
-  externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
 
+  // We use RunUntilIdle because the install requests are dropped, so
+  // on_app_synchronized() won't be called.
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
+
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
+  system_web_app_manager().Start();
+  base::RunLoop().RunUntilIdle();
+
+  externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
@@ -838,12 +855,14 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
   // If we don't abandon at the same version, it doesn't even attempt another
   // request
   externally_managed_app_manager().SetDropRequestsForTesting(false);
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
   EXPECT_EQ(5u, install_requests.size());
 
   // Bump the version, and it works.
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().set_current_locale("fr/fr");
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
@@ -878,7 +897,7 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   // reinstallation. But, this fails!
   system_web_app_manager().set_current_version(base::Version("2.0.0.0"));
   externally_managed_app_manager().SetDropRequestsForTesting(true);
-
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
@@ -886,6 +905,8 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
   EXPECT_EQ(2u, install_requests.size());
   EXPECT_TRUE(install_requests[1].force_reinstall);
   EXPECT_TRUE(IsInstalled(AppUrl1()));
+
+  system_web_app_manager().ResetForTesting();
   system_web_app_manager().Start();
   base::RunLoop().RunUntilIdle();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();

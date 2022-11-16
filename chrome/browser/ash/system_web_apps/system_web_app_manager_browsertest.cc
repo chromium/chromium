@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -51,7 +52,9 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -1826,6 +1829,68 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAbortsLaunchTest, LaunchAborted) {
   EXPECT_EQ(0U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }
 
+class SystemWebAppIconHealthMetricsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppIconHealthMetricsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppWithValidIcons();
+    // Only reinstall on version change, so we don't force reinstall
+    // and overwrite the broken icon.
+    maybe_installation_->set_update_policy(
+        SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+  }
+  ~SystemWebAppIconHealthMetricsTest() override = default;
+
+ protected:
+  static constexpr char kHistogramName[] =
+      "Webapp.SystemApps.IconsAreHealthyInSession";
+  base::HistogramTester tester_;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, ReportsMetrics) {
+  WaitForTestSystemAppInstall();
+
+  // Icons should be healthy after installation.
+  base::RunLoop run_loop;
+  SystemWebAppManager::Get(browser()->profile())
+      ->on_icon_check_completed()
+      .Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  tester_.ExpectBucketCount(kHistogramName, true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, PRE_BrokenIcon) {
+  WaitForTestSystemAppInstall();
+
+  // Intentionally break icons by corrupting the on-disk icon file.
+  auto app_id = maybe_installation_->GetAppId();
+  base::FilePath icon_path =
+      SystemWebAppManager::GetWebAppProvider(browser()->profile())
+          ->icon_manager()
+          .GetIconFilePathForTesting(app_id, IconPurpose::ANY, 32);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::WriteFile(icon_path, "Not a PNG file");
+  }
+
+  // Restart to let SystemWebAppManager perform the check.
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, BrokenIcon) {
+  WaitForTestSystemAppInstall();
+
+  base::RunLoop run_loop;
+  SystemWebAppManager::Get(browser()->profile())
+      ->on_icon_check_completed()
+      .Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  tester_.ExpectBucketCount(kHistogramName, false, 1);
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_TEST_SUITE_REGULAR_PREF_MIGRATION_P(
     SystemWebAppManagerBrowserTestBasicInstall);
 
@@ -1886,6 +1951,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppAccessibilityTest);
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppAbortsLaunchTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppIconHealthMetricsTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerContextMenuBrowserTest);

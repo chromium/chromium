@@ -37,6 +37,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
@@ -92,6 +93,8 @@
 
 namespace ash {
 
+const constexpr char kIconHealthMetricName[] =
+    "Webapp.SystemApps.IconsAreHealthyInSession";
 namespace {
 
 // Number of attempts to install a given version & locale of the SWAs before
@@ -203,10 +206,12 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
       provider_(web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       on_apps_synchronized_(new base::OneShotEvent()),
       on_tasks_started_(new base::OneShotEvent()),
+      on_icon_check_completed_(new base::OneShotEvent()),
       install_result_per_profile_histogram_name_(
           std::string(kInstallResultHistogramName) + ".Profiles." +
           web_app::GetProfileCategoryForLogging(profile)),
-      pref_service_(profile_->GetPrefs()) {
+      pref_service_(profile_->GetPrefs()),
+      icon_checker_(SystemWebAppIconChecker::Create(profile_)) {
   DCHECK(provider_);
   // Always create delegates because many System Web App WebUIs are disabled
   // when the delegate is not present and we need them in tests. Tests can
@@ -311,7 +316,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemWebAppType type) const {
 
 void SystemWebAppManager::ScheduleStart() {
   provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&SystemWebAppManager::Start, GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&SystemWebAppManager::Start,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SystemWebAppManager::Start() {
@@ -375,18 +381,23 @@ void SystemWebAppManager::Start() {
   provider_->externally_managed_app_manager().SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
-      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized, GetWeakPtr(),
-                     should_force_install_apps, install_start_time));
+      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
+                     weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
+                     install_start_time));
 }
 
 void SystemWebAppManager::Shutdown() {
   shutting_down_ = true;
   StopBackgroundTasks();
+
+  // Icon check might be in progress, we need to cancel it.
+  icon_checker_->StopCheck();
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
   on_tasks_started_ = std::make_unique<base::OneShotEvent>();
+  on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
   skip_app_installation_in_test_ = false;
   Start();
 
@@ -515,10 +526,6 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   return type;
 }
 
-base::WeakPtr<SystemWebAppManager> SystemWebAppManager::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void SystemWebAppManager::OnWebAppUiManagerDestroyed() {
   ui_manager_observation_.Reset();
 }
@@ -538,8 +545,11 @@ void SystemWebAppManager::SetUpdatePolicyForTesting(UpdatePolicy policy) {
   update_policy_ = policy;
 }
 
-void SystemWebAppManager::ResetOnAppsSynchronizedForTesting() {
+void SystemWebAppManager::ResetForTesting() {
+  StopBackgroundTasks();
+  icon_checker_ = SystemWebAppIconChecker::Create(profile_);
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
+  on_icon_check_completed_ = std::make_unique<base::OneShotEvent>();
 }
 
 const base::Version& SystemWebAppManager::CurrentVersion() const {
@@ -644,6 +654,7 @@ void SystemWebAppManager::OnAppsSynchronized(
           profile_, background_info.value()));
     }
   }
+
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
@@ -653,11 +664,18 @@ void SystemWebAppManager::OnAppsSynchronized(
     // associated with a disabled SWA.
   }
 
+  if (!shutting_down_) {
+    // Start an icon health check.
+    icon_checker_->StartCheck(
+        GetAppIds(), base::BindOnce(&SystemWebAppManager::OnIconCheckResult,
+                                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Start the tasks async to give any code running in an on_app_synchronized
   // context a chance to finish first.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SystemWebAppManager::StartBackgroundTasks, GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&SystemWebAppManager::StartBackgroundTasks,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SystemWebAppManager::StartBackgroundTasks() const {
@@ -668,6 +686,26 @@ void SystemWebAppManager::StartBackgroundTasks() const {
   // in testing.
   if (!on_tasks_started_->is_signaled()) {
     on_tasks_started_->Signal();
+  }
+}
+
+void SystemWebAppManager::OnIconCheckResult(
+    SystemWebAppIconChecker::IconState result) {
+  switch (result) {
+    case SystemWebAppIconChecker::IconState::kNoAppInstalled:
+      break;
+    case SystemWebAppIconChecker::IconState::kBroken:
+      base::UmaHistogramBoolean(kIconHealthMetricName, false);
+      // TODO(crbug.com/1356059): Schedule app reinstallation.
+      break;
+    case SystemWebAppIconChecker::IconState::kOk:
+      base::UmaHistogramBoolean(kIconHealthMetricName, true);
+      break;
+  }
+
+  // Might get signaled multiple times in tests.
+  if (!on_icon_check_completed_->is_signaled()) {
+    on_icon_check_completed_->Signal();
   }
 }
 
