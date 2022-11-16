@@ -591,9 +591,7 @@ try_.builder(
 try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    cores = "8|16",
-    # TODO(crbug.com/1343843): Set to True once ssd bots are landed
-    ssd = None,
+    cores = 16,
     mirrors = [
         "ci/Android arm Builder (dbg)",
     ],
@@ -604,7 +602,7 @@ try_.builder(
     builderless = not settings.is_main,
     goma_backend = None,
     main_list_view = "try",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
 
