@@ -15,6 +15,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/session_manager_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class PrefRegistrySimple;
@@ -77,7 +78,14 @@ class ASH_EXPORT KeyboardBacklightColorController
       personalization_app::mojom::BacklightColor backlight_color,
       const AccountId& account_id);
 
+  // Toggles on the keyboard brightness at 40% if the backlight is off.
+  void MaybeToggleOnKeyboardBrightness();
+
+  // Callbacks:
+  void KeyboardBrightnessPercentReceived(absl::optional<double> percentage);
+
   SkColor displayed_color_for_testing_ = SK_ColorTRANSPARENT;
+  bool keyboard_brightness_on_for_testing_ = false;
 
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_observer_{this};
@@ -87,6 +95,9 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   std::unique_ptr<KeyboardBacklightColorNudgeController>
       keyboard_backlight_color_nudge_controller_;
+
+  base::WeakPtrFactory<KeyboardBacklightColorController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

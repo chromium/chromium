@@ -103,6 +103,14 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     return controller_->displayed_color_for_testing_;
   }
 
+  bool keyboard_brightness_on_for_testing() const {
+    return controller_->keyboard_brightness_on_for_testing_;
+  }
+
+  void set_keyboard_brightness_off_for_testing() const {
+    controller_->keyboard_brightness_on_for_testing_ = false;
+  }
+
   void clear_displayed_color() {
     controller_->displayed_color_for_testing_ = SK_ColorTRANSPARENT;
   }
@@ -221,4 +229,16 @@ TEST_F(KeyboardBacklightColorControllerTest,
   controller_->OnRgbKeyboardSupportedChanged(true);
   EXPECT_EQ(kDefaultColor, displayed_color());
 }
+
+TEST_F(KeyboardBacklightColorControllerTest, TurnsOnKeyboardBrightnessWhenOff) {
+  SimulateUserLogin(account_id_1);
+  set_keyboard_brightness_off_for_testing();
+  controller_->SetBacklightColor(
+      personalization_app::mojom::BacklightColor::kBlue, account_id_1);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(personalization_app::mojom::BacklightColor::kBlue,
+            controller_->GetBacklightColor(account_id_1));
+  EXPECT_TRUE(keyboard_brightness_on_for_testing());
+}
+
 }  // namespace ash
