@@ -137,8 +137,9 @@ ContentSuggestion CreateSuggestion(Category category,
       chrome_test_util::GetOriginalBrowserState();
   TemplateURLService* service =
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
-  return base::SysUTF16ToNSString(
-      service->GetDefaultSearchProvider()->short_name());
+  const TemplateURL* default_provider = service->GetDefaultSearchProvider();
+  DCHECK(default_provider);
+  return base::SysUTF16ToNSString(default_provider->short_name());
 }
 
 + (void)resetSearchEngineTo:(NSString*)defaultSearchEngine {

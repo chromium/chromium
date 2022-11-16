@@ -432,12 +432,12 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
       // Undo the change. This information might be used during activation so
       // we should not change it.
       base::AutoReset<bool> resetter(&search_terms_args.is_prefetch, true);
-      prerender_url = GURL(
-          template_url_service->GetDefaultSearchProvider()
-              ->url_ref()
-              .ReplaceSearchTerms(search_terms_args,
-                                  template_url_service->search_terms_data(),
-                                  /*post_content=*/nullptr));
+      const TemplateURL* default_provider =
+          template_url_service->GetDefaultSearchProvider();
+      DCHECK(default_provider);
+      prerender_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
+          search_terms_args, template_url_service->search_terms_data(),
+          /*post_content=*/nullptr));
     }
     DCHECK(!search_terms_args.is_prefetch);
   }

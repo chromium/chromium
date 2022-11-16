@@ -819,6 +819,7 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 
   const TemplateURL* default_search_provider =
       client_->GetTemplateURLService()->GetDefaultSearchProvider();
+  DCHECK(default_search_provider);
   keyword_ = default_search_provider->keyword();
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;

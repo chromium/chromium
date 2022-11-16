@@ -1550,6 +1550,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   const TemplateURL* defaultURL =
       templateURLService->GetDefaultSearchProvider();
+  DCHECK(defaultURL);
 
   TemplateURLRef::SearchTermsArgs search_args(
       base::SysNSStringToUTF16(self.searchTerms));

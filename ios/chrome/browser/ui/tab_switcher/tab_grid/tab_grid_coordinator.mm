@@ -953,6 +953,7 @@
 
   const TemplateURL* searchURLTemplate =
       templateURLService->GetDefaultSearchProvider();
+  DCHECK(searchURLTemplate);
 
   TemplateURLRef::SearchTermsArgs searchArgs(
       base::SysNSStringToUTF16(searchText));

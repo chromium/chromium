@@ -66,6 +66,7 @@ ImageSearchParamGenerator::LoadParamsForResizedImageData(
 
   const TemplateURL* default_url =
       template_url_service->GetDefaultSearchProvider();
+  DCHECK(default_url);
   DCHECK(!default_url->image_url().empty());
   DCHECK(default_url->image_url_ref().IsValid(
       template_url_service->search_terms_data()));

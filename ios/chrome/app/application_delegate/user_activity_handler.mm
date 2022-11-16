@@ -455,6 +455,7 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
   const TemplateURL* defaultURL =
       templateURLService->GetDefaultSearchProvider();
+  DCHECK(defaultURL);
   DCHECK(!defaultURL->url().empty());
   DCHECK(
       defaultURL->url_ref().IsValid(templateURLService->search_terms_data()));

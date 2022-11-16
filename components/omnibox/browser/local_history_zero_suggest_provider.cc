@@ -49,8 +49,12 @@ namespace {
 std::u16string GetSearchTermsFromURL(const GURL& url,
                                      TemplateURLService* template_url_service) {
   DCHECK(template_url_service);
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  DCHECK(default_provider);
+
   std::u16string search_terms;
-  template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+  default_provider->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &search_terms);
   return base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
 }

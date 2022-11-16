@@ -59,11 +59,11 @@ GURL GetPreloadURLFromMatch(
   // Copy the search term args, so we can modify them for just the prefetch.
   auto search_terms_args = search_terms_args_from_match;
   search_terms_args.is_prefetch = attach_prefetch_information;
-  return GURL(template_url_service->GetDefaultSearchProvider()
-                  ->url_ref()
-                  .ReplaceSearchTerms(search_terms_args,
-                                      template_url_service->search_terms_data(),
-                                      nullptr));
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  DCHECK(default_provider);
+  return GURL(default_provider->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service->search_terms_data(), nullptr));
 }
 
 struct SearchPrefetchEligibilityReasonRecorder {
@@ -947,8 +947,10 @@ void SearchPrefetchService::ObserveTemplateURLService(
   if (!observer_.IsObserving()) {
     observer_.Observe(template_url_service);
 
-    template_url_service_data_ =
-        template_url_service->GetDefaultSearchProvider()->data();
+    const TemplateURL* default_provider =
+        template_url_service->GetDefaultSearchProvider();
+    DCHECK(default_provider);
+    template_url_service_data_ = default_provider->data();
   }
 }
 

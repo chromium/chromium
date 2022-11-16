@@ -133,8 +133,11 @@ void StartSuggestService::SearchProviderChanged() {
 
 GURL StartSuggestService::GetRequestURL(
     const TemplateURLRef::SearchTermsArgs& search_terms_args) {
+  const TemplateURL* default_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  DCHECK(default_provider);
   const TemplateURLRef& suggestion_url_ref =
-      template_url_service_->GetDefaultSearchProvider()->suggestions_url_ref();
+      default_provider->suggestions_url_ref();
   const SearchTermsData& search_terms_data =
       template_url_service_->search_terms_data();
   DCHECK(suggestion_url_ref.SupportsReplacement(search_terms_data));
@@ -158,6 +161,7 @@ GURL StartSuggestService::GetQueryDestinationURL(
     const std::u16string& query,
     const TemplateURL* search_provider) {
   TemplateURLRef::SearchTermsArgs search_terms_args(query);
+  DCHECK(search_provider);
   const TemplateURLRef& search_url_ref = search_provider->url_ref();
   const SearchTermsData& search_terms_data =
       template_url_service_->search_terms_data();
