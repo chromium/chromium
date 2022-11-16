@@ -86,6 +86,7 @@ export class ChromeVoxBackground {
 
   /** Initializes classic background object. */
   static init() {
+    ExtensionBridge.init();
     const background = new ChromeVoxBackground();
   }
 }
