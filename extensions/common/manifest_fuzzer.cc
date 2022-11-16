@@ -95,10 +95,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   for (auto location : kLocations) {
-    Manifest manifest(location,
-                      base::DictionaryValue::From(
-                          base::Value::ToUniquePtrValue(parsed_json->Clone())),
-                      extension_id);
+    Manifest manifest(location, parsed_json->GetDict().Clone(), extension_id);
 
     std::string error;
     std::vector<InstallWarning> install_warning;

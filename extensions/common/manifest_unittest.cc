@@ -25,7 +25,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
   Manifest(ManifestLocation::kUnpacked,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+               .BuildDict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -39,7 +39,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
   Manifest(ManifestLocation::kCommandLine,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+               .BuildDict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -53,7 +53,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
   Manifest(ManifestLocation::kInternal,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build(),
+               .BuildDict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -63,7 +63,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kUnpacked, DictionaryBuilder().Build(),
+  Manifest(ManifestLocation::kUnpacked, DictionaryBuilder().BuildDict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -73,7 +73,7 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kInternal, DictionaryBuilder().Build(),
+  Manifest(ManifestLocation::kInternal, DictionaryBuilder().BuildDict(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
@@ -143,8 +143,7 @@ TEST(ManifestTest, AvailableValues) {
     ASSERT_TRUE(manifest_value->is_dict()) << test_case.input_manifest;
 
     Manifest manifest(ManifestLocation::kInternal,
-                      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-                          std::move(*manifest_value))),
+                      std::move(*manifest_value).TakeDict(),
                       crx_file::id_util::GenerateId("extid"));
 
     absl::optional<base::Value> expected_value =

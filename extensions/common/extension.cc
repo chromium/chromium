@@ -264,13 +264,11 @@ scoped_refptr<Extension> Extension::Create(
   }
 
   std::unique_ptr<extensions::Manifest> manifest;
-  auto value_clone = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(value.Clone())));
   if (flags & FOR_LOGIN_SCREEN) {
-    manifest = Manifest::CreateManifestForLoginScreen(
-        location, std::move(value_clone), std::move(extension_id));
+    manifest = Manifest::CreateManifestForLoginScreen(location, value.Clone(),
+                                                      std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(location, std::move(value_clone),
+    manifest = std::make_unique<Manifest>(location, value.Clone(),
                                           std::move(extension_id));
   }
 

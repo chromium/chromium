@@ -11,19 +11,15 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
-
 namespace extensions {
 struct InstallWarning;
 
-// Wraps the DictionaryValue form of extension's manifest. Enforces access to
+// Wraps the base::Value::Dict form of extension's manifest. Enforces access to
 // properties of the manifest using ManifestFeatureProvider.
 class Manifest final {
  public:
@@ -105,7 +101,7 @@ class Manifest final {
   }
 
   // Returns the Manifest::Type for the given |value|.
-  static Type GetTypeFromManifestValue(const base::DictionaryValue& value,
+  static Type GetTypeFromManifestValue(const base::Value::Dict& value,
                                        bool for_login_screen = false);
 
   // Returns true if an item with the given |location| should always be loaded,
@@ -118,11 +114,11 @@ class Manifest final {
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
       mojom::ManifestLocation location,
-      std::unique_ptr<base::DictionaryValue> value,
+      base::Value::Dict value,
       ExtensionId extension_id);
 
   Manifest(mojom::ManifestLocation location,
-           std::unique_ptr<base::DictionaryValue> value,
+           base::Value::Dict value,
            ExtensionId extension_id);
 
   Manifest(const Manifest&) = delete;
@@ -188,17 +184,19 @@ class Manifest final {
 
   // Gets the underlying DictionaryValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
-  const base::DictionaryValue* value() const { return value_.get(); }
+  const base::DictionaryValue* value() const {
+    return &base::Value::AsDictionaryValue(value_);
+  }
 
   // Gets the underlying DictionaryValue representing the manifest with all
   // unavailable manifest keys removed.
   const base::DictionaryValue& available_values() const {
-    return *available_values_;
+    return base::Value::AsDictionaryValue(available_values_);
   }
 
  private:
   Manifest(mojom::ManifestLocation location,
-           std::unique_ptr<base::DictionaryValue> value,
+           base::Value::Dict value,
            ExtensionId extension_id,
            bool for_login_screen);
 
@@ -216,10 +214,14 @@ class Manifest final {
   const mojom::ManifestLocation location_;
 
   // The underlying dictionary representation of the manifest.
-  const std::unique_ptr<const base::DictionaryValue> value_;
+  // TODO(https://crbug.com/1366865): Make base::Value::Dict when callers of
+  // `value()` are migrated.
+  const base::Value value_;
 
   // Same as |value_| but comprises only of keys available to this manifest.
-  std::unique_ptr<const base::DictionaryValue> available_values_;
+  // TODO(https://crbug.com/1366865): Make base::Value::Dict when callers of
+  // `available_value()` are migrated.
+  base::Value available_values_;
 
   const Type type_;
 

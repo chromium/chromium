@@ -217,7 +217,7 @@ class KioskAppData::WebstoreDataParser
       std::unique_ptr<base::DictionaryValue> parsed_manifest) override {
     extensions::Manifest manifest(
         extensions::mojom::ManifestLocation::kInvalidLocation,
-        std::move(parsed_manifest), id);
+        std::move(*parsed_manifest).TakeDict(), id);
 
     if (!IsValidKioskAppManifest(manifest)) {
       ReportFailure();

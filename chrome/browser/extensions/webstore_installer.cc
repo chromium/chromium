@@ -248,9 +248,9 @@ WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
   std::unique_ptr<Approval> result(new Approval());
   result->extension_id = extension_id;
   result->profile = profile;
-  result->manifest =
-      std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
-                                 std::move(parsed_manifest), extension_id);
+  result->manifest = std::make_unique<Manifest>(
+      mojom::ManifestLocation::kInvalidLocation,
+      std::move(*parsed_manifest).TakeDict(), extension_id);
   result->skip_install_dialog = true;
   result->manifest_check_level = strict_manifest_check ?
     MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;

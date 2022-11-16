@@ -57,12 +57,11 @@ class ManifestUnitTest : public testing::Test {
   void MutateManifest(std::unique_ptr<Manifest>* manifest,
                       const std::string& key,
                       std::unique_ptr<base::Value> value) {
-    auto manifest_value = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(manifest->get()->value()->Clone()));
+    base::Value::Dict manifest_value = (*manifest)->value()->GetDict().Clone();
     if (value)
-      manifest_value->SetPath(key, std::move(*value));
+      manifest_value.SetByDottedPath(key, std::move(*value));
     else
-      manifest_value->RemovePath(key);
+      manifest_value.RemoveByDottedPath(key);
     ExtensionId extension_id = manifest->get()->extension_id();
     *manifest = std::make_unique<Manifest>(
         ManifestLocation::kInternal, std::move(manifest_value), extension_id);
@@ -72,8 +71,7 @@ class ManifestUnitTest : public testing::Test {
   // and uses the |for_login_screen| during creation to determine its type.
   void MutateManifestForLoginScreen(std::unique_ptr<Manifest>* manifest,
                                     bool for_login_screen) {
-    auto manifest_value = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(manifest->get()->value()->Clone()));
+    auto manifest_value = (*manifest)->value()->GetDict().Clone();
     ExtensionId extension_id = manifest->get()->extension_id();
     if (for_login_screen) {
       *manifest = Manifest::CreateManifestForLoginScreen(
@@ -90,13 +88,12 @@ class ManifestUnitTest : public testing::Test {
 
 // Verifies that extensions can access the correct keys.
 TEST_F(ManifestUnitTest, Extension) {
-  std::unique_ptr<base::DictionaryValue> manifest_value(
-      new base::DictionaryValue());
-  manifest_value->SetString(keys::kName, "extension");
-  manifest_value->SetString(keys::kVersion, "1");
-  manifest_value->SetInteger(keys::kManifestVersion, 2);
-  manifest_value->SetString(keys::kBackgroundPage, "bg.html");
-  manifest_value->SetString("unknown_key", "foo");
+  base::Value::Dict manifest_value;
+  manifest_value.Set(keys::kName, "extension");
+  manifest_value.Set(keys::kVersion, "1");
+  manifest_value.Set(keys::kManifestVersion, 2);
+  manifest_value.SetByDottedPath(keys::kBackgroundPage, "bg.html");
+  manifest_value.Set("unknown_key", "foo");
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(manifest_value),
@@ -122,9 +119,7 @@ TEST_F(ManifestUnitTest, Extension) {
 
   // Test EqualsForTesting.
   auto manifest2 = std::make_unique<Manifest>(
-      ManifestLocation::kInternal,
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(manifest->value()->Clone())),
+      ManifestLocation::kInternal, manifest->value()->GetDict().Clone(),
       crx_file::id_util::GenerateId("extid"));
   EXPECT_TRUE(manifest->EqualsForTesting(*manifest2));
   EXPECT_TRUE(manifest2->EqualsForTesting(*manifest));
@@ -134,9 +129,9 @@ TEST_F(ManifestUnitTest, Extension) {
 
 // Verifies that key restriction based on type works.
 TEST_F(ManifestUnitTest, ExtensionTypes) {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetStringKey(keys::kName, "extension");
-  value->SetStringKey(keys::kVersion, "1");
+  base::Value::Dict value;
+  value.Set(keys::kName, "extension");
+  value.Set(keys::kVersion, "1");
 
   std::unique_ptr<Manifest> manifest(
       new Manifest(ManifestLocation::kInternal, std::move(value),
@@ -197,12 +192,11 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
 // Verifies that the getters filter restricted keys taking into account the
 // manifest version.
 TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
-  std::unique_ptr<base::DictionaryValue> value =
-      DictionaryBuilder()
-          .Set(keys::kName, "extension")
-          .Set(keys::kVersion, "1")
-          .Set(keys::kManifestVersion, 2)
-          .Build();
+  base::Value::Dict value = DictionaryBuilder()
+                                .Set(keys::kName, "extension")
+                                .Set(keys::kVersion, "1")
+                                .Set(keys::kManifestVersion, 2)
+                                .BuildDict();
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
@@ -228,14 +222,12 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
 // Verifies that the getters filter restricted keys taking into account the
 // item type.
 TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
-  std::unique_ptr<base::DictionaryValue> value =
-      DictionaryBuilder()
-          .Set(keys::kName, "item")
-          .Set(keys::kVersion, "1")
-          .Set(keys::kManifestVersion, 2)
-          .Set(keys::kPageAction,
-               std::make_unique<base::Value>(base::Value::Type::DICTIONARY))
-          .Build();
+  base::Value::Dict value = DictionaryBuilder()
+                                .Set(keys::kName, "item")
+                                .Set(keys::kVersion, "1")
+                                .Set(keys::kManifestVersion, 2)
+                                .Set(keys::kPageAction, base::Value::Dict())
+                                .BuildDict();
 
   auto manifest =
       std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),

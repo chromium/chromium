@@ -171,21 +171,13 @@ void ZipFileInstaller::ManifestParsed(
     const base::FilePath& unzip_dir,
     absl::optional<base::Value> result,
     const absl::optional<std::string>& error) {
-  if (!result) {
-    ReportFailure(std::string(kExtensionHandlerFileUnzipError));
-    return;
-  }
-
-  std::unique_ptr<base::DictionaryValue> manifest_dictionary =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(*result)));
-  if (!manifest_dictionary) {
+  if (!result || !result->is_dict()) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
   }
 
   Manifest::Type manifest_type =
-      Manifest::GetTypeFromManifestValue(*manifest_dictionary);
+      Manifest::GetTypeFromManifestValue(result->GetDict());
 
   unzip::UnzipFilterCallback filter = base::BindRepeating(
       [](bool is_theme, const base::FilePath& file_path) -> bool {

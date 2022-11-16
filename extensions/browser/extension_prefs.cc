@@ -1976,10 +1976,10 @@ void ExtensionPrefs::InitPrefStore() {
       // we could instead initialize the controlled preferences when the
       // extension is more finalized, but this also needs to happen sufficiently
       // before other subsystems are notified about the extension being loaded.
-      Manifest::Type type =
-          info->extension_manifest
-              ? Manifest::GetTypeFromManifestValue(*info->extension_manifest)
-              : Manifest::TYPE_UNKNOWN;
+      Manifest::Type type = info->extension_manifest
+                                ? Manifest::GetTypeFromManifestValue(
+                                      info->extension_manifest->GetDict())
+                                : Manifest::TYPE_UNKNOWN;
       bool is_theme = type == Manifest::TYPE_THEME;
       // Erase the entry if the extension won't be loaded.
       return !Manifest::ShouldAlwaysLoadExtension(info->extension_location,
@@ -2604,7 +2604,7 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
     // We only want to migrate extensions we can actually withhold permissions
     // from.
     Manifest::Type type =
-        Manifest::GetTypeFromManifestValue(*info->extension_manifest);
+        Manifest::GetTypeFromManifestValue(info->extension_manifest->GetDict());
     ManifestLocation location = info->extension_location;
     if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
                                                    location))

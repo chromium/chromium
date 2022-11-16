@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/value_iterators.h"
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/feature.h"
@@ -96,11 +97,11 @@ int GetLocationRank(ManifestLocation location) {
   return rank;
 }
 
-int GetManifestVersion(const base::DictionaryValue& manifest_value,
+int GetManifestVersion(const base::Value::Dict& manifest_value,
                        Manifest::Type type) {
   // Platform apps were launched after manifest version 2 was the preferred
   // version, so they default to that.
-  return manifest_value.FindIntKey(keys::kManifestVersion)
+  return manifest_value.FindInt(keys::kManifestVersion)
       .value_or(type == Manifest::TYPE_PLATFORM_APP ? 2 : 1);
 }
 
@@ -108,21 +109,20 @@ int GetManifestVersion(const base::DictionaryValue& manifest_value,
 class AvailableValuesFilter {
  public:
   // Filters `manifest.values()` removing any unavailable keys.
-  static base::Value Filter(const Manifest& manifest) {
-    return FilterInternal(manifest, *manifest.value(), "");
+  static base::Value::Dict Filter(const Manifest& manifest) {
+    return FilterInternal(manifest, manifest.value()->GetDict(), "");
   }
 
  private:
-  // Returns a DictionaryValue corresponding to |input_dict| for the given
+  // Returns a base::Value::Dict corresponding to |input_dict| for the given
   // |manifest|, with all unavailable keys removed.
-  static base::Value FilterInternal(const Manifest& manifest,
-                                    const base::Value& input_dict,
-                                    std::string current_path) {
-    base::Value output_dict(base::Value::Type::DICTIONARY);
-    DCHECK(input_dict.is_dict());
+  static base::Value::Dict FilterInternal(const Manifest& manifest,
+                                          const base::Value::Dict& input_dict,
+                                          std::string current_path) {
+    base::Value::Dict output_dict;
     DCHECK(CanAccessFeature(manifest, current_path));
 
-    for (auto it : input_dict.DictItems()) {
+    for (auto it : input_dict) {
       std::string child_path = CombineKeys(current_path, it.first);
 
       // Unavailable key, skip it.
@@ -132,13 +132,13 @@ class AvailableValuesFilter {
       // If |child_path| corresponds to a leaf node, copy it.
       bool is_leaf_node = !it.second.is_dict();
       if (is_leaf_node) {
-        output_dict.SetKey(it.first, it.second.Clone());
+        output_dict.Set(it.first, it.second.Clone());
         continue;
       }
 
       // Child dictionary. Populate it recursively.
-      output_dict.SetKey(it.first,
-                         FilterInternal(manifest, it.second, child_path));
+      output_dict.Set(
+          it.first, FilterInternal(manifest, it.second.GetDict(), child_path));
     }
     return output_dict;
   }
@@ -201,23 +201,23 @@ ManifestLocation Manifest::GetHigherPriorityLocation(ManifestLocation loc1,
 
 // static
 Manifest::Type Manifest::GetTypeFromManifestValue(
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     bool for_login_screen) {
   Type type = TYPE_UNKNOWN;
-  if (value.FindKey(keys::kTheme)) {
+  if (value.Find(keys::kTheme)) {
     type = TYPE_THEME;
-  } else if (value.FindKey(api::shared_module::ManifestKeys::kExport)) {
+  } else if (value.Find(api::shared_module::ManifestKeys::kExport)) {
     type = TYPE_SHARED_MODULE;
-  } else if (value.FindKey(keys::kApp)) {
-    if (value.Get(keys::kWebURLs, nullptr) ||
-        value.Get(keys::kLaunchWebURL, nullptr)) {
+  } else if (value.Find(keys::kApp)) {
+    if (value.FindByDottedPath(keys::kWebURLs) ||
+        value.FindByDottedPath(keys::kLaunchWebURL)) {
       type = TYPE_HOSTED_APP;
-    } else if (value.Get(keys::kPlatformAppBackground, nullptr)) {
+    } else if (value.FindByDottedPath(keys::kPlatformAppBackground)) {
       type = TYPE_PLATFORM_APP;
     } else {
       type = TYPE_LEGACY_PACKAGED_APP;
     }
-  } else if (value.FindKey(keys::kChromeOSSystemExtension)) {
+  } else if (value.Find(keys::kChromeOSSystemExtension)) {
     type = TYPE_CHROMEOS_SYSTEM_EXTENSION;
   } else if (for_login_screen) {
     type = TYPE_LOGIN_SCREEN_EXTENSION;
@@ -248,7 +248,7 @@ bool Manifest::ShouldAlwaysLoadExtension(ManifestLocation location,
 // static
 std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
     ManifestLocation location,
-    std::unique_ptr<base::DictionaryValue> value,
+    base::Value::Dict value,
     ExtensionId extension_id) {
   CHECK(IsPolicyLocation(location));
   // Use base::WrapUnique + new because the constructor is private.
@@ -257,24 +257,23 @@ std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
 }
 
 Manifest::Manifest(ManifestLocation location,
-                   std::unique_ptr<base::DictionaryValue> value,
+                   base::Value::Dict value,
                    ExtensionId extension_id)
     : Manifest(location, std::move(value), std::move(extension_id), false) {}
 
 Manifest::Manifest(ManifestLocation location,
-                   std::unique_ptr<base::DictionaryValue> value,
+                   base::Value::Dict value,
                    ExtensionId extension_id,
                    bool for_login_screen)
     : extension_id_(std::move(extension_id)),
       hashed_id_(HashedExtensionId(extension_id_)),
       location_(location),
       value_(std::move(value)),
-      type_(GetTypeFromManifestValue(*value_, for_login_screen)),
-      manifest_version_(GetManifestVersion(*value_, type_)) {
+      type_(GetTypeFromManifestValue(value_.GetDict(), for_login_screen)),
+      manifest_version_(GetManifestVersion(value_.GetDict(), type_)) {
   DCHECK(!extension_id_.empty());
 
-  available_values_ = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(AvailableValuesFilter::Filter(*this)));
+  available_values_ = base::Value(AvailableValuesFilter::Filter(*this));
 }
 
 Manifest::~Manifest() = default;
@@ -291,8 +290,7 @@ bool Manifest::ValidateManifest(
   const FeatureProvider* manifest_feature_provider =
       FeatureProvider::GetManifestFeatures();
   for (const auto& map_entry : manifest_feature_provider->GetAllFeatures()) {
-    // Use Get instead of HasKey because the former uses path expansion.
-    if (!value_->Get(map_entry.first, nullptr))
+    if (!value_.GetDict().FindByDottedPath(map_entry.first))
       continue;
 
     Feature::Availability result = map_entry.second->IsAvailableToManifest(
@@ -302,7 +300,7 @@ bool Manifest::ValidateManifest(
   }
 
   // Also generate warnings for keys that are not features.
-  for (const auto item : value_->GetDict()) {
+  for (const auto item : value_.GetDict()) {
     if (!manifest_feature_provider->GetFeature(item.first)) {
       warnings->push_back(InstallWarning(
           ErrorUtils::FormatErrorMessage(
@@ -312,7 +310,8 @@ bool Manifest::ValidateManifest(
   }
 
   if (IsUnpackedLocation(location_) &&
-      value_->FindPath(manifest_keys::kDifferentialFingerprint)) {
+      value_.GetDict().FindByDottedPath(
+          manifest_keys::kDifferentialFingerprint)) {
     warnings->push_back(
         InstallWarning(manifest_errors::kHasDifferentialFingerprint,
                        manifest_keys::kDifferentialFingerprint));
@@ -321,50 +320,55 @@ bool Manifest::ValidateManifest(
 }
 
 const base::Value* Manifest::FindKey(base::StringPiece key) const {
-  return available_values_->FindKey(key);
+  return available_values_.GetDict().Find(key);
 }
 
 const base::Value* Manifest::FindPath(base::StringPiece path) const {
-  return available_values_->FindPath(path);
+  return available_values_.GetDict().FindByDottedPath(path);
 }
 
 absl::optional<bool> Manifest::FindBoolPath(base::StringPiece path) const {
-  return available_values_->FindBoolPath(path);
+  return available_values_.GetDict().FindBoolByDottedPath(path);
 }
 
 absl::optional<int> Manifest::FindIntPath(base::StringPiece path) const {
-  return available_values_->FindIntPath(path);
+  return available_values_.GetDict().FindIntByDottedPath(path);
 }
 
 const std::string* Manifest::FindStringPath(base::StringPiece path) const {
-  return available_values_->FindStringPath(path);
+  return available_values_.GetDict().FindStringByDottedPath(path);
 }
 
 bool Manifest::GetDictionary(
     const std::string& path, const base::DictionaryValue** out_value) const {
-  return available_values_->GetDictionary(path, out_value);
+  const base::Value* value;
+  if (!GetDictionary(path, &value)) {
+    return false;
+  }
+  *out_value = &base::Value::AsDictionaryValue(*value);
+  return true;
 }
 
 bool Manifest::GetDictionary(const std::string& path,
                              const base::Value** out_value) const {
-  const std::vector<base::StringPiece> components =
-      manifest_handler_helpers::TokenizeDictionaryPath(path);
-  *out_value = available_values_->FindPathOfType(components,
-                                                 base::Value::Type::DICTIONARY);
-  return *out_value != nullptr;
+  const base::Value* value = available_values_.GetDict().FindByDottedPath(path);
+  if (!value || !value->is_dict())
+    return false;
+  *out_value = value;
+  return true;
 }
 
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
-  const std::vector<base::StringPiece> components =
-      manifest_handler_helpers::TokenizeDictionaryPath(path);
-  *out_value =
-      available_values_->FindPathOfType(components, base::Value::Type::LIST);
-  return *out_value != nullptr;
+  const base::Value* value = available_values_.GetDict().FindByDottedPath(path);
+  if (!value || !value->is_list())
+    return false;
+  *out_value = value;
+  return true;
 }
 
 bool Manifest::EqualsForTesting(const Manifest& other) const {
-  return *value_ == *other.value() && location_ == other.location_ &&
+  return value_ == other.value_ && location_ == other.location_ &&
          extension_id_ == other.extension_id_;
 }
 
