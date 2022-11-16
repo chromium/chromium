@@ -400,10 +400,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Verify that the suggestion's texts are populated correctly for a virtual card
 // suggestion when the cardholder name field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
-       CreateCreditCardSuggestion_VirtualCardMetadata_VirtualCardNameField) {
+       CreateCreditCardSuggestion_VirtualCardMetadata_NameField) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableVirtualCardMetadata);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName},
+      /*disabled_features=*/{});
 
   // Create a server card.
   CreditCard server_card = CreateServerCard();
@@ -420,25 +422,19 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
 
   ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, the label is "Network  ....1234".
-  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
-            base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", 4)}));
-#elif BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)
   // For IOS, the label is "....1234".
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
-  // For Desktop, the label is the descriptive expiration date formatted as
-  // "Network  ....1234, expires on mm/yy".
-  EXPECT_EQ(
-      virtual_card_name_field_suggestion.labels[0][0].value,
-      base::StrCat({u"Visa  ",
-                    internal::GetObfuscatedStringForCardDigits(u"1111", 4),
-                    u", expires on ", base::UTF8ToUTF16(test::NextMonth()),
-                    u"/", base::UTF8ToUTF16(test::NextYear().substr(2))}));
+  // For Desktop/Android, the label is "CardName  ....1234". Card name and last
+  // four are shown separately.
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 2U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value, u"Visa");
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][1].value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #endif
   // The virtual card text should be populated in the labels to be shown in a
   // new line.
@@ -450,12 +446,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Verify that the suggestion's texts are populated correctly for a virtual card
 // suggestion when the card number field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
-       CreateCreditCardSuggestion_VirtualCardMetadata_VirtualCardNumberField) {
+       CreateCreditCardSuggestion_VirtualCardMetadata_NumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /* enabled_features */ {features::kAutofillEnableVirtualCardMetadata,
-                              features::kAutofillEnableCardProductName},
-      /* disabled_features */ {});
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName},
+      /*disabled_features=*/{});
 
   // Create a server card.
   CreditCard server_card = CreateServerCard();
@@ -467,18 +463,17 @@ TEST_F(AutofillSuggestionGeneratorTest,
           /*virtual_card_option=*/true,
           /*card_linked_offer_available=*/false);
 
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, split the first line and populate card name, last 4 digits
-  // separately.
-  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
-            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
-#else
+#if BUILDFLAG(IS_IOS)
   // Only card number is displayed on the first line.
   EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value, u"");
+#else
+  // Card name and the obfuscated last four digits are shown separately.
+  EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #endif
 
   // "Virtual card" is the label.
@@ -491,10 +486,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Verify that the suggestion's texts are populated correctly for a masked
 // server card suggestion when the cardholder name field is focused.
 TEST_F(AutofillSuggestionGeneratorTest,
-       CreateCreditCardSuggestion_VirtualCardMetadata_NonVirtualCardNameField) {
+       CreateCreditCardSuggestion_MaskedServerCardMetadata_NameField) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableVirtualCardMetadata);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName},
+      /*disabled_features=*/{});
 
   // Create a server card.
   CreditCard server_card = CreateServerCard();
@@ -510,43 +507,32 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(real_card_name_field_suggestion.main_text.value, u"Elvis Presley");
   EXPECT_EQ(real_card_name_field_suggestion.minor_text.value, u"");
 
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, the label is "Network  ....1234".
-  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-            base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", 4)}));
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   // For IOS, the label is "....1234".
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
-  // For Desktop, the label is the descriptive expiration date formatted as
-  // "Network  ....1234, expires on mm/yy".
+  // For Desktop/Android, the label is "CardName  ....1234". Card name and last
+  // four are shown separately.
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
-  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(
-      real_card_name_field_suggestion.labels[0][0].value,
-      base::StrCat({u"Visa  ",
-                    internal::GetObfuscatedStringForCardDigits(u"1111", 4),
-                    u", expires on ", base::UTF8ToUTF16(test::NextMonth()),
-                    u"/", base::UTF8ToUTF16(test::NextYear().substr(2))}));
+  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 2U);
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value, u"Visa");
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][1].value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #endif
 }
 
 // Verify that the suggestion's texts are populated correctly for a masked
 // server card suggestion when the card number field is focused.
-TEST_F(
-    AutofillSuggestionGeneratorTest,
-    CreateCreditCardSuggestion_VirtualCardMetadata_NonVirtualCardNumberField) {
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateCreditCardSuggestion_MaskedServerCardMetadata_NumberField) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /* enabled_features */ {features::kAutofillEnableVirtualCardMetadata,
-                              features::kAutofillEnableCardProductName},
-      /* disabled_features */ {});
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName},
+      /*disabled_features=*/{});
 
   // Create a server card.
   CreditCard server_card = CreateServerCard();
@@ -558,18 +544,18 @@ TEST_F(
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-#if BUILDFLAG(IS_ANDROID)
-  // For Android, split the first line and populate card name, last 4 digits
-  // separately.
-  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
-            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
-#else
+#if BUILDFLAG(IS_IOS)
   // Only the card number is displayed on the first line.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
+#else
+  // For Desktop/Android, split the first line and populate card name, last 4
+  // digits separately.
+  EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
+  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
+            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -584,10 +570,9 @@ TEST_F(
   // "Expires on mm/yy".
   ASSERT_EQ(real_card_number_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_number_field_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(
-      real_card_number_field_suggestion.labels[0][0].value,
-      base::StrCat({u"Expires on ", base::UTF8ToUTF16(test::NextMonth()), u"/",
-                    base::UTF8ToUTF16(test::NextYear().substr(2))}));
+  EXPECT_EQ(real_card_number_field_suggestion.labels[0][0].value,
+            base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
+                          base::UTF8ToUTF16(test::NextYear().substr(2))}));
 #endif
 }
 

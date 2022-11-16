@@ -133,12 +133,24 @@ class AutofillSuggestionGenerator {
   std::map<InternalId, Suggestion::BackendId> internal_to_backend_map_;
 
  private:
-  // Get the suggestion label for the `credit_card`. Note this does not account
+  // Return the texts shown as the first line of the suggestion, based on the
+  // `credit_card` and the focused field `type`. The first index in the pair
+  // represents the main text, and the second index represents the minor text.
+  // The minor text can be empty, in which case the main text should be rendered
+  // as the entire first line. If the minor text is not empty, they should be
+  // combined. This splitting is implemented for situations where the first part
+  // of the first line of the suggestion should be truncated.
+  std::pair<Suggestion::Text, Suggestion::Text>
+  GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
+                                           const AutofillType& type,
+                                           const std::string& app_locale) const;
+
+  // Return the labels to be shown in the suggestion. Note this does not account
   // for virtual cards or card-linked offers.
-  std::u16string GetCardLabel(const CreditCard& credit_card,
-                              const AutofillType& type,
-                              const std::string& app_locale,
-                              int obfuscation_length) const;
+  std::vector<Suggestion::Text> GetSuggestionLabelsForCard(
+      const CreditCard& credit_card,
+      const AutofillType& type,
+      const std::string& app_locale) const;
 
   // Adjust the content of |suggestion| if it is a virtual card suggestion.
   void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,

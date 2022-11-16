@@ -972,8 +972,12 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
 
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
-    features_.InitWithFeatureState(features::kAutofillKeyboardAccessory,
-                                   is_keyboard_accessory_enabled_);
+    feature_list_keyboard_accessory_.InitWithFeatureState(
+        features::kAutofillKeyboardAccessory, is_keyboard_accessory_enabled_);
+    feature_list_card_metadata_and_product_name_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {features::kAutofillEnableVirtualCardMetadata,
+                                 features::kAutofillEnableCardProductName});
   }
 
   int ObfuscationLength() {
@@ -985,7 +989,8 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList feature_list_keyboard_accessory_;
+  base::test::ScopedFeatureList feature_list_card_metadata_and_product_name_;
   const bool is_keyboard_accessory_enabled_;
 };
 
@@ -1735,18 +1740,14 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 
   const FormFieldData& credit_card_number_field = form.fields[1];
   GetAutofillSuggestions(form, credit_card_number_field);
-  int obfuscation_length = base::FeatureList::IsEnabled(
-                               autofill::features::kAutofillKeyboardAccessory)
-                               ? 2
-                               : 4;
   const std::string visa_value =
       std::string("Visa  ") +
-      test::ObfuscatedCardDigitsAsUTF8("3456", obfuscation_length);
+      test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
   // Mastercard has a valid nickname. Display nickname + last four in the
   // suggestion title.
   const std::string master_card_value =
       kArbitraryNickname + "  " +
-      test::ObfuscatedCardDigitsAsUTF8("8765", obfuscation_length);
+      test::ObfuscatedCardDigitsAsUTF8("8765", ObfuscationLength());
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const std::string visa_label = std::string("04/99");
