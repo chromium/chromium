@@ -8593,13 +8593,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::wm::features::kPartialSplit)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"performant-split-view-resizing",
-     flag_descriptions::kPerformantSplitViewResizing,
-     flag_descriptions::kPerformantSplitViewResizingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPerformantSplitViewResizing)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"privacy-guide-2", flag_descriptions::kPrivacyGuide2Name,
      flag_descriptions::kPrivacyGuide2Description, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyGuide2)},

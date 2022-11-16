@@ -5530,11 +5530,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "performant-split-view-resizing",
-    "owners": [ "dandersson", "riomat" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "permission-chip",
     "owners": [ "elklm", "bsep", "engedy", "olesiamarukhno@google.com" ],
     "expiry_milestone": 110

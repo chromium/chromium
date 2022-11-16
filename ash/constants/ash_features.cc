@@ -1525,12 +1525,6 @@ BASE_FEATURE(kPcieBillboardNotification,
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows tablet mode split screen to resize by moving windows instead of
-// resizing. This reduces jank on low end devices.
-BASE_FEATURE(kPerformantSplitViewResizing,
-             "PerformantSplitViewResizing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2862,10 +2856,6 @@ bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {
 
 bool IsPhoneHubPingOnBubbleOpenEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubPingOnBubbleOpen);
-}
-
-bool IsPerformantSplitViewResizingEnabled() {
-  return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
 }
 
 bool IsPhoneHubEnabled() {
