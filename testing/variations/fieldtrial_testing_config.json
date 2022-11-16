@@ -4797,6 +4797,25 @@
             ]
         }
     ],
+    "FollowOnboarding": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221116",
+                    "params": {
+                        "awareness_style": "IPH"
+                    },
+                    "enable_features": [
+                        "WebFeedAwareness",
+                        "WebFeedOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForceGpuMainThreadToNormalPriorityDrDc": [
         {
             "platforms": [
