@@ -83,6 +83,9 @@ public class CastWebContentsActivity extends Activity {
     private final Controller<Unit> mStartedState = new Controller<>();
     // Tracks the most recent Intent for the Activity.
     private final Controller<Intent> mGotIntentState = new Controller<>();
+    // Tracks the most recent session id for the Activity. Derived from
+    // mGotIntentState.
+    private final Controller<String> mSessionIdState = new Controller<>();
     // Set this to cause the Activity to finish.
     private final Controller<String> mIsFinishingState = new Controller<>();
     // Set in unittests to skip some behavior.
@@ -142,6 +145,18 @@ public class CastWebContentsActivity extends Activity {
             });
         });
 
+        mGotIntentState.map(Intent::getExtras)
+                .map(CastWebContentsIntentUtils::getSessionId)
+                .subscribe(Observers.onEnter(mSessionIdState::set));
+
+        mStartedState.and(mSessionIdState).subscribe(both -> {
+            sendVisibilityChanged(
+                    both.second, CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN);
+            return () -> {
+                sendVisibilityChanged(both.second, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
+            };
+        });
+
         // Set a flag to exit sleep mode when this activity starts.
         mCreatedState.and(mGotIntentState)
                 .map(Both::getSecond)
@@ -174,20 +189,6 @@ public class CastWebContentsActivity extends Activity {
             finishAndRemoveTask();
         }));
 
-        mStartedState.subscribe(x -> {
-            Context ctx = getApplicationContext();
-            Intent intent = getIntent();
-            String instanceId = CastWebContentsIntentUtils.getSessionId(intent.getExtras());
-            Intent visible = CastWebContentsIntentUtils.onVisibilityChange(
-                    instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN);
-            LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(visible);
-            return () -> {
-                Intent hidden = CastWebContentsIntentUtils.onVisibilityChange(
-                        instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
-                LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(hidden);
-            };
-        });
-
         // If a new Intent arrives after finishing, start a new Activity instead of recycling this.
         gotIntentAfterFinishingState.subscribe(Observers.onEnter((Intent intent) -> {
             Log.d(TAG, "Got intent while finishing current activity, so start new activity.");
@@ -215,6 +216,7 @@ public class CastWebContentsActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         if (DEBUG) Log.d(TAG, "onNewIntent");
+        setIntent(intent);
         mGotIntentState.set(intent);
     }
 
@@ -229,6 +231,7 @@ public class CastWebContentsActivity extends Activity {
     protected void onStop() {
         if (DEBUG) Log.d(TAG, "onStop");
         mStartedState.reset();
+
         // If this device is in "lock task mode," then leaving the Activity will not return to the
         // Home screen and there will be no affordance for the user to return to this Activity.
         // When in this mode, leaving the Activity should tear down the Cast app.
@@ -323,6 +326,13 @@ public class CastWebContentsActivity extends Activity {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
                 && !BuildInfo.getInstance().isTV;
+    }
+
+    // Sends the specified visibility change event to the current app (as reported by getIntent()).
+    private void sendVisibilityChanged(String sessionId, @VisibilityType int visibilityType) {
+        Context ctx = getApplicationContext();
+        Intent event = CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType);
+        LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(event);
     }
 
     public void finishForTesting() {
