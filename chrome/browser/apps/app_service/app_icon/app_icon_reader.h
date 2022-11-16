@@ -39,10 +39,6 @@ class AppIconReader {
                  LoadIconCallback callback);
 
  private:
-  void OnCompressedIconRead(IconType icon_type,
-                            LoadIconCallback callback,
-                            std::vector<uint8_t> icon_data);
-
   void OnUncompressedIconRead(int32_t size_in_dip,
                               IconEffects icon_effects,
                               IconType icon_type,
@@ -50,7 +46,13 @@ class AppIconReader {
                               AppIconDecoder* decoder,
                               gfx::ImageSkia image);
 
-  void OnCompleteWithIconValue(LoadIconCallback callback, IconValuePtr iv);
+  void OnCompleteWithIconValue(int32_t size_in_dip,
+                               IconType icon_type,
+                               LoadIconCallback callback,
+                               IconValuePtr iv);
+
+  void OnCompleteWithCompressedData(LoadIconCallback callback,
+                                    std::vector<uint8_t> icon_data);
 
   const raw_ptr<Profile> profile_;
 
