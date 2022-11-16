@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_IMAGE_BACKING_H_
 
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
@@ -14,117 +14,6 @@
 #include "ui/gl/gl_image_memory.h"
 
 namespace gpu {
-
-// Interface through which a representation that has a GL texture calls into its
-// GLImage backing.
-class GLTextureImageRepresentationClient {
- public:
-  virtual bool GLTextureImageRepresentationBeginAccess(bool readonly) = 0;
-  virtual void GLTextureImageRepresentationEndAccess(bool readonly) = 0;
-  virtual void GLTextureImageRepresentationRelease(bool have_context) = 0;
-};
-
-// Representation of a GLTextureImageBacking or GLImageBacking
-// as a GL Texture.
-class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
- public:
-  GLTextureGLCommonRepresentation(SharedImageManager* manager,
-                                  SharedImageBacking* backing,
-                                  GLTextureImageRepresentationClient* client,
-                                  MemoryTypeTracker* tracker,
-                                  gles2::Texture* texture);
-  ~GLTextureGLCommonRepresentation() override;
-
- private:
-  // GLTextureImageRepresentation:
-  gles2::Texture* GetTexture(int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  raw_ptr<gles2::Texture> texture_;
-  GLenum mode_ = 0;
-};
-
-// Representation of a GLTextureImageBacking or
-// GLTextureImageBackingPassthrough as a GL TexturePassthrough.
-class GLTexturePassthroughGLCommonRepresentation
-    : public GLTexturePassthroughImageRepresentation {
- public:
-  class Client {
-   public:
-    virtual bool OnGLTexturePassthroughBeginAccess(GLenum mode) = 0;
-  };
-  GLTexturePassthroughGLCommonRepresentation(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      GLTextureImageRepresentationClient* client,
-      MemoryTypeTracker* tracker,
-      scoped_refptr<gles2::TexturePassthrough> texture_passthrough);
-  ~GLTexturePassthroughGLCommonRepresentation() override;
-
- private:
-  // GLTexturePassthroughImageRepresentation:
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
-      int plane_index) override;
-  bool BeginAccess(GLenum mode) override;
-  void EndAccess() override;
-
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
-  GLenum mode_ = 0;
-};
-
-// Skia representation for both GLTextureImageBackingHelper.
-class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
- public:
-  class Client {
-   public:
-    virtual bool OnSkiaBeginReadAccess() = 0;
-    virtual bool OnSkiaBeginWriteAccess() = 0;
-  };
-  SkiaGLCommonRepresentation(SharedImageManager* manager,
-                             SharedImageBacking* backing,
-                             GLTextureImageRepresentationClient* client,
-                             scoped_refptr<SharedContextState> context_state,
-                             sk_sp<SkPromiseImageTexture> promise_texture,
-                             MemoryTypeTracker* tracker);
-  ~SkiaGLCommonRepresentation() override;
-
-  void SetBeginReadAccessCallback(
-      base::RepeatingClosure begin_read_access_callback);
-
- private:
-  // SkiaImageRepresentation:
-  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      const gfx::Rect& update_rect,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphore,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndWriteAccess() override;
-  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndReadAccess() override;
-  bool SupportsMultipleConcurrentReadAccess() override;
-
-  void CheckContext();
-
-  const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
-  scoped_refptr<SharedContextState> context_state_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
-  sk_sp<SkSurface> write_surface_;
-#if DCHECK_IS_ON()
-  raw_ptr<gl::GLContext> context_ = nullptr;
-#endif
-};
 
 // Overlay representation for a GLImageBacking.
 class OverlayGLImageRepresentation : public OverlayImageRepresentation {
@@ -138,10 +27,7 @@ class OverlayGLImageRepresentation : public OverlayImageRepresentation {
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
-
-#if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() override;
-#endif
 
   scoped_refptr<gl::GLImage> gl_image_;
 };
