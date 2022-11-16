@@ -37,8 +37,8 @@ std::unique_ptr<KeyedService> TestSystemWebAppManager::BuildDefault(
 // static
 TestSystemWebAppManager* TestSystemWebAppManager::Get(Profile* profile) {
   CHECK(profile->AsTestingProfile());
-  auto* test_swa_manager = static_cast<TestSystemWebAppManager*>(
-      TestSystemWebAppManager::GetForLocalAppsUnchecked(profile));
+  auto* test_swa_manager =
+      static_cast<TestSystemWebAppManager*>(SystemWebAppManager::Get(profile));
   return test_swa_manager;
 }
 

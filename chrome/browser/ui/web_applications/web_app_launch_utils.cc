@@ -169,8 +169,7 @@ const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
   auto system_app_type =
       ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
   if (system_app_type) {
-    return ash::SystemWebAppManager::GetForLocalAppsUnchecked(
-               browser->profile())
+    return ash::SystemWebAppManager::Get(browser->profile())
         ->GetSystemApp(*system_app_type);
   }
   return nullptr;
@@ -454,7 +453,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
         WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
     DCHECK(web_app_provider);
     ash::SystemWebAppManager* swa_manager =
-        ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile());
+        ash::SystemWebAppManager::Get(browser->profile());
     DCHECK(swa_manager);
 
     TRACE_EVENT_INSTANT(

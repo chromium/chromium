@@ -71,25 +71,16 @@ class SystemWebAppManager : public KeyedService,
   SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
   ~SystemWebAppManager() override;
 
-  // On Chrome OS: returns the SystemWebAppManager that hosts System Web Apps in
-  // Ash; In Lacros, returns nullptr (unless
-  // EnableSystemWebAppInLacrosForTesting). On other platforms, always returns a
-  // SystemWebAppManager.
+  // Return the SystemWebAppManager that hosts system web apps in profile.
+  // Returns nullptr if the profile doesn't support system web apps (e.g. Kiosk,
+  // lock-screen, system profile).
   static SystemWebAppManager* Get(Profile* profile);
   // Gets the associated WebAppProvider for system web apps. `WebAppProvider` is
   // always presented in the `profile` if the `Get` above returns non-nullptr.
   static web_app::WebAppProvider* GetWebAppProvider(Profile* profile);
 
-  // Returns the SystemWebAppManager object for the current process.
-  // Avoid using this function where possible and prefer `Get` which guarantees
-  // it is being called from the correct process. Only use
-  // `GetForLocalAppsUnchecked` if the calling code is shared between Ash/Lacros
-  // and expects that some SystemWebAppManager always exists. In Lacros, this
-  // function returns an empty SWA manager with no concrete apps.
-  static SystemWebAppManager* GetForLocalAppsUnchecked(Profile* profile);
-
-  // Returns the SystemWebAppManager for tests, regardless of whether this is
-  // running in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  // Returns the SystemWebAppManager for tests. Blocks if the web app registry
+  // is not yet ready.
   static SystemWebAppManager* GetForTest(Profile* profile);
 
   // Calls `Start` when `WebAppProvider` is ready.

@@ -92,10 +92,10 @@ content::WebContents* WebAppLaunchProcess::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_url_in_system_web_app_sccope =
       ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id) &&
-      ash::SystemWebAppManager::GetForLocalAppsUnchecked(&*profile_)
+      ash::SystemWebAppManager::Get(&*profile_)
           ->GetSystemApp(
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id)) &&
-      ash::SystemWebAppManager::GetForLocalAppsUnchecked(&*profile_)
+      ash::SystemWebAppManager::Get(&*profile_)
           ->GetSystemApp(
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);

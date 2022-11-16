@@ -253,19 +253,13 @@ SystemWebAppManager::~SystemWebAppManager() {
 
 // static
 SystemWebAppManager* SystemWebAppManager::Get(Profile* profile) {
-  return GetForLocalAppsUnchecked(profile);
+  return SystemWebAppManagerFactory::GetForProfile(profile);
 }
 
 // static
 web_app::WebAppProvider* SystemWebAppManager::GetWebAppProvider(
     Profile* profile) {
   return web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-}
-
-// static
-SystemWebAppManager* SystemWebAppManager::GetForLocalAppsUnchecked(
-    Profile* profile) {
-  return SystemWebAppManagerFactory::GetForProfile(profile);
 }
 
 // static
@@ -280,7 +274,7 @@ SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
   if (!provider)
     return nullptr;
 
-  SystemWebAppManager* swa_manager = GetForLocalAppsUnchecked(profile);
+  SystemWebAppManager* swa_manager = Get(profile);
   DCHECK(swa_manager);
 
   if (provider->on_registry_ready().is_signaled())

@@ -65,12 +65,11 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
-      publisher_helper_(
-          profile_,
-          provider_,
-          ash::SystemWebAppManager::GetForLocalAppsUnchecked(profile_),
-          this,
-          ShouldObserveMediaRequests())
+      publisher_helper_(profile_,
+                        provider_,
+                        ash::SystemWebAppManager::Get(profile_),
+                        this,
+                        ShouldObserveMediaRequests())
 #else
       publisher_helper_(profile_,
                         provider_,
