@@ -26,6 +26,14 @@ using ::testing::SaveArg;
 
 namespace ui {
 
+namespace {
+
+const int kTestLogicalsize = 100;
+const float kTestDevicePixelRatio = 1.5;
+const int kTestPhysicalSize = 150;
+
+}  // namespace
+
 class MockFlatlandSurfaceFactory : public FlatlandSurfaceFactory {
  public:
   MockFlatlandSurfaceFactory() = default;
@@ -56,7 +64,9 @@ class FlatlandSurfaceTest : public ::testing::Test {
 
   void SetLayoutInfo() {
     fuchsia::ui::composition::LayoutInfo layout_info;
-    layout_info.set_logical_size({100, 100});
+    layout_info.set_logical_size({kTestLogicalsize, kTestLogicalsize});
+    layout_info.set_device_pixel_ratio(
+        {kTestDevicePixelRatio, kTestDevicePixelRatio});
     flatland_surface_->OnGetLayout(std::move(layout_info));
   }
 
@@ -107,7 +117,8 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
   collection->InitializeForTesting(std::move(service_handle),
                                    gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
-      collection, std::move(handle), gfx::Size(1, 1));
+      collection, std::move(handle),
+      gfx::Size(kTestPhysicalSize, kTestPhysicalSize));
   surface->Present(
       primary_plane_pixmap, std::vector<ui::OverlayPlane>(),
       std::vector<gfx::GpuFenceHandle>(), std::vector<gfx::GpuFenceHandle>(),
@@ -133,7 +144,8 @@ TEST_F(FlatlandSurfaceTest, PresentBeforeLayoutInfo) {
   collection->InitializeForTesting(std::move(service_handle),
                                    gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
-      collection, std::move(handle), gfx::Size(1, 1));
+      collection, std::move(handle),
+      gfx::Size(kTestPhysicalSize, kTestPhysicalSize));
   surface->Present(
       primary_plane_pixmap, std::vector<ui::OverlayPlane>(),
       std::vector<gfx::GpuFenceHandle>(), std::vector<gfx::GpuFenceHandle>(),

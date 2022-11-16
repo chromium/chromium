@@ -105,8 +105,7 @@ void FlatlandWindow::AttachSurfaceContent(
   // 0x0 is not a valid Viewport size for Flatland. Sending these commands will
   // cause an error that results in channel closure. We will receive a non-zero
   // size at OnGetLayout(), so we wait until then to run these commands.
-  if (bounds_.IsEmpty()) {
-    DCHECK(!logical_size_);
+  if (!logical_size_) {
     pending_attach_surface_content_closure_ =
         base::BindOnce(&FlatlandWindow::AttachSurfaceContent,
                        base::Unretained(this), std::move(token));
@@ -123,8 +122,8 @@ void FlatlandWindow::AttachSurfaceContent(
   flatland_.flatland()->AddChild(root_transform_id_, surface_transform_id_);
 
   fuchsia::ui::composition::ViewportProperties properties;
-  properties.set_logical_size({static_cast<uint32_t>(bounds_.width()),
-                               static_cast<uint32_t>(bounds_.height())});
+  properties.set_logical_size({static_cast<uint32_t>(logical_size_->width()),
+                               static_cast<uint32_t>(logical_size_->height())});
 
   surface_content_id_ = flatland_.NextContentId();
   fuchsia::ui::composition::ChildViewWatcherPtr content_link;
@@ -159,6 +158,8 @@ void FlatlandWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
 }
 
 gfx::Rect FlatlandWindow::GetBoundsInDIP() const {
+  // TODO(crbug.com/1382849): Remove the hardcoded values and return
+  // |logical_size_|.
   return platform_window_delegate_->ConvertRectToDIP(bounds_);
 }
 
@@ -298,6 +299,7 @@ void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
       gfx::Size(info.logical_size().width, info.logical_size().height);
   device_pixel_ratio_ =
       std::max(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
+  DCHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
 
   if (scenic_window_delegate_)
     scenic_window_delegate_->OnScenicPixelScale(this, device_pixel_ratio_);
@@ -345,15 +347,13 @@ void FlatlandWindow::OnViewRefFocusedWatchResult(
 
 void FlatlandWindow::UpdateSize() {
   DCHECK(logical_size_);
+  if (pending_attach_surface_content_closure_) {
+    std::move(pending_attach_surface_content_closure_).Run();
+  }
 
   const auto old_bounds = bounds_;
   bounds_ = gfx::Rect(
       gfx::ScaleToCeiledSize(logical_size_.value(), device_pixel_ratio_));
-
-  if (pending_attach_surface_content_closure_) {
-    DCHECK(old_bounds.IsEmpty());
-    std::move(pending_attach_surface_content_closure_).Run();
-  }
 
   PlatformWindowDelegate::BoundsChange bounds(old_bounds.origin() !=
                                               bounds_.origin());

@@ -142,11 +142,12 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
   fuchsia::ui::composition::ChildViewWatcherPtr main_plane_view_watcher_;
   absl::optional<gfx::Size> logical_size_;
+  absl::optional<float> device_pixel_ratio_;
 
   // FlatlandSurface might receive a Present() call before OnGetLayout(),
   // because the present loop is tied to the parent Flatland instance in
-  // FlatlandWindow. There is no |logical_size_| in that case, so we should hold
-  // onto the Present until receiving |logical_size_|.
+  // FlatlandWindow. There is no |logical_size_| or |device_pixel_ratio_| in
+  // that case, so we should hold onto the Present until receiving them.
   std::vector<base::OnceClosure> pending_present_closures_;
 
   FlatlandSurfaceFactory* const flatland_surface_factory_;

@@ -135,7 +135,7 @@ void FlatlandSurface::Present(
     BufferPresentedCallback presentation_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!logical_size_) {
+  if (!logical_size_ || !device_pixel_ratio_) {
     pending_present_closures_.emplace_back(base::BindOnce(
         &FlatlandSurface::Present, base::Unretained(this),
         std::move(primary_plane_pixmap), std::move(overlays),
@@ -205,15 +205,17 @@ void FlatlandSurface::Present(
     flatland_.flatland()->AddChild(root_transform_id_, child.second);
   }
 
-  // Content sizes may not be equal to logical_size for this View if DPR is
-  // applied. Scale if necessary.
-  DCHECK_GT(logical_size_->width(), 0);
+  // We are given the overlays in physical coordinates. Allocation sizes of
+  // primary plane buffers may not be equal to |logical_size_| if
+  // |device_pixel_ratio_| is applied. Applying a scale at the root converts
+  // these back to to the logical coordinates.
   const auto primary_plane_size = primary_plane_pixmap->GetBufferSize();
-  const float scale =
-      static_cast<float>(primary_plane_size.width()) / logical_size_->width();
-  DCHECK_EQ(scale, static_cast<float>(primary_plane_size.height()) /
-                       logical_size_->height());
-  flatland_.flatland()->SetScale(root_transform_id_, {scale, scale});
+  const float root_scale =
+      static_cast<float>(logical_size_->width()) / primary_plane_size.width();
+  DCHECK_EQ(root_scale, static_cast<float>(logical_size_->height()) /
+                            primary_plane_size.height());
+  DCHECK_EQ(root_scale, 1.f / device_pixel_ratio_.value());
+  flatland_.flatland()->SetScale(root_transform_id_, {root_scale, root_scale});
 
   // Add to pending frame to track callbacks.
   pending_frames_.emplace_back(
@@ -261,8 +263,12 @@ void FlatlandSurface::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
 
   logical_size_ =
       gfx::Size(info.logical_size().width, info.logical_size().height);
+  DCHECK_EQ(info.device_pixel_ratio().x, info.device_pixel_ratio().y);
+  DCHECK_GT(info.device_pixel_ratio().x, 0.f);
+  device_pixel_ratio_ = info.device_pixel_ratio().x;
 
-  // Run |pending_present_closures_| that are waiting on |logical_size_|.
+  // Run |pending_present_closures_| that are waiting on |logical_size_| and
+  // |device_pixel_ratio_|.
   for (auto& closure : pending_present_closures_) {
     std::move(closure).Run();
   }
