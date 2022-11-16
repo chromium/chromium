@@ -81,7 +81,7 @@ export interface ContentController {
     fileName: string,
     dataToSave: ArrayBuffer,
     editModeForTesting?: boolean,
-  }>;
+  }|null>;
 
   /**
    * Requests that the attachment at a certain index be saved.
@@ -347,7 +347,7 @@ export class PluginController implements ContentController {
 
   save(requestType: SaveRequestType) {
     const resolver =
-        new PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}>();
+        new PromiseResolver<{fileName: string, dataToSave: ArrayBuffer}|null>();
     const newToken = createToken();
     this.pendingTokens_.set(newToken, resolver);
     this.postMessage_({

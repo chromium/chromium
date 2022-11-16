@@ -4,7 +4,7 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
 import {FakeUpdateProviderInterface, FirmwareUpdate, InstallationProgress, InstallControllerInterface, UpdateProgressObserver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';

@@ -385,7 +385,7 @@ js_library("global_scroll_target_behavior") {
   deps = [
     ":route_observer_behavior",
     "..:router",
-    "//ui/webui/resources/js:promise_resolver",
+    "//ash/webui/common/resources:promise_resolver",
   ]
 }
 

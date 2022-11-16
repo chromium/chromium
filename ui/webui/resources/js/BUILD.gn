@@ -54,6 +54,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "parse_html_subset.ts",
     "platform.ts",
     "plural_string_proxy.ts",
+    "promise_resolver.ts",
     "search_highlight_utils.ts",
     "static_types.ts",
     "store_ts.ts",
@@ -83,7 +84,6 @@ preprocess_if_expr("preprocess_src") {
     "cr/event_target.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
-    "promise_resolver.js",
     "util.js",
   ]
 
@@ -140,7 +140,6 @@ js_type_check("js_resources_modules") {
     ":assert",
     ":cr.m",
     ":load_time_data.m",
-    ":promise_resolver",
     ":util",
   ]
 }
@@ -152,10 +151,6 @@ js_library("cr.m") {
 }
 
 js_library("load_time_data.m") {
-}
-
-js_library("promise_resolver") {
-  deps = [ ":assert" ]
 }
 
 js_library("util") {
