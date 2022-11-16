@@ -58,6 +58,10 @@ void QuickAnswersPreTargetHandler::OnEvent(ui::Event* event) {
   if (!event->IsLocatedEvent())
     return;
 
+  // Filter scroll event due to potential timing issue (b/258750397).
+  if (event->IsScrollEvent() || event->type() == ui::ET_MOUSEWHEEL)
+    return;
+
   // Clone event to forward down the view-hierarchy.
   auto clone = event->Clone();
   ui::Event::DispatcherApi(clone.get()).set_target(event->target());
