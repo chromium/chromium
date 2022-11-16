@@ -380,13 +380,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Holdback_20221013",
+                    "name": "Holdback_20221115",
                     "enable_features": [
                         "AndroidBatteryMetricsReportOnUIThread"
                     ],
                     "disable_features": [
                         "AndroidScrollOptimizations",
-                        "ToolbarPhoneOptimizations"
+                        "CacheSiteIsolationMemoryThreshold",
+                        "MojoAvoidRandomPipeId",
+                        "NewSigninRequestHeaderCheckOrder",
+                        "ToolbarPhoneOptimizations",
+                        "UseGetrandomForRandBytes"
                     ]
                 }
             ]
