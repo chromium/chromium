@@ -349,6 +349,15 @@ const AcceleratorData
 const size_t kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength =
     std::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
 
+const AcceleratorData kEnableWithSameAppWindowCycleAcceleratorData[] = {
+    {true, ui::VKEY_OEM_3, ui::EF_ALT_DOWN, CYCLE_SAME_APP_WINDOWS_FORWARD},
+    {true, ui::VKEY_OEM_3, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     CYCLE_SAME_APP_WINDOWS_BACKWARD},
+};
+
+const size_t kEnableWithSameAppWindowCycleAcceleratorDataLength =
+    std::size(kEnableWithSameAppWindowCycleAcceleratorData);
+
 // static
 AcceleratorController* AcceleratorController::Get() {
   return g_instance;

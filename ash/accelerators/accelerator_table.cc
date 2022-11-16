@@ -131,8 +131,10 @@ const size_t kDeveloperAcceleratorDataLength =
 
 const AcceleratorAction kPreferredActions[] = {
     // Window cycling accelerators.
-    CYCLE_BACKWARD_MRU,  // Shift+Alt+Tab
-    CYCLE_FORWARD_MRU,   // Alt+Tab
+    CYCLE_BACKWARD_MRU,               // Shift+Alt+Tab
+    CYCLE_FORWARD_MRU,                // Alt+Tab
+    CYCLE_SAME_APP_WINDOWS_BACKWARD,  // Shift+Alt+Backtick
+    CYCLE_SAME_APP_WINDOWS_FORWARD,   // Alt+Backtick
 };
 
 const size_t kPreferredActionsLength = std::size(kPreferredActions);

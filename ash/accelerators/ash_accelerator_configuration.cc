@@ -117,6 +117,12 @@ void AshAcceleratorConfiguration::Initialize() {
         base::make_span(kDisableWithNewMappingAcceleratorData,
                         kDisableWithNewMappingAcceleratorDataLength));
   }
+  if (ash::features::IsSameAppWindowCycleEnabled()) {
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kEnableWithSameAppWindowCycleAcceleratorData,
+                        kEnableWithSameAppWindowCycleAcceleratorDataLength));
+  }
 
   // Debug accelerators.
   if (debug::DebugAcceleratorsEnabled()) {

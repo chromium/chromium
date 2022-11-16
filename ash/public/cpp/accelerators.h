@@ -27,6 +27,8 @@ enum AcceleratorAction {
   BRIGHTNESS_UP,
   CYCLE_BACKWARD_MRU,
   CYCLE_FORWARD_MRU,
+  CYCLE_SAME_APP_WINDOWS_BACKWARD,
+  CYCLE_SAME_APP_WINDOWS_FORWARD,
   DESKS_ACTIVATE_DESK_LEFT,
   DESKS_ACTIVATE_DESK_RIGHT,
   DESKS_MOVE_ACTIVE_ITEM_LEFT,
@@ -211,6 +213,12 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
     kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t
     kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
+
+// Accelerators that are enabled with same app window cycling experiment.
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kEnableWithSameAppWindowCycleAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t
+    kEnableWithSameAppWindowCycleAcceleratorDataLength;
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.

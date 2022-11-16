@@ -564,6 +564,16 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Accel_Cycle_Same_App">
+  <owner>benbecker@chromium.org</owner>
+  <owner>andp@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <description>
+    Starting a same app window selection cycle by pressing alt-backtick. Only
+    counts the initial alt-backtick, not each step in the cycle.
+  </description>
+</action>
+
 <action name="Accel_Desks_ActivateLeft">
   <owner>afakhry@chromium.org</owner>
   <description>

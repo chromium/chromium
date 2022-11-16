@@ -567,6 +567,11 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case CYCLE_BACKWARD_MRU:
     case CYCLE_FORWARD_MRU:
       return accelerators::CanCycleMru();
+    case CYCLE_SAME_APP_WINDOWS_BACKWARD:
+    case CYCLE_SAME_APP_WINDOWS_FORWARD:
+      // TODO(b/250698986): Implement window switching functionality.
+      NOTIMPLEMENTED();
+      return false;
     case DESKS_ACTIVATE_DESK_LEFT:
     case DESKS_ACTIVATE_DESK_RIGHT:
     case DESKS_MOVE_ACTIVE_ITEM_LEFT:
@@ -798,6 +803,14 @@ void AcceleratorControllerImpl::PerformAction(
     case CYCLE_FORWARD_MRU:
       RecordCycleForwardMru(accelerator);
       accelerators::CycleForwardMru();
+      break;
+    case CYCLE_SAME_APP_WINDOWS_BACKWARD:
+      // TODO(b/250698986): Implement window switching functionality.
+      NOTIMPLEMENTED();
+      break;
+    case CYCLE_SAME_APP_WINDOWS_FORWARD:
+      // TODO(b/250698986): Implement window switching functionality.
+      NOTIMPLEMENTED();
       break;
     case DESKS_ACTIVATE_DESK_LEFT:
       // UMA metrics are recorded in the function.
