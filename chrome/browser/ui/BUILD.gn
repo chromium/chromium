@@ -2045,8 +2045,6 @@ static_library("ui") {
       "app_list/internal_app/internal_app_metadata.h",
       "app_list/md_icon_normalizer.cc",
       "app_list/md_icon_normalizer.h",
-      "app_list/page_break_app_item.cc",
-      "app_list/page_break_app_item.h",
       "app_list/reorder/app_list_reorder_core.cc",
       "app_list/reorder/app_list_reorder_core.h",
       "app_list/reorder/app_list_reorder_delegate.h",

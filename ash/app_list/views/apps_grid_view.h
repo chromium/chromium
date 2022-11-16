@@ -809,11 +809,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns model index of the item view of the specified item.
   size_t GetModelIndexOfItem(const AppListItem* item) const;
 
-  // Returns the target model index based on item index. (Item index is the
-  // index of an item in item list.) This should be used when the item is
-  // updated in item list but its item view has not been updated in view model.
-  size_t GetTargetModelIndexFromItemIndex(size_t item_index);
-
   // Returns the target GridIndex for a keyboard move.
   GridIndex GetTargetGridIndexForKeyboardMove(ui::KeyboardCode key_code) const;
 

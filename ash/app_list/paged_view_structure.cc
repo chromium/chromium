@@ -171,27 +171,7 @@ int PagedViewStructure::GetTargetModelIndexForMove(
 int PagedViewStructure::GetTargetItemListIndexForMove(
     AppListItem* moved_item,
     const GridIndex& index) const {
-  if (mode_ == Mode::kFullPages)
-    return GetModelIndexFromIndex(index);
-
-  DCHECK_EQ(index.page, 0);
-  GridIndex current_index(0, 0);
-  size_t current_item_index = 0;
-
-  const auto* item_list = apps_grid_view_->item_list_;
-  while (current_item_index < item_list->item_count() &&
-         item_list->item_at(current_item_index)->is_page_break()) {
-    ++current_item_index;
-  }
-
-  while (current_item_index < item_list->item_count() &&
-         current_index != index) {
-    if (!item_list->item_at(current_item_index)->is_page_break())
-      ++current_index.slot;
-    ++current_item_index;
-  }
-  DCHECK_EQ(current_index, index);
-  return current_item_index;
+  return GetModelIndexFromIndex(index);
 }
 
 bool PagedViewStructure::IsValidReorderTargetIndex(

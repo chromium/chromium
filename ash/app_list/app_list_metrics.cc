@@ -249,8 +249,6 @@ void RecordPeriodicAppListMetrics() {
   AppListItemList* const item_list = model->top_level_item_list();
   for (size_t i = 0; i < item_list->item_count(); ++i) {
     AppListItem* item = item_list->item_at(i);
-    if (item->is_page_break())
-      continue;
     number_of_root_level_items++;
 
     // Item is a folder.

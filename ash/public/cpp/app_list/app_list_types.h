@@ -129,8 +129,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   // to contain a single item.
   bool is_system_folder = false;
 
-  gfx::ImageSkia icon;         // The icon of this item.
-  bool is_page_break = false;  // Whether this item is a "page break" item.
+  gfx::ImageSkia icon;                  // The icon of this item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
 
   // Whether the app was installed this session and has not yet been launched.

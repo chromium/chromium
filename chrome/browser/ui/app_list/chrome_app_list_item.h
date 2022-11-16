@@ -67,7 +67,6 @@ class ChromeAppListItem {
   bool is_system_folder() const { return metadata_->is_system_folder; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   const ash::IconColor& icon_color() const { return metadata_->icon_color; }
-  bool is_page_break() const { return metadata_->is_page_break; }
   bool is_new_install() const { return metadata_->is_new_install; }
   bool is_ephemeral() const { return metadata_->is_ephemeral; }
 
@@ -84,7 +83,6 @@ class ChromeAppListItem {
   void SetIcon(const gfx::ImageSkia& icon, bool is_place_holder_icon);
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
-  void SetIsPageBreak(bool is_page_break);
   void SetIsSystemFolder(bool is_system_folder);
   void SetIsNewInstall(bool is_new_install);
 

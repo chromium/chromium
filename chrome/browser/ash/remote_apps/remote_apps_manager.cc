@@ -375,7 +375,7 @@ void RemoteAppsManager::OnSyncModelUpdated() {
 }
 
 void RemoteAppsManager::OnAppListItemAdded(ChromeAppListItem* item) {
-  if (item->is_folder() || item->is_page_break())
+  if (item->is_folder())
     return;
 
   // Make a copy of id as item->metadata can be invalidated.

@@ -109,8 +109,7 @@ std::vector<ChromeAppListItem*> ChromeAppListItemManager::GetTopLevelItems()
     ChromeAppListItem* item = entry.second.get();
     DCHECK(item->position().IsValid())
         << "Item with invalid position: id=" << item->id()
-        << ", name=" << item->name() << ", is_folder=" << item->is_folder()
-        << ", is_page_break=" << item->is_page_break();
+        << ", name=" << item->name() << ", is_folder=" << item->is_folder();
     if (item->folder_id().empty() && item->position().IsValid())
       top_level_items.emplace_back(item);
   }

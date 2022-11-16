@@ -181,16 +181,6 @@ class AppListControllerImplTest : public AshTestBase {
     return widget_layer && widget_layer->GetAnimator()->is_animating();
   }
 
-  int CountPageBreakItems() {
-    auto* top_list = GetAppListModel()->top_level_item_list();
-    int count = 0;
-    for (size_t index = 0; index < top_list->item_count(); ++index) {
-      if (top_list->item_at(index)->is_page_break())
-        ++count;
-    }
-    return count;
-  }
-
  private:
   // The count of the items created by `PopulateItem()`.
   int populated_item_count_ = 0;
@@ -679,9 +669,6 @@ TEST_F(AppListControllerImplTest, CreatePage) {
   // Add an extra item and verify that the page count is 2 now.
   PopulateItem(1);
   EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
-
-  // Verify that there is no page break items.
-  EXPECT_EQ(0, CountPageBreakItems());
 }
 
 // The test parameter indicates whether the shelf should auto-hide. In either

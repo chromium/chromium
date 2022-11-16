@@ -124,9 +124,6 @@ std::vector<SyncItemWrapper<T>> GenerateWrappersFromAppListItems(
     const absl::optional<std::string>& ignored_id) {
   std::vector<SyncItemWrapper<T>> wrappers;
   for (const auto* app_list_item : app_list_items) {
-    if (app_list_item->is_page_break())
-      continue;
-
     if (ignored_id && *ignored_id == app_list_item->id())
       continue;
 

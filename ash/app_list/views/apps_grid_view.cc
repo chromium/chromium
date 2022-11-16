@@ -390,15 +390,9 @@ void AppsGridView::ResetForShowApps() {
   layer()->SetOpacity(1.0f);
   SetVisible(true);
 
-  // The number of non-page-break-items should be the same as item views.
-  if (item_list_) {
-    size_t item_count = 0;
-    for (size_t i = 0; i < item_list_->item_count(); ++i) {
-      if (!item_list_->item_at(i)->is_page_break())
-        ++item_count;
-    }
-    CHECK_EQ(item_count, view_model_.view_size());
-  }
+  // The number of model items should be the same as item views.
+  if (item_list_)
+    CHECK_EQ(item_list_->item_count(), view_model_.view_size());
 }
 
 void AppsGridView::CancelDragWithNoDropAnimation() {
@@ -1081,9 +1075,6 @@ void AppsGridView::Update() {
   std::vector<AppListItemView*> item_views;
   if (item_list_ && item_list_->item_count()) {
     for (size_t i = 0; i < item_list_->item_count(); ++i) {
-      // Skip "page break" items.
-      if (item_list_->item_at(i)->is_page_break())
-        continue;
       std::unique_ptr<AppListItemView> view = CreateViewForItemAtIndex(i);
       view_model_.Add(view.get(), view_model_.view_size());
       item_views.push_back(items_container_->AddChildView(std::move(view)));
@@ -1134,13 +1125,11 @@ void AppsGridView::OnSwapAnimationDone(views::View* placeholder,
 }
 
 AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
-  size_t model_index = GetTargetModelIndexFromItemIndex(index);
-  AppListItemView* view = items_container_->AddChildViewAt(
-      CreateViewForItemAtIndex(index), model_index);
-  view_model_.Add(view, model_index);
+  AppListItemView* view =
+      items_container_->AddChildViewAt(CreateViewForItemAtIndex(index), index);
+  view_model_.Add(view, index);
 
-  const bool placeholder_in_view_index =
-      model_index == (view_model_.view_size() - 1);
+  const bool placeholder_in_view_index = index == (view_model_.view_size() - 1);
   const bool is_syncing =
       model_ && model_->status() == AppListModelStatus::kStatusSyncing;
   const bool should_animate_placeholder_swap =
@@ -2551,15 +2540,13 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
   // Abort reorder animation before a view is added to `view_model_`.
   MaybeAbortWholeGridAnimation();
 
-  if (!item->is_page_break()) {
-    AppListItemView* view = MaybeSwapPlaceholderAsset(index);
+  AppListItemView* view = MaybeSwapPlaceholderAsset(index);
 
-    if (item == drag_item_) {
-      drag_view_ = view;
-      drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
-    }
-    view->InitializeIconLoader();
+  if (item == drag_item_) {
+    drag_view_ = view;
+    drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
   }
+  view->InitializeIconLoader();
 
   view_structure_.LoadFromMetadata();
 
@@ -2587,8 +2574,7 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
   // Abort reorder animation before a view is deleted from `view_model_`.
   MaybeAbortWholeGridAnimation();
 
-  if (!item->is_page_break())
-    DeleteItemViewAtIndex(GetModelIndexOfItem(item));
+  DeleteItemViewAtIndex(GetModelIndexOfItem(item));
 
   view_structure_.LoadFromMetadata();
 
@@ -2617,20 +2603,14 @@ void AppsGridView::OnListItemMoved(size_t from_index,
     EndDrag(true);
   }
 
-  if (item->is_page_break()) {
-    LOG(ERROR) << "Page break item is moved: " << item->id();
-  } else {
-    // The item is updated in the item list but the view_model is not updated,
-    // so get current model index by looking up view_model and predict the
-    // target model index based on its current item index.
-    size_t from_model_index = GetModelIndexOfItem(item);
-    size_t to_model_index = GetTargetModelIndexFromItemIndex(to_index);
-    view_model_.Move(from_model_index, to_model_index);
-    items_container_->ReorderChildView(view_model_.view_at(to_model_index),
-                                       to_model_index);
-    items_container_->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged, true /* send_native_event */);
-  }
+  // The item is updated in the item list but the view_model is not updated,
+  // so get current model index by looking up view_model and predict the
+  // target model index based on its current item index.
+  size_t from_model_index = GetModelIndexOfItem(item);
+  view_model_.Move(from_model_index, to_index);
+  items_container_->ReorderChildView(view_model_.view_at(to_index), to_index);
+  items_container_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
+                                             true /* send_native_event */);
 
   view_structure_.LoadFromMetadata();
 
@@ -2984,19 +2964,6 @@ size_t AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
     return static_cast<AppListItemView*>(entry.view)->item();
   });
   return static_cast<size_t>(std::distance(entries.begin(), iter));
-}
-
-size_t AppsGridView::GetTargetModelIndexFromItemIndex(size_t item_index) {
-  if (folder_delegate_)
-    return item_index;
-
-  CHECK(item_index <= item_list_->item_count());
-  size_t target_model_index = 0;
-  for (size_t i = 0; i < item_index; ++i) {
-    if (!item_list_->item_at(i)->is_page_break())
-      ++target_model_index;
-  }
-  return target_model_index;
 }
 
 int AppsGridView::GetNumberOfItemsOnPage(int page) const {

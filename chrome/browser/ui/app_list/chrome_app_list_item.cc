@@ -222,10 +222,6 @@ void ChromeAppListItem::SetIsSystemFolder(bool is_system_folder) {
     updater->SetItemIsSystemFolder(id(), is_system_folder);
 }
 
-void ChromeAppListItem::SetIsPageBreak(bool is_page_break) {
-  metadata_->is_page_break = is_page_break;
-}
-
 void ChromeAppListItem::SetIsNewInstall(bool is_new_install) {
   metadata_->is_new_install = is_new_install;
   AppListModelUpdater* updater = model_updater();

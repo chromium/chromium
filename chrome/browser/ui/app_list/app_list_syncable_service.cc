@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/page_break_app_item.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -157,8 +156,6 @@ sync_pb::AppListSpecifics::AppListItemType GetAppListItemType(
     const ChromeAppListItem* item) {
   if (item->is_folder())
     return sync_pb::AppListSpecifics::TYPE_FOLDER;
-  else if (item->is_page_break())
-    return sync_pb::AppListSpecifics::TYPE_PAGE_BREAK;
   else
     return sync_pb::AppListSpecifics::TYPE_APP;
 }
@@ -301,7 +298,7 @@ class AppListSyncableService::ModelUpdaterObserver
       return;
 
     // Only sync folders and page breaks which are added from Ash.
-    if (!item->is_folder() && !item->is_page_break())
+    if (!item->is_folder())
       return;
     DCHECK(adding_item_id_.empty());
     adding_item_id_ = item->id();  // Ignore updates while adding an item.
@@ -730,7 +727,7 @@ void AppListSyncableService::AddItem(
   if (!sync_item)
     return;  // Item is not valid.
 
-  if (app_item->is_folder() || app_item->is_page_break()) {
+  if (app_item->is_folder()) {
     model_updater_->AddItem(std::move(app_item));
   } else if (AppIsOem(app_item->id())) {
     VLOG(2) << this << ": AddItem to OEM folder: " << sync_item->ToString();
@@ -1408,18 +1405,9 @@ void AppListSyncableService::ProcessNewSyncItem(SyncItem* sync_item) {
           false);                 // It's a folder itself.
       return;
     }
-    case sync_pb::AppListSpecifics::TYPE_OBSOLETE_URL: {
+    case sync_pb::AppListSpecifics::TYPE_OBSOLETE_URL:
+    case sync_pb::AppListSpecifics::TYPE_PAGE_BREAK:
       return;
-    }
-    case sync_pb::AppListSpecifics::TYPE_PAGE_BREAK: {
-      // This is can be either a default page break item that was installed by
-      // default for new users, or a non-default page-break item that was
-      // added by the user. the ctor of PageBreakAppItem will update the
-      // newly-created item from its |sync_item|.
-      model_updater_->AddItem(std::make_unique<PageBreakAppItem>(
-          profile_, model_updater_.get(), sync_item, sync_item->item_id));
-      return;
-    }
   }
   NOTREACHED() << "Unrecognized sync item type: " << sync_item->ToString();
 }
@@ -1681,9 +1669,6 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
     AppListSyncableService::SyncItem* sync_item) {
   DCHECK_EQ(sync_item->item_id, app_item->id());
 
-  // Page breaker should not be added in a folder.
-  DCHECK(!app_item->is_page_break() || app_item->folder_id().empty());
-
   bool changed = false;
   // Allow sync changes for parent only for non OEM app.
   if (sync_item->parent_id != app_item->folder_id() &&
@@ -1738,8 +1723,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // crostini folder still use the first available position as the initial
   // position due to the concern over the possible regression in OEM folders.
   bool use_first_available_position =
-      (new_item->is_folder() || new_item->is_page_break()) &&
-      new_item->id() != ash::kCrostiniFolderId;
+      new_item->is_folder() && new_item->id() != ash::kCrostiniFolderId;
   if (!ash::features::IsLauncherAppSortEnabled() ||
       use_first_available_position) {
     new_item->SetChromePosition(model_updater_->GetFirstAvailablePosition());

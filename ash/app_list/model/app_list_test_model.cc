@@ -8,9 +8,11 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -207,14 +209,12 @@ void AppListTestModel::PopulateAppWithId(int id) {
 }
 
 std::string AppListTestModel::GetModelContent() {
-  std::string content;
-  for (size_t i = 0; i < top_level_item_list()->item_count(); ++i) {
-    if (i > 0)
-      content += ',';
-    AppListItem* item = top_level_item_list()->item_at(i);
-    content += item->is_page_break() ? "PageBreakItem" : item->id();
-  }
-  return content;
+  std::vector<std::string> ids;
+  ids.reserve(top_level_item_list()->item_count());
+
+  for (size_t i = 0; i < top_level_item_list()->item_count(); ++i)
+    ids.push_back(top_level_item_list()->item_at(i)->id());
+  return base::JoinString(ids, ",");
 }
 
 AppListTestModel::AppListTestItem* AppListTestModel::CreateItem(

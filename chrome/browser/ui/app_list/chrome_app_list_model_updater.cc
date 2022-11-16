@@ -163,14 +163,6 @@ void ChromeAppListModelUpdater::AddItem(
   std::unique_ptr<ash::AppListItemMetadata> item_data =
       app_item->CloneMetadata();
 
-  // With ProductivityLauncher, ignore page break items because empty slots
-  // only exist on the last launcher page. Therefore syncing on page break items
-  // is unnecessary.
-  if (item_data->is_page_break &&
-      ash::features::IsProductivityLauncherEnabled()) {
-    return;
-  }
-
   // Add to Chrome first leave all updates to observer methods.
   item_manager_->AddChromeItem(std::move(app_item));
   const std::string folder_id = item_data->folder_id;
@@ -188,7 +180,6 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
     const std::string& folder_id,
     bool add_from_local) {
   DCHECK(!app_item->is_folder());
-  DCHECK(!app_item->is_page_break());
 
   if (is_under_temporary_sort()) {
     // Store `app_item`'s position before calculating a new position under the
@@ -683,30 +674,11 @@ void ChromeAppListModelUpdater::OnAppListItemAdded(ash::AppListItem* item) {
     // Otherwise, we detect an item is created in Ash which is not added into
     // our Chrome list yet. This only happens when a folder is created or when a
     // page break is added.
-    DCHECK(item->is_folder() || item->is_page_break());
+    DCHECK(item->is_folder());
     std::unique_ptr<ChromeAppListItem> new_item =
         std::make_unique<ChromeAppListItem>(profile_, item->id(), this);
     new_item->SetMetadata(item->CloneMetadata());
     chrome_item = item_manager_->AddChromeItem(std::move(new_item));
-  }
-
-  // Do not propagate the addition of page break items from Ash side to remote
-  // side if ProductivityLauncher feature is enabled. Because:
-  // (1) If a remote device enables ProductivityLauncher as well, it will
-  // generate a page break item by its own when the current launcher page has no
-  // space for extra icons. In other words, it does not need to sync on page
-  // break items with other devices.
-  // (2) If a remote device disables the feature flag, syncing on page break
-  // items with those with the flag enabled does not bring the consistent
-  // launcher layout.
-  // TODO(crbug.com/1233729): Simply stopping the syncs on page break items may
-  // lead to overflow pages on the device with the feature flag disabled.
-  // Therefore we should handle the page break item sync in a better way.
-  // TODO(crbug.com/1234588): Ideally we should not send page breaks from/to the
-  // app list controller if the feature to remove spaces is enabled.
-  if (chrome_item->is_page_break() &&
-      ash::features::IsProductivityLauncherEnabled()) {
-    return;
   }
 
   // Notify observers that an item is added to the AppListModel in ash.
@@ -743,7 +715,7 @@ void ChromeAppListModelUpdater::OnAppListItemWillBeDeleted(
     temporary_sort_manager_->DeletePermanentPosition(item->id());
   }
 
-  if (!item->is_folder() && !item->is_page_break())
+  if (!item->is_folder())
     return;
 
   ChromeAppListItem* chrome_item = FindItem(item->id());

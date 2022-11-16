@@ -22,45 +22,17 @@ AppListModelUpdater::~AppListModelUpdater() = default;
 
 syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
   const std::vector<ChromeAppListItem*>& top_level_items = GetTopLevelItems();
+  auto last_item =
+      std::max_element(top_level_items.begin(), top_level_items.end(),
+                       [](ChromeAppListItem* const& item1,
+                          ChromeAppListItem* const& item2) -> bool {
+                         return item1->position().LessThan(item2->position());
+                       });
 
-  // Sort the top level items by their positions.
-  std::vector<ChromeAppListItem*> sorted_items(top_level_items);
-  std::sort(sorted_items.begin(), sorted_items.end(),
-            [](ChromeAppListItem* const& item1,
-               ChromeAppListItem* const& item2) -> bool {
-              return item1->position().LessThan(item2->position());
-            });
-
-  // Find the first empty position in app list. If all pages are full, return
-  // the next position after last item.
-  int items_in_page = 0;
-  for (size_t i = 0; i < sorted_items.size(); ++i) {
-    if (!sorted_items[i]->is_page_break()) {
-      ++items_in_page;
-      continue;
-    }
-
-    // There may be multiple "page break" items at the end of page while empty
-    // pages will not be shown in app list, so skip them.
-    const int max_items_in_page =
-        ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-    if (items_in_page > 0 && items_in_page < max_items_in_page) {
-      // Sometimes two continuous items may have the same position, so skip to
-      // the next available position.
-      // |i| should always be larger than 0 here because |items_in_page| is
-      // larger than 0.
-      if (sorted_items[i - 1]->position().LessThan(
-              sorted_items[i]->position())) {
-        return sorted_items[i - 1]->position().CreateBetween(
-            sorted_items[i]->position());
-      }
-    }
-    items_in_page = 0;
-  }
-
-  if (sorted_items.empty())
+  if (last_item == top_level_items.end())
     return syncer::StringOrdinal::CreateInitialOrdinal();
-  return sorted_items.back()->position().CreateAfter();
+
+  return (*last_item)->position().CreateAfter();
 }
 
 std::vector<ChromeSearchResult*>
