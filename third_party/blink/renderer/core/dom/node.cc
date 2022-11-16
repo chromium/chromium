@@ -2013,14 +2013,15 @@ void Node::setTextContent(const StringOrTrustedScript& string_or_trusted_script,
   // Force the text length to match when replaying, as a workaround for
   // differences in the assigned text which cause the replay to fail as
   // layout behavior diverges afterwards.
-  recordreplay::Assert("Node::setTextContent %zu %s", value.length(),
-                       v8::RecordReplayGetScriptedCaller().c_str());
   if (recordreplay::IsRecordingOrReplaying("values")) {
     std::string contents = value.Utf8();
     size_t recordedLength = recordreplay::RecordReplayValue("Node::setTextContent length", contents.length());
     contents.resize(recordedLength, ' ');
     recordreplay::RecordReplayBytes("Node::setTextContent string", &contents[0], recordedLength);
     value = String::FromUTF8(&contents[0], recordedLength);
+
+    // https://linear.app/replay/issue/RUN-809
+    recordreplay::Assert("Node::setTextContent %zu", value.length());
   }
 
   setTextContent(value);
