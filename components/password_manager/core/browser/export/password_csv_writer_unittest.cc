@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +17,12 @@
 #include "url/gurl.h"
 
 using testing::ElementsAre;
+
+#if BUILDFLAG(IS_WIN)
+const std::string kLineEnding = "\r\n";
+#else
+const std::string kLineEnding = "\n";
+#endif
 
 namespace password_manager {
 
@@ -80,6 +87,37 @@ TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
                                     "http://example.com/", "Someone", "Secret"),
                                 FormHasOriginUsernamePassword(
                                     "http://other.org/", "Anyone", "None")));
+}
+
+TEST(PasswordCSVWriterTest, SerializePasswordsWritesNames) {
+  std::vector<CredentialUIEntry> credentials;
+  PasswordForm form;
+  form.url = GURL("http://example.com");
+  form.username_value = u"a";
+  form.password_value = u"b";
+  credentials.emplace_back(form);
+  form.url = GURL(
+      "android://"
+      "Jzj5T2E45Hb33D-lk-"
+      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
+      "com.netflix.mediaclient");
+  form.signon_realm =
+      "android://"
+      "Jzj5T2E45Hb33D-lk-"
+      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
+      "com.netflix.mediaclient";
+  form.app_display_name = "Netflix";
+  form.username_value = u"a";
+  form.password_value = u"b";
+  credentials.emplace_back(form);
+  std::string expected = "name,url,username,password" + kLineEnding +
+                         "example.com,http://example.com/,a,b" + kLineEnding +
+                         "Netflix,android://"
+                         "Jzj5T2E45Hb33D-lk-"
+                         "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsB"
+                         "zC09Gk094Z-U_hg==@com.netflix.mediaclient,a,b" +
+                         kLineEnding;
+  EXPECT_EQ(expected, PasswordCSVWriter::SerializePasswords(credentials));
 }
 
 }  // namespace password_manager

@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/export/csv_writer.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -45,7 +46,7 @@ std::map<std::string, std::string> PasswordCSVWriter::PasswordFormToRecord(
   record[kUrlColumnName] = credential.GetURL().spec();
   record[kUsernameColumnName] = base::UTF16ToUTF8(credential.username);
   record[kPasswordColumnName] = base::UTF16ToUTF8(credential.password);
-  record[kTitleColumnName] = credential.GetURL().host();
+  record[kTitleColumnName] = GetShownOrigin(credential);
   return record;
 }
 
