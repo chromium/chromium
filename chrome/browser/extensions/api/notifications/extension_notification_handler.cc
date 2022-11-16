@@ -28,7 +28,7 @@ namespace notifications = api::notifications;
 
 namespace {
 
-std::unique_ptr<base::ListValue> CreateBaseEventArgs(
+base::Value::List CreateBaseEventArgs(
     const std::string& extension_id,
     const std::string& scoped_notification_id) {
   // Unscope the notification id before returning it.
@@ -37,8 +37,8 @@ std::unique_ptr<base::ListValue> CreateBaseEventArgs(
   std::string unscoped_notification_id =
       scoped_notification_id.substr(index_of_separator);
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(unscoped_notification_id);
+  base::Value::List args;
+  args.Append(unscoped_notification_id);
   return args;
 }
 
@@ -67,9 +67,8 @@ void ExtensionNotificationHandler::OnClose(
   std::string extension_id(GetExtensionId(GURL(origin)));
   DCHECK(!extension_id.empty());
 
-  std::unique_ptr<base::ListValue> args(
-      CreateBaseEventArgs(extension_id, notification_id));
-  args->Append(by_user);
+  base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
+  args.Append(by_user);
   SendEvent(profile, extension_id, events::NOTIFICATIONS_ON_CLOSED,
             api::notifications::OnClosed::kEventName, gesture, std::move(args));
 
@@ -91,10 +90,9 @@ void ExtensionNotificationHandler::OnClick(
   DCHECK(!reply.has_value());
 
   std::string extension_id(GetExtensionId(GURL(origin)));
-  std::unique_ptr<base::ListValue> args(
-      CreateBaseEventArgs(extension_id, notification_id));
+  base::Value::List args = CreateBaseEventArgs(extension_id, notification_id);
   if (action_index.has_value())
-    args->Append(action_index.value());
+    args.Append(action_index.value());
   events::HistogramValue histogram_value =
       action_index.has_value() ? events::NOTIFICATIONS_ON_BUTTON_CLICKED
                                : events::NOTIFICATIONS_ON_CLICKED;
@@ -122,7 +120,7 @@ void ExtensionNotificationHandler::SendEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
     EventRouter::UserGestureState user_gesture,
-    std::unique_ptr<base::ListValue> args) {
+    base::Value::List args) {
   if (extension_id.empty())
     return;
 
@@ -130,8 +128,8 @@ void ExtensionNotificationHandler::SendEvent(
   if (!event_router)
     return;
 
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(*args).TakeList());
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name, std::move(args));
   event->user_gesture = user_gesture;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
