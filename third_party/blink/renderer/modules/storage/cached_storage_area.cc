@@ -233,8 +233,13 @@ void CachedStorageArea::BindStorageArea(
     return;
   }
 
-  auto task_runner =
-      local_dom_window->GetTaskRunner(TaskType::kInternalNavigationAssociated);
+  // Because the storage area is keyed by the BlinkStorageKey it could be
+  // reused by other frames in the same agent cluster so we use the
+  // associated AgentGroupScheduler's task runner.
+  auto task_runner = local_dom_window->GetFrame()
+                         ->GetFrameScheduler()
+                         ->GetAgentGroupScheduler()
+                         ->DefaultTaskRunner();
   if (new_area) {
     remote_area_.Bind(std::move(new_area), task_runner);
   } else if (storage_namespace_) {

@@ -1,0 +1,4 @@
+Tests that virtual time works with storage.
+Request to http://test.com/index.html, type: Document
+Request to http://test2.com/frame1.html, type: Document
+Request to http://test2.com/frame2.html, type: Document

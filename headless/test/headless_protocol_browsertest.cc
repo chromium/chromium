@@ -49,13 +49,18 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
                                   "MAP *.test 127.0.0.1");
   HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
 
-  // Make sure the navigations spawn new processes. We run test harness
-  // in one process (harness.test) and tests in another.
-  command_line->AppendSwitch(::switches::kSitePerProcess);
-
+  if (RequiresSitePerProcess()) {
+    // Make sure the navigations spawn new processes. We run test harness
+    // in one process (harness.test) and tests in another.
+    command_line->AppendSwitch(::switches::kSitePerProcess);
+  }
   // Make sure proxy related tests are not affected by a platform specific
   // system proxy configuration service.
   command_line->AppendSwitch(switches::kNoSystemProxyConfigService);
+}
+
+bool HeadlessProtocolBrowserTest::RequiresSitePerProcess() {
+  return true;
 }
 
 base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
@@ -367,5 +372,37 @@ class HeadlessProtocolBrowserTestWithProxy
 
 HEADLESS_PROTOCOL_TEST_WITH_PROXY(BrowserSetProxyConfig,
                                   "sanity/browser-set-proxy-config.js")
+
+// TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
+#define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
+                         DISABLED_##TEST_NAME) {                              \
+    test_folder_ = "/protocol/";                                              \
+    script_name_ = SCRIPT_NAME;                                               \
+    RunTest();                                                                \
+  }
+#else
+#define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
+                         TEST_NAME) {                                         \
+    test_folder_ = "/protocol/";                                              \
+    script_name_ = SCRIPT_NAME;                                               \
+    RunTest();                                                                \
+  }
+#endif
+
+class HeadlessProtocolBrowserTestWithoutSiteIsolation
+    : public HeadlessProtocolBrowserTest {
+ public:
+  HeadlessProtocolBrowserTestWithoutSiteIsolation() = default;
+
+ protected:
+  bool RequiresSitePerProcess() override { return false; }
+};
+
+HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(
+    VirtualTimeLocalStorageDetachedFrame,
+    "emulation/virtual-time-local-storage-detached-frame.js")
 
 }  // namespace headless

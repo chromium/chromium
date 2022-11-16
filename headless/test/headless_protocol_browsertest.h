@@ -28,6 +28,8 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
 
   virtual base::Value::Dict GetPageUrlExtraParams();
 
+  virtual bool RequiresSitePerProcess();
+
  private:
   // HeadlessWebContentsObserver implementation.
   void RunDevTooledTest() override;
