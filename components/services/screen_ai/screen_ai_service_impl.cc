@@ -59,19 +59,21 @@ std::vector<char> LoadModelFile(base::File& model_file) {
   return buffer;
 }
 
-#if !BUILDFLAG(IS_WIN)
 NO_SANITIZE("cfi-icall")
 bool CallInitVisualAnnotationsFunction(LibraryFunctions* library_functions,
                                        const base::FilePath& models_folder) {
+  DCHECK(library_functions);
+  DCHECK(library_functions->init_visual_annotation_);
   return library_functions->init_visual_annotation_(
       models_folder.MaybeAsASCII().c_str());
 }
-#endif
 
 NO_SANITIZE("cfi-icall")
 bool CallInitMainContentExtractionFunction(LibraryFunctions* library_functions,
                                            base::File& model_config_file,
                                            base::File& model_tflite_file) {
+  DCHECK(library_functions);
+  DCHECK(library_functions->init_main_content_extraction_);
   std::vector<char> model_config = LoadModelFile(model_config_file);
   std::vector<char> model_tflite = LoadModelFile(model_tflite_file);
   if (model_config.empty() || model_tflite.empty())
@@ -97,8 +99,9 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
 
   if (features::IsScreenAIDebugModeEnabled())
     CallEnableDebugMode(library_functions.get());
+
   bool init_ok = true;
-#if !BUILDFLAG(IS_WIN)
+
   if (features::IsPdfOcrEnabled() ||
       features::IsScreenAIVisualAnnotationsEnabled()) {
     if (!CallInitVisualAnnotationsFunction(library_functions.get(),
@@ -109,7 +112,6 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
           ScreenAILoadLibraryResult::kVisualAnnotationFailed);
     }
   }
-#endif
 
   if (init_ok && features::IsReadAnythingWithScreen2xEnabled()) {
     if (!CallInitMainContentExtractionFunction(library_functions.get(),
@@ -154,24 +156,31 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
   DCHECK(enable_debug_mode_);
 
   // Main Content Extraction functions.
-  init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
-      library_.GetFunctionPointer("InitMainContentExtraction"));
-  DCHECK(init_main_content_extraction_);
-  extract_main_content_ = reinterpret_cast<ExtractMainContent>(
-      library_.GetFunctionPointer("ExtractMainContent"));
-  DCHECK(extract_main_content_);
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    init_main_content_extraction_ = reinterpret_cast<InitMainContentExtraction>(
+        library_.GetFunctionPointer("InitMainContentExtraction"));
+    DCHECK(init_main_content_extraction_);
+    extract_main_content_ = reinterpret_cast<ExtractMainContent>(
+        library_.GetFunctionPointer("ExtractMainContent"));
+    DCHECK(extract_main_content_);
+  } else {
+    init_main_content_extraction_ = nullptr;
+    extract_main_content_ = nullptr;
+  }
 
 // Visual Annotation functions.
-// TODO(https://crbug.com/1278249): Enable when ScreenAI is supported on
-// Windows.
-#if !BUILDFLAG(IS_WIN)
-  init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
-      library_.GetFunctionPointer("InitVisualAnnotations"));
-  DCHECK(init_visual_annotation_);
-  annotate_ =
-      reinterpret_cast<Annotate>(library_.GetFunctionPointer("Annotate"));
-  DCHECK(annotate_);
-#endif  // !BUILDFLAG(IS_WIN)
+  if (features::IsPdfOcrEnabled() ||
+      features::IsScreenAIVisualAnnotationsEnabled()) {
+    init_visual_annotation_ = reinterpret_cast<InitVisualAnnotations>(
+        library_.GetFunctionPointer("InitVisualAnnotations"));
+    DCHECK(init_visual_annotation_);
+    annotate_ =
+        reinterpret_cast<Annotate>(library_.GetFunctionPointer("Annotate"));
+    DCHECK(annotate_);
+  } else {
+    init_visual_annotation_ = nullptr;
+    annotate_ = nullptr;
+  }
 }
 
 void ScreenAIService::LoadLibrary(base::File model_config,
@@ -286,14 +295,10 @@ bool ScreenAIService::CallLibraryAnnotateFunction(
     const SkBitmap& image,
     char*& annotation_proto,
     uint32_t& annotation_proto_length) {
-#if BUILDFLAG(IS_WIN)
-  NOTIMPLEMENTED();
-  return false;
-#else
   DCHECK(library_functions_);
+  DCHECK(library_functions_->annotate_);
   return library_functions_->annotate_(image, annotation_proto,
                                        annotation_proto_length);
-#endif
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -350,6 +355,7 @@ bool ScreenAIService::CallLibraryExtractMainContentFunction(
     int32_t*& node_ids,
     uint32_t& nodes_count) {
   DCHECK(library_functions_);
+  DCHECK(library_functions_->extract_main_content_);
   return library_functions_->extract_main_content_(
       serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
 }

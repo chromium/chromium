@@ -33,7 +33,6 @@ class LibraryFunctions {
   LibraryFunctions& operator=(const LibraryFunctions&) = delete;
   ~LibraryFunctions() = default;
 
-#if !BUILDFLAG(IS_WIN)
   // Initializes the pipeline for layout extraction and OCR.
   // |models_folder| is a null terminated string pointing to the
   // folder that includes model files for layout extraction and OCR.
@@ -51,7 +50,6 @@ class LibraryFunctions {
                            char*& /*serialized_visual_annotation*/,
                            uint32_t& /*serialized_visual_annotation_length*/);
   Annotate annotate_ = nullptr;
-#endif
 
   // Initializes the pipeline for main content extraction.
   // |model_config| and |model_tflite| pass content of the required files to

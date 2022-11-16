@@ -8195,8 +8195,10 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_PDF)
 
 #if !BUILDFLAG(IS_ANDROID)
+    // TODO(https://crbug.com/1278249): Add Windows once library supports it.
     {"pdf-ocr", flag_descriptions::kPdfOcrName,
-     flag_descriptions::kPdfOcrDescription, kOsDesktop,
+     flag_descriptions::kPdfOcrDescription,
+     kOsMac | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kPdfOcr)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -9068,8 +9070,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+    // TODO(https://crbug.com/1278249): Add Windows once library supports it.
     {"screen-ai", flag_descriptions::kScreenAIName,
-     flag_descriptions::kScreenAIDescription, kOsDesktop,
+     flag_descriptions::kScreenAIDescription,
+     kOsMac | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kScreenAI)},
 #endif
 
