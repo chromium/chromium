@@ -591,9 +591,9 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
                     displayed.
   """
   def ReportHook(blocknum, blocksize, totalsize):
-    if quit_event and quit_event.isSet():
+    if quit_event and quit_event.is_set():
       raise RuntimeError('Aborting download of revision %s' % str(rev))
-    if progress_event and progress_event.isSet():
+    if progress_event and progress_event.is_set():
       size = blocknum * blocksize
       if totalsize == -1:  # Total size not known.
         progress = 'Received %d bytes' % size
@@ -607,7 +607,7 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
   download_url = context.GetDownloadURL(rev)
   try:
     urllib.urlretrieve(download_url, filename, ReportHook)
-    if progress_event and progress_event.isSet():
+    if progress_event and progress_event.is_set():
       print()
 
   except RuntimeError:
