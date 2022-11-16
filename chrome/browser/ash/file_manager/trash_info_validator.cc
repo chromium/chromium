@@ -66,7 +66,7 @@ base::File::Error ValidationErrorToFileError(ValidationError error) {
       return base::File::FILE_ERROR_INVALID_OPERATION;
     default:
       NOTREACHED();
-      break;
+      return base::File::FILE_ERROR_FAILED;
   }
 }
 
