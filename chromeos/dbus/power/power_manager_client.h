@@ -246,12 +246,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
 
-  // Set the toggled-off state of the keyboard backlight.
-  virtual void SetKeyboardBacklightToggledOff(bool toggled_off) = 0;
-
-  // Get the toggled-off state of the keyboard backlight.
-  virtual void GetKeyboardBacklightToggledOff(
-      DBusMethodCallback<bool> callback) = 0;
+  // Toggle the keyboard backlight on or off.
+  virtual void ToggleKeyboardBacklight() = 0;
 
   // Returns the last power status that was received from D-Bus, if any.
   virtual const absl::optional<power_manager::PowerSupplyProperties>&

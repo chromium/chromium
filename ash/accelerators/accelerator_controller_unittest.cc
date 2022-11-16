@@ -203,9 +203,7 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
 class DummyKeyboardBrightnessControlDelegate
     : public KeyboardBrightnessControlDelegate {
  public:
-  DummyKeyboardBrightnessControlDelegate()
-      : handle_keyboard_brightness_down_count_(0),
-        handle_keyboard_brightness_up_count_(0) {}
+  DummyKeyboardBrightnessControlDelegate() = default;
 
   DummyKeyboardBrightnessControlDelegate(
       const DummyKeyboardBrightnessControlDelegate&) = delete;
@@ -226,7 +224,11 @@ class DummyKeyboardBrightnessControlDelegate
         ui::Accelerator(ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN);
   }
 
-  void HandleToggleKeyboardBacklight() override {}
+  void HandleToggleKeyboardBacklight() override {
+    ++handle_toggle_keyboard_backlight_count_;
+    last_accelerator_ =
+        ui::Accelerator(ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE);
+  }
 
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
@@ -236,11 +238,16 @@ class DummyKeyboardBrightnessControlDelegate
     return handle_keyboard_brightness_up_count_;
   }
 
+  int handle_toggle_keyboard_backlight_count() const {
+    return handle_toggle_keyboard_backlight_count_;
+  }
+
   const ui::Accelerator& last_accelerator() const { return last_accelerator_; }
 
  private:
-  int handle_keyboard_brightness_down_count_;
-  int handle_keyboard_brightness_up_count_;
+  int handle_keyboard_brightness_down_count_ = 0;
+  int handle_keyboard_brightness_up_count_ = 0;
+  int handle_toggle_keyboard_backlight_count_ = 0;
   ui::Accelerator last_accelerator_;
 };
 
@@ -1253,21 +1260,32 @@ TEST_F(AcceleratorControllerTest, GlobalAccelerators) {
                                             ui::EF_ALT_DOWN);
   const ui::Accelerator alt_brightness_up(ui::VKEY_BRIGHTNESS_UP,
                                           ui::EF_ALT_DOWN);
+  const ui::Accelerator toggle_keyboard_backlight(ui::VKEY_KBD_BACKLIGHT_TOGGLE,
+                                                  ui::EF_NONE);
   {
     EXPECT_TRUE(ProcessInController(alt_brightness_down));
     EXPECT_TRUE(ProcessInController(alt_brightness_up));
+    EXPECT_TRUE(ProcessInController(toggle_keyboard_backlight));
+
     DummyKeyboardBrightnessControlDelegate* delegate =
         new DummyKeyboardBrightnessControlDelegate;
     SetKeyboardBrightnessControlDelegate(
         std::unique_ptr<KeyboardBrightnessControlDelegate>(delegate));
+
     EXPECT_EQ(0, delegate->handle_keyboard_brightness_down_count());
     EXPECT_TRUE(ProcessInController(alt_brightness_down));
     EXPECT_EQ(1, delegate->handle_keyboard_brightness_down_count());
     EXPECT_EQ(alt_brightness_down, delegate->last_accelerator());
+
     EXPECT_EQ(0, delegate->handle_keyboard_brightness_up_count());
     EXPECT_TRUE(ProcessInController(alt_brightness_up));
     EXPECT_EQ(1, delegate->handle_keyboard_brightness_up_count());
     EXPECT_EQ(alt_brightness_up, delegate->last_accelerator());
+
+    EXPECT_EQ(0, delegate->handle_toggle_keyboard_backlight_count());
+    EXPECT_TRUE(ProcessInController(toggle_keyboard_backlight));
+    EXPECT_EQ(1, delegate->handle_toggle_keyboard_backlight_count());
+    EXPECT_EQ(toggle_keyboard_backlight, delegate->last_accelerator());
   }
 
   // Exit
