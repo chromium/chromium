@@ -3620,8 +3620,10 @@ IN_PROC_BROWSER_TEST_P(
 // This test checks the behavior of mixed content blocking for the requests
 // from a dedicated worker by changing the settings in WebPreferences
 // with allow_running_insecure_content = false.
-IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
-                       MixedContentSettings_DisallowRunningInsecureContent) {
+// Disabled due to being flaky. crbug.com/1116670
+IN_PROC_BROWSER_TEST_P(
+    SSLUIWorkerFetchTest,
+    DISABLED_MixedContentSettings_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
   content::ScopedContentBrowserClientSetting setting(&browser_client);
 
