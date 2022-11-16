@@ -5,6 +5,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -12,7 +13,7 @@ suite('extensions-toggle-row', function() {
   let row: ExtensionsToggleRowElement;
 
   setup(function() {
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <extensions-toggle-row id="row">
         <span id="label">Description</span>
       </extensions-toggle-row>
