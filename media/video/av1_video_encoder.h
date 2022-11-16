@@ -43,6 +43,7 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
                     base::TimeDelta ts,
                     gfx::ColorSpace color_space);
   EncoderStatus::Or<int> AssignNextTemporalId(bool key_frame);
+  void UpdateEncoderColorSpace();
 
   using aom_codec_unique_ptr =
       std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;

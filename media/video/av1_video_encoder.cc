@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
@@ -157,6 +158,16 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
   }
 
   return EncoderStatus::Codes::kOk;
+}
+
+std::string LogAomErrorMessage(aom_codec_ctx_t* context,
+                               const char* message,
+                               aom_codec_err_t status) {
+  auto formatted_msg = base::StringPrintf("%s: %s (%s)", message,
+                                          aom_codec_err_to_string(status),
+                                          aom_codec_error_detail(context));
+  DLOG(ERROR) << formatted_msg;
+  return formatted_msg;
 }
 
 }  // namespace
@@ -376,6 +387,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
     key_frame = true;
+    UpdateEncoderColorSpace();
   }
 
   auto temporal_id_status = AssignNextTemporalId(key_frame);
@@ -393,10 +405,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   artificial_timestamp_ += duration_us;
 
   if (error != AOM_CODEC_OK) {
-    auto msg =
-        base::StringPrintf("AOM encoding error: %s (%d)",
-                           aom_codec_error_detail(codec_.get()), codec_->err);
-    DLOG(ERROR) << msg;
+    auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
@@ -542,9 +551,8 @@ EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
     aom_codec_control(codec_.get(), AV1E_SET_ERROR_RESILIENT_MODE,
                       temporal_id > 0 ? 1 : 0);
   if (error != AOM_CODEC_OK) {
-    auto msg =
-        base::StringPrintf("Set AV1E_SET_SVC_LAYER_ID error: %s (%d)",
-                           aom_codec_error_detail(codec_.get()), codec_->err);
+    auto msg = LogAomErrorMessage(codec_.get(),
+                                  "Set AV1E_SET_SVC_LAYER_ID error", error);
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
   }
   return temporal_id;
@@ -562,10 +570,7 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
 
   auto error = aom_codec_encode(codec_.get(), nullptr, 0, 0, 0);
   if (error != AOM_CODEC_OK) {
-    auto msg =
-        base::StringPrintf("AOM encoding error: %s (%d)",
-                           aom_codec_error_detail(codec_.get()), codec_->err);
-    DLOG(ERROR) << msg;
+    auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
@@ -576,6 +581,40 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
   // are drained after each Encode(). We might want to change this in the
   // future, see: crbug.com/1280404
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+}
+
+void Av1VideoEncoder::UpdateEncoderColorSpace() {
+  auto aom_cs = VideoColorSpace::FromGfxColorSpace(last_frame_color_space_);
+  if (aom_cs.primaries != VideoColorSpace::PrimaryID::INVALID) {
+    auto status = aom_codec_control(codec_.get(), AV1E_SET_COLOR_PRIMARIES,
+                                    aom_cs.primaries);
+    if (status != AOM_CODEC_OK)
+      LogAomErrorMessage(codec_.get(), "Failed to set color primaries", status);
+  }
+  if (aom_cs.transfer != VideoColorSpace::TransferID::INVALID) {
+    auto status = aom_codec_control(
+        codec_.get(), AV1E_SET_TRANSFER_CHARACTERISTICS, aom_cs.transfer);
+    if (status != AOM_CODEC_OK)
+      LogAomErrorMessage(codec_.get(), "Failed to set color transfer", status);
+  }
+  if (aom_cs.matrix != VideoColorSpace::MatrixID::INVALID) {
+    auto status = aom_codec_control(codec_.get(), AV1E_SET_MATRIX_COEFFICIENTS,
+                                    aom_cs.matrix);
+    if (status != AOM_CODEC_OK)
+      LogAomErrorMessage(codec_.get(), "Failed to set color transfer", status);
+  }
+
+  if (last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL ||
+      last_frame_color_space_.GetRangeID() ==
+          gfx::ColorSpace::RangeID::LIMITED) {
+    auto status = aom_codec_control(
+        codec_.get(), AV1E_SET_COLOR_RANGE,
+        last_frame_color_space_.GetRangeID() == gfx::ColorSpace::RangeID::FULL
+            ? AOM_CR_FULL_RANGE
+            : AOM_CR_STUDIO_RANGE);
+    if (status != AOM_CODEC_OK)
+      LogAomErrorMessage(codec_.get(), "Failed to set color range", status);
+  }
 }
 
 }  // namespace media
