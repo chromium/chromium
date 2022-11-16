@@ -7,17 +7,16 @@ import("//chrome/browser/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "password_manager"
   static_files = [
-    "images/checkup_result_banner_compromised.svg",
-    "images/checkup_result_banner_compromised_dark.svg",
-    "images/checkup_result_banner_error.svg",
-    "images/checkup_result_banner_error_dark.svg",
-    "images/checkup_result_banner_ok.svg",
-    "images/checkup_result_banner_ok_dark.svg",
-    "images/checkup_result_banner_running.svg",
-    "images/checkup_result_banner_running_dark.svg",
-    "images/password_manager_logo.svg",
-    "manifest.webmanifest",
     "password_manager.html",
+    "manifest.webmanifest",
+    "images/checkup_result_banner_error_dark.svg",
+    "images/checkup_result_banner_compromised_dark.svg",
+    "images/checkup_result_banner_running_dark.svg",
+    "images/checkup_result_banner_error.svg",
+    "images/checkup_result_banner_compromised.svg",
+    "images/checkup_result_banner_running.svg",
+    "images/checkup_result_banner_ok_dark.svg",
+    "images/checkup_result_banner_ok.svg",
   ]
   web_component_files = [
     "checkup_section.ts",

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/password_manager_resources.h"
 #include "chrome/grit/password_manager_resources_map.h"
@@ -20,10 +19,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/grit/chrome_unscaled_resources.h"
-#endif
 
 namespace {
 
@@ -86,14 +81,6 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Overwrite ubranded logo for Chrome-branded builds.
-  // This path is used in the manifest of the PasswordManager web app
-  // (chrome/browser/resources/password_manager/manifest.webmanifest).
-  source->AddResourcePath("images/password_manager_logo.svg",
-                          IDR_CHROME_PASSWORD_MANAGER_LOGO);
-#endif
 
   return source;
 }

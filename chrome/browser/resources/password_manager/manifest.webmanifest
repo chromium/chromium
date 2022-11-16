@@ -3,9 +3,9 @@
   "name": "Password Manager",
   "icons": [
     {
-      "src": "chrome://password-manager/images/password_manager_logo.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
+      "src": "chrome://theme/current-channel-logo",
+      "type": "image/png",
+      "sizes": "32x32"
     }
   ],
   "start_url": "/?source=pwa",
