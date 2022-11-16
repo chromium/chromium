@@ -435,6 +435,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)willResignActive {
+  // Regardless of app state, if the user is able to background the app, reset
+  // the failed startup count.
+  crash_util::ResetFailedStartupAttemptCount();
+
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // If the application did not pass the foreground initialization stage,
     // there is no active tab model to resign.

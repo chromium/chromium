@@ -104,22 +104,6 @@ void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
   base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
 }
 
-// web::WebStateObserver
-void WebStateListMetricsBrowserAgent::DidStartNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  // In order to avoid false positive in the crash loop detection, disable the
-  // counter as soon as an URL is loaded. This requires an user action and is a
-  // significant source of crashes. Ignore NTP as it is loaded by default after
-  // a crash.
-  if (navigation_context->GetUrl().host_piece() != kChromeUINewTabHost) {
-    static dispatch_once_t dispatch_once_token;
-    dispatch_once(&dispatch_once_token, ^{
-      crash_util::ResetFailedStartupAttemptCount();
-    });
-  }
-}
-
 void WebStateListMetricsBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

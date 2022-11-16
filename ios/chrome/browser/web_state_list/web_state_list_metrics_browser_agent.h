@@ -58,8 +58,6 @@ class WebStateListMetricsBrowserAgent
       const std::vector<web::WebState*>& restored_web_states) override;
 
   // web::WebStateObserver
-  void DidStartNavigation(web::WebState* web_state,
-                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void PageLoaded(
