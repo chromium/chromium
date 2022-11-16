@@ -466,6 +466,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
       base::FeatureList::IsEnabled(kEnableTTSCacheSetup);
   params.enable_consumer_auto_update_toggle = base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed);
+  params.use_virtio_blk_data = use_virtio_blk_data_;
 
   // TODO (b/196460968): Remove after CTS run is complete.
   if (params.enable_notifications_refresh) {
@@ -881,6 +882,10 @@ void ArcSessionImpl::TrimVmMemory(TrimVmMemoryCallback callback,
 void ArcSessionImpl::SetDefaultDeviceScaleFactor(float scale_factor) {
   lcd_density_ = GetLcdDensityForDeviceScaleFactor(scale_factor);
   DCHECK_GT(lcd_density_, 0);
+}
+
+void ArcSessionImpl::SetUseVirtioBlkData(bool use_virtio_blk_data) {
+  use_virtio_blk_data_ = use_virtio_blk_data;
 }
 
 void ArcSessionImpl::OnConfigurationSet(bool success,

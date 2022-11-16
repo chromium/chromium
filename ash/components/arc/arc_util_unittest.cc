@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/app_types.h"
 #include "base/base_switches.h"
@@ -112,6 +114,7 @@ class ArcUtilTest : public testing::Test {
 
   void SetUp() override {
     run_loop_ = std::make_unique<base::RunLoop>();
+    prefs::RegisterProfilePrefs(profile_prefs_.registry());
     RemoveUpstartStartStopJobFailures();
   }
 
@@ -162,6 +165,8 @@ class ArcUtilTest : public testing::Test {
     return upstart_operations_;
   }
 
+  PrefService* profile_prefs() { return &profile_prefs_; }
+
  private:
   void RemoveUpstartStartStopJobFailures() {
     auto* upstart_client = ash::FakeUpstartClient::Get();
@@ -173,6 +178,7 @@ class ArcUtilTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple profile_prefs_;
 
   // List of upstart operations recorded. When it's "start" the boolean is set
   // to true.
@@ -623,6 +629,70 @@ TEST_F(ArcUtilTest, GetArcWindowSessionId) {
     EXPECT_TRUE(task_or_session_id.has_value());
     EXPECT_EQ(task_or_session_id.value(), 200);
   }
+}
+
+// Tests that ShouldUseVirtioBlkData() returns true when virtio-blk /data is
+// enabled via the kEnableVirtioBlkForData feature.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableVirtioBlkForData);
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kEnableArcVmDataMigration));
+  EXPECT_TRUE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
+// but the user has not been notified yet.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Unnotified) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kUnnotified));
+  EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
+// but the user has just been notified of its availability.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Notified) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kNotified));
+  EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
+// but the user has just confirmed the migration.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Confirmed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kConfirmed));
+  EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that ShouldUseVirtioBlkData() returns false when ARCVM /data is enabled
+// and the migration has started, but not finished yet.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Started) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kStarted));
+  EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that ShouldUseVirtioBlkData() returns true when ARCVM /data is enabled
+// and the migration has finished.
+TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Finished) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStatus,
+      static_cast<int>(ArcVmDataMigrationStatus::kFinished));
+  EXPECT_TRUE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 
 }  // namespace

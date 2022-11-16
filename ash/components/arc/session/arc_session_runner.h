@@ -123,6 +123,10 @@ class ArcSessionRunner : public ArcSession::Observer {
     default_device_scale_factor_ = scale_factor;
   }
 
+  void set_use_virtio_blk_data(bool use_virtio_blk_data) {
+    use_virtio_blk_data_ = use_virtio_blk_data;
+  }
+
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
 
@@ -188,6 +192,9 @@ class ArcSessionRunner : public ArcSession::Observer {
   bool resumed_ = false;
 
   float default_device_scale_factor_ = 1.0f;
+
+  // Whether ARCVM uses virtio-blk for /data.
+  bool use_virtio_blk_data_ = false;
 
   // DemoModeDelegate to be used by ArcSession.
   std::unique_ptr<ArcClientAdapter::DemoModeDelegate> demo_mode_delegate_;

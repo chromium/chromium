@@ -8,6 +8,8 @@
 #include <cstdio>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -22,6 +24,7 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/version/version_loader.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -425,6 +428,26 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
       NOTREACHED();
       break;
   }
+}
+
+bool ShouldUseVirtioBlkData(PrefService* profile_prefs) {
+  // If kEnableVirtioBlkForData is set, force using virtio-blk /data regardless
+  // of the migration status.
+  if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
+    return true;
+
+  // Just use virtio-fs when ARCVM /data migration is not enabled.
+  if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration))
+    return false;
+
+  ArcVmDataMigrationStatus status = static_cast<ArcVmDataMigrationStatus>(
+      profile_prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
+  if (status == ArcVmDataMigrationStatus::kFinished) {
+    VLOG(1) << "ARCVM /data migration has finished";
+    return true;
+  }
+  VLOG(1) << "ARCVM /data migration hasn't finished yet. Status=" << status;
+  return false;
 }
 
 }  // namespace arc

@@ -29,6 +29,8 @@ namespace user_manager {
 class User;
 }  // namespace user_manager
 
+class PrefService;
+
 namespace arc {
 
 // This enum should be synced with CpuRestrictionState in
@@ -225,6 +227,9 @@ int GetSystemPropertyInt(const std::string& property);
 // are successfully processed, |callback| is called with true.
 void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                           chromeos::VoidDBusMethodCallback callback);
+
+// Returns whether ARCVM should use virtio-blk for /data.
+bool ShouldUseVirtioBlkData(PrefService* prefs);
 
 }  // namespace arc
 

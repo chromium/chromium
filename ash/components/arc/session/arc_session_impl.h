@@ -198,6 +198,7 @@ class ArcSessionImpl
       ArcClientAdapter::DemoModeDelegate* delegate) override;
   void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit) override;
   void SetDefaultDeviceScaleFactor(float scale_factor) override;
+  void SetUseVirtioBlkData(bool use_virtio_blk_data) override;
 
   // chromeos::SchedulerConfigurationManagerBase::Observer overrides:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
@@ -275,6 +276,9 @@ class ArcSessionImpl
 
   // Whether there's insufficient disk space to start the container.
   bool insufficient_disk_space_ = false;
+
+  // Whether ARCVM uses virtio-blk for /data.
+  bool use_virtio_blk_data_ = false;
 
   // In CONNECTING_MOJO state, this is set to the write side of the pipe
   // to notify cancelling of the procedure.

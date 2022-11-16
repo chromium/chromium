@@ -110,6 +110,8 @@ class ArcSession {
 
   virtual void SetDefaultDeviceScaleFactor(float scale_factor) = 0;
 
+  virtual void SetUseVirtioBlkData(bool use_virtio_blk_data) = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

@@ -1555,14 +1555,13 @@ TEST_F(ArcVmClientAdapterTest, SpecifyBlockSize) {
       GetTestConciergeClient()->start_arc_vm_request().rootfs_block_size());
 }
 
-TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kEnableVirtioBlkForData, false);
-
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_Disabled) {
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
 
-  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = false;
+  StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
 
   // CreateDiskImage() should NOT be called.
@@ -1577,41 +1576,39 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_FlagDisabled) {
 }
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
-
   // CreateDiskImage() returns an empty response.
   GetTestConciergeClient()->set_create_disk_image_response(absl::nullopt);
 
   // StartArcVm should NOT be called.
-  StartMiniArcWithParams(false, {});
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(false, std::move(start_params));
   EXPECT_EQ(GetTestConciergeClient()->start_arc_vm_call_count(), 0);
 
   EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
 }
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusFailed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
-
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_FAILED));
 
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+
   // StartArcVm should NOT be called.
-  StartMiniArcWithParams(false, {});
+  StartMiniArcWithParams(false, std::move(start_params));
   EXPECT_EQ(GetTestConciergeClient()->start_arc_vm_call_count(), 0);
 
   EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
 }
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusCreated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
-
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_CREATED));
 
-  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
 
   EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
@@ -1625,13 +1622,12 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusCreated) {
 }
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(arc::kEnableVirtioBlkForData);
-
   GetTestConciergeClient()->set_create_disk_image_response(
       CreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_EXISTS));
 
-  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  StartParams start_params = GetPopulatedStartParams();
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
 
   EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 1);
@@ -1646,12 +1642,11 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_LvmSupported) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{arc::kEnableVirtioBlkForData,
-                            arc::kLvmApplicationContainers},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(arc::kLvmApplicationContainers);
 
-  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
 
   // CreateDiskImage() should NOT be called.
@@ -1672,12 +1667,13 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_OverrideUseLvm) {
   // ArcLvmApplicationContainers flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{arc::kEnableVirtioBlkForData, {{}}},
-                            {arc::kVirtioBlkDataConfigOverride,
+      /*enabled_features=*/{{arc::kVirtioBlkDataConfigOverride,
                              {{"use_lvm", "true"}}}},
       /*disabled_features=*/{arc::kLvmApplicationContainers});
 
-  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  StartParams start_params(GetPopulatedStartParams());
+  start_params.use_virtio_blk_data = true;
+  StartMiniArcWithParams(true, std::move(start_params));
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
 
   // CreateDiskImage() should NOT be called.
