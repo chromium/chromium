@@ -1326,7 +1326,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"use-sf-symbols-omnibox", flag_descriptions::kUseSFSymbolsInOmniboxName,
      flag_descriptions::kUseSFSymbolsInOmniboxDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseSFSymbolsInOmnibox)},
-    {"tab-grid-recency-sort", flag_descriptions::kTabGridRecencySortName,
+    {"tab-grid-sort", flag_descriptions::kTabGridRecencySortName,
      flag_descriptions::kTabGridRecencySortDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRecencySort)},
     {"enable-pinned-tabs", flag_descriptions::kEnablePinnedTabsName,

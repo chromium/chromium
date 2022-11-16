@@ -819,9 +819,9 @@ const char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
-const char kTabGridRecencySortName[] = "Sort tabs by recency";
+const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
-    "When enabled, the tabs in the Tab Grid are sorted by last time used.";
+    "When enabled, the tabs in the Tab Grid are sorted differently.";
 
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "

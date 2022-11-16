@@ -6481,7 +6481,7 @@
     "expiry_milestone": -1
   },
   {
-    "name": "tab-grid-recency-sort",
+    "name": "tab-grid-sort",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 114
   },
