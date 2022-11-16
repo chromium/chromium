@@ -42,6 +42,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(HelpBubbleView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpBubbleElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultButtonIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);
 
   HelpBubbleView(const HelpBubbleDelegate* delegate,
                  views::View* anchor_view,

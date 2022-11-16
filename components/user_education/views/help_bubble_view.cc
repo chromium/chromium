@@ -284,6 +284,10 @@ END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kHelpBubbleElementIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+                                      kDefaultButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
+                                      kFirstNonDefaultButtonIdForTesting);
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
@@ -448,10 +452,17 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       if (button_params.is_default) {
         DCHECK(!default_button);
         default_button = std::move(button);
+        default_button->SetProperty(views::kElementIdentifierKey,
+                                    kDefaultButtonIdForTesting);
       } else {
         non_default_buttons_.push_back(
             button_container->AddChildView(std::move(button)));
       }
+    }
+
+    if (!non_default_buttons_.empty()) {
+      non_default_buttons_.front()->SetProperty(
+          views::kElementIdentifierKey, kFirstNonDefaultButtonIdForTesting);
     }
 
     // Add the default button if there is one based on platform style.

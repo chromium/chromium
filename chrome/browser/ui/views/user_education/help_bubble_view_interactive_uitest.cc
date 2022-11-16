@@ -210,3 +210,45 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
+                       ElementIdentifierFindsButton) {
+  user_education::HelpBubbleParams params;
+  params.body_text = u"To X, do Y";
+  params.arrow = HelpBubbleArrow::kTopRight;
+
+  constexpr char16_t kButton1Text[] = u"button 1";
+  constexpr char16_t kButton2Text[] = u"button 2";
+
+  user_education::HelpBubbleButtonParams button1;
+  button1.text = kButton1Text;
+  button1.is_default = true;
+  params.buttons.push_back(std::move(button1));
+
+  user_education::HelpBubbleButtonParams button2;
+  button2.text = kButton2Text;
+  button2.is_default = false;
+  params.buttons.push_back(std::move(button2));
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const bubble = new HelpBubbleView(
+      GetHelpBubbleDelegate(), GetAnchorElement()->view(), std::move(params));
+
+  views::LabelButton* default_button = views::AsViewClass<views::LabelButton>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          HelpBubbleView::kDefaultButtonIdForTesting,
+          browser_view->GetElementContext()));
+
+  views::LabelButton* non_default_button =
+      views::AsViewClass<views::LabelButton>(
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              HelpBubbleView::kFirstNonDefaultButtonIdForTesting,
+              browser_view->GetElementContext()));
+
+  EXPECT_EQ(bubble->GetDefaultButtonForTesting()->GetText(),
+            default_button->GetText());
+  EXPECT_EQ(bubble->GetNonDefaultButtonForTesting(0)->GetText(),
+            non_default_button->GetText());
+
+  bubble->Close();
+}
