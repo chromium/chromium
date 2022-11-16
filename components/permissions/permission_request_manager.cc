@@ -213,7 +213,7 @@ void PermissionRequestManager::AddRequest(
   // any other renderer-side nav initiations?). Double-check this for
   // correct behavior on interstitials -- we probably want to basically queue
   // any request for which GetVisibleURL != GetLastCommittedURL.
-  CHECK_EQ(source_frame->GetMainFrame(), web_contents()->GetPrimaryMainFrame());
+  CHECK(source_frame->GetMainFrame()->IsInPrimaryMainFrame());
   const GURL main_frame_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(source_frame->GetMainFrame());
   bool is_main_frame =
