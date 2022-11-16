@@ -441,16 +441,6 @@ BASE_FEATURE(kContextualNudges,
              "ContextualNudges",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables upgrading the crostini container to debian bullseye.
-BASE_FEATURE(kCrostiniBullseyeUpgrade,
-             "CrostiniBullseyeUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables Crostini Disk Resizing.
-BASE_FEATURE(kCrostiniDiskResizing,
-             "CrostiniDiskResizing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Crostini GPU support.
 // Note that this feature can be overridden by login_manager based on
 // whether a per-board build sets the USE virtio_gpu flag.
@@ -463,11 +453,6 @@ BASE_FEATURE(kCrostiniGpuSupport,
 BASE_FEATURE(kCrostiniResetLxdDb,
              "CrostiniResetLxdDb",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Do we use the default LXD version or try LXD 4?
-BASE_FEATURE(kCrostiniUseLxd4,
-             "CrostiniUseLxd4",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables experimental UI creating and managing multiple Crostini containers.
 BASE_FEATURE(kCrostiniMultiContainer,
@@ -1008,9 +993,6 @@ const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText{
 
 // Enable glanceables on login.
 BASE_FEATURE(kGlanceables, "Glanceables", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable GuestOS integration with the files app.
-BASE_FEATURE(kGuestOsFiles, "GuestOsFiles", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Gaia reauth endpoint.
 BASE_FEATURE(kGaiaReauthEndpoint,
@@ -2595,10 +2577,6 @@ bool IsGifRecordingEnabled() {
 
 bool AreGlanceablesEnabled() {
   return base::FeatureList::IsEnabled(kGlanceables);
-}
-
-bool IsGuestOsFilesEnabled() {
-  return base::FeatureList::IsEnabled(kGuestOsFiles);
 }
 
 bool IsHatsUseNewHistogramsEnabled() {

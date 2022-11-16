@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -74,9 +73,7 @@ CrostiniInstallerPageHandler::~CrostiniInstallerPageHandler() = default;
 void CrostiniInstallerPageHandler::Install(int64_t disk_size_bytes,
                                            const std::string& username) {
   crostini::CrostiniManager::RestartOptions options{};
-  if (base::FeatureList::IsEnabled(features::kCrostiniDiskResizing)) {
-    options.disk_size_bytes = disk_size_bytes;
-  }
+  options.disk_size_bytes = disk_size_bytes;
   options.container_username = username;
   installer_ui_delegate_->Install(
       std::move(options),

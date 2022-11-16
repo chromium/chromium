@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
@@ -574,11 +573,9 @@ void EventRouter::Shutdown() {
       chromeos::PowerManagerClient::Get();
   power_manager_client->RemoveObserver(device_event_router_.get());
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles)) {
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
-                         ->MountProviderRegistry();
-    registry->RemoveObserver(this);
-  }
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                       ->MountProviderRegistry();
+  registry->RemoveObserver(this);
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
     apps::AppServiceProxy* proxy =
@@ -681,11 +678,9 @@ void EventRouter::ObserveEvents() {
   if (tablet_mode)
     tablet_mode->AddObserver(this);
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles)) {
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
-                         ->MountProviderRegistry();
-    registry->AddObserver(this);
-  }
+  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+                       ->MountProviderRegistry();
+  registry->AddObserver(this);
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
     apps::AppServiceProxy* proxy =

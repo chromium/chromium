@@ -133,16 +133,6 @@ class SettingsCrostiniSubpageElement extends
         },
       },
 
-      /**
-       * Whether the button to show the disk resizing view should be shown.
-       */
-      showCrostiniDiskResize_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showCrostiniDiskResize');
-        },
-      },
-
       showDiskResizeConfirmationDialog_: {
         type: Boolean,
         value: false,

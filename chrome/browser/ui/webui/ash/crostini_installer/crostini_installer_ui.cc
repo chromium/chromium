@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +79,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"diskSizeHint", IDS_CROSTINI_INSTALLER_DISK_SIZE_HINT},
       {"insufficientDiskError", IDS_CROSTINI_INSTALLER_INSUFFICIENT_DISK_ERROR},
       {"usernameLabel", IDS_CROSTINI_INSTALLER_USERNAME_LABEL},
-      {"usernameMessage", IDS_CROSTINI_INSTALLER_USERNAME_MESSAGE},
       {"usernameInvalidFirstCharacterError",
        IDS_CROSTINI_INSTALLER_USERNAME_INVALID_FIRST_CHARACTER_ERROR},
       {"usernameInvalidCharactersError",
@@ -140,9 +138,6 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   auto* profile = Profile::FromWebUI(web_ui);
   webui::SetJSModuleDefaults(source);
   AddStringResources(source);
-  source->AddBoolean(
-      "diskResizingEnabled",
-      base::FeatureList::IsEnabled(features::kCrostiniDiskResizing));
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
 

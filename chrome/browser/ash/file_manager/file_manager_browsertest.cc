@@ -162,11 +162,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableGuestOsFiles() {
-    options.enable_guest_os_files = true;
-    return *this;
-  }
-
   TestCase& EnableVirtioBlkForData() {
     options.enable_virtio_blk_for_data = true;
     return *this;
@@ -816,8 +811,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
-        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")
-            .EnableGuestOsFiles()));
+        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.js */
@@ -1038,13 +1032,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewDrive"),
         TestCase("openQuickViewSmbfs"),
         TestCase("openQuickViewAndroid"),
-        TestCase("openQuickViewAndroidGuestOs")
-            .EnableGuestOsFiles()
-            .EnableVirtioBlkForData(),
+        TestCase("openQuickViewAndroidGuestOs").EnableVirtioBlkForData(),
         TestCase("openQuickViewDocumentsProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewCrostini"),
-        TestCase("openQuickViewGuestOs").EnableGuestOsFiles(),
+        TestCase("openQuickViewGuestOs"),
         TestCase("openQuickViewLastModifiedMetaData")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewUsb"),
@@ -1454,16 +1446,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogFileListShowContextMenu").WithBrowser(),
         TestCase("openFileDialogSelectAllDisabled").WithBrowser(),
         TestCase("openMultiFileDialogSelectAllEnabled").WithBrowser(),
-        TestCase("saveFileDialogGuestOs").WithBrowser().EnableGuestOsFiles(),
-        TestCase("saveFileDialogGuestOs")
-            .WithBrowser()
-            .EnableGuestOsFiles()
-            .InIncognito(),
-        TestCase("openFileDialogGuestOs").WithBrowser().EnableGuestOsFiles(),
-        TestCase("openFileDialogGuestOs")
-            .WithBrowser()
-            .EnableGuestOsFiles()
-            .InIncognito()));
+        TestCase("saveFileDialogGuestOs").WithBrowser(),
+        TestCase("saveFileDialogGuestOs").WithBrowser().InIncognito(),
+        TestCase("openFileDialogGuestOs").WithBrowser(),
+        TestCase("openFileDialogGuestOs").WithBrowser().InIncognito()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CopyBetweenWindows, /* copy_between_windows.js */
@@ -1784,12 +1770,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("fakesListed").EnableGuestOsFiles(),
-        TestCase("listUpdatedWhenGuestsChanged").EnableGuestOsFiles(),
-        TestCase("mountGuestSuccess").EnableGuestOsFiles(),
-        TestCase("notListedWithoutFlag"),
-        TestCase("mountAndroidVolumeSuccess")
-            .EnableGuestOsFiles()
-            .EnableVirtioBlkForData()));
+        TestCase("fakesListed"),
+        TestCase("listUpdatedWhenGuestsChanged"),
+        TestCase("mountGuestSuccess"),
+        TestCase("mountAndroidVolumeSuccess").EnableVirtioBlkForData()));
 
 }  // namespace file_manager

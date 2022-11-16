@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
@@ -327,13 +325,7 @@ void CrostiniUpgrader::Upgrade(const guest_os::GuestId& container_id) {
               return;
             }
 
-            ContainerVersion target_version;
-            if (base::FeatureList::IsEnabled(
-                    chromeos::features::kCrostiniBullseyeUpgrade)) {
-              target_version = ContainerVersion::BULLSEYE;
-            } else {
-              target_version = ContainerVersion::BUSTER;
-            }
+            auto target_version = ContainerVersion::BULLSEYE;
 
             CrostiniManager::GetForProfile(weak_this->profile_)
                 ->UpgradeContainer(

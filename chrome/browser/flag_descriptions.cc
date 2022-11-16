@@ -4955,15 +4955,6 @@ const char kEnableServiceWorkersForChromeUntrustedName[] =
 const char kEnableServiceWorkersForChromeUntrustedDescription[] =
     "When enabled, allows chrome-untrusted:// WebUIs to use service workers.";
 
-const char kCrostiniBullseyeUpgradeName[] = "Upgrade Crostini to Bullseye";
-const char kCrostiniBullseyeUpgradeDescription[] =
-    "Offer to upgrade Crostini containers on older versions to bullseye.";
-
-const char kCrostiniDiskResizingName[] = "Allow resizing Crostini disks";
-const char kCrostiniDiskResizingDescription[] =
-    "Use preallocated user-resizeable disks for Crostini instead of sparse "
-    "automatically sized disks.";
-
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =
@@ -4975,12 +4966,6 @@ const char kCrostiniGpuSupportDescription[] = "Enable Crostini GPU support.";
 const char kCrostiniResetLxdDbName[] = "Crostini Reset LXD DB on launch";
 const char kCrostiniResetLxdDbDescription[] =
     "Recreates the LXD database every time we launch it";
-
-const char kCrostiniUseLxd4Name[] =
-    "Use LXD 4 instead of the default - Dangerous & Irreversible";
-const char kCrostiniUseLxd4Description[] =
-    "Uses LXD version 4 instead of the default version. WARNING: Once this is "
-    "set you can't unset it without deleting your entire container";
 
 const char kCrostiniMultiContainerName[] = "Allow multiple Crostini containers";
 const char kCrostiniMultiContainerDescription[] =
@@ -5493,12 +5478,6 @@ const char kFullRestoreForLacrosDescription[] =
 const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
-
-const char kGuestOsFilesName[] =
-    "Enabled Guest OS Service + file manager integration";
-const char kGuestOsFilesDescription[] =
-    "The files app sources information about guests from the Guest OS service, "
-    "instead of querying each type individually";
 
 const char kHelpAppBackgroundPageName[] = "Help App Background Page";
 const char kHelpAppBackgroundPageDescription[] =

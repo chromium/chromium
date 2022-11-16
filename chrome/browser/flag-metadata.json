@@ -773,12 +773,12 @@
   {
     "name": "bruschetta",
     "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "bruschetta-alpha-migrate",
     "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "bubble-rich-iph",
@@ -1158,19 +1158,9 @@
     "expiry_milestone": 120
   },
   {
-    "name": "crostini-bullseye-upgrade",
-    "owners": [ "sidereal@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "crostini-container-install",
     "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "crostini-disk-resizing",
-    "owners": [ "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 110
   },
   {
     "name": "crostini-gpu-support",
@@ -1190,12 +1180,7 @@
   {
     "name": "crostini-reset-lxd-db",
     "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "crostini-use-lxd-4",
-    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "crostini-virtual-keyboard-support",
@@ -3940,11 +3925,6 @@
     "name": "grid-tab-switcher-for-tablets",
     "owners": [ "nemco", "clank-app-team@google.com" ],
     "expiry_milestone": 114
-  },
-  {
-    "name": "guest-os-files",
-    "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 110
   },
   {
     "name": "handwriting-gesture-editing",

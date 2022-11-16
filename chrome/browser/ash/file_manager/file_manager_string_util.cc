@@ -1071,8 +1071,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("INLINE_SYNC_STATUS",
             chromeos::features::IsInlineSyncStatusEnabled());
 
-  dict->Set("GUEST_OS",
-            base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
+  dict->Set("GUEST_OS", true);
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(

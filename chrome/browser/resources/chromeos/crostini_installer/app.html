@@ -110,13 +110,13 @@
       <a href="$i18n{learnMoreUrl}" target="_blank">$i18n{learnMore}</a>
     </div>
     <div id="configure-message" hidden="[[!eq_(state_, State.CONFIGURE)]]">
-      <div id="configure-message-title">[[getConfigureMessageTitle_()]]</div>
+      <div id="configure-message-title">$i18n{configureMessage}</div>
       <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
           invalid="[[!eq_(usernameError_, '')]]"
           error-message="[[usernameError_]]">
       </cr-input>
-      <div id='disk-size-section' hidden="[[!showDiskResizing_()]]">
+      <div id='disk-size-section'>
         <div id="disk-size-message">
           <div style="color:var(--cr-primary-text-color)">
             $i18n{diskSizeSubtitle}

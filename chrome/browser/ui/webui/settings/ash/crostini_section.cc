@@ -216,10 +216,6 @@ bool IsAdbSideloadingAllowed() {
   return base::FeatureList::IsEnabled(features::kArcAdbSideloadingFeature);
 }
 
-bool IsDiskResizingAllowed() {
-  return base::FeatureList::IsEnabled(features::kCrostiniDiskResizing);
-}
-
 }  // namespace
 
 CrostiniSection::CrostiniSection(Profile* profile,
@@ -401,17 +397,10 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (base::FeatureList::IsEnabled(features::kCrostiniBullseyeUpgrade)) {
-    html_source->AddString(
-        "crostiniContainerUpgrade",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE));
-  } else {
-    html_source->AddString(
-        "crostiniContainerUpgrade",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_MESSAGE));
-  }
+  html_source->AddString(
+      "crostiniContainerUpgrade",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_CROSTINI_CONTAINER_UPGRADE_BULLSEYE_MESSAGE));
 
   if (auto* pretty_name_value = guest_os::GetContainerPrefValue(
           profile_, crostini::DefaultContainerId(),
@@ -496,7 +485,6 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsDeviceManaged() || IsProfileManaged(profile_));
   html_source->AddBoolean("showCrostiniContainerUpgrade",
                           IsContainerUpgradeAllowed());
-  html_source->AddBoolean("showCrostiniDiskResize", IsDiskResizingAllowed());
 }
 
 void CrostiniSection::AddHandlers(content::WebUI* web_ui) {
@@ -666,8 +654,7 @@ void CrostiniSection::UpdateSearchTags() {
   if (IsContainerUpgradeAllowed())
     updater.AddSearchTags(GetCrostiniContainerUpgradeSearchConcepts());
 
-  if (IsDiskResizingAllowed())
-    updater.AddSearchTags(GetCrostiniDiskResizingSearchConcepts());
+  updater.AddSearchTags(GetCrostiniDiskResizingSearchConcepts());
 
   // TODO(crbug:1261319): search concepts for extras containers.
 }

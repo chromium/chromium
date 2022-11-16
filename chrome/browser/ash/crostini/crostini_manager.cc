@@ -1058,12 +1058,8 @@ ContainerOsVersion VersionFromOsRelease(
 }
 
 bool IsUpgradableContainerVersion(ContainerOsVersion version) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrostiniBullseyeUpgrade)) {
-    return version == ContainerOsVersion::kDebianStretch ||
-           version == ContainerOsVersion::kDebianBuster;
-  }
-  return version == ContainerOsVersion::kDebianStretch;
+  return version == ContainerOsVersion::kDebianStretch ||
+         version == ContainerOsVersion::kDebianBuster;
 }
 
 }  // namespace
@@ -1562,9 +1558,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
     request.set_enable_audio_capture(true);
   }
-  if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniUseLxd4)) {
-    request.add_features(vm_tools::concierge::StartVmRequest::LXD_4_LTS);
-  }
+  request.add_features(vm_tools::concierge::StartVmRequest::LXD_4_LTS);
   const int32_t cpus = base::SysInfo::NumberOfProcessors() - num_cores_disabled;
   DCHECK_LT(0, cpus);
   request.set_cpus(cpus);

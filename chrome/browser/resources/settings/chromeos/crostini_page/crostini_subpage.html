@@ -70,35 +70,31 @@
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
-<template is="dom-if" if="[[showCrostiniDiskResize_]]">
-  <div class="settings-box hr" id="crostini-disk-resize">
-    <div class="start">
-      <div>
-        $i18n{crostiniDiskResizeLabel}
-      </div>
-      <div class="secondary" id="diskSizeDescription">
-        [[diskSizeLabel_]]
-      </div>
+<div class="settings-box hr" id="crostini-disk-resize">
+  <div class="start">
+    <div>
+      $i18n{crostiniDiskResizeLabel}
     </div>
-    <cr-button on-click="onDiskResizeClick_" hidden="[[!canDiskResize_]]"
-        aria-label="[[diskResizeButtonAriaLabel_]]"
-        aria-describedby="diskSizeDescription"
-        id="showDiskResizeButton"
-        deep-link-focus-id$="[[Setting.kCrostiniDiskResize]]">
-      [[diskResizeButtonLabel_]]
-    </cr-button>
+    <div class="secondary" id="diskSizeDescription">
+      [[diskSizeLabel_]]
+    </div>
   </div>
-  <template is="dom-if" if="[[showDiskResizeDialog_]]" restamp>
-    <settings-crostini-disk-resize-dialog
-        on-close="onDiskResizeDialogClose_">
-    </settings-crostini-disk-resize-dialog>
-  </template>
-  <template is="dom-if" if="[[showDiskResizeConfirmationDialog_]]" restamp>
-    <settings-crostini-disk-resize-confirmation-dialog
-        on-close="onDiskResizeConfirmationDialogClose_"
-        on-cancel="onDiskResizeConfirmationDialogCancel_">
-    </settings-crostini-disk-resize-confirmation-dialog>
-  </template>
+  <cr-button on-click="onDiskResizeClick_" hidden="[[!canDiskResize_]]"
+      aria-label="[[diskResizeButtonAriaLabel_]]"
+      aria-describedby="diskSizeDescription" id="showDiskResizeButton"
+      deep-link-focus-id$="[[Setting.kCrostiniDiskResize]]">
+    [[diskResizeButtonLabel_]]
+  </cr-button>
+</div>
+<template is="dom-if" if="[[showDiskResizeDialog_]]" restamp>
+  <settings-crostini-disk-resize-dialog on-close="onDiskResizeDialogClose_">
+  </settings-crostini-disk-resize-dialog>
+</template>
+<template is="dom-if" if="[[showDiskResizeConfirmationDialog_]]" restamp>
+  <settings-crostini-disk-resize-confirmation-dialog
+      on-close="onDiskResizeConfirmationDialogClose_"
+      on-cancel="onDiskResizeConfirmationDialogCancel_">
+  </settings-crostini-disk-resize-confirmation-dialog>
 </template>
 <settings-toggle-button
     class="hr"

@@ -4590,9 +4590,6 @@
   <message name="IDS_CROSTINI_INSTALLER_USERNAME_LABEL" desc="Label for the field where the user enters their username">
     Username
   </message>
-  <message name="IDS_CROSTINI_INSTALLER_USERNAME_MESSAGE" desc="Text shown in the Crostini installer dialog prompting the user to pick their username">
-    Select a username
-  </message>
   <message name="IDS_CROSTINI_INSTALLER_USERNAME_INVALID_FIRST_CHARACTER_ERROR" desc="Text shown in the Crostini installer dialog when the user picks a username starting with an invalid character">
     Must start with a lowercase character or underscore
   </message>

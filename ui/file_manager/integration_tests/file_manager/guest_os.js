@@ -8,26 +8,6 @@ import {testcase} from '../testcase.js';
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
- * Tests that Guest OS entries don't show up if the flag controlling guest os +
- * files app integration is disabled.
- */
-testcase.notListedWithoutFlag = async () => {
-  // Prepopulate the list with a bunch of guests.
-  const names = ['Electra', 'Etcetera', 'Jemima'];
-  for (const name of names) {
-    await sendTestMessage({name: 'registerMountableGuest', displayName: name});
-  }
-
-  // Open the files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
-
-  // Check that we have no Guest OS entries.
-  const query = '#directory-tree [root-type-icon=bruschetta]';
-  await remoteCall.waitForElementsCount(appId, [query], 0);
-};
-
-/**
  * Tests that Guest OS entries show up in the sidebar at files app launch.
  */
 testcase.fakesListed = async () => {
