@@ -1,6 +1,6 @@
 {
-  "version": "14.30",
-  "log_list_timestamp": "2022-11-15T12:55:09Z",
+  "version": "15.1",
+  "log_list_timestamp": "2022-11-16T12:54:50Z",
   "operators": [
     {
       "name": "Google",
@@ -47,8 +47,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -95,8 +95,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2024/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -284,8 +284,8 @@
           "url": "https://yeti2024.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -300,8 +300,8 @@
           "url": "https://yeti2025.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -348,8 +348,8 @@
           "url": "https://nessie2024.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
@@ -364,8 +364,8 @@
           "url": "https://nessie2025.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2022-08-18T23:45:14Z"
+            "usable": {
+              "timestamp": "2022-11-01T18:54:00Z"
             }
           },
           "temporal_interval": {
