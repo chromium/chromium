@@ -245796,6 +245796,58 @@
          {}
         ]
        ],
+       "fixed-position-child-with-contain-ancestor.html": [
+        "98835cb795fb0e4bce8f68f4f1bdbf5bd39614e8",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-fixed-position-cb-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fixed-position-child-with-fo-ancestor.html": [
+        "fe625f1c9bfb4962970fd1852df5ca3b6e9eb7ca",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-fixed-position-cb-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fixed-position-child-with-transformed-ancestor.html": [
+        "58627443dae1941971eb29d8943877419801d783",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-fixed-position-cb-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "fixed-position-child-with-will-change-ancestor.html": [
+        "14f4391e6bfbc2a3e5817edbd197cfcc4013a1af",
+        [
+         null,
+         [
+          [
+           "/html/semantics/interactive-elements/the-dialog-element/fixed-position-child-with-fixed-position-cb-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "inert-node-is-not-highlighted.html": [
         "f6db38ed72a8cc24c5462313ae41f803ec0016eb",
         [
@@ -257412,16 +257464,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "464b9c93eed0495e70ff94d9868b04b37a348730",
-     []
-    ],
-    "mtime.json": [
-     "a52b35a00de1e750a3bb515d90621afa6a0943c1",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -344804,6 +344846,10 @@
        ],
        "element-removed-from-top-layer-has-original-position-ref.html": [
         "c0b64e68bd146566a354e98dba237e68183d0928",
+        []
+       ],
+       "fixed-position-child-with-fixed-position-cb-ref.html": [
+        "d973c0876de05535aa8196b3239fadd007d18ba6",
         []
        ],
        "green-dialog-and-backdrop.html": [

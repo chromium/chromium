@@ -3041,9 +3041,9 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-grid/subgrid/grid-gap-010.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-grid/subgrid/grid-gap-011.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Timeout Failure ]
-crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Timeout Failure ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/speculation-rules/prerender/opt-out.html [ Timeout Failure ]
+crbug.com/626703 [ Win ] external/wpt/html/semantics/disabled-elements/event-propagate-disabled.tentative.html [ Failure Timeout ]
+crbug.com/626703 [ Win11 ] external/wpt/screen-orientation/hidden_document.html [ Failure Timeout ]
+crbug.com/626703 [ Win10.20h2 ] external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/web-share/disabled-by-permissions-policy-cross-origin.https.sub.html [ Crash Failure ]
