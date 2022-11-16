@@ -57,9 +57,7 @@ html[dir='rtl'] #header {
 }
 
 div#header h1::before {
-  /* grit doesn't flatten -webkit-mask, so define the properties separately
-  * for now. */
-  -webkit-mask-image: url(../../../../ui/webui/resources/images/settings.svg);
+  -webkit-mask-image: url(chrome://resources/images/icon_settings.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 24px;
