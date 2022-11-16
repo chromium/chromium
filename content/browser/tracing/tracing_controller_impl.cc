@@ -561,8 +561,11 @@ void TracingControllerImpl::OnReadBuffersComplete() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      chromeos::system::kHardwareClassKey, &hardware_class_);
+  if (const absl::optional<base::StringPiece> hardware_class =
+          chromeos::system::StatisticsProvider::GetInstance()
+              ->GetMachineStatistic(chromeos::system::kHardwareClassKey)) {
+    hardware_class_ = std::string(hardware_class.value());
+  }
   are_statistics_loaded_ = true;
 }
 #endif
