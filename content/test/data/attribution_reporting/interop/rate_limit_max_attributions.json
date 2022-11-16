@@ -95,7 +95,7 @@
       }
     ],
     "triggers": [
-      // Should result in an event-level report becasue the attribution limit
+      // Should result in an event-level report because the attribution limit
       // is not reached.
       {
         "timestamp": "1643235574000",
