@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
@@ -129,7 +130,7 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   wl::TestWaylandServerThread server_;
   raw_ptr<wl::MockSurface> surface_;
 
-  MockWaylandPlatformWindowDelegate delegate_;
+  ::testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
   std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;
