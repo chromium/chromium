@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -574,6 +575,54 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {
       AccountManagerFacadeImpl::
           GetAccountAdditionResultStatusHistogramNameForTesting(),
       /*sample=*/result.status(), /*expected_count=*/1);
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       ShowAddAccountDialogReturnsAnErrorIfMojoRemoteIsDisconnected) {
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      mojo::Remote<crosapi::mojom::AccountManager>(),
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
+
+  base::RunLoop run_loop;
+  base::OnceCallback<void(const account_manager::AccountAdditionResult&)>
+      callback = base::BindLambdaForTesting(
+          [&run_loop](
+              const account_manager::AccountAdditionResult& result) -> void {
+            EXPECT_EQ(account_manager::AccountAdditionResult::Status::
+                          kMojoRemoteDisconnected,
+                      result.status());
+            run_loop.Quit();
+          });
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton,
+      std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       ShowAddAccountDialogReturnsAnErrorIfMojoVersionIsIncompatible) {
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      account_manager().CreateRemote(),
+      /*remote_version=*/1,
+      /*account_manager_for_tests=*/nullptr);
+
+  base::RunLoop run_loop;
+  base::OnceCallback<void(const account_manager::AccountAdditionResult&)>
+      callback = base::BindLambdaForTesting(
+          [&run_loop](
+              const account_manager::AccountAdditionResult& result) -> void {
+            EXPECT_EQ(account_manager::AccountAdditionResult::Status::
+                          kIncompatibleMojoVersions,
+                      result.status());
+            run_loop.Quit();
+          });
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton,
+      std::move(callback));
+  run_loop.Run();
 }
 
 TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {

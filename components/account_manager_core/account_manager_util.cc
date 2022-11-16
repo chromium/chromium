@@ -4,6 +4,7 @@
 
 #include "components/account_manager_core/account_manager_util.h"
 
+#include "base/notreached.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -134,6 +135,18 @@ crosapi::mojom::AccountAdditionResult::Status ToMojoAccountAdditionStatus(
       return cm::AccountAdditionResult::Status::kUnexpectedResponse;
     case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
       return cm::AccountAdditionResult::Status::kBlockedByPolicy;
+    case account_manager::AccountAdditionResult::Status::
+        kMojoRemoteDisconnected:
+    case account_manager::AccountAdditionResult::Status::
+        kIncompatibleMojoVersions:
+      // `kMojoRemoteDisconnected` and `kIncompatibleMojoVersions` are generated
+      // entirely on the remote side when the receiver can't even be reached.
+      // They do not have any Mojo equivalent since they are never passed over
+      // the wire in the first place.
+      NOTREACHED() << "These statuses should not be passed over the wire";
+      // Return something to make the compiler happy. This should never happen
+      // in production.
+      return cm::AccountAdditionResult::Status::kUnexpectedResponse;
   }
 }
 
@@ -297,6 +310,10 @@ FromMojoAccountAdditionResult(
     case account_manager::AccountAdditionResult::Status::kAlreadyInProgress:
     case account_manager::AccountAdditionResult::Status::kCancelledByUser:
     case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
+    case account_manager::AccountAdditionResult::Status::
+        kMojoRemoteDisconnected:
+    case account_manager::AccountAdditionResult::Status::
+        kIncompatibleMojoVersions:
       return account_manager::AccountAdditionResult::FromStatus(status.value());
     case account_manager::AccountAdditionResult::Status::kBlockedByPolicy:
       return account_manager::AccountAdditionResult::FromStatus(status.value());
