@@ -41,13 +41,13 @@ interface MethodData {
  * });
  * --------------------------------------------------------------------------
  */
-export class TestBrowserProxy {
-  private resolverMap_: Map<string, MethodData>;
+export class TestBrowserProxy<T = any> {
+  private resolverMap_: Map<keyof T, MethodData>;
 
   /**
    * @param methodNames Names of all methods whose calls need to be tracked.
    */
-  constructor(methodNames: string[] = []) {
+  constructor(methodNames: Array<keyof T> = []) {
     this.resolverMap_ = new Map();
     methodNames.forEach(methodName => {
       this.createMethodData_(methodName);
@@ -58,12 +58,14 @@ export class TestBrowserProxy {
    * Creates a |TestBrowserProxy|, which has mock functions for all functions of
    * class |clazz|.
    */
-  static fromClass<T>(clazz: Constructor<T>): (T&TestBrowserProxy) {
-    const methodNames = Object.getOwnPropertyNames(clazz.prototype)
-                            .filter(methodName => methodName !== 'constructor');
-    const proxy = new TestBrowserProxy(methodNames);
+  static fromClass<T>(clazz: Constructor<T>): (T&TestBrowserProxy<T>) {
+    const methodNames =
+        Object.getOwnPropertyNames(clazz.prototype)
+            .filter(methodName => methodName !== 'constructor') as
+        Array<keyof T>;
+    const proxy = new TestBrowserProxy<T>(methodNames);
     proxy.mockMethods_(methodNames);
-    return proxy as unknown as (T&TestBrowserProxy);
+    return proxy as unknown as (T & TestBrowserProxy<T>);
   }
 
   /**
@@ -72,9 +74,9 @@ export class TestBrowserProxy {
    * |setResultFor(methodName)|, or set a result mapper function that will be
    * invoked when a method is called using |setResultMapperFor(methodName)|.
    */
-  private mockMethods_(methodNames: string[]) {
+  private mockMethods_(methodNames: Array<keyof T>) {
     methodNames.forEach(methodName => {
-      (this as unknown as {[key: string]: Function})[methodName] =
+      (this as unknown as {[key in keyof T]: Function})[methodName] =
           (...args: any[]) => this.methodCalled(methodName, ...args);
     });
   }
@@ -87,7 +89,7 @@ export class TestBrowserProxy {
    *     arguments.
    * @return If set the result registered via |setResult[Mapper]For|.
    */
-  methodCalled(methodName: string, ...args: any[]): any {
+  methodCalled(methodName: keyof T, ...args: any[]): any {
     const methodData = this.resolverMap_.get(methodName);
     assert(methodData);
     const storedArgs = args.length === 1 ? args[0] : args;
@@ -102,14 +104,14 @@ export class TestBrowserProxy {
   /**
    * @return A promise that is resolved when the given method is called.
    */
-  whenCalled(methodName: string): Promise<any> {
+  whenCalled(methodName: keyof T): Promise<any> {
     return this.getMethodData_(methodName).resolver.promise;
   }
 
   /**
    * Resets the PromiseResolver associated with the given method.
    */
-  resetResolver(methodName: string) {
+  resetResolver(methodName: keyof T) {
     this.getMethodData_(methodName);
     this.createMethodData_(methodName);
   }
@@ -126,14 +128,14 @@ export class TestBrowserProxy {
   /**
    * Get number of times method is called.
    */
-  getCallCount(methodName: string): number {
+  getCallCount(methodName: keyof T): number {
     return this.getMethodData_(methodName).args.length;
   }
 
   /**
    * Returns the arguments of calls made to |method|.
    */
-  getArgs(methodName: string): any[] {
+  getArgs(methodName: keyof T): any[] {
     return this.getMethodData_(methodName).args;
   }
 
@@ -143,21 +145,21 @@ export class TestBrowserProxy {
    * object each method invovation or have the returned value be different based
    * on the arguments.
    */
-  setResultMapperFor(methodName: string, resultMapper: Function) {
+  setResultMapperFor(methodName: keyof T, resultMapper: Function) {
     this.getMethodData_(methodName).resultMapper = resultMapper;
   }
 
   /**
    * Sets the return value of a method.
    */
-  setResultFor(methodName: string, value: any) {
+  setResultFor(methodName: keyof T, value: any) {
     this.getMethodData_(methodName).resultMapper = () => value;
   }
 
   /**
    * Try to give programmers help with mistyped methodNames.
    */
-  private getMethodData_(methodName: string): MethodData {
+  private getMethodData_(methodName: keyof T): MethodData {
     // Tip: check that the |methodName| is being passed to |this.constructor|.
     const methodData = this.resolverMap_.get(methodName);
     assert(
@@ -168,7 +170,7 @@ export class TestBrowserProxy {
   /**
    * Creates a new |MethodData| for |methodName|.
    */
-  private createMethodData_(methodName: string) {
+  private createMethodData_(methodName: keyof T) {
     this.resolverMap_.set(
         methodName, {resolver: new PromiseResolver(), args: []});
   }
