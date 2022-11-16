@@ -154,9 +154,13 @@ void HTMLIFrameElement::CollectStyleForPresentationAttribute(
     // off if set to zero.
     if (!value.ToInt()) {
       // Add a rule that nulls out our border width.
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kBorderWidth, 0,
-          CSSPrimitiveValue::UnitType::kPixels);
+      for (CSSPropertyID property_id :
+           {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,
+            CSSPropertyID::kBorderLeftWidth,
+            CSSPropertyID::kBorderRightWidth}) {
+        AddPropertyToPresentationAttributeStyle(
+            style, property_id, 0, CSSPrimitiveValue::UnitType::kPixels);
+      }
     }
   } else {
     HTMLFrameElementBase::CollectStyleForPresentationAttribute(name, value,

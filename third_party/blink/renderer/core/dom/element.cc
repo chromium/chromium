@@ -7497,7 +7497,8 @@ void Element::AddPropertyToPresentationAttributeStyle(
     CSSPropertyID property_id,
     CSSValueID identifier) {
   DCHECK(IsStyledElement());
-  style->SetProperty(property_id, *CSSIdentifierValue::Create(identifier));
+  style->SetLonghandProperty(property_id,
+                             *CSSIdentifierValue::Create(identifier));
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
@@ -7506,7 +7507,8 @@ void Element::AddPropertyToPresentationAttributeStyle(
     double value,
     CSSPrimitiveValue::UnitType unit) {
   DCHECK(IsStyledElement());
-  style->SetProperty(property_id, *CSSNumericLiteralValue::Create(value, unit));
+  style->SetLonghandProperty(property_id,
+                             *CSSNumericLiteralValue::Create(value, unit));
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(
@@ -7526,7 +7528,7 @@ void Element::AddPropertyToPresentationAttributeStyle(
     CSSPropertyID property_id,
     const CSSValue& value) {
   DCHECK(IsStyledElement());
-  style->SetProperty(property_id, value);
+  style->SetLonghandProperty(property_id, value);
 }
 
 void Element::MapLanguageAttributeToLocale(const AtomicString& value,

@@ -274,11 +274,19 @@ unsigned HTMLElement::ParseBorderWidthAttribute(
 void HTMLElement::ApplyBorderAttributeToStyle(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kBorderWidth,
-                                          ParseBorderWidthAttribute(value),
-                                          CSSPrimitiveValue::UnitType::kPixels);
-  AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kBorderStyle,
-                                          CSSValueID::kSolid);
+  unsigned width = ParseBorderWidthAttribute(value);
+  for (CSSPropertyID property_id :
+       {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,
+        CSSPropertyID::kBorderLeftWidth, CSSPropertyID::kBorderRightWidth}) {
+    AddPropertyToPresentationAttributeStyle(
+        style, property_id, width, CSSPrimitiveValue::UnitType::kPixels);
+  }
+  for (CSSPropertyID property_id :
+       {CSSPropertyID::kBorderTopStyle, CSSPropertyID::kBorderBottomStyle,
+        CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorderRightStyle}) {
+    AddPropertyToPresentationAttributeStyle(style, property_id,
+                                            CSSValueID::kSolid);
+  }
 }
 
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {

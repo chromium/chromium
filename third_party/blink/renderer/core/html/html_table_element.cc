@@ -315,8 +315,18 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kHeightAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else if (name == html_names::kBorderAttr) {
+    unsigned width = ParseBorderWidthAttribute(value);
     AddPropertyToPresentationAttributeStyle(
-        style, CSSPropertyID::kBorderWidth, ParseBorderWidthAttribute(value),
+        style, CSSPropertyID::kBorderTopWidth, width,
+        CSSPrimitiveValue::UnitType::kPixels);
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kBorderBottomWidth, width,
+        CSSPrimitiveValue::UnitType::kPixels);
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kBorderLeftWidth, width,
+        CSSPrimitiveValue::UnitType::kPixels);
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kBorderRightWidth, width,
         CSSPrimitiveValue::UnitType::kPixels);
   } else if (name == html_names::kBordercolorAttr) {
     if (!value.empty())
@@ -341,8 +351,12 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kCellspacingAttr) {
     if (!value.empty()) {
-      AddHTMLLengthToStyle(style, CSSPropertyID::kBorderSpacing, value,
-                           kDontAllowPercentageValues);
+      for (CSSPropertyID property_id :
+           {CSSPropertyID::kWebkitBorderHorizontalSpacing,
+            CSSPropertyID::kWebkitBorderVerticalSpacing}) {
+        AddHTMLLengthToStyle(style, property_id, value,
+                             kDontAllowPercentageValues);
+      }
     }
   } else if (name == html_names::kAlignAttr) {
     if (!value.empty()) {
@@ -370,8 +384,13 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     bool border_left;
     if (GetBordersFromFrameAttributeValue(value, border_top, border_right,
                                           border_bottom, border_left)) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kBorderWidth, CSSValueID::kThin);
+      for (CSSPropertyID property_id :
+           {CSSPropertyID::kBorderTopWidth, CSSPropertyID::kBorderBottomWidth,
+            CSSPropertyID::kBorderLeftWidth,
+            CSSPropertyID::kBorderRightWidth}) {
+        AddPropertyToPresentationAttributeStyle(style, property_id,
+                                                CSSValueID::kThin);
+      }
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kBorderTopStyle,
           border_top ? CSSValueID::kSolid : CSSValueID::kHidden);

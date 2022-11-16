@@ -77,14 +77,23 @@ void HTMLHRElement::CollectStyleForPresentationAttribute(
       AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
     }
   } else if (name == html_names::kColorAttr) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kBorderStyle,
-                                            CSSValueID::kSolid);
+    for (CSSPropertyID property_id :
+         {CSSPropertyID::kBorderTopStyle, CSSPropertyID::kBorderBottomStyle,
+          CSSPropertyID::kBorderLeftStyle, CSSPropertyID::kBorderRightStyle}) {
+      AddPropertyToPresentationAttributeStyle(style, property_id,
+                                              CSSValueID::kSolid);
+    }
     AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kNoshadeAttr) {
     if (!FastHasAttribute(html_names::kColorAttr)) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kBorderStyle, CSSValueID::kSolid);
+      for (CSSPropertyID property_id :
+           {CSSPropertyID::kBorderTopStyle, CSSPropertyID::kBorderBottomStyle,
+            CSSPropertyID::kBorderLeftStyle,
+            CSSPropertyID::kBorderRightStyle}) {
+        AddPropertyToPresentationAttributeStyle(style, property_id,
+                                                CSSValueID::kSolid);
+      }
 
       const cssvalue::CSSColor& dark_gray_value =
           *cssvalue::CSSColor::Create(Color::kDarkGray);

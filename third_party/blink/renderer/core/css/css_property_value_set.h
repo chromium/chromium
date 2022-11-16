@@ -278,12 +278,12 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   bool AddRespectingCascade(const CSSPropertyValue&);
 
   // Expands shorthand properties into multiple properties.
+  void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
+
+  // Convenience wrapper around the above that also supports custom properties.
   void SetProperty(const CSSPropertyName&,
                    const CSSValue&,
                    bool important = false);
-
-  // Convenience wrapper around the above.
-  void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
 
   // Also a convenience wrapper around SetProperty(), parsing the value from a
   // string before setting it. If the value is empty, the property is removed.
@@ -306,11 +306,17 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
                                       StyleSheetContents* context_style_sheet,
                                       bool is_animation_tainted);
 
-  // This one does not expand longhands, but is the most efficient form.
+  // This one does not expand longhands, but is the second-most efficient form
+  // save for the CSSPropertyID variant below.
   // All the other property setters eventually call down into this.
-  SetResult SetLonghandProperty(const CSSPropertyValue&);
+  SetResult SetLonghandProperty(CSSPropertyValue);
 
-  // Convenience form of the above.
+  // A streamlined version of the above, which can be used if you don't need
+  // custom properties and don't need the return value (which requires an extra
+  // comparison with the old property). This is the fastest form.
+  void SetLonghandProperty(CSSPropertyID, const CSSValue&);
+
+  // Convenience form of the CSSPropertyValue overload above.
   SetResult SetLonghandProperty(CSSPropertyID,
                                 CSSValueID identifier,
                                 bool important = false);
@@ -337,6 +343,17 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  template <typename T>  // CSSPropertyID or AtomicString
+  const CSSPropertyValue* FindPropertyPointer(const T& property) const;
+
+  // Returns nullptr if there is no property to be overwritten.
+  //
+  // If property_id is a logical property we've already seen a different
+  // property matching, this will remove the existing property (and return
+  // nullptr).
+  ALWAYS_INLINE CSSPropertyValue* FindInsertionPointForID(
+      CSSPropertyID property_id);
+
   bool RemovePropertyAtIndex(int, String* return_text);
 
   bool RemoveShorthandProperty(CSSPropertyID);
