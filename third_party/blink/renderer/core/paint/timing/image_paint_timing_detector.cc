@@ -447,7 +447,8 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     unsigned current_frame_index) {
   base::WeakPtr<ImageRecord> record = GetPendingImage(record_id);
   DCHECK(record);
-  if (!record->media_timing->GetFirstVideoFrameTime().is_null()) {
+  if (record->media_timing &&
+      !record->media_timing->GetFirstVideoFrameTime().is_null()) {
     // If this is a video record, then we can get the first frame time from the
     // MediaTiming object, and can use that to set the first frame time in the
     // ImageRecord object.
