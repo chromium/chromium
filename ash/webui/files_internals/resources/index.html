@@ -16,12 +16,20 @@
 </ul>
 
 <h2>SMB</h2>
-<div>
+<div style="display: flex; flex-direction: row">
 <label>
-Verbose logging (restart after toggling)
+  <b>Enable verbose logging</b>
 <input type="checkbox" id="smb-verbose-logging-toggle">
 </label>
-</div>
+<span style="flex: 3 0px"><b>WARNING:</b> Enabling this option can cause the
+  names of files and directories on SMB shares to be recorded in ChromeOS system
+  logs, which may be uploaded to Google in ChromeOS feedback reports. This
+  option should only be enabled for detailed debugging purposes and should be
+  disabled as soon as debugging is complete.
 
+  <p><i>You must logout / login, or remove / re-add the share after toggling
+    this option.</i></p>
+</span>
+</div>
 </body>
 </html>

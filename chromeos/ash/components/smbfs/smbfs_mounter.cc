@@ -98,7 +98,7 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
 
   std::vector<std::string> mount_options;
   if (options_.enable_verbose_logging) {
-    mount_options.emplace_back("log-level=-1");
+    mount_options.emplace_back("log-level=-2");
   }
 
   ash::disks::MountPoint::Mount(
