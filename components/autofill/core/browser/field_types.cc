@@ -111,8 +111,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
       return true;
 
     case MERCHANT_PROMO_CODE:
-      return base::FeatureList::IsEnabled(
-          features::kAutofillParseMerchantPromoCodeFields);
+      return true;
 
     // Fillable credential fields.
     case USERNAME:

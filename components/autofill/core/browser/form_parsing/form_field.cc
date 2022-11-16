@@ -207,12 +207,9 @@ void FormField::ParseSingleFieldForms(
   std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
 
   // Merchant promo code pass.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParseMerchantPromoCodeFields)) {
-    ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
-                        field_candidates, page_language, pattern_source,
-                        log_manager);
-  }
+  ParseFormFieldsPass(MerchantPromoCodeField::Parse, processed_fields,
+                      field_candidates, page_language, pattern_source,
+                      log_manager);
 
   // IBAN pass.
   if (base::FeatureList::IsEnabled(features::kAutofillParseIBANFields)) {

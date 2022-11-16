@@ -182,12 +182,6 @@ BASE_FEATURE(kAutofillParseIBANFields,
              "AutofillParseIBANFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill will attempt to find merchant promo/coupon/gift code
-// fields when parsing forms.
-BASE_FEATURE(kAutofillParseMerchantPromoCodeFields,
-             "AutofillParseMerchantPromoCodeFields",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
 BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,

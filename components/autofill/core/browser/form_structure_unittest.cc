@@ -1030,9 +1030,6 @@ TEST_F(FormStructureTestImpl,
 // Tests that heuristics for single field parseable types are run for forms with
 // fewer than 3 fields.
 TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
   FormData form;
   form.url = GURL("http://www.foo.com/");
 

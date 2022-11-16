@@ -566,11 +566,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "autofill-parse-merchant-promo-code-fields",
-    "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
     "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
     "expiry_milestone": 120

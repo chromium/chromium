@@ -202,10 +202,6 @@ TEST_P(FormFieldTest, TestParseableLabels) {
 
 // Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
 TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
-
   AddTextFormFieldData("", "Phone", PHONE_HOME_WHOLE_NUMBER);
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
@@ -217,10 +213,6 @@ TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
 
 // Test that `ParseSingleFieldForms` parses single field promo codes.
 TEST_P(FormFieldTest, ParseFormFieldsForSingleFieldPromoCode) {
-  base::test::ScopedFeatureList scoped_feature;
-  scoped_feature.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
-
   // Parse single field promo code.
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
   EXPECT_EQ(1, ParseSingleFieldForms());
