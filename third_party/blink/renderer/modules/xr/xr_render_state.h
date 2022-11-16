@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -14,6 +15,7 @@ namespace blink {
 
 class HTMLCanvasElement;
 class XRWebGLLayer;
+class XRLayer;
 class XRRenderStateInit;
 
 class XRRenderState : public ScriptWrappable {
@@ -29,6 +31,7 @@ class XRRenderState : public ScriptWrappable {
   double depthFar() const { return depth_far_; }
   absl::optional<double> inlineVerticalFieldOfView() const;
   XRWebGLLayer* baseLayer() const { return base_layer_; }
+  const HeapVector<Member<XRLayer>>& layers() const { return layers_; }
 
   HTMLCanvasElement* output_canvas() const;
 
@@ -45,6 +48,7 @@ class XRRenderState : public ScriptWrappable {
   double depth_near_ = 0.1;
   double depth_far_ = 1000.0;
   Member<XRWebGLLayer> base_layer_;
+  HeapVector<Member<XRLayer>> layers_;
   absl::optional<double> inline_vertical_fov_;
 };
 

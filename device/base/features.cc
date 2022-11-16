@@ -74,6 +74,9 @@ BASE_FEATURE(kWebXrIncubations,
              "WebXRIncubations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables access to WebXR composition layers.
+BASE_FEATURE(kWebXrLayers, "WebXRLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Controls whether Web Bluetooth should support confirm-only and confirm-PIN
 // pairing mode on Win/Linux

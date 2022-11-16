@@ -1119,6 +1119,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_anchor_set.idl",
           "//third_party/blink/renderer/modules/xr/xr_bounded_reference_space.idl",
           "//third_party/blink/renderer/modules/xr/xr_camera.idl",
+          "//third_party/blink/renderer/modules/xr/xr_composition_layer.idl",
           "//third_party/blink/renderer/modules/xr/xr_cpu_depth_information.idl",
           "//third_party/blink/renderer/modules/xr/xr_depth_information.idl",
           "//third_party/blink/renderer/modules/xr/xr_depth_state_init.idl",
@@ -1146,6 +1147,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_plane.idl",
           "//third_party/blink/renderer/modules/xr/xr_plane_set.idl",
           "//third_party/blink/renderer/modules/xr/xr_pose.idl",
+          "//third_party/blink/renderer/modules/xr/xr_projection_layer.idl",
           "//third_party/blink/renderer/modules/xr/xr_ray.idl",
           "//third_party/blink/renderer/modules/xr/xr_ray_direction_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_reference_space.idl",
@@ -1159,6 +1161,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_session_event_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_session_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_space.idl",
+          "//third_party/blink/renderer/modules/xr/xr_sub_image.idl",
           "//third_party/blink/renderer/modules/xr/xr_system.idl",
           "//third_party/blink/renderer/modules/xr/xr_tracked_image_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_options_init.idl",
@@ -1172,6 +1175,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_webgl_depth_information.idl",
           "//third_party/blink/renderer/modules/xr/xr_webgl_layer.idl",
           "//third_party/blink/renderer/modules/xr/xr_webgl_layer_init.idl",
+          "//third_party/blink/renderer/modules/xr/xr_webgl_sub_image.idl",
         ],
         "abspath")
 

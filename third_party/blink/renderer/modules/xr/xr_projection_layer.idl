@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webxrlayers-1/#xrprojectionlayertype
+[
+  SecureContext,
+  Exposed=Window,
+  RuntimeEnabled=WebXRLayers
+] interface XRProjectionLayer : XRCompositionLayer {
+  readonly attribute unsigned long textureWidth;
+  readonly attribute unsigned long textureHeight;
+  readonly attribute unsigned long textureArrayLength;
+
+  readonly attribute boolean ignoreDepthValues;
+  attribute float? fixedFoveation;
+  attribute XRRigidTransform? deltaPose;
+};

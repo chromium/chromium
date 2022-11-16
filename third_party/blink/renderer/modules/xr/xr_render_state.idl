@@ -12,4 +12,5 @@
   readonly attribute double depthFar;
   readonly attribute double? inlineVerticalFieldOfView;
   readonly attribute XRWebGLLayer? baseLayer;
+  [RuntimeEnabled=WebXRLayers] readonly attribute FrozenArray<XRLayer> layers;
 };

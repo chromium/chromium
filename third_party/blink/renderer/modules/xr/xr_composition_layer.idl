@@ -1,0 +1,31 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webxrlayers-1/#xrlayerlayouttype
+enum XRLayerLayout {
+  "default",
+  "mono",
+  "stereo",
+  "stereo-left-right",
+  "stereo-top-bottom"
+};
+
+// https://www.w3.org/TR/webxrlayers-1/#xrcompositionlayertype
+[
+  SecureContext,
+  Exposed=Window,
+  RuntimeEnabled=WebXRLayers
+] interface XRCompositionLayer : XRLayer {
+  readonly attribute XRLayerLayout layout;
+
+  attribute boolean blendTextureSourceAlpha;
+  attribute boolean? chromaticAberrationCorrection;
+  attribute boolean forceMonoPresentation;
+  attribute float opacity;
+  readonly attribute unsigned long mipLevels;
+
+  readonly attribute boolean needsRedraw;
+
+  undefined destroy();
+};

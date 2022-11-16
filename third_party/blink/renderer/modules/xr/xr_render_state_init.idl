@@ -8,4 +8,5 @@ dictionary XRRenderStateInit {
   double depthFar;
   double inlineVerticalFieldOfView;
   XRWebGLLayer? baseLayer;
+  [RuntimeEnabled=WebXRLayers] sequence<XRLayer>? layers;
 };

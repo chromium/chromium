@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_projection_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
@@ -12,11 +13,13 @@
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
+#include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_sub_image.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 
@@ -65,6 +68,29 @@ XRWebGLBinding::XRWebGLBinding(XRSession* session,
                                WebGLRenderingContextBase* webgl_context,
                                bool webgl2)
     : session_(session), webgl_context_(webgl_context), webgl2_(webgl2) {}
+
+double XRWebGLBinding::nativeProjectionScaleFactor() const {
+  return session_->NativeFramebufferScale();
+}
+
+bool XRWebGLBinding::usesDepthValues() const {
+  return false;
+}
+
+XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
+    const XRProjectionLayerInit* init,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
+    XRProjectionLayer* layer,
+    XRView* view,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
 
 WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
     XRLightProbe* light_probe,

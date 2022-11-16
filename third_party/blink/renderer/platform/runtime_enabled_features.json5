@@ -3231,6 +3231,12 @@
       status: "experimental",
     },
     {
+      name: "WebXRLayers",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental"
+    },
+    {
       name: "WebXRLightEstimation",
       depends_on: ["WebXRARModule"],
       public: true,

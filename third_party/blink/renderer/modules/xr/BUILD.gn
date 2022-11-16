@@ -19,6 +19,8 @@ blink_modules_sources("xr") {
     "xr_camera.h",
     "xr_canvas_input_provider.cc",
     "xr_canvas_input_provider.h",
+    "xr_composition_layer.cc",
+    "xr_composition_layer.h",
     "xr_cpu_depth_information.cc",
     "xr_cpu_depth_information.h",
     "xr_cube_map.cc",
@@ -76,6 +78,8 @@ blink_modules_sources("xr") {
     "xr_plane_set.h",
     "xr_pose.cc",
     "xr_pose.h",
+    "xr_projection_layer.cc",
+    "xr_projection_layer.h",
     "xr_ray.cc",
     "xr_ray.h",
     "xr_reference_space.cc",
@@ -95,6 +99,7 @@ blink_modules_sources("xr") {
     "xr_setlike.h",
     "xr_space.cc",
     "xr_space.h",
+    "xr_sub_image.h",
     "xr_system.cc",
     "xr_system.h",
     "xr_target_ray_space.cc",
@@ -116,6 +121,7 @@ blink_modules_sources("xr") {
     "xr_webgl_depth_information.h",
     "xr_webgl_layer.cc",
     "xr_webgl_layer.h",
+    "xr_webgl_sub_image.h",
   ]
 
   deps = [

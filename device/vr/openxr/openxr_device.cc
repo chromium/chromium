@@ -22,14 +22,12 @@ namespace {
 
 const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
   static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
-      kSupportedFeatures{{
-    mojom::XRSessionFeature::REF_SPACE_VIEWER,
-    mojom::XRSessionFeature::REF_SPACE_LOCAL,
-    mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
-    mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
-    mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
-    mojom::XRSessionFeature::ANCHORS,
-  }};
+      kSupportedFeatures{{mojom::XRSessionFeature::REF_SPACE_VIEWER,
+                          mojom::XRSessionFeature::REF_SPACE_LOCAL,
+                          mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
+                          mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
+                          mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
+                          mojom::XRSessionFeature::ANCHORS}};
 
   return *kSupportedFeatures;
 }
@@ -59,6 +57,10 @@ OpenXrDevice::OpenXrDevice(
   // Only support hand input if the feature flag is enabled.
   if (base::FeatureList::IsEnabled(features::kWebXrHandInput))
     device_features.emplace_back(mojom::XRSessionFeature::HAND_INPUT);
+
+  // Only support layers if the feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXrLayers))
+    device_features.emplace_back(mojom::XRSessionFeature::LAYERS);
 
   // Only support hit test if the feature flag is enabled.
   if (base::FeatureList::IsEnabled(features::kWebXrHitTest) &&

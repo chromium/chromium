@@ -212,6 +212,9 @@ absl::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(
     return device::mojom::XRSessionFeature::HAND_INPUT;
   } else if (feature_string == "secondary-views") {
     return device::mojom::XRSessionFeature::SECONDARY_VIEWS;
+  } else if (RuntimeEnabledFeatures::WebXRLayersEnabled(context) &&
+             feature_string == "layers") {
+    return device::mojom::XRSessionFeature::LAYERS;
   }
 
   return absl::nullopt;
@@ -250,6 +253,8 @@ String XRSessionFeatureToString(device::mojom::XRSessionFeature feature) {
       return "hand-tracking";
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
       return "secondary-views";
+    case device::mojom::XRSessionFeature::LAYERS:
+      return "layers";
   }
 }
 
@@ -269,6 +274,7 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::ANCHORS:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+    case device::mojom::XRSessionFeature::LAYERS:
       return mode == device::mojom::blink::XRSessionMode::kImmersiveVr ||
              mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
     case device::mojom::XRSessionFeature::DOM_OVERLAY:
@@ -332,6 +338,7 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+    case device::mojom::XRSessionFeature::LAYERS:
       return context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);
