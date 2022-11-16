@@ -3628,17 +3628,9 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
 
   network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
 
-  base::Value::Dict onc;
-  onc.Set(::onc::network_config::kGUID, network_guid);
-  const std::string& onc_type =
-      MojoNetworkTypeToOnc(mojom::NetworkType::kCellular);
-  onc.Set(::onc::network_config::kType, onc_type);
-  base::Value::Dict type_dict;
-  type_dict.Set(::onc::cellular::kUserAPNList, std::move(new_apns));
-  onc.Set(onc_type, std::move(type_dict));
-
   SetPropertiesInternal(
-      network_guid, *network, std::move(onc),
+      network_guid, *network,
+      UserApnListToOnc(network_guid, std::move(new_apns)),
       base::BindOnce(
           [](const std::string& guid, bool success,
              const std::string& message) {

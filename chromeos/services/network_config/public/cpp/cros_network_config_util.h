@@ -29,6 +29,12 @@ int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network);
 // but kNotInhibited.
 bool IsInhibited(const mojom::DeviceStateProperties* device);
 
+// Returns an ONC dictionary for network with guid |network_guid| containing a
+// configuration of the network's user APN list. Takes ownership of
+// |user_apn_list|.
+base::Value::Dict UserApnListToOnc(const std::string& network_guid,
+                                   base::Value::List user_apn_list);
+
 }  // namespace network_config
 }  // namespace chromeos
 
