@@ -365,8 +365,7 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
   }
 
   bool site_instance_exists = site_instance_infos_.count(site_instance) != 0;
-  auto* primary_main_rfh = web_contents()->GetPrimaryMainFrame();
-  bool is_primary_main_frame = (render_frame_host == primary_main_rfh);
+  bool is_primary_main_frame = render_frame_host->IsInPrimaryMainFrame();
   bool site_instance_is_main =
       (site_instance == primary_main_frame_site_instance_);
 
@@ -377,7 +376,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
   // represented by a SubframeTask.
   if (!site_instance_exists ||
       (is_primary_main_frame && !site_instance_is_main)) {
-    auto* primary_main_frame_task = GetTaskForFrame(primary_main_rfh);
+    auto* primary_main_frame_task =
+        GetTaskForFrame(web_contents()->GetPrimaryMainFrame());
     if (rfh_state == RenderFrameHost::LifecycleState::kInBackForwardCache) {
       // Use RFH::GetMainFrame instead web_contents()->GetPrimaryMainFrame()
       // because the BFCached frames are not the currently active main frame.
