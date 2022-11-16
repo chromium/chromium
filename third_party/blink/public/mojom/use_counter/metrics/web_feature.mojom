@@ -3658,7 +3658,7 @@ enum WebFeature {
   kV8PendingGetBeacon_SetURL_Method = 4325,
   kV8PendingPostBeacon_Constructor = 4326,
   kV8PendingPostBeacon_SetData_Method = 4327,
-  kContentVisibilityAutoStateChangedHandlerRegistered = 4328,
+  kContentVisibilityAutoStateChangeHandlerRegistered = 4328,
   kReplacedElementPaintedWithLargeOverflow = 4329,
   // The items above roughly this point are available in the M105 branch.
 

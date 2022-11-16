@@ -523,7 +523,7 @@ generate_event_interfaces("core_event_interfaces") {
   sources = [
     "css/font_face_set_load_event.idl",
     "css/media_query_list_event.idl",
-    "display_lock/content_visibility_auto_state_changed_event.idl",
+    "display_lock/content_visibility_auto_state_change_event.idl",
     "dom/events/custom_event.idl",
     "dom/events/event.idl",
     "editing/ime/character_bounds_update_event.idl",

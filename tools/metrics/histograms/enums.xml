@@ -42470,7 +42470,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4325" label="V8PendingGetBeacon_SetURL_Method"/>
   <int value="4326" label="V8PendingPostBeacon_Constructor"/>
   <int value="4327" label="V8PendingPostBeacon_SetData_Method"/>
-  <int value="4328" label="ContentVisibilityAutoStateChangedHandlerRegistered"/>
+  <int value="4328" label="ContentVisibilityAutoStateChangeHandlerRegistered"/>
   <int value="4329" label="ReplacedElementPaintedWithLargeOverflow"/>
   <int value="4330" label="FlexboxAbsPosJustifyContent"/>
   <int value="4331" label="MultipleFetchHandlersInServiceWorker"/>

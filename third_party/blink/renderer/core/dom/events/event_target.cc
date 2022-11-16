@@ -527,10 +527,10 @@ void EventTarget::AddedEventListener(
       } else if (event_type == event_type_names::kBeforematch) {
         UseCounter::Count(*document, WebFeature::kBeforematchHandlerRegistered);
       } else if (event_type ==
-                 event_type_names::kContentvisibilityautostatechanged) {
+                 event_type_names::kContentvisibilityautostatechange) {
         UseCounter::Count(
             *document,
-            WebFeature::kContentVisibilityAutoStateChangedHandlerRegistered);
+            WebFeature::kContentVisibilityAutoStateChangeHandlerRegistered);
       }
     }
   }
