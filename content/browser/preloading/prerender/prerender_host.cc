@@ -417,9 +417,6 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // frame_tree_->root(). Do not add any code between here and
   // frame_tree_.reset() that calls into observer functions to minimize the
   // duration of current_frame_host being null.
-  //
-  // TODO(https://crbug.com/1176148): Investigate how to combine taking the
-  // prerendered page and frame_tree_ destruction.
   std::unique_ptr<StoredPage> page =
       frame_tree_->root()->render_manager()->TakePrerenderedPage();
 
@@ -474,6 +471,9 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
     subframe_node->SetFrameTree(target_frame_tree);
   }
 
+  frame_tree_->Shutdown();
+  frame_tree_.reset();
+
   page->render_frame_host()->ForEachRenderFrameHostIncludingSpeculative(
       [this](RenderFrameHostImpl* rfh) {
         // The visibility state of the prerendering page has not been
@@ -484,9 +484,6 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
         rfh->render_view_host()->SetFrameTreeVisibility(
             web_contents_->GetPageVisibilityState());
       });
-
-  frame_tree_->Shutdown();
-  frame_tree_.reset();
 
   for (auto& observer : observers_)
     observer.OnActivated();
