@@ -337,11 +337,6 @@ bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
   return false;
 }
 
-bool ContentBrowserClient::IsIsolatedWebAppsDeveloperModeAllowed(
-    BrowserContext* context) {
-  return true;
-}
-
 bool ContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const url::Origin& origin) {

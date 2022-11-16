@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -47,7 +48,8 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
     InProcessBrowserTest::SetUp();
   }
 

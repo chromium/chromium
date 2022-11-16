@@ -24,7 +24,10 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
@@ -125,28 +128,40 @@ base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
 }
 
 base::expected<absl::optional<IsolationData>, std::string>
-GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
-  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
-    return absl::nullopt;
-  }
-
+GetIsolationDataFromCommandLine(const base::CommandLine& command_line,
+                                const PrefService* prefs) {
   base::expected<absl::optional<IsolationData>, std::string> proxy_url =
       GetProxyUrlFromCommandLine(command_line);
   base::expected<absl::optional<IsolationData>, std::string> bundle_path =
       GetBundlePathFromCommandLine(command_line);
 
-  // Return an error if both flags are set.
-  bool was_proxy_url_set = !proxy_url.has_value() || proxy_url->has_value();
-  bool was_bundle_path_set =
+  bool is_proxy_url_set = !proxy_url.has_value() || proxy_url->has_value();
+  bool is_bundle_path_set =
       !bundle_path.has_value() || bundle_path->has_value();
-  if (was_proxy_url_set && was_bundle_path_set) {
+  if (!is_proxy_url_set && !is_bundle_path_set) {
+    return absl::nullopt;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    return base::unexpected("Isolated Web Apps are not enabled");
+  }
+
+  if (is_proxy_url_set && is_bundle_path_set) {
     return base::unexpected(
         base::StrCat({"--", switches::kInstallIsolatedWebAppFromUrl, " and --",
                       switches::kInstallIsolatedWebAppFromFile,
                       " cannot both be provided."}));
   }
 
-  return was_proxy_url_set ? proxy_url : bundle_path;
+  bool is_dev_mode_policy_enabled =
+      prefs && prefs->GetBoolean(
+                   policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed);
+  if (!base::FeatureList::IsEnabled(features::kIsolatedWebAppDevMode) ||
+      !is_dev_mode_policy_enabled) {
+    return base::unexpected("Isolated Web App Developer Mode is not enabled");
+  }
+
+  return is_proxy_url_set ? proxy_url : bundle_path;
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
@@ -161,7 +176,7 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
   }
 
   base::expected<absl::optional<IsolationData>, std::string> isolation_data =
-      GetIsolationDataFromCommandLine(command_line);
+      GetIsolationDataFromCommandLine(command_line, profile.GetPrefs());
   if (!isolation_data.has_value()) {
     LOG(ERROR) << isolation_data.error();
     return;

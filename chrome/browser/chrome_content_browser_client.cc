@@ -2410,14 +2410,6 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsIsolatedWebAppsDeveloperModeAllowed(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  return profile &&
-         profile->GetPrefs()->GetBoolean(
-             policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed);
-}
-
 bool ChromeContentBrowserClient::IsGetDisplayMediaSetSelectAllScreensAllowed(
     content::BrowserContext* context,
     const url::Origin& origin) {

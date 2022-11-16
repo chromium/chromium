@@ -386,7 +386,6 @@ source_set("browser_tests") {
   if (!is_android) {
     sources += [
       "cloud/component_cloud_policy_browsertest.cc",
-      "test/isolated_apps_developer_mode_allowed_browsertest.cc",
       "test/promotional_tabs_enabled_policy_browsertest.cc",
     ]
 

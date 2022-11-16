@@ -642,12 +642,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
                                               const GURL& lock_url);
 
-  // Checks whether isolated apps developer mode is allowed by the
-  // AllowIsolatedWebAppsDeveloperMode policy (chrome-only, the respective
-  // override can be found in ChromeContentBrowserClient). Returns true by
-  // default.
-  virtual bool IsIsolatedWebAppsDeveloperModeAllowed(BrowserContext* context);
-
   // Check if applications whose origin is |origin| are allowed to perform
   // all-screens-auto-selection, which allows automatic capturing of all
   // screens with the getDisplayMediaSet API.

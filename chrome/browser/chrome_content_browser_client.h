@@ -240,8 +240,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool origin_matches_flag) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
-  bool IsIsolatedWebAppsDeveloperModeAllowed(
-      content::BrowserContext* context) override;
   bool IsGetDisplayMediaSetSelectAllScreensAllowed(
       content::BrowserContext* context,
       const url::Origin& origin) override;

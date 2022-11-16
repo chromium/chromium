@@ -14,6 +14,7 @@ namespace base {
 class CommandLine;
 }
 
+class PrefService;
 class Profile;
 
 namespace web_app {
@@ -22,7 +23,8 @@ base::expected<IsolatedWebAppUrlInfo, std::string> GetIsolationInfo(
     const IsolationData& isolation_data);
 
 base::expected<absl::optional<IsolationData>, std::string>
-GetIsolationDataFromCommandLine(const base::CommandLine& command_line);
+GetIsolationDataFromCommandLine(const base::CommandLine& command_line,
+                                const PrefService* prefs);
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile);
