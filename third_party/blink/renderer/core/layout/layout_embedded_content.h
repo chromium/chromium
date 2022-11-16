@@ -112,6 +112,10 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
       const HitTestLocation&,
       const PhysicalOffset& accumulated_offset,
       HitTestPhase);
+
+  bool PointOverResizer(const HitTestResult&,
+                        const HitTestLocation&,
+                        const PhysicalOffset& accumulated_offset) const;
 };
 
 template <>

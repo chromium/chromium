@@ -152,6 +152,23 @@ PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   return kForcedPaintLayer;
 }
 
+bool LayoutEmbeddedContent::PointOverResizer(
+    const HitTestResult& result,
+    const HitTestLocation& location,
+    const PhysicalOffset& accumulated_offset) const {
+  NOT_DESTROYED();
+  if (const auto* scrollable_area = GetScrollableArea()) {
+    const HitTestRequest::HitTestRequestType hit_type =
+        result.GetHitTestRequest().GetType();
+    const blink::ResizerHitTestType resizer_type =
+        hit_type & HitTestRequest::kTouchEvent ? kResizerForTouch
+                                               : kResizerForPointer;
+    return scrollable_area->IsAbsolutePointInResizeControl(
+        ToRoundedPoint(location.Point() - accumulated_offset), resizer_type);
+  }
+  return false;
+}
+
 bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
@@ -167,14 +184,8 @@ bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(
   if ((inside || hit_test_location.IsRectBasedTest()) && !had_result &&
       result.InnerNode() == GetNode()) {
     bool is_over_content_view =
-        PhysicalContentBoxRect().Contains(result.LocalPoint());
-    if (is_over_content_view) {
-      if (const auto* scrollable_area = GetScrollableArea()) {
-        if (scrollable_area->IsLocalPointInResizeControl(
-                ToRoundedPoint(result.LocalPoint()), kResizerForPointer))
-          is_over_content_view = false;
-      }
-    }
+        PhysicalContentBoxRect().Contains(result.LocalPoint()) &&
+        !result.IsOverResizer();
     result.SetIsOverEmbeddedContentView(is_over_content_view);
   }
   return inside;
@@ -187,8 +198,11 @@ bool LayoutEmbeddedContent::NodeAtPoint(
     HitTestPhase phase) {
   NOT_DESTROYED();
   auto* local_frame_view = DynamicTo<LocalFrameView>(ChildFrameView());
-  bool skip_contents = (result.GetHitTestRequest().GetStopNode() == this ||
-                        !result.GetHitTestRequest().AllowsChildFrameContent());
+  bool skip_contents =
+      (result.GetHitTestRequest().GetStopNode() == this ||
+       !result.GetHitTestRequest().AllowsChildFrameContent() ||
+       PointOverResizer(result, hit_test_location, accumulated_offset));
+
   if (!local_frame_view || skip_contents) {
     return NodeAtPointOverEmbeddedContentView(result, hit_test_location,
                                               accumulated_offset, phase);
