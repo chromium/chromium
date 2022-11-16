@@ -563,7 +563,12 @@ enum class IOSOverflowMenuActionType {
   self.presenter = [[PopupMenuPresenter alloc] init];
   self.presenter.baseViewController = self.baseViewController;
   self.presenter.presentedViewController = tableViewController;
-  self.presenter.guideName = guideName;
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UILayoutGuide* layoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:guideName];
+  [self.baseViewController.view addLayoutGuide:layoutGuide];
+  self.presenter.layoutGuide = layoutGuide;
   self.presenter.delegate = self;
 
   [self.UIUpdater updateUIForMenuDisplayed:type];

@@ -8,8 +8,6 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller_delegate.h"
-// TODO(crbug.com/1382336): Remove the use of NamedGuide.
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -45,7 +43,6 @@ const CGFloat kDamping = 0.85;
 
 @synthesize baseViewController = _baseViewController;
 @synthesize delegate = _delegate;
-@synthesize guideName = _guideName;
 @synthesize popupViewController = _popupViewController;
 @synthesize initialConstraints = _initialConstraints;
 @synthesize presentedConstraints = _presentedConstraints;
@@ -112,14 +109,7 @@ const CGFloat kDamping = 0.85;
                                               constant:-kMinWidthDifference]
       .active = YES;
 
-  UILayoutGuide* layoutGuide;
-  if (self.guideName) {
-    // TODO(crbug.com/1382336): Remove the use of NamedGuide.
-    layoutGuide = [NamedGuide guideWithName:self.guideName
-                                       view:self.baseViewController.view];
-  } else {
-    layoutGuide = self.layoutGuide;
-  }
+  UILayoutGuide* layoutGuide = self.layoutGuide;
   self.initialConstraints = @[
     [popup.centerXAnchor constraintEqualToAnchor:layoutGuide.centerXAnchor],
     [popup.centerYAnchor constraintEqualToAnchor:layoutGuide.centerYAnchor],
@@ -200,21 +190,14 @@ const CGFloat kDamping = 0.85;
 }
 
 // Sets `presentedConstraints` up, such as they are positioning the popup
-// relatively to the `guideName` layout guide. The popup is positioned closest
-// to the layout guide, by default it is presented below the layout guide,
-// aligned on its leading edge. However, it is respecting the safe area bounds.
+// relatively to `layoutGuide`. The popup is positioned closest to the layout
+// guide, by default it is presented below the layout guide, aligned on its
+// leading edge. However, it is respecting the safe area bounds.
 - (void)setUpPresentedConstraints {
   UIView* parentView = self.baseViewController.view;
   UIView* container = self.popupViewController.contentContainer;
 
-  UILayoutGuide* layoutGuide;
-  if (self.guideName) {
-    // TODO(crbug.com/1382336): Remove the use of NamedGuide.
-    layoutGuide = [NamedGuide guideWithName:self.guideName
-                                       view:self.baseViewController.view];
-  } else {
-    layoutGuide = self.layoutGuide;
-  }
+  UILayoutGuide* layoutGuide = self.layoutGuide;
   CGRect guideFrame =
       [self.popupViewController.view convertRect:layoutGuide.layoutFrame
                                         fromView:layoutGuide.owningView];
