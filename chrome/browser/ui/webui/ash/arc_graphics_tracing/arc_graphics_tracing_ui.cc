@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/values.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -76,6 +78,25 @@ content::WebUIDataSource* CreateOverviewDataSource() {
 }  // anonymous namespace
 
 namespace ash {
+
+template <>
+ArcGraphicsTracingUIConfig<
+    ArcGraphicsTracingMode::kFull>::ArcGraphicsTracingUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIArcGraphicsTracingHost) {}
+
+template <>
+ArcGraphicsTracingUIConfig<
+    ArcGraphicsTracingMode::kOverview>::ArcGraphicsTracingUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIArcOverviewTracingHost) {}
+
+template <ArcGraphicsTracingMode mode>
+bool ArcGraphicsTracingUIConfig<mode>::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return arc::IsArcAllowedForProfile(
+      Profile::FromBrowserContext(browser_context));
+}
 
 template <>
 ArcGraphicsTracingUI<ArcGraphicsTracingMode::kFull>::ArcGraphicsTracingUI(

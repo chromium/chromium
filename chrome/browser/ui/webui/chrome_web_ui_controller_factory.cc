@@ -1002,19 +1002,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
-  if (arc::IsArcAllowedForProfile(profile)) {
-    if (url.host_piece() == chrome::kChromeUIArcGraphicsTracingHost) {
-      return &NewWebUI<
-          ash::ArcGraphicsTracingUI<ash::ArcGraphicsTracingMode::kFull>>;
-    }
-    if (url.host_piece() == chrome::kChromeUIArcOverviewTracingHost) {
-      return &NewWebUI<
-          ash::ArcGraphicsTracingUI<ash::ArcGraphicsTracingMode::kOverview>>;
-    }
-    if (url.host_piece() == chrome::kChromeUIArcPowerControlHost) {
-      return &NewWebUI<ash::ArcPowerControlUI>;
-    }
-  }
   if (url.host_piece() == ash::eche_app::kChromeUIEcheAppHost &&
       base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
     return &NewWebUI<ash::eche_app::EcheAppUI>;

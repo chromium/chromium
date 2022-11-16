@@ -7,12 +7,27 @@
 
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 
 namespace content {
 class WebUI;
 }
 
 namespace ash {
+
+template <ArcGraphicsTracingMode mode>
+class ArcGraphicsTracingUI;
+
+// WebUIConfig for chrome://arc-graphics-tracing and
+// chrome://arc-overview-tracing
+template <ArcGraphicsTracingMode mode>
+class ArcGraphicsTracingUIConfig
+    : public content::DefaultWebUIConfig<ArcGraphicsTracingUI<mode>> {
+ public:
+  ArcGraphicsTracingUIConfig();
+
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // WebUI controller for arc graphics/overview tracing.
 template <ArcGraphicsTracingMode mode>

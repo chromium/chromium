@@ -17,6 +17,9 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing.h"
+#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
@@ -90,6 +93,11 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::ArcGraphicsTracingUIConfig<
+                         ash::ArcGraphicsTracingMode::kFull>>());
+  map.AddWebUIConfig(std::make_unique<ash::ArcGraphicsTracingUIConfig<
+                         ash::ArcGraphicsTracingMode::kOverview>>());
+  map.AddWebUIConfig(std::make_unique<ash::ArcPowerControlUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());

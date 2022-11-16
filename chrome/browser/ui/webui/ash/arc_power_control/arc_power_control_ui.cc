@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_handler.h"
@@ -52,6 +53,12 @@ content::WebUIDataSource* CreatePowerControlDataSource() {
 }  // anonymous namespace
 
 namespace ash {
+
+bool ArcPowerControlUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return arc::IsArcAllowedForProfile(
+      Profile::FromBrowserContext(browser_context));
+}
 
 ArcPowerControlUI::ArcPowerControlUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
