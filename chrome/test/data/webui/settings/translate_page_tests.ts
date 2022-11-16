@@ -104,6 +104,78 @@ suite('translate page settings', function() {
       assertEquals(translatePage.getPref(translateTarget).value, 'sw');
     });
 
+    test('test never translate display', function() {
+      // Disable a language not in fake_language_settings_private. The language
+      // should not be shown in the never translate list.
+      languageHelper.disableTranslateLanguage('eo');
+      flush();
+
+      const neverTranslateDiv =
+          translatePage.shadowRoot!.querySelector<HTMLElement>(
+              '#neverTranslateList');
+      assertTrue(!!neverTranslateDiv);
+
+      // Only one language should be shown in the UI.
+      let listItems =
+          neverTranslateDiv.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(1, listItems.length);
+
+      // But two should be in the preference (since en-US is the default).
+      assertDeepEquals(
+          ['en-US', 'eo'], translatePage.getPref(neverTranslatePref).value);
+
+      // Disable a language that is in fake_language_settings_private. The
+      // language should be shown in the never translate list.
+      languageHelper.disableTranslateLanguage('nb');
+      flush();
+
+      // Two items should now be shown.
+      listItems = neverTranslateDiv.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(2, listItems.length);
+
+      // But three should be on the never translate list
+      assertDeepEquals(
+          ['en-US', 'eo', 'nb'],
+          translatePage.getPref(neverTranslatePref).value);
+    });
+
+    test('test always translate display', function() {
+      // Add a language not in fake_language_settings_private. The language
+      // should not be shown in the always translate list.
+      languageHelper.setLanguageAlwaysTranslateState('eo', true);
+      flush();
+
+      const alwaysTranslateDiv =
+          translatePage.shadowRoot!.querySelector<HTMLElement>(
+              '#alwaysTranslateList');
+      assertTrue(!!alwaysTranslateDiv);
+
+      // No languages should be shown on the UI.
+      let listItems =
+          alwaysTranslateDiv.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(0, listItems.length);
+
+      // But one should be on the always translate list
+      assertDeepEquals(
+          ['eo'],
+          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
+
+      // Add a language that is in fake_language_settings_private. The
+      // language should be shown in the always translate list.
+      languageHelper.setLanguageAlwaysTranslateState('nb', true);
+      flush();
+
+      // // There should now be only one item shown.
+      listItems =
+          alwaysTranslateDiv.querySelectorAll<HTMLElement>('.list-item');
+      assertEquals(1, listItems.length);
+
+      // But two should be on the always translate list
+      assertDeepEquals(
+          ['eo', 'nb'],
+          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
+    });
+
     test('never translate remove icon enabled state', function() {
       // The icon should be disabled if there is only one element on the list
       // and enabled if there are more than one.
@@ -222,7 +294,8 @@ suite('translate page settings', function() {
           new CustomEvent('languages-added', {detail: ['en', 'no']}));
       dialog.$.dialog.close();
       assertDeepEquals(
-          ['en', 'no'], translatePage.getPref(alwaysTranslatePref).value);
+          ['en', 'no'],
+          Object.keys(translatePage.getPref(alwaysTranslatePref).value));
 
       return dialogClosedResolver.promise;
     });

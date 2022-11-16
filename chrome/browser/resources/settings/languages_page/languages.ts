@@ -457,7 +457,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const alwaysTranslateCodes =
         Object.keys(this.getPref('translate_allowlists').value);
     const alwaysTranslateLanguages =
-        alwaysTranslateCodes.map(code => this.getLanguage(code));
+        alwaysTranslateCodes.map((code: string) => this.getLanguage(code));
     this.set('languages.alwaysTranslate', alwaysTranslateLanguages);
   }
 

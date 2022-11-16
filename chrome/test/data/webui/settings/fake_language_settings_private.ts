@@ -216,7 +216,9 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    */
   getAlwaysTranslateLanguages(callback: StringArrayCallback) {
     setTimeout(() => {
-      callback(this.settingsPrefs_!.get('prefs.translate_allowlists.value'));
+      const alwaysTranslateMap =
+          this.settingsPrefs_!.get('prefs.translate_allowlists.value');
+      callback(Object.keys(alwaysTranslateMap));
     });
   }
 
@@ -225,21 +227,18 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    */
   setLanguageAlwaysTranslateState(
       languageCode: string, alwaysTranslate: boolean) {
-    const alwaysTranslateList =
-        this.settingsPrefs_!.get('prefs.translate_allowlists.value');
+    // Need to create a copy of the translate_allowlist object so that
+    // preference observers are notified during tests.
+    const alwaysTranslateMap = Object.assign(
+        {}, this.settingsPrefs_!.get('prefs.translate_allowlists.value'));
     if (alwaysTranslate) {
-      if (!alwaysTranslateList.includes(languageCode)) {
-        alwaysTranslateList.push(languageCode);
-      }
+      // The target language is not used in tests so set to 'en'.
+      alwaysTranslateMap[languageCode] = 'en';
     } else {
-      const index = alwaysTranslateList.indexOf(languageCode);
-      if (index === -1) {
-        return;
-      }
-      alwaysTranslateList.splice(index, 1);
+      delete alwaysTranslateMap[languageCode];
     }
     this.settingsPrefs_!.set(
-        'prefs.translate_allowlists.value', alwaysTranslateList);
+        'prefs.translate_allowlists.value', alwaysTranslateMap);
   }
 
   /**
@@ -465,7 +464,7 @@ export function getFakeLanguagePrefs() {
     },
     {
       key: 'translate_site_blocklist_with_time',
-      type: chrome.settingsPrivate.PrefType.LIST,
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {
         'ru.wikipedia.org': '13305315102292953',
         'de.wikipedia.org': '13305315083099649',
@@ -473,11 +472,11 @@ export function getFakeLanguagePrefs() {
     },
     // Note: The real implementation of this pref is actually a dictionary
     // of {always translate: target}, however only the keys are needed for
-    // testing.
+    // testing so target will always be 'en'.
     {
       key: 'translate_allowlists',
-      type: chrome.settingsPrivate.PrefType.LIST,
-      value: [],
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
     },
     {
       key: 'translate_recent_target',
