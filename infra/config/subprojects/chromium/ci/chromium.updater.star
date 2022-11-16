@@ -650,3 +650,27 @@ ci.thin_tester(
     ),
     triggered_by = ["win-updater-builder-dbg"],
 )
+
+ci.thin_tester(
+    name = "win11-updater-tester-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "release|win (64)",
+        short_name = "11",
+    ),
+    triggered_by = ["win-updater-builder-rel"],
+)

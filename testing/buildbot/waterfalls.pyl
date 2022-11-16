@@ -5831,6 +5831,23 @@
           ]
         },
       },
+      'win11-updater-tester-rel': {
+        'mixins': [
+          'win11',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_win',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'integrity': 'high',
+              'pool': 'chromium.tests',
+            }
+          ]
+        },
+      },
       'win7(32)-updater-tester-rel': {
         'mixins': [
           'win7',
