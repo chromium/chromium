@@ -149,6 +149,8 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_support.h",
     "frame_sinks/external_begin_frame_source_mojo.cc",
     "frame_sinks/external_begin_frame_source_mojo.h",
+    "frame_sinks/frame_counter.cc",
+    "frame_sinks/frame_counter.h",
     "frame_sinks/frame_sink_bundle_impl.cc",
     "frame_sinks/frame_sink_bundle_impl.h",
     "frame_sinks/frame_sink_manager_impl.cc",

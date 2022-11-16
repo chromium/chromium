@@ -47,6 +47,21 @@ struct RootCompositorFrameSinkParams {
       external_begin_frame_controller;
 };
 
+// Response from StopFrameCounting that contains counted frames for all frame
+// sinks during the tracked time window.
+struct FrameCountingData {
+  array<FrameCountingPerSinkData> per_sink_data;
+};
+
+// Container for collected data for a given frame sink.
+struct FrameCountingPerSinkData {
+  CompositorFrameSinkType type;
+  bool is_root;
+
+  // Collected number of presented frames for the specified bucket size.
+  array<uint16> presented_frames;
+};
+
 // The FrameSinkManager interface is a privileged interface that allows the
 // frame sink manager host (browser or window server) to create
 // CompositorFrameSinks. Clients acquire a CompositorFrameSink connection
@@ -173,6 +188,13 @@ interface FrameSinkManager {
   // This allows dynamic manipulation of the viz debug options stored in
   // |debug_settings| (show_overdraw_feedback, etc.).
   UpdateDebugRendererSettings(DebugRendererSettings debug_settings);
+
+  // Starts frame counting per frame sink on the Viz thread.
+  StartFrameCountingForTest(mojo_base.mojom.TimeDelta bucket_size);
+
+  // Stops frame counting on the Viz thread and returns all records to the
+  // caller.
+  StopFrameCountingForTest() => (FrameCountingData data);
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display

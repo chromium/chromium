@@ -652,6 +652,19 @@ namespace autotestPrivate {
 
   callback GetShelfUIInfoForStateCallback = void (ShelfUIInfo info);
 
+  // Frame counting record for one frame sink/compositor.
+  dictionary FrameCountingPerSinkData {
+    // Type of the frame sink. This corresponds to CompositorFrameSinkType.
+    DOMString sinkType;
+    // Whether the frame sink is the root.
+    boolean isRoot;
+
+    // Number of presented frames grouped by seconds, i.e. fps.
+    long[] presentedFrames;
+  };
+
+  callback StopFrameCountingCallback = void (FrameCountingPerSinkData[] data);
+
   // Result of calling setWindowBounds, which returns the actual bounds and
   // display the window was set to. This may be different than the requested
   // bounds and display, for example if the window is showing an ARC app and
@@ -1509,6 +1522,16 @@ namespace autotestPrivate {
     // Remove the specified component extension.
     [supportsPromises] static void removeComponentExtension(
         DOMString extensionId, VoidCallback callback);
+
+    // Starts frame counting in viz. `bucketSizeInSeconds` decides the bucket
+    // size of the frame count records. If it is X seconds, each record is
+    // the number of presented frames in X seconds.
+    [supportsPromises] static void startFrameCounting(long bucketSizeInSeconds,
+        VoidCallback callback);
+
+    // Ends frame counting in viz and return the collected data.
+    [supportsPromises] static void stopFrameCounting(
+        StopFrameCountingCallback  callback);
   };
 
   interface Events {

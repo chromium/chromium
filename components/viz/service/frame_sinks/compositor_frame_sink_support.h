@@ -241,6 +241,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return current_capture_bounds_;
   }
 
+  mojom::CompositorFrameSinkType frame_sink_type() const {
+    return frame_sink_type_;
+  }
+
  private:
   friend class CompositorFrameSinkSupportTest;
   friend class DisplayTest;

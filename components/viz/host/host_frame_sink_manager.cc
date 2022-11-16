@@ -431,6 +431,17 @@ void HostFrameSinkManager::UpdateDebugRendererSettings(
   frame_sink_manager_->UpdateDebugRendererSettings(debug_settings);
 }
 
+void HostFrameSinkManager::StartFrameCountingForTest(
+    base::TimeDelta bucket_size) {
+  frame_sink_manager_->StartFrameCountingForTest(bucket_size);  // IN-TEST
+}
+
+void HostFrameSinkManager::StopFrameCountingForTest(
+    mojom::FrameSinkManager::StopFrameCountingForTestCallback callback) {
+  frame_sink_manager_->StopFrameCountingForTest(  // IN-TEST
+      std::move(callback));
+}
+
 HostFrameSinkManager::FrameSinkData::FrameSinkData() = default;
 
 HostFrameSinkManager::FrameSinkData::FrameSinkData(FrameSinkData&& other) =

@@ -75,6 +75,9 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                 base::TimeDelta interval) override {}
   void StartThrottlingAllFrameSinks(base::TimeDelta interval) override {}
   void StopThrottlingAllFrameSinks() override {}
+  void StartFrameCountingForTest(base::TimeDelta bucket_size) override {}
+  void StopFrameCountingForTest(
+      StopFrameCountingForTestCallback callback) override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

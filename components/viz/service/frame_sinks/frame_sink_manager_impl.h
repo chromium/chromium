@@ -26,6 +26,7 @@
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
+#include "components/viz/service/frame_sinks/frame_counter.h"
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/frame_sinks/root_compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
@@ -155,6 +156,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                 base::TimeDelta interval) override;
   void StartThrottlingAllFrameSinks(base::TimeDelta interval) override;
   void StopThrottlingAllFrameSinks() override;
+  void StartFrameCountingForTest(base::TimeDelta bucket_size) override;
+  void StopFrameCountingForTest(
+      StopFrameCountingForTestCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 
@@ -266,6 +270,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       std::unique_ptr<SurfaceAnimationManager> manager);
   std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager(
       NavigationID navigation_id);
+
+  FrameCounter* frame_counter() {
+    return frame_counter_ ? &frame_counter_.value() : nullptr;
+  }
 
  private:
   friend class FrameSinkManagerTest;
@@ -447,6 +455,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
 
   base::ObserverList<FrameSinkObserver>::Unchecked observer_list_;
+
+  // Counts frames for test.
+  absl::optional<FrameCounter> frame_counter_;
 };
 
 }  // namespace viz

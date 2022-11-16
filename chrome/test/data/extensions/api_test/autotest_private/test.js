@@ -1105,6 +1105,29 @@ var defaultTests = [
     });
   },
 
+  function collectFrameCountingData() {
+    promisify(
+        chrome.autotestPrivate.startFrameCounting, /*bucketSizeInSeconds=*/1)
+        .then(function() {
+          // Minimize/restore to trigger screen updates.
+          return promisify(minimizeBrowserWindow);
+        })
+        .then(function() {
+          return promisify(unminimizeBrowserWindow);
+        })
+        .then(function() {
+          return promisify(
+              chrome.autotestPrivate.stopFrameCounting);
+        })
+        .then(function(data) {
+          chrome.test.assertTrue(data.length >= 0);
+          chrome.test.succeed();
+        })
+        .catch(function(err) {
+          chrome.test.fail(err);
+        });
+  },
+
   // KEEP |lockScreen()| TESTS AT THE BOTTOM OF THE defaultTests AS IT WILL
   // CHANGE THE SESSION STATE TO LOCKED STATE.
   function lockScreen() {

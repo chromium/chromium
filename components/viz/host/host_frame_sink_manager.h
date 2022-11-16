@@ -219,6 +219,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
+  // Starts the frame counting in Viz.
+  void StartFrameCountingForTest(base::TimeDelta bucket_size);
+
+  // Ends the frame counting in Viz thread and returns data to the client.
+  void StopFrameCountingForTest(
+      mojom::FrameSinkManager::StopFrameCountingForTestCallback callback);
+
   const DebugRendererSettings& debug_renderer_settings() const {
     return debug_renderer_settings_;
   }

@@ -428,6 +428,11 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
     UpdateThrottlingRecursively(frame_sink_id,
                                 global_throttle_interval_.value());
   }
+
+  if (frame_counter_) {
+    frame_counter_->AddFrameSink(frame_sink_id, support->frame_sink_type(),
+                                 support->is_root());
+  }
 }
 
 void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
@@ -820,6 +825,25 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
   auto manager = std::move(it->second);
   navigation_to_animation_manager_.erase(it);
   return manager;
+}
+
+void FrameSinkManagerImpl::StartFrameCountingForTest(
+    base::TimeDelta bucket_size) {
+  DCHECK(!frame_counter_.has_value());
+  frame_counter_.emplace(bucket_size);
+
+  for (auto& [sink_id, support] : support_map_) {
+    DCHECK_EQ(sink_id, support->frame_sink_id());
+    frame_counter_->AddFrameSink(sink_id, support->frame_sink_type(),
+                                 support->is_root());
+  }
+}
+
+void FrameSinkManagerImpl::StopFrameCountingForTest(
+    StopFrameCountingForTestCallback callback) {
+  DCHECK(frame_counter_.has_value());
+  std::move(callback).Run(frame_counter_->TakeData());
+  frame_counter_.reset();
 }
 
 }  // namespace viz
