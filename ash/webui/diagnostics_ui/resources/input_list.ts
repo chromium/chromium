@@ -10,9 +10,10 @@ import './touchscreen_tester.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
+import {InputCardElement} from './input_card.js';
 import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
@@ -273,6 +274,24 @@ export class InputListElement extends InputListElementBase {
    */
   onNavigationPageChanged({isActive}: {isActive: boolean}): void {
     if (isActive) {
+      // Focus the first visible card title. If no cards are present,
+      // fallback to focusing the element's main container.
+      afterNextRender(this, () => {
+        if (this.keyboards_) {
+          const keyboard: InputCardElement|null =
+              this.shadowRoot!.querySelector('#keyboardInputCard');
+          assert(keyboard);
+          const keyboardTitle: HTMLDivElement|null =
+              keyboard.querySelector('#keyboardTitle');
+          assert(keyboardTitle);
+          keyboardTitle.focus();
+        } else {
+          const inputListContainer: HTMLDivElement|null =
+              this.shadowRoot!.querySelector('#inputListContainer');
+          assert(inputListContainer);
+          inputListContainer.focus();
+        }
+      });
       // TODO(ashleydp): Remove when a call can be made at a higher component
       // to avoid duplicate code in all navigatable pages.
       this.browserProxy_.recordNavigation('input');
