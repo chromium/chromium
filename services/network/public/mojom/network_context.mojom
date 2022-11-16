@@ -874,6 +874,7 @@ interface NetworkContext {
   //
   // The CookieManager must only be passed to trusted processes. Whenever
   // possible, a RestrictedCookieManager should be handed out instead.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   GetCookieManager(pending_receiver<CookieManager> cookie_manager);
 
   // Gets a RestrictedCookieManager scoped to a given origin, and applying

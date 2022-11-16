@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
@@ -332,6 +333,11 @@ interface CookieChangeListener {
   OnCookieChange(CookieChangeInfo change);
 };
 
+// CookieManager is a privileged interface that should only be used in trusted
+// processes.
+//
+// Untrusted processes like renderers should use RestrictedCookieManager.
+[RequireContext=sandbox.mojom.Context.kBrowser]
 interface CookieManager {
   // TODO(rdsmith): Worthwhile specifying a sort order for the getters?
 
@@ -426,6 +432,7 @@ interface CookieManager {
   // Clone the interface for use somewhere else.  After this call,
   // requests to the same implementation may be posted to the other side
   // of the pipe new_interface was configured on.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   CloneInterface(pending_receiver<CookieManager> new_interface);
 
   // Flush the backing store (if any) to disk.
