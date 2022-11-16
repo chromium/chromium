@@ -379,9 +379,9 @@ bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
   if (strcmp(event_rlz, "CAF") == 0) {
     chromeos::system::StatisticsProvider* stats =
         chromeos::system::StatisticsProvider::GetInstance();
-    std::string should_send_rlz_ping_value;
-    if (stats->GetMachineStatistic(chromeos::system::kShouldSendRlzPingKey,
-                                   &should_send_rlz_ping_value)) {
+    if (const absl::optional<base::StringPiece> should_send_rlz_ping_value =
+            stats->GetMachineStatistic(
+                chromeos::system::kShouldSendRlzPingKey)) {
       if (should_send_rlz_ping_value ==
           chromeos::system::kShouldSendRlzPingValueFalse) {
         return true;
@@ -389,7 +389,7 @@ bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
                  chromeos::system::kShouldSendRlzPingValueTrue) {
         LOG(WARNING) << chromeos::system::kShouldSendRlzPingKey
                      << " has an unexpected value: "
-                     << should_send_rlz_ping_value << ". Treat it as "
+                     << should_send_rlz_ping_value.value() << ". Treat it as "
                      << chromeos::system::kShouldSendRlzPingValueFalse
                      << " to avoid sending duplicate rlz ping.";
         return true;
