@@ -127,82 +127,6 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
           weak_factory_.GetWeakPtr()));
 }
 
-void MediaFoundationRendererClient::InitializeFramePool(
-    mojom::FramePoolInitializationParametersPtr pool_info) {
-  DCHECK_GT(pool_info->frame_textures.size(), static_cast<size_t>(0));
-
-  // Release our references to the video pool so that once the
-  // rendering is complete the memory will be freed.
-  video_frame_pool_.clear();
-
-  for (const auto& frame_info : pool_info->frame_textures) {
-    dcomp_texture_wrapper_->CreateVideoFrame(
-        pool_info->texture_size, std::move(frame_info->texture_handle),
-        base::BindOnce(
-            [](base::flat_map<base::UnguessableToken,
-                              scoped_refptr<VideoFrame>>& video_frame_pool,
-               const base::UnguessableToken& token,
-               scoped_refptr<VideoFrame> video_frame) {
-              video_frame_pool.insert({token, std::move(video_frame)});
-            },
-            std::ref(video_frame_pool_), frame_info->token));
-  }
-}
-
-bool MediaFoundationRendererClient::IsFrameServerMode() const {
-  return rendering_mode_ == MediaFoundationRenderingMode::FrameServer;
-}
-
-void MediaFoundationRendererClient::OnFrameAvailable(
-    const base::UnguessableToken& frame_token,
-    const gfx::Size& size,
-    base::TimeDelta timestamp) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(has_video_);
-
-  auto video_frame = video_frame_pool_.find(frame_token);
-  // It is possible to become unsynced when we are reinitializing the frame
-  // pool so we are just checking to make sure the frame has been acquired.
-  if (video_frame == video_frame_pool_.end()) {
-    return;
-  }
-
-  scoped_refptr<VideoFrame> texture_pool_video_frame = video_frame->second;
-
-  texture_pool_video_frame->set_timestamp(timestamp);
-
-  // The Video Frame object's Destruction Observer is called when the video
-  // frame is no longer needed and the underlying texture can be reused. We
-  // cannot use the video frame we created in InitializeFramePool() directly
-  // because we hold onto a reference in our video frame pool so the callback
-  // would not be called, and for those their callback is to destroy the shared
-  // image anyway. Therefore we wrap the shared image based video frame in
-  // another video frame and add the callback which allows us to reuse the
-  // texture for a new video frame.
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapVideoFrame(
-      texture_pool_video_frame, texture_pool_video_frame->format(),
-      gfx::Rect(size), size);
-  frame->metadata().wants_promotion_hint = true;
-  frame->metadata().allow_overlay = true;
-  frame->AddDestructionObserver(base::BindPostTask(
-      media_task_runner_,
-      base::BindOnce(&MediaFoundationRendererClient::OnPaintComplete,
-                     weak_factory_.GetWeakPtr(), frame_token)));
-
-  // The sink needs a frame ASAP so the first frame will be painted, all
-  // following frames will be returned in the Render callback.
-  if (!next_video_frame_) {
-    sink_->PaintSingleFrame(frame);
-  }
-  next_video_frame_ = frame;
-}
-
-void MediaFoundationRendererClient::OnPaintComplete(
-    const base::UnguessableToken& token) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  renderer_extension_->NotifyFrameReleased(token);
-}
-
 void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
                                            CdmAttachedCB cdm_attached_cb) {
   DVLOG_FUNC(1) << "cdm_context=" << cdm_context;
@@ -354,6 +278,7 @@ void MediaFoundationRendererClient::OnVideoFrameRateChange(
 }
 
 // RenderCallback implementation.
+
 scoped_refptr<VideoFrame> MediaFoundationRendererClient::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
@@ -389,7 +314,87 @@ base::TimeDelta MediaFoundationRendererClient::GetPreferredRenderInterval() {
   return render_interval_;
 }
 
+// media::mojom::MediaFoundationRendererClientExtension
+
+void MediaFoundationRendererClient::InitializeFramePool(
+    mojom::FramePoolInitializationParametersPtr pool_info) {
+  DCHECK_GT(pool_info->frame_textures.size(), static_cast<size_t>(0));
+
+  // Release our references to the video pool so that once the
+  // rendering is complete the memory will be freed.
+  video_frame_pool_.clear();
+
+  for (const auto& frame_info : pool_info->frame_textures) {
+    dcomp_texture_wrapper_->CreateVideoFrame(
+        pool_info->texture_size, std::move(frame_info->texture_handle),
+        base::BindOnce(
+            [](base::flat_map<base::UnguessableToken,
+                              scoped_refptr<VideoFrame>>& video_frame_pool,
+               const base::UnguessableToken& token,
+               scoped_refptr<VideoFrame> video_frame) {
+              video_frame_pool.insert({token, std::move(video_frame)});
+            },
+            std::ref(video_frame_pool_), frame_info->token));
+  }
+}
+
+void MediaFoundationRendererClient::OnFrameAvailable(
+    const base::UnguessableToken& frame_token,
+    const gfx::Size& size,
+    base::TimeDelta timestamp) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(has_video_);
+
+  auto video_frame = video_frame_pool_.find(frame_token);
+  // It is possible to become unsynced when we are reinitializing the frame
+  // pool so we are just checking to make sure the frame has been acquired.
+  if (video_frame == video_frame_pool_.end()) {
+    return;
+  }
+
+  scoped_refptr<VideoFrame> texture_pool_video_frame = video_frame->second;
+
+  texture_pool_video_frame->set_timestamp(timestamp);
+
+  // The Video Frame object's Destruction Observer is called when the video
+  // frame is no longer needed and the underlying texture can be reused. We
+  // cannot use the video frame we created in InitializeFramePool() directly
+  // because we hold onto a reference in our video frame pool so the callback
+  // would not be called, and for those their callback is to destroy the shared
+  // image anyway. Therefore we wrap the shared image based video frame in
+  // another video frame and add the callback which allows us to reuse the
+  // texture for a new video frame.
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapVideoFrame(
+      texture_pool_video_frame, texture_pool_video_frame->format(),
+      gfx::Rect(size), size);
+  frame->metadata().wants_promotion_hint = true;
+  frame->metadata().allow_overlay = true;
+  frame->AddDestructionObserver(base::BindPostTask(
+      media_task_runner_,
+      base::BindOnce(&MediaFoundationRendererClient::OnPaintComplete,
+                     weak_factory_.GetWeakPtr(), frame_token)));
+
+  // The sink needs a frame ASAP so the first frame will be painted, all
+  // following frames will be returned in the Render callback.
+  if (!next_video_frame_) {
+    sink_->PaintSingleFrame(frame);
+  }
+  next_video_frame_ = frame;
+}
+
 // private
+
+bool MediaFoundationRendererClient::IsFrameServerMode() const {
+  return rendering_mode_ == MediaFoundationRenderingMode::FrameServer;
+}
+
+void MediaFoundationRendererClient::OnConnectionError() {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
+  REPORT_ERROR_REASON(kOnConnectionError);
+  OnError(PIPELINE_ERROR_DISCONNECTED);
+}
 
 void MediaFoundationRendererClient::OnRemoteRendererInitialized(
     PipelineStatus status) {
@@ -556,14 +561,6 @@ void MediaFoundationRendererClient::OnCdmAttached(bool success) {
   std::move(cdm_attached_cb_).Run(success);
 }
 
-void MediaFoundationRendererClient::OnConnectionError() {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
-  REPORT_ERROR_REASON(kOnConnectionError);
-  OnError(PIPELINE_ERROR_DISCONNECTED);
-}
-
 void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
     bool is_playing) {
   // Skip if we are already in the same playing state
@@ -580,6 +577,29 @@ void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
     }
   }
   is_playing_ = is_playing;
+}
+
+void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
+    const gpu::Mailbox& mailbox) {
+  // If the rendering strategy is dynamic then setup an OverlayStateObserver to
+  // respond to promotion changes. If the rendering strategy is Direct
+  // Composition or Frame Server then we do not need to listen & respond to
+  // overlay state changes.
+  if (rendering_strategy_ == MediaFoundationClearRenderingStrategy::kDynamic) {
+    mailbox_ = mailbox;
+    // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
+    // subscribe to overlay state information for the given 'mailbox' from the
+    // Viz layer in the GPU process. We hold an OverlayStateObserverSubscription
+    // since a direct dependency on a content object is not allowed. Once the
+    // OverlayStateObserverSubscription is destroyed the OnOverlayStateChanged
+    // callback will no longer be invoked, so base::Unretained(this) is safe to
+    // use.
+    observer_subscription_ = observe_overlay_state_cb_.Run(
+        mailbox, base::BindRepeating(
+                     &MediaFoundationRendererClient::OnOverlayStateChanged,
+                     base::Unretained(this), mailbox));
+    DCHECK(observer_subscription_);
+  }
 }
 
 void MediaFoundationRendererClient::OnOverlayStateChanged(
@@ -632,27 +652,10 @@ void MediaFoundationRendererClient::UpdateRenderMode() {
   }
 }
 
-void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
-    const gpu::Mailbox& mailbox) {
-  // If the rendering strategy is dynamic then setup an OverlayStateObserver to
-  // respond to promotion changes. If the rendering strategy is Direct
-  // Composition or Frame Server then we do not need to listen & respond to
-  // overlay state changes.
-  if (rendering_strategy_ == MediaFoundationClearRenderingStrategy::kDynamic) {
-    mailbox_ = mailbox;
-    // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
-    // subscribe to overlay state information for the given 'mailbox' from the
-    // Viz layer in the GPU process. We hold an OverlayStateObserverSubscription
-    // since a direct dependency on a content object is not allowed. Once the
-    // OverlayStateObserverSubscription is destroyed the OnOverlayStateChanged
-    // callback will no longer be invoked, so base::Unretained(this) is safe to
-    // use.
-    observer_subscription_ = observe_overlay_state_cb_.Run(
-        mailbox, base::BindRepeating(
-                     &MediaFoundationRendererClient::OnOverlayStateChanged,
-                     base::Unretained(this), mailbox));
-    DCHECK(observer_subscription_);
-  }
+void MediaFoundationRendererClient::OnPaintComplete(
+    const base::UnguessableToken& token) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  renderer_extension_->NotifyFrameReleased(token);
 }
 
 }  // namespace media
