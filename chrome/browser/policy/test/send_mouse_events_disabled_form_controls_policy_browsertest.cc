@@ -73,14 +73,8 @@ class SendMouseEventsDisabledFormControlsPolicyTest
 };
 
 IN_PROC_BROWSER_TEST_P(SendMouseEventsDisabledFormControlsPolicyTest, Test) {
-  bool expected_enabled;
-  if (GetParam() == SendMouseEventsDisabledFormControlsPolicyValue::kUnset) {
-    // SendMouseEventsDisabledFormControls should be enabled by default.
-    expected_enabled = true;
-  } else {
-    expected_enabled =
-        GetParam() == SendMouseEventsDisabledFormControlsPolicyValue::kEnabled;
-  }
+  bool expected_enabled =
+      GetParam() == SendMouseEventsDisabledFormControlsPolicyValue::kEnabled;
   AssertSendMouseEventsDisabledFormControlsEnabled(expected_enabled);
 }
 
@@ -88,13 +82,6 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     SendMouseEventsDisabledFormControlsPolicyTest,
     ::testing::Values(
-// The linux-chromeos-chrome trybot has this feature disabled by default, unlike
-// all other trybots which have it enabled. It is currently set to experimental
-// in runtime_enabled_features.json5 and I plan to enable it via finch, so this
-// is acceptable.
-#if !BUILDFLAG(IS_CHROMEOS)
-        SendMouseEventsDisabledFormControlsPolicyValue::kUnset,
-#endif
         SendMouseEventsDisabledFormControlsPolicyValue::kEnabled,
         SendMouseEventsDisabledFormControlsPolicyValue::kDisabled));
 
