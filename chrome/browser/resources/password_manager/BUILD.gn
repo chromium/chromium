@@ -23,6 +23,7 @@ build_webui("build") {
     "password_manager_app.ts",
     "password_list_item.ts",
     "passwords_section.ts",
+    "password_details_section.ts",
     "prefs/pref_toggle_button.ts",
     "settings_section.ts",
     "side_bar.ts",

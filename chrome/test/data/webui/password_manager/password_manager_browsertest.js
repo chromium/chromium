@@ -34,6 +34,7 @@ GEN('#endif');
  ['SideBar', 'password_manager_side_bar_test.js'],
  ['Settings', 'settings_section_test.js'],
  ['Routing', 'password_manager_routing_test.js'],
+ ['PasswordDetails', 'password_details_section_test.js'],
  ['Checkup', 'checkup_section_test.js'],
  ['PasswordsSection', 'passwords_section_test.js'],
 ].forEach(test => registerTest(...test));
