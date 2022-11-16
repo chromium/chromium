@@ -112,10 +112,6 @@ config("config") {
       "-add-plugin",
       "-Xclang",
       "blink-gc-plugin",
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "fix-bugs-of-is-considered-abstract",
     ]
 
     # Add arguments for enabled GC plugin options:
