@@ -21,8 +21,6 @@ import {CdpClient, createClient} from './cdpClient';
 
 import {log, LogType} from '../utils/log';
 
-const logCdp = log(LogType.cdp);
-
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;
   reject: (errorObj: object) => void;
@@ -91,13 +89,10 @@ export class CdpConnection {
 
       const messageStr = JSON.stringify(messageObj);
       this._transport.sendMessage(messageStr);
-      logCdp('sent > ' + messageStr);
     });
   }
 
   private _onMessage = async (message: string) => {
-    logCdp('received < ' + message);
-
     const parsed = JSON.parse(message);
 
     // Update client map if a session is attached or detached.
