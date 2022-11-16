@@ -409,7 +409,9 @@
                       items="[[getImagesToShow_(item.productImageUrls)]]">
                     <li>
                       <img class="thumbnail-img" is="cr-auto-img"
-                          auto-src="[[item.url]]"></img>
+                          auto-src="[[item.url]]"
+                          on-error="onProductImageLoadError_">
+                      </img>
                     </li>
                   </template>
                 </ul>
