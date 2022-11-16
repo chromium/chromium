@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/command_line_switches.h"
@@ -105,6 +106,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::PRIORITY_PREFERENCES, syncer::WEB_APPS, syncer::PROXY_TABS,
       syncer::NIGORI);
 
+  if (features::kTabGroupsSaveSyncIntegration.Get()) {
+    expected_active_data_types.Put(syncer::SAVED_TAB_GROUP);
+  }
+
   // The dictionary is currently only synced on Windows and Linux.
   // TODO(crbug.com/1052397): Reassess whether the following block needs to be
   // included
@@ -114,7 +119,6 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
-
   EXPECT_EQ(service->GetActiveDataTypes(), expected_active_data_types);
 
   // Verify certain features are disabled.

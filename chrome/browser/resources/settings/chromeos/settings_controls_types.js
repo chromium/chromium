@@ -141,6 +141,8 @@ const StatusAction = {
  *   preferencesSynced: boolean,
  *   readingListRegistered: boolean,
  *   readingListSynced: boolean,
+ *   savedTabGroupsRegistered: boolean,
+ *   savedTabGroupsSynced: boolean,
  *   syncAllDataTypes: boolean,
  *   tabsRegistered: boolean,
  *   tabsSynced: boolean,

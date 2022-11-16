@@ -110,6 +110,7 @@ export const syncPrefsIndividualDataTypes: string[] = [
   'passwordsSynced',
   'paymentsIntegrationEnabled',
   'preferencesSynced',
+  'savedTabGroupsSynced',
   'tabsSynced',
   'themesSynced',
   'typedUrlsSynced',

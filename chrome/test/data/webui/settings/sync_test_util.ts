@@ -27,6 +27,8 @@ interface SyncAllPrefs {
   preferencesSynced: boolean;
   readingListRegistered: boolean;
   readingListSynced: boolean;
+  savedTabGroupsRegistered: boolean;
+  savedTabGroupsSynced: boolean;
   syncAllDataTypes: boolean;
   tabsRegistered: boolean;
   tabsSynced: boolean;
@@ -60,6 +62,8 @@ export function getSyncAllPrefs(): SyncAllPrefs {
     preferencesSynced: true,
     readingListRegistered: true,
     readingListSynced: true,
+    savedTabGroupsRegistered: true,
+    savedTabGroupsSynced: true,
     syncAllDataTypes: true,
     tabsRegistered: true,
     tabsSynced: true,
