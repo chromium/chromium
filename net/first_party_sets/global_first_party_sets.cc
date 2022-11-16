@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"
@@ -235,6 +236,14 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
 FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     const std::vector<SingleSet>& replacement_sets,
     const std::vector<SingleSet>& addition_sets) const {
+  if (base::ranges::all_of(replacement_sets,
+                           [](const SingleSet& set) { return set.empty(); }) &&
+      base::ranges::all_of(addition_sets,
+                           [](const SingleSet& set) { return set.empty(); })) {
+    // Nothing to do.
+    return FirstPartySetsContextConfig();
+  }
+
   // Maps a site to its new entry if it has one.
   std::vector<std::pair<SchemefulSite, absl::optional<FirstPartySetEntry>>>
       site_to_entry;
@@ -345,6 +354,12 @@ std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
 GlobalFirstPartySets::NormalizeAdditionSets(
     const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
         addition_sets) const {
+  if (base::ranges::all_of(addition_sets,
+                           [](const SingleSet& set) { return set.empty(); })) {
+    // Nothing to do.
+    return {};
+  }
+
   // Find all the addition sets that intersect with any given public set.
   base::flat_map<SchemefulSite, base::flat_set<size_t>> addition_set_overlaps;
   for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
