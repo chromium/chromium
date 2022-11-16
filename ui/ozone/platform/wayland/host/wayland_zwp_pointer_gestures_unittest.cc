@@ -9,6 +9,7 @@
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -57,7 +58,7 @@ class PinchEventScaleRecorder : public PlatformEventObserver {
 
 class WaylandPointerGesturesTest : public WaylandTest {
  public:
-  WaylandPointerGesturesTest() = default;
+  WaylandPointerGesturesTest() : WaylandTest(TestServerMode::kAsync) {}
   WaylandPointerGesturesTest(const WaylandPointerGesturesTest&) = delete;
   WaylandPointerGesturesTest& operator=(const WaylandPointerGesturesTest&) =
       delete;
@@ -67,11 +68,12 @@ class WaylandPointerGesturesTest : public WaylandTest {
     WaylandTest::SetUp();
 
     // Pointer capability is required for gesture objects to be initialised.
-    wl_seat_send_capabilities(server_.seat()->resource(),
-                              WL_SEAT_CAPABILITY_POINTER);
+    PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+      wl_seat_send_capabilities(server->seat()->resource(),
+                                WL_SEAT_CAPABILITY_POINTER);
+    });
 
-    Sync();
-
+    ASSERT_TRUE(connection_->seat()->pointer());
     ASSERT_TRUE(connection_->wayland_zwp_pointer_gestures());
   }
 };
@@ -88,33 +90,42 @@ class WaylandPointerGesturesTest : public WaylandTest {
 //
 // See https://crbug.com/1283652
 TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
-  auto* const mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->get_surface_id());
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const pointer = server->seat()->pointer()->resource();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
 
-  uint32_t serial = 0;
-  auto* pointer = server_.seat()->pointer();
-  wl_pointer_send_enter(pointer->resource(), ++serial, mock_surface->resource(),
-                        wl_fixed_from_int(50), wl_fixed_from_int(50));
-  wl_pointer_send_frame(pointer->resource());
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface,
+                          wl_fixed_from_int(50), wl_fixed_from_int(50));
+    wl_pointer_send_frame(pointer);
+  });
 
   PinchEventScaleRecorder observer;
 
-  auto* pinch_resource = server_.wp_pointer_gestures().pinch()->resource();
-  zwp_pointer_gesture_pinch_v1_send_begin(pinch_resource, ++serial,
-                                          /* time */ 0,
-                                          mock_surface->resource(),
-                                          /* fingers */ 2);
-  Sync();
+  PostToServerAndWait([surface_id = window_->root_surface()->get_surface_id()](
+                          wl::TestWaylandServerThread* server) {
+    auto* const pinch = server->wp_pointer_gestures().pinch()->resource();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+
+    zwp_pointer_gesture_pinch_v1_send_begin(pinch, server->GetNextSerial(),
+                                            server->GetNextTime(), surface,
+                                            /* fingers */ 2);
+  });
 
   constexpr double kScales[] = {1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.4,
                                 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7,
                                 0.6, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
   [[maybe_unused]] auto previous_scale = kScales[0];
   for (auto scale : kScales) {
-    zwp_pointer_gesture_pinch_v1_send_update(
-        pinch_resource, /* time */ 0, /* dx */ 0, /* dy */ 0,
-        wl_fixed_from_double(scale), /* rotation */ 0);
-    Sync();
+    PostToServerAndWait([scale](wl::TestWaylandServerThread* server) {
+      auto* const pinch = server->wp_pointer_gestures().pinch()->resource();
+
+      zwp_pointer_gesture_pinch_v1_send_update(
+          pinch, /* time */ 0, /* dx */ 0, /* dy */ 0,
+          wl_fixed_from_double(scale), /* rotation */ 0);
+    });
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_FLOAT_EQ(observer.latest_scale_update(),
                     wl_fixed_to_double(wl_fixed_from_double(scale)));
