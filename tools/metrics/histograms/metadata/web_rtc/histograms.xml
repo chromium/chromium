@@ -144,8 +144,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.DigitalGainApplied" units="dB"
-    expires_after="2023-04-30">
+    expires_after="2023-12-31">
   <owner>alessiob@chromium.org</owner>
+  <owner>silen@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by
     AdaptiveDigitalGainApplier in GainController2. A log call is made once per
@@ -155,60 +156,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.EstimatedNoiseLevel" units="dBFS (negated)"
-    expires_after="2021-12-31">
+    expires_after="2023-12-31">
   <owner>alessiob@chromium.org</owner>
+  <owner>silen@chromium.org</owner>
   <summary>
     This histogram reports the noise level estimation done in GainController2. A
     value is reported every second. The unit is inverted dBFS. The scale goes
-    from 0 (very loud noise) to 100 (very faint noise).
+    from 0 (very loud noise) to 100 (very faint noise). Warning: this histogram
+    was expired from 2021-12-31 to 2022-11-16; data may be missing.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Identity"
-    units="seconds" expires_after="2022-04-24">
+<histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.{Region}"
+    units="seconds" expires_after="2023-12-31">
   <owner>alessiob@chromium.org</owner>
+  <owner>silen@chromium.org</owner>
   <summary>
-    The Fixed-Digital part of the AGC protects from saturation by reducing the
-    level of too loud signals. This metric shows how long the level estimate
-    stays in the 'Identity' region. In this region no attenuating gain is
-    applied. This metric is logged from the Fixed Digital limiter in
-    GainController2.
+    How long the AGC2 limiter remained in the {Region} region. Logged during an
+    active WebRTC call whenever the limiter switches region and at the end of
+    the call.
   </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Knee"
-    units="seconds" expires_after="2022-05-01">
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The Fixed-Digital part of the AGC protects from saturation by reducing the
-    level of too loud signals. This metric shows how long the level estimate
-    stays in the 'Knee' region. In this region some attenuating gain is applied.
-    This metric is logged from the Fixed Digital limiter in GainController2.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Limiter"
-    units="seconds" expires_after="2022-05-01">
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The Fixed-Digital part of the AGC protects from saturation by reducing the
-    level of too loud signals. This metric shows how long the level estimate
-    stays in the 'Limiter' region. In this region some more attenuating gain is
-    applied. This metric is logged from the Fixed Digital limiter in
-    GainController2.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Saturation"
-    units="seconds" expires_after="2022-05-01">
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The Fixed-Digital part of the AGC protects from saturation by reducing the
-    level of too loud signals. This metric shows how long the level estimate
-    stays in the 'Saturation' region. In this region much attenuating gain is
-    applied. This metric is logged from the Fixed Digital limiter in
-    GainController2.
-  </summary>
+  <token key="Region">
+    <variant name="Identity" summary="identity"/>
+    <variant name="Knee" summary="knee"/>
+    <variant name="Limiter" summary="limiter"/>
+    <variant name="Saturation" summary="saturation"/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcClippingAdjustmentAllowed" enum="Boolean"
