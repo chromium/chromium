@@ -126,7 +126,7 @@ std::atomic<bool> g_use_getrandom;
 // both are enabled.
 BASE_FEATURE(kUseGetrandomForRandBytes,
              "UseGetrandomForRandBytes",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseGetrandom() {
   return g_use_getrandom.load(std::memory_order_relaxed);
