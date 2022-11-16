@@ -106,6 +106,9 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   // height set to 0, which results in asking the client to set the width and
   // height of the surface.
   void ActivateSurface(wl::MockXdgSurface* xdg_surface);
+  // Same as above, but uses surface_id. Requires the tests to use async test
+  // server.
+  void ActivateSurface(uint32_t surface_id);
 
   // Initializes SurfaceAugmenter in |server_|.
   void InitializeSurfaceAugmenter();

@@ -228,7 +228,9 @@ void TestWaylandServerThread::RunAndWait(base::OnceClosure closure) {
   run_loop.Run();
 }
 
-MockWpPresentation* TestWaylandServerThread::EnsureWpPresentation() {
+MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
+  if (wp_presentation_.resource())
+    return &wp_presentation_;
   if (wp_presentation_.Initialize(display_.get()))
     return &wp_presentation_;
   return nullptr;

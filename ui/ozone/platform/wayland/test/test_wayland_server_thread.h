@@ -114,8 +114,9 @@ class TestWaylandServerThread : public base::Thread,
   void RunAndWait(base::OnceCallback<void(TestWaylandServerThread*)> callback);
   void RunAndWait(base::OnceClosure closure);
 
-  // Initializes and returns WpPresentation.
-  MockWpPresentation* EnsureWpPresentation();
+  // Returns WpPresentation. If it hasn't been initialized yet, initializes that
+  // first and then returns.
+  MockWpPresentation* EnsureAndGetWpPresentation();
   // Initializes and returns SurfaceAugmenter.
   TestSurfaceAugmenter* EnsureSurfaceAugmenter();
 

@@ -220,6 +220,12 @@ void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   SendConfigureEvent(xdg_surface, {0, 0}, 1, state.get());
 }
 
+void WaylandTest::ActivateSurface(uint32_t surface_id) {
+  ASSERT_EQ(server_mode_, TestServerMode::kAsync);
+  wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
+  SendConfigureEvent(surface_id, {0, 0}, state);
+}
+
 void WaylandTest::InitializeSurfaceAugmenter() {
   if (server_mode_ == TestServerMode::kAsync) {
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
