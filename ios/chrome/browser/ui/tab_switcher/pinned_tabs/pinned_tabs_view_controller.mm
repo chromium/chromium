@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_view_controller.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

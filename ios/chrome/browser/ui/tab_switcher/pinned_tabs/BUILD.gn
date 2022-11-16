@@ -5,14 +5,19 @@
 source_set("pinned_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "pinned_cell.h",
+    "pinned_cell.mm",
     "pinned_tabs_constants.h",
     "pinned_tabs_constants.mm",
+    "pinned_tabs_layout.h",
+    "pinned_tabs_layout.mm",
     "pinned_tabs_view_controller.h",
     "pinned_tabs_view_controller.mm",
   ]
   deps = [
     ":features",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/common/ui/colors",
   ]
 }
