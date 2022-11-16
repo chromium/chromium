@@ -98,7 +98,7 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
                                 const std::string& extension_id,
                                 events::HistogramValue histogram_value,
                                 const std::string& event_name,
-                                std::unique_ptr<base::ListValue> event_args);
+                                base::Value::List event_args);
 
   // BrowserContextKeyedAPI implementation.
   void Shutdown() override;
