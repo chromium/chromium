@@ -125,6 +125,11 @@ export class StatusBoxElement extends CustomElement {
           status.lastCloudReportSentTimestamp + ' (' +
               status.timeSinceLastCloudReportSent + ')');
     }
+
+    if (status.error) {
+      this.setLabelAndShow_(
+          '.error', loadTimeData.getString('statusErrorManagedNoPolicy'));
+    }
   }
 }
 

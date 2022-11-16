@@ -398,6 +398,9 @@ Additional details:
     Google Update
   </message>
  </if>
+  <message name="IDS_POLICY_STATUS_ERROR_MANAGED_NO_POLICY" desc="Message to display when a managed device does not have a policy loaded.">
+    Managed user or device has no policy loaded.
+  </message>
   <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DOMAIN" desc="Label for the enrollment domain in the machine policy status box.">
     Enrollment domain:
   </message>
