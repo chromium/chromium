@@ -467,10 +467,14 @@ void OpenscreenSessionHost::OnNegotiated(
     media_remoter_->OnMirroringResumed();
   }
 
-  session_->RequestCapabilities();
+  if (initially_starting_session) {
+    // We should only request capabilities once, in order to avoid instantiating
+    // the media remoter multiple times.
+    session_->RequestCapabilities();
 
-  if (initially_starting_session && observer_) {
-    observer_->DidStart();
+    if (observer_) {
+      observer_->DidStart();
+    }
   }
 
   LogInfoMessage(base::StringPrintf(
@@ -494,6 +498,12 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::RemotingCapabilities capabilities) {
   DCHECK_EQ(session_.get(), session);
+
+  // This method should only be called once, in order to avoid issues with
+  // multiple media remoters getting instantiated and attempting to fulfill the
+  // mojom interface. Generally speaking, receivers do not update their remoting
+  // capabilities during a single session.
+  DCHECK(!media_remoter_);
   if (state_ == State::kStopped)
     return;
 
