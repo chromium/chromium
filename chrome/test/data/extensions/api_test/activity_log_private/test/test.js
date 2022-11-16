@@ -246,8 +246,6 @@ var domExpectedActivity = [
     'Storage.getItem',
     'Storage.removeItem',
     'Storage.clear',
-    // Web database access
-    'Window.openDatabase',
     // Canvas access
     // XHR from content script.
     'blinkRequestResource XMLHttpRequest',

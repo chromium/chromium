@@ -315,10 +315,6 @@ function executeDOMChangesOnTabUpdated() {
           'store.removeItem("foo"); ' +
           'store.clear();';
 
-  // Accesses the HTML5 WebDatabase API from inside a content script.
-  code += 'var db = openDatabase("testdb", "1.0", "test database", ' +
-          '                      1024 * 1024);';
-
   // Accesses the HTML5 Canvas API from inside a content script.
   code += 'var testCanvas = document.createElement("canvas"); ' +
           'var testContext = testCanvas.getContext("2d");';
