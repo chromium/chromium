@@ -1349,7 +1349,7 @@ void StyleResolver::ApplyBaseStyle(
     ApplyBaseStyleNoCache(element, style_recalc_context, style_request, state,
                           cascade);
     scoped_refptr<const ComputedStyle> style_snapshot =
-        state.StyleBuilder().ToStyle();
+        state.StyleBuilder().CloneStyle();
     DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(
                                animation_base_computed_style, *style_snapshot));
 #endif
@@ -1708,7 +1708,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleBuilder().BaseData()) {
     state.StyleBuilder().SetBaseData(StyleBaseData::Create(
-        ComputedStyle::Clone(*state.Style()), cascade.GetImportantSet()));
+        state.StyleBuilder().CloneStyle(), cascade.GetImportantSet()));
   }
 
   CSSAnimations::CalculateAnimationUpdate(
@@ -1931,8 +1931,9 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
       MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_added, 1);
-    matched_properties_cache_.Add(cache_success.key, *state.Style(),
-                                  *state.ParentStyle());
+    matched_properties_cache_.Add(cache_success.key,
+                                  state.StyleBuilder().CloneStyle(),
+                                  ComputedStyle::Clone(*state.ParentStyle()));
   }
 }
 
@@ -2118,8 +2119,8 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   apply(CascadeFilter(CSSProperty::kLegacyOverlapping, true));
 
   if (state.RejectedLegacyOverlapping()) {
-    scoped_refptr<ComputedStyle> non_legacy_style =
-        ComputedStyle::Clone(*state.Style());
+    scoped_refptr<const ComputedStyle> non_legacy_style =
+        state.StyleBuilder().CloneStyle();
     // Re-apply all overlapping properties (both legacy and non-legacy).
     apply(CascadeFilter(CSSProperty::kOverlapping, false));
     UseCountLegacyOverlapping(GetDocument(), *non_legacy_style, *state.Style());

@@ -60,7 +60,8 @@ class MatchedPropertiesCacheTestCache {
   void Add(const TestKey& key,
            const ComputedStyle& style,
            const ComputedStyle& parent_style) {
-    cache_.Add(key.InnerKey(), style, parent_style);
+    cache_.Add(key.InnerKey(), ComputedStyle::Clone(style),
+               ComputedStyle::Clone(parent_style));
   }
 
   const CachedMatchedProperties* Find(const TestKey& key,

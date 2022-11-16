@@ -2706,12 +2706,11 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
 
-#if DCHECK_IS_ON()
-  scoped_refptr<ComputedStyle> ToStyle() {
+  // NOTE: Prefer `TakeStyle()` if possible.
+  scoped_refptr<const ComputedStyle> CloneStyle() const {
     DCHECK(style_);
     return ComputedStyle::Clone(*style_);
   }
-#endif  // DCHECK_IS_ON()
 
   CORE_EXPORT void InheritFrom(
       const ComputedStyle& inherit_parent,

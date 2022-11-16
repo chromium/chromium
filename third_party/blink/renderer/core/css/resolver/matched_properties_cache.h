@@ -48,11 +48,11 @@ class CORE_EXPORT CachedMatchedProperties final
   Vector<UntracedMember<CSSPropertyValueSet>> matched_properties;
   Vector<MatchedProperties::Data> matched_properties_types;
 
-  scoped_refptr<ComputedStyle> computed_style;
-  scoped_refptr<ComputedStyle> parent_computed_style;
+  scoped_refptr<const ComputedStyle> computed_style;
+  scoped_refptr<const ComputedStyle> parent_computed_style;
 
-  void Set(const ComputedStyle&,
-           const ComputedStyle& parent_style,
+  void Set(scoped_refptr<const ComputedStyle>&& style,
+           scoped_refptr<const ComputedStyle>&& parent_style,
            const MatchedPropertiesVector&);
   void Clear();
 
@@ -97,7 +97,9 @@ class CORE_EXPORT MatchedPropertiesCache {
   };
 
   const CachedMatchedProperties* Find(const Key&, const StyleResolverState&);
-  void Add(const Key&, const ComputedStyle&, const ComputedStyle& parent_style);
+  void Add(const Key&,
+           scoped_refptr<const ComputedStyle>&&,
+           scoped_refptr<const ComputedStyle>&& parent_style);
 
   void Clear();
   void ClearViewportDependent();

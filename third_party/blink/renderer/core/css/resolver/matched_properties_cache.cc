@@ -45,9 +45,10 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
                                   sizeof(MatchedProperties) * vector.size());
 }
 
-void CachedMatchedProperties::Set(const ComputedStyle& style,
-                                  const ComputedStyle& parent_style,
-                                  const MatchedPropertiesVector& properties) {
+void CachedMatchedProperties::Set(
+    scoped_refptr<const ComputedStyle>&& style,
+    scoped_refptr<const ComputedStyle>&& parent_style,
+    const MatchedPropertiesVector& properties) {
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
@@ -56,8 +57,8 @@ void CachedMatchedProperties::Set(const ComputedStyle& style,
   // Note that we don't cache the original ComputedStyle instance. It may be
   // further modified.  The ComputedStyle in the cache is really just a holder
   // for the substructures and never used as-is.
-  this->computed_style = ComputedStyle::Clone(style);
-  this->parent_computed_style = ComputedStyle::Clone(parent_style);
+  this->computed_style = style;
+  this->parent_computed_style = parent_style;
 }
 
 void CachedMatchedProperties::Clear() {
@@ -164,9 +165,10 @@ bool CachedMatchedProperties::operator!=(
   return !(*this == properties);
 }
 
-void MatchedPropertiesCache::Add(const Key& key,
-                                 const ComputedStyle& style,
-                                 const ComputedStyle& parent_style) {
+void MatchedPropertiesCache::Add(
+    const Key& key,
+    scoped_refptr<const ComputedStyle>&& style,
+    scoped_refptr<const ComputedStyle>&& parent_style) {
   DCHECK(key.IsValid());
 
   Member<CachedMatchedProperties>& cache_item =
@@ -177,7 +179,8 @@ void MatchedPropertiesCache::Add(const Key& key,
   else
     cache_item->Clear();
 
-  cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
+  cache_item->Set(std::move(style), std::move(parent_style),
+                  key.result_.GetMatchedProperties());
 }
 
 void MatchedPropertiesCache::Clear() {

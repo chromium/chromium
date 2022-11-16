@@ -138,7 +138,7 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
                       .CreateLength(conversion_data, value_range_);
   if (LengthPropertyFunctions::SetLength(CssProperty(), builder, length)) {
 #if DCHECK_IS_ON()
-    scoped_refptr<const ComputedStyle> before_style = builder.ToStyle();
+    scoped_refptr<const ComputedStyle> before_style = builder.CloneStyle();
     // Assert that setting the length on ComputedStyle directly is identical to
     // the StyleBuilder code path. This check is useful for catching differences
     // in clamping behavior.
@@ -149,7 +149,7 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     StyleBuilder::ApplyProperty(
         GetProperty().GetCSSProperty(), state,
         ScopedCSSValue(*CSSValue::Create(length, zoom), nullptr));
-    scoped_refptr<const ComputedStyle> after_style = builder.ToStyle();
+    scoped_refptr<const ComputedStyle> after_style = builder.CloneStyle();
     DCHECK(
         LengthPropertyFunctions::GetLength(CssProperty(), *after_style, after));
     DCHECK(before.IsSpecified());
