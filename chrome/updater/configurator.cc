@@ -56,7 +56,14 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
       unzip_factory_(
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(
-          base::MakeRefCounted<update_client::InProcessPatcherFactory>()) {}
+          base::MakeRefCounted<update_client::InProcessPatcherFactory>()) {
+#if BUILDFLAG(IS_LINUX)
+  // On Linux creating the NetworkFetcherFactory requires performing blocking IO
+  // to load an external library. This should be done when the configurator is
+  // created.
+  GetNetworkFetcherFactory();
+#endif
+}
 Configurator::~Configurator() = default;
 
 double Configurator::InitialDelay() const {
