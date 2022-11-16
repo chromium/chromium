@@ -541,8 +541,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
   }
 
  private:
-  raw_ptr<download::DownloadItem> download_item_ = nullptr;
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  raw_ptr<download::DownloadItem, DanglingUntriaged> download_item_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
   std::string notification_id_;
 };
 

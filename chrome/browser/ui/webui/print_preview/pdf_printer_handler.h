@@ -81,7 +81,7 @@ class PdfPrinterHandler : public PrinterHandler,
                           bool prompt_user);
 
   // The print preview web contents. Protected so unit tests can access it.
-  const raw_ptr<content::WebContents> preview_web_contents_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> preview_web_contents_;
 
   // The underlying dialog object. Protected so unit tests can access it.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -102,7 +102,7 @@ class PdfPrinterHandler : public PrinterHandler,
   // Return save location as the Drive mount or fetch from Download Preferences.
   base::FilePath GetSaveLocation() const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<PrintPreviewStickySettings> sticky_settings_;
 
   // Holds the path to the print to pdf request. It is empty if no such request

@@ -89,7 +89,7 @@ class TutorialService {
     TutorialCreationParams(TutorialDescription* description,
                            ui::ElementContext context);
 
-    raw_ptr<TutorialDescription> description_;
+    raw_ptr<TutorialDescription, DanglingUntriaged> description_;
     ui::ElementContext context_;
   };
 

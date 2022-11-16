@@ -69,9 +69,10 @@ class DlpContentManagerTestHelper {
   DlpReportingManager* GetReportingManager() const;
 
  private:
-  raw_ptr<DlpContentManager> manager_;
-  raw_ptr<DlpReportingManager> reporting_manager_;
-  raw_ptr<ScopedDlpContentObserverForTesting> scoped_dlp_content_observer_;
+  raw_ptr<DlpContentManager, DanglingUntriaged> manager_;
+  raw_ptr<DlpReportingManager, DanglingUntriaged> reporting_manager_;
+  raw_ptr<ScopedDlpContentObserverForTesting, DanglingUntriaged>
+      scoped_dlp_content_observer_;
 };
 
 }  // namespace policy

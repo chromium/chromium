@@ -56,7 +56,9 @@ struct BreakpadInfo {
   uint64_t process_start_time;     // Uptime of the crashing process.
   size_t oom_size;                 // Amount of memory requested if OOM.
   uint64_t pid;                    // PID where applicable.
-  raw_ptr<crash_reporter::internal::TransitionalCrashKeyStorage> crash_keys;
+  raw_ptr<crash_reporter::internal::TransitionalCrashKeyStorage,
+          DanglingUntriaged>
+      crash_keys;
 };
 
 extern void HandleCrashDump(const BreakpadInfo& info);

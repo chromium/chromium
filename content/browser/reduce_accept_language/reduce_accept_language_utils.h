@@ -160,7 +160,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
 
   // The delegate is owned by the BrowserContext, which should always outlive
   // this utility class.
-  raw_ref<ReduceAcceptLanguageControllerDelegate> delegate_;
+  raw_ref<ReduceAcceptLanguageControllerDelegate, DanglingUntriaged> delegate_;
 };
 
 }  // namespace content

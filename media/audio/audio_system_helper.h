@@ -55,7 +55,7 @@ class MEDIA_EXPORT AudioSystemHelper {
   absl::optional<AudioParameters> ComputeOutputParameters(
       const std::string& device_id);
 
-  const raw_ptr<AudioManager> audio_manager_;
+  const raw_ptr<AudioManager, DanglingUntriaged> audio_manager_;
 };
 
 }  // namespace media

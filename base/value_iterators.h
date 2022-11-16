@@ -168,7 +168,7 @@ class BASE_EXPORT dict_iterator_proxy {
   const_reverse_iterator crend() const;
 
  private:
-  raw_ptr<DictStorage> storage_;
+  raw_ptr<DictStorage, DanglingUntriaged> storage_;
 };
 
 // This class wraps the various const |begin| and |end| methods of the
@@ -205,7 +205,7 @@ class BASE_EXPORT const_dict_iterator_proxy {
   const_reverse_iterator crend() const;
 
  private:
-  raw_ptr<const DictStorage> storage_;
+  raw_ptr<const DictStorage, DanglingUntriaged> storage_;
 };
 }  // namespace detail
 

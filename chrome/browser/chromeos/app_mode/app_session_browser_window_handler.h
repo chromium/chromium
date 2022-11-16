@@ -72,7 +72,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // open.
   bool IsOnlySettingsBrowserRemainOpen() const;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   // |web_app_name_| is set only when we have the initial browser in the web
   // kiosk session.
   absl::optional<std::string> web_app_name_;

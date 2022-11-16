@@ -52,7 +52,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
     }
 
    private:
-    raw_ptr<InterfaceProvider> provider_;
+    raw_ptr<InterfaceProvider, DanglingUntriaged> provider_;
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not

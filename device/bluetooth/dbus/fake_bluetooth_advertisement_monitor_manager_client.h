@@ -67,7 +67,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdvertisementMonitorManagerClient
   void OnPropertyChanged(const dbus::ObjectPath& object_path,
                          const std::string& property_name);
 
-  raw_ptr<FakeBluetoothAdvertisementMonitorApplicationServiceProvider>
+  raw_ptr<FakeBluetoothAdvertisementMonitorApplicationServiceProvider,
+          DanglingUntriaged>
       application_provider_ = nullptr;
   std::unique_ptr<Properties> properties_;
 

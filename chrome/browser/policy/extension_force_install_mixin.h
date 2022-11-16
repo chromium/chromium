@@ -239,7 +239,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
   bool initialized_ = false;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   raw_ptr<policy::MockConfigurationPolicyProvider> mock_policy_provider_ =
       nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

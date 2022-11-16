@@ -52,7 +52,7 @@ class DlpRulesPolicyTest : public InProcessBrowserTest {
     return new_rules_manager;
   }
 
-  raw_ptr<DlpRulesManager> rules_manager_;
+  raw_ptr<DlpRulesManager, DanglingUntriaged> rules_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {

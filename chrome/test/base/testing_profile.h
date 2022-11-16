@@ -520,7 +520,8 @@ class TestingProfile : public Profile {
   std::unique_ptr<policy::PolicyService> policy_service_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  raw_ptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
+  raw_ptr<TestingPrefStore, DanglingUntriaged> supervised_user_pref_store_ =
+      nullptr;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

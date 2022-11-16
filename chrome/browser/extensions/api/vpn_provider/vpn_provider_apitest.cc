@@ -171,7 +171,7 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
     extension_id_ = extension_->id();
   }
 
-  raw_ptr<const extensions::Extension> extension_ = nullptr;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_ = nullptr;
   absl::optional<std::string> extension_id_;
 };
 

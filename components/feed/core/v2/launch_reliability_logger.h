@@ -58,7 +58,7 @@ class LaunchReliabilityLogger {
       feedwire::DiscoverLaunchResult result);
 
  private:
-  raw_ptr<StreamSurfaceSet> surfaces_;
+  raw_ptr<StreamSurfaceSet, DanglingUntriaged> surfaces_;
   NetworkRequestId::Generator request_id_gen_;
 };
 

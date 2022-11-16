@@ -148,7 +148,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
       override {}
   void CloseBubble(const std::string& window_id) override {}
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   web_app::AppId selected_app_id_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

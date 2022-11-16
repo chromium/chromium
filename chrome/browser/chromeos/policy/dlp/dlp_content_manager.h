@@ -406,7 +406,7 @@ class DlpContentManager : public DlpContentObserver,
   // List of the currently running screen shares.
   std::vector<std::unique_ptr<ScreenShareInfo>> running_screen_shares_;
 
-  raw_ptr<DlpReportingManager> reporting_manager_{nullptr};
+  raw_ptr<DlpReportingManager, DanglingUntriaged> reporting_manager_{nullptr};
 
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 

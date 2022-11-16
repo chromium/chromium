@@ -80,8 +80,8 @@ class DownloadControllerClientLacrosBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<crosapi::mojom::DownloadControllerClient>
       download_controller_client_;
-  raw_ptr<testing::NiceMock<content::MockDownloadManager>> download_manager_ =
-      nullptr;
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>, DanglingUntriaged>
+      download_manager_ = nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

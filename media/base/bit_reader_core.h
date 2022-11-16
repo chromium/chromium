@@ -107,7 +107,7 @@ class MEDIA_EXPORT BitReaderCore {
   // Refill the current bit register from the next bit register.
   void RefillCurrentRegister();
 
-  const raw_ptr<ByteStreamProvider> byte_stream_provider_;
+  const raw_ptr<ByteStreamProvider, DanglingUntriaged> byte_stream_provider_;
 
   // Number of bits read so far.
   int bits_read_;

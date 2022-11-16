@@ -37,7 +37,7 @@ class CaptivePortalLoginDetector {
   void SetIsLoginTab();
 
  private:
-  raw_ptr<CaptivePortalService> captive_portal_service_;
+  raw_ptr<CaptivePortalService, DanglingUntriaged> captive_portal_service_;
 
   // True if this is a login tab.  Set manually, automatically cleared once
   // login is detected.

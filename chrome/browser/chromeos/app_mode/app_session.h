@@ -105,7 +105,7 @@ class AppSession {
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
 #endif
 
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   base::OnceClosure attempt_user_exit_;
   const std::unique_ptr<AppSessionMetricsService> metrics_service_;

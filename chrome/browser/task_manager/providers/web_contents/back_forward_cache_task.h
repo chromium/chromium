@@ -43,9 +43,9 @@ class BackForwardCacheTask : public RendererTask {
   // is created per site. Therefore a 1:1 mapping of main frame task to subframe
   // task is not guaranteed.
   // For cached main frame tasks |parent_task_| is nullptr.
-  raw_ptr<RendererTask> parent_task_;
+  raw_ptr<RendererTask, DanglingUntriaged> parent_task_;
   // The provider has the same lifespan as the task manager.
-  const raw_ptr<WebContentsTaskProvider> task_provider_;
+  const raw_ptr<WebContentsTaskProvider, DanglingUntriaged> task_provider_;
 };
 
 }  // namespace task_manager

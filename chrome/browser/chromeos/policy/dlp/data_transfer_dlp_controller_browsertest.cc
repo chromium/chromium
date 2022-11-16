@@ -260,14 +260,14 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
         widget_->GetNativeWindow()->GetRootWindow());
   }
 
-  raw_ptr<MockDlpRulesManager> rules_manager_;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events_;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<views::Textfield, DanglingUntriaged> textfield_ = nullptr;
 };
 
 // Flaky on MSan bots: http://crbug.com/1178328

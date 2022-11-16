@@ -125,7 +125,7 @@ class HoldingSpaceServicePrintToPdfIntegrationBrowserTest
   }
 
   std::unique_ptr<printing::PdfPrinterHandler> pdf_printer_handler_;
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

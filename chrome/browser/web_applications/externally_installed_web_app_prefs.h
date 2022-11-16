@@ -106,7 +106,7 @@ class ExternallyInstalledWebAppPrefs {
   static void LogDataMetrics(bool data_exists_in_pref,
                              bool data_exists_in_registrar);
 
-  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 };
 
 }  // namespace web_app

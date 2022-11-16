@@ -425,9 +425,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       bool allowed,
       bool remember_user_choice);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  const raw_ptr<WebAppProvider> provider_;
+  const raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
   // nullptr for Lacros Chrome, valid pointer otherwise.
   const raw_ptr<ash::SystemWebAppManager> swa_manager_;
 
@@ -435,7 +435,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::AppType app_type_;
 
-  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
@@ -461,7 +461,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::AppNotifications app_notifications_;
 
-  raw_ptr<badging::BadgeManager> badge_manager_ = nullptr;
+  raw_ptr<badging::BadgeManager, DanglingUntriaged> badge_manager_ = nullptr;
 
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>
