@@ -17,6 +17,28 @@
 namespace base {
 namespace internal {
 
+namespace {
+
+// Asserts that a lock is acquired and annotates the scope such that
+// base/thread_annotations.h can recognize that the lock is acquired.
+class SCOPED_LOCKABLE AnnotateLockAcquired {
+ public:
+  explicit AnnotateLockAcquired(const CheckedLock& lock)
+      EXCLUSIVE_LOCK_FUNCTION(lock)
+      : acquired_lock_(lock) {
+    acquired_lock_->AssertAcquired();
+  }
+
+  ~AnnotateLockAcquired() UNLOCK_FUNCTION() {
+    acquired_lock_->AssertAcquired();
+  }
+
+ private:
+  const raw_ref<const CheckedLock> acquired_lock_;
+};
+
+}  // namespace
+
 Sequence::Transaction::Transaction(Sequence* sequence)
     : TaskSource::Transaction(sequence) {}
 
@@ -25,6 +47,7 @@ Sequence::Transaction::Transaction(Sequence::Transaction&& other) = default;
 Sequence::Transaction::~Transaction() = default;
 
 bool Sequence::Transaction::ShouldBeQueued() const {
+  AnnotateLockAcquired annotate(sequence()->lock_);
   // A sequence should be queued to the immediate queue after receiving a new
   // immediate Task, or queued to or updated in the delayed queue after
   // receiving a new delayed Task, if it's not already in the immediate queue
@@ -49,6 +72,7 @@ bool Sequence::Transaction::ShouldBeQueued() const {
 }
 
 bool Sequence::Transaction::TopDelayedTaskWillChange(Task& delayed_task) const {
+  AnnotateLockAcquired annotate(sequence()->lock_);
   if (sequence()->IsEmpty())
     return true;
   return delayed_task.latest_delayed_run_time() <
@@ -56,6 +80,7 @@ bool Sequence::Transaction::TopDelayedTaskWillChange(Task& delayed_task) const {
 }
 
 void Sequence::Transaction::PushImmediateTask(Task task) {
+  AnnotateLockAcquired annotate(sequence()->lock_);
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
@@ -95,6 +120,7 @@ void Sequence::Transaction::PushImmediateTask(Task task) {
 }
 
 void Sequence::Transaction::PushDelayedTask(Task task) {
+  AnnotateLockAcquired annotate(sequence()->lock_);
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
@@ -215,6 +241,7 @@ TimeTicks Sequence::GetNextReadyTime() {
 
 Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
+  AnnotateLockAcquired annotate(lock_);
 
   DCHECK(current_location_.load(std::memory_order_relaxed) ==
          Sequence::SequenceLocation::kInWorker);
@@ -230,6 +257,8 @@ Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
 
 bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
+  AnnotateLockAcquired annotate(lock_);
+
   // There should never be a call to DidProcessTask without an associated
   // WillRunTask().
   DCHECK(current_location_.load(std::memory_order_relaxed) ==
@@ -252,6 +281,8 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
 bool Sequence::WillReEnqueue(TimeTicks now,
                              TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
+  AnnotateLockAcquired annotate(lock_);
+
   // This should always be called from a worker thread and it will be
   // called after DidProcessTask().
   DCHECK(current_location_.load(std::memory_order_relaxed) ==
@@ -298,6 +329,8 @@ TimeTicks Sequence::GetDelayedSortKey() const {
 
 Task Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
+  AnnotateLockAcquired annotate(lock_);
+
   // See comment on TaskSource::task_runner_ for lifetime management details.
   if (!IsEmpty() && current_location_.load(std::memory_order_relaxed) !=
                         Sequence::SequenceLocation::kInWorker) {
