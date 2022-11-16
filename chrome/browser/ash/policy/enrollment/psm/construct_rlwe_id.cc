@@ -19,21 +19,23 @@ psm_rlwe::RlwePlaintextId ConstructRlweId() {
   // Retrieve the device's serial number and RLZ brand code.
   chromeos::system::StatisticsProvider* provider =
       chromeos::system::StatisticsProvider::GetInstance();
-  const std::string device_serial_number = provider->GetEnterpriseMachineID();
-  std::string device_rlz_brand_code;
-  const bool device_rlz_brand_code_found = provider->GetMachineStatistic(
-      chromeos::system::kRlzBrandCodeKey, &device_rlz_brand_code);
+  const absl::optional<base::StringPiece> device_serial_number =
+      provider->GetMachineID();
+  const absl::optional<base::StringPiece> device_rlz_brand_code =
+      provider->GetMachineStatistic(chromeos::system::kRlzBrandCodeKey);
 
   // Verify the existence of the device's data.
-  CHECK(!device_serial_number.empty());
-  CHECK(device_rlz_brand_code_found);
-  CHECK(!device_rlz_brand_code.empty());
+  CHECK(device_serial_number);
+  CHECK(!device_serial_number->empty());
+  CHECK(device_rlz_brand_code);
+  CHECK(!device_rlz_brand_code->empty());
 
   // Construct the encrypted PSM RLWE ID.
   psm_rlwe::RlwePlaintextId rlwe_id;
   std::string rlz_brand_code_hex = base::HexEncode(
-      device_rlz_brand_code.data(), device_rlz_brand_code.size());
-  rlwe_id.set_sensitive_id(rlz_brand_code_hex + "/" + device_serial_number);
+      device_rlz_brand_code->data(), device_rlz_brand_code->size());
+  rlwe_id.set_sensitive_id(rlz_brand_code_hex + "/" +
+                           std::string(device_serial_number.value()));
 
   return rlwe_id;
 }
