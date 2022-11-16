@@ -123,6 +123,11 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 
   _appState = appState;
   [appState addObserver:self];
+
+  for (SceneState* scene in appState.connectedScenes) {
+    [scene addObserver:self];
+  }
+  [self updateIncognitoContentVisible];
 }
 
 #pragma mark - AppStateObserver
