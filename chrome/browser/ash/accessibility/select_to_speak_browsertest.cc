@@ -129,8 +129,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
   void LoadURLAndSelectToSpeak(std::string url) {
     content::AccessibilityNotificationWaiter waiter(
-        GetWebContents(), ui::kAXModeComplete,
-        ax::mojom::Event::kLayoutComplete);
+        GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     std::ignore = waiter.WaitForNotification();
 
