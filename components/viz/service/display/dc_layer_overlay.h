@@ -220,6 +220,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // List of clear video content candidate bounds.
   std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_{};
   int frames_since_last_overlay_candidate_rects_change_ = 0;
+  bool no_undamaged_overlay_promotion_;
 
   THREAD_CHECKER(thread_checker_);
 };

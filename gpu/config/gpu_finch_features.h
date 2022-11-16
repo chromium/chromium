@@ -42,6 +42,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasContextLostInBackground);
 GPU_EXPORT BASE_DECLARE_FEATURE(kGpuProcessHighPriorityWin);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kDisableVideoOverlayIfMoving);
+
+GPU_EXPORT BASE_DECLARE_FEATURE(kNoUndamagedOverlayPromotion);
 #endif
 
 #if BUILDFLAG(IS_MAC)

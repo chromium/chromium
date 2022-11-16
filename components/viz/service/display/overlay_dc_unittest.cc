@@ -827,8 +827,10 @@ TEST_F(DCLayerOverlayTest, RoundedCorners) {
 
 // If there are multiple yuv overlay quad candidates, no overlay will be
 // promoted to save power.
-TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
-  base::test::ScopedFeatureList feature_list;
+TEST_F(DCLayerOverlayTest, MultipleYUVOverlays) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNoUndamagedOverlayPromotion);
   {
     auto pass = CreateRenderPass();
     CreateOpaqueQuadAt(resource_provider_.get(),
