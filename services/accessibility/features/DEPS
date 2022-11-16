@@ -1,0 +1,14 @@
+include_rules = [
+  "+gin",
+  "+ui/accessibility/ax_event.h",
+  "+ui/accessibility/ax_node_id_forward.h",
+  "+ui/accessibility/ax_node_position.h",
+  "+ui/accessibility/ax_relative_bounds.h",
+  "+ui/accessibility/ax_tree_id.h",
+  "+ui/accessibility/ax_tree_update.h",
+  "+ui/accessibility/platform/automation/automation_tree_manager_owner.h",
+  "+ui/accessibility/platform/automation/automation_v8_bindings.h",
+  "+ui/accessibility/platform/automation/automation_v8_router.h",
+  "+ui/accessibility/platform/automation/automation_api_util.h",
+  "+v8/include",
+]

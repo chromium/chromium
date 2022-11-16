@@ -59,10 +59,12 @@ class AccessibilityServiceCrosTest : public testing::Test {
                         mojom::AssistiveTechnologyType feature) {
     return service->at_controller_->IsFeatureEnabled(feature);
   }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AccessibilityServiceCrosTest, BindsAutomation) {
-  base::test::SingleThreadTaskEnvironment task_environment;
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<AccessibilityServiceCros> service =
       std::make_unique<AccessibilityServiceCros>(std::move(receiver));
@@ -72,8 +74,33 @@ TEST_F(AccessibilityServiceCrosTest, BindsAutomation) {
   EXPECT_TRUE(client.IsBound());
 }
 
-TEST_F(AccessibilityServiceCrosTest, BindsAssistiveTechnologyController) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+TEST_F(AccessibilityServiceCrosTest,
+       BindsAssistiveTechnologyControllerWithNoFeaturesEnabled) {
+  mojo::PendingReceiver<mojom::AccessibilityService> receiver;
+  std::unique_ptr<AccessibilityServiceCros> service =
+      std::make_unique<AccessibilityServiceCros>(std::move(receiver));
+
+  FakeAssistiveTechnologyController at_controller(service.get());
+  at_controller.BindAssistiveTechnologyController(
+      std::vector<mojom::AssistiveTechnologyType>());
+  EXPECT_TRUE(at_controller.IsBound());
+
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kChromeVox));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kAutoClick));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kSwitchAccess));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kDictation));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kMagnifier));
+  EXPECT_FALSE(IsFeatureEnabled(
+      service.get(), mojom::AssistiveTechnologyType::kSelectToSpeak));
+}
+
+TEST_F(AccessibilityServiceCrosTest,
+       BindsAssistiveTechnologyControllerWithSomeFeaturesEnabled) {
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<AccessibilityServiceCros> service =
       std::make_unique<AccessibilityServiceCros>(std::move(receiver));

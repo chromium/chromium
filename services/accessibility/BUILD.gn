@@ -27,6 +27,18 @@ source_set("lib") {
       "accessibility_service_cros.h",
       "assistive_technology_controller_impl.cc",
       "assistive_technology_controller_impl.h",
+      "features/automation_internal_bindings.cc",
+      "features/automation_internal_bindings.h",
+      "features/v8_manager.cc",
+      "features/v8_manager.h",
+    ]
+    public_deps += [
+      "//gin",
+      "//ui/accessibility:accessibility",
+    ]
+    configs += [
+      "//tools/v8_context_snapshot:use_v8_context_snapshot",
+      "//v8:external_startup_data",
     ]
   } else {
     sources += [
@@ -62,7 +74,9 @@ source_set("tests") {
     sources = [
       "accessibility_service_cros_unittest.cc",
       "assistive_technology_controller_impl_unittest.cc",
+      "features/v8_manager_unittest.cc",
     ]
+    deps += [ "//ui/accessibility:accessibility" ]
   } else {
     sources = [ "accessibility_service_chrome_unittest.cc" ]
   }
