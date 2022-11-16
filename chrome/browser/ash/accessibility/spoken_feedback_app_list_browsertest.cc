@@ -261,6 +261,15 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     return nullptr;
   }
 
+  void ReadWindowTitle() {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId,
+        "import('/chromevox/background/"
+        "command_handler_interface.js').then(module => "
+        "module.CommandHandlerInterface.instance.onCommand('readCurrentTitle'))"
+        ";");
+  }
+
  private:
   const SpokenFeedbackAppListTestVariant variant_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
@@ -550,6 +559,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
   sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
+  sm_.ExpectSpeech("Launcher, all apps");
+  sm_.Call([this]() { ReadWindowTitle(); });
+  sm_.ExpectSpeech("Launcher");
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("Button");
@@ -764,6 +776,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchTest, LauncherSearch) {
 
   sm_.ExpectSpeechPattern("Search your *");
   sm_.ExpectSpeech("Edit text");
+  sm_.Call([this]() { ReadWindowTitle(); });
+  sm_.ExpectSpeech("Launcher");
 
   sm_.Call([this]() {
     apps_provider_->set_best_match_count(2);
