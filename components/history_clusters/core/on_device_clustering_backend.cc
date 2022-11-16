@@ -384,16 +384,25 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   }
 
   // Group visits into clusters.
+  base::ElapsedThreadTimer clusterer_timer;
   std::vector<history::Cluster> clusters =
       clusterer->CreateInitialClustersFromVisits(std::move(visits));
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ContextClusterer.ThreadTime",
+      clusterer_timer.Elapsed());
 
   // Process clusters.
+  base::ElapsedThreadTimer cluster_processors_timer;
   for (const auto& processor : cluster_processors) {
     processor->ProcessClusters(&clusters);
   }
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ClusterProcessors.ThreadTime",
+      cluster_processors_timer.Elapsed());
 
   // Run finalizers that dedupe and score visits within a cluster and
   // log several metrics about the result.
+  base::ElapsedThreadTimer cluster_finalizers_timer;
   std::vector<int> keyword_sizes;
   std::vector<int> visits_in_clusters;
   keyword_sizes.reserve(clusters.size());
@@ -411,6 +420,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     visits_in_clusters.emplace_back(cluster.visits.size());
     keyword_sizes.emplace_back(cluster.keyword_to_data_map.size());
   }
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ClusterFinalizers.ThreadTime",
+      cluster_finalizers_timer.Elapsed());
 
   // It's a bit strange that this is essentially a `ClusterProcessor` but has
   // to operate after the finalizers.
