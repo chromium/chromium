@@ -425,6 +425,11 @@ void DefaultProvider::RecordHistogramMetrics() {
           GetPrefName(ContentSettingsType::BLUETOOTH_GUARD))),
       CONTENT_SETTING_NUM_SETTINGS);
   base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultBackgroundSyncSetting",
+      IntToContentSetting(prefs_->GetInteger(
+          GetPrefName(ContentSettingsType::BACKGROUND_SYNC))),
+      CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
       "ContentSettings.RegularProfile.DefaultAutoplaySetting",
       IntToContentSetting(
           prefs_->GetInteger(GetPrefName(ContentSettingsType::AUTOPLAY))),
