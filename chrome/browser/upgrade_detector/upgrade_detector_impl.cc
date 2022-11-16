@@ -23,7 +23,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
@@ -71,11 +70,11 @@ constexpr auto kOutdatedBuildDetectorPeriod = base::Days(1);
 constexpr auto kOutdatedBuildAge = base::Days(7) * 8;
 
 constexpr bool ShouldDetectOutdatedBuilds() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
   return true;
-#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif
 }
 
 // Check if one of the outdated simulation switches was present on the command
@@ -474,9 +473,7 @@ void UpgradeDetectorImpl::Init() {
     variations_service->AddObserver(this);
   }
 
-  // On Windows, only enable upgrade notifications for Google Chrome builds.
-  // Chromium does not use an auto-updater.
-#if !BUILDFLAG(IS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
 
   // On macOS, only enable upgrade notifications if the updater (Keystone) is
   // present.
@@ -484,9 +481,6 @@ void UpgradeDetectorImpl::Init() {
   if (!keystone_glue::KeystoneEnabled())
     return;
 #endif
-
-  // On non-macOS non-Windows, always enable upgrade notifications regardless
-  // of branding.
 
   // Start checking for outdated builds sometime after startup completes.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT,
@@ -499,7 +493,7 @@ void UpgradeDetectorImpl::Init() {
   auto* const build_state = g_browser_process->GetBuildState();
   build_state->AddObserver(this);
   installed_version_poller_.emplace(build_state);
-#endif
+#endif  // BUILDFLAG(ENABLE_UPDATE_NOTIFICATIONS)
 }
 
 void UpgradeDetectorImpl::Shutdown() {
