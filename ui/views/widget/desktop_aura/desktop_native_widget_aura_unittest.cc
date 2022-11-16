@@ -409,7 +409,7 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
     params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
     params.native_widget = desktop_native_widget;
     widget->Init(std::move(params));
-
+    widget->Show();
     // Widget will create a DefaultWidgetDelegate if no delegates are provided.
     // Call Widget::OnNativeWidgetDestroyed() to destroy
     // the WidgetDelegate properly.
@@ -458,6 +458,12 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnCaptureLostTest) {
   static_cast<aura::WindowDelegate*>(desktop_native_widget)->OnCaptureLost();
 }
 
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnGestureEventTest) {
+  ui::GestureEvent move(0, 0, 0, ui::EventTimeForNow(),
+                        ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+  static_cast<ui::EventHandler*>(desktop_native_widget)->OnGestureEvent(&move);
+}
+
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostMovedInPixelsTest) {
   static_cast<aura::WindowTreeHostObserver*>(desktop_native_widget)
       ->OnHostMovedInPixels(nullptr);
@@ -476,6 +482,12 @@ TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnHostWorkspaceChangedTest) {
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnKeyEventTest) {
   ui::KeyEvent key(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE);
   static_cast<ui::EventHandler*>(desktop_native_widget)->OnKeyEvent(&key);
+}
+
+TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnMouseEventTest) {
+  ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
+                      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  static_cast<ui::EventHandler*>(desktop_native_widget)->OnMouseEvent(&move);
 }
 
 TEST_F(DesktopNativeWidgetAuraWithNoDelegateTest, OnPaintTest) {

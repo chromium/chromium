@@ -799,6 +799,8 @@ bool DesktopWindowTreeHostWin::HasNonClientView() const {
 }
 
 FrameMode DesktopWindowTreeHostWin::GetFrameMode() const {
+  if (!GetWidget())
+    return FrameMode::SYSTEM_DRAWN;
   return GetWidget()->ShouldUseNativeFrame() ? FrameMode::SYSTEM_DRAWN
                                              : FrameMode::CUSTOM_DRAWN;
 }
@@ -808,11 +810,12 @@ bool DesktopWindowTreeHostWin::HasFrame() const {
 }
 
 void DesktopWindowTreeHostWin::SchedulePaint() {
-  GetWidget()->GetRootView()->SchedulePaint();
+  if (GetWidget())
+    GetWidget()->GetRootView()->SchedulePaint();
 }
 
 bool DesktopWindowTreeHostWin::ShouldPaintAsActive() const {
-  return GetWidget()->ShouldPaintAsActive();
+  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : false;
 }
 
 bool DesktopWindowTreeHostWin::CanResize() const {
@@ -830,7 +833,8 @@ bool DesktopWindowTreeHostWin::CanMinimize() const {
 bool DesktopWindowTreeHostWin::CanActivate() const {
   if (IsModalWindowActive())
     return true;
-  return native_widget_delegate_->CanActivate();
+  return native_widget_delegate_ ? native_widget_delegate_->CanActivate()
+                                 : false;
 }
 
 bool DesktopWindowTreeHostWin::WantsMouseEventsWhenInactive() const {
@@ -838,14 +842,13 @@ bool DesktopWindowTreeHostWin::WantsMouseEventsWhenInactive() const {
 }
 
 bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
-  const Widget* widget = GetWidget()->GetTopLevelWidget();
+  const Widget* widget =
+      GetWidget() ? GetWidget()->GetTopLevelWidget() : nullptr;
   return IsMaximized() || (widget && widget->ShouldUseNativeFrame());
 }
 
 bool DesktopWindowTreeHostWin::IsModal() const {
-  if (native_widget_delegate_)
-    return native_widget_delegate_->IsModal();
-  return false;
+  return native_widget_delegate_ ? native_widget_delegate_->IsModal() : false;
 }
 
 int DesktopWindowTreeHostWin::GetInitialShowState() const {
@@ -1003,7 +1006,8 @@ void DesktopWindowTreeHostWin::HandleWorkAreaChanged() {
 }
 
 void DesktopWindowTreeHostWin::HandleVisibilityChanged(bool visible) {
-  native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
+  if (native_widget_delegate_)
+    native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
 }
 
 void DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(bool restored) {
@@ -1236,11 +1240,13 @@ void DesktopWindowTreeHostWin::SetBoundsInDIP(const gfx::Rect& bounds) {
 // DesktopWindowTreeHostWin, private:
 
 Widget* DesktopWindowTreeHostWin::GetWidget() {
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 const Widget* DesktopWindowTreeHostWin::GetWidget() const {
-  return native_widget_delegate_->AsWidget();
+  return native_widget_delegate_ ? native_widget_delegate_->AsWidget()
+                                 : nullptr;
 }
 
 HWND DesktopWindowTreeHostWin::GetHWND() const {
