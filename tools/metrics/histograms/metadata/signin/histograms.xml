@@ -668,6 +668,16 @@ the browser and content area. -->
   <summary>Tracks the latency of calls to the Kids Management API.</summary>
 </histogram>
 
+<histogram name="Signin.ListFamilyMembersRequest.LegacyNoError.Latency"
+    units="ms" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Latency of the legacy calls to the Kids Management API that resulted with
+    success.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ListFamilyMembersRequest.Status"
     enum="KidsExternalFetcherStatus" expires_after="2023-11-01">
   <owner>tju@google.com</owner>
