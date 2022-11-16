@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -26,6 +25,14 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       chrome::kChromeUICustomizeChromeSidePanelHost);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"customizeThisPage", IDS_NTP_CUSTOM_BG_CUSTOMIZE_NTP_LABEL},
+      {"mostVisited", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
+      {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
+      {"shortcutsCurated", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC},
+      {"shortcutsMenuItem", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
+      {"shortcutsOption", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
+      {"shortcutsSuggested", IDS_NTP_CUSTOMIZE_MOST_VISITED_DESC},
+      {"showToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       {"title", IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);

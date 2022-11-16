@@ -6623,6 +6623,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_HIDE_SHORTCUTS_DESC" desc="The description for the option to hide shortcuts in the customization menu on the New Tab Page">
         Don't show shortcuts on this page
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL" desc="The label for the option to show shortcuts in the customization menu on the New Tab Page">
+        Show shortcuts
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL" desc="The label for the option to show user selected shortcuts in the customization menu on the New Tab Page">
         My shortcuts
       </message>

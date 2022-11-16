@@ -8,7 +8,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
 import {CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-chrome/shortcuts.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {installMock} from './test_support.js';
@@ -36,10 +36,67 @@ suite('ShortcutsTest', () => {
     await handler.whenCalled('getMostVisitedSettings');
   }
 
-  test('shortcut element added to side panel', async () => {
-    // We set initial settings in this test to demonstrate how to use the
-    // handler. It does not affect the assertion in this test.
-    setInitialSettings(true, true);
-    assertTrue(document.body.contains(customizeShortcuts));
+  function assertShown(shown: boolean) {
+    assertEquals(shown, customizeShortcuts.$.showToggle.checked);
+  }
+
+  function assertCustomLinksEnabled() {
+    assertEquals(
+        'customLinksOption',
+        customizeShortcuts.$.shortcutsRadioSelection.selected);
+    assertShown(true);
+  }
+
+  function assertUseMostVisited() {
+    assertEquals(
+        'mostVisitedOption',
+        customizeShortcuts.$.shortcutsRadioSelection.selected);
+    assertShown(true);
+  }
+
+  test('selections are mutually exclusive', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ true, /* shortcutsVisible= */ false);
+    assertShown(false);
+    customizeShortcuts.$.showToggle.click();
+    assertCustomLinksEnabled();
+    customizeShortcuts.$.mostVisitedButton.click();
+    assertUseMostVisited();
+    customizeShortcuts.$.showToggle.click();
+    assertShown(false);
+    customizeShortcuts.$.showToggle.click();
+    assertUseMostVisited();
+  });
+
+  test('toggling show shortcuts on calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    customizeShortcuts.$.showToggle.click();
+    const [customLinksEnabled, visible] = await setSettingsCalled;
+    assertFalse(customLinksEnabled);
+    assertTrue(visible);
+  });
+
+  test('enable custom links calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
+    assertUseMostVisited();
+    customizeShortcuts.$.customLinksButton.click();
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    const [customLinksEnabled, visible] = await setSettingsCalled;
+    assertTrue(customLinksEnabled);
+    assertTrue(visible);
+  });
+
+  test('enable most visited calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
+    assertCustomLinksEnabled();
+    customizeShortcuts.$.mostVisitedButton.click();
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    const [customLinksEnabled, visible] = await setSettingsCalled;
+    assertFalse(customLinksEnabled);
+    assertTrue(visible);
   });
 });

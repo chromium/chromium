@@ -1,1 +1,49 @@
-<p>Customize Shortcuts Page</p>
+<style>
+  #shortcutsTitle {
+    font-weight: 500;
+    margin-bottom: 34px;
+    margin-inline-start: 16px;
+  }
+
+  #showToggleContainer {
+    align-items: center;
+    display: flex;
+    margin-bottom: 16px;
+    margin-inline-start: 16px;
+  }
+
+  #options {
+    align-items: center;
+    display: flex;
+    margin-bottom: 24px;
+    margin-inline-start: 40px;
+  }
+</style>
+<div id="shortcutsTitle">$i18n{shortcutsMenuItem}</div>
+<div id="showToggleContainer">
+  <div id="showToggleTitle">$i18n{showToggleTitle}</div>
+  <cr-toggle id="showToggle" title="$i18n{showToggleTitle}"
+      checked="[[show_]]" on-change="onShowChange_"></cr-toggle>
+</div>
+<div id="options">
+  <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
+      selected="[[shortcutsRadioSelection_(customLinksEnabled_)]]"
+      on-selected-changed="onShortcutsRadioSelectionChanged_">
+    <cr-radio-button id="customLinksButton" name="customLinksOption">
+      <div id="customLinksTitleContainer">
+      <div id="customLinksTitle">$i18n{myShortcuts}</div>
+      <div id="customLinksDescription">
+        $i18n{shortcutsCurated}
+      </div>
+    </div>
+    </cr-radio-button>
+    <cr-radio-button id="mostVisitedButton" name="mostVisitedOption">
+      <div id="mostVisitedTitleContainer">
+        <div id="mostVisitedTitle">$i18n{mostVisited}</div>
+        <div id="mostVisitedDescription">
+          $i18n{shortcutsSuggested}
+        </div>
+      </div>
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
