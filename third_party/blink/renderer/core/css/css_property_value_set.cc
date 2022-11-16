@@ -446,11 +446,9 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
 
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::SetLonghandProperty(
-    const CSSPropertyValue& property,
-    CSSPropertyValue* slot) {
+    const CSSPropertyValue& property) {
   DCHECK_EQ(shorthandForProperty(property.Id()).length(), 0u);
-  CSSPropertyValue* to_replace =
-      slot ? slot : FindCSSPropertyWithName(property.Name());
+  CSSPropertyValue* to_replace = FindCSSPropertyWithName(property.Name());
   if (to_replace) {
     if (may_have_logical_properties_) {
       const CSSProperty& prop = CSSProperty::Get(property.Id());
@@ -538,14 +536,8 @@ void MutableCSSPropertyValueSet::MergeAndOverrideOnConflict(
   unsigned size = other->PropertyCount();
   for (unsigned n = 0; n < size; ++n) {
     PropertyReference to_merge = other->PropertyAt(n);
-    CSSPropertyValue* old = FindCSSPropertyWithName(to_merge.Name());
-    if (old) {
-      SetLonghandProperty(
-          CSSPropertyValue(to_merge.PropertyMetadata(), to_merge.Value()), old);
-    } else {
-      property_vector_.push_back(
-          CSSPropertyValue(to_merge.PropertyMetadata(), to_merge.Value()));
-    }
+    SetLonghandProperty(
+        CSSPropertyValue(to_merge.PropertyMetadata(), to_merge.Value()));
   }
 }
 

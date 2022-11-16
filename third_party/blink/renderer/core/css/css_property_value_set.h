@@ -308,8 +308,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
 
   // This one does not expand longhands, but is the most efficient form.
   // All the other property setters eventually call down into this.
-  SetResult SetLonghandProperty(const CSSPropertyValue&,
-                                CSSPropertyValue* slot = nullptr);
+  SetResult SetLonghandProperty(const CSSPropertyValue&);
 
   // Convenience form of the above.
   SetResult SetLonghandProperty(CSSPropertyID,
