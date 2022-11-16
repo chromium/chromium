@@ -475,7 +475,7 @@ void SVGAnimateElement::ApplyResultsToTarget(
         target_element->EnsureAnimatedSMILStyleProperties();
     auto animated_value_string = animated_value->ValueAsString();
     auto& document = target_element->GetDocument();
-    auto set_result = properties->SetProperty(
+    auto set_result = properties->ParseAndSetProperty(
         css_property_id_, animated_value_string, false,
         document.GetExecutionContext()->GetSecureContextMode(),
         document.ElementSheet().Contents());

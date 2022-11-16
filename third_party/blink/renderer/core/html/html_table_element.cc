@@ -331,7 +331,7 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
           OriginClean::kTrue, false /* is_ad_related */);
-      style->SetProperty(CSSPropertyValue(
+      style->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kValignAttr) {
@@ -457,10 +457,10 @@ void HTMLTableElement::ParseAttribute(
 static CSSPropertyValueSet* CreateBorderStyle(CSSValueID value) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kBorderTopStyle, value);
-  style->SetProperty(CSSPropertyID::kBorderBottomStyle, value);
-  style->SetProperty(CSSPropertyID::kBorderLeftStyle, value);
-  style->SetProperty(CSSPropertyID::kBorderRightStyle, value);
+  style->SetLonghandProperty(CSSPropertyID::kBorderTopStyle, value);
+  style->SetLonghandProperty(CSSPropertyID::kBorderBottomStyle, value);
+  style->SetLonghandProperty(CSSPropertyID::kBorderLeftStyle, value);
+  style->SetLonghandProperty(CSSPropertyID::kBorderRightStyle, value);
   return style;
 }
 
@@ -518,18 +518,26 @@ CSSPropertyValueSet* HTMLTableElement::CreateSharedCellStyle() {
 
   switch (GetCellBorders()) {
     case kSolidBordersColsOnly:
-      style->SetProperty(CSSPropertyID::kBorderLeftWidth, CSSValueID::kThin);
-      style->SetProperty(CSSPropertyID::kBorderRightWidth, CSSValueID::kThin);
-      style->SetProperty(CSSPropertyID::kBorderLeftStyle, CSSValueID::kSolid);
-      style->SetProperty(CSSPropertyID::kBorderRightStyle, CSSValueID::kSolid);
+      style->SetLonghandProperty(CSSPropertyID::kBorderLeftWidth,
+                                 CSSValueID::kThin);
+      style->SetLonghandProperty(CSSPropertyID::kBorderRightWidth,
+                                 CSSValueID::kThin);
+      style->SetLonghandProperty(CSSPropertyID::kBorderLeftStyle,
+                                 CSSValueID::kSolid);
+      style->SetLonghandProperty(CSSPropertyID::kBorderRightStyle,
+                                 CSSValueID::kSolid);
       style->SetProperty(CSSPropertyID::kBorderColor,
                          *CSSInheritedValue::Create());
       break;
     case kSolidBordersRowsOnly:
-      style->SetProperty(CSSPropertyID::kBorderTopWidth, CSSValueID::kThin);
-      style->SetProperty(CSSPropertyID::kBorderBottomWidth, CSSValueID::kThin);
-      style->SetProperty(CSSPropertyID::kBorderTopStyle, CSSValueID::kSolid);
-      style->SetProperty(CSSPropertyID::kBorderBottomStyle, CSSValueID::kSolid);
+      style->SetLonghandProperty(CSSPropertyID::kBorderTopWidth,
+                                 CSSValueID::kThin);
+      style->SetLonghandProperty(CSSPropertyID::kBorderBottomWidth,
+                                 CSSValueID::kThin);
+      style->SetLonghandProperty(CSSPropertyID::kBorderTopStyle,
+                                 CSSValueID::kSolid);
+      style->SetLonghandProperty(CSSPropertyID::kBorderBottomStyle,
+                                 CSSValueID::kSolid);
       style->SetProperty(CSSPropertyID::kBorderColor,
                          *CSSInheritedValue::Create());
       break;
@@ -575,15 +583,23 @@ static CSSPropertyValueSet* CreateGroupBorderStyle(int rows) {
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   if (rows) {
-    style->SetProperty(CSSPropertyID::kBorderTopWidth, CSSValueID::kThin);
-    style->SetProperty(CSSPropertyID::kBorderBottomWidth, CSSValueID::kThin);
-    style->SetProperty(CSSPropertyID::kBorderTopStyle, CSSValueID::kSolid);
-    style->SetProperty(CSSPropertyID::kBorderBottomStyle, CSSValueID::kSolid);
+    style->SetLonghandProperty(CSSPropertyID::kBorderTopWidth,
+                               CSSValueID::kThin);
+    style->SetLonghandProperty(CSSPropertyID::kBorderBottomWidth,
+                               CSSValueID::kThin);
+    style->SetLonghandProperty(CSSPropertyID::kBorderTopStyle,
+                               CSSValueID::kSolid);
+    style->SetLonghandProperty(CSSPropertyID::kBorderBottomStyle,
+                               CSSValueID::kSolid);
   } else {
-    style->SetProperty(CSSPropertyID::kBorderLeftWidth, CSSValueID::kThin);
-    style->SetProperty(CSSPropertyID::kBorderRightWidth, CSSValueID::kThin);
-    style->SetProperty(CSSPropertyID::kBorderLeftStyle, CSSValueID::kSolid);
-    style->SetProperty(CSSPropertyID::kBorderRightStyle, CSSValueID::kSolid);
+    style->SetLonghandProperty(CSSPropertyID::kBorderLeftWidth,
+                               CSSValueID::kThin);
+    style->SetLonghandProperty(CSSPropertyID::kBorderRightWidth,
+                               CSSValueID::kThin);
+    style->SetLonghandProperty(CSSPropertyID::kBorderLeftStyle,
+                               CSSValueID::kSolid);
+    style->SetLonghandProperty(CSSPropertyID::kBorderRightStyle,
+                               CSSValueID::kSolid);
   }
   return style;
 }

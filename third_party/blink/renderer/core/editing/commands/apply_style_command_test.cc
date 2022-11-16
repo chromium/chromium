@@ -48,8 +48,9 @@ TEST_F(ApplyStyleCommandTest, RemoveRedundantBlocksWithStarEditableStyle) {
 
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kTextAlign, "center", /* important */ false,
-                     SecureContextMode::kInsecureContext);
+  style->ParseAndSetProperty(CSSPropertyID::kTextAlign, "center",
+                             /* important */ false,
+                             SecureContextMode::kInsecureContext);
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kFormatJustifyCenter,
@@ -78,8 +79,9 @@ TEST_F(ApplyStyleCommandTest, JustifyRightDetachesDestination) {
 
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kTextAlign, "right", /* important */ false,
-                     SecureContextMode::kInsecureContext);
+  style->ParseAndSetProperty(CSSPropertyID::kTextAlign, "right",
+                             /* important */ false,
+                             SecureContextMode::kInsecureContext);
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kFormatJustifyCenter,
@@ -96,9 +98,9 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
       SetSelectionOptions());
 
   auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
-  style->SetProperty(CSSPropertyID::kInternalFontSizeDelta, "3px",
-                     /* important */ false,
-                     GetFrame().DomWindow()->GetSecureContextMode());
+  style->ParseAndSetProperty(CSSPropertyID::kInternalFontSizeDelta, "3px",
+                             /* important */ false,
+                             GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kNone)
@@ -118,9 +120,9 @@ TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
       SetSelectionOptions());
 
   auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
-  style->SetProperty(CSSPropertyID::kTextAlign, "right",
-                     /* important */ false,
-                     GetFrame().DomWindow()->GetSecureContextMode());
+  style->ParseAndSetProperty(CSSPropertyID::kTextAlign, "right",
+                             /* important */ false,
+                             GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kFormatJustifyRight,
@@ -145,9 +147,9 @@ TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
       SetSelectionOptions());
 
   auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
-  style->SetProperty(CSSPropertyID::kTextAlign, "center",
-                     /* important */ false,
-                     GetFrame().DomWindow()->GetSecureContextMode());
+  style->ParseAndSetProperty(CSSPropertyID::kTextAlign, "center",
+                             /* important */ false,
+                             GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kFormatJustifyCenter,
@@ -191,9 +193,9 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
                            SetSelectionOptions());
 
   auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
-  style->SetProperty(CSSPropertyID::kFontStyle, "italic",
-                     /* important */ false,
-                     GetFrame().DomWindow()->GetSecureContextMode());
+  style->ParseAndSetProperty(CSSPropertyID::kFontStyle, "italic",
+                             /* important */ false,
+                             GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kFormatItalic)

@@ -42,8 +42,9 @@ bool InlineStylePropertyMap::SetShorthandProperty(
     const String& value,
     SecureContextMode secure_context_mode) {
   DCHECK(CSSProperty::Get(property_id).IsShorthand());
-  const auto result = owner_element_->EnsureMutableInlineStyle().SetProperty(
-      property_id, value, false /* important */, secure_context_mode);
+  const auto result =
+      owner_element_->EnsureMutableInlineStyle().ParseAndSetProperty(
+          property_id, value, false /* important */, secure_context_mode);
   return result != MutableCSSPropertyValueSet::kParseError;
 }
 

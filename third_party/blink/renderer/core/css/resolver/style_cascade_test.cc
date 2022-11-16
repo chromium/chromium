@@ -329,10 +329,10 @@ class StyleCascadeTest : public PageTestBase {
                                                         String value) {
     CSSParserMode mode = kHTMLStandardMode;
     auto* set = MakeGarbageCollected<MutableCSSPropertyValueSet>(mode);
-    set->SetProperty(name, value, /* important */ false,
-                     SecureContextMode::kSecureContext,
-                     /* context_style_sheet */ nullptr,
-                     /* is_animation_tainted */ true);
+    set->ParseAndSetCustomProperty(name, value, /* important */ false,
+                                   SecureContextMode::kSecureContext,
+                                   /* context_style_sheet */ nullptr,
+                                   /* is_animation_tainted */ true);
     return set;
   }
 

@@ -641,8 +641,8 @@ void ApplyStyleCommand::RemoveEmbeddingUpToEnclosingBlock(
     } else {
       MutableCSSPropertyValueSet* inline_style =
           CopyStyleOrCreateEmpty(element->InlineStyle());
-      inline_style->SetProperty(CSSPropertyID::kUnicodeBidi,
-                                CSSValueID::kNormal);
+      inline_style->SetLonghandProperty(CSSPropertyID::kUnicodeBidi,
+                                        CSSValueID::kNormal);
       inline_style->RemoveProperty(CSSPropertyID::kDirection);
       SetNodeAttribute(element, html_names::kStyleAttr,
                        AtomicString(inline_style->AsText()));

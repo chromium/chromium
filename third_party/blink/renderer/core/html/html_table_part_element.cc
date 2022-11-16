@@ -63,7 +63,7 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
           Referrer(GetExecutionContext()->OutgoingReferrer(),
                    GetExecutionContext()->GetReferrerPolicy()),
           OriginClean::kTrue, false /* is_ad_related */);
-      style->SetProperty(CSSPropertyValue(
+      style->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kValignAttr) {

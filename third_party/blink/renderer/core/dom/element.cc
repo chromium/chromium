@@ -7421,7 +7421,7 @@ bool Element::SetInlineStyleProperty(CSSPropertyID property_id,
   DCHECK_NE(property_id, CSSPropertyID::kVariable);
   DCHECK(IsStyledElement());
   bool did_change =
-      EnsureMutableInlineStyle().SetProperty(
+      EnsureMutableInlineStyle().ParseAndSetProperty(
           property_id, value, important,
           GetExecutionContext() ? GetExecutionContext()->GetSecureContextMode()
                                 : SecureContextMode::kInsecureContext,
@@ -7525,11 +7525,11 @@ void Element::AddPropertyToPresentationAttributeStyle(
     CSSPropertyID property_id,
     const String& value) {
   DCHECK(IsStyledElement());
-  style->SetProperty(property_id, value, false,
-                     GetExecutionContext()
-                         ? GetExecutionContext()->GetSecureContextMode()
-                         : SecureContextMode::kInsecureContext,
-                     GetDocument().ElementSheet().Contents());
+  style->ParseAndSetProperty(property_id, value, false,
+                             GetExecutionContext()
+                                 ? GetExecutionContext()->GetSecureContextMode()
+                                 : SecureContextMode::kInsecureContext,
+                             GetDocument().ElementSheet().Contents());
 }
 
 void Element::AddPropertyToPresentationAttributeStyle(

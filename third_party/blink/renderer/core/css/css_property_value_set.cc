@@ -377,7 +377,8 @@ bool CSSPropertyValueSet::IsPropertyImplicit(CSSPropertyID property_id) const {
   return PropertyAt(found_property_index).IsImplicit();
 }
 
-MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
+MutableCSSPropertyValueSet::SetResult
+MutableCSSPropertyValueSet::ParseAndSetProperty(
     CSSPropertyID unresolved_property,
     const String& value,
     bool important,
@@ -401,7 +402,8 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
                                secure_context_mode, context_style_sheet);
 }
 
-MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
+MutableCSSPropertyValueSet::SetResult
+MutableCSSPropertyValueSet::ParseAndSetCustomProperty(
     const AtomicString& custom_property_name,
     const String& value,
     bool important,
@@ -422,7 +424,7 @@ void MutableCSSPropertyValueSet::SetProperty(const CSSPropertyName& name,
                                              bool important) {
   StylePropertyShorthand shorthand = shorthandForProperty(name.Id());
   if (!shorthand.length()) {
-    SetProperty(CSSPropertyValue(name, value, important));
+    SetLonghandProperty(CSSPropertyValue(name, value, important));
     return;
   }
 
@@ -442,9 +444,11 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
   SetProperty(CSSPropertyName(property_id), value, important);
 }
 
-MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
+MutableCSSPropertyValueSet::SetResult
+MutableCSSPropertyValueSet::SetLonghandProperty(
     const CSSPropertyValue& property,
     CSSPropertyValue* slot) {
+  DCHECK_EQ(shorthandForProperty(property.Id()).length(), 0u);
   CSSPropertyValue* to_replace =
       slot ? slot : FindCSSPropertyWithName(property.Name());
   if (to_replace) {
@@ -479,12 +483,12 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
   return kChangedPropertySet;
 }
 
-MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
-    CSSPropertyID property_id,
-    CSSValueID identifier,
-    bool important) {
+MutableCSSPropertyValueSet::SetResult
+MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyID property_id,
+                                                CSSValueID identifier,
+                                                bool important) {
   CSSPropertyName name(property_id);
-  return SetProperty(CSSPropertyValue(
+  return SetLonghandProperty(CSSPropertyValue(
       name, *CSSIdentifierValue::Create(identifier), important));
 }
 
@@ -513,7 +517,7 @@ MutableCSSPropertyValueSet::AddParsedProperties(
   SetResult changed = kUnchanged;
   property_vector_.reserve(property_vector_.size() + properties.size());
   for (unsigned i = 0; i < properties.size(); ++i)
-    changed = std::max(changed, SetProperty(properties[i]));
+    changed = std::max(changed, SetLonghandProperty(properties[i]));
   return changed;
 }
 
@@ -521,7 +525,7 @@ bool MutableCSSPropertyValueSet::AddRespectingCascade(
     const CSSPropertyValue& property) {
   // Only add properties that have no !important counterpart present
   if (!PropertyIsImportant(property.Id()) || property.IsImportant())
-    return SetProperty(property);
+    return SetLonghandProperty(property);
   return false;
 }
 
@@ -536,7 +540,7 @@ void MutableCSSPropertyValueSet::MergeAndOverrideOnConflict(
     PropertyReference to_merge = other->PropertyAt(n);
     CSSPropertyValue* old = FindCSSPropertyWithName(to_merge.Name());
     if (old) {
-      SetProperty(
+      SetLonghandProperty(
           CSSPropertyValue(to_merge.PropertyMetadata(), to_merge.Value()), old);
     } else {
       property_vector_.push_back(

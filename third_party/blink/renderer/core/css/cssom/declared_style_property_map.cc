@@ -52,7 +52,7 @@ bool DeclaredStylePropertyMap::SetShorthandProperty(
     SecureContextMode secure_context_mode) {
   DCHECK(CSSProperty::Get(property_id).IsShorthand());
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
-  const auto result = GetStyleRule()->MutableProperties().SetProperty(
+  const auto result = GetStyleRule()->MutableProperties().ParseAndSetProperty(
       property_id, value, false /* important */, secure_context_mode);
   return result != MutableCSSPropertyValueSet::kParseError;
 }

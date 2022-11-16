@@ -189,7 +189,7 @@ void HTMLFontElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kFaceAttr && !value.empty()) {
     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
             value, GetExecutionContext()->GetSecureContextMode())) {
-      style->SetProperty(CSSPropertyValue(
+      style->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(CSSPropertyID::kFontFamily), *font_face_value));
     }
   } else {

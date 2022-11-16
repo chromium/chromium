@@ -362,7 +362,7 @@ const CSSValue* HTMLAttributeEquivalent::AttributeValueAsCSSValue(
 
   auto* dummy_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  dummy_style->SetProperty(
+  dummy_style->ParseAndSetProperty(
       property_id_, value, /* important */ false,
       element->GetExecutionContext()->GetSecureContextMode());
   return dummy_style->GetPropertyCSSValue(property_id_);
@@ -563,14 +563,14 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
   if (properties_to_include == kEditingPropertiesInEffect) {
     if (const CSSValue* value =
             EditingStyleUtilities::BackgroundColorValueInEffect(node)) {
-      mutable_style_->SetProperty(
+      mutable_style_->ParseAndSetProperty(
           CSSPropertyID::kBackgroundColor, value->CssText(),
           /* important */ false,
           node->GetExecutionContext()->GetSecureContextMode());
     }
     if (const CSSValue* value = computed_style_at_position->GetPropertyCSSValue(
             CSSPropertyID::kWebkitTextDecorationsInEffect)) {
-      mutable_style_->SetProperty(
+      mutable_style_->ParseAndSetProperty(
           CSSPropertyID::kTextDecoration, value->CssText(),
           /* important */ false,
           node->GetExecutionContext()->GetSecureContextMode());
@@ -588,7 +588,7 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
     if (computed_style->ComputedFontSize() !=
         computed_style->SpecifiedFontSize()) {
       // ReplaceSelectionCommandTest_TextAutosizingDoesntInflateText gets here.
-      mutable_style_->SetProperty(
+      mutable_style_->ParseAndSetProperty(
           CSSPropertyID::kFontSize,
           CSSNumericLiteralValue::Create(computed_style->SpecifiedFontSize(),
                                          CSSPrimitiveValue::UnitType::kPixels)
@@ -635,8 +635,8 @@ void EditingStyle::SetProperty(CSSPropertyID property_id,
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   }
 
-  mutable_style_->SetProperty(property_id, value, important,
-                              secure_context_mode);
+  mutable_style_->ParseAndSetProperty(property_id, value, important,
+                                      secure_context_mode);
 }
 
 void EditingStyle::ReplaceFontSizeByKeywordIfPossible(
@@ -645,7 +645,7 @@ void EditingStyle::ReplaceFontSizeByKeywordIfPossible(
     CSSComputedStyleDeclaration* css_computed_style) {
   DCHECK(computed_style);
   if (computed_style->GetFontDescription().KeywordSize()) {
-    mutable_style_->SetProperty(
+    mutable_style_->ParseAndSetProperty(
         CSSPropertyID::kFontSize,
         css_computed_style->GetFontSizeCSSValuePreferringKeyword()->CssText(),
         /* important */ false, secure_context_mode);
@@ -792,11 +792,11 @@ EditingStyle* EditingStyle::ExtractAndRemoveTextDirection(
   EditingStyle* text_direction = MakeGarbageCollected<EditingStyle>();
   text_direction->mutable_style_ =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  text_direction->mutable_style_->SetProperty(
+  text_direction->mutable_style_->SetLonghandProperty(
       CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate,
       mutable_style_->PropertyIsImportant(CSSPropertyID::kUnicodeBidi));
 
-  text_direction->mutable_style_->SetProperty(
+  text_direction->mutable_style_->ParseAndSetProperty(
       CSSPropertyID::kDirection,
       mutable_style_->GetPropertyValue(CSSPropertyID::kDirection),
       mutable_style_->PropertyIsImportant(CSSPropertyID::kDirection),
@@ -864,7 +864,7 @@ void EditingStyle::CollapseTextDecorationProperties(
     return;
 
   if (text_decorations_in_effect->IsValueList()) {
-    mutable_style_->SetProperty(
+    mutable_style_->ParseAndSetProperty(
         CSSPropertyID::kTextDecorationLine,
         text_decorations_in_effect->CssText(),
         mutable_style_->PropertyIsImportant(CSSPropertyID::kTextDecorationLine),
@@ -1318,12 +1318,13 @@ void EditingStyle::PrepareToApplyAt(
 
   if (auto* unicode_bidi_identifier_value =
           DynamicTo<CSSIdentifierValue>(unicode_bidi)) {
-    mutable_style_->SetProperty(CSSPropertyID::kUnicodeBidi,
-                                unicode_bidi_identifier_value->GetValueID());
+    mutable_style_->SetLonghandProperty(
+        CSSPropertyID::kUnicodeBidi,
+        unicode_bidi_identifier_value->GetValueID());
     if (auto* direction_identifier_value =
             DynamicTo<CSSIdentifierValue>(direction)) {
-      mutable_style_->SetProperty(CSSPropertyID::kDirection,
-                                  direction_identifier_value->GetValueID());
+      mutable_style_->SetLonghandProperty(
+          CSSPropertyID::kDirection, direction_identifier_value->GetValueID());
     }
   }
 }
@@ -1483,7 +1484,7 @@ void EditingStyle::MergeStyle(const CSSPropertyValueSet* style,
     }
 
     if (mode == kOverrideValues || (mode == kDoNotOverrideValues && !value)) {
-      mutable_style_->SetProperty(
+      mutable_style_->SetLonghandProperty(
           CSSPropertyValue(property.PropertyMetadata(), property.Value()));
     }
   }
@@ -1598,7 +1599,7 @@ void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
   if (computed_style->mutable_style_) {
     if (!computed_style->mutable_style_->GetPropertyCSSValue(
             CSSPropertyID::kBackgroundColor)) {
-      computed_style->mutable_style_->SetProperty(
+      computed_style->mutable_style_->SetLonghandProperty(
           CSSPropertyID::kBackgroundColor, CSSValueID::kTransparent);
     }
 
@@ -1641,8 +1642,8 @@ void EditingStyle::ForceInline() {
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   }
   const bool kPropertyIsImportant = true;
-  mutable_style_->SetProperty(CSSPropertyID::kDisplay, CSSValueID::kInline,
-                              kPropertyIsImportant);
+  mutable_style_->SetLonghandProperty(
+      CSSPropertyID::kDisplay, CSSValueID::kInline, kPropertyIsImportant);
 }
 
 int EditingStyle::LegacyFontSize(Document* document) const {
@@ -1670,9 +1671,9 @@ static void ReconcileTextDecorationProperties(
   // "web_tests/editing/execCommand/insert-list-and-strikethrough.html" makes
   // both |textDecorationsInEffect| and |textDecoration| non-null.
   if (text_decorations_in_effect) {
-    style->SetProperty(CSSPropertyID::kTextDecorationLine,
-                       text_decorations_in_effect->CssText(),
-                       /* important */ false, secure_context_mode);
+    style->ParseAndSetProperty(CSSPropertyID::kTextDecorationLine,
+                               text_decorations_in_effect->CssText(),
+                               /* important */ false, secure_context_mode);
     style->RemoveProperty(CSSPropertyID::kWebkitTextDecorationsInEffect);
     text_decoration = text_decorations_in_effect;
   }
@@ -1724,7 +1725,7 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
   // FIXME: Shouldn't this be done in getPropertiesNotIn?
   if (mutable_style->GetPropertyCSSValue(CSSPropertyID::kUnicodeBidi) &&
       !style->Style()->GetPropertyCSSValue(CSSPropertyID::kDirection)) {
-    mutable_style->SetProperty(
+    mutable_style->ParseAndSetProperty(
         CSSPropertyID::kDirection,
         style->Style()->GetPropertyValue(CSSPropertyID::kDirection),
         /* important */ false,
@@ -1740,9 +1741,9 @@ static void SetTextDecorationProperty(MutableCSSPropertyValueSet* style,
                                       CSSPropertyID property_id,
                                       SecureContextMode secure_context_mode) {
   if (new_text_decoration->length()) {
-    style->SetProperty(property_id, new_text_decoration->CssText(),
-                       style->PropertyIsImportant(property_id),
-                       secure_context_mode);
+    style->ParseAndSetProperty(property_id, new_text_decoration->CssText(),
+                               style->PropertyIsImportant(property_id),
+                               secure_context_mode);
   } else {
     // text-decoration: none is redundant since it does not remove any text
     // decorations.

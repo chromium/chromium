@@ -232,13 +232,13 @@ void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
     AtomicString atomic_name(custom_property_name);
 
     bool is_animation_tainted = IsKeyframeStyle();
-    result = PropertySet().SetProperty(atomic_name, value, important,
-                                       secure_context_mode, ContextStyleSheet(),
-                                       is_animation_tainted);
+    result = PropertySet().ParseAndSetCustomProperty(
+        atomic_name, value, important, secure_context_mode, ContextStyleSheet(),
+        is_animation_tainted);
   } else {
-    result =
-        PropertySet().SetProperty(unresolved_property, value, important,
-                                  secure_context_mode, ContextStyleSheet());
+    result = PropertySet().ParseAndSetProperty(unresolved_property, value,
+                                               important, secure_context_mode,
+                                               ContextStyleSheet());
   }
 
   if (result == MutableCSSPropertyValueSet::kParseError ||

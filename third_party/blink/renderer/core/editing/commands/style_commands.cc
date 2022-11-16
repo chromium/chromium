@@ -108,8 +108,8 @@ bool StyleCommands::ExecuteApplyStyle(LocalFrame& frame,
   DCHECK(frame.GetDocument());
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(property_id, property_value, /* important */ false,
-                     frame.DomWindow()->GetSecureContextMode());
+  style->ParseAndSetProperty(property_id, property_value, /* important */ false,
+                             frame.DomWindow()->GetSecureContextMode());
   return ApplyCommandToFrame(frame, source, input_type, style);
 }
 
@@ -120,7 +120,7 @@ bool StyleCommands::ExecuteApplyStyle(LocalFrame& frame,
                                       CSSValueID property_value) {
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(property_id, property_value);
+  style->SetLonghandProperty(property_id, property_value);
   return ApplyCommandToFrame(frame, source, input_type, style);
 }
 
@@ -176,8 +176,8 @@ bool StyleCommands::ExecuteMakeTextWritingDirectionLeftToRight(
     const String&) {
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
-  style->SetProperty(CSSPropertyID::kDirection, CSSValueID::kLtr);
+  style->SetLonghandProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
+  style->SetLonghandProperty(CSSPropertyID::kDirection, CSSValueID::kLtr);
   ApplyStyle(frame, style, InputEvent::InputType::kFormatSetBlockTextDirection);
   return true;
 }
@@ -188,7 +188,7 @@ bool StyleCommands::ExecuteMakeTextWritingDirectionNatural(LocalFrame& frame,
                                                            const String&) {
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kNormal);
+  style->SetLonghandProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kNormal);
   ApplyStyle(frame, style, InputEvent::InputType::kFormatSetBlockTextDirection);
   return true;
 }
@@ -200,8 +200,8 @@ bool StyleCommands::ExecuteMakeTextWritingDirectionRightToLeft(
     const String&) {
   auto* const style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
-  style->SetProperty(CSSPropertyID::kDirection, CSSValueID::kRtl);
+  style->SetLonghandProperty(CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
+  style->SetLonghandProperty(CSSPropertyID::kDirection, CSSValueID::kRtl);
   ApplyStyle(frame, style, InputEvent::InputType::kFormatSetBlockTextDirection);
   return true;
 }
@@ -323,8 +323,9 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
   // We should have setPropertyCSSValue.
   auto* const new_mutable_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  new_mutable_style->SetProperty(property_id, new_style, /* important */ false,
-                                 frame.DomWindow()->GetSecureContextMode());
+  new_mutable_style->ParseAndSetProperty(
+      property_id, new_style, /* important */ false,
+      frame.DomWindow()->GetSecureContextMode());
   return ApplyCommandToFrame(frame, source, input_type, new_mutable_style);
 }
 

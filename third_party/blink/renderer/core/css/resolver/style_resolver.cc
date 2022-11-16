@@ -330,8 +330,8 @@ static CSSPropertyValueSet* LeftToRightDeclaration() {
       Persistent<MutableCSSPropertyValueSet>, left_to_right_decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
   if (left_to_right_decl->IsEmpty()) {
-    left_to_right_decl->SetProperty(CSSPropertyID::kDirection,
-                                    CSSValueID::kLtr);
+    left_to_right_decl->SetLonghandProperty(CSSPropertyID::kDirection,
+                                            CSSValueID::kLtr);
   }
   return left_to_right_decl;
 }
@@ -341,8 +341,8 @@ static CSSPropertyValueSet* RightToLeftDeclaration() {
       Persistent<MutableCSSPropertyValueSet>, right_to_left_decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode)));
   if (right_to_left_decl->IsEmpty()) {
-    right_to_left_decl->SetProperty(CSSPropertyID::kDirection,
-                                    CSSValueID::kRtl);
+    right_to_left_decl->SetLonghandProperty(CSSPropertyID::kDirection,
+                                            CSSValueID::kRtl);
   }
   return right_to_left_decl;
 }
@@ -972,9 +972,10 @@ void StyleResolver::ApplyInheritance(Element& element,
     state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
   } else {
     // We use a different initial_style for img elements to match the overrides
-    // in html.css. This avoids allocation overhead from copy-on-write when these
-    // properties are set only via UA styles. The overhead shows up on motionmark
-    // which stress tests this code. See crbub.com/1369454 for details.
+    // in html.css. This avoids allocation overhead from copy-on-write when
+    // these properties are set only via UA styles. The overhead shows up on
+    // motionmark which stress tests this code. See crbub.com/1369454 for
+    // details.
     ComputedStyleBuilder builder(IsA<HTMLImageElement>(element)
                                      ? *initial_style_for_img_
                                      : *initial_style_);

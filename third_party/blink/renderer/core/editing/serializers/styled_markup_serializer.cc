@@ -248,7 +248,7 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
                  CSSPropertyID::kBackgroundImage)) &&
             fully_selected_root->FastHasAttribute(
                 html_names::kBackgroundAttr)) {
-          fully_selected_root_style->Style()->SetProperty(
+          fully_selected_root_style->Style()->ParseAndSetProperty(
               CSSPropertyID::kBackgroundImage,
               "url('" +
                   fully_selected_root->getAttribute(
@@ -266,13 +266,13 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
           // "inherit", and copy it.
           if (!PropertyMissingOrEqualToNone(fully_selected_root_style->Style(),
                                             CSSPropertyID::kTextDecoration)) {
-            fully_selected_root_style->Style()->SetProperty(
+            fully_selected_root_style->Style()->SetLonghandProperty(
                 CSSPropertyID::kTextDecoration, CSSValueID::kNone);
           }
           if (!PropertyMissingOrEqualToNone(
                   fully_selected_root_style->Style(),
                   CSSPropertyID::kWebkitTextDecorationsInEffect)) {
-            fully_selected_root_style->Style()->SetProperty(
+            fully_selected_root_style->Style()->SetLonghandProperty(
                 CSSPropertyID::kWebkitTextDecorationsInEffect,
                 CSSValueID::kNone);
           }
@@ -506,8 +506,8 @@ void StyledMarkupTraverser<Strategy>::AppendStartMarkup(Node& node) {
         // block }.
         inline_style->ForceInline();
         // FIXME: Should this be included in forceInline?
-        inline_style->Style()->SetProperty(CSSPropertyID::kFloat,
-                                           CSSValueID::kNone);
+        inline_style->Style()->SetLonghandProperty(CSSPropertyID::kFloat,
+                                                   CSSValueID::kNone);
 
         if (IsForMarkupSanitization()) {
           EditingStyleUtilities::StripUAStyleRulesForMarkupSanitization(

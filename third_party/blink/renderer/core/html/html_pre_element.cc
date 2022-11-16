@@ -43,10 +43,12 @@ void HTMLPreElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == html_names::kWrapAttr)
-    style->SetProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPreWrap);
-  else
+  if (name == html_names::kWrapAttr) {
+    style->SetLonghandProperty(CSSPropertyID::kWhiteSpace,
+                               CSSValueID::kPreWrap);
+  } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
+  }
 }
 
 }  // namespace blink

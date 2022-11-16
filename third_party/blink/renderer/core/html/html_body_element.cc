@@ -73,7 +73,7 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
                    GetExecutionContext()->GetReferrerPolicy()),
           OriginClean::kTrue, false /* is_ad_related */);
       image_value->SetInitiator(localName());
-      style->SetProperty(CSSPropertyValue(
+      style->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kMarginwidthAttr ||

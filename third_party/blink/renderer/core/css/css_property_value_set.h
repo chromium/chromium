@@ -267,34 +267,54 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
     kChangedPropertySet = 3,
   };
 
+  // Wrapper around SetLonghandProperty() for setting multiple properties
+  // at a time.
   SetResult AddParsedProperties(const HeapVector<CSSPropertyValue, 64>&);
 
+  // Wrapper around SetLonghandProperty() that does nothing if the same property
+  // already exists with an !important declaration.
+  //
   // Returns whether this style set was changed.
   bool AddRespectingCascade(const CSSPropertyValue&);
 
-  // These expand shorthand properties into multiple properties.
-  SetResult SetProperty(CSSPropertyID unresolved_property,
-                        const String& value,
-                        bool important,
-                        SecureContextMode,
-                        StyleSheetContents* context_style_sheet = nullptr);
-  SetResult SetProperty(const AtomicString& custom_property_name,
-                        const String& value,
-                        bool important,
-                        SecureContextMode,
-                        StyleSheetContents* context_style_sheet,
-                        bool is_animation_tainted);
+  // Expands shorthand properties into multiple properties.
   void SetProperty(const CSSPropertyName&,
                    const CSSValue&,
                    bool important = false);
+
+  // Convenience wrapper around the above.
   void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
 
-  // These do not. FIXME: This is too messy, we can do better.
-  SetResult SetProperty(CSSPropertyID,
-                        CSSValueID identifier,
-                        bool important = false);
-  SetResult SetProperty(const CSSPropertyValue&,
-                        CSSPropertyValue* slot = nullptr);
+  // Also a convenience wrapper around SetProperty(), parsing the value from a
+  // string before setting it. If the value is empty, the property is removed.
+  // Only for non-custom properties.
+  SetResult ParseAndSetProperty(
+      CSSPropertyID unresolved_property,
+      const String& value,
+      bool important,
+      SecureContextMode,
+      StyleSheetContents* context_style_sheet = nullptr);
+
+  // Similar to ParseAndSetProperty(), but for custom properties instead.
+  // (By implementation quirk, it attempts shorthand expansion, even though
+  // custom properties can never be shorthands.) If the value is empty,
+  // the property is removed.
+  SetResult ParseAndSetCustomProperty(const AtomicString& custom_property_name,
+                                      const String& value,
+                                      bool important,
+                                      SecureContextMode,
+                                      StyleSheetContents* context_style_sheet,
+                                      bool is_animation_tainted);
+
+  // This one does not expand longhands, but is the most efficient form.
+  // All the other property setters eventually call down into this.
+  SetResult SetLonghandProperty(const CSSPropertyValue&,
+                                CSSPropertyValue* slot = nullptr);
+
+  // Convenience form of the above.
+  SetResult SetLonghandProperty(CSSPropertyID,
+                                CSSValueID identifier,
+                                bool important = false);
 
   template <typename T>  // CSSPropertyID or AtomicString
   bool RemoveProperty(const T& property, String* return_text = nullptr);

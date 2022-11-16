@@ -657,13 +657,12 @@ void Editor::SetBaseWritingDirection(
 
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(
+  style->ParseAndSetProperty(
       CSSPropertyID::kDirection,
-      direction == mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT
-          ? "ltr"
-          : direction == mojo_base::mojom::blink::TextDirection::RIGHT_TO_LEFT
-                ? "rtl"
-                : "inherit",
+      direction == mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT ? "ltr"
+      : direction == mojo_base::mojom::blink::TextDirection::RIGHT_TO_LEFT
+          ? "rtl"
+          : "inherit",
       /* important */ false, GetFrame().DomWindow()->GetSecureContextMode());
   ApplyParagraphStyleToSelection(
       style, InputEvent::InputType::kFormatSetBlockTextDirection);

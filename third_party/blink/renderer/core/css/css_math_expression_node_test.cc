@@ -76,8 +76,9 @@ void TestAccumulatePixelsAndPercent(
 bool AccumulateLengthArray(String text, CSSLengthArray& length_array) {
   auto* property_set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  property_set->SetProperty(CSSPropertyID::kLeft, text, /* important */ false,
-                            SecureContextMode::kInsecureContext);
+  property_set->ParseAndSetProperty(CSSPropertyID::kLeft, text,
+                                    /* important */ false,
+                                    SecureContextMode::kInsecureContext);
   return To<CSSPrimitiveValue>(
              property_set->GetPropertyCSSValue(CSSPropertyID::kLeft))
       ->AccumulateLengthArray(length_array);

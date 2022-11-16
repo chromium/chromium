@@ -178,8 +178,10 @@ EditingStyle* EditingStyleUtilities::CreateStyleAtSelectionStart(
     // value of CSS vertical-align property.
     if (GetIdentifierValue(element_style, CSSPropertyID::kVerticalAlign) ==
             CSSValueID::kBaseline &&
-        HasAncestorVerticalAlignStyle(*element, value_id))
-      style->Style()->SetProperty(CSSPropertyID::kVerticalAlign, value_id);
+        HasAncestorVerticalAlignStyle(*element, value_id)) {
+      style->Style()->SetLonghandProperty(CSSPropertyID::kVerticalAlign,
+                                          value_id);
+    }
   }
 
   // If background color is transparent, traverse parent nodes until we hit a
