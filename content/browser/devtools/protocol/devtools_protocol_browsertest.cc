@@ -2008,17 +2008,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   ASSERT_TRUE(target_infos);
   EXPECT_EQ(1u, target_infos->size());
   const base::Value& target_info_value = target_infos->front();
-  EXPECT_TRUE(target_info_value.is_dict());
-  const base::DictionaryValue& target_info =
-      base::Value::AsDictionaryValue(target_info_value);
-  std::string target_id, type, title, url;
-  EXPECT_TRUE(target_info.GetString("targetId", &target_id));
-  EXPECT_TRUE(target_info.GetString("type", &type));
-  EXPECT_TRUE(target_info.GetString("title", &title));
-  EXPECT_TRUE(target_info.GetString("url", &url));
-  EXPECT_EQ("page", type);
-  EXPECT_EQ("about:blank", title);
-  EXPECT_EQ("about:blank", url);
+  const base::Value::Dict* target_info = target_info_value.GetIfDict();
+  ASSERT_TRUE(target_info);
+  const std::string* target_id = target_info->FindString("target_id");
+  const std::string* type = target_info->FindString("type");
+  const std::string* title = target_info->FindString("title");
+  const std::string* url = target_info->FindString("url");
+  EXPECT_FALSE(target_id);
+  ASSERT_TRUE(type);
+  ASSERT_TRUE(title);
+  ASSERT_TRUE(url);
+  EXPECT_EQ("page", *type);
+  EXPECT_EQ("about:blank", *title);
+  EXPECT_EQ("about:blank", *url);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {

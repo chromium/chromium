@@ -86,28 +86,28 @@ TEST(IPCMessageTest, Bitmap) {
   EXPECT_FALSE(IPC::ParamTraits<SkBitmap>::Read(&bad_msg, &iter, &bad_output));
 }
 
-TEST(IPCMessageTest, DictionaryValue) {
-  base::DictionaryValue input;
-  input.SetKey("null", base::Value());
-  input.SetBoolean("bool", true);
-  input.GetDict().Set("int", 42);
+TEST(IPCMessageTest, ValueDict) {
+  base::Value::Dict input;
+  input.Set("null", base::Value());
+  input.Set("bool", true);
+  input.Set("int", 42);
 
-  base::DictionaryValue subdict;
-  subdict.SetString("str", "forty two");
-  subdict.SetBoolean("bool", false);
+  base::Value::Dict subdict;
+  subdict.Set("str", "forty two");
+  subdict.Set("bool", false);
 
-  base::ListValue sublist;
+  base::Value::List sublist;
   sublist.Append(42.42);
   sublist.Append("forty");
   sublist.Append("two");
-  subdict.SetKey("list", std::move(sublist));
+  subdict.Set("list", std::move(sublist));
 
-  input.SetKey("dict", std::move(subdict));
+  input.Set("dict", std::move(subdict));
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::WriteParam(&msg, input);
 
-  base::DictionaryValue output;
+  base::Value::Dict output;
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
