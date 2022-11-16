@@ -1422,6 +1422,8 @@ DXVAVideoDecodeAccelerator::GetSupportedProfiles(
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       gl::QueryD3D11DeviceObjectFromANGLE(), workarounds);
   for (const auto& kv : supported_resolutions) {
+    if (!base::Contains(kSupportedProfiles, kv.first))
+      continue;
     const auto& resolution_range = kv.second;
     {
       SupportedProfile profile;
