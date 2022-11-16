@@ -232,7 +232,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       return false;
     context_state_->set_need_context_state_reset(true);
 
-    DCHECK(!viz::IsResourceFormatCompressed(format()));
+    DCHECK(!format().IsCompressed());
     auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
                                                       : GrMipMapped::kNo;
     const std::string label = "WrappedSkImageBackingFactory_Initialize" +
@@ -280,7 +280,7 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       return false;
     context_state_->set_need_context_state_reset(true);
 
-    if (viz::IsResourceFormatCompressed(format())) {
+    if (format().IsCompressed()) {
       backend_texture_ =
           context_state_->gr_context()->createCompressedBackendTexture(
               size().width(), size().height(), SkImage::kETC1_CompressionType,

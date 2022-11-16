@@ -27,7 +27,6 @@ VIZ_RESOURCE_FORMAT_EXPORT SkColorType
 ResourceFormatToClosestSkColorType(bool gpu_compositing, ResourceFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT bool HasAlpha(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
 SkColorTypeToResourceFormat(SkColorType color_type);
 
@@ -94,7 +93,6 @@ ResourceFormatToClosestSkColorType(bool gpu_compositing,
                                    SharedImageFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(SharedImageFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT bool HasAlpha(SharedImageFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataType(SharedImageFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataFormat(SharedImageFormat format);
@@ -102,8 +100,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(
     SharedImageFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat BufferFormat(
-    SharedImageFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT bool IsResourceFormatCompressed(
     SharedImageFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(

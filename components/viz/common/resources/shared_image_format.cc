@@ -132,6 +132,35 @@ std::string SharedImageFormat::ToString() const {
   }
 }
 
+bool SharedImageFormat::HasAlpha() const {
+  if (is_single_plane()) {
+    switch (resource_format()) {
+      case ResourceFormat::RGBA_8888:
+      case ResourceFormat::RGBA_4444:
+      case ResourceFormat::BGRA_8888:
+      case ResourceFormat::ALPHA_8:
+      case ResourceFormat::RGBA_F16:
+      case ResourceFormat::YUVA_420_TRIPLANAR:
+        return true;
+      default:
+        return false;
+    }
+  } else if (is_multi_plane()) {
+    switch (plane_config()) {
+      case PlaneConfig::kY_UV_A:
+        return true;
+      default:
+        return false;
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool SharedImageFormat::IsCompressed() const {
+  return is_single_plane() && resource_format() == ResourceFormat::ETC1;
+}
+
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {
   if (plane_type_ != o.plane_type())
     return false;

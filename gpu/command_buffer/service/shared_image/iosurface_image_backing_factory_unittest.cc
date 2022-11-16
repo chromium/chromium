@@ -1029,8 +1029,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, TexImageTexStorageEquivalence) {
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
     auto format = viz::SharedImageFormat::SinglePlane(
         static_cast<viz::ResourceFormat>(i));
-    if (!viz::GLSupportsFormat(format) ||
-        viz::IsResourceFormatCompressed(format))
+    if (!viz::GLSupportsFormat(format) || format.IsCompressed())
       continue;
     int storage_format = viz::TextureStorageFormat(
         format, feature_info->feature_flags().angle_rgbx_internal_format);

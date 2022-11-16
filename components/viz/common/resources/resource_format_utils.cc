@@ -168,37 +168,6 @@ int BitsPerPixel(ResourceFormat format) {
   return 0;
 }
 
-bool HasAlpha(ResourceFormat format) {
-  switch (format) {
-    case RGBA_8888:
-    case RGBA_4444:
-    case BGRA_8888:
-    case ALPHA_8:
-    case RGBA_F16:
-    case YUVA_420_TRIPLANAR:
-      return true;
-    case LUMINANCE_8:
-    case RGB_565:
-    case BGR_565:
-    case ETC1:
-    case RED_8:
-    case RG_88:
-    case LUMINANCE_F16:
-    case R16_EXT:
-    case RG16_EXT:
-    case RGBX_8888:
-    case BGRX_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case P010:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
 unsigned int GLDataType(ResourceFormat format) {
   DCHECK_LE(format, RESOURCE_FORMAT_MAX);
   static const GLenum format_gl_data_type[] = {
@@ -643,10 +612,6 @@ int BitsPerPixel(SharedImageFormat format) {
   return BitsPerPixel(format.resource_format());
 }
 
-bool HasAlpha(SharedImageFormat format) {
-  return HasAlpha(format.resource_format());
-}
-
 unsigned int GLDataType(SharedImageFormat format) {
   return GLDataType(format.resource_format());
 }
@@ -661,10 +626,6 @@ unsigned int GLInternalFormat(SharedImageFormat format) {
 
 gfx::BufferFormat BufferFormat(SharedImageFormat format) {
   return BufferFormat(format.resource_format());
-}
-
-bool IsResourceFormatCompressed(SharedImageFormat format) {
-  return IsResourceFormatCompressed(format.resource_format());
 }
 
 unsigned int TextureStorageFormat(SharedImageFormat format,

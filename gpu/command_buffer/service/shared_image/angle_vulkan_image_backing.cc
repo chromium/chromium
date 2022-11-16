@@ -198,7 +198,7 @@ bool AngleVulkanImageBacking::Initialize(
   if (usage() & kUsageNeedsColorAttachment) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-    if (viz::IsResourceFormatCompressed(format())) {
+    if (format().IsCompressed()) {
       DLOG(ERROR) << "ETC1 format cannot be used as color attachment.";
       return false;
     }

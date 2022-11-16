@@ -103,6 +103,12 @@ class SharedImageFormat {
 
   std::string ToString() const;
 
+  // Returns true if the format contains alpha.
+  bool HasAlpha() const;
+
+  // Returns true if the format is ETC1 compressed.
+  bool IsCompressed() const;
+
   bool operator==(const SharedImageFormat& o) const;
   bool operator!=(const SharedImageFormat& o) const;
 

@@ -603,7 +603,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
-  DCHECK(!viz::IsResourceFormatCompressed(format));
+  DCHECK(!format.IsCompressed());
 
   if (!ValidateUsage(usage, size, format)) {
     return nullptr;

@@ -234,6 +234,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
   DCHECK(dxgi_factory);
 
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   DXGI_SWAP_CHAIN_DESC1 desc = {};
   desc.Width = size.width();
   desc.Height = size.height();
@@ -245,8 +246,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   desc.Scaling = DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
   desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-  desc.AlphaMode = viz::HasAlpha(format) ? DXGI_ALPHA_MODE_PREMULTIPLIED
-                                         : DXGI_ALPHA_MODE_IGNORE;
+  desc.AlphaMode = si_format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
+                                        : DXGI_ALPHA_MODE_IGNORE;
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
 
