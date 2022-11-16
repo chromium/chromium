@@ -2962,7 +2962,7 @@
     {
       name: "WebAppLaunchHandler",
       origin_trial_feature_name: "Launch Handler",
-      status: "experimental",
+      status: {"Android": "experimental", "default": "stable"},
       base_feature: "WebAppEnableLaunchHandler",
     },
     {
