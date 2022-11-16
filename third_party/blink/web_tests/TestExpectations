@@ -1527,7 +1527,6 @@ crbug.com/591099 [ Mac ] external/wpt/css/css-writing-modes/bidi-override-006.ht
 crbug.com/591099 [ Mac ] external/wpt/css/css-writing-modes/bidi-plaintext-001.html [ Failure ]
 crbug.com/591099 [ Mac ] fast/css/content-counter-010.htm [ Failure ]
 crbug.com/591099 [ Mac ] fast/css/content/content-quotes-07.html [ Failure ]
-crbug.com/591099 [ Mac10.14 ] fast/forms/text/text-lineheight-centering.html [ Failure ]
 crbug.com/591099 [ Mac ] paint/invalidation/box/hover-pseudo-borders.html [ Failure ]
 crbug.com/591099 [ Mac ] fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-auto.html [ Failure ]
 crbug.com/591099 [ Mac ] paint/invalidation/flexbox/remove-inline-block-descendant-of-flex.html [ Failure ]
@@ -3997,7 +3996,6 @@ crbug.com/807110 external/wpt/media-source/mediasource-is-type-supported.html [ 
 crbug.com/807110 external/wpt/media-source/mediasource-sequencemode-append-buffer.html [ Failure Pass ]
 crbug.com/807110 external/wpt/media-source/mediasource-sourcebuffer-mode-timestamps.html [ Failure Pass ]
 crbug.com/794338 media/video-rotation.html [ Failure Pass ]
-crbug.com/811605 media/video-poster-after-loadedmetadata.html [ Failure Pass ]
 
 # MHT works only when loaded from local FS (file://..).
 crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
@@ -4285,7 +4283,6 @@ crbug.com/937811 [ Release Win ] http/tests/devtools/elements/shadow/elements-pa
 
 # Sheriff 2019-07-31
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-shadow.html [ Failure ]
-crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-all.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-padding.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-with-mask.html [ Failure ]
 crbug.com/979422 [ Mac ] fast/borders/border-radius-mask-canvas-border.html [ Failure ]
@@ -4699,7 +4696,6 @@ crbug.com/1102167 external/wpt/fetch/redirect-navigate/preserve-fragment.html [ 
 # Sheriff 2020-07-13
 
 crbug.com/1104910 fast/peerconnection/RTCPeerConnection-reload-interesting-usage.html [ Failure Pass ]
-crbug.com/1104910 [ Mac ] editing/selection/selection-background.html [ Failure Pass ]
 
 # Sheriff 2020-07-14
 
