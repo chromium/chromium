@@ -17,9 +17,10 @@
 
 namespace {
 
-// Reference of time.
+// Reference of time. Don't use 0 or it will be processed as nullptr instead of
+// 0 seconds.
 constexpr base::Time kOriginOfTime =
-    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(0));
+    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
 
 }  // anonymous namespace
 

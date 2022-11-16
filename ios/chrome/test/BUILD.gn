@@ -318,6 +318,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/main_content:unit_tests",
     "//ios/chrome/browser/ui/menu:unit_tests",
     "//ios/chrome/browser/ui/ntp:unit_tests",
+    "//ios/chrome/browser/ui/ntp/metrics:unit_tests",
     "//ios/chrome/browser/ui/omnibox:unit_tests",
     "//ios/chrome/browser/ui/omnibox/popup:unit_tests",
     "//ios/chrome/browser/ui/open_in:unit_tests",
