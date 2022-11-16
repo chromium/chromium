@@ -331,6 +331,21 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-rel-reclient": {
+    "gn_args": {
+      "also_build_lacros_chrome": true,
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-chromeos-rel-rts": {
     "gn_args": {
       "also_build_lacros_chrome": true,

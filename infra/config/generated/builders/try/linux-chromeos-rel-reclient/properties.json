@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "linux-chromeos-rel-reclient-compilator",
+    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -40,30 +44,15 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-chromeos-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-chromeos-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-chromeos-rel-reclient",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-chromeos-rel-rts",
-          "group": "tryserver.chromium.chromiumos"
-        }
-      ]
+      "is_compile_only": true
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -72,9 +61,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium/orchestrator"
 }

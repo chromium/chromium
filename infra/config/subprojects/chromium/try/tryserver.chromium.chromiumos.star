@@ -269,6 +269,30 @@ try_.compilator_builder(
     goma_jobs = goma.jobs.J300,
 )
 
+try_.orchestrator_builder(
+    name = "linux-chromeos-rel-reclient",
+    builderless = True,
+    mirrors = [
+        "ci/linux-chromeos-rel",
+    ],
+    compilator = "linux-chromeos-rel-reclient-compilator",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        experiment_percentage = 3,
+    ),
+    try_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+)
+
+try_.compilator_builder(
+    name = "linux-chromeos-rel-reclient-compilator",
+    builderless = True,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+)
+
 try_.builder(
     name = "linux-lacros-dbg",
     # TODO(crbug.com/1233247) Adds the CI tester when it's available.

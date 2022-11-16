@@ -163,7 +163,6 @@
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
-      'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
@@ -1069,6 +1068,7 @@
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
+      'linux-chromeos-rel-reclient': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage', # should be kept in sync with linux-chromeos-rel
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
@@ -2290,6 +2290,12 @@
     # Keep in sync with chromeos_with_codecs_release_trybot.
     'chromeos_with_codecs_release_trybot_code_coverage': [
       'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    # Keep in sync with chromeos_with_codecs_release_trybot.
+    'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
