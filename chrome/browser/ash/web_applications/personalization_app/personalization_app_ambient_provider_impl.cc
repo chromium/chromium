@@ -573,7 +573,7 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
 }
 
 void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
-  Shell::Get()->ambient_controller()->ShowUi();
+  Shell::Get()->ambient_controller()->StartScreenSaverPreview();
 }
 
 }  // namespace ash::personalization_app

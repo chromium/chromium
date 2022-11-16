@@ -105,6 +105,9 @@ std::ostream& operator<<(std::ostream& out, AmbientUiVisibility visibility) {
     case AmbientUiVisibility::kShown:
       out << "kShown";
       break;
+    case AmbientUiVisibility::kPreview:
+      out << "kPreview";
+      break;
     case AmbientUiVisibility::kHidden:
       out << "kHidden";
       break;

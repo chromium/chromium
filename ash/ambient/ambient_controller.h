@@ -113,6 +113,7 @@ class ASH_EXPORT AmbientController
   void OnInteractionStateChanged(InteractionState interaction_state) override;
 
   void ShowUi();
+  void StartScreenSaverPreview();
   // Ui will be enabled but not shown immediately. If there is no user activity
   // Ui will be shown after a short delay.
   void ShowHiddenUi();
@@ -175,6 +176,7 @@ class ASH_EXPORT AmbientController
 
   void StartRefreshingImages();
   void StopRefreshingImages();
+  void MaybeStartScreenSaver();
   AmbientAnimationTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after

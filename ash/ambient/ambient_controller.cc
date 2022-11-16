@@ -216,13 +216,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       DCHECK(!start_time_);
       start_time_ = base::Time::Now();
 
-      multi_screen_metrics_recorder_ =
-          std::make_unique<AmbientMultiScreenMetricsRecorder>(
-              GetCurrentTheme());
-      frame_rate_controller_ =
-          std::make_unique<AmbientAnimationFrameRateController>(
-              Shell::Get()->frame_throttling_controller());
-
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
 
@@ -235,16 +228,12 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       if (!power_status_observer_.IsObserving())
         power_status_observer_.Observe(PowerStatus::Get());
 
-      if (!user_activity_observer_.IsObserving())
-        user_activity_observer_.Observe(ui::UserActivityDetector::Get());
-
-      // Add observer for assistant interaction model
-      AssistantInteractionController::Get()->GetModel()->AddObserver(this);
-
-      Shell::Get()->AddPreTargetHandler(this);
-
-      StartRefreshingImages();
+      MaybeStartScreenSaver();
       break;
+    case AmbientUiVisibility::kPreview: {
+      MaybeStartScreenSaver();
+      break;
+    }
     case AmbientUiVisibility::kHidden:
     case AmbientUiVisibility::kClosed: {
       bool ambient_ui_was_rendering =
@@ -503,6 +492,15 @@ void AmbientController::ShowUi() {
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
 }
 
+void AmbientController::StartScreenSaverPreview() {
+  if (!IsAmbientModeEnabled()) {
+    LOG(WARNING) << "Ambient mode is not allowed.";
+    return;
+  }
+
+  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kPreview);
+}
+
 void AmbientController::ShowHiddenUi() {
   DVLOG(1) << __func__;
 
@@ -538,7 +536,8 @@ void AmbientController::ToggleInSessionUi() {
 }
 
 bool AmbientController::IsShown() const {
-  return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown;
+  return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown ||
+         ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview;
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -838,9 +837,11 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   widget->Show();
 
-  DCHECK(start_time_);
-  ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
-                                        current_theme);
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown) {
+    DCHECK(start_time_);
+    ambient::RecordAmbientModeStartupTime(base::Time::Now() - *start_time_,
+                                          current_theme);
+  }
 
   // Only announce for the primary window.
   if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {
@@ -894,6 +895,27 @@ void AmbientController::StartRefreshingImages() {
 void AmbientController::StopRefreshingImages() {
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
+}
+
+void AmbientController::MaybeStartScreenSaver() {
+  // The screensaver may have already been started.
+  if (ambient_photo_controller_->IsScreenUpdateActive())
+    return;
+
+  if (!user_activity_observer_.IsObserving())
+    user_activity_observer_.Observe(ui::UserActivityDetector::Get());
+
+  // Add observer for assistant interaction model
+  AssistantInteractionController::Get()->GetModel()->AddObserver(this);
+
+  multi_screen_metrics_recorder_ =
+      std::make_unique<AmbientMultiScreenMetricsRecorder>(GetCurrentTheme());
+  frame_rate_controller_ =
+      std::make_unique<AmbientAnimationFrameRateController>(
+          Shell::Get()->frame_throttling_controller());
+
+  Shell::Get()->AddPreTargetHandler(this);
+  StartRefreshingImages();
 }
 
 AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
