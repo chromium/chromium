@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,10 +21,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
-
-bool KeyIdHasValidLength(const std::string& key) {
-  return key.size() <= kMaxBytesPerAggregationKeyId;
-}
 
 bool IsValueInRange(int value) {
   return value > 0 && value <= kMaxAggregatableValue;
@@ -34,7 +31,8 @@ bool IsValid(const AggregatableValues::Values& values) {
     return false;
 
   return base::ranges::all_of(values, [](const auto& value) {
-    return KeyIdHasValidLength(value.first) && IsValueInRange(value.second);
+    return AggregationKeyIdHasValidLength(value.first) &&
+           IsValueInRange(value.second);
   });
 }
 
@@ -68,7 +66,7 @@ AggregatableValues::FromJSON(const base::Value* input_value) {
   Values::container_type container;
 
   for (auto [id, key_value] : *dict) {
-    if (!KeyIdHasValidLength(id)) {
+    if (!AggregationKeyIdHasValidLength(id)) {
       return base::unexpected(
           TriggerRegistrationError::kAggregatableValuesKeyTooLong);
     }

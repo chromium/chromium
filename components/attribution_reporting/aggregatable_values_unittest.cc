@@ -108,7 +108,7 @@ TEST(AggregatableValuesTest, Parse_KeyCount) {
     return AggregatableValues::FromJSON(&value);
   };
 
-  for (size_t count = 0; count < 50; count++) {
+  for (size_t count = 0; count < 51; count++) {
     EXPECT_TRUE(parse_dict_with_key_count(count).has_value());
   }
 
