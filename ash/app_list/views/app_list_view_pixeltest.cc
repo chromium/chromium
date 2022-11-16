@@ -6,13 +6,17 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
@@ -118,6 +122,82 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
       "bubble_launcher_gradient_zone.rev_0",
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
+}
+
+class AppListViewTabletPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*tablet_mode=*/bool> {
+ public:
+  // AshTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params;
+    init_params.under_rtl = GetParam();
+    return init_params;
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+    AppListTestHelper* test_helper = GetAppListTestHelper();
+    test_helper->GetSearchBoxView()->UseFixedPlaceholderTextForTest();
+    test_helper->AddAppItemsWithColorAndName(
+        /*num_apps=*/32, AppListTestHelper::IconColorType::kAlternativeColor,
+        /*set_name=*/true);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(RTL, AppListViewTabletPixelTest, testing::Bool());
+
+// Verifies the default layout for tablet mode launcher.
+TEST_P(AppListViewTabletPixelTest, Basic) {
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "tablet_launcher_basics.rev_0",
+      GetAppListTestHelper()->GetAppsContainerView()));
+}
+
+// Verifies that the top gradient zone of the tablet mode launcher works
+// correctly.
+TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
+  test::AppsGridViewTestApi test_api(
+      GetAppListTestHelper()->GetRootPagedAppsGridView());
+
+  // Drag the first launcher page upwards so that some apps are within the
+  // top gradient zone.
+  const gfx::Point start_page_drag = test_api.GetViewAtIndex(GridIndex(0, 0))
+                                         ->GetIconBoundsInScreen()
+                                         .bottom_left();
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(start_page_drag);
+  generator->PressTouch();
+  generator->MoveTouchBy(0, -40);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "tablet_launcher_top_gradient_zone.rev_0",
+      GetAppListTestHelper()->GetAppsContainerView()));
+}
+
+// Verifies that the bottom gradient zone of the tablet mode launcher works
+// correctly.
+TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
+  test::AppsGridViewTestApi test_api(
+      GetAppListTestHelper()->GetRootPagedAppsGridView());
+
+  // Drag the first launcher page upwards so that some apps are within the
+  // bottom gradient zone.
+  const gfx::Point start_page_drag = test_api.GetViewAtIndex(GridIndex(0, 0))
+                                         ->GetIconBoundsInScreen()
+                                         .bottom_left();
+  auto* generator = GetEventGenerator();
+  generator->set_current_screen_location(start_page_drag);
+  generator->PressTouch();
+  generator->MoveTouchBy(0, -90);
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "tablet_launcher_bottom_gradient_zone.rev_0",
+      GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 }  // namespace ash
