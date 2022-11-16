@@ -297,9 +297,6 @@ def ChooseFiles(args):
       name = os.path.basename(os.path.dirname(path))
       if args.start <= name[0] <= args.end:
         paths.append(path)
-
-  if args.obsolete:
-    paths.append(histogram_paths.OBSOLETE_XML)
   return paths
 
 
@@ -349,9 +346,6 @@ if __name__ == '__main__':
   parser.add_argument('--end',
                       help='End migration at a certain character (inclusive).',
                       default='z')
-  parser.add_argument('--obsolete',
-                      help='Whether to migrate obsolete_histograms.xml',
-                      default=False)
   args = parser.parse_args()
   assert len(args.start) == 1 and len(args.end) == 1, (
       'start and end flag should only contain a single letter.')

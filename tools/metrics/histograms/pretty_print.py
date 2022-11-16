@@ -197,8 +197,7 @@ def main():
                                         PrettyPrintEnums)
 
   elif 'histograms' in args.filepath:
-    # Specify the individual directory of histograms.xml or
-    # obsolete_histograms.xml.
+    # Specify the individual directory of histograms.xml.
     status = presubmit_util.DoPresubmit(
         sys.argv,
         args.filepath,

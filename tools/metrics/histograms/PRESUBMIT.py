@@ -36,19 +36,6 @@ def GetPrefixErrors(input_api, output_api, cwd, rel_path, results):
     results.append(output_api.PresubmitError(error_msg))
 
 
-def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
-  """Validates all histograms in the file are obsolete."""
-  exit_code = input_api.subprocess.call(
-      [input_api.python3_executable, 'validate_obsolete_histograms.py'],
-      cwd=cwd)
-
-  if exit_code != 0:
-    error_msg = (
-        'metadata/obsolete_histograms.xml contains non-obsolete '
-        'histograms, please run validate_obsolete_histograms.py to fix.')
-    results.append(output_api.PresubmitError(error_msg))
-
-
 def GetValidateHistogramsError(input_api, output_api, cwd, results):
   """Validates histograms format and index file."""
   exit_code = input_api.subprocess.call(
@@ -92,14 +79,6 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   if 'test_data' in filepath:
     return False
 
-  # If the changed file is obsolete_histograms.xml, validate all histograms
-  # inside are obsolete.
-  if 'obsolete_histograms.xml' in filepath:
-    GetObsoleteXmlErrors(input_api, output_api, cwd, results)
-    # Return false here because we don't need to validate format if users only
-    # change obsolete_histograms.xml.
-    return False
-
   # If the changed file is histograms.xml or histogram_suffixes_list.xml,
   # pretty-print and validate prefix it.
   elif ('histograms.xml' in filepath
@@ -125,7 +104,7 @@ def CheckHistogramFormatting(input_api, output_api):
   xml_changed = False
 
   # Only for changed files, do corresponding checks if the file is
-  # histograms.xml, enums.xml or obsolete_histograms.xml.
+  # histograms.xml or enums.xml.
   for file_obj in input_api.AffectedTextFiles():
     is_changed = ValidateSingleFile(
         input_api, output_api, file_obj, cwd, results)

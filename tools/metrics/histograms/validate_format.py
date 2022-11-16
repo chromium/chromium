@@ -22,10 +22,7 @@ _NAMESPACES_IN_MULTIPLE_FILES = [
 def CheckNamespaces():
   namespaces = {}
   has_errors = False
-  # Iterate over HISTOGRAMS_XMLS rather than ALL_XMLS because it's fine for
-  # histogram namespaces in obsolete_histograms.xml to also appear in
-  # non-obsolete histograms.xml files.
-  for path in histogram_paths.HISTOGRAMS_XMLS:
+  for path in histogram_paths.ALL_XMLS:
     tree = xml.dom.minidom.parse(path)
 
     def _GetNamespace(node):

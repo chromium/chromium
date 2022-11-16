@@ -179,7 +179,6 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/weblayer/histograms.xml",
       "//tools/metrics/histograms/metadata/windows/histograms.xml",
       "//tools/metrics/histograms/metadata/xr/histograms.xml",
-      "//tools/metrics/histograms/metadata/obsolete_histograms.xml",
       "//tools/metrics/histograms/enums.xml",
     ]
 
