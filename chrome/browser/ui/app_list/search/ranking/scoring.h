@@ -10,10 +10,6 @@
 
 namespace app_list {
 
-// TODO(crbug.com/1258415): Consider refactoring so that |SortCategories| and
-// |SortResults| are the lambda functions themselves, instead of thin wrappers
-// around lambdas.
-
 // Determine category display order by sorting the given list of |categories|
 // in-place.
 //
