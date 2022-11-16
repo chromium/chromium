@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.View.OnLayoutChangeListener;
 
 import org.junit.Assert;
@@ -33,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 
@@ -59,6 +64,8 @@ public class FullscreenHtmlApiHandlerUnitTest {
     private WebContents mWebContents;
     @Mock
     private ContentView mContentView;
+    @Mock
+    DimensionCompat mDimensionCompat;
 
     private FullscreenHtmlApiHandler mFullscreenHtmlApiHandler;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
@@ -213,5 +220,48 @@ public class FullscreenHtmlApiHandlerUnitTest {
         // We should now be in fullscreen, with the toast shown.
         assertTrue("Fullscreen toast should be visible in fullscreen",
                 mFullscreenHtmlApiHandler.isToastVisibleForTesting());
+    }
+
+    @Test
+    public void testToastRepositionsUponWindowLayoutChange() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isHidden();
+        doReturn(true).when(mContentView).hasWindowFocus();
+        doReturn(SYSTEM_UI_HEIGHT).when(mDimensionCompat).getNavbarHeight();
+        final int contentHeight = DEVICE_HEIGHT - SYSTEM_UI_HEIGHT;
+        doReturn(contentHeight).when(mContentView).getHeight();
+        final Rect windowBounds = new Rect(0, 0, 800, contentHeight);
+        doAnswer(invocation -> {
+            Rect paramRect = invocation.getArgument(0);
+            paramRect.set(windowBounds);
+            return null;
+        })
+                .when(mContentView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
+        mAreControlsHidden.set(true);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        mFullscreenHtmlApiHandler.setVersionCompatForTesting(mDimensionCompat);
+
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        var arg = ArgumentCaptor.forClass(OnLayoutChangeListener.class);
+        verify(mContentView).addOnLayoutChangeListener(arg.capture());
+        arg.getValue().onLayoutChange(mContentView, 0, 0, DEVICE_WIDTH, DEVICE_HEIGHT, 0, 0, 0, 0);
+        mFullscreenHtmlApiHandler.triggerWindowLayoutChangeForTesting();
+        assertEquals(SYSTEM_UI_HEIGHT, mFullscreenHtmlApiHandler.getToastBottomMarginForTesting());
+
+        // Verify that the toast has a bigger margin that puts it up above the OSK.
+        final int oskHeight = 800;
+        final int windowHeightWithOsk = contentHeight - oskHeight;
+        windowBounds.bottom = windowHeightWithOsk;
+        mFullscreenHtmlApiHandler.triggerWindowLayoutChangeForTesting();
+        assertEquals(oskHeight, mFullscreenHtmlApiHandler.getToastBottomMarginForTesting());
+
+        // Verify that the toast returns to the original position when the OSK is gone.
+        windowBounds.bottom = contentHeight;
+        mFullscreenHtmlApiHandler.triggerWindowLayoutChangeForTesting();
+        assertEquals(SYSTEM_UI_HEIGHT, mFullscreenHtmlApiHandler.getToastBottomMarginForTesting());
     }
 }
