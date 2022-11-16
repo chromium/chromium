@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is deprecated in favor of
-// ui/webui/resources/js/promise_resolver.ts, and is maintained only for
-// legacy Closure Compiler users.
-
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from './assert.js';
 
 /**
  * @fileoverview PromiseResolver is a helper class that allows creating a

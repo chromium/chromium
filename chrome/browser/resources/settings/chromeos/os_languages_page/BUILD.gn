@@ -45,11 +45,11 @@ js_library("languages") {
     ":languages_types",
     "..:prefs_behavior",
     "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:promise_resolver",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [
     "$externs_path/input_method_private.js",

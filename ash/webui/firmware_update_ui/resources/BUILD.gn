@@ -82,8 +82,8 @@ js_library("fake_update_controller") {
   deps = [
     ":firmware_update_types",
     "//ash/webui/common/resources:fake_observables",
-    "//ash/webui/common/resources:promise_resolver",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 

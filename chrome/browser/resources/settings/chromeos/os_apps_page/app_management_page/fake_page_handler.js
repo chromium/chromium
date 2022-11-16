@@ -6,7 +6,7 @@ import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerIn
 import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import {AppManagementStore} from './store.js';
 

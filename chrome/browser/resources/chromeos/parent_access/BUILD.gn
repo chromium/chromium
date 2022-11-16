@@ -51,8 +51,8 @@ js_library("parent_access_app") {
 
 js_library("parent_access_controller") {
   deps = [
-    "//ash/webui/common/resources:promise_resolver",
     "//ash/webui/common/resources/post_message_api:post_message_api_server",
+    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 

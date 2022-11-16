@@ -139,16 +139,16 @@ js_library("chrome_app_detail_view") {
 
 js_library("dom_switch") {
   deps = [
-    "//ash/webui/common/resources:promise_resolver",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 
 js_library("fake_page_handler") {
   deps = [
-    "//ash/webui/common/resources:promise_resolver",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 

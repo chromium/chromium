@@ -18,8 +18,8 @@ js_library("index") {
     ":types",
     "line_chart:line_chart",
     "line_chart:unit_label",
-    "//ash/webui/common/resources:promise_resolver",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:promise_resolver",
     "//ui/webui/resources/js:util",
   ]
 
