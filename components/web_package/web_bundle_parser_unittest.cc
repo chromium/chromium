@@ -4,6 +4,7 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -13,15 +14,19 @@
 #include "components/cbor/writer.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
 namespace {
+
+using testing::ElementsAreArray;
 
 constexpr char kPrimaryUrl[] = "https://test.example.com/";
 constexpr char kValidityUrl[] =
@@ -219,8 +224,8 @@ SignedWebBundleAndKeys SignBundle(
 
 void CheckIfSignatureStackEntryIsValid(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry,
-    const std::vector<uint8_t>& public_key) {
-  EXPECT_EQ(entry->public_key, public_key);
+    const Ed25519PublicKey& public_key) {
+  EXPECT_THAT(entry->public_key, ElementsAreArray(public_key.bytes()));
 
   EXPECT_EQ(entry->signature.size(), 64ul);
   // The signature should also be present at the very end of
@@ -234,7 +239,7 @@ void CheckIfSignatureStackEntryIsValid(
       base::ranges::search(entry->complete_entry_cbor, entry->attributes_cbor),
       entry->complete_entry_cbor.end());
   // The attributes should contain the public key.
-  EXPECT_NE(base::ranges::search(entry->attributes_cbor, public_key),
+  EXPECT_NE(base::ranges::search(entry->attributes_cbor, public_key.bytes()),
             entry->attributes_cbor.end());
 }
 

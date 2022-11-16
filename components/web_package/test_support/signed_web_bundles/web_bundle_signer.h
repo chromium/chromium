@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
 namespace web_package {
 
@@ -32,14 +33,17 @@ class WebBundleSigner {
   struct KeyPair {
     static KeyPair CreateRandom(bool produce_invalid_signature = false);
 
-    KeyPair(base::span<const uint8_t> public_key,
-            base::span<const uint8_t> private_key,
-            bool produce_invalid_signature = false);
+    KeyPair(
+        base::span<const uint8_t, Ed25519PublicKey::kLength> public_key_bytes,
+        base::span<const uint8_t, 64> private_key_bytes,
+        bool produce_invalid_signature = false);
     KeyPair(const KeyPair& other);
     ~KeyPair();
 
-    std::vector<uint8_t> public_key;
-    std::vector<uint8_t> private_key;
+    Ed25519PublicKey public_key;
+    // We don't have a wrapper for private keys since they are only used in
+    // tests.
+    std::array<uint8_t, 64> private_key;
     bool produce_invalid_signature;
   };
 
@@ -63,7 +67,7 @@ class WebBundleSigner {
  private:
   // Creates a signature stack entry for the given public key and signature.
   static cbor::Value CreateSignatureStackEntry(
-      base::span<const uint8_t> public_key,
+      const Ed25519PublicKey& public_key,
       std::vector<uint8_t> signature,
       ErrorForTesting error_for_testing = ErrorForTesting::kNoError);
 

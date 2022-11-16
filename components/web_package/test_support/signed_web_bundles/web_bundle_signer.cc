@@ -6,6 +6,7 @@
 
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
 #include "crypto/secure_hash.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -28,7 +29,7 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
 }
 
 cbor::Value WebBundleSigner::CreateSignatureStackEntry(
-    base::span<const uint8_t> public_key,
+    const Ed25519PublicKey& public_key,
     std::vector<uint8_t> signature,
     ErrorForTesting error_for_testing) {
   if (error_for_testing == ErrorForTesting::kInvalidSignatureLength) {
@@ -37,7 +38,8 @@ cbor::Value WebBundleSigner::CreateSignatureStackEntry(
 
   cbor::Value::ArrayValue entry;
   entry.push_back(cbor::Value(CreateSignatureStackEntryAttributes(
-      std::vector(public_key.begin(), public_key.end()), error_for_testing)));
+      std::vector(public_key.bytes().begin(), public_key.bytes().end()),
+      error_for_testing)));
   entry.push_back(cbor::Value(signature));
 
   if (error_for_testing ==
@@ -93,8 +95,10 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
         cbor::Writer::Write(CreateIntegrityBlock(signature_stack));
 
     // Create the attributes map for the current signature stack entry.
-    absl::optional<std::vector<uint8_t>> attributes = cbor::Writer::Write(
-        CreateSignatureStackEntryAttributes(key_pair.public_key));
+    absl::optional<std::vector<uint8_t>> attributes =
+        cbor::Writer::Write(CreateSignatureStackEntryAttributes(
+            std::vector(key_pair.public_key.bytes().begin(),
+                        key_pair.public_key.bytes().end())));
 
     // Build the payload to sign and then sign it.
     std::vector<uint8_t> payload_to_sign = CreateSignaturePayload(
@@ -139,18 +143,23 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
 // static
 WebBundleSigner::KeyPair WebBundleSigner::KeyPair::CreateRandom(
     bool produce_invalid_signature) {
-  std::vector<uint8_t> public_key(ED25519_PUBLIC_KEY_LEN);
-  std::vector<uint8_t> private_key(ED25519_PRIVATE_KEY_LEN);
+  std::array<uint8_t, ED25519_PUBLIC_KEY_LEN> public_key;
+  std::array<uint8_t, ED25519_PRIVATE_KEY_LEN> private_key;
   ED25519_keypair(public_key.data(), private_key.data());
-  return KeyPair(public_key, private_key, produce_invalid_signature);
+  return KeyPair(std::move(public_key), std::move(private_key),
+                 produce_invalid_signature);
 }
 
-WebBundleSigner::KeyPair::KeyPair(base::span<const uint8_t> public_key,
-                                  base::span<const uint8_t> private_key,
-                                  bool produce_invalid_signature)
-    : public_key(public_key.begin(), public_key.end()),
-      private_key(private_key.begin(), private_key.end()),
-      produce_invalid_signature(produce_invalid_signature) {}
+WebBundleSigner::KeyPair::KeyPair(
+    base::span<const uint8_t, ED25519_PUBLIC_KEY_LEN> public_key_bytes,
+    base::span<const uint8_t, ED25519_PRIVATE_KEY_LEN> private_key_bytes,
+    bool produce_invalid_signature)
+    : public_key(Ed25519PublicKey::Create(public_key_bytes)),
+      produce_invalid_signature(produce_invalid_signature) {
+  std::array<uint8_t, ED25519_PRIVATE_KEY_LEN> private_key_array;
+  base::ranges::copy(private_key_bytes, private_key_array.begin());
+  private_key = std::move(private_key_array);
+}
 
 WebBundleSigner::KeyPair::KeyPair(const WebBundleSigner::KeyPair& other) =
     default;

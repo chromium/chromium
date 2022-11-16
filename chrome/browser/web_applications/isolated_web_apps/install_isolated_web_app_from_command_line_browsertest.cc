@@ -131,12 +131,9 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
   std::vector<uint8_t> BuildBundle() {
     web_package::WebBundleSigner::KeyPair key_pair =
         web_package::WebBundleSigner::KeyPair::CreateRandom();
-    base::expected<web_package::Ed25519PublicKey, std::string> public_key =
-        web_package::Ed25519PublicKey::Create(key_pair.public_key);
-    DCHECK(public_key.has_value());
     web_package::SignedWebBundleId bundle_id =
         web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-            public_key.value());
+            key_pair.public_key);
     web_package::WebBundleBuilder builder;
 
     builder.AddPrimaryURL("isolated-app://" + bundle_id.id());
