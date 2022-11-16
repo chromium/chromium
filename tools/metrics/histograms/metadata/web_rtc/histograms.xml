@@ -133,34 +133,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.Agc.DigitalGainApplied" units="dB"
-    expires_after="2023-04-30">
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    Logs adaptive digital compression gain that is applied by AgcManagerDirect.
-    A log call is made once per second. The compression gain is applied to the
-    microphone signal at the end of the processing chain.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc.DigitalGainUpdated" units="dB"
-    expires_after="2022-05-01">
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    Logs adaptive digital compression gain that is applied by AgcManagerDirect.
-    A log call is made every time the gain changes. The compression gain is
-    applied to the microphone signal at the end of the processing chain.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
     expires_after="2023-12-31">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
-    Logs the input clipping rate in AgcManagerDirect. A log call is made every
-    30 seconds during an active WebRTC call using the input volume controller
-    and clipping detection.
+    Logs the input clipping rate in AGC1 and in AGC2. A log call is made every
+    30 seconds during an active WebRTC call using the input volume controller.
   </summary>
 </histogram>
 
