@@ -506,6 +506,3 @@ as required builders.
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
 
-* [win10_chromium_x64_rel_ng-reclient](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win10_chromium_x64_rel_ng-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win10_chromium_x64_rel_ng-reclient""))
-  * Experiment percentage: 3.0
-

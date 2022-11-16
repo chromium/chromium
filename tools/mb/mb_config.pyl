@@ -1340,7 +1340,6 @@
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
       'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10_chromium_x64_rel_ng-inverse-fyi': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
-      'win10_chromium_x64_rel_ng-reclient': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win7-rel': 'gpu_tests_release_trybot_x86_resource_allowlisting',

@@ -87,10 +87,6 @@
         {
           "builder": "win10_chromium_x64_rel_ng",
           "group": "tryserver.chromium.win"
-        },
-        {
-          "builder": "win10_chromium_x64_rel_ng-reclient",
-          "group": "tryserver.chromium.win"
         }
       ]
     }
