@@ -24,7 +24,7 @@
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"

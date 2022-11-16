@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <vector>
 
-#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

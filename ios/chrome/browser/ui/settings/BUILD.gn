@@ -144,7 +144,7 @@ source_set("settings") {
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/commerce",
+    "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",

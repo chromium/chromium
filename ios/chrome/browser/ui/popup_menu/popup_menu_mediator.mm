@@ -27,7 +27,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"

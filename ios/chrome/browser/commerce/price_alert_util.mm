@@ -18,10 +18,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const char kPriceTrackingNotifications[] = "enable_price_notification";
-}  // namespace
-
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
@@ -48,11 +44,4 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
   return true;
-}
-
-// Determine if price drop notifications are enabled.
-bool IsPriceNotificationsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      commerce::kCommercePriceTracking, kPriceTrackingNotifications,
-      /** default_value */ false);
 }

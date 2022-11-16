@@ -31,7 +31,7 @@
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"

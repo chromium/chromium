@@ -64,7 +64,7 @@ source_set("overflow_menu") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/commerce",
+    "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow:browser_agent",
     "//ios/chrome/browser/follow:enums",

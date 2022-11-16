@@ -15,7 +15,4 @@ class BrowserState;
 // MSBB and signed in users with a non-incognito Tab.
 BOOL IsPriceAlertsEligible(web::BrowserState* browser_state);
 
-// Determine if price drop notifications are enabled.
-BOOL IsPriceNotificationsEnabled();
-
 #endif  // IOS_CHROME_BROWSER_COMMERCE_PRICE_ALERT_UTIL_H_
