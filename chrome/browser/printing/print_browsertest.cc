@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
@@ -3555,6 +3556,8 @@ class ContentAnalysisPrintBrowserTest
                 &ContentAnalysisPrintBrowserTest::ScanningResponse,
                 base::Unretained(this)),
             kFakeDmToken));
+    enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
+        base::Milliseconds(0));
 
     feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
   }
@@ -3640,13 +3643,7 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1384459): Flaky on MSan builds.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_PrintNow DISABLED_PrintNow
-#else
-#define MAYBE_PrintNow PrintNow
-#endif
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
   AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -3678,14 +3675,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
   ASSERT_EQ(new_document_called_count(), 0);
 }
 
-// TODO(crbug.com/1384459): Flaky on MSan builds.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_PrintWithPreview DISABLED_PrintWithPreview
-#else
-#define MAYBE_PrintWithPreview PrintWithPreview
-#endif
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
-                       MAYBE_PrintWithPreview) {
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
   AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
