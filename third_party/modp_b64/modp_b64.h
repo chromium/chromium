@@ -120,69 +120,10 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len);
  */
 #define modp_b64_decode_len(A) (A / 4 * 3 + 2)
 
-/**
- * Will return the strlen of the output from encoding.
- * This may be less than the required number of bytes allocated.
- *
- * This allows you to 'deserialized' a struct
- * \code
- * char* b64encoded = "...";
- * int len = strlen(b64encoded);
- *
- * struct datastuff foo;
- * if (modp_b64_encode_strlen(sizeof(struct datastuff)) != len) {
- *    // wrong size
- *    return false;
- * } else {
- *    // safe to do;
- *    if (modp_b64_decode((char*) &foo, b64encoded, len) == -1) {
- *      // bad characters
- *      return false;
- *    }
- * }
- * // foo is filled out now
- * \endcode
- */
-#define modp_b64_encode_strlen(A) ((A + 2)/ 3 * 4)
-
 #define MODP_B64_ERROR ((size_t)-1)
 
 #ifdef __cplusplus
 }
-
-#include <string>
-
-inline std::string& modp_b64_encode(std::string& s)
-{
-    std::string x(modp_b64_encode_len(s.size()), '\0');
-    size_t d = modp_b64_encode(const_cast<char*>(x.data()), s.data(), s.size());
-    x.erase(d, std::string::npos);
-    s.swap(x);
-    return s;
-}
-
-/**
- * base 64 decode a string (self-modifing)
- * On failure, the string is empty.
- *
- * This function is for C++ only (duh)
- *
- * \param[in,out] s the string to be decoded
- * \return a reference to the input string
- */
-inline std::string& modp_b64_decode(std::string& s)
-{
-    std::string x(modp_b64_decode_len(s.size()), '\0');
-    size_t d = modp_b64_decode(const_cast<char*>(x.data()), s.data(), s.size());
-    if (d == MODP_B64_ERROR) {
-        x.clear();
-    } else {
-        x.erase(d, std::string::npos);
-    }
-    s.swap(x);
-    return s;
-}
-
 #endif /* __cplusplus */
 
 #endif /* MODP_B64 */

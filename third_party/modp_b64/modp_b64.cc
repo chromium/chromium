@@ -45,17 +45,6 @@
 /* public header */
 #include "modp_b64.h"
 
-/*
- * If you are ripping this out of the library, comment out the next
- * line and uncomment the next lines as approrpiate
- */
-//#include "config.h"
-
-/* if on motoral, sun, ibm; uncomment this */
-/* #define WORDS_BIGENDIAN 1 */
-/* else for Intel, Amd; uncomment this */
-/* #undef WORDS_BIGENDIAN */
-
 #include "modp_b64_data.h"
 
 #define BADCHAR 0x01FFFFFF
@@ -116,75 +105,6 @@ size_t modp_b64_encode(char* dest, const char* str, size_t len)
     *p = '\0';
     return p - (uint8_t*)dest;
 }
-
-#ifdef WORDS_BIGENDIAN   /* BIG ENDIAN -- SUN / IBM / MOTOROLA */
-int modp_b64_decode(char* dest, const char* src, int len)
-{
-    if (len == 0) return 0;
-
-#ifdef DOPAD
-    /* if padding is used, then the message must be at least
-       4 chars and be a multiple of 4.
-       there can be at most 2 pad chars at the end */
-    if (len < 4 || (len % 4 != 0)) return MODP_B64_ERROR;
-    if (src[len-1] == CHARPAD) {
-        len--;
-        if (src[len -1] == CHARPAD) {
-            len--;
-        }
-    }
-#endif  /* DOPAD */
-
-    size_t i;
-    int leftover = len % 4;
-    size_t chunks = (leftover == 0) ? len / 4 - 1 : len /4;
-
-    uint8_t* p = (uint8_t*) dest;
-    uint32_t x = 0;
-    uint32_t* destInt = (uint32_t*) p;
-    uint32_t* srcInt = (uint32_t*) src;
-    uint32_t y = *srcInt++;
-    for (i = 0; i < chunks; ++i) {
-        x = d0[y >> 24 & 0xff] | d1[y >> 16 & 0xff] |
-            d2[y >> 8 & 0xff] | d3[y & 0xff];
-
-        if (x >= BADCHAR)  return MODP_B64_ERROR;
-        *destInt = x << 8;
-        p += 3;
-        destInt = (uint32_t*)p;
-        y = *srcInt++;
-    }
-
-    switch (leftover) {
-    case 0:
-        x = d0[y >> 24 & 0xff] | d1[y >> 16 & 0xff] |
-            d2[y >>  8 & 0xff] | d3[y & 0xff];
-        if (x >= BADCHAR)  return MODP_B64_ERROR;
-        *p++ = ((uint8_t*)&x)[1];
-        *p++ = ((uint8_t*)&x)[2];
-        *p = ((uint8_t*)&x)[3];
-        return (chunks+1)*3;
-    case 1:
-        x = d3[y >> 24];
-        *p =  (uint8_t)x;
-        break;
-    case 2:
-        x = d3[y >> 24] *64 + d3[(y >> 16) & 0xff];
-        *p =  (uint8_t)(x >> 4);
-        break;
-    default:  /* case 3 */
-        x = (d3[y >> 24] *64 + d3[(y >> 16) & 0xff])*64 +
-            d3[(y >> 8) & 0xff];
-        *p++ = (uint8_t) (x >> 10);
-        *p = (uint8_t) (x >> 2);
-        break;
-    }
-
-    if (x >= BADCHAR) return MODP_B64_ERROR;
-    return 3*chunks + (6*leftover)/8;
-}
-
-#else /* LITTLE  ENDIAN -- INTEL AND FRIENDS */
 
 size_t modp_b64_decode(char* dest, const char* src, size_t len)
 {
@@ -248,5 +168,3 @@ size_t modp_b64_decode(char* dest, const char* src, size_t len)
 
     return 3*chunks + (6*leftover)/8;
 }
-
-#endif  /* if bigendian / else / endif */

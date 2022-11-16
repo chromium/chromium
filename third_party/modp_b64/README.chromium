@@ -6,12 +6,14 @@ License: BSD
 Security Critical: yes
 
 Description:
-The modp_b64.c file was modified to remove the inclusion of modp's config.h
-and to fix compilation errors that occur under VC8.  The file was renamed
-modp_b64.cc to force it to be compiled as C++ so that the inclusion of
-basictypes.h could be possible.
-
-The modp_b64.cc and modp_b64.h files were then modified to make them safe on
-64-bit systems, avoid misaligned read/write on little-endian hardware, and
-remove unreachable code. The API was also extended so callers can avoid overflow
-when performing a base64 encode.
+The source code was modified from upstream as follows:
+- Removed the inclusion of modp's config.h
+- Fixed compilation errors that occur under VC8
+- Renamed modp_b64.c to modp_b64.cc to force it to be compiled as C++ and so
+  the inclusion of basictypes.h could be possible
+- Made code safe on 64-bit systems
+- Removed misaligned read/writes on little-endian systems
+- Removed unreachable code
+- Extended the API so callers can avoid overload for base64 encode
+- Removed big endian support entirely
+- Removed std::string APIs
