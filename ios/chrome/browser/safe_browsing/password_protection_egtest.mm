@@ -6,6 +6,7 @@
 #import <string>
 
 #import "base/ios/ios_util.h"
+#import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
@@ -65,13 +66,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_phish_guard=") +
       _allowlistedURL.spec());
-  // TODO(crbug.com/1221635) testPasswordReuseDetectionWarning is disabled
-  /*
+
   if ([self isRunningTest:@selector(testPasswordReuseDetectionWarning)]) {
     // Use commandline args to save a fake phishing cached verdict.
     config.additional_args.push_back(
         std::string("--mark_as_phish_guard_phishing=") + _phishingURL.spec());
-  }*/
+  }
 
   return config;
 }
@@ -120,23 +120,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that password protection UI is shown when saved password is reused on
 // phishing site.
-// TODO(crbug.com/1221635) This fails on iPad 14.4 and iPhone 14.5+
-- (void)DISABLED_testPasswordReuseDetectionWarning {
+- (void)testPasswordReuseDetectionWarning {
   // PhishGuard is only available on iOS 14.0 or above.
 
   [ChromeEarlGrey loadURL:_phishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:kInputPage];
 
   [self typePasswordIntoWebInput];
-
-  [[EarlGrey selectElementWithMatcher:PasswordProtectionMatcher()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:PasswordProtectionMatcher()
+                                  timeout:base::test::ios::
+                                              kWaitForUIElementTimeout];
 }
 
 // Tests that password protection UI is not shown when saved password is reused
 // on safe site.
-// TODO(crbug.com/1213616) Test is flaky.
-- (void)DISABLED_testPasswordProtectionNotShownForAllowListedURL {
+- (void)testPasswordProtectionNotShownForAllowListedURL {
   // PhishGuard is only available on iOS 14.0 or above.
 
   [ChromeEarlGrey loadURL:_allowlistedURL];
