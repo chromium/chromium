@@ -9,8 +9,26 @@
 
 namespace ntp_tiles {
 
+// (Chrome IOS only) Experiment behaviors for the improved default popular sites
+// experiment.
+enum class IOSDefaultPopularSitesExperimentBehavior {
+  // Sites with popular, native iOS apps are included in the default popular
+  // sites suggestions.
+  kIncludePopularApps = 0,
+  // Sites with popular, native iOS apps are excluded from the default popular
+  // sites suggestions.
+  kExcludePopularApps = 1,
+  // Default popular sites.
+  kDefault = 2,
+};
+
 // Name of the field trial to configure PopularSites.
 extern const char kPopularSitesFieldTrialName[];
+
+// Feature param under `kIOSPopularSitesImprovedSuggestions` to enable
+// excluding sites from popular sites (on IOS only) that have popular, native
+// iOS apps.
+extern const char kIOSPopularSitesExcludePopularAppsParam[];
 
 // This feature is enabled by default. Otherwise, users who need it would not
 // get the right configuration timely enough. The configuration affects only
@@ -23,6 +41,15 @@ BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 
 // If this feature is enabled, we enable popular sites in the suggestions UI.
 BASE_DECLARE_FEATURE(kUsePopularSitesSuggestions);
+
+// Feature flag to enable improved default popular sites suggestions on IOS.
+// Use `GetDefaultPopularSitesExperimentType()` instead of this
+// constant directly.
+BASE_DECLARE_FEATURE(kIOSPopularSitesImprovedSuggestions);
+
+// (Chrome IOS only) Returns the experiment type for the improved default
+// popular sites suggestions.
+IOSDefaultPopularSitesExperimentBehavior GetDefaultPopularSitesExperimentType();
 
 }  // namespace ntp_tiles
 

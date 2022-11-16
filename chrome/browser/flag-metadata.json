@@ -4309,6 +4309,10 @@
     "name": "ios-password-ui-split",
     "owners": ["tmartino", "bling-integrations-team@google.com"],
     "expiry_milestone": 110
+  },  {
+    "name": "ios-popular-sites-improved-suggestions",
+    "owners": ["bwwilliams@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 112
   },
   {
     "name": "ios-shared-highlighting-color-change",

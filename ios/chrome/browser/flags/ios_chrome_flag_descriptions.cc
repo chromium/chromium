@@ -437,6 +437,12 @@ const char kIOSPasswordManagerCrossOriginIframeSupportName[] =
 const char kIOSPasswordManagerCrossOriginIframeSupportDescription[] =
     "Enables password saving and filling in cross-origin iframes on IOS.";
 
+const char kIOSPopularSitesImprovedSuggestionsName[] =
+    "Most Visited Tiles (Improved Default Suggestions)";
+const char kIOSPopularSitesImprovedSuggestionsDescription[] =
+    "Enables improved default suggestions for the most visited tiles, by using "
+    "only Chrome iOS usage data to generate its suggestions.";
+
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =
