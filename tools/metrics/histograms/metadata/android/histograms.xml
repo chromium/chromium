@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth"
-    units="ms" expires_after="2023-04-09">
+    units="ms" expires_after="M115">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1873,7 +1873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.PrefToggledFromSettingPage"
-    enum="IncognitoReauthToggleValueType" expires_after="2023-03-26">
+    enum="IncognitoReauthToggleValueType" expires_after="M115">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -1891,7 +1891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.IncognitoReauth.PromoActionType"
-    enum="IncognitoReauthPromoActionType" expires_after="M110">
+    enum="IncognitoReauthPromoActionType" expires_after="M115">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
