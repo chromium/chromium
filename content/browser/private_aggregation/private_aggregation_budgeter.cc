@@ -339,9 +339,6 @@ void PrivateAggregationBudgeter::ClearDataImpl(
       break;
   }
 
-  // TODO(alexmt): Delay `done` being run until after the database task is
-  // complete.
-
   // Treat null times as unbounded lower or upper range. This is used by
   // browsing data remover.
   if (delete_begin.is_null())
@@ -354,7 +351,9 @@ void PrivateAggregationBudgeter::ClearDataImpl(
 
   if (is_all_time_covered && filter.is_null()) {
     storage_->budgets_data()->DeleteAllData();
-    std::move(done).Run();
+
+    // Runs `done` once flushing is complete.
+    storage_->budgets_data()->FlushDataToDisk(std::move(done));
     return;
   }
 
@@ -370,7 +369,9 @@ void PrivateAggregationBudgeter::ClearDataImpl(
 
   if (is_all_time_covered) {
     storage_->budgets_data()->DeleteData(origins_to_delete);
-    std::move(done).Run();
+
+    // Runs `done` once flushing is complete.
+    storage_->budgets_data()->FlushDataToDisk(std::move(done));
     return;
   }
 
@@ -406,11 +407,10 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     storage_->budgets_data()->UpdateData(origin_key, budgets);
   }
 
-  // A no-op call to force the database to be flushed immediately instead of
-  // waiting up to `PrivateAggregationBudgetStorage::kFlushDelay`.
-  storage_->budgets_data()->DeleteData({});
-
-  std::move(done).Run();
+  // Force the database to be flushed immediately instead of waiting up to
+  // `PrivateAggregationBudgetStorage::kFlushDelay`. Runs the `done` callback
+  // once flushing is complete.
+  storage_->budgets_data()->FlushDataToDisk(std::move(done));
 }
 
 }  // namespace content

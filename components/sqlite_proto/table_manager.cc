@@ -26,6 +26,16 @@ void TableManager::ScheduleDBTask(const base::Location& from_here,
                                 std::move(task)));
 }
 
+void TableManager::ScheduleDBTaskWithReply(const base::Location& from_here,
+                                           DBTask task,
+                                           base::OnceClosure reply) {
+  GetTaskRunner()->PostTaskAndReply(
+      from_here,
+      base::BindOnce(&TableManager::ExecuteDBTaskOnDBSequence, this,
+                     std::move(task)),
+      std::move(reply));
+}
+
 void TableManager::ExecuteDBTaskOnDBSequence(DBTask task) {
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   if (CantAccessDatabase())

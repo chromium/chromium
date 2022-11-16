@@ -2642,7 +2642,11 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       (remove_mask_ & REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL)) {
     private_aggregation_manager->ClearBudgetData(
         begin, end, generic_filter,
-        CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation));
+
+        // Wrapping the callback ensures that the callback is still run in the
+        // case that the storage partition is deleted before the task is posted.
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation)));
   }
 
   // TODO(crbug.com/1340250): The Plugin Private File System is removed, but

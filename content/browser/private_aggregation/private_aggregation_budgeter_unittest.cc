@@ -772,7 +772,7 @@ TEST_F(PrivateAggregationBudgeterTest,
        MaxPendingCallsExceeded_AdditionalDataClearingCallsAllowed) {
   base::RunLoop run_loop;
   CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
+                 /*on_done_initializing=*/base::DoNothing());
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -800,10 +800,12 @@ TEST_F(PrivateAggregationBudgeterTest,
   // Despite the limit being reached, data clearing requests are allowed to
   // cause the limit to be exceeded and are queued.
   bool was_callback_run = false;
-  budgeter()->ClearData(
-      base::Time::Min(), base::Time::Max(),
-      StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { was_callback_run = true; }));
+  budgeter()->ClearData(base::Time::Min(), base::Time::Max(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          was_callback_run = true;
+                          run_loop.Quit();
+                        }));
   EXPECT_FALSE(was_callback_run);
 
   run_loop.Run();
@@ -861,11 +863,15 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
             ++num_queries_processed;
           }));
 
-  budgeter()->ClearData(
-      kExampleTime, kExampleTime, StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
-
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
   base::RunLoop run_loop;
+  budgeter()->ClearData(kExampleTime, kExampleTime,
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
@@ -873,7 +879,6 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 4);
@@ -924,13 +929,18 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
             ++num_queries_processed;
           }));
 
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
+  base::RunLoop run_loop;
+
   budgeter()->ClearData(
       kExampleTime,
       kExampleTime + PrivateAggregationBudgetKey::TimeWindow::kDuration,
       StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
-
-  base::RunLoop run_loop;
+      base::BindLambdaForTesting([&]() {
+        ++num_queries_processed;
+        run_loop.Quit();
+      }));
 
   // After clearing, we can use the full budget again.
   budgeter()->ConsumeBudget(
@@ -938,7 +948,6 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 5);
@@ -999,10 +1008,17 @@ TEST_F(PrivateAggregationBudgeterTest,
             ++num_queries_processed;
           }));
 
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
+  base::RunLoop run_loop;
+
   // This will only clear the `key_to_clear`'s budget.
-  budgeter()->ClearData(
-      kExampleTime, kExampleTime, StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
+  budgeter()->ClearData(kExampleTime, kExampleTime,
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can have a budget of exactly
   // (`PrivateAggregationBudgeter::kMaxBudgetPerScope` - 2) that we can use.
@@ -1010,13 +1026,11 @@ TEST_F(PrivateAggregationBudgeterTest,
       /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 2),
       key_after, expect_approved);
 
-  base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
       /*budget=*/1, key_after,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kInsufficientBudget);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
@@ -1066,21 +1080,26 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
   budgeter()->ConsumeBudget(
       /*budget=*/1, shared_storage_key, expect_insufficient_budget);
 
-  budgeter()->ClearData(
-      kExampleTime, kExampleTime, StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
+  base::RunLoop run_loop;
+  budgeter()->ClearData(kExampleTime, kExampleTime,
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, fledge_key,
       expect_approved);
-  base::RunLoop run_loop;
+
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope,
       shared_storage_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
@@ -1113,12 +1132,15 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
             ++num_queries_processed;
           }));
 
-  budgeter()->ClearData(
-      base::Time::Min(), base::Time::Max(),
-      StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
-
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
   base::RunLoop run_loop;
+  budgeter()->ClearData(base::Time::Min(), base::Time::Max(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
@@ -1126,7 +1148,6 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 4);
@@ -1159,11 +1180,15 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
             ++num_queries_processed;
           }));
 
-  budgeter()->ClearData(
-      base::Time(), base::Time(), StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
-
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
   base::RunLoop run_loop;
+  budgeter()->ClearData(base::Time(), base::Time(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
@@ -1171,7 +1196,6 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 4);
@@ -1204,12 +1228,15 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
             ++num_queries_processed;
           }));
 
-  budgeter()->ClearData(
-      base::Time(), base::Time::Max(),
-      StoragePartition::StorageKeyMatcherFunction(),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
-
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
   base::RunLoop run_loop;
+  budgeter()->ClearData(base::Time(), base::Time::Max(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          ++num_queries_processed;
+                          run_loop.Quit();
+                        }));
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
@@ -1217,7 +1244,6 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
-        run_loop.Quit();
       }));
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 4);
@@ -1268,25 +1294,26 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
+  base::RunLoop run_loop;
   budgeter()->ClearData(
       kExampleTime, kExampleTime,
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
         return storage_key == blink::StorageKey(kOriginA);
       }),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
+      base::BindLambdaForTesting([&]() {
+        ++num_queries_processed;
+        run_loop.Quit();
+      }));
 
   // After clearing, we can use the full budget again for the cleared origin.
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
       expect_approved);
-  base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      base::BindLambdaForTesting([&](RequestResult result) {
-        EXPECT_EQ(result, RequestResult::kInsufficientBudget);
-        ++num_queries_processed;
-        run_loop.Quit();
-      }));
+      expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
 }
@@ -1336,25 +1363,27 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key_b, expect_insufficient_budget);
 
+  // `ClearData()` runs its callback after a round trip in the db task runner,
+  // so its callback is invoked last.
+  base::RunLoop run_loop;
   budgeter()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindLambdaForTesting([&](const blink::StorageKey& storage_key) {
         return storage_key == blink::StorageKey(kOriginA);
       }),
-      base::BindLambdaForTesting([&]() { ++num_queries_processed; }));
+      base::BindLambdaForTesting([&]() {
+        ++num_queries_processed;
+        run_loop.Quit();
+      }));
 
   // After clearing, we can use the full budget again for the cleared origin.
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
       expect_approved);
-  base::RunLoop run_loop;
+
   budgeter()->ConsumeBudget(
       /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      base::BindLambdaForTesting([&](RequestResult result) {
-        EXPECT_EQ(result, RequestResult::kInsufficientBudget);
-        ++num_queries_processed;
-        run_loop.Quit();
-      }));
+      expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
 }
