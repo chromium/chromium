@@ -124,7 +124,7 @@
 
 #pragma mark - AddPasswordMediatorDelegate
 
-- (void)dismissPasswordDetailsTableViewController {
+- (void)dismissAddPasswordTableViewController {
   [self.delegate passwordDetailsTableViewControllerDidFinish:self];
 }
 

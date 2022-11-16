@@ -45,7 +45,7 @@ constexpr char kPassword[] = "test";
 
 @end
 
-// Test class that conforms to PasswordDetailsViewControllerDelegate in order to
+// Test class that conforms to AddPasswordViewControllerDelegate in order to
 // test the delegate methods are called correctly.
 @interface FakeAddPasswordDelegate
     : NSObject <AddPasswordViewControllerDelegate>
@@ -56,8 +56,8 @@ constexpr char kPassword[] = "test";
 
 @implementation FakeAddPasswordDelegate
 
-- (void)passwordDetailsViewController:(AddPasswordViewController*)viewController
-               didEditPasswordDetails:(PasswordDetails*)password {
+- (void)addPasswordViewController:(AddPasswordViewController*)viewController
+           didEditPasswordDetails:(PasswordDetails*)password {
   self.password = password;
 }
 

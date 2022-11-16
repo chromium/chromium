@@ -171,8 +171,7 @@ class PasswordDetailsTableViewControllerTest
   ChromeTableViewController* InstantiateController() override {
     PasswordDetailsTableViewController* controller =
         [[PasswordDetailsTableViewController alloc]
-            initWithCredentialType:credential_type_
-                  syncingUserEmail:syncing_user_email_];
+            initWithSyncingUserEmail:syncing_user_email_];
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
@@ -193,13 +192,15 @@ class PasswordDetailsTableViewControllerTest
     form.username_element = u"email";
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
 
+    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
     PasswordDetails* passwordDetails = [[PasswordDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];
     passwordDetails.compromised = isCompromised;
+    [passwords addObject:passwordDetails];
 
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPassword:passwordDetails];
+    [passwords_controller setPasswords:passwords andTitle:nil];
   }
 
   void SetFederatedPassword() {
@@ -210,11 +211,13 @@ class PasswordDetailsTableViewControllerTest
     form.signon_realm = form.url.spec();
     form.federation_origin =
         url::Origin::Create(GURL("http://www.example.com/"));
+    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
     PasswordDetails* password = [[PasswordDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];
+    [passwords addObject:password];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPassword:password];
+    [passwords_controller setPasswords:passwords andTitle:nil];
   }
 
   void SetBlockedOrigin() {
@@ -223,11 +226,13 @@ class PasswordDetailsTableViewControllerTest
     form.url = GURL("http://www.example.com/");
     form.blocked_by_user = true;
     form.signon_realm = form.url.spec();
+    NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
     PasswordDetails* password = [[PasswordDetails alloc]
         initWithCredential:password_manager::CredentialUIEntry(form)];
+    [passwords addObject:password];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
-    [passwords_controller setPassword:password];
+    [passwords_controller setPasswords:passwords andTitle:nil];
   }
 
   void CheckEditCellText(NSString* expected_text, int section, int item) {

@@ -7,20 +7,36 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/list_model/list_model.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 struct CredentialUIEntry;
 }  // namespace password_manager
 
+// Represents the credential type (blocked, federated or regular) of the
+// credential in this Password Details.
+typedef NS_ENUM(NSInteger, CredentialType) {
+  CredentialTypeRegular = kItemTypeEnumZero,
+  CredentialTypeBlocked,
+  CredentialTypeFederation,
+};
+
 // Object which is used by `PasswordDetailsViewController` to show
 // information about password.
 @interface PasswordDetails : NSObject
 
+// Represents the type of the credential (blocked, federated or regular).
+@property(nonatomic, assign) CredentialType credentialType;
+
+// Associated sign-on realm used as identifier for this object.
+@property(nonatomic, copy, readonly) NSString* signonRealm;
+
 // Short version of website.
 @property(nonatomic, copy, readonly) NSString* origin;
 
-// Associated website.
+// Associated website. It is determined by either the sign-on realm or the
+// display name of the Android app.
 @property(nonatomic, copy, readonly) NSString* website;
 
 // Associated username.

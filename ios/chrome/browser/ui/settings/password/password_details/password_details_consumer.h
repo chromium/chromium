@@ -12,8 +12,10 @@
 // Sets the Password details for consumer.
 @protocol PasswordDetailsConsumer <NSObject>
 
-// Displays provided password details.
-- (void)setPassword:(PasswordDetails*)password;
+// Displays provided array of password details and the title for the Password
+// Details view.
+- (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
+            andTitle:(NSString*)title;
 
 @end
 

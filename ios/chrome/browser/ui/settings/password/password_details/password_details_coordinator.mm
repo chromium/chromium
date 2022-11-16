@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -32,6 +33,7 @@
 #endif
 
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
+  password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
   // Manager responsible for password check feature.
@@ -47,10 +49,6 @@
 // Module containing the reauthentication mechanism for viewing and copying
 // passwords.
 @property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
-
-// Denotes the type of the credential passed to this coordinator. Could be
-// blocked, federated, new or regular.
-@property(nonatomic, assign) CredentialType credentialType;
 
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
@@ -83,23 +81,51 @@
     _credential = credential;
     _manager = manager;
     _reauthenticationModule = reauthModule;
-    _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
-                                                 : CredentialTypeRegular;
-    if (_credentialType == CredentialTypeRegular &&
-        !credential.federation_origin.opaque()) {
-      _credentialType = CredentialTypeFederation;
-    }
+  }
+  return self;
+}
+
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                     affiliatedGroup:(const password_manager::AffiliatedGroup&)
+                                         affiliatedGroup
+                        reauthModule:(ReauthenticationModule*)reauthModule
+                passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+  self = [super initWithBaseViewController:navigationController
+                                   browser:browser];
+  if (self) {
+    DCHECK(navigationController);
+    DCHECK(manager);
+
+    _baseNavigationController = navigationController;
+    _affiliatedGroup = affiliatedGroup;
+    _manager = manager;
+    _reauthenticationModule = reauthModule;
   }
   return self;
 }
 
 - (void)start {
-  self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithCredentialType:_credentialType
-            syncingUserEmail:nil];
+  self.viewController =
+      [[PasswordDetailsTableViewController alloc] initWithSyncingUserEmail:nil];
 
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_credential
-                                               passwordCheckManager:_manager];
+  std::vector<password_manager::CredentialUIEntry> credentials;
+  NSString* displayName;
+  if (_affiliatedGroup.GetCredentials().size() > 0) {
+    displayName = [NSString
+        stringWithUTF8String:_affiliatedGroup.GetDisplayName().c_str()];
+    for (const auto& credentialGroup : _affiliatedGroup.GetCredentials()) {
+      credentials.push_back(credentialGroup);
+    }
+  } else {
+    credentials.push_back(_credential);
+  }
+
+  self.mediator = [[PasswordDetailsMediator alloc] initWithPasswords:credentials
+                                                         displayName:displayName
+                                                passwordCheckManager:_manager];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -232,8 +258,9 @@
 
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised {
+  // TODO(crbug.com/1358988): Fix logic here.
   [self.delegate passwordDetailsCoordinator:self
-                           deleteCredential:self.mediator.credential];
+                           deleteCredential:self.mediator.credentials[0]];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",

@@ -2225,11 +2225,19 @@ NSInteger kTrailingSymbolSize = 18;
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
-      password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
-              [model itemAtIndexPath:indexPath])
-              .credential;
-      [self.handler showDetailedViewForCredential:credential];
+      if (IsPasswordGroupingEnabled()) {
+        password_manager::AffiliatedGroup affiliatedGroup =
+            base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                [model itemAtIndexPath:indexPath])
+                .affiliatedGroup;
+        [self.handler showDetailedViewForAffiliatedGroup:affiliatedGroup];
+      } else {
+        password_manager::CredentialUIEntry credential =
+            base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                [model itemAtIndexPath:indexPath])
+                .credential;
+        [self.handler showDetailedViewForCredential:credential];
+      }
       break;
     }
     case ItemTypeBlocked: {

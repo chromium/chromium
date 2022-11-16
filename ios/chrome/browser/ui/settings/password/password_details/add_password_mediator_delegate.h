@@ -12,8 +12,8 @@ struct CredentialUIEntry;
 // Delegate for AddPasswordMediator.
 @protocol AddPasswordMediatorDelegate
 
-// Called when the password details view controller is to be dismissed.
-- (void)dismissPasswordDetailsTableViewController;
+// Called when the add password view controller is to be dismissed.
+- (void)dismissAddPasswordTableViewController;
 
 // Called after a new credential is added or an existing one is updated via the
 // add credential flow.

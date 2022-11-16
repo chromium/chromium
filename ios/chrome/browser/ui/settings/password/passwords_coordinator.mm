@@ -191,6 +191,19 @@
   [self.passwordDetailsCoordinator start];
 }
 
+- (void)showDetailedViewForAffiliatedGroup:
+    (const password_manager::AffiliatedGroup&)affiliatedGroup {
+  DCHECK(!self.passwordDetailsCoordinator);
+  self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser
+                       affiliatedGroup:affiliatedGroup
+                          reauthModule:self.reauthModule
+                  passwordCheckManager:[self passwordCheckManager].get()];
+  self.passwordDetailsCoordinator.delegate = self;
+  [self.passwordDetailsCoordinator start];
+}
+
 - (void)showAddPasswordSheet {
   DCHECK(!self.addPasswordCoordinator);
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]

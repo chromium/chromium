@@ -31,28 +31,36 @@ using base::SysNSStringToUTF16;
 // List of the usernames for the same domain.
 @property(nonatomic, strong) NSSet<NSString*>* usernamesWithSameDomain;
 
+// Display name to use for the Password Details view.
+@property(nonatomic, strong) NSString* displayName;
+
 @end
 
 @implementation PasswordDetailsMediator
 
-- (instancetype)initWithPassword:
-                    (const password_manager::CredentialUIEntry&)credential
-            passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+- (instancetype)initWithPasswords:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        credentials
+                      displayName:(NSString*)displayName
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super init];
   if (self) {
     _manager = manager;
-    _credential = credential;
+    _credentials = credentials;
+    _displayName = displayName;
     _passwordCheckObserver.reset(
         new PasswordCheckObserverBridge(self, manager));
+    DCHECK(!_credentials.empty());
     NSMutableSet<NSString*>* usernames = [[NSMutableSet alloc] init];
-    auto credentials =
+    auto savedCredentials =
         manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
-    for (const auto& cred : credentials) {
-      if (cred.GetFirstSignonRealm() == credential.GetFirstSignonRealm()) {
+    for (const auto& cred : savedCredentials) {
+      // TODO(crbug.com/1358979): Fix usernames logic.
+      if (cred.GetFirstSignonRealm() == _credentials[0].GetFirstSignonRealm()) {
         [usernames addObject:base::SysUTF16ToNSString(cred.username)];
       }
     }
-    [usernames removeObject:base::SysUTF16ToNSString(credential.username)];
+    [usernames removeObject:base::SysUTF16ToNSString(_credentials[0].username)];
     _usernamesWithSameDomain = usernames;
   }
   return self;
@@ -76,13 +84,30 @@ using base::SysNSStringToUTF16;
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password {
   if ([password.password length] != 0) {
-    password_manager::CredentialUIEntry updated_credential = _credential;
+    password_manager::CredentialUIEntry original_credential;
+
+    auto it = std::find_if(
+        _credentials.begin(), _credentials.end(),
+        [password](password_manager::CredentialUIEntry credential) {
+          return [password.signonRealm
+              isEqualToString:[NSString stringWithUTF8String:
+                                            credential.GetFirstSignonRealm()
+                                                .c_str()]];
+        });
+
+    // There should be no reason not to find the credential in the vector of
+    // credentials.
+    DCHECK(it != _credentials.end());
+
+    original_credential = *it;
+    password_manager::CredentialUIEntry updated_credential =
+        original_credential;
     updated_credential.username = SysNSStringToUTF16(password.username);
     updated_credential.password = SysNSStringToUTF16(password.password);
     if (_manager->GetSavedPasswordsPresenter()->EditSavedCredentials(
-            _credential, updated_credential) ==
+            original_credential, updated_credential) ==
         password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
-      _credential = updated_credential;
+      *it = std::move(updated_credential);
       return;
     }
   }
@@ -142,10 +167,14 @@ using base::SysNSStringToUTF16;
 // Updates password details and sets it to a consumer.
 - (void)fetchPasswordWith:
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
-  PasswordDetails* password =
-      [[PasswordDetails alloc] initWithCredential:_credential];
-  password.compromised = base::Contains(credentials, _credential);
-  [self.consumer setPassword:password];
+  NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
+  for (password_manager::CredentialUIEntry credential : _credentials) {
+    PasswordDetails* password =
+        [[PasswordDetails alloc] initWithCredential:credential];
+    password.compromised = base::Contains(credentials, credential);
+    [passwords addObject:password];
+  }
+  [self.consumer setPasswords:passwords andTitle:_displayName];
 }
 
 @end

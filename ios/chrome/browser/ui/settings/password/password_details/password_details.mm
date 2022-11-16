@@ -20,6 +20,8 @@
     (const password_manager::CredentialUIEntry&)credential {
   self = [super init];
   if (self) {
+    _signonRealm = [NSString
+        stringWithUTF8String:credential.GetFirstSignonRealm().c_str()];
     auto facetUri = password_manager::FacetURI::FromPotentiallyInvalidSpec(
         credential.GetFirstSignonRealm());
     if (facetUri.IsValidAndroidFacetURI()) {
@@ -51,6 +53,13 @@
     } else {
       _federation =
           base::SysUTF8ToNSString(credential.federation_origin.host());
+    }
+
+    _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
+                                                 : CredentialTypeRegular;
+    if (_credentialType == CredentialTypeRegular &&
+        !credential.federation_origin.opaque()) {
+      _credentialType = CredentialTypeFederation;
     }
   }
   return self;

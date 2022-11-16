@@ -89,8 +89,14 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 @interface PasswordDetailsTableViewController () <TableViewTextEditItemDelegate>
 
+// Array of passwords that are shown on the screen.
+@property(nonatomic, strong) NSArray<PasswordDetails*>* passwords;
+
 // Password which is shown on the screen.
+// TODO(crbug.com/1358979): Remove this.
 @property(nonatomic, strong) PasswordDetails* password;
+
+@property(nonatomic, strong) NSString* pageTitle;
 
 // Whether the password is shown in plain text form or in masked form.
 @property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
@@ -107,10 +113,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // The view used to anchor error alert which is shown for the username. This is
 // image icon in the `usernameTextItem` cell.
 @property(nonatomic, weak) UIView* usernameErrorAnchorView;
-
-// Denotes the type of the credential passed to this coordinator. Could be
-// blocked, federated, new or regular.
-@property(nonatomic, assign) CredentialType credentialType;
 
 // If YES, denotes that the credential with the same website/username
 // combination already exists. Used when creating a new credential.
@@ -136,11 +138,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithCredentialType:(CredentialType)credentialType
-                      syncingUserEmail:(NSString*)syncingUserEmail {
+- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _credentialType = credentialType;
     _isDuplicatedCredential = NO;
     _shouldEnableSave = NO;
     _showPasswordWithoutAuth = NO;
@@ -162,7 +162,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     titleLabel.adjustsFontForContentSizeCategory = YES;
-    titleLabel.text = self.password.origin;
+    titleLabel.text = (self.pageTitle && self.pageTitle.length > 0)
+                          ? self.pageTitle
+                          : self.password.origin;
     self.navigationItem.titleView = titleLabel;
 }
 
@@ -225,17 +227,13 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   [model addSectionWithIdentifier:SectionIdentifierTLDFooter];
 
   [model addSectionWithIdentifier:SectionIdentifierPassword];
-  // Blocked passwords don't have username and password value.
-  if (self.credentialType != CredentialTypeBlocked) {
-    self.usernameTextItem = [self usernameItem];
-    [model addItem:self.usernameTextItem
-        toSectionWithIdentifier:SectionIdentifierPassword];
 
-    if (self.credentialType == CredentialTypeFederation) {
-      // Federated password forms don't have password value.
-      [model addItem:[self federationItem]
+  switch (self.password.credentialType) {
+    case CredentialTypeRegular: {
+      self.usernameTextItem = [self usernameItem];
+      [model addItem:self.usernameTextItem
           toSectionWithIdentifier:SectionIdentifierPassword];
-    } else {
+
       self.passwordTextItem = [self passwordItem];
       [model addItem:self.passwordTextItem
           toSectionWithIdentifier:SectionIdentifierPassword];
@@ -262,6 +260,21 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
               toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
         }
       }
+      break;
+    }
+    case CredentialTypeFederation: {
+      self.usernameTextItem = [self usernameItem];
+      [model addItem:self.usernameTextItem
+          toSectionWithIdentifier:SectionIdentifierPassword];
+
+      // Federated password forms don't have password value.
+      [model addItem:[self federationItem]
+          toSectionWithIdentifier:SectionIdentifierPassword];
+      break;
+    }
+
+    case CredentialTypeBlocked: {
+      break;
     }
   }
 }
@@ -297,7 +310,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;  // Empty for a new form.
   // If password is missing (federated credential) don't allow to edit username.
-  if (self.credentialType != CredentialTypeFederation) {
+  if (self.password.credentialType != CredentialTypeFederation) {
     item.textFieldEnabled = self.tableView.editing;
     item.hideIcon = !self.tableView.editing;
     item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
@@ -665,8 +678,16 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 #pragma mark - PasswordDetailsConsumer
 
-- (void)setPassword:(PasswordDetails*)password {
-  _password = password;
+- (void)setPasswords:(NSArray<PasswordDetails*>*)passwords
+            andTitle:(NSString*)title {
+  _passwords = passwords;
+  _pageTitle = title;
+
+  // TODO(crbug.com/1358979): Use first password until we implement this.
+  if (_passwords.count >= 1) {
+    _password = _passwords[0];
+  }
+
   [self reloadData];
 }
 

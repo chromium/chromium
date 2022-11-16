@@ -17,9 +17,13 @@ struct CredentialUIEntry;
 // Shows the screen with password issues.
 - (void)showCompromisedPasswords;
 
-// Shows passwords details.
+// Shows passwords details for blocked passwords.
 - (void)showDetailedViewForCredential:
     (const password_manager::CredentialUIEntry&)credential;
+
+// Shows passwords details for saved passwords.
+- (void)showDetailedViewForAffiliatedGroup:
+    (const password_manager::AffiliatedGroup&)affiliatedGroup;
 
 // Shows form to manually enter new password credentials.
 - (void)showAddPasswordSheet;

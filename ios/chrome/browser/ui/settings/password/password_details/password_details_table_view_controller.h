@@ -16,23 +16,15 @@
 @protocol ReauthenticationProtocol;
 @protocol SnackbarCommands;
 
-// Denotes the credential type that is being displayed by the view controller.
-typedef NS_ENUM(NSInteger, CredentialType) {
-  CredentialTypeRegular = kItemTypeEnumZero,
-  CredentialTypeBlocked,
-  CredentialTypeFederation,
-};
-
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
     : AutofillEditTableViewController <AddPasswordDetailsConsumer,
                                        PasswordDetailsConsumer>
 
 // The designated initializer.
-// `syncingUserEmail` stores the user email if the user is authenticated amd
+// `syncingUserEmail` stores the user email if the user is authenticated and
 // syncing passwords.
-- (instancetype)initWithCredentialType:(CredentialType)credentialType
-                      syncingUserEmail:(NSString*)syncingUserEmail
+- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

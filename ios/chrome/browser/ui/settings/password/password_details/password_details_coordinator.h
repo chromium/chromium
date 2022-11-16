@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 namespace password_manager {
+class AffiliatedGroup;
 struct CredentialUIEntry;
 }  // namespace password_manager
 
@@ -27,6 +28,16 @@ class IOSChromePasswordCheckManager;
                           credential:
                               (const password_manager::CredentialUIEntry&)
                                   credential
+                        reauthModule:(ReauthenticationModule*)reauthModule
+                passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                     affiliatedGroup:(const password_manager::AffiliatedGroup&)
+                                         affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
