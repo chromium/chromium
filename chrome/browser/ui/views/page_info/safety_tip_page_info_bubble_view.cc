@@ -189,7 +189,7 @@ void SafetyTipPageInfoBubbleView::OpenHelpCenter() {
 
 void SafetyTipPageInfoBubbleView::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host != web_contents()->GetPrimaryMainFrame()) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
 
