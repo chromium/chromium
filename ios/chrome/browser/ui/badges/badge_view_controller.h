@@ -11,11 +11,15 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @class BadgeButtonFactory;
+@class LayoutGuideCenter;
 
 // Manages badges to display that are received through BadgeConsumer. Currently
 // only displays the newest badge.
 @interface BadgeViewController
     : UIViewController <BadgeConsumer, FullscreenUIElement>
+
+// The layout guide center to use to reference the displayed badge.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // `buttonFactory` must be non-nil.
 - (instancetype)initWithButtonFactory:(BadgeButtonFactory*)buttonFactory

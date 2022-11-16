@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_item.h"
 #import "ios/chrome/browser/ui/badges/badges_histograms.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -64,7 +66,12 @@
   self.popupMenuPresenter = [[PopupMenuPresenter alloc] init];
   self.popupMenuPresenter.baseViewController = self.baseViewController;
   self.popupMenuPresenter.presentedViewController = self.popupViewController;
-  self.popupMenuPresenter.guideName = kBadgeOverflowMenuGuide;
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UILayoutGuide* layoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:kBadgeOverflowMenuGuide];
+  [self.popupMenuPresenter.baseViewController.view addLayoutGuide:layoutGuide];
+  self.popupMenuPresenter.layoutGuide = layoutGuide;
   self.popupMenuPresenter.delegate = self;
   [self.popupMenuPresenter prepareForPresentation];
   [self.popupMenuPresenter presentAnimated:YES];

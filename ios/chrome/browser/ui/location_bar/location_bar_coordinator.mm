@@ -200,6 +200,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
   self.badgeViewController =
       [[BadgeViewController alloc] initWithButtonFactory:buttonFactory];
+  self.badgeViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
   [self.viewController addChildViewController:self.badgeViewController];
   [self.viewController setBadgeView:self.badgeViewController.view];
   [self.badgeViewController didMoveToParentViewController:self.viewController];

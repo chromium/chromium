@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -221,9 +222,10 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
                      self.view.transform = CGAffineTransformIdentity;
                    }
                    completion:nil];
-  NamedGuide* guide = [NamedGuide guideWithName:kBadgeOverflowMenuGuide
-                                           view:_displayedBadge];
-  guide.constrainedView = _displayedBadge;
+
+  // Register the badge with the layout guide center.
+  [self.layoutGuideCenter referenceView:_displayedBadge
+                              underName:kBadgeOverflowMenuGuide];
 }
 
 - (void)setFullScreenBadge:(BadgeButton*)fullScreenBadge {
