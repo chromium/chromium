@@ -81,13 +81,6 @@ inline void UmaHistogramBounceCategory(RedirectCategory category,
   base::UmaHistogramEnumeration(histogram_name, category);
 }
 
-inline void UmaHistogramCookieAccessFilterResult(bool result,
-                                                 DIPSCookieMode mode) {
-  const std::string histogram_name = base::StrCat(
-      {"Privacy.DIPS.CookieAccessFilterResult", GetHistogramSuffix(mode)});
-  base::UmaHistogramBoolean(histogram_name, result);
-}
-
 inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
   base::UmaHistogramTimes("Privacy.DIPS.TimeFromNavigationCommitToClientBounce",
                           sample);
@@ -471,10 +464,8 @@ void DIPSBounceDetector::DidFinishNavigation(
 
   std::vector<DIPSRedirectInfoPtr> redirects;
   std::vector<CookieAccessType> access_types;
-  bool filter_success = server_state->filter.Filter(
-      navigation_handle->GetRedirectChain(), &access_types);
-  UmaHistogramCookieAccessFilterResult(filter_success,
-                                       delegate_->GetCookieMode());
+  server_state->filter.Filter(navigation_handle->GetRedirectChain(),
+                              &access_types);
 
   for (size_t i = 0; i < access_types.size() - 1; i++) {
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(

@@ -28,8 +28,8 @@ class CookieAccessFilter {
   // `urls`. Otherwise returns false, and `result` is filled entirely with
   // kUnknown. (Note: this depends on the order of previous calls to
   // AddAccess()).
-  [[nodiscard]] bool Filter(const std::vector<GURL>& urls,
-                            std::vector<CookieAccessType>* result) const;
+  bool Filter(const std::vector<GURL>& urls,
+              std::vector<CookieAccessType>* result) const;
 
   // Returns true iff AddAccess() has never been called.
   bool is_empty() const { return accesses_.empty(); }

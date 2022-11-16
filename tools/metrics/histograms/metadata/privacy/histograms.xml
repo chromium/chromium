@@ -191,7 +191,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2022-12-01">
+    enum="DIPSRedirectCategory" expires_after="2023-05-01">
   <owner>bcl@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
@@ -204,20 +204,8 @@ reviewer.
   <token key="DIPSRedirectType" variants="DIPSRedirectType"/>
 </histogram>
 
-<histogram name="Privacy.DIPS.CookieAccessFilterResult{DIPSCookieMode}"
-    enum="Boolean" expires_after="2022-12-01">
-  <owner>bcl@chromium.org</owner>
-  <owner>rtarpine@chromium.org</owner>
-  <owner>src/chrome/browser/dips/OWNERS</owner>
-  <summary>
-    The return value of CookieAccessFilter::Filter(). Recorded once per
-    navigation, {DIPSCookieMode}.
-  </summary>
-  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
-</histogram>
-
 <histogram name="Privacy.DIPS.TimeFromInteractionToStorage{DIPSCookieMode}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-05-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
@@ -245,7 +233,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromStorageToInteraction{DIPSCookieMode}"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-05-01">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
