@@ -7671,6 +7671,17 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
 
   DCHECK(!top_layer_elements_.Contains(element));
   DCHECK(!before || top_layer_elements_.Contains(before));
+
+  // The view transition root pseudo-element should always be the last element
+  // in the top layer so it paints on top of all other top layer elements.
+  auto* transition_pseudo =
+      documentElement()->GetPseudoElement(kPseudoIdViewTransition);
+  if (transition_pseudo && element != transition_pseudo) {
+    DCHECK(transition_pseudo->IsInTopLayer());
+    DCHECK(top_layer_elements_.back() == *transition_pseudo);
+    top_layer_elements_.pop_back();
+  }
+
   if (before) {
     DCHECK(element->IsBackdropPseudoElement())
         << "If this invariant changes, we might need to revisit Container "
@@ -7680,6 +7691,10 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   } else {
     top_layer_elements_.push_back(element);
   }
+
+  if (transition_pseudo && element != transition_pseudo)
+    top_layer_elements_.push_back(transition_pseudo);
+
   element->SetIsInTopLayer(true);
   display_lock_document_state_->ElementAddedToTopLayer(element);
 
