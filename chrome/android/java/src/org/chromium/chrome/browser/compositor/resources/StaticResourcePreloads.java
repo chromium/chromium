@@ -17,6 +17,8 @@ public class StaticResourcePreloads {
     /** A list of resources to load synchronously once the compositor is initialized. */
     private static int[] sSynchronousResources = new int[] {
             R.drawable.bg_tabstrip_tab,
+            R.drawable.bg_tabstrip_tab_detached,
+            R.drawable.bg_tabstrip_tab_folio,
             R.drawable.btn_tab_close_normal,
             R.drawable.ic_new_tab_button,
             R.drawable.spinner,

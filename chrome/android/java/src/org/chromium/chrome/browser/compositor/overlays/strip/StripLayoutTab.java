@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -162,6 +164,10 @@ public class StripLayoutTab implements VirtualView {
     // Animation/Timer Constants
     private static final int ANIM_TAB_CLOSE_BUTTON_FADE_MS = 150;
 
+    // Position Constants
+    private static final float DEFAULT_OFFSET_Y = 0.f;
+    private static final float FOLIO_DETACHED_OFFSET_Y = 4.f;
+
     // Close button width
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
     private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
@@ -182,6 +188,7 @@ public class StripLayoutTab implements VirtualView {
     private boolean mVisible = true;
     private boolean mIsDying;
     private boolean mCanShowCloseButton = true;
+    private boolean mFolioAttached = true;
     private final boolean mIncognito;
     private float mContentOffsetX;
     private float mDividerOpacity;
@@ -309,6 +316,14 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
+     * Marks if tab container is attached to the toolbar for the Tab Strip Redesign folio treatment.
+     * @param folioAttached Whether the tab should be attached or not.
+     */
+    public void setFolioAttached(boolean folioAttached) {
+        mFolioAttached = folioAttached;
+    }
+
+    /**
      * @return The id of the {@link Tab} this {@link StripLayoutTab} represents.
      */
     public int getId() {
@@ -319,6 +334,12 @@ public class StripLayoutTab implements VirtualView {
      * @return The Android resource that represents the tab background.
      */
     public int getResourceId() {
+        if (TabUiFeatureUtilities.isTabStripDetachedEnabled() || !mFolioAttached) {
+            return R.drawable.bg_tabstrip_tab_detached;
+        } else if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+            return R.drawable.bg_tabstrip_tab_folio;
+        }
+
         return R.drawable.bg_tabstrip_tab;
     }
 
@@ -341,6 +362,17 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource that represents the tab background.
      */
     public int getTint(boolean foreground) {
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Inactive tabs have no container in TSR. Return arbitrary color to avoid calculation.
+            if (!foreground) return Color.TRANSPARENT;
+
+            if (TabUiFeatureUtilities.isTabStripFolioEnabled()) {
+                return ChromeColors.getDefaultThemeColor(mContext, mIncognito);
+            } else if (TabUiFeatureUtilities.isTabStripDetachedEnabled()) {
+                return TabUiThemeProvider.getTabStripDetachedTabColor(mContext, mIncognito);
+            }
+        }
+
         if (foreground) {
             return ChromeColors.getDefaultThemeColor(mContext, mIncognito);
         }
@@ -362,6 +394,11 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource that represents the tab outline.
      */
     public int getOutlineTint(boolean foreground) {
+        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Tabs have no outline in TSR. Return arbitrary color to avoid calculation.
+            return Color.TRANSPARENT;
+        }
+
         if (foreground) {
             return getTint(true);
         }
@@ -533,6 +570,17 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getDividerOffsetX() {
         return DIVIDER_OFFSET_X;
+    }
+
+    /**
+     * @return How far to offset the bottom of the tab container from the toolbar.
+     */
+    public float getBottomOffsetY() {
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled() && !mFolioAttached) {
+            return FOLIO_DETACHED_OFFSET_Y;
+        }
+
+        return DEFAULT_OFFSET_Y;
     }
 
     /**

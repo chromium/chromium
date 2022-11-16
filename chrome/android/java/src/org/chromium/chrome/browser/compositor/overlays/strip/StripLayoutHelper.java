@@ -1794,7 +1794,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             performHapticFeedback(tab);
         }
 
-        // 7. Request an update.
+        // 7. Lift the TSR folio container off the toolbar.
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) mInteractingTab.setFolioAttached(false);
+
+        // 8. Request an update.
         mUpdateHost.requestUpdate();
     }
 
@@ -1819,7 +1822,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 4. Clear any tab group margins if they are enabled.
         if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) resetTabGroupMargins();
 
-        // 5. Request an update.
+        // 5. Reattach the TSR folio container to the toolbar.
+        if (TabUiFeatureUtilities.isTabStripFolioEnabled()) mInteractingTab.setFolioAttached(true);
+
+        // 6. Request an update.
         mUpdateHost.requestUpdate();
     }
 

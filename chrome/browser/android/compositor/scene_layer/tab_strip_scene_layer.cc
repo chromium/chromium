@@ -319,6 +319,7 @@ void TabStripSceneLayer::PutStripTabLayer(
     jfloat height,
     jfloat content_offset_x,
     jfloat divider_offset_x,
+    jfloat bottom_offset_y,
     jfloat close_button_alpha,
     jfloat divider_alpha,
     jboolean is_loading,
@@ -343,11 +344,12 @@ void TabStripSceneLayer::PutStripTabLayer(
                                                   close_tint);
   ui::Resource* divider_resource = resource_manager->GetStaticResourceWithTint(
       divider_resource_id, divider_tint);
-  layer->SetProperties(
-      id, close_button_resource, divider_resource, tab_handle_resource,
-      tab_handle_outline_resource, foreground, close_pressed, toolbar_width, x,
-      y, width, height, content_offset_x, divider_offset_x, close_button_alpha,
-      divider_alpha, is_loading, spinner_rotation, brightness, opacity);
+  layer->SetProperties(id, close_button_resource, divider_resource,
+                       tab_handle_resource, tab_handle_outline_resource,
+                       foreground, close_pressed, toolbar_width, x, y, width,
+                       height, content_offset_x, divider_offset_x,
+                       bottom_offset_y, close_button_alpha, divider_alpha,
+                       is_loading, spinner_rotation, brightness, opacity);
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(

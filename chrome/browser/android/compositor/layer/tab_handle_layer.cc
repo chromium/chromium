@@ -40,6 +40,7 @@ void TabHandleLayer::SetProperties(
     float height,
     float content_offset_x,
     float divider_offset_x,
+    float bottom_offset_y,
     float close_button_alpha,
     float divider_alpha,
     bool is_loading,
@@ -85,7 +86,7 @@ void TabHandleLayer::SetProperties(
     y = y - (margin_height - height);
     height = margin_height;
   }
-  gfx::Size tab_bounds(width, height);
+  gfx::Size tab_bounds(width, height - bottom_offset_y);
 
   layer_->SetPosition(gfx::PointF(x, y));
   DecorationTitle* title_layer = nullptr;
