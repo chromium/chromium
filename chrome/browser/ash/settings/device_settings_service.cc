@@ -133,17 +133,6 @@ void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
   }
 }
 
-void DeviceSettingsService::GetPolicyDataAsync(PolicyDataCallback callback) {
-  if (policy_data_) {
-    std::move(callback).Run(policy_data_.get());
-    return;
-  }
-
-  pending_policy_data_callbacks_.push_back(std::move(callback));
-  if (pending_operations_.empty())
-    EnqueueLoad(false);
-}
-
 scoped_refptr<PublicKey> DeviceSettingsService::GetPublicKey() {
   return public_key_;
 }
@@ -384,10 +373,6 @@ void DeviceSettingsService::HandleCompletedOperation(
   NotifyDeviceSettingsUpdated();
   RunPendingOwnershipStatusCallbacks();
 
-  if ((status == STORE_SUCCESS) || (status == STORE_NO_POLICY)) {
-    RunPendingPolicyDataCallbacks();
-  }
-
   // The completion callback happens after the notification so clients can
   // filter self-triggered updates.
   if (!callback.is_null())
@@ -409,14 +394,6 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   callbacks.swap(pending_ownership_status_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
-  }
-}
-
-void DeviceSettingsService::RunPendingPolicyDataCallbacks() {
-  std::vector<PolicyDataCallback> callbacks;
-  callbacks.swap(pending_policy_data_callbacks_);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(policy_data_.get());
   }
 }
 

@@ -38,6 +38,7 @@ class OwnerKeyLoader {
   OwnerKeyLoader(Profile* profile,
                  DeviceSettingsService* device_settings_service,
                  scoped_refptr<ownership::OwnerKeyUtil> owner_key_util,
+                 bool is_enterprise_managed,
                  KeypairCallback callback);
   OwnerKeyLoader(const OwnerKeyLoader&) = delete;
   auto operator=(const OwnerKeyLoader&) = delete;
@@ -50,15 +51,17 @@ class OwnerKeyLoader {
  private:
   void OnPublicKeyLoaded(scoped_refptr<ownership::PublicKey> public_key);
   void OnPrivateKeyLoaded(scoped_refptr<ownership::PrivateKey> private_key);
+  void MaybeGenerateNewKey();
+  void GenerateNewKey();
   void OnNewKeyGenerated(scoped_refptr<ownership::PublicKey> public_key,
                          scoped_refptr<ownership::PrivateKey> private_key);
-  void OnPolicyDataReady(enterprise_management::PolicyData* policy_data);
   void MaybeRegenerateLostKey(
       const enterprise_management::PolicyData* policy_data);
 
   Profile* const profile_;
   DeviceSettingsService* const device_settings_service_;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
+  const bool is_enterprise_managed_;
   scoped_refptr<ownership::PublicKey> public_key_;
   KeypairCallback callback_;
   int generate_attempt_counter_ = 0;
