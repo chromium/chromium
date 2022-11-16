@@ -57,6 +57,11 @@ enum class NonAutocorrectDiacriticStatus {
   kMaxValue = kWithDiacritics,
 };
 
+bool ShouldRouteToFirstPartyVietnameseInput(const std::string& engine_id) {
+  return base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput) &&
+         (engine_id == "vkd_vi_vni" || engine_id == "vkd_vi_telex");
+}
+
 bool IsRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
@@ -681,7 +686,11 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
     return;
   }
 
-  if (ShouldRouteToRuleBasedEngine(engine_id)) {
+  if (ShouldRouteToFirstPartyVietnameseInput(engine_id)) {
+    // TODO(b/251679480): Make this part of ShouldRouteToNativeMojoEngine logic
+    // once flag is baked in.
+    ConnectToImeService(mojom::ConnectionTarget::kImeServiceLib, engine_id);
+  } else if (ShouldRouteToRuleBasedEngine(engine_id)) {
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
     ConnectToImeService(mojom::ConnectionTarget::kRulebasedEngine,
                         new_engine_id);
