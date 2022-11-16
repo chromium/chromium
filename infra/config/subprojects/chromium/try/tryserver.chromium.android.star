@@ -591,6 +591,9 @@ try_.builder(
 try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    cores = "8|16",
+    # TODO(crbug.com/1343843): Set to True once ssd bots are landed
+    ssd = None,
     mirrors = [
         "ci/Android arm Builder (dbg)",
     ],
