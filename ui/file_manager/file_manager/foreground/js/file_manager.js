@@ -1142,7 +1142,7 @@ export class FileManager extends EventTarget {
 
     // Create search controller.
     this.searchController_ = new SearchController(
-        this.ui_.searchBox,
+        this.ui_.searchContainer,
         this.directoryModel_,
         this.volumeManager_,
         assert(this.taskController_),
