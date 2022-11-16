@@ -145,6 +145,8 @@ declare_args() {
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
+assert(!enable_profiling || !is_component_build,
+       "Cannot profile component builds (crbug.com/1199271).")
 
 if (use_thin_lto && is_debug) {
   print("WARNING: ThinLTO (use_thin_lto=true) doesn't work with debug" +
