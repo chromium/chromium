@@ -682,7 +682,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   if (!::DuplicateHandle(
           ::GetCurrentProcess(), process.Handle(), caller_proc_handle.Get(),
           ScopedKernelHANDLE::Receiver(duplicate_proc_handle).get(),
-          PROCESS_QUERY_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
+          PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, 0)) {
     HRESULT hr = HRESULTFromLastError();
     VLOG(1) << "Failed to duplicate the handle " << hr;
     return hr;
