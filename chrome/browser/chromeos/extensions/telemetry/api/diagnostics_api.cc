@@ -443,6 +443,30 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunMemoryRoutine(std::move(cb));
 }
 
+// OsDiagnosticsRunNvmeSelfTestRoutineFunction ---------------------------------
+
+OsDiagnosticsRunNvmeSelfTestRoutineFunction::
+    OsDiagnosticsRunNvmeSelfTestRoutineFunction() = default;
+OsDiagnosticsRunNvmeSelfTestRoutineFunction::
+    ~OsDiagnosticsRunNvmeSelfTestRoutineFunction() = default;
+
+void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunNvmeSelfTestRoutine::Params> params(
+      api::os_diagnostics::RunNvmeSelfTestRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  GetRemoteService()->RunNvmeSelfTestRoutine(
+      converters::ConvertNvmeSelfTestRoutineType(std::move(params->request)),
+      std::move(cb));
+}
+
 // OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
 
 OsDiagnosticsRunNvmeWearLevelRoutineFunction::

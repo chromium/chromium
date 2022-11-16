@@ -21,6 +21,7 @@ using MojoRoutineUserMessageType =
     crosapi::mojom::DiagnosticsRoutineUserMessageEnum;
 using MojoDiskReadRoutineType =
     crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum;
+using MojoNvmeSelfTestType = crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum;
 
 using RoutineCommandType = ::chromeos::api::os_diagnostics::RoutineCommandType;
 using RoutineStatus = ::chromeos::api::os_diagnostics::RoutineStatus;
@@ -30,6 +31,8 @@ using RoutineAcPowerStatusRoutineType =
 using RoutineUserMessageType = ::chromeos::api::os_diagnostics::UserMessageType;
 using RoutineDiskReadRoutineType =
     ::chromeos::api::os_diagnostics::DiskReadRoutineType;
+using RoutineNvmeSelfTestRoutineType =
+    ::chromeos::api::os_diagnostics::RunNvmeSelfTestRequest;
 
 }  // namespace
 
@@ -92,6 +95,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
       return true;
     case MojoRoutineType::kSensitiveSensor:
       *out = RoutineType::ROUTINE_TYPE_SENSITIVE_SENSOR;
+      return true;
+    case MojoRoutineType::kNvmeSelfTest:
+      *out = RoutineType::ROUTINE_TYPE_NVME_SELF_TEST;
       return true;
     default:
       return false;
@@ -190,6 +196,18 @@ MojoDiskReadRoutineType ConvertDiskReadRoutineType(
   NOTREACHED() << "Unknown disk read routine type: " << routineType;
   return static_cast<MojoDiskReadRoutineType>(
       static_cast<int>(MojoDiskReadRoutineType::kMaxValue) + 1);
+}
+
+MojoNvmeSelfTestType ConvertNvmeSelfTestRoutineType(
+    RoutineNvmeSelfTestRoutineType routine_type) {
+  switch (routine_type.test_type) {
+    case api::os_diagnostics::NVME_SELF_TEST_TYPE_NONE:
+      return MojoNvmeSelfTestType::kUnknown;
+    case api::os_diagnostics::NVME_SELF_TEST_TYPE_SHORT_TEST:
+      return MojoNvmeSelfTestType::kShortSelfTest;
+    case api::os_diagnostics::NVME_SELF_TEST_TYPE_LONG_TEST:
+      return MojoNvmeSelfTestType::kLongSelfTest;
+  }
 }
 
 }  // namespace converters

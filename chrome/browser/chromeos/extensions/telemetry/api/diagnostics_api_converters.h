@@ -29,6 +29,9 @@ chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
 crosapi::mojom::DiagnosticsDiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
     chromeos::api::os_diagnostics::DiskReadRoutineType routineType);
 
+crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum ConvertNvmeSelfTestRoutineType(
+    chromeos::api::os_diagnostics::RunNvmeSelfTestRequest routineType);
+
 }  // namespace converters
 }  // namespace chromeos
 

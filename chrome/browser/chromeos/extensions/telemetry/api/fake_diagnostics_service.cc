@@ -249,7 +249,7 @@ void FakeDiagnosticsService::RunNvmeSelfTestRoutine(
     crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum nvme_self_test_type,
     RunNvmeSelfTestRoutineCallback callback) {
   actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("nvme_self_test_type",
+  actual_passed_parameters_.Set("test_type",
                                 static_cast<int32_t>(nvme_self_test_type));
 
   actual_called_routine_ =

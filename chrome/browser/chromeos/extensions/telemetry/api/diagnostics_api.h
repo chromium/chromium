@@ -384,6 +384,25 @@ class OsDiagnosticsRunMemoryRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunNvmeSelfTestRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeSelfTestRoutine",
+                             OS_DIAGNOSTICS_RUNNVMESELFTESTROUTINE)
+
+  OsDiagnosticsRunNvmeSelfTestRoutineFunction();
+  OsDiagnosticsRunNvmeSelfTestRoutineFunction(
+      const OsDiagnosticsRunNvmeSelfTestRoutineFunction&) = delete;
+  OsDiagnosticsRunNvmeSelfTestRoutineFunction& operator=(
+      const OsDiagnosticsRunNvmeSelfTestRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunNvmeSelfTestRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunNvmeWearLevelRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

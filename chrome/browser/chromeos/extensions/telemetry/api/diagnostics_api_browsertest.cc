@@ -272,6 +272,18 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function runNvmeSelfTestRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runNvmeSelfTestRoutine(
+              {
+                test_type: 'short_test'
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runNvmeSelfTestRoutine ' +
+            'failed. Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function runNvmeWearLevelRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runNvmeWearLevelRoutine(
@@ -365,6 +377,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kGatewayCanBePinged,
         crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
         crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
+        crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -396,7 +409,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "signal_strength",
               "gateway_can_be_pinged",
               "smartctl_check",
-              "sensitive_sensor"
+              "sensitive_sensor",
+              "nvme_self_test"
             ]
           }, response);
         chrome.test.succeed();
@@ -1234,6 +1248,59 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runMemoryRoutine() {
         const response =
           await chrome.os.diagnostics.runMemoryRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunNvmeSelfTestRoutineSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Diagnostics interface is not available on this version of ash-chrome,
+  // this test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunNvmeSelfTestRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    base::Value::Dict expected_result;
+    expected_result.Set(
+        "test_type",
+        static_cast<int32_t>(
+            crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest));
+
+    // Set the expected runtime actions.
+    fake_service_impl->SetExpectedLastPassedParameters(
+        std::move(expected_result));
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runNvmeSelfTestRoutine() {
+        const response =
+          await chrome.os.diagnostics.runNvmeSelfTestRoutine(
+            {
+              test_type: 'short_test'
+            }
+          );
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }
