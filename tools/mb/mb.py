@@ -385,6 +385,10 @@ class MetaBuildWrapper:
                       default=None,
                       help=('Optional realm used when triggering swarming '
                             'tasks.'))
+    subp.add_argument('--service-account',
+                      default=None,
+                      help=('Optional service account to run the swarming '
+                            'tasks as.'))
     subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
                       help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
@@ -682,10 +686,14 @@ class MetaBuildWrapper:
       cas_instance = 'chrome-swarming'
       swarming_server = 'chrome-swarming.appspot.com'
       realm = 'chrome:try' if not self.args.realm else self.args.realm
+      account = 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com'
     else:
       cas_instance = 'chromium-swarm'
       swarming_server = 'chromium-swarm.appspot.com'
       realm = self.args.realm
+      account = 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com'
+    account = (self.args.service_account
+               if self.args.service_account else account)
     # TODO(dpranke): Look up the information for the target in
     # the //testing/buildbot.json file, if possible, so that we
     # can determine the isolate target, command line, and additional
@@ -751,6 +759,8 @@ class MetaBuildWrapper:
           # 30 is try level. So use the same here.
           '-priority',
           '30',
+          '-service-account',
+          account,
           '-tag=purpose:user-debug-mb',
           '-relative-cwd',
           self.ToSrcRelPath(build_dir),
