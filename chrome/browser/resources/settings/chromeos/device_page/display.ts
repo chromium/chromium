@@ -291,7 +291,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   private currentRoute_: Route|null;
   private currentSelectedModeIndex_: number;
   private currentSelectedParentModeIndex_: number;
-  private displayChangedListener_: EventListener|null;
+  private displayChangedListener_: (() => void)|null;
   private displayModeList_: DropdownMenuOptionList;
   private displayTabNames_: string[];
   private invalidDisplayId_: string;

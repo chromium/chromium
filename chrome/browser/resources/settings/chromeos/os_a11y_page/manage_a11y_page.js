@@ -18,14 +18,14 @@ import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
-import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
@@ -35,6 +35,18 @@ import {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './mana
 /** @const {number} */
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
 
+// TODO(crbug/1315757) Temporarily including this for Closure typing.
+// Avoiding migrating this file to TS since it will be obsolete once
+// the AccessibilityOSSettingsVisibility feature flag is removed
+// (crbug/1380229)
+/** @interface */
+export class DevicePageBrowserProxy {
+  /** Initializes the mouse and touchpad handler. */
+  initializePointers() {}
+
+  /** Initializes the keyboard update watcher. */
+  initializeKeyboardWatcher() {}
+}
 
 /**
  * @constructor

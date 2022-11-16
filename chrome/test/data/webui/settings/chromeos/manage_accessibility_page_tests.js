@@ -4,51 +4,19 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('ManageAccessibilityPageTests', function() {
   let page = null;
   let deviceBrowserProxy = null;
-
-  /** @implements {DevicePageBrowserProxy} */
-  class TestDevicePageBrowserProxy {
-    constructor() {
-      /** @private {boolean} */
-      this.hasMouse_ = true;
-      /** @private {boolean} */
-      this.hasTouchpad_ = true;
-    }
-
-    /** @param {boolean} hasMouse */
-    set hasMouse(hasMouse) {
-      this.hasMouse_ = hasMouse;
-      webUIListenerCallback('has-mouse-changed', this.hasMouse_);
-    }
-
-    /** @param {boolean} hasTouchpad */
-    set hasTouchpad(hasTouchpad) {
-      this.hasTouchpad_ = hasTouchpad;
-      webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
-    }
-
-    /** @override */
-    initializePointers() {
-      webUIListenerCallback('has-mouse-changed', this.hasMouse_);
-      webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
-    }
-
-    /** @override */
-    initializeKeyboardWatcher() {
-      webUIListenerCallback('has-hardware-keyboard', this.hasKeyboard_);
-    }
-  }
 
   function initPage(opt_prefs) {
     page = document.createElement('settings-manage-a11y-page');
@@ -87,6 +55,9 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     deviceBrowserProxy = new TestDevicePageBrowserProxy();
+    deviceBrowserProxy.hasMouse = true;
+    deviceBrowserProxy.hasTouchpad = true;
+    deviceBrowserProxy.hasPointingStick = false;
     DevicePageBrowserProxyImpl.setInstanceForTesting(deviceBrowserProxy);
 
     PolymerTest.clearBody();

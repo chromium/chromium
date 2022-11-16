@@ -26,7 +26,6 @@ js_library("manage_a11y_page") {
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
-    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

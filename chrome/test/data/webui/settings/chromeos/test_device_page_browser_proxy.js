@@ -8,9 +8,6 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/**
- * @implements {DevicePageBrowserProxy}
- */
 export class TestDevicePageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -29,14 +26,44 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy {
     this.setAppOnLockScreenCount_ = 0;
 
     this.lastHighlightedDisplayId_ = '-1';
+
+    this.hasMouse_ = true;
+    this.hasTouchpad_ = true;
+    this.hasPointingStick_ = true;
+    this.hasHapticTouchpad_ = true;
+  }
+
+  /** @param {boolean} hasMouse */
+  set hasMouse(hasMouse) {
+    this.hasMouse_ = hasMouse;
+    webUIListenerCallback('has-mouse-changed', this.hasMouse_);
+  }
+
+  /** @param {boolean} hasTouchpad */
+  set hasTouchpad(hasTouchpad) {
+    this.hasTouchpad_ = hasTouchpad;
+    webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
+  }
+
+  /** @param {boolean} hasPointingStick */
+  set hasPointingStick(hasPointingStick) {
+    this.hasPointingStick_ = hasPointingStick;
+    webUIListenerCallback('has-pointing-stick-changed', this.hasPointingStick_);
+  }
+
+  /** @param {boolean} hasHapticTouchpad */
+  set hasHapticTouchpad(hasHapticTouchpad) {
+    this.hasHapticTouchpad_ = hasHapticTouchpad;
+    webUIListenerCallback(
+        'has-haptic-touchpad-changed', this.hasHapticTouchpad_);
   }
 
   initializePointers() {
-    // Enable mouse and touchpad.
-    webUIListenerCallback('has-mouse-changed', true);
-    webUIListenerCallback('has-pointing-stick-changed', true);
-    webUIListenerCallback('has-touchpad-changed', true);
-    webUIListenerCallback('has-haptic-touchpad-changed', true);
+    webUIListenerCallback('has-mouse-changed', this.hasMouse_);
+    webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
+    webUIListenerCallback('has-pointing-stick-changed', this.hasPointingStick_);
+    webUIListenerCallback(
+        'has-haptic-touchpad-changed', this.hasHapticTouchpad_);
   }
 
   initializeStylus() {
@@ -45,6 +72,10 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy {
   }
 
   initializeKeyboard() {}
+
+  initializeKeyboardWatcher() {
+    webUIListenerCallback('has-hardware-keyboard', this.hasKeyboard_);
+  }
 
   showKeyboardShortcutViewer() {
     this.keyboardShortcutViewerShown_++;
