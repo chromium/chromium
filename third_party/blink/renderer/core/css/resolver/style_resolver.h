@@ -294,10 +294,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       is_inherited_cache_hit = false;
       is_non_inherited_cache_hit = false;
     }
-    bool EffectiveZoomChanged(const ComputedStyle&) const;
-    bool FontChanged(const ComputedStyle&) const;
-    bool InheritedVariablesChanged(const ComputedStyle&) const;
-    bool IsUsableAfterApplyInheritedOnly(const ComputedStyle&) const;
+    bool EffectiveZoomChanged(const ComputedStyleBuilder&) const;
+    bool FontChanged(const ComputedStyleBuilder&) const;
+    bool InheritedVariablesChanged(const ComputedStyleBuilder&) const;
+    bool IsUsableAfterApplyInheritedOnly(const ComputedStyleBuilder&) const;
   };
 
   CacheSuccess ApplyMatchedCache(StyleResolverState&, const MatchResult&);

@@ -1813,33 +1813,33 @@ void StyleResolver::ClearResizedForViewportUnits() {
 }
 
 bool StyleResolver::CacheSuccess::EffectiveZoomChanged(
-    const ComputedStyle& style) const {
+    const ComputedStyleBuilder& builder) const {
   if (!cached_matched_properties)
     return false;
   return cached_matched_properties->computed_style->EffectiveZoom() !=
-         style.EffectiveZoom();
+         builder.EffectiveZoom();
 }
 
 bool StyleResolver::CacheSuccess::FontChanged(
-    const ComputedStyle& style) const {
+    const ComputedStyleBuilder& builder) const {
   if (!cached_matched_properties)
     return false;
   return cached_matched_properties->computed_style->GetFontDescription() !=
-         style.GetFontDescription();
+         builder.GetFontDescription();
 }
 
 bool StyleResolver::CacheSuccess::InheritedVariablesChanged(
-    const ComputedStyle& style) const {
+    const ComputedStyleBuilder& builder) const {
   if (!cached_matched_properties)
     return false;
   return cached_matched_properties->computed_style->InheritedVariables() !=
-         style.InheritedVariables();
+         builder.InheritedVariables();
 }
 
 bool StyleResolver::CacheSuccess::IsUsableAfterApplyInheritedOnly(
-    const ComputedStyle& style) const {
-  return !EffectiveZoomChanged(style) && !FontChanged(style) &&
-         !InheritedVariablesChanged(style);
+    const ComputedStyleBuilder& builder) const {
+  return !EffectiveZoomChanged(builder) && !FontChanged(builder) &&
+         !InheritedVariablesChanged(builder);
 }
 
 StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
@@ -2102,7 +2102,7 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
     if (cache_success.ShouldApplyInheritedOnly()) {
       cascade.Apply(filter.Add(CSSProperty::kInherited, false));
-      if (!cache_success.IsUsableAfterApplyInheritedOnly(*state.Style()))
+      if (!cache_success.IsUsableAfterApplyInheritedOnly(state.StyleBuilder()))
         cascade.Apply(filter.Add(CSSProperty::kInherited, true));
     } else {
       cascade.Apply(filter);
