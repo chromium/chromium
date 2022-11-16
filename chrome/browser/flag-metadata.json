@@ -412,8 +412,8 @@
   },
   {
     "name": "autocomplete-extended-suggestions",
-    "owners": [ "yulunwu", "etuck" ],
-    "expiry_milestone": 109
+    "owners": [ "yulunwu", "tbarzic" ],
+    "expiry_milestone": 111
   },
   {
     "name": "autofill-address-save-prompt",
