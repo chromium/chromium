@@ -7,10 +7,12 @@
 
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
@@ -23,8 +25,6 @@ namespace apps {
 // AppIconDecoder is used to decode for one icon uncompressed image only, and
 // owned by AppIconReader. AppIconReader is responsible to free AppIconDecoder's
 // objects once the decode is done.
-//
-// TODO(crbug.com/1380608): Implement the icon decode function.
 class AppIconDecoder {
  public:
   explicit AppIconDecoder(
@@ -40,8 +40,34 @@ class AppIconDecoder {
   void Start();
 
  private:
+  // Decode images safely in a sandboxed service per ARC app icons' security
+  // requests.
+  class DecodeRequest : public ImageDecoder::ImageRequest {
+   public:
+    explicit DecodeRequest(ui::ResourceScaleFactor scale_factor,
+                           AppIconDecoder& host);
+
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
+    ~DecodeRequest() override;
+
+    // ImageDecoder::ImageRequest
+    void OnImageDecoded(const SkBitmap& bitmap) override;
+    void OnDecodeImageFailed() override;
+
+   private:
+    ui::ResourceScaleFactor scale_factor_;
+    AppIconDecoder& host_;
+  };
+
   void OnIconRead(
       std::map<ui::ResourceScaleFactor, std::vector<uint8_t>> icon_data);
+
+  void UpdateImageSkia(ui::ResourceScaleFactor scale_factor,
+                       const SkBitmap& bitmap);
+
+  void DiscardDecodeRequest();
 
   const base::FilePath base_path_;
   const std::string app_id_;
@@ -51,6 +77,9 @@ class AppIconDecoder {
 
   gfx::ImageSkia image_skia_;
   std::set<ui::ResourceScaleFactor> incomplete_scale_factors_;
+
+  // Contains pending image decode requests.
+  std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
   base::WeakPtrFactory<AppIconDecoder> weak_ptr_factory_{this};
 };
