@@ -117,11 +117,11 @@ js_library("shimless_rma_app_test") {
 js_library("onboarding_choose_destination_page_test") {
   deps = [
     "..:chai_assert",
+    "//ash/webui/common/resources:promise_resolver",
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:onboarding_choose_destination_page",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -169,13 +169,13 @@ js_library("onboarding_landing_page_test") {
 js_library("onboarding_select_components_page_test") {
   deps = [
     "..:chai_assert",
+    "//ash/webui/common/resources:promise_resolver",
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:onboarding_select_components_page",
     "//ash/webui/shimless_rma/resources:repair_component_chip",
     "//ash/webui/shimless_rma/resources:shimless_rma",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:promise_resolver",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

@@ -29,9 +29,9 @@ js_library("chai_assert") {
 
 js_library("fake_network_config_mojom") {
   deps = [
+    "//ash/webui/common/resources:promise_resolver",
     "//ash/webui/common/resources/network:onc_mojo",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:promise_resolver",
   ]
 }
 
@@ -39,7 +39,7 @@ js_library("mock_controller.m") {
 }
 
 js_library("test_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:promise_resolver" ]
+  deps = [ "//ash/webui/common/resources:promise_resolver" ]
 }
 
 js_library("test_util") {

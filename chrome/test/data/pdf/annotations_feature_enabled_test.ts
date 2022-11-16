@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {AnnotationTool, SaveRequestType, ViewerInkHostElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {waitFor} from './test_util.js';
@@ -450,6 +451,7 @@ chrome.test.runTests([
   async function testSaveAfterAnnotationMode() {
     const saveData = await viewer.getCurrentControllerForTesting()!.save(
         SaveRequestType.EDITED);
+    assert(saveData);
     chrome.test.assertTrue(saveData.editModeForTesting!);
     chrome.test.succeed();
   },

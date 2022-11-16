@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 
 /**
  * Class that implements the Chrome side of the ParentAccess PostMessageAPI.

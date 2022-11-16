@@ -133,6 +133,7 @@ non_web_component_files = [
   "network_health/mojo_interface_provider.js",
   "network_health/network_diagnostics_types.js",
   "parse_html_subset.js",
+  "promise_resolver.js",
   "post_message_api/post_message_api_client.js",
   "post_message_api/post_message_api_request_handler.js",
   "post_message_api/post_message_api_server.js",
@@ -331,6 +332,7 @@ checked_in_dts_files = [
 
   "page_toolbar.d.ts",
   "parse_html_subset.d.ts",
+  "promise_resolver.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
   "web_ui_listener_behavior.d.ts",
@@ -433,6 +435,7 @@ js_type_check("closure_compile_local") {
     ":navigation_view_panel",
     ":page_toolbar",
     ":parse_html_subset",
+    ":promise_resolver",
     ":webui_resource_test",
   ]
 }
@@ -551,6 +554,10 @@ js_library("page_toolbar") {
 }
 
 js_library("parse_html_subset") {
+}
+
+js_library("promise_resolver") {
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_library("web_ui_listener_behavior") {

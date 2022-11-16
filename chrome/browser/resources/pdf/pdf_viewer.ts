@@ -449,6 +449,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       const result =
           await this.pluginController_!.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
+      assert(result);
 
       record(UserAction.ENTER_ANNOTATION_MODE);
       this.annotationMode_ = true;
