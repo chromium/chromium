@@ -10,7 +10,7 @@
 namespace {
 class FuchsiaInstalledVersionMonitor : public InstalledVersionMonitor {
   void Start(Callback callback) override {
-    // TODO(crbug.com/1235293)
+    // TODO(crbug.com/1318672)
     NOTIMPLEMENTED_LOG_ONCE();
   }
 };
@@ -18,7 +18,7 @@ class FuchsiaInstalledVersionMonitor : public InstalledVersionMonitor {
 
 // static
 std::unique_ptr<InstalledVersionMonitor> InstalledVersionMonitor::Create() {
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1318672)
   NOTIMPLEMENTED_LOG_ONCE();
   return std::make_unique<FuchsiaInstalledVersionMonitor>();
 }

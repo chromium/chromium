@@ -246,7 +246,7 @@ SystemMonitor::CreateMetricEvaluatorsHelper() {
 #elif BUILDFLAG(IS_POSIX)
   return std::make_unique<MetricEvaluatorsHelperPosix>();
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1166873): Implement this in support of tracing.
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 #else

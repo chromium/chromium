@@ -697,7 +697,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // selection dialog.
   return nullptr;
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1380609): Implement ClientCertStore support.
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 #else

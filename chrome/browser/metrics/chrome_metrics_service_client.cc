@@ -385,7 +385,7 @@ bool IsProcessRunning(base::ProcessId pid) {
   if (kill(pid, 0) == 0 || errno != ESRCH)
     return true;
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/967028): Implement along with metrics support.
   NOTIMPLEMENTED_LOG_ONCE();
 #else
 #error Unsupported OS. Might be okay to just return false.

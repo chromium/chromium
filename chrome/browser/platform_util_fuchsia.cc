@@ -8,21 +8,21 @@
 namespace platform_util {
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1231928): Implement once Fuchsia supports opening folders.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 namespace internal {
 
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1231928): Implement once Fuchsia supports opening folders.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace internal
 
 void OpenExternal(const GURL& url) {
-  // TODO(crbug.com/1235293)
+  // TODO(crbug.com/1231928): Implement once Fuchsia supports opening folders.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
