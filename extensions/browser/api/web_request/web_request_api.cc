@@ -268,19 +268,18 @@ bool IsRequestFromExtension(const WebRequestInfo& request,
 
 // Converts a HttpHeaders dictionary to a |name|, |value| pair. Returns
 // true if successful.
-bool FromHeaderDictionary(const base::DictionaryValue* header_value,
+bool FromHeaderDictionary(const base::Value::Dict& header_value,
                           std::string* name,
                           std::string* out_value) {
-  const std::string* name_ptr =
-      header_value->FindStringKey(keys::kHeaderNameKey);
+  const std::string* name_ptr = header_value.FindString(keys::kHeaderNameKey);
   if (!name)
     return false;
   *name = *name_ptr;
 
   // We require either a "value" or a "binaryValue" entry.
-  const base::Value* value = header_value->FindKey(keys::kHeaderValueKey);
+  const base::Value* value = header_value.Find(keys::kHeaderValueKey);
   const base::Value* binary_value =
-      header_value->FindKey(keys::kHeaderBinaryValueKey);
+      header_value.Find(keys::kHeaderBinaryValueKey);
   if (!((value != nullptr) ^ (binary_value != nullptr))) {
     return false;
   }
@@ -317,8 +316,7 @@ void SendOnMessageEventOnUI(
     return;
 
   base::Value::List event_args;
-  event_args.Append(
-      base::Value::FromUniquePtrValue(event_details->GetAndClearDict()));
+  event_args.Append(event_details->GetAndClearDict());
 
   EventRouter* event_router = EventRouter::Get(browser_context);
 
@@ -1009,11 +1007,12 @@ struct ExtensionWebRequestEventRouter::BlockedRequest {
 };
 
 bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
-    const base::DictionaryValue& value, std::string* error) {
-  if (!value.FindKey("urls"))
+    const base::Value::Dict& value,
+    std::string* error) {
+  if (!value.Find("urls"))
     return false;
 
-  for (const auto dict_item : value.GetDict()) {
+  for (const auto dict_item : value) {
     if (dict_item.first == "urls" && dict_item.second.is_list()) {
       for (const auto& item : dict_item.second.GetList()) {
         std::string url;
@@ -1691,10 +1690,9 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
     // Filter out the optional keys that this listener didn't request.
     base::Value::List args_filtered;
 
-    args_filtered.Append(
-        base::Value::FromUniquePtrValue(event_details->GetFilteredDict(
-            listener->extra_info_spec, PermissionHelper::Get(browser_context),
-            listener->id.extension_id, crosses_incognito)));
+    args_filtered.Append(event_details->GetFilteredDict(
+        listener->extra_info_spec, PermissionHelper::Get(browser_context),
+        listener->id.extension_id, crosses_incognito));
 
     if (is_active) {
       DCHECK(render_process);
@@ -2821,8 +2819,7 @@ WebRequestInternalAddEventListenerFunction::Run() {
   // Failure + an empty error string means a fatal error.
   std::string error;
   EXTENSION_FUNCTION_VALIDATE(
-      filter.InitFromValue(base::Value::AsDictionaryValue(args()[1]), &error) ||
-      !error.empty());
+      filter.InitFromValue(args()[1].GetDict(), &error) || !error.empty());
   if (!error.empty())
     return RespondNow(Error(std::move(error)));
 
@@ -2939,11 +2936,10 @@ WebRequestInternalEventHandledFunction::Run() {
 
   std::unique_ptr<ExtensionWebRequestEventRouter::EventResponse> response;
   if (HasOptionalArgument(4)) {
-    const base::DictionaryValue& dict_value =
-        base::Value::AsDictionaryValue(args()[4]);
-    EXTENSION_FUNCTION_VALIDATE(dict_value.is_dict());
+    EXTENSION_FUNCTION_VALIDATE(args()[4].is_dict());
+    const base::Value::Dict& dict_value = args()[4].GetDict();
 
-    if (!dict_value.DictEmpty()) {
+    if (!dict_value.empty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
                                     ->GetInstallTime(extension_id_safe());
       response =
@@ -2951,18 +2947,18 @@ WebRequestInternalEventHandledFunction::Run() {
               extension_id_safe(), install_time);
     }
 
-    const base::Value* redirect_url_value = dict_value.FindKey("redirectUrl");
+    const base::Value* redirect_url_value = dict_value.Find("redirectUrl");
     const base::Value* auth_credentials_value =
-        dict_value.FindKey(keys::kAuthCredentialsKey);
+        dict_value.Find(keys::kAuthCredentialsKey);
     const base::Value* request_headers_value =
-        dict_value.FindKey("requestHeaders");
+        dict_value.Find("requestHeaders");
     const base::Value* response_headers_value =
-        dict_value.FindKey("responseHeaders");
+        dict_value.Find("responseHeaders");
 
-    const base::Value* cancel_value = dict_value.FindKey("cancel");
+    const base::Value* cancel_value = dict_value.Find("cancel");
     if (cancel_value) {
       // Don't allow cancel mixed with other keys.
-      if (dict_value.DictSize() != 1) {
+      if (dict_value.size() != 1) {
         OnError(event_name, sub_event_name, request_id, render_process_id,
                 web_view_instance_id, std::move(response));
         return RespondNow(Error(keys::kInvalidBlockingResponse));
@@ -2993,27 +2989,24 @@ WebRequestInternalEventHandledFunction::Run() {
         return RespondNow(Error(keys::kInvalidHeaderKeyCombination));
       }
 
-      const base::Value* headers_value = nullptr;
+      const base::Value::List* headers_value = nullptr;
       std::unique_ptr<net::HttpRequestHeaders> request_headers;
       std::unique_ptr<helpers::ResponseHeaders> response_headers;
       if (has_request_headers) {
         request_headers = std::make_unique<net::HttpRequestHeaders>();
-        headers_value = dict_value.FindKeyOfType(keys::kRequestHeadersKey,
-                                                 base::Value::Type::LIST);
+        headers_value = dict_value.FindList(keys::kRequestHeadersKey);
       } else {
         response_headers = std::make_unique<helpers::ResponseHeaders>();
-        headers_value = dict_value.FindKeyOfType(keys::kResponseHeadersKey,
-                                                 base::Value::Type::LIST);
+        headers_value = dict_value.FindList(keys::kResponseHeadersKey);
       }
       EXTENSION_FUNCTION_VALIDATE(headers_value);
 
-      for (const base::Value& elem : headers_value->GetList()) {
+      for (const base::Value& elem : *headers_value) {
         EXTENSION_FUNCTION_VALIDATE(elem.is_dict());
-        const base::DictionaryValue& header_value =
-            base::Value::AsDictionaryValue(elem);
+        const base::Value::Dict& header_value = elem.GetDict();
         std::string name;
         std::string value;
-        if (!FromHeaderDictionary(&header_value, &name, &value)) {
+        if (!FromHeaderDictionary(header_value, &name, &value)) {
           std::string serialized_header;
           base::JSONWriter::Write(header_value, &serialized_header);
           OnError(event_name, sub_event_name, request_id, render_process_id,
@@ -3030,15 +3023,17 @@ WebRequestInternalEventHandledFunction::Run() {
                   web_view_instance_id, std::move(response));
           return RespondNow(Error(keys::kInvalidHeaderValue, name));
         }
-        if (has_request_headers)
+        if (has_request_headers) {
           request_headers->SetHeader(name, value);
-        else
+        } else {
           response_headers->push_back(helpers::ResponseHeader(name, value));
+        }
       }
-      if (has_request_headers)
+      if (has_request_headers) {
         response->request_headers = std::move(request_headers);
-      else
+      } else {
         response->response_headers = std::move(response_headers);
+      }
     }
 
     if (auth_credentials_value) {

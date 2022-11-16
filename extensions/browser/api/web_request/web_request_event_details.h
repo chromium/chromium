@@ -94,15 +94,14 @@ class WebRequestEventDetails {
   // this event will be dispatched to doesn't have permission for the initiator
   // then the initiator will not be populated.
   // This can be called from any thread.
-  std::unique_ptr<base::DictionaryValue> GetFilteredDict(
-      int extra_info_spec,
-      PermissionHelper* permission_helper,
-      const ExtensionId& extension_id,
-      bool crosses_incognito) const;
+  base::Value::Dict GetFilteredDict(int extra_info_spec,
+                                    PermissionHelper* permission_helper,
+                                    const ExtensionId& extension_id,
+                                    bool crosses_incognito) const;
 
   // Get the internal dictionary, unfiltered. After this call, the internal
   // dictionary is empty.
-  std::unique_ptr<base::DictionaryValue> GetAndClearDict();
+  base::Value::Dict GetAndClearDict();
 
  private:
   // The details that are always included in a webRequest event object.

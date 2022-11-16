@@ -36,9 +36,9 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
     WebRequestInfo request_info(std::move(params));
     WebRequestEventDetails details(request_info, kFilter);
     details.SetResponseHeaders(request_info, headers.get());
-    std::unique_ptr<base::DictionaryValue> dict =
+    base::Value::Dict dict =
         details.GetFilteredDict(kFilter, nullptr, std::string(), false);
-    base::Value* filtered_headers = dict->FindKey("responseHeaders");
+    base::Value* filtered_headers = dict.Find("responseHeaders");
     ASSERT_TRUE(filtered_headers);
     ASSERT_EQ(2u, filtered_headers->GetList().size());
     EXPECT_EQ("Key1",
@@ -58,9 +58,9 @@ TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
     WebRequestInfo gaia_request_info(std::move(params));
     WebRequestEventDetails gaia_details(gaia_request_info, kFilter);
     gaia_details.SetResponseHeaders(gaia_request_info, headers.get());
-    std::unique_ptr<base::DictionaryValue> dict =
+    base::Value::Dict dict =
         gaia_details.GetFilteredDict(kFilter, nullptr, std::string(), false);
-    base::Value* filtered_headers = dict->FindKey("responseHeaders");
+    base::Value* filtered_headers = dict.Find("responseHeaders");
     ASSERT_TRUE(filtered_headers);
     ASSERT_EQ(1u, filtered_headers->GetList().size());
     EXPECT_EQ("Key1",

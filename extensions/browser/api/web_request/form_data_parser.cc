@@ -19,9 +19,6 @@
 #include "net/http/http_request_headers.h"
 #include "third_party/re2/src/re2/re2.h"
 
-using base::DictionaryValue;
-using base::ListValue;
-using base::StringPiece;
 using re2::RE2;
 
 namespace extensions {

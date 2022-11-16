@@ -23,6 +23,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
@@ -46,10 +47,6 @@
 
 class ExtensionWebRequestTimeTracker;
 class GURL;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -333,7 +330,7 @@ class ExtensionWebRequestEventRouter {
     // Returns false if there was an error initializing. If it is a user error,
     // an error message is provided, otherwise the error is internal (and
     // unexpected).
-    bool InitFromValue(const base::DictionaryValue& value, std::string* error);
+    bool InitFromValue(const base::Value::Dict& value, std::string* error);
 
     extensions::URLPatternSet urls;
     std::vector<WebRequestResourceType> types;
