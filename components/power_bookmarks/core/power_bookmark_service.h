@@ -45,6 +45,14 @@ class PowerBookmarkService : public KeyedService,
 
   ~PowerBookmarkService() override;
 
+  // Initializes the power bookmarks backend.
+  // Should only be called in cases where the power is meant to be displayed
+  // to the user. This will also initialize sync for the power bookmarks data
+  // type in cases where another feature hasn't already called this. This
+  // should be called at startup to register the data type with sync as soon
+  // as possible. If this isn't called, then an in-memory database will be
+  // used instead. None of the data will be persisted/synced when using the
+  // in-memory database.
   void InitPowerBookmarkDatabase();
 
   // Returns a vector of Powers for the given `url` through the given
