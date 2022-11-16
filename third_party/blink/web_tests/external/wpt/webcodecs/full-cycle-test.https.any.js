@@ -41,6 +41,17 @@ promise_test(async t => {
       assert_equals(frame.visibleRect.width, w, "visibleRect.width");
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
       assert_equals(frame.timestamp, next_ts++, "decode timestamp");
+
+      // The encoder is allowed to change the color space to satisfy the
+      // encoder when readback is needed to send the frame for encoding, so
+      // just ensure we have something set on the frame.
+      assert_not_equals(
+          frame.colorSpace.primaries, null, 'colorSpace.primaries');
+      assert_not_equals(frame.colorSpace.transfer, null, 'colorSpace.transfer');
+      assert_not_equals(frame.colorSpace.matrix, null, 'colorSpace.matrix');
+      assert_not_equals(
+          frame.colorSpace.fullRange, null, 'colorSpace.fullRange');
+
       frames_decoded++;
       assert_true(validateBlackDots(frame, frame.timestamp),
         "frame doesn't match. ts: " + frame.timestamp);
@@ -73,6 +84,13 @@ promise_test(async t => {
 
   for (let i = 0; i < frames_to_encode; i++) {
     let frame = createDottedFrame(w, h, i);
+
+    // Frames should have a valid color space when created from canvas.
+    assert_not_equals(frame.colorSpace.primaries, null, 'colorSpace.primaries');
+    assert_not_equals(frame.colorSpace.transfer, null, 'colorSpace.transfer');
+    assert_not_equals(frame.colorSpace.matrix, null, 'colorSpace.matrix');
+    assert_not_equals(frame.colorSpace.fullRange, null, 'colorSpace.fullRange');
+
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
     frame.close();

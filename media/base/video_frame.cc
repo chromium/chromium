@@ -903,6 +903,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
 
   // Copy all metadata to the wrapped frame->
   wrapping_frame->metadata().MergeMetadataFrom(frame->metadata());
+  wrapping_frame->set_color_space(frame->ColorSpace());
+  wrapping_frame->set_hdr_metadata(frame->hdr_metadata());
 
   if (frame->IsMappable()) {
     for (size_t i = 0; i < new_plane_count; ++i) {

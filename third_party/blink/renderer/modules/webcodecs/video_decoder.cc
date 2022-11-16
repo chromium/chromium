@@ -631,10 +631,12 @@ media::DecoderStatus::Or<VideoDecoder::OutputType*> VideoDecoder::MakeOutput(
   if (it != chunk_metadata_.end()) {
     const auto duration = it->second.duration;
     if (!duration.is_zero() && duration != media::kNoTimestamp) {
-      output = media::VideoFrame::WrapVideoFrame(output, output->format(),
-                                                 output->visible_rect(),
-                                                 output->natural_size());
-      output->metadata().frame_duration = duration;
+      auto wrapped_output = media::VideoFrame::WrapVideoFrame(
+          output, output->format(), output->visible_rect(),
+          output->natural_size());
+      wrapped_output->set_color_space(output->ColorSpace());
+      wrapped_output->metadata().frame_duration = duration;
+      output = wrapped_output;
     }
   }
 
