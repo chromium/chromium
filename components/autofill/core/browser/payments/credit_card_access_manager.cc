@@ -621,6 +621,10 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
 
 #if BUILDFLAG(IS_ANDROID)
 bool CreditCardAccessManager::ShouldOfferFidoAuth() const {
+  // We should not display the FIDO opt-in checkbox for virtual cards.
+  if (card_->record_type() == CreditCard::VIRTUAL_CARD)
+    return false;
+
   // If the user opted-in through the settings page, do not show checkbox.
   return unmask_details_.offer_fido_opt_in &&
          opt_in_intention_ != UserOptInIntention::kIntentToOptIn;
@@ -846,6 +850,10 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   // We should not offer FIDO opt-in dialog on mobile.
   return false;
 #else
+  // We should not offer FIDO opt-in for virtual cards.
+  if (card_->record_type() == CreditCard::VIRTUAL_CARD)
+    return false;
+
   // If this card is not eligible for offering FIDO opt-in, we should not offer
   // the FIDO opt-in dialog.
   if (!unmask_details_.offer_fido_opt_in)
