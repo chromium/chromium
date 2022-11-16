@@ -1127,42 +1127,11 @@ BASE_FEATURE(kSetTimeoutWithoutClamp,
              "SetTimeoutWithoutClamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-namespace {
-
-enum class SetTimeoutWithout1MsClampPolicyOverride {
-  kNoOverride,
-  kForceDisable,
-  kForceEnable
-};
-
-bool g_set_timeout_without_1m_clamp_policy_override_cached = false;
-
-// Returns the SetTimeoutWithout1MsClamp policy settings. This is calculated
-// once on first access and cached.
-SetTimeoutWithout1MsClampPolicyOverride
-GetSetTimeoutWithout1MsClampPolicyOverride() {
-  static SetTimeoutWithout1MsClampPolicyOverride policy =
-      SetTimeoutWithout1MsClampPolicyOverride::kNoOverride;
-  if (g_set_timeout_without_1m_clamp_policy_override_cached)
-    return policy;
-
-  // Otherwise, check the command-line for the renderer. Only values of "0"
-  // and "1" are valid, anything else is ignored (and allows the base::Feature
-  // to control the feature). This slow path will only be hit once per renderer
-  // process.
-  std::string value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSetTimeoutWithout1MsClampPolicy);
-  if (value == switches::kSetTimeoutWithout1MsClampPolicy_ForceEnable) {
-    policy = SetTimeoutWithout1MsClampPolicyOverride::kForceEnable;
-  } else if (value == switches::kSetTimeoutWithout1MsClampPolicy_ForceDisable) {
-    policy = SetTimeoutWithout1MsClampPolicyOverride::kForceDisable;
-  } else {
-    policy = SetTimeoutWithout1MsClampPolicyOverride::kNoOverride;
-  }
-  g_set_timeout_without_1m_clamp_policy_override_cached = true;
-  return policy;
+bool IsSetTimeoutWithoutClampEnabled() {
+  return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
 }
+
+namespace {
 
 enum class UnthrottledNestedTimeoutPolicyOverride {
   kNoOverride,
@@ -1200,21 +1169,6 @@ GetUnthrottledNestedTimeoutPolicyOverride() {
 }
 
 }  // namespace
-
-void ClearSetTimeoutWithout1MsClampPolicyOverrideCacheForTesting() {
-  // Tests may want to force recalculation of the cached policy value when
-  // exercising different configs.
-  g_set_timeout_without_1m_clamp_policy_override_cached = false;
-}
-
-bool IsSetTimeoutWithoutClampEnabled() {
-  // If policy is present then respect it.
-  auto policy = GetSetTimeoutWithout1MsClampPolicyOverride();
-  if (policy != SetTimeoutWithout1MsClampPolicyOverride::kNoOverride)
-    return policy == SetTimeoutWithout1MsClampPolicyOverride::kForceEnable;
-  // Otherwise respect the base::Feature.
-  return base::FeatureList::IsEnabled(features::kSetTimeoutWithoutClamp);
-}
 
 void ClearUnthrottledNestedTimeoutOverrideCacheForTesting() {
   // Tests may want to force recalculation of the cached policy value when

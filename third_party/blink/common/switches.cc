@@ -132,16 +132,6 @@ const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 const char kTouchTextSelectionStrategy_Character[] = "character";
 const char kTouchTextSelectionStrategy_Direction[] = "direction";
 
-// Used to communicate managed policy for the SetTimeoutWithoutClamp feature.
-// This feature is typically controlled by base::Feature (see
-// blink/common/features.*) but requires an enterprise policy override.
-// This is implicitly a tri-state, and can be either unset, or
-// set to "1" for force enable, or "0" for force disable.
-extern const char kSetTimeoutWithout1MsClampPolicy[] =
-    "set-timeout-without-1ms-clamp-policy";
-extern const char kSetTimeoutWithout1MsClampPolicy_ForceDisable[] = "0";
-extern const char kSetTimeoutWithout1MsClampPolicy_ForceEnable[] = "1";
-
 // Used to communicate managed policy for the MaxUnthrottledTimeoutNestingLevel
 // feature. This feature is typically controlled by base::Feature (see
 // blink/common/features.*) but requires an enterprise policy override. This is

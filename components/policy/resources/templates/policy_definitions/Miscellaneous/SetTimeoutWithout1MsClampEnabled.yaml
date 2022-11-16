@@ -10,9 +10,8 @@ desc: "When the policy is set to Enabled, the Javascript setTimeout() with a tim
   \ on sites that are dependent on\n          a certain ordering in some way. It also\
   \ may affect sites with a lot of setTimeout()\n          with a timeout of 0ms usage,\
   \ e.g. increasing CPU load.\n\n          For users where this policy is unset, Chrome\
-  \ will roll out the change gradually on the stable channel.\n\n          This is\
-  \ a temporary policy that is planned be removed in Chrome 105. This deadline may\
-  \ be extended if there is a need for it among enterprises.\n          "
+  \ will roll out the change gradually on the stable channel.\n\n          This policy\
+  \ was removed in Chrome 110.\n                                        "
 example_value: true
 features:
   dynamic_refresh: true
@@ -33,8 +32,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:101-107
-- chrome.*:101-107
-- android:101-107
+- chrome_os:101-109
+- chrome.*:101-109
+- android:101-109
 tags: []
 type: main

@@ -498,12 +498,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsResourceWidth_DEPRECATED);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsViewportWidth_DEPRECATED);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSetTimeoutWithoutClamp);
-// window.setTimeout() has a feature to remove 1ms clamp to improve performance
-// and battery life. Enterprise policy can override this to control the feature.
-// Normally, the result of this feature calculation is cached; allow tests
-// to clear the cache to recompute the feature value.
-BLINK_COMMON_EXPORT void
-ClearSetTimeoutWithout1MsClampPolicyOverrideCacheForTesting();
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMaxUnthrottledTimeoutNestingLevel);

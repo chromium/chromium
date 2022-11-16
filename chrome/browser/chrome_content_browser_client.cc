@@ -1547,8 +1547,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kSuppressDifferentOriginSubframeJSDialogs, true);
   registry->RegisterBooleanPref(
-      policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled, false);
-  registry->RegisterBooleanPref(
       policy::policy_prefs::kUnthrottledNestedTimeoutEnabled, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kWebXRImmersiveArEnabled, true);
@@ -2684,18 +2682,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      // Override SetTimeoutWithoutClamp feature if its Enterprise Policy
-      // is specified.
-      if (prefs->HasPrefPath(
-              policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled)) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kSetTimeoutWithout1MsClampPolicy,
-            prefs->GetBoolean(
-                policy::policy_prefs::kSetTimeoutWithout1MsClampEnabled)
-                ? blink::switches::kSetTimeoutWithout1MsClampPolicy_ForceEnable
-                : blink::switches::
-                      kSetTimeoutWithout1MsClampPolicy_ForceDisable);
-      }
       // Override MaxUnthrottledTimeoutNestingLevel feature if its Enterprise
       // Policy is specified.
       if (prefs->HasPrefPath(

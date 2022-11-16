@@ -232,7 +232,6 @@ source_set("policy_specific_browser_tests") {
       "test/local_fonts_policy_browsertest.cc",
       "test/media_stream_policy_browsertest.cc",
       "test/prefixed_storage_info_policy_browsertest.cc",
-      "test/set_timeout_without_1ms_clamp_policy_browsertest.cc",
       "test/signed_exchange_browsertest.cc",
       "test/task_manager_end_process_enabled_browsertest.cc",
       "test/unthrottled_nested_timeout_policy_browsertest.cc",
