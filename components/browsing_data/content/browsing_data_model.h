@@ -31,7 +31,8 @@ class BrowsingDataModel {
   // incomplete implementations, and are marked as such.
   // TODO(crbug.com/1271155): Complete implementations for all browsing data.
   enum class StorageType {
-    kTrustTokens,                // Only issuance information considered.
+    kTrustTokens,  // Only issuance information considered.
+    kSharedStorage,
     kPartitionedQuotaStorage,    // Not fetched from disk or deleted.
     kUnpartitionedQuotaStorage,  // Not fetched from disk or deleted.
 

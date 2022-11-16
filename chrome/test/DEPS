@@ -60,6 +60,7 @@ include_rules = [
   "+components/security_interstitials/content",
   "+components/services/language_detection/public/cpp",
   "+components/services/quarantine",
+  "+components/services/storage/shared_storage",
   "+components/sessions",
   "+components/signin/public",
   "+components/spellcheck",

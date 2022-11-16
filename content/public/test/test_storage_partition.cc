@@ -23,6 +23,10 @@ network::mojom::NetworkContext* TestStoragePartition::GetNetworkContext() {
   return network_context_;
 }
 
+storage::SharedStorageManager* TestStoragePartition::GetSharedStorageManager() {
+  return nullptr;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
   return nullptr;

@@ -4,6 +4,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,8 @@
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +25,8 @@
 #include "services/network/test/trust_token_request_handler.h"
 #include "services/network/test/trust_token_test_server_handler_registration.h"
 #include "services/network/test/trust_token_test_util.h"
+#include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -30,21 +35,92 @@ constexpr char kTestHost[] = "a.test";
 }
 
 using browsing_data_model_test_util::ValidateBrowsingDataEntries;
+using OperationResult = storage::SharedStorageDatabase::OperationResult;
 
-class BrowsingDataModelTrustTokenBrowserTest : public InProcessBrowserTest {
+class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
  public:
-  BrowsingDataModelTrustTokenBrowserTest() {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
-    feature_list_.InitWithFeaturesAndParameters(
-        // Enabled Features:
-        {{network::features::kTrustTokens,
-          {{field_trial_param.name,
-            field_trial_param.GetName(
-                network::features::TrustTokenOriginTrialSpec::
-                    kOriginTrialNotRequired)}}}},
-        {});
+  BrowsingDataModelBrowserTest() = default;
+
+  ~BrowsingDataModelBrowserTest() override = default;
+
+  void SetUp() override {
+    SetUpFeatureList();
+    InProcessBrowserTest::SetUp();
   }
+
+  void SetUpOnMainThread() override {
+    PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+        ->SetPrivacySandboxEnabled(true);
+  }
+
+  virtual void SetUpFeatureList() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+  std::unique_ptr<BrowsingDataModel> BuildBrowsingDataModel() {
+    base::test::TestFuture<std::unique_ptr<BrowsingDataModel>>
+        browsing_data_model;
+    BrowsingDataModel::BuildFromDisk(browser()->profile(),
+                                     browsing_data_model.GetCallback());
+    return browsing_data_model.Take();
+  }
+
+  content::StoragePartition* storage_partition() {
+    return browser()->profile()->GetDefaultStoragePartition();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       SharedStorageHandledCorrectly) {
+  // Add origin shared storage.
+  auto* shared_storage_manager = storage_partition()->GetSharedStorageManager();
+  ASSERT_NE(nullptr, shared_storage_manager);
+
+  base::test::TestFuture<OperationResult> future;
+  url::Origin testOrigin = url::Origin::Create(GURL("https://a.test"));
+  shared_storage_manager->Set(testOrigin, u"key", u"value",
+                              future.GetCallback());
+  EXPECT_EQ(OperationResult::kSet, future.Get());
+
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  // Validate shared storage entry saved correctly.
+  base::test::TestFuture<uint64_t> test_entry_storage_size;
+  shared_storage_manager->FetchOrigins(base::BindLambdaForTesting(
+      [&](std::vector<::storage::mojom::StorageUsageInfoPtr>
+              storage_usage_info) {
+        ASSERT_EQ(1U, storage_usage_info.size());
+        test_entry_storage_size.SetValue(
+            storage_usage_info[0]->total_size_bytes);
+      }));
+
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        blink::StorageKey(testOrigin),
+        {BrowsingDataModel::StorageType::kSharedStorage,
+         test_entry_storage_size.Get(), /*cookie_count=*/0}}});
+
+  // Remove origin.
+  {
+    base::RunLoop run_loop;
+    browsing_data_model.get()->RemoveBrowsingData(kTestHost,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+
+class BrowsingDataModelTrustTokenBrowserTest
+    : public BrowsingDataModelBrowserTest {
+ public:
+  BrowsingDataModelTrustTokenBrowserTest() = default;
   ~BrowsingDataModelTrustTokenBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -60,6 +136,20 @@ class BrowsingDataModelTrustTokenBrowserTest : public InProcessBrowserTest {
     network::test::RegisterTrustTokenTestHandlers(https_server_.get(),
                                                   &request_handler_);
     ASSERT_TRUE(https_server_->Start());
+  }
+
+  void SetUpFeatureList() override {
+    auto& field_trial_param =
+        network::features::kTrustTokenOperationsRequiringOriginTrial;
+    feature_list_.InitWithFeaturesAndParameters(
+        // Enabled Features:
+        {{network::features::kTrustTokens,
+          {{field_trial_param.name,
+            field_trial_param.GetName(
+                network::features::TrustTokenOriginTrialSpec::
+                    kOriginTrialNotRequired)}}}},
+        // Disabled Features:
+        {});
   }
 
  protected:
@@ -91,7 +181,6 @@ class BrowsingDataModelTrustTokenBrowserTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   network::test::TrustTokenRequestHandler request_handler_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelTrustTokenBrowserTest,
@@ -127,15 +216,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelTrustTokenBrowserTest,
 
   // Confirm that a BrowsingDataModel built from disk contains the issued token
   // information.
-  std::unique_ptr<BrowsingDataModel> browsing_data_model;
-  base::RunLoop run_loop;
-  BrowsingDataModel::BuildFromDisk(
-      browser()->profile(),
-      base::BindLambdaForTesting([&](std::unique_ptr<BrowsingDataModel> model) {
-        browsing_data_model = std::move(model);
-        run_loop.QuitWhenIdle();
-      }));
-  run_loop.Run();
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
 
   ValidateBrowsingDataEntries(
       browsing_data_model.get(),
@@ -144,23 +226,16 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelTrustTokenBrowserTest,
         {BrowsingDataModel::StorageType::kTrustTokens, 100, 0}}});
 
   // Remove data for the host, and confirm the model updates appropriately.
-  base::RunLoop run_loop2;
-  browsing_data_model->RemoveBrowsingData(kTestHost,
-                                          run_loop2.QuitWhenIdleClosure());
-  run_loop2.Run();
+  {
+    base::RunLoop run_loop;
+    browsing_data_model->RemoveBrowsingData(kTestHost,
+                                            run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
+  }
 
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 
   // Build another model from disk, ensuring the data is no longer present.
-  browsing_data_model.reset();
-  base::RunLoop run_loop3;
-  BrowsingDataModel::BuildFromDisk(
-      browser()->profile(),
-      base::BindLambdaForTesting([&](std::unique_ptr<BrowsingDataModel> model) {
-        browsing_data_model = std::move(model);
-        run_loop3.QuitWhenIdle();
-      }));
-
-  run_loop3.Run();
+  browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }

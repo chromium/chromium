@@ -7,6 +7,7 @@ include_rules = [
   "+components/no_state_prefetch/browser",
   "+components/services/storage/privileged",
   "+components/services/storage/public",
+  "+components/services/storage/shared_storage",
   "+components/site_isolation",
   "+content/public/browser",
   "+content/public/common",

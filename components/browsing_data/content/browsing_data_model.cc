@@ -8,12 +8,15 @@
 #include "base/callback.h"
 #include "base/containers/enum_set.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
@@ -57,6 +60,9 @@ std::string GetPrimaryHost::operator()<blink::StorageKey>(
     return data_key.origin().host();
   }
 
+  if (storage_type_ == BrowsingDataModel::StorageType::kSharedStorage) {
+    return data_key.origin().host();
+  }
   NOTREACHED();
   return "";
 }
@@ -133,8 +139,20 @@ void StorageRemoverHelper::Visitor::operator()<url::Origin>(
 template <>
 void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
     const blink::StorageKey& storage_key) {
-  // TODO(crbug.com/1271155): Implement.
-  NOTREACHED();
+  if (types.Has(BrowsingDataModel::StorageType::kSharedStorage)) {
+    helper->storage_partition_->GetSharedStorageManager()->Clear(
+        storage_key.origin(),
+        base::BindOnce(
+            [](base::OnceClosure complete_callback,
+               storage::SharedStorageDatabase::OperationResult result) {
+              std::move(complete_callback).Run();
+            },
+            helper->GetCompleteCallback()));
+
+  } else {
+    // TODO(crbug.com/1271155): Implement for quota managed storage.
+    NOTREACHED();
+  }
 }
 
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
@@ -164,6 +182,19 @@ void OnTrustTokenIssuanceInfoLoaded(
     model->AddBrowsingData(token->issuer,
                            BrowsingDataModel::StorageType::kTrustTokens,
                            kSmallAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnSharedStorageLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::vector<::storage::mojom::StorageUsageInfoPtr> storage_usage_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  for (const auto& info : storage_usage_info) {
+    model->AddBrowsingData(info->storage_key,
+                           BrowsingDataModel::StorageType::kSharedStorage,
+                           info->total_size_bytes);
   }
   std::move(loaded_callback).Run();
 }
@@ -310,9 +341,12 @@ void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
 
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+  bool is_shared_storage_enabled =
+      base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI);
   // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
   int storage_backend_count = 1;
+  if (is_shared_storage_enabled)
+    storage_backend_count++;
 
   base::RepeatingClosure completion =
       base::BarrierClosure(storage_backend_count, std::move(finished_callback));
@@ -324,6 +358,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   // Issued Trust Tokens:
   storage_partition_->GetNetworkContext()->GetStoredTrustTokenCounts(
       base::BindOnce(&OnTrustTokenIssuanceInfoLoaded, this, completion));
+
+  // Shared storage origins
+  if (is_shared_storage_enabled) {
+    storage_partition_->GetSharedStorageManager()->FetchOrigins(
+        base::BindOnce(&OnSharedStorageLoaded, this, completion));
+  }
 }
 
 BrowsingDataModel::BrowsingDataModel(

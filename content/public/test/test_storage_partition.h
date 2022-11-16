@@ -59,6 +59,8 @@ class TestStoragePartition : public StoragePartition {
   }
   network::mojom::NetworkContext* GetNetworkContext() override;
 
+  storage::SharedStorageManager* GetSharedStorageManager() override;
+
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() override;
 

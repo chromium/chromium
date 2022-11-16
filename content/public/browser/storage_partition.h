@@ -50,10 +50,11 @@ class URLLoaderNetworkServiceObserver;
 }  // namespace network
 
 namespace storage {
-class QuotaManager;
-class SpecialStoragePolicy;
-struct QuotaSettings;
 class DatabaseTracker;
+class QuotaManager;
+struct QuotaSettings;
+class SharedStorageManager;
+class SpecialStoragePolicy;
 }  // namespace storage
 
 namespace url {
@@ -96,6 +97,10 @@ class CONTENT_EXPORT StoragePartition {
   // or restarts, the raw pointer will not be valid or safe to use. Therefore,
   // caller should not hold onto this pointer beyond the same message loop task.
   virtual network::mojom::NetworkContext* GetNetworkContext() = 0;
+
+  // Returns the SharedStorageManager for the StoragePartition, or nullptr if it
+  // doesn't exist because the feature is disabled.
+  virtual storage::SharedStorageManager* GetSharedStorageManager() = 0;
 
   // Returns a pointer/info to a URLLoaderFactory/CookieManager owned by
   // the storage partition. Prefer to use this instead of creating a new

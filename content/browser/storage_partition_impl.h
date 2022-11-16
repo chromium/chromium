@@ -265,9 +265,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   MediaLicenseManager* GetMediaLicenseManager();
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  // Gets the SharedStorageManager for the StoragePartition, or nullptr if it
-  // doesn't exist because the feature is disabled.
-  storage::SharedStorageManager* GetSharedStorageManager();
+  storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
 
   // blink::mojom::DomStorage interface.
