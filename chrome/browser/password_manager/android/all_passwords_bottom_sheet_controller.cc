@@ -87,7 +87,8 @@ gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
 
 void AllPasswordsBottomSheetController::OnCredentialSelected(
     const std::u16string username,
-    const std::u16string password) {
+    const std::u16string password,
+    RequestsToFillPassword requests_to_fill_password) {
   const bool is_password_field =
       focused_field_type_ == FocusedFieldType::kFillablePasswordField;
   if (!driver_) {
@@ -95,7 +96,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     return;
   }
 
-  if (is_password_field) {
+  if (requests_to_fill_password && is_password_field) {
     // `client_` is guaranteed to be valid here.
     // Both the `client_` and `PasswordAccessoryController` are attached to
     // WebContents. And AllPasswordBottomSheetController is owned by
@@ -117,7 +118,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     }
 
     FillPassword(password);
-  } else {
+  } else if (!requests_to_fill_password) {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
   // Consumes the dismissal callback to destroy the native controller and java

@@ -50,6 +50,9 @@ using DismissCallback = base::MockCallback<base::OnceCallback<void()>>;
 using IsPublicSuffixMatch = UiCredential::IsPublicSuffixMatch;
 using IsAffiliationBasedMatch = UiCredential::IsAffiliationBasedMatch;
 
+using RequestsToFillPassword =
+    AllPasswordsBottomSheetController::RequestsToFillPassword;
+
 constexpr char kExampleCom[] = "https://example.com";
 constexpr char kExampleOrg[] = "http://www.example.org";
 constexpr char kExampleDe[] = "https://www.example.de";
@@ -211,7 +214,20 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsUsernameWithoutAuth) {
               FillIntoFocusedField(false, std::u16string(kUsername1)));
   EXPECT_CALL(dismissal_callback(), Run());
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       FillsOnlyUsernameIfNotPasswordFillRequested) {
+  UiCredential credential = MakeUiCredential(kUsername1, kPassword);
+
+  EXPECT_CALL(client(), GetBiometricAuthenticator).Times(0);
+
+  EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kUsername1)));
+
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
@@ -220,7 +236,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfNoAuth) {
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
@@ -232,7 +249,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
@@ -249,7 +267,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
@@ -267,7 +286,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
       .Times(0);
   EXPECT_CALL(dismissal_callback(), Run());
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
@@ -283,7 +303,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)))
       .Times(0);
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 
   EXPECT_CALL(*authenticator().get(),
               Cancel(BiometricAuthRequester::kAllPasswordsList));
@@ -298,7 +319,16 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
   EXPECT_CALL(client(), OnPasswordSelected(std::u16string(kPassword)));
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       PhishGuardIsNotCalledForUsernameInPasswordField) {
+  EXPECT_CALL(client(), OnPasswordSelected).Times(0);
+
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
@@ -306,5 +336,15 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
   EXPECT_CALL(client(), OnPasswordSelected).Times(0);
 
-  all_passwords_controller()->OnCredentialSelected(kUsername1, kPassword);
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       FillsUsernameIfPasswordFillRequestedInNonPasswordField) {
+  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
+  EXPECT_CALL(driver(), FillIntoFocusedField(_, _)).Times(0);
+
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(true));
 }

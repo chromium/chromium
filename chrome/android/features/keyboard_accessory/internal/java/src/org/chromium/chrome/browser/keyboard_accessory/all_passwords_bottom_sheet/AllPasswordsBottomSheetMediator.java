@@ -92,9 +92,9 @@ class AllPasswordsBottomSheetMediator {
                             .contains(searchQuery.toLowerCase(Locale.getDefault()));
     }
 
-    void onCredentialSelected(Credential credential) {
+    void onCredentialSelected(CredentialFillRequest credentialFillRequest) {
         mModel.set(VISIBLE, false);
-        mDelegate.onCredentialSelected(credential);
+        mDelegate.onCredentialSelected(credentialFillRequest);
     }
 
     void onDismissed(@StateChangeReason Integer reason) {

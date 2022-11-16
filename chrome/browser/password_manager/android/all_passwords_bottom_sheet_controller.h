@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -30,6 +31,8 @@ class AllPasswordsBottomSheetView;
 class AllPasswordsBottomSheetController
     : public password_manager::PasswordStoreConsumer {
  public:
+  using RequestsToFillPassword =
+      base::StrongAlias<struct RequestsToFillPasswordTag, bool>;
   // No-op constructor for tests.
   AllPasswordsBottomSheetController(
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
@@ -61,7 +64,8 @@ class AllPasswordsBottomSheetController
 
   // Informs the controller that the user has made a selection.
   void OnCredentialSelected(const std::u16string username,
-                            const std::u16string password);
+                            const std::u16string password,
+                            RequestsToFillPassword requests_to_fill_password);
 
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();

@@ -104,9 +104,10 @@ public class AllPasswordsBottomSheetControllerTest {
     @Test
     public void testOnCredentialSelected() {
         mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
-        mMediator.onCredentialSelected(TEST_CREDENTIALS[1]);
+        CredentialFillRequest request = new CredentialFillRequest(TEST_CREDENTIALS[1], true);
+        mMediator.onCredentialSelected(request);
         assertThat(mModel.get(VISIBLE), is(false));
-        verify(mMockDelegate).onCredentialSelected(TEST_CREDENTIALS[1]);
+        verify(mMockDelegate).onCredentialSelected(request);
     }
 
     @Test

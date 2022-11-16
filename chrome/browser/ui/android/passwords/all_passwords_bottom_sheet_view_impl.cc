@@ -80,9 +80,13 @@ void AllPasswordsBottomSheetViewImpl::Show(
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username,
-    const base::android::JavaParamRef<jstring>& password) {
-  controller_->OnCredentialSelected(ConvertJavaStringToUTF16(env, username),
-                                    ConvertJavaStringToUTF16(env, password));
+    const base::android::JavaParamRef<jstring>& password,
+    jboolean requests_to_fill_password) {
+  controller_->OnCredentialSelected(
+      ConvertJavaStringToUTF16(env, username),
+      ConvertJavaStringToUTF16(env, password),
+      AllPasswordsBottomSheetController::RequestsToFillPassword(
+          requests_to_fill_password));
 }
 
 void AllPasswordsBottomSheetViewImpl::OnDismiss(JNIEnv* env) {

@@ -24,9 +24,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
+import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -109,36 +111,17 @@ class AllPasswordsBottomSheetViewBinder {
     private static void bindCredentialView(
             PropertyModel model, View view, PropertyKey propertyKey) {
         Credential credential = model.get(CREDENTIAL);
-        if (propertyKey == ON_CLICK_LISTENER) {
+        ChipView usernameChip = view.findViewById(R.id.suggestion_text);
+        ChipView passwordChip = view.findViewById(R.id.password_text);
+
+        if (propertyKey == ON_CLICK_LISTENER || propertyKey == IS_PASSWORD_FIELD) {
             boolean isPasswordField = model.get(IS_PASSWORD_FIELD);
-            ChipView usernameView = view.findViewById(R.id.suggestion_text);
-            ChipView passwordView = view.findViewById(R.id.password_text);
+            Callback<CredentialFillRequest> callback = model.get(ON_CLICK_LISTENER);
+            updateUsernameChipListener(usernameChip, credential, callback);
+            updatePasswordChipListener(passwordChip, credential, isPasswordField, callback);
 
-            if (isPasswordField) {
-                passwordView.setOnClickListener(
-                        src -> model.get(ON_CLICK_LISTENER).onResult(credential));
-                usernameView.setOnClickListener(null);
-                usernameView.setClickable(false);
-            } else {
-                String username = credential.getUsername();
-                usernameView.setOnClickListener(username.isEmpty()
-                                ? null
-                                : src -> model.get(ON_CLICK_LISTENER).onResult(credential));
-                usernameView.setClickable(!username.isEmpty());
-                passwordView.setOnClickListener(null);
-                passwordView.setClickable(false);
-            }
-        } else if (propertyKey == IS_PASSWORD_FIELD) {
-            boolean isPasswordField = model.get(IS_PASSWORD_FIELD);
-
-            ChipView usernameView = view.findViewById(R.id.suggestion_text);
-            String username = credential.getUsername();
-            usernameView.setEnabled(!isPasswordField && !username.isEmpty());
-            usernameView.setClickable(!isPasswordField && !username.isEmpty());
-
-            ChipView passwordView = view.findViewById(R.id.password_text);
-            passwordView.setEnabled(isPasswordField);
-            passwordView.setClickable(isPasswordField);
+            updateChipViewVisibility(usernameChip);
+            updateChipViewVisibility(passwordChip);
         } else if (propertyKey == CREDENTIAL) {
             TextView passwordTitleView = view.findViewById(R.id.password_info_title);
             String title = credential.isAndroidCredential()
@@ -147,16 +130,14 @@ class AllPasswordsBottomSheetViewBinder {
                             new GURL(credential.getOriginUrl()), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
             passwordTitleView.setText(title);
 
-            ChipView usernameView = view.findViewById(R.id.suggestion_text);
-            usernameView.getPrimaryTextView().setText(credential.getFormattedUsername());
+            usernameChip.getPrimaryTextView().setText(credential.getFormattedUsername());
 
-            ChipView passwordView = view.findViewById(R.id.password_text);
             boolean isEmptyPassword = credential.getPassword().isEmpty();
             if (!isEmptyPassword) {
-                passwordView.getPrimaryTextView().setTransformationMethod(
+                passwordChip.getPrimaryTextView().setTransformationMethod(
                         new PasswordTransformationMethod());
             }
-            passwordView.getPrimaryTextView().setText(isEmptyPassword
+            passwordChip.getPrimaryTextView().setText(isEmptyPassword
                             ? view.getContext().getString(
                                     R.string.all_passwords_bottom_sheet_no_password)
                             : credential.getPassword());
@@ -194,5 +175,31 @@ class AllPasswordsBottomSheetViewBinder {
                                 ? R.string.all_passwords_bottom_sheet_subtitle
                                 : R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                 formattedOrigin);
+    }
+
+    private static void updatePasswordChipListener(View view, Credential credential,
+            boolean isPasswordField, Callback<CredentialFillRequest> callback) {
+        if (isPasswordField) {
+            view.setOnClickListener(
+                    src -> callback.onResult(new CredentialFillRequest(credential, true)));
+            return;
+        }
+        view.setOnClickListener(
+                src -> InsecureFillingDialogUtils.showWarningDialog(view.getContext()));
+    }
+
+    private static void updateUsernameChipListener(
+            View view, Credential credential, Callback<CredentialFillRequest> callback) {
+        if (credential.getUsername().isEmpty()) {
+            view.setOnClickListener(null);
+            return;
+        }
+        view.setOnClickListener(
+                src -> callback.onResult(new CredentialFillRequest(credential, false)));
+    }
+
+    private static void updateChipViewVisibility(ChipView chip) {
+        chip.setEnabled(chip.hasOnClickListeners());
+        chip.setClickable(chip.hasOnClickListeners());
     }
 }

@@ -27,7 +27,7 @@ class AllPasswordsBottomSheetCoordinator {
         /**
          * Called when the user selects one of the credentials shown in the AllPasswordsBottomSheet.
          */
-        void onCredentialSelected(Credential credential);
+        void onCredentialSelected(CredentialFillRequest credentialFillRequest);
 
         /**
          * Called when the user dismisses the AllPasswordsBottomSheet or if the bottom sheet content

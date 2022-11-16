@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
+import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
 
@@ -86,7 +87,7 @@ class PasswordAccessorySheetModernViewBinder {
             if (field.isSelectable()) {
                 listener = src -> field.triggerSelection();
             } else if (field.isObfuscated()) {
-                listener = src -> PasswordAccessoryInfoView.showWarningDialog(context);
+                listener = src -> InsecureFillingDialogUtils.showWarningDialog(context);
             }
             chip.setOnClickListener(listener);
             chip.setClickable(listener != null);
