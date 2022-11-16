@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/style/ash_color_provider_source.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -65,7 +64,6 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
   // content::WebContentsObserver overrides
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void DidStopLoading() override;
-  void OnColorProviderChanged() override;
 
   // Loads the web contents for the given |url|.
   void LoadContents(const GURL& url);
@@ -75,8 +73,6 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
-
-  ash::AshColorProviderSource color_provider_source_;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ChromeKeyboardBoundsObserver> window_bounds_observer_;
