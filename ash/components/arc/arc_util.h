@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace aura {
@@ -227,6 +228,13 @@ int GetSystemPropertyInt(const std::string& property);
 // are successfully processed, |callback| is called with true.
 void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                           chromeos::VoidDBusMethodCallback callback);
+
+// Gets the ArcVmDataMigrationStatus profile preference.
+ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(PrefService* prefs);
+
+// Sets the ArcVmDataMigrationStatus profile preference.
+void SetArcVmDataMigrationStatus(PrefService* prefs,
+                                 ArcVmDataMigrationStatus status);
 
 // Returns whether ARCVM should use virtio-blk for /data.
 bool ShouldUseVirtioBlkData(PrefService* prefs);

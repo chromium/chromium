@@ -631,6 +631,20 @@ TEST_F(ArcUtilTest, GetArcWindowSessionId) {
   }
 }
 
+TEST_F(ArcUtilTest, SetAndGetArcVmDataMigrationStatus) {
+  constexpr ArcVmDataMigrationStatus statuses[] = {
+      ArcVmDataMigrationStatus::kFinished,
+      ArcVmDataMigrationStatus::kStarted,
+      ArcVmDataMigrationStatus::kConfirmed,
+      ArcVmDataMigrationStatus::kNotified,
+      ArcVmDataMigrationStatus::kUnnotified,
+  };
+  for (const auto status : statuses) {
+    SetArcVmDataMigrationStatus(profile_prefs(), status);
+    EXPECT_EQ(status, GetArcVmDataMigrationStatus(profile_prefs()));
+  }
+}
+
 // Tests that ShouldUseVirtioBlkData() returns true when virtio-blk /data is
 // enabled via the kEnableVirtioBlkForData feature.
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
@@ -645,9 +659,8 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Unnotified) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile_prefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kUnnotified));
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kUnnotified);
   EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 
@@ -656,9 +669,8 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Unnotified) {
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Notified) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile_prefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kNotified));
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kNotified);
   EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 
@@ -667,9 +679,8 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Notified) {
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Confirmed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile_prefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kConfirmed));
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kConfirmed);
   EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 
@@ -678,9 +689,8 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Confirmed) {
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Started) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile_prefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kStarted));
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kStarted);
   EXPECT_FALSE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 
@@ -689,9 +699,8 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Started) {
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Finished) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile_prefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kFinished));
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kFinished);
   EXPECT_TRUE(ShouldUseVirtioBlkData(profile_prefs()));
 }
 

@@ -430,6 +430,18 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
   }
 }
 
+ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(
+    PrefService* profile_prefs) {
+  return static_cast<ArcVmDataMigrationStatus>(
+      profile_prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
+}
+
+void SetArcVmDataMigrationStatus(PrefService* profile_prefs,
+                                 ArcVmDataMigrationStatus status) {
+  profile_prefs->SetInteger(prefs::kArcVmDataMigrationStatus,
+                            static_cast<int>(status));
+}
+
 bool ShouldUseVirtioBlkData(PrefService* profile_prefs) {
   // If kEnableVirtioBlkForData is set, force using virtio-blk /data regardless
   // of the migration status.
@@ -440,8 +452,7 @@ bool ShouldUseVirtioBlkData(PrefService* profile_prefs) {
   if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration))
     return false;
 
-  ArcVmDataMigrationStatus status = static_cast<ArcVmDataMigrationStatus>(
-      profile_prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
+  ArcVmDataMigrationStatus status = GetArcVmDataMigrationStatus(profile_prefs);
   if (status == ArcVmDataMigrationStatus::kFinished) {
     VLOG(1) << "ARCVM /data migration has finished";
     return true;
