@@ -32,7 +32,7 @@ class ReadAnythingToolbarView : public views::View,
     virtual void OnFontSizeChanged(bool increase) = 0;
     virtual void OnColorsChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetColorsModel() = 0;
-    virtual void SetIconColorIds(ui::ColorId color_id) = 0;
+    virtual ui::ColorId GetForegroundColorId() = 0;
     virtual void OnLineSpacingChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetLineSpacingModel() = 0;
     virtual void OnLetterSpacingChanged(int new_index) = 0;
@@ -49,12 +49,7 @@ class ReadAnythingToolbarView : public views::View,
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(
-      std::string& font_name,
-      double font_scale,
-      ui::ColorId foreground_color_id,
-      ui::ColorId background_color_id,
-      read_anything::mojom::Spacing line_spacing,
-      read_anything::mojom::Spacing letter_spacing) override;
+      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // ReadAnythingCoordinator::Observer:
   void OnCoordinatorDestroyed() override;
@@ -69,7 +64,6 @@ class ReadAnythingToolbarView : public views::View,
   void ChangeLetterSpacingCallback();
 
   // views::View:
-  void AddedToWidget() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   std::unique_ptr<views::View> Separator();

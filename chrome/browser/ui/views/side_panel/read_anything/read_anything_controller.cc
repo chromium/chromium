@@ -77,8 +77,8 @@ ui::ComboboxModel* ReadAnythingController::GetColorsModel() {
   return model_->GetColorsModel();
 }
 
-void ReadAnythingController::SetIconColorIds(ui::ColorId color_id) {
-  return model_->SetIconColorIds(color_id);
+ui::ColorId ReadAnythingController::GetForegroundColorId() {
+  return model_->GetForegroundColorId();
 }
 
 void ReadAnythingController::OnLineSpacingChanged(int new_index) {

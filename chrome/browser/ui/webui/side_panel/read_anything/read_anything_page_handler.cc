@@ -11,24 +11,20 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
-#include "content/public/browser/web_ui.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 using read_anything::mojom::Page;
 using read_anything::mojom::PageHandler;
-using read_anything::mojom::ReadAnythingTheme;
+using read_anything::mojom::ReadAnythingThemePtr;
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<Page> page,
-    mojo::PendingReceiver<PageHandler> receiver,
-    content::WebUI* web_ui)
-    : browser_(chrome::FindLastActive()),
-      receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
-      web_ui_(web_ui) {
+    mojo::PendingReceiver<PageHandler> receiver)
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {
   // Register |this| as a |ReadAnythingModel::Observer| with the coordinator
   // for the component. This will allow the IPC to update the front-end web ui.
 
+  browser_ = chrome::FindLastActive();
   if (!browser_)
     return;
 
@@ -72,21 +68,8 @@ void ReadAnythingPageHandler::OnAXTreeDistilled(
 }
 
 void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
-    std::string& font_name,
-    double font_scale,
-    ui::ColorId foreground_color_id,
-    ui::ColorId background_color_id,
-    read_anything::mojom::Spacing line_spacing,
-    read_anything::mojom::Spacing letter_spacing) {
-  content::WebContents* web_contents = web_ui_->GetWebContents();
-  SkColor foreground_skcolor =
-      web_contents->GetColorProvider().GetColor(foreground_color_id);
-  SkColor background_skcolor =
-      web_contents->GetColorProvider().GetColor(background_color_id);
-
-  page_->OnThemeChanged(
-      ReadAnythingTheme::New(font_name, font_scale, foreground_skcolor,
-                             background_skcolor, line_spacing, letter_spacing));
+    ReadAnythingThemePtr new_theme_ptr) {
+  page_->OnThemeChanged(std::move(new_theme_ptr));
 }
 
 void ReadAnythingPageHandler::OnLinkClicked(const GURL& url,

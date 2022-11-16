@@ -21,7 +21,7 @@ class MockReadAnythingToolbarViewDelegate
   MOCK_METHOD(void, OnFontSizeChanged, (bool increase), (override));
   MOCK_METHOD(void, OnColorsChanged, (int new_index), (override));
   MOCK_METHOD(ui::ComboboxModel*, GetColorsModel, (), (override));
-  MOCK_METHOD(void, SetIconColorIds, (ui::ColorId color_id), (override));
+  MOCK_METHOD(ui::ColorId, GetForegroundColorId, (), (override));
   MOCK_METHOD(void, OnLineSpacingChanged, (int new_index), (override));
   MOCK_METHOD(ui::ComboboxModel*, GetLineSpacingModel, (), (override));
   MOCK_METHOD(void, OnLetterSpacingChanged, (int new_index), (override));
@@ -86,7 +86,10 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
     toolbar_view_->ChangeLetterSpacingCallback();
   }
 
-  void Separator() { toolbar_view_->Separator(); }
+  void OnReadAnythingThemeChanged(
+      read_anything::mojom::ReadAnythingThemePtr new_theme) {
+    toolbar_view_->OnReadAnythingThemeChanged(std::move(new_theme));
+  }
 
  protected:
   MockReadAnythingToolbarViewDelegate toolbar_delegate_;
@@ -116,6 +119,14 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeColorsCallback) {
   EXPECT_CALL(toolbar_delegate_, OnColorsChanged(0)).Times(1);
 
   ChangeColorsCallback();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeSeparatorColor) {
+  // GetForegroundColorId() called for each separator (2 separators total)
+  EXPECT_CALL(toolbar_delegate_, GetForegroundColorId()).Times(2);
+
+  auto theme = read_anything::mojom::ReadAnythingTheme::New();
+  OnReadAnythingThemeChanged(std::move(theme));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeLineSpacingCallback) {

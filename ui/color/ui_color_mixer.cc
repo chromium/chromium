@@ -154,15 +154,6 @@ void AddUiColorMixer(ColorProvider* provider,
                gfx::kGoogleGreyAlpha500);
   mixer[kColorProgressBarPaused] = {kColorDisabledForeground};
   mixer[kColorProgressBar] = {kColorAccent};
-  mixer[kColorReadAnythingBackground] = {
-      dark_mode ? kColorReadAnythingBackgroundDark
-                : kColorReadAnythingBackgroundLight};
-  mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
-  mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey050};
-  mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow200};
-  mixer[kColorReadAnythingForeground] = {
-      dark_mode ? kColorReadAnythingForegroundDark
-                : kColorReadAnythingForegroundLight};
   mixer[kColorReadAnythingForegroundDark] = {gfx::kGoogleGrey200};
   mixer[kColorReadAnythingForegroundLight] = {gfx::kGoogleGrey800};
   mixer[kColorReadAnythingForegroundYellow] = {gfx::kGoogleGrey800};

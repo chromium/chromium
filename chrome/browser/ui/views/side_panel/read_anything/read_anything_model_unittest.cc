@@ -14,6 +14,7 @@
 
 #include "ui/accessibility/accessibility_features.h"
 
+using read_anything::mojom::ReadAnythingThemePtr;
 using testing::_;
 using testing::FloatNear;
 
@@ -26,12 +27,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               (override));
   MOCK_METHOD(void,
               OnReadAnythingThemeChanged,
-              (std::string & font_name,
-               double font_scale,
-               ui::ColorId foreground_color_id,
-               ui::ColorId background_color_id,
-               read_anything::mojom::Spacing line_spacing,
-               read_anything::mojom::Spacing letter_spacing),
+              (ReadAnythingThemePtr new_theme),
               (override));
 };
 
@@ -67,12 +63,10 @@ TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->AddObserver(&model_observer_2_);
 }
@@ -82,16 +76,13 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_2_);
 
   EXPECT_CALL(model_observer_1_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   EXPECT_CALL(model_observer_2_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(0);
+  EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_)).Times(0);
 
   EXPECT_CALL(model_observer_3_, OnAXTreeDistilled(_, _)).Times(0);
-  EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->RemoveObserver(&model_observer_2_);
   model_->AddObserver(&model_observer_3_);
@@ -100,8 +91,7 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedFontIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedFontByIndex(2);
 }
@@ -120,8 +110,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetDistilledAXTree) {
 TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->DecreaseTextSize();
 
@@ -131,8 +120,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnDecreasedFontSize) {
 TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->IncreaseTextSize();
 
@@ -142,8 +130,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnIncreasedFontSize) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedColorsByIndex(2);
 }
@@ -151,8 +138,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedColorsIndex) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLineSpacingIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedLineSpacingByIndex(2);
 }
@@ -160,8 +146,7 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLineSpacingIndex) {
 TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
-      .Times(1);
+  EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_)).Times(1);
 
   model_->SetSelectedLetterSpacingByIndex(2);
 }

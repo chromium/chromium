@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -23,6 +24,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::Spacing;
 
 ReadAnythingModel::ReadAnythingModel()
@@ -67,8 +69,8 @@ void ReadAnythingModel::Init(std::string& font_name,
 
   colors_combobox_index_ = colors_model_->GetStartingStateIndex();
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
-  foreground_color_id_ = initial_colors.foreground_color_id;
-  background_color_id_ = initial_colors.background_color_id;
+  foreground_color_ = initial_colors.foreground;
+  background_color_ = initial_colors.background;
   SetIconColorIds(initial_colors.foreground_color_id);
 
   line_spacing = line_spacing_model_->GetLineSpacingAt(
@@ -101,8 +103,9 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
 
   colors_combobox_index_ = new_index;
   auto& new_colors = colors_model_->GetColorsAt(new_index);
-  foreground_color_id_ = new_colors.foreground_color_id;
-  background_color_id_ = new_colors.background_color_id;
+  foreground_color_ = new_colors.foreground;
+  background_color_ = new_colors.background;
+  SetIconColorIds(new_colors.foreground_color_id);
 
   NotifyThemeChanged();
 }
@@ -111,6 +114,13 @@ void ReadAnythingModel::SetIconColorIds(ui::ColorId color_id) {
   colors_model_->SetIconColorId(color_id);
   line_spacing_model_->SetIconColorId(color_id);
   letter_spacing_model_->SetIconColorId(color_id);
+}
+
+ui::ColorId ReadAnythingModel::GetForegroundColorId() {
+  // Check that the index is valid.
+  DCHECK(colors_model_->IsValidColorsIndex(colors_combobox_index_));
+
+  return colors_model_->GetForegroundColorId(colors_combobox_index_);
 }
 
 void ReadAnythingModel::SetSelectedLineSpacingByIndex(size_t new_index) {
@@ -173,9 +183,9 @@ void ReadAnythingModel::NotifyAXTreeDistilled() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(font_name_, font_scale_,
-                                   foreground_color_id_, background_color_id_,
-                                   line_spacing_, letter_spacing_);
+    obs.OnReadAnythingThemeChanged(ReadAnythingTheme::New(
+        font_name_, font_scale_, foreground_color_, background_color_,
+        line_spacing_, letter_spacing_));
   }
 }
 
@@ -253,21 +263,22 @@ ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
+  // TODO (crbug.com/1266555): Define default colors from system theme.
   ColorInfo kDefaultColors = {u"Default", IDS_READ_ANYTHING_DEFAULT_PNG,
-                              ui::kColorReadAnythingForeground,
-                              ui::kColorReadAnythingBackground};
+                              gfx::kGoogleGrey800, gfx::kGoogleGrey050,
+                              ui::kColorReadAnythingForegroundLight};
 
   ColorInfo kLightColors = {u"Light", IDS_READ_ANYTHING_LIGHT_PNG,
-                            ui::kColorReadAnythingForegroundLight,
-                            ui::kColorReadAnythingBackgroundLight};
+                            gfx::kGoogleGrey800, gfx::kGoogleGrey050,
+                            ui::kColorReadAnythingForegroundLight};
 
   ColorInfo kDarkColors = {u"Dark", IDS_READ_ANYTHING_DARK_PNG,
-                           ui::kColorReadAnythingForegroundDark,
-                           ui::kColorReadAnythingBackgroundDark};
+                           gfx::kGoogleGrey200, gfx::kGoogleGrey900,
+                           ui::kColorReadAnythingForegroundDark};
 
   ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
-                             ui::kColorReadAnythingForegroundYellow,
-                             ui::kColorReadAnythingBackgroundYellow};
+                             gfx::kGoogleGrey800, gfx::kGoogleYellow200,
+                             ui::kColorReadAnythingForegroundYellow};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);
@@ -286,6 +297,10 @@ void ReadAnythingColorsModel::SetDefaultColorsIndexFromPref(size_t index) {
 ReadAnythingColorsModel::ColorInfo& ReadAnythingColorsModel::GetColorsAt(
     size_t index) {
   return colors_choices_[index];
+}
+
+ui::ColorId ReadAnythingColorsModel::GetForegroundColorId(size_t index) {
+  return GetColorsAt(index).foreground_color_id;
 }
 
 absl::optional<size_t> ReadAnythingColorsModel::GetDefaultIndex() const {

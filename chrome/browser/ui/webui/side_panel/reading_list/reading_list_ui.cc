@@ -176,7 +176,7 @@ void ReadingListUI::CreatePageHandler(
     mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver) {
   DCHECK(page);
   read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
-      std::move(page), std::move(receiver), web_ui());
+      std::move(page), std::move(receiver));
 }
 
 void ReadingListUI::BindInterface(
