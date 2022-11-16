@@ -3853,7 +3853,7 @@
   {
     "name": "fullscreen-promos-manager",
     "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 113
   },
   {
     "name": "fullscreen-promos-manager-skip-internal-limits",
