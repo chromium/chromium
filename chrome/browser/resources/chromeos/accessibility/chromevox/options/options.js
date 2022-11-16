@@ -9,7 +9,7 @@ import {constants} from '../../common/constants.js';
 import {AbstractTts} from '../common/abstract_tts.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleTable} from '../common/braille/braille_table.js';
-import {ExtensionBridge} from '../common/extension_bridge.js';
+import {ContentScriptBridge} from '../common/content_script_bridge.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 
@@ -31,6 +31,7 @@ export class OptionsPage {
    * @this {OptionsPage}
    */
   static async init() {
+    ContentScriptBridge.init();
     OptionsPage.populateVoicesSelect();
     BrailleTable.getAll(function(tables) {
       /** @type {!Array<BrailleTable.Table>} */
@@ -159,7 +160,7 @@ export class OptionsPage {
       }
     });
 
-    ExtensionBridge.addMessageListener(function(message) {
+    ContentScriptBridge.addMessageListener(function(message) {
       if (message['prefs']) {
         OptionsPage.update();
       }

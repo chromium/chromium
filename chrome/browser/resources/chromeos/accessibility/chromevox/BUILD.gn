@@ -21,7 +21,6 @@ closure_library_dir =
 chromevox_modules = [
   "background/braille/cursor_dots.js",
   "background/braille/pan_strategy.js",
-  "common/extension_bridge.js",
   "injected/api_implementation.js",
   "injected/extension_bridge.js",
   "injected/loader.js",
@@ -127,9 +126,9 @@ chromevox_es6_modules = [
   "common/bridge_helper.js",
   "common/command_store.js",
   "common/composite_tts.js",
+  "common/content_script_bridge.js",
   "common/custom_automation_event.js",
   "common/event_source_type.js",
-  "common/extension_bridge.js",
   "common/gesture_command_data.js",
   "common/key_map.js",
   "common/key_sequence.js",
