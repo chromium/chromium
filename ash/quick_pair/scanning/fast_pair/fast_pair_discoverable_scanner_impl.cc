@@ -45,6 +45,20 @@ bool IsValidDeviceType(const nearby::fastpair::Device& device) {
              nearby::fastpair::DeviceType::DEVICE_TYPE_UNSPECIFIED;
 }
 
+bool IsSupportedNotificationType(const nearby::fastpair::Device& device) {
+  // We only allow-list notification types that should trigger a pairing
+  // notification, since we currently only support pairing. We include
+  // NOTIFICATION_TYPE_UNSPECIFIED to handle the case where a Provider is
+  // advertising incorrectly and conservatively allow it to show a notification,
+  // matching Android behavior.
+  return device.notification_type() == nearby::fastpair::NotificationType::
+                                           NOTIFICATION_TYPE_UNSPECIFIED ||
+         device.notification_type() ==
+             nearby::fastpair::NotificationType::FAST_PAIR ||
+         device.notification_type() ==
+             nearby::fastpair::NotificationType::FAST_PAIR_ONE;
+}
+
 }  // namespace
 
 namespace ash {
@@ -183,6 +197,16 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
     QP_LOG(WARNING)
         << __func__
         << ": Invalid device type for Fast Pair. Ignoring this advertisement";
+    return;
+  }
+
+  // Ignore advertisements for unsupported notification types, such as
+  // APP_LAUNCH which should launch a companion app instead of beginning Fast
+  // Pair.
+  if (!IsSupportedNotificationType(device_metadata->GetDetails())) {
+    QP_LOG(WARNING) << __func__
+                    << ": Unsupported notification type for Fast Pair. "
+                       "Ignoring this advertisement";
     return;
   }
 
