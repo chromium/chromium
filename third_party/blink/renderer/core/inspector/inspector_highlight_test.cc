@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 
 #include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -272,6 +273,85 @@ TEST_F(InspectorHighlightTest, BuildIsolatedElementInfo) {
   AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(
                             info.get(), &errors),
                         expected_isolated_element);
+}
+
+static std::string GetBackgroundColorFromElementInfo(Element* element) {
+  EXPECT_TRUE(element);
+  auto info = BuildElementInfo(element);
+  EXPECT_TRUE(info);
+  AppendStyleInfo(element, info.get(), {}, {});
+
+  protocol::ErrorSupport errors;
+  auto actual_value = protocol::ValueConversions<protocol::Value>::fromValue(
+      info.get(), &errors);
+  EXPECT_TRUE(actual_value);
+
+  std::string json_actual;
+  auto status_to_json = crdtp::json::ConvertCBORToJSON(
+      crdtp::SpanFrom(actual_value->Serialize()), &json_actual);
+  EXPECT_TRUE(status_to_json.ok());
+  base::Value parsed_json_actual = ParseJson(json_actual);
+  auto* style =
+      parsed_json_actual.FindKeyOfType("style", base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(style);
+  auto* backgroundColor = style->FindKeyOfType("background-color-css-text",
+                                               base::Value::Type::STRING);
+  if (!backgroundColor) {
+    backgroundColor =
+        style->FindKeyOfType("background-color", base::Value::Type::STRING);
+  }
+  EXPECT_TRUE(backgroundColor);
+  return backgroundColor->GetString();
+}
+
+TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        width: 400px;
+        height: 500px;
+      }
+      #lab {
+        background-color: lab(100% 0 0);
+      }
+      #color {
+        background-color: color(display-p3 50% 50% 50%);
+      }
+      #hex {
+        background-color: #ff00ff;
+      }
+      #rgb {
+        background-color: rgb(128 128 128);
+      }
+      #var {
+        background-color: Var(--lab);
+      }
+      :root {
+        --lab: lab(20% -10 -10);
+      }
+    </style>
+    <div id="lab"></div>
+    <div id="color"></div>
+    <div id="hex"></div>
+    <div id="rgb"></div>
+    <div id="var"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_THAT(
+      GetBackgroundColorFromElementInfo(GetDocument().getElementById("lab")),
+      Eq("lab(100 0 0)"));
+  EXPECT_THAT(
+      GetBackgroundColorFromElementInfo(GetDocument().getElementById("color")),
+      Eq("color(display-p3 0.5 0.5 0.5)"));
+  EXPECT_THAT(
+      GetBackgroundColorFromElementInfo(GetDocument().getElementById("hex")),
+      Eq("#FF00FFFF"));
+  EXPECT_THAT(
+      GetBackgroundColorFromElementInfo(GetDocument().getElementById("rgb")),
+      Eq("#808080FF"));
+  EXPECT_THAT(
+      GetBackgroundColorFromElementInfo(GetDocument().getElementById("var")),
+      Eq("lab(20 -10 -10)"));
 }
 
 }  // namespace blink

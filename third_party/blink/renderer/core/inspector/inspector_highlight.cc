@@ -263,6 +263,7 @@ String ContrastAlgorithmToString(const ContrastAlgorithm& contrast_algorithm) {
       return ContrastAlgorithmEnum::Apca;
   }
 }
+}  // namespace
 
 void AppendStyleInfo(Node* node,
                      protocol::DictionaryValue* element_info,
@@ -298,6 +299,9 @@ void AppendStyleInfo(Node* node,
     AtomicString name = CSSPropertyName(properties[i]).ToAtomicString();
     if (value->IsColorValue()) {
       Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
+      if (!color.IsLegacyColor()) {
+        computed_style->setString(name + "-css-text", value->CssText());
+      }
       computed_style->setString(name, ToHEXA(color));
     } else {
       computed_style->setString(name, value->CssText());
@@ -380,6 +384,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   return element_info;
 }
 
+namespace {
 std::unique_ptr<protocol::DictionaryValue> BuildTextNodeInfo(Text* text_node) {
   std::unique_ptr<protocol::DictionaryValue> text_info =
       protocol::DictionaryValue::create();

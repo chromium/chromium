@@ -319,6 +319,14 @@ BuildIsolatedElementInfo(Element& element,
                          const InspectorIsolationModeHighlightConfig& config,
                          float scale);
 
+void CORE_EXPORT
+AppendStyleInfo(Node* node,
+                protocol::DictionaryValue* element_info,
+                const InspectorHighlightContrastInfo& node_contrast,
+                const ContrastAlgorithm& contrast_algorithm);
+
+std::unique_ptr<protocol::DictionaryValue> CORE_EXPORT
+BuildElementInfo(Element* element);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_HIGHLIGHT_H_
