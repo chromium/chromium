@@ -44,13 +44,14 @@
   #link-container {
     align-items: center;
     display: flex;
+    margin-inline-end: var(--cluster-padding-horizontal);
     min-width: 0;
     outline: none;
-    padding-inline-end: var(--cluster-padding-horizontal);
+    padding-inline-end: 2px; /* So focus outline does not intersect text */
   }
 
   :host(:hover) #link-container {
-    padding-inline-end: 0;
+    margin-inline-end: 0;
   }
 
   :host-context(.focus-outline-visible) #link-container:focus {
