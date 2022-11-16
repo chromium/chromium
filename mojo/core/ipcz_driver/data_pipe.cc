@@ -71,7 +71,7 @@ DrainResult DrainPeerUpdates(IpczHandle portal) {
         portal, IPCZ_NO_FLAGS, nullptr, &data, &num_bytes, nullptr);
     auto end_get = [portal](size_t num_bytes_consumed) {
       GetIpczAPI().EndGet(portal, num_bytes_consumed, 0, IPCZ_NO_FLAGS, nullptr,
-                          nullptr, nullptr);
+                          nullptr);
     };
 
     switch (result) {

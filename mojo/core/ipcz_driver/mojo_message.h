@@ -7,9 +7,11 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/message_pipe.h"
@@ -46,16 +48,15 @@ class MojoMessage {
     return reinterpret_cast<MojoMessageHandle>(this);
   }
 
-  base::span<uint8_t> data() { return data_; }
+  base::span<const uint8_t> data() const { return data_; }
+  base::span<uint8_t> mutable_data() const { return data_; }
   std::vector<IpczHandle>& handles() { return handles_; }
   uintptr_t context() const { return context_; }
 
-  IpczHandle validator() const { return validator_.get(); }
+  IpczHandle parcel() const { return parcel_.get(); }
 
-  // Sets the contents of this message, as read from a portal by ipcz.
-  bool SetContents(std::vector<uint8_t> data,
-                   std::vector<IpczHandle> handles,
-                   ScopedIpczHandle validator);
+  // Sets the received parcel object backing this message.
+  bool SetParcel(ScopedIpczHandle parcel);
 
   // Appends data to a new or partially serialized message, effectively
   // implementing MojoAppendMessageData().
@@ -76,7 +77,7 @@ class MojoMessage {
 
   // Finalizes the Message by ensuring that any attached DataPipe objects also
   // attach their portals alongside the existing attachments. This operation is
-  // balanced within SetContents(), where DataPipes extract their portals from
+  // balanced within SetParcel(), where DataPipes extract their portals from
   // the tail end of the attached handles.
   void AttachDataPipePortals();
 
@@ -90,9 +91,18 @@ class MojoMessage {
   MojoResult Serialize();
 
  private:
-  ScopedIpczHandle validator_;
-  std::vector<uint8_t> data_storage_;
+  // The parcel backing this message, if any.
+  ScopedIpczHandle parcel_;
+
+  // A heap buffer of message data, used only when `parcel_` is null.
+  using DataPtr = std::unique_ptr<uint8_t, base::NonScannableDeleter>;
+  DataPtr data_storage_;
+  size_t data_storage_size_ = 0;
+
+  // A view into the message data, whether it's backed by `parcel_` or stored in
+  // `data_storage_`.
   base::span<uint8_t> data_;
+
   std::vector<IpczHandle> handles_;
   bool handles_consumed_ = false;
   bool size_committed_ = false;

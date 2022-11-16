@@ -11,9 +11,9 @@
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link_memory.h"
+#include "ipcz/parcel_wrapper.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
-#include "ipcz/validator.h"
 #include "util/ref_counted.h"
 
 extern "C" {
@@ -214,56 +214,80 @@ IpczResult EndPut(IpczHandle portal_handle,
                            absl::MakeSpan(handles, num_handles));
 }
 
-IpczResult Get(IpczHandle portal_handle,
+IpczResult Get(IpczHandle source,
                IpczGetFlags flags,
                const void* options,
                void* data,
                size_t* num_bytes,
                IpczHandle* handles,
                size_t* num_handles,
-               IpczHandle* validator) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal) {
+               IpczHandle* parcel) {
+  if ((flags & IPCZ_GET_PARTIAL) && parcel) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  return portal->Get(flags, data, num_bytes, handles, num_handles, validator);
+
+  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
+    if ((flags & IPCZ_GET_PARCEL_ONLY) && !parcel) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    return portal->Get(flags, data, num_bytes, handles, num_handles, parcel);
+  }
+
+  if (ipcz::ParcelWrapper* wrapper = ipcz::ParcelWrapper::FromHandle(source)) {
+    if ((flags & IPCZ_GET_PARCEL_ONLY) || parcel) {
+      return IPCZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wrapper->Get(flags, data, num_bytes, handles, num_handles);
+  }
+
+  return IPCZ_RESULT_INVALID_ARGUMENT;
 }
 
-IpczResult BeginGet(IpczHandle portal_handle,
+IpczResult BeginGet(IpczHandle source,
                     uint32_t flags,
                     const void* options,
                     const void** data,
                     size_t* num_bytes,
                     size_t* num_handles) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
+  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
+    return portal->BeginGet(data, num_bytes, num_handles);
   }
 
-  return portal->BeginGet(data, num_bytes, num_handles);
+  if (ipcz::ParcelWrapper* parcel = ipcz::ParcelWrapper::FromHandle(source)) {
+    return parcel->BeginGet(data, num_bytes, num_handles);
+  }
+
+  return IPCZ_RESULT_INVALID_ARGUMENT;
 }
 
-IpczResult EndGet(IpczHandle portal_handle,
+IpczResult EndGet(IpczHandle source,
                   size_t num_bytes_consumed,
                   size_t num_handles,
                   IpczEndGetFlags flags,
                   const void* options,
-                  IpczHandle* handles,
-                  IpczHandle* validator) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
+                  IpczHandle* handles) {
   if (num_handles > 0 && !handles) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  if (flags & IPCZ_END_GET_ABORT) {
-    return portal->AbortGet();
+  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
+    if (flags & IPCZ_END_GET_ABORT) {
+      return portal->AbortGet();
+    }
+    return portal->CommitGet(num_bytes_consumed,
+                             absl::MakeSpan(handles, num_handles));
   }
 
-  return portal->CommitGet(num_bytes_consumed,
-                           absl::MakeSpan(handles, num_handles), validator);
+  if (ipcz::ParcelWrapper* parcel = ipcz::ParcelWrapper::FromHandle(source)) {
+    if (flags & IPCZ_END_GET_ABORT) {
+      return parcel->AbortGet();
+    }
+    return parcel->CommitGet(num_bytes_consumed,
+                             absl::MakeSpan(handles, num_handles));
+  }
+
+  return IPCZ_RESULT_INVALID_ARGUMENT;
 }
 
 IpczResult Trap(IpczHandle portal_handle,
@@ -288,16 +312,16 @@ IpczResult Trap(IpczHandle portal_handle,
                                 satisfied_condition_flags, status);
 }
 
-IpczResult Reject(IpczHandle validator_handle,
+IpczResult Reject(IpczHandle parcel_handle,
                   uintptr_t context,
                   uint32_t flags,
                   const void* options) {
-  ipcz::Validator* validator = ipcz::Validator::FromHandle(validator_handle);
-  if (!validator) {
+  ipcz::ParcelWrapper* parcel = ipcz::ParcelWrapper::FromHandle(parcel_handle);
+  if (!parcel) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  return validator->Reject(context);
+  return parcel->Reject(context);
 }
 
 IpczResult Box(IpczHandle node_handle,
