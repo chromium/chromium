@@ -258,8 +258,6 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
   }
 
   TRACE_EVENT0("blink", "ScrollAnchor::SerializeAnchor");
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-      "Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector");
 
   Vector<String> selector_list;
   for (Element* element = ElementTraversal::FirstAncestorOrSelf(*anchor_node);
@@ -283,11 +281,6 @@ static const String ComputeUniqueSelector(Node* anchor_node) {
       builder.Append(">");
     builder.Append(*reverse_iterator);
   }
-
-  DEFINE_STATIC_LOCAL(CustomCountHistogram, selector_length_histogram,
-                      ("Layout.ScrollAnchor.SerializedAnchorSelectorLength", 1,
-                       kMaxSerializedSelectorLength, 50));
-  selector_length_histogram.Count(builder.length());
 
   if (builder.length() > kMaxSerializedSelectorLength) {
     return String();
@@ -669,7 +662,6 @@ void ScrollAnchor::Adjust() {
   if (scroll_anchor_disabling_style_changed_) {
     // Note that we only clear if the adjustment would have been non-zero.
     // This minimizes redundant calls to findAnchor.
-    // TODO(skobes): add UMA metric for this.
     ClearSelf();
     return;
   }
@@ -686,8 +678,6 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
   if (!scroller_ || !serialized_anchor.IsValid()) {
     return false;
   }
-
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Layout.ScrollAnchor.TimeToRestoreAnchor");
 
   if (anchor_object_ && serialized_anchor.selector == saved_selector_) {
     return true;

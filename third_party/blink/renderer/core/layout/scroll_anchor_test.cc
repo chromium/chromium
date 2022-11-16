@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -154,56 +153,6 @@ class MAYBE_ScrollAnchorTest : public testing::WithParamInterface<bool>,
 };
 
 INSTANTIATE_TEST_SUITE_P(All, MAYBE_ScrollAnchorTest, testing::Bool());
-
-// TODO(ymalik): Currently, this should be the first test in the file to avoid
-// failure when running with other tests. Dig into this more and fix.
-TEST_P(MAYBE_ScrollAnchorTest, UMAMetricUpdated) {
-  base::HistogramTester histogram_tester;
-  SetBodyInnerHTML(R"HTML(
-    <style> body { height: 1000px } div { height: 100px } </style>
-    <div id='block1'>abc</div>
-    <div id='block2'>def</div>
-    <script></script>
-  )HTML");
-
-  ScrollableArea* viewport = LayoutViewport();
-
-  // Scroll position not adjusted, metric not updated.
-  ScrollLayoutViewport(ScrollOffset(0, 150));
-  histogram_tester.ExpectTotalCount(
-      "Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector", 0);
-
-  SetHeight(GetDocument().getElementById("block1"), 200);
-
-  EXPECT_EQ(250, viewport->ScrollOffsetInt().y());
-  EXPECT_EQ(GetDocument().getElementById("block2")->GetLayoutObject(),
-            GetScrollAnchor(viewport).AnchorObject());
-
-  GetScrollAnchor(viewport).GetSerializedAnchor();
-  histogram_tester.ExpectTotalCount(
-      "Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector", 1);
-  // 7 == "#block2".length()
-  histogram_tester.ExpectUniqueSample(
-      "Layout.ScrollAnchor.SerializedAnchorSelectorLength", 7, 1);
-
-  // Clear the current anchor so that we can test restoration histograms.
-  // Restoration only proceeds if there isn't an existing anchor.
-  GetScrollAnchor(viewport).Clear();
-
-  SerializedAnchor bad_anchor("##foobar", LayoutPoint(0, 0));
-  EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor));
-  SerializedAnchor bad_anchor2("#bl", LayoutPoint(0, 0));
-  EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor2));
-  SerializedAnchor bad_anchor3("script", LayoutPoint(0, -1000));
-  EXPECT_FALSE(GetScrollAnchor(LayoutViewport()).RestoreAnchor(bad_anchor3));
-
-  SerializedAnchor serialized_anchor("#block1", LayoutPoint(0, 0));
-  EXPECT_TRUE(
-      GetScrollAnchor(LayoutViewport()).RestoreAnchor(serialized_anchor));
-
-  histogram_tester.ExpectTotalCount("Layout.ScrollAnchor.TimeToRestoreAnchor",
-                                    4);
-}
 
 // TODO(skobes): Convert this to web-platform-tests when visual viewport API is
 // launched (http://crbug.com/635031).
