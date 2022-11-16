@@ -19,6 +19,7 @@ class NewTabButton;
 class TabSearchButton;
 class TabStrip;
 class TipMarqueeView;
+class TabStripScrollContainer;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -75,9 +76,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   views::View* GetDefaultFocusableChild() override;
 
   views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
-  raw_ptr<views::View> GetTabStripContainerForTesting() {
-    return raw_ptr<views::View>(tab_strip_container_);
-  }
+  views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
  private:
   // Updates the border padding for |new_tab_button_|.  This should be called
@@ -85,9 +84,11 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void UpdateNewTabButtonBorder();
 
   raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> tab_strip_container_;
-  raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_;
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
+  raw_ptr<views::View, DanglingUntriaged> tab_strip_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
+  raw_ptr<TabStripScrollContainer, DanglingUntriaged>
+      tab_strip_scroll_container_ = nullptr;
   raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
   raw_ptr<TipMarqueeView, DanglingUntriaged> tip_marquee_view_ = nullptr;

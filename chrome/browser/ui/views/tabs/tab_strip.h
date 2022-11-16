@@ -93,9 +93,6 @@ class TabStrip : public views::View,
   void AddObserver(TabStripObserver* observer);
   void RemoveObserver(TabStripObserver* observer);
 
-  // Called when the colors of the frame change.
-  void FrameColorsChanged();
-
   // Sets |background_offset_| and schedules a paint.
   void SetBackgroundOffset(int background_offset);
 
@@ -316,6 +313,9 @@ class TabStrip : public views::View,
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   const Browser* GetBrowser() const override;
+
+  // Update the background colors when frame active state changes.
+  void FrameColorsChanged();
 
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;

@@ -46,6 +46,9 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
     return trailing_scroll_button_;
   }
 
+  // Update the background colors when frame active state changes.
+  void FrameColorsChanged();
+
  private:
   int GetTabStripAvailableWidth() const;
 
@@ -57,8 +60,6 @@ class TabStripScrollContainer : public views::View, views::ViewObserver {
 
   // Subscription for scrolling of content view
   base::CallbackListSubscription on_contents_scrolled_subscription_;
-
-  void FrameColorsChanged();
 
   // views::View
   void OnThemeChanged() override;

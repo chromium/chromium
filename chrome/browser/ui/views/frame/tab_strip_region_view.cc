@@ -67,8 +67,10 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   tab_strip_ = tab_strip.get();
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    tab_strip_container_ = AddChildView(
-        std::make_unique<TabStripScrollContainer>(std::move(tab_strip)));
+    std::unique_ptr<TabStripScrollContainer> scroll_container =
+        std::make_unique<TabStripScrollContainer>(std::move(tab_strip));
+    tab_strip_scroll_container_ = scroll_container.get();
+    tab_strip_container_ = AddChildView(std::move(scroll_container));
     // Allow the |tab_strip_container_| to grow into the free space available in
     // the TabStripRegionView.
     const views::FlexSpecification tab_strip_container_flex_spec =
@@ -206,7 +208,10 @@ void TabStripRegionView::FrameColorsChanged() {
   new_tab_button_->FrameColorsChanged();
   if (tab_search_button_)
     tab_search_button_->FrameColorsChanged();
+
   tab_strip_->FrameColorsChanged();
+  if (tab_strip_scroll_container_)
+    tab_strip_scroll_container_->FrameColorsChanged();
   SchedulePaint();
 }
 
