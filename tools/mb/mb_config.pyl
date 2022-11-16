@@ -14,31 +14,31 @@
   # this dict to look up which config to use for a given bot.
   'builder_groups': {
     'chrome': {
-      'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official',
-      'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official',
-      'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients',
-      'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official',
-      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks',
+      'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
+      'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official_reclient',
+      'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient',
+      'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient',
+      'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
-      'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
-      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
-      'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
-      'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
-      'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks',
+      'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks_reclient',
+      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_reclient',
+      'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks_reclient',
+      'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks_reclient',
+      'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
       'chromeos-trogdor64-chrome-skylab': 'chromeos_trogdor64_include_unwind_tables_official_dchecks_skylab',
-      'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_no_symbols',
-      'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab',
-      'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official',
-      'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab',
-      'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official',
-      'lacros-arm64-generic-chrome-skylab': 'chromeos_arm64-generic_lacros_official_skylab',
+      'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_no_symbols_reclient',
+      'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
+      'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_reclient',
+      'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab_reclient',
+      'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official_reclient',
+      'lacros-arm64-generic-chrome-skylab': 'chromeos_arm64-generic_lacros_official_skylab_reclient',
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
-      'linux-chrome': 'official_goma',
-      'linux-chromeos-chrome': 'official_goma_chromeos_include_unwind_tables',
-      'mac-chrome': 'official_goma_mac',
-      'win-chrome': 'official_goma_x86',
-      'win64-chrome': 'official_goma_x64',
+      'linux-chrome': 'official_reclient',
+      'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
+      'mac-chrome': 'official_reclient_mac',
+      'win-chrome': 'official_reclient_x86',
+      'win64-chrome': 'official_reclient_x64',
     },
     'chrome.pgo': {
       'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
@@ -1994,6 +1994,9 @@
     'chromeos_amd64-generic_lacros_official_no_symbols': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'no_symbols', 'cfi', 'thin_lto',
     ],
+    'chromeos_amd64-generic_lacros_official_no_symbols_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'no_symbols', 'cfi', 'thin_lto',
+    ],
 
     # This is the same as 'chromeos_amd64-generic_lacros_official', except for
     # the 'is_skylab' arg. Please keep them in sync.
@@ -2043,7 +2046,6 @@
 
     'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
-      'also_build_lacros_chrome_for_architecture_arm',
     ],
 
     'chromeos_arm-generic_dbg': [
@@ -2061,6 +2063,9 @@
 
     'chromeos_arm-generic_lacros_official': [
       'chromeos_arm-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
+    'chromeos_arm-generic_lacros_official_reclient': [
+      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
     'chromeos_arm-generic_lacros_official_skylab': [
@@ -2085,6 +2090,9 @@
     'chromeos_arm64-generic_cfi_thin_lto_official': [
       'chromeos_device', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
+    'chromeos_arm64-generic_cfi_thin_lto_official_reclient': [
+      'chromeos_device_reclient', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
+    ],
 
     'chromeos_arm64-generic_dchecks': [
       'chromeos_device', 'arm64-generic', 'dcheck_always_on',
@@ -2097,9 +2105,15 @@
     'chromeos_arm64-generic_lacros_official': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
+    'chromeos_arm64-generic_lacros_official_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
 
     'chromeos_arm64-generic_lacros_official_skylab': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+    ],
+    'chromeos_arm64-generic_lacros_official_skylab_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_arm64-generic_lacros_rel_dchecks': [
@@ -2126,9 +2140,17 @@
       'chromeos_device', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
+    'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient': [
+      'chromeos_device_reclient', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
+      'also_build_lacros_chrome_for_architecture_amd64',
+    ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
       'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
+      'also_build_lacros_chrome_for_architecture_amd64',
+    ],
+    'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient': [
+      'chromeos_device_reclient', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'minimal_symbols',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
@@ -2151,6 +2173,10 @@
       'chromeos_device', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
+    'chromeos_eve_include_unwind_tables_official_dchecks_reclient': [
+      'chromeos_device_reclient', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
+    ],
 
     'chromeos_jacuzzi_dchecks': [
       'chromeos_jacuzzi', 'dcheck_always_on',
@@ -2162,6 +2188,13 @@
 
     'chromeos_jacuzzi_include_unwind_tables_official': [
       'chromeos_device', 'jacuzzi', 'include_unwind_tables', 'official',
+      # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
+      # display-orientation DCHECK failures are resolved.
+      # 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_arm',
+    ],
+    'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
+      'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
       # display-orientation DCHECK failures are resolved.
       # 'dcheck_always_on',
@@ -2182,6 +2215,10 @@
 
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
       'chromeos_kevin', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_arm',
+    ],
+    'chromeos_kevin_include_unwind_tables_official_dchecks_reclient': [
+      'chromeos_kevin_reclient', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_arm',
     ],
 
@@ -2213,9 +2250,17 @@
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
+    'chromeos_octopus_include_unwind_tables_official_dchecks_reclient': [
+      'chromeos_device_reclient', 'octopus', 'include_unwind_tables', 'official',
+      'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64',
+    ],
 
     'chromeos_reven_include_unwind_tables_official_dchecks': [
       'chromeos_device', 'reven', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'also_build_lacros_chrome_for_architecture_amd64',
+    ],
+    'chromeos_reven_include_unwind_tables_official_dchecks_reclient': [
+      'chromeos_device_reclient', 'reven', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
@@ -3340,8 +3385,16 @@
     ],
 
 
+    'official_reclient_chromeos_include_unwind_tables': [
+      'official', 'reclient', 'chromeos', 'minimal_symbols', 'include_unwind_tables',
+    ],
+
     'official_reclient_linux_pgo': [
       'official', 'reclient', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_mac': [
+      'official', 'reclient', 'no_widevine_cdm_host_verification',
     ],
 
     'official_reclient_mac_arm': [
@@ -3356,10 +3409,17 @@
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_reclient_x64': [
+      'official', 'reclient', 'x64',
+    ],
+
     'official_reclient_x64_pgo': [
       'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_reclient_x86': [
+      'official', 'reclient', 'x86',
+    ],
     'official_reclient_x86_pgo': [
       'official', 'reclient', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
