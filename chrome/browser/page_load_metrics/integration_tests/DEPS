@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "cross_document_resource_reuse_test\.cc": [
+    "+third_party/blink/renderer/platform/loader/fetch/resource.h",
+  ]
+}

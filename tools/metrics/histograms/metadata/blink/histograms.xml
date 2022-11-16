@@ -2043,6 +2043,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.MemoryCache.CrossDocumentCachedResource"
+    enum="ResourceType" expires_after="2023-04-01">
+  <owner>gjc@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Type of cached resources reused across Documents when loading a new document
+    in the same renderer. Recorded by the ResourceFetcher when a resource is
+    requested for a new document. If the resource is available from the memory
+    cache and previously loaded by a different document, the resource will be
+    considered as reused. Repetitive requests to the same url in a document will
+    be counted only once.
+  </summary>
+</histogram>
+
 <histogram name="Blink.MemoryCache.RevalidationPolicy"
     enum="RevalidationPolicy" expires_after="2021-04-21">
   <owner>hiroshige@chromium.org</owner>

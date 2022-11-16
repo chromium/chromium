@@ -109,6 +109,9 @@ constexpr base::TimeDelta kKeepaliveLoadersTimeout = base::Seconds(30);
 // Timeout for link preloads to be used after window.onload
 static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
 
+static constexpr char kCrossDocumentCachedResource[] =
+    "Blink.MemoryCache.CrossDocumentCachedResource";
+
 #define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
 
 #define DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, name)                         \
@@ -1155,6 +1158,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
   DCHECK(resource);
   DCHECK_EQ(resource->GetType(), resource_type);
+
+  // in_cached_resources_map is checked to detect Resources shared across
+  // Documents, in the same way as features::kScopeMemoryCachePerContext.
+  if (policy == RevalidationPolicy::kUse && !in_cached_resources_map) {
+    base::UmaHistogramEnumeration(kCrossDocumentCachedResource,
+                                  resource->GetType());
+  }
 
   if (policy != RevalidationPolicy::kUse)
     resource->VirtualTimePauser() = std::move(pauser);

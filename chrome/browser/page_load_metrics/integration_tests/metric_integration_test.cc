@@ -216,6 +216,13 @@ void MetricIntegrationTest::ExpectUniqueUMAWithinRange(StringPiece metric_name,
       << expected_value;
 }
 
+void MetricIntegrationTest::ExpectUniqueUMABucketCount(
+    StringPiece metric_name,
+    base::HistogramBase::Sample sample,
+    base::HistogramBase::Count count) {
+  histogram_tester_->ExpectBucketCount(metric_name, sample, count);
+}
+
 void MetricIntegrationTest::ExpectUniqueUMAPageLoadMetricNear(
     StringPiece metric_name,
     double expected_value) {

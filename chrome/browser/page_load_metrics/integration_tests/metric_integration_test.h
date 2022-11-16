@@ -125,6 +125,11 @@ class MetricIntegrationTest : public InProcessBrowserTest {
                                   double below,
                                   double above);
 
+  // Checks that the UMA bucket count precisely matches the provided value.
+  void ExpectUniqueUMABucketCount(base::StringPiece metric_name,
+                                  base::Histogram::Sample sample,
+                                  base::Histogram::Count count);
+
   // Checks that we have a single UMA entry.
   void ExpectUniqueUMA(base::StringPiece metric_name);
 
