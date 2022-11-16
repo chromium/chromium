@@ -80,7 +80,7 @@ export class FingerprintBrowserProxy {
    * @param {number} index
    * @return {!Promise<boolean>}
    */
-  removeEnrollment(index) {}
+  removeEnrollment(index, authToken) {}
 
   /**
    * @param {number} index
@@ -140,8 +140,8 @@ export class FingerprintBrowserProxyImpl {
   }
 
   /** @override */
-  removeEnrollment(index) {
-    return sendWithPromise('removeEnrollment', index);
+  removeEnrollment(index, authToken) {
+    return sendWithPromise('removeEnrollment', index, authToken);
   }
 
   /** @override */

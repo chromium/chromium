@@ -185,11 +185,7 @@ void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
 
   // Auth token expiration will trigger password prompt.
   // Silently fail if auth token is incorrect.
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-  if (!quick_unlock_storage->GetAuthToken())
-    return;
-  if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier())
+  if (!CheckAuthTokenValidity(auth_token))
     return;
 
   // Determines what the newly added fingerprint's name should be.
@@ -242,9 +238,14 @@ void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
   const auto& list = args;
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
+  const std::string& auth_token = list[1].GetString();
   int index = list[1].GetInt();
   CHECK_GE(index, 0);
   CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
+
+  // Silently fail if auth token is incorrect.
+  if (!CheckAuthTokenValidity(auth_token))
+    return;
 
   AllowJavascript();
   fp_service_->RemoveRecord(
@@ -284,6 +285,16 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
   if (!success)
     LOG(ERROR) << "Failed to set fingerprint record label.";
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
+}
+
+bool FingerprintHandler::CheckAuthTokenValidity(const std::string& auth_token) {
+  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
+  if (!quick_unlock_storage->GetAuthToken())
+    return false;
+  if (auth_token != quick_unlock_storage->GetAuthToken()->Identifier())
+    return false;
+  return true;
 }
 
 }  // namespace ash::settings

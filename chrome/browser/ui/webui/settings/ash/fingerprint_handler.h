@@ -67,6 +67,7 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   void OnRemoveRecord(const std::string& callback_id, bool success);
   void OnSetRecordLabel(const std::string& callback_id, bool success);
   void OnEndCurrentAuthSession(bool success);
+  bool CheckAuthTokenValidity(const std::string& auth_token);
 
   Profile* profile_;  // unowned
 

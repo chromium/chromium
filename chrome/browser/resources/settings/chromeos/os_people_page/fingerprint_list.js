@@ -186,12 +186,13 @@ class SettingsFingerprintListElement extends
    * @private
    */
   onFingerprintDeleteTapped_(e) {
-    this.browserProxy_.removeEnrollment(e.model.index).then(success => {
-      if (success) {
-        recordSettingChange();
-        this.updateFingerprintsList_();
-      }
-    });
+    this.browserProxy_.removeEnrollment(e.model.index, this.authToken)
+        .then(success => {
+          if (success) {
+            recordSettingChange();
+            this.updateFingerprintsList_();
+          }
+        });
   }
 
   /**
