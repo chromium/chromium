@@ -3891,7 +3891,7 @@
   {
     "name": "global-media-controls-cast-start-stop",
     "owners": [  "takumif", "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 130
   },
   {
     "name": "global-media-controls-for-cast",
