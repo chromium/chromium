@@ -77,6 +77,11 @@ class MockDataProvider : public PowerBookmarkDataProvider {
                     PowerBookmarkMeta* meta));
 };
 
+class MockObserver : public PowerBookmarkService::Observer {
+ public:
+  MOCK_METHOD0(OnPowersChanged, void());
+};
+
 TEST_F(PowerBookmarkServiceTest, AddDataProvider) {
   MockDataProvider data_provider;
   service()->AddDataProvider(&data_provider);
@@ -275,4 +280,46 @@ TEST_F(PowerBookmarkServiceTest, DeletePowersForURL) {
   RunUntilIdle();
 }
 
+TEST_F(PowerBookmarkServiceTest, ObserverCalled) {
+  MockObserver obs;
+  service()->AddObserver(&obs);
+  EXPECT_CALL(obs, OnPowersChanged());
+
+  base::MockCallback<SuccessCallback> success_cb;
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+
+  base::GUID guid = base::GUID::GenerateRandomV4();
+  std::unique_ptr<PowerSpecifics> power_specifics =
+      std::make_unique<PowerSpecifics>();
+  std::unique_ptr<Power> power =
+      std::make_unique<Power>(std::move(power_specifics));
+  power->set_guid(guid);
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->CreatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(obs, OnPowersChanged());
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+
+  power_specifics = std::make_unique<PowerSpecifics>();
+  power = std::make_unique<Power>(std::move(power_specifics));
+  power->set_url(GURL("https://google.com"));
+  power->set_power_type(PowerType::POWER_TYPE_MOCK);
+  service()->UpdatePower(std::move(power), success_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_CALL(obs, OnPowersChanged());
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+  service()->DeletePowersForURL(GURL("https://google.com"),
+                                PowerType::POWER_TYPE_MOCK, success_cb.Get());
+  RunUntilIdle();
+
+  service()->RemoveObserver(&obs);
+  EXPECT_CALL(obs, OnPowersChanged()).Times(0);
+  EXPECT_CALL(success_cb, Run(IsTrue()));
+
+  service()->DeletePower(guid, success_cb.Get());
+  RunUntilIdle();
+}
 }  // namespace power_bookmarks

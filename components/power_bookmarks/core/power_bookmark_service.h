@@ -33,9 +33,20 @@ using PowerOverviewsCallback = base::OnceCallback<void(
     std::vector<std::unique_ptr<PowerOverview>> power_overviews)>;
 using SuccessCallback = base::OnceCallback<void(bool success)>;
 
+// Provides a public API surface for power bookmarks. The storage lives on a
+// background thread, all results from there require a callback.
+// Callbacks for the result of create/update/delete calls are wrapped so that
+// observers can be notified when any changes to the storage occur.
 class PowerBookmarkService : public KeyedService,
                              public bookmarks::BaseBookmarkModelObserver {
  public:
+  // Observer class for any changes to the underlying storage.
+  class Observer {
+   public:
+    // Called whenever there are changes to Powers.
+    virtual void OnPowersChanged() = 0;
+  };
+
   PowerBookmarkService(
       bookmarks::BookmarkModel* model,
       const base::FilePath& database_dir,
@@ -89,6 +100,14 @@ class PowerBookmarkService : public KeyedService,
                           const PowerType& power_type,
                           SuccessCallback callback);
 
+  // Captures storage changes to forward along to observers. Returns the
+  // result of the call to `callback` and notifies observers after.
+  void NotifyPowersChanged(SuccessCallback callback, bool success);
+
+  // Registration methods for observers.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Allow features to receive notification when a bookmark node is created to
   // add extra information. The `data_provider` can be removed with the remove
   // method.
@@ -107,7 +126,10 @@ class PowerBookmarkService : public KeyedService,
   base::SequenceBound<PowerBookmarkBackend> backend_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
+  base::ObserverList<Observer>::Unchecked observers_;
   std::vector<PowerBookmarkDataProvider*> data_providers_;
+
+  base::WeakPtrFactory<PowerBookmarkService> weak_ptr_factory_{this};
 };
 
 }  // namespace power_bookmarks
