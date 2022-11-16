@@ -96434,6 +96434,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2054" label="rsa_pss_sha512"/>
 </enum>
 
+<enum name="SSLSubresourceResponseType">
+  <int value="0" label="IGNORED_MESSAGE"/>
+  <int value="1" label="PROCESSED_MESSAGE"/>
+</enum>
+
 <enum name="SSLVersionInterferenceDetails">
   <obsolete>
     Removed April 2018.

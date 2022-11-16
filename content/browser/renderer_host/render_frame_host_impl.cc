@@ -809,6 +809,19 @@ enum class RendererLoadType {
   kReplaceCurrentItem,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used to log whether the call to SSLManager::DidStartResourceResponse()
+// resulted in a no-op or if the exceptions were cleared out when a good
+// certificate was seen. Matches histogram enum (SSLSubresourceResponseType).
+enum class SSLSubresourceResponseType {
+  // Includes cases when call resulted in a no-op.
+  kIgnored = 0,
+  // Includes cases when exceptions were cleared after seeing a good cert.
+  kProcessed = 1,
+  kMaxValue = kProcessed,
+};
+
 bool ValidateCSPAttribute(const std::string& value) {
   static const size_t kMaxLengthCSPAttribute = 4096;
   if (!base::IsStringASCII(value))
@@ -7876,10 +7889,14 @@ void RenderFrameHostImpl::SubresourceResponseStarted(
   OPTIONAL_TRACE_EVENT1("content",
                         "RenderFrameHostImpl::SubresourceResponseStarted",
                         "url", final_response_url.GetURL());
-  frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
-      final_response_url, cert_status);
+  bool was_processed =
+      frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
+          final_response_url, cert_status);
+  UMA_HISTOGRAM_ENUMERATION("SSL.Experimental.SubresourceResponse",
+                            was_processed
+                                ? SSLSubresourceResponseType::kProcessed
+                                : SSLSubresourceResponseType::kIgnored);
 }
-
 void RenderFrameHostImpl::ResourceLoadComplete(
     blink::mojom::ResourceLoadInfoPtr resource_load_info) {
   GlobalRequestID global_request_id;

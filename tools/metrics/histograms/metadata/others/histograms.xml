@@ -13708,6 +13708,25 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SSL.Experimental.SubresourceResponse"
+    enum="SSLSubresourceResponseType" expires_after="2023-02-03">
+  <owner>amanvr@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    The histogram is being used to track the number of messages
+    (content::mojom::FrameHost::SubresourceResponseStarted IPCs) resulting in
+    no-op (i.e. returning without doing anything) but requiring an IPC vs
+    messages which revoke exceptions after seeing a good certificate when
+    calling SSLManager::DidStartResourceResponse() from
+    RenderFrameHostImpl::SubresourceResponseStarted(). We are not interested in
+    calls to SSLManager::DidStartResourceResponse() from ReadyToCommitNavigation
+    since they don't involve mojo messages. From local benchmarks, we observe
+    this request causes significant IPC chatter, and this histogram will help us
+    understand it better.
+  </summary>
+</histogram>
+
 <histogram name="SSL.InsecureContent" enum="InsecureContentType"
     expires_after="2020-02-23">
   <obsolete>

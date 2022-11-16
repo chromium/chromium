@@ -15,6 +15,7 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/ssl/ssl_error_handler.h"
@@ -363,22 +364,22 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
   OnCertErrorInternal(std::move(handler));
 }
 
-void SSLManager::DidStartResourceResponse(
+bool SSLManager::DidStartResourceResponse(
     const url::SchemeHostPort& final_response_url,
     bool has_certificate_errors) {
   const std::string& scheme = final_response_url.scheme();
   const std::string& host = final_response_url.host();
 
-  if (!GURL::SchemeIsCryptographic(scheme) || has_certificate_errors)
-    return;
-
+  if (!GURL::SchemeIsCryptographic(scheme) || has_certificate_errors) {
+    return false;
+  }
   // If the scheme is https: or wss and the cert did not have any errors, revoke
   // any previous decisions that have occurred.
   if (!ssl_host_state_delegate_ ||
       !ssl_host_state_delegate_->HasAllowException(
           host,
           controller_->frame_tree().GetMainFrame()->GetStoragePartition())) {
-    return;
+    return false;
   }
 
   // If there's no certificate error, a good certificate has been seen, so
@@ -386,6 +387,7 @@ void SSLManager::DidStartResourceResponse(
   // certificates. This intentionally does not apply to cached resources
   // (see https://crbug.com/634553 for an explanation).
   ssl_host_state_delegate_->RevokeUserAllowExceptions(host);
+  return true;
 }
 
 void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
