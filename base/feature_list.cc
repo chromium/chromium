@@ -50,46 +50,55 @@ class EarlyFeatureAccessTracker {
   // Invoked when `feature` is accessed before FeatureList registration.
   void AccessedFeature(const Feature& feature) {
     AutoLock lock(lock_);
-    if (feature_)
-      return;
-
-    feature_ = &feature;
-    stack_trace_ = std::make_unique<debug::StackTrace>();
+    if (fail_instantly_)
+      Fail(&feature);
+    else if (!feature_)
+      feature_ = &feature;
   }
 
   // Asserts that no feature was accessed before FeatureList registration.
   void AssertNoAccess() {
     AutoLock lock(lock_);
-    if (!feature_)
-      return;
+    if (feature_)
+      Fail(feature_);
+  }
 
-#if !BUILDFLAG(IS_NACL)
-    // Create a crash key with the name of the feature accessed too early, to
-    // facilitate crash triage.
-    SCOPED_CRASH_KEY_STRING256("FeatureList", "feature-accessed-too-early",
-                               feature_->name);
-#endif  // !BUILDFLAG(IS_NACL)
-    // Fail if DCHECKs are enabled.
-    DCHECK(!feature_) << "Accessed feature " << feature_->name
-                      << " before FeatureList registration, in stack: "
-                      << stack_trace_->ToString();
-    // Report the problem but don't crash if DCHECKs are disabled, to avoid
-    // making Chrome unusable if a feature is accessed too early.
-    //
-    // TODO(crbug.com/1383852): Uncomment this once all known problematic cases
-    // are fixed. We don't want to increase the crash reporting rate while we
-    // work on known problematic cases.
-    // base::debug::DumpWithoutCrashing();
+  // Makes calls to AccessedFeature() fail instantly.
+  void FailOnFeatureAccessWithoutFeatureList() {
+    AutoLock lock(lock_);
+    if (feature_)
+      Fail(feature_);
+    fail_instantly_ = true;
   }
 
   // Resets the state of this tracker.
   void Reset() {
     AutoLock lock(lock_);
     feature_ = nullptr;
-    stack_trace_.reset();
+    fail_instantly_ = false;
   }
 
  private:
+  void Fail(const Feature* feature) {
+    // TODO(crbug.com/1358639): Enable this check on all platforms.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_NACL)
+    // Create a crash key with the name of the feature accessed too early, to
+    // facilitate crash triage.
+    SCOPED_CRASH_KEY_STRING256("FeatureList", "feature-accessed-too-early",
+                               feature->name);
+#endif  // !BUILDFLAG(IS_NACL)
+    // Fail if DCHECKs are enabled.
+    DCHECK(!feature) << "Accessed feature " << feature->name
+                     << " before FeatureList registration.";
+    // TODO(crbug.com/1383852): When we believe that all early accesses have
+    // been fixed, add a base::debug::DumpWithoutCrashing(), to get reports from
+    // the field without making Chrome unusable. If we don't get reports, change
+    // the DCHECK above to a CHECK.
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_CHROMEOS)
+  }
+
   friend class NoDestructor<EarlyFeatureAccessTracker>;
 
   EarlyFeatureAccessTracker() = default;
@@ -100,8 +109,8 @@ class EarlyFeatureAccessTracker {
   // First feature to be accessed before FeatureList registration.
   const Feature* feature_ GUARDED_BY(lock_) = nullptr;
 
-  // Stack trace of the first feature access before FeatureList registration.
-  std::unique_ptr<debug::StackTrace> stack_trace_ GUARDED_BY(lock_);
+  // Whether AccessedFeature() should fail instantly.
+  bool fail_instantly_ GUARDED_BY(lock_) = false;
 };
 
 // Controls whether a feature's override state will be cached in
@@ -116,10 +125,6 @@ BASE_FEATURE(kCacheFeatureOverrideState,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if DCHECK_IS_ON()
-// Tracks whether the use of base::Feature is allowed for this module.
-// See ForbidUseForCurrentModule().
-bool g_use_allowed = true;
-
 const char* g_reason_overrides_disallowed = nullptr;
 
 void DCheckOverridesAllowed() {
@@ -441,9 +446,6 @@ void FeatureList::GetCommandLineFeatureOverrides(
 
 // static
 bool FeatureList::IsEnabled(const Feature& feature) {
-#if DCHECK_IS_ON()
-  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
-#endif
   if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
@@ -458,9 +460,6 @@ bool FeatureList::IsValidFeatureOrFieldTrialName(StringPiece name) {
 
 // static
 absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
-#if DCHECK_IS_ON()
-  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
-#endif
   if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     // If there is no feature list, there can be no overrides.
@@ -471,10 +470,6 @@ absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
 
 // static
 FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
-#if DCHECK_IS_ON()
-  // See documentation for ForbidUseForCurrentModule.
-  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
-#endif
   if (!g_feature_list_instance) {
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(feature);
     return nullptr;
@@ -581,10 +576,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
 
-  // TODO(crbug.com/1358639): Enable this check on all platforms.
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
-#endif
 
 #if !BUILDFLAG(IS_NACL)
   // Configured first because it takes precedence over the getrandom() trial.
@@ -635,12 +627,9 @@ void FeatureList::RestoreInstanceForTesting(
 }
 
 // static
-void FeatureList::ForbidUseForCurrentModule() {
-#if DCHECK_IS_ON()
-  // Verify there hasn't been any use prior to being called.
-  EarlyFeatureAccessTracker::GetInstance()->AssertNoAccess();
-  g_use_allowed = false;
-#endif  // DCHECK_IS_ON()
+void FeatureList::FailOnFeatureAccessWithoutFeatureList() {
+  EarlyFeatureAccessTracker::GetInstance()
+      ->FailOnFeatureAccessWithoutFeatureList();
 }
 
 void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {

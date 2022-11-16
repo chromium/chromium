@@ -380,12 +380,16 @@ class BASE_EXPORT FeatureList {
 
   // Returns whether the given `feature` is enabled.
   //
-  // If no `FeatureList` instance is registered, this returns the feature's
-  // default state. Registering a `FeatureList` later will fail.
+  // If no `FeatureList` instance is registered, this will:
+  // - DCHECK(), if FailOnFeatureAccessWithoutFeatureList() was called.
+  //     TODO(crbug.com/1358639): Change the DCHECK to a CHECK when we're
+  //     confident that all early accesses have been fixed. We don't want to
+  //     get many crash reports from the field in the meantime.
+  // - Return the default state, otherwise. Registering a `FeatureList` later
+  //   will fail.
   //
-  // TODO(crbug.com/1358639): Make registering a `FeatureList` later fail on
-  // iOS, Android and ChromeOS. This currently only works on Windows, Mac and
-  // Linux.
+  // TODO(crbug.com/1358639): Make early FeatureList access fail on iOS, Android
+  // and ChromeOS. This currently only works on Windows, Mac and Linux.
   //
   // A feature with a given name must only have a single corresponding Feature
   // instance, which is checked in builds with DCHECKs enabled.
@@ -465,11 +469,16 @@ class BASE_EXPORT FeatureList {
   // to support base::test::ScopedFeatureList helper class.
   static void RestoreInstanceForTesting(std::unique_ptr<FeatureList> instance);
 
-  // On some platforms, the base::FeatureList singleton might be duplicated to
-  // more than one module. If this function is called, then using base::Feature
-  // API will result in DCHECK if accessed from the same module as the callee.
-  // Has no effect if DCHECKs are not enabled.
-  static void ForbidUseForCurrentModule();
+  // After calling this, an attempt to access feature state when no FeatureList
+  // is registered will DCHECK.
+  //
+  // TODO(crbug.com/1358639): Change the DCHECK to a CHECK when we're confident
+  // that all early accesses have been fixed. We don't want to get many crash
+  // reports from the field in the meantime.
+  //
+  // Note: This isn't the default behavior because accesses are tolerated in
+  // processes that never register a FeatureList.
+  static void FailOnFeatureAccessWithoutFeatureList();
 
   void SetCachingContextForTesting(uint16_t caching_context);
 

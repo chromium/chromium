@@ -303,10 +303,10 @@ int main() {
       command_line->GetSwitchValueASCII(switches::kProcessType);
 
 #if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
-  // In non-component mode, chrome.exe contains a separate instance of
-  // base::FeatureList. Prevent accidental use of this here by forbidding use of
-  // the one that's linked with chrome.exe.
-  base::FeatureList::ForbidUseForCurrentModule();
+  // In non-component mode, chrome.exe contains its own base::FeatureList
+  // instance pointer, which remains nullptr. Attempts to access feature state
+  // from chrome.exe should fail, instead of silently returning a default state.
+  base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
 
   // Patch the main EXE on non-component builds when DCHECKs are enabled.
   // This allows detection of third party code that might attempt to meddle with

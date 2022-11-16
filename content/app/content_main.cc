@@ -13,6 +13,7 @@
 #include "base/debug/activity_tracker.h"
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -199,6 +200,7 @@ ContentMainParams& ContentMainParams::operator=(ContentMainParams&&) = default;
 int NO_STACK_PROTECTOR
 RunContentProcess(ContentMainParams params,
                   ContentMainRunner* content_main_runner) {
+  base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Lacros is launched with inherited priority. Revert to normal priority
   // before spawning more processes.
