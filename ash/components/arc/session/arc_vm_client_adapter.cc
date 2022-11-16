@@ -86,14 +86,6 @@ constexpr char kArcVmPostVmStartServicesJobName[] =
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
-constexpr base::TimeDelta kArcBugReportBackupTimeMetricMinTime =
-    base::Milliseconds(1);
-constexpr base::TimeDelta kArcBugReportBackupTimeMetricMaxTime =
-    base::Seconds(60);
-constexpr int kArcBugReportBackupTimeMetricBuckets = 50;
-constexpr const char kArcBugReportBackupTimeMetric[] =
-    "Login.ArcBugReportBackupTime";
-
 constexpr int kLogdConfigSizeSmall = 256;   // kBytes
 constexpr int kLogdConfigSizeMed = 512;     // kBytes
 constexpr int kLogdConfigSizeLarge = 1024;  // kBytes
@@ -866,7 +858,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       GetDebugDaemonClient()->BackupArcBugReport(
           cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_),
           base::BindOnce(&ArcVmClientAdapter::OnArcBugReportBackedUp,
-                         weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                         weak_factory_.GetWeakPtr()));
     } else {
       StopArcInstanceInternal();
     }
@@ -947,16 +939,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
  private:
-  void OnArcBugReportBackedUp(base::TimeTicks arc_bug_report_backup_time,
-                              bool result) {
-    if (result) {
-      base::TimeDelta elapsed_time =
-          base::TimeTicks::Now() - arc_bug_report_backup_time;
-      base::UmaHistogramCustomTimes(kArcBugReportBackupTimeMetric, elapsed_time,
-                                    kArcBugReportBackupTimeMetricMinTime,
-                                    kArcBugReportBackupTimeMetricMaxTime,
-                                    kArcBugReportBackupTimeMetricBuckets);
-    } else {
+  void OnArcBugReportBackedUp(bool result) {
+    if (!result) {
       LOG(ERROR) << "Error contacting debugd to back up ARC bug report.";
     }
 

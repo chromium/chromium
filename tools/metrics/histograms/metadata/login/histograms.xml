@@ -39,6 +39,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Login.ArcBugReportBackupTime" units="ms"
     expires_after="2022-12-25">
+  <obsolete>
+    Removed in M110.
+  </obsolete>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
