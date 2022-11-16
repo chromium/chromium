@@ -24,13 +24,11 @@ ExtensionsTabbedMenuCoordinator::~ExtensionsTabbedMenuCoordinator() {
   Hide();
 }
 
-void ExtensionsTabbedMenuCoordinator::Show(
-    views::View* anchor_view,
-    ExtensionsToolbarButton::ButtonType button_type) {
+void ExtensionsTabbedMenuCoordinator::Show(views::View* anchor_view) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   auto menu = std::make_unique<ExtensionsTabbedMenuView>(
-      anchor_view, browser_, extensions_container_, button_type, allow_pining_);
+      anchor_view, browser_, extensions_container_, allow_pining_);
   extensions_tabbed_menu_view_tracker_.SetView(menu.get());
   views::BubbleDialogDelegateView::CreateBubble(std::move(menu))->Show();
 }

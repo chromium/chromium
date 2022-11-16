@@ -25,7 +25,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
 
   explicit ExtensionsToolbarControls(
       std::unique_ptr<ExtensionsToolbarButton> extensions_button,
-      std::unique_ptr<ExtensionsToolbarButton> site_access_button,
       std::unique_ptr<ExtensionsRequestAccessButton> request_button);
   ExtensionsToolbarControls(const ExtensionsToolbarControls&) = delete;
   ExtensionsToolbarControls operator=(const ExtensionsToolbarControls&) =
@@ -37,9 +36,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   }
 
   // Methods for testing.
-  ExtensionsToolbarButton* site_access_button_for_testing() const {
-    return site_access_button_;
-  }
   ExtensionsRequestAccessButton* request_access_button_for_testing() const {
     return request_access_button_;
   }
@@ -55,11 +51,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   void UpdateAllIcons() override;
 
  private:
-  // Updates `site_access_button_` visibility given `actions` in `web_contents`.
-  void UpdateSiteAccessButton(
-      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-      content::WebContents* web_contents);
-
   // Updates `request_access_button_` visibility given the user `site_setting`
   // and `actions` in `web_contents`.
   void UpdateRequestAccessButton(
@@ -68,7 +59,6 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
       content::WebContents* web_contents);
 
   const raw_ptr<ExtensionsRequestAccessButton> request_access_button_;
-  const raw_ptr<ExtensionsToolbarButton> site_access_button_;
   const raw_ptr<ExtensionsToolbarButton> extensions_button_;
 };
 

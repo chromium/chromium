@@ -17,13 +17,10 @@
 
 ExtensionsToolbarControls::ExtensionsToolbarControls(
     std::unique_ptr<ExtensionsToolbarButton> extensions_button,
-    std::unique_ptr<ExtensionsToolbarButton> site_access_button,
     std::unique_ptr<ExtensionsRequestAccessButton> request_access_button)
     : ToolbarIconContainerView(/*uses_highlight=*/true),
       request_access_button_(AddChildView(std::move(request_access_button))),
-      site_access_button_(AddChildView(std::move(site_access_button))),
       extensions_button_(extensions_button.get()) {
-  site_access_button_->SetVisible(false);
   request_access_button_->SetVisible(false);
   // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
   AddMainItem(extensions_button.release());
@@ -37,14 +34,12 @@ void ExtensionsToolbarControls::UpdateControls(
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* current_web_contents) {
-  UpdateSiteAccessButton(actions, current_web_contents);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
 
   // Display background only when multiple buttons are visible. Since
-  // the extensions button is always visible, check if any of the other
-  // buttons is too.
-  SetBackground(site_access_button_->GetVisible() ||
-                        request_access_button_->GetVisible()
+  // the extensions button is always visible, check if the request access
+  // button is too.
+  SetBackground(request_access_button_->GetVisible()
                     ? views::CreateThemedRoundedRectBackground(
                           kColorExtensionsToolbarControlsBackground,
                           extensions_button_->GetPreferredSize().height())
@@ -53,14 +48,6 @@ void ExtensionsToolbarControls::UpdateControls(
   // Resets the layout since layout animation does not handle host view
   // visibility changing. This should be called after any visibility changes.
   GetAnimatingLayoutManager()->ResetLayout();
-}
-
-void ExtensionsToolbarControls::UpdateSiteAccessButton(
-    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
-    content::WebContents* web_contents) {
-  site_access_button_->SetVisible(
-      ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
-          actions, web_contents));
 }
 
 void ExtensionsToolbarControls::UpdateRequestAccessButton(

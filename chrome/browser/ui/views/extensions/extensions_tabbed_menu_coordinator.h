@@ -28,10 +28,8 @@ class ExtensionsTabbedMenuCoordinator {
       const ExtensionsTabbedMenuCoordinator&) = delete;
   ~ExtensionsTabbedMenuCoordinator();
 
-  // Displays the ExtensionsTabbedMenu under `anchor_view` with the selected tab
-  // open by the `selected_tab_index` given.
-  void Show(views::View* anchor_view,
-            ExtensionsToolbarButton::ButtonType button_type);
+  // Displays the ExtensionsTabbedMenu under `anchor_view`.
+  void Show(views::View* anchor_view);
 
   // Hides the currently-showing ExtensionsTabbedMenuView, if it exists.
   void Hide();

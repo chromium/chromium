@@ -28,9 +28,9 @@
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -102,15 +102,13 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                     this,
                     CanShowIconInToolbar())
               : nullptr),
-      extensions_button_(
-          base::FeatureList::IsEnabled(
-              extensions_features::kExtensionsMenuAccessControl)
-              ? nullptr
-              : new ExtensionsToolbarButton(
-                    browser,
-                    this,
-                    ExtensionsToolbarButton::ButtonType::kExtensions,
-                    extensions_tabbed_menu_coordinator_.get())),
+      extensions_button_(base::FeatureList::IsEnabled(
+                             extensions_features::kExtensionsMenuAccessControl)
+                             ? nullptr
+                             : new ExtensionsToolbarButton(
+                                   browser,
+                                   this,
+                                   extensions_tabbed_menu_coordinator_.get())),
       extensions_controls_(
           base::FeatureList::IsEnabled(
               extensions_features::kExtensionsMenuAccessControl)
@@ -118,12 +116,6 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
                     std::make_unique<ExtensionsToolbarButton>(
                         browser,
                         this,
-                        ExtensionsToolbarButton::ButtonType::kExtensions,
-                        extensions_tabbed_menu_coordinator_.get()),
-                    std::make_unique<ExtensionsToolbarButton>(
-                        browser,
-                        this,
-                        ExtensionsToolbarButton::ButtonType::kSiteAccess,
                         extensions_tabbed_menu_coordinator_.get()),
                     std::make_unique<ExtensionsRequestAccessButton>(browser_))
               : nullptr),

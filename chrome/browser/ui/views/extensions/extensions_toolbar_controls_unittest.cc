@@ -33,13 +33,9 @@ class ExtensionsToolbarControlsUnitTest : public ExtensionsToolbarUnitTest {
       const ExtensionsToolbarControlsUnitTest&) = delete;
 
   ExtensionsRequestAccessButton* request_access_button();
-  ExtensionsToolbarButton* site_access_button();
 
   // Returns whether the request access button is visible or not.
   bool IsRequestAccessButtonVisible();
-
-  // Returns whether the site access button is visible or not.
-  bool IsSiteAccessButtonVisible();
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -57,118 +53,8 @@ ExtensionsToolbarControlsUnitTest::request_access_button() {
       ->request_access_button_for_testing();
 }
 
-ExtensionsToolbarButton*
-ExtensionsToolbarControlsUnitTest::site_access_button() {
-  return extensions_container()
-      ->GetExtensionsToolbarControls()
-      ->site_access_button_for_testing();
-}
-
 bool ExtensionsToolbarControlsUnitTest::IsRequestAccessButtonVisible() {
   return request_access_button()->GetVisible();
-}
-
-bool ExtensionsToolbarControlsUnitTest::IsSiteAccessButtonVisible() {
-  return site_access_button()->GetVisible();
-}
-
-TEST_F(ExtensionsToolbarControlsUnitTest,
-       SiteAccessButtonVisibility_NavigationBetweenPages) {
-  content::WebContentsTester* web_contents_tester =
-      AddWebContentsAndGetTester();
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
-
-  // Add an extension that only requests access to a specific url.
-  InstallExtensionWithHostPermissions("specific_url", {url_a.spec()});
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Navigate to an url the extension should have access to.
-  web_contents_tester->NavigateAndCommit(url_a);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-
-  // Navigate to an url the extension should not have access to.
-  web_contents_tester->NavigateAndCommit(url_b);
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-}
-
-TEST_F(ExtensionsToolbarControlsUnitTest,
-       SiteAccessButtonVisibility_ContextMenuChangesHostPermissions) {
-  content::WebContentsTester* web_contents_tester =
-      AddWebContentsAndGetTester();
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
-
-  // Add an extension with all urls host permissions. Since we haven't navigated
-  // to an url yet, the extension should not have access.
-  auto extension =
-      InstallExtensionWithHostPermissions("all_urls", {"<all_urls>"});
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Navigate to an url the extension should have access to as part of
-  // <all_urls>.
-  web_contents_tester->NavigateAndCommit(url_a);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-
-  // Change the extension to run only on the current site using the context
-  // menu. The extension should still have access to the current site.
-  extensions::ExtensionContextMenuModel context_menu(
-      extension.get(), browser(), extensions::ExtensionContextMenuModel::PINNED,
-      nullptr, true,
-      extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
-  context_menu.ExecuteCommand(
-      extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE, 0);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-
-  // Navigate to a different url. The extension should not have access.
-  web_contents_tester->NavigateAndCommit(url_b);
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Go back to the original url. The extension should have access.
-  web_contents_tester->NavigateAndCommit(url_a);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-}
-
-TEST_F(ExtensionsToolbarControlsUnitTest,
-       SiteAccessButtonVisibility_MultipleExtensions) {
-  content::WebContentsTester* web_contents_tester =
-      AddWebContentsAndGetTester();
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
-
-  // There are no extensions installed yet, so no extension has access to the
-  // current site.
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Add an extension that doesn't request host permissions. Extension should
-  // not have access to the current site.
-  InstallExtension("no_permissions");
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Add an extension that only requests access to url_a. Extension should not
-  // have access to the current site.
-  InstallExtensionWithHostPermissions("specific_url", {url_a.spec()});
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Add an extension with all urls host permissions. Extension should not have
-  // access because there isn't a real url yet.
-  auto extension_all_urls =
-      InstallExtensionWithHostPermissions("all_urls", {"<all_urls>"});
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
-
-  // Navigate to the url that "specific_url" extension has access to. Both
-  // "all_urls" and "specific_urls" should have accessn to the current site.
-  web_contents_tester->NavigateAndCommit(url_a);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-
-  // Navigate to a different url. Only "all_urls" should have access.
-  web_contents_tester->NavigateAndCommit(url_b);
-  EXPECT_TRUE(IsSiteAccessButtonVisible());
-
-  // Remove the only extension that has access to the current site.
-  UninstallExtension(extension_all_urls->id());
-  LayoutContainerIfNecessary();
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
 }
 
 TEST_F(ExtensionsToolbarControlsUnitTest,
@@ -299,7 +185,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // Remove the only extension that requests access to the current site.
   UninstallExtension(extension_all_urls->id());
   LayoutContainerIfNecessary();
-  EXPECT_FALSE(IsSiteAccessButtonVisible());
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
 // Tests that extensions with activeTab and requested url with withheld access

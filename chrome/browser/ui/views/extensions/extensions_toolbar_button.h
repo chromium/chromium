@@ -24,18 +24,8 @@ class ExtensionsToolbarButton : public ToolbarButton,
  public:
   METADATA_HEADER(ExtensionsToolbarButton);
 
-  enum class ButtonType {
-    // Indicates that at least one extension is enabled, and opens the installed
-    // extensions tab in the menu.
-    kExtensions,
-    // Indicates that at least one extension has access to the current page, and
-    // opens the permissions tab in the menu.
-    kSiteAccess
-  };
-
   ExtensionsToolbarButton(Browser* browser,
                           ExtensionsToolbarContainer* extensions_container,
-                          ButtonType button_type,
                           ExtensionsTabbedMenuCoordinator* coordinator);
   ExtensionsToolbarButton(const ExtensionsToolbarButton&) = delete;
   ExtensionsToolbarButton& operator=(const ExtensionsToolbarButton&) = delete;
@@ -63,7 +53,6 @@ class ExtensionsToolbarButton : public ToolbarButton,
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   const raw_ptr<Browser> browser_;
-  const ButtonType button_type_;
   raw_ptr<views::MenuButtonController> menu_button_controller_;
   const raw_ptr<ExtensionsToolbarContainer> extensions_container_;
   // This can be nullptr before ExtensionsTabbedMenu is fully rolled out.

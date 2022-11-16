@@ -65,10 +65,9 @@ class ExtensionsTabbedMenuViewInteractiveUITest
   // Asserts there is exactly one installed menu item and then returns it.
   InstalledExtensionMenuItemView* GetOnlyInstalledMenuItem();
 
-  // Opens the tabbed menu in the installed tab.
-  void ShowInstalledTabInMenu();
-  // Opens the tabbed menu in the site access tab.
-  void ShowSiteAccessTabInMenu();
+  // Opens the menu. Tab opened is not important, since both are populated at
+  // construction.
+  void ShowMenu();
 
   void ClickPrimaryButton(InstalledExtensionMenuItemView* item);
   void ClickPinButton(InstalledExtensionMenuItemView* installed_item);
@@ -91,7 +90,7 @@ void ExtensionsTabbedMenuViewInteractiveUITest::ShowUi(
   set_should_verify_dialog_bounds(false);
 #endif
 
-  ShowInstalledTabInMenu();
+  ShowMenu();
   ASSERT_TRUE(extensions_tabbed_menu_view());
 }
 
@@ -115,15 +114,8 @@ ExtensionsTabbedMenuViewInteractiveUITest::GetOnlyInstalledMenuItem() {
   return *items.begin();
 }
 
-void ExtensionsTabbedMenuViewInteractiveUITest::ShowInstalledTabInMenu() {
+void ExtensionsTabbedMenuViewInteractiveUITest::ShowMenu() {
   ClickButton(GetExtensionsToolbarContainer()->GetExtensionsButton());
-  WaitForAnimation();
-}
-
-void ExtensionsTabbedMenuViewInteractiveUITest::ShowSiteAccessTabInMenu() {
-  ClickButton(GetExtensionsToolbarContainer()
-                  ->GetExtensionsToolbarControls()
-                  ->site_access_button_for_testing());
   WaitForAnimation();
 }
 
@@ -164,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsTabbedMenuViewInteractiveUITest,
                        InvocationSourceMetrics) {
   base::HistogramTester histogram_tester;
   LoadTestExtension("extensions/uitest/extension_with_action_and_command");
-  ShowInstalledTabInMenu();
+  ShowMenu();
 
   constexpr char kHistogramName[] = "Extensions.Toolbar.InvocationSource";
   histogram_tester.ExpectTotalCount(kHistogramName, 0);
@@ -308,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionsTabbedMenuViewInteractiveUITest,
     InstalledTab_PinnedExtensionShowsCorrectContextMenuPinOption) {
   LoadTestExtension("extensions/simple_with_popup");
-  ShowInstalledTabInMenu();
+  ShowMenu();
 
   ASSERT_TRUE(VerifyUi());
   ASSERT_EQ(installed_items().size(), 1u);
@@ -350,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(
     ExtensionsTabbedMenuViewInteractiveUITest,
     InstalledTab_UnpinnedExtensionShowsCorrectContextMenuPinOption) {
   LoadTestExtension("extensions/simple_with_popup");
-  ShowInstalledTabInMenu();
+  ShowMenu();
 
   ExtensionsToolbarContainer* const extensions_container =
       GetExtensionsToolbarContainer();
@@ -387,13 +379,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Verify site access button is visible, and trigger it to open site access
-  // tab in the extension menu so we can test the UI when permissions change.
-  auto* site_access_button = GetExtensionsToolbarContainer()
-                                 ->GetExtensionsToolbarControls()
-                                 ->site_access_button_for_testing();
-  EXPECT_TRUE(site_access_button);
-  ShowSiteAccessTabInMenu();
+  ShowMenu();
 
   // Extension with <all_urls> permission has site access by default (except for
   // forbidden websites such as chrome:-scheme), and it should be in the has

@@ -39,7 +39,6 @@ class ExtensionsTabbedMenuView
   ExtensionsTabbedMenuView(views::View* anchor_view,
                            Browser* browser,
                            ExtensionsContainer* extensions_container,
-                           ExtensionsToolbarButton::ButtonType button_type,
                            bool allow_pinning);
   ~ExtensionsTabbedMenuView() override;
   ExtensionsTabbedMenuView(const ExtensionsTabbedMenuView&) = delete;
