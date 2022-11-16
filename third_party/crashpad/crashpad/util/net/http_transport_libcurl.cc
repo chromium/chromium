@@ -522,6 +522,10 @@ size_t HTTPTransportLibcurl::WriteResponseBody(char* buffer,
                                                size_t size,
                                                size_t nitems,
                                                void* userdata) {
+#if defined(MEMORY_SANITIZER)
+  // Work around an MSAN false-positive in passing `userdata`.
+  __msan_unpoison(&userdata, sizeof(userdata));
+#endif
   std::string* response_body = reinterpret_cast<std::string*>(userdata);
 
   // This libcurl callback mimics the silly stdio-style fread() interface: size

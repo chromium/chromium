@@ -180,8 +180,10 @@ class SignalHandler {
 
     DCHECK(!handler_);
     handler_ = this;
-    return Signals::InstallCrashHandlers(
-        HandleOrReraiseSignal, SA_ONSTACK, &old_actions_, unhandled_signals);
+    return Signals::InstallCrashHandlers(HandleOrReraiseSignal,
+                                         SA_ONSTACK | SA_EXPOSE_TAGBITS,
+                                         &old_actions_,
+                                         unhandled_signals);
   }
 
   const ExceptionInformation& GetExceptionInfo() {

@@ -15,6 +15,9 @@
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
   'gn_version': 'git_revision:2ecd43a10266bd091c98e6dcde507c64f6a0dad3',
+  # ninja CIPD package version.
+  # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
+  'ninja_version': 'version:2@1.8.2.chromium.3',
   'pull_linux_clang': False,
   'pull_win_toolchain': False,
   # Controls whether crashpad/build/ios/setup-ios-gn.py is run as part of
@@ -132,6 +135,51 @@ deps = {
     ],
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
+  },
+  # depot_tools/ninja wrapper calls third_party/ninja/{ninja, ninja.exe}.
+  # crashpad/third_party/ninja/ninja is another wrapper to call linux ninja
+  # or mac ninja.
+  # This allows crashpad developers to work for multiple platforms on the same
+  # machine.
+  'crashpad/third_party/ninja': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/${{platform}}',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'condition': 'host_os == "win"',
+    'dep_type': 'cipd',
+  },
+  'crashpad/third_party/ninja/linux': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/${{platform}}',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'condition': 'host_os == "linux"',
+    'dep_type': 'cipd',
+  },
+  'crashpad/third_party/ninja/mac-amd64': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/mac-amd64',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'condition': 'host_os == "mac" and host_cpu == "amd64"',
+    'dep_type': 'cipd',
+  },
+  'crashpad/third_party/ninja/mac-arm64': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/mac-arm64',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'condition': 'host_os == "mac" and host_cpu == "arm64"',
+    'dep_type': 'cipd',
   },
   'crashpad/third_party/win/toolchain': {
     # This package is only updated when the solution in .gclient includes an

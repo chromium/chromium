@@ -22,6 +22,12 @@
 #define SS_AUTODISARM (1u << 31)
 #endif
 
+// Linux Kernel >= 5.11 flag for `sigaction::sa_flags`. Missing in headers from
+// earlier versions of Linux.
+#if !defined(SA_EXPOSE_TAGBITS)
+#define SA_EXPOSE_TAGBITS 0x00000800
+#endif
+
 // Missing from glibc and bionic-x86_64
 
 #if defined(__x86_64__) || defined(__i386__)

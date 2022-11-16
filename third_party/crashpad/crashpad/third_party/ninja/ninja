@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Copyright 2022 Google Inc. All rights reserved
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -eu
+
+OS="$(uname -s)"
+THIS_DIR="$(dirname "${0}")"
+
+function print_help() {
+cat <<EOF >&2
+No ninja binary is available for this system.
+Try building your own binary by doing:
+  cd ~
+  git clone https://github.com/ninja-build/ninja.git
+  cd ninja && ./configure.py --bootstrap
+Then add ~/ninja/ to your PATH.
+EOF
+}
+
+case "${OS}" in
+  Linux)
+    exec "${THIS_DIR}/linux/ninja" "$@";;
+  Darwin)
+    ARCH="$(uname -m)"
+    case "${ARCH}" in
+      x86_64)
+        exec "${THIS_DIR}/mac-amd64/ninja" "$@";;
+      arm64)
+        exec "${THIS_DIR}/mac-arm64/ninja" "$@";;
+      *)
+        echo "Unsupported architecture ${ARCH}" >&2
+        print_help
+        exit 1;;
+    esac
+    ;;
+  *)
+    echo "Unsupported OS ${OS}" >&2
+    print_help
+    exit 1;;
+esac

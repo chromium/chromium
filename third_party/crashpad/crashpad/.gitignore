@@ -38,6 +38,9 @@
 /third_party/lss/lss
 /third_party/gyp/gyp
 /third_party/mini_chromium/mini_chromium
+/third_party/ninja/linux
+/third_party/ninja/mac*
+/third_party/ninja/ninja.exe
 /third_party/zlib/zlib
 /xcodebuild
 tags
