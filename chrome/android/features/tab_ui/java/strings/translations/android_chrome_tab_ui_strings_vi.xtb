@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Hình thu nhỏ để xem trước trang tính chia sẻ.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="3882834874697329510">Để nhận thông báo khi có ưu đãi giảm giá trong một thẻ đang mở, hãy bật thông báo trong phần Cài đặt.</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
 <translation id="5558362125926932819">Đóng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ</translation>
 <translation id="5580090775658607195">Đã nhóm <ph name="TAB_COUNT" /> thẻ</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
 <translation id="575494663145460764">Nhận thông báo khi có mặt hàng giảm giá?</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
 <translation id="5846292395804797011">Đóng nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ</translation>

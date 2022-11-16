@@ -2371,6 +2371,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3143515551205905069">Sinxronizasiyanı ləğv edin</translation>
 <translation id="3143754809889689516">Başdan oxudun</translation>
 <translation id="3144647712221361880">Linki bu formada açın:</translation>
+<translation id="3144896554017119333">Artırmalar və s.</translation>
 <translation id="3149510190863420837">Chrome Tətbiqləri</translation>
 <translation id="3150693969729403281">Təhlükəsizlik yoxlanışını indi icra edin</translation>
 <translation id="3150927491400159470">Çətin yenidən yükləmə</translation>
@@ -2479,6 +2480,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3269093882174072735">Şəkli yükləyin</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> modulunu göstərməyin</translation>
+<translation id="3269175001434213183">Elementləri yedəkləmək və istənilən cihazda istifadə etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="3269612321104318480">Açıq-firuzəyi və ağ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fayl}other{# fayl}}</translation>
 <translation id="326999365752735949">Yükləmə fərq</translation>
@@ -4274,6 +4276,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4950993567860689081">Sessiyanız təşkilatınız tərəfindən idarə edilir. Administratorlar profilinizi silə və həmçinin şəbəkə trafikinizə nəzarət edə bilərlər.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{fayl}other{# fayl}}</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
+<translation id="4951966678293618079">Heç vaxt bu sayt üçün parolları saxlamayın</translation>
 <translation id="4953808748584563296">Defolt narıncı avatar</translation>
 <translation id="4955710816792587366">PIN seçin</translation>
 <translation id="4959262764292427323">Parollar Google Hesabınızda yadda saxlanılıb, beləliklə, onları istənilən cihazda istifadə edə bilərsiniz</translation>
@@ -4303,6 +4306,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4981449534399733132">Axtarış tarixçəsini bütün sinxronizasiya olunmuş cihazlardan və Google Hesabınızdan silmək üçün <ph name="BEGIN_LINK" />daxil olun<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">İstənilən cihazda qaldığınız yerdən davam edin</translation>
 <translation id="4982236238228587209">Cihaz proqramı</translation>
+<translation id="4986706507552097681">Sinxronizasiya seçimlərini ayarlarda edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="4986728572522335985">Bu əməliyyat PIN kod daxil olmaqla təhlükəsizlik açarınızdakı bütün verilənləri siləcək</translation>
 <translation id="4988526792673242964">Səhifələr</translation>
 <translation id="49896407730300355">Saat əqrəbi istiqaməti əksinə fırladın</translation>

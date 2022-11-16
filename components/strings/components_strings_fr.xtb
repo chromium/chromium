@@ -1431,6 +1431,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4646534391647090355">Accéder</translation>
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
 <translation id="4652266463001779298">Non autorisée</translation>
+<translation id="4652440160515225514">Votre organisation a bloqué ce site, car il ne respecte pas une règle.</translation>
 <translation id="4653167719759882810">Fusions-acquisitions</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
 <translation id="4660119392514473465">Vous pouvez désormais naviguer de façon privée. Les autres utilisateurs de cet appareil ne verront pas votre activité. Toutefois, les téléchargements, les favoris et les éléments de la liste de lecture seront enregistrés.</translation>
@@ -2920,6 +2921,7 @@ Informations supplémentaires :
 <translation id="8437238597147034694">&amp;Annuler le déplacement</translation>
 <translation id="8438476240229491014">Mémoriser ce paramètre</translation>
 <translation id="8438786541497918448">Utiliser la caméra et le micro ?</translation>
+<translation id="8438923942245957911">Ce site est signalé par votre organisation</translation>
 <translation id="8443613539889492016">Rap et hip-hop</translation>
 <translation id="8444543005280733648">Réseaux informatiques</translation>
 <translation id="8446884382197647889">En savoir plus</translation>

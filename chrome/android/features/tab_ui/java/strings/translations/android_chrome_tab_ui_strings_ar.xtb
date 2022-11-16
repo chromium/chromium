@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{تصغير علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3882834874697329510">لتلقِّي تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة، فعِّل الإشعارات في الإعدادات.</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5558362125926932819">إغلاق مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="5580090775658607195">تم جمع <ph name="TAB_COUNT" /> علامة تبويب</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏رابط واحد (<ph name="TABS_COUNT_ONE" />) من Chrome}zero{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}two{‏رابطان (<ph name="TABS_COUNT_MANY" />) من Chrome}few{‏<ph name="TABS_COUNT_MANY" /> روابط من Chrome}many{‏<ph name="TABS_COUNT_MANY" /> رابطًا من Chrome}other{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}}</translation>
 <translation id="575494663145460764">هل تريد الحصول على تنبيهات عن الأسعار المنخفضة؟</translation>
 <translation id="58326064309361797">اسحب علامات التبويب لجمعها.</translation>
 <translation id="5846292395804797011">إغلاق المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>

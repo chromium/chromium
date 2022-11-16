@@ -1431,6 +1431,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4646534391647090355">Przejdź tam teraz</translation>
 <translation id="4648262692072505866">Hasz musi mieć format SHA-256.</translation>
 <translation id="4652266463001779298">Nie zezwolono</translation>
+<translation id="4652440160515225514">Twoja organizacja zablokowała tę witrynę, ponieważ narusza ona zasady.</translation>
 <translation id="4653167719759882810">Fuzje i przejęcia</translation>
 <translation id="4658638640878098064">Zszywka w lewym górnym rogu</translation>
 <translation id="4660119392514473465">Teraz możesz przeglądać prywatnie, a inne osoby korzystające z tego urządzenia nie zobaczą Twojej aktywności. Pobrane pliki, zakładki i elementy na liście Do przeczytania zostaną jednak zapisane.</translation>
@@ -2919,6 +2920,7 @@ Dodatkowe informacje:
 <translation id="8437238597147034694">&amp;Cofnij przeniesienie</translation>
 <translation id="8438476240229491014">Zapamiętaj to ustawienie</translation>
 <translation id="8438786541497918448">Korzystać z kamery i mikrofonu?</translation>
+<translation id="8438923942245957911">Ta witryna została oznaczona przez Twoją organizację</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>
 <translation id="8444543005280733648">Sieci komputerowe</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>

@@ -2388,6 +2388,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3143515551205905069">Annuller synkronisering</translation>
 <translation id="3143754809889689516">Afspil fra begyndelsen</translation>
 <translation id="3144647712221361880">Åbn linket som</translation>
+<translation id="3144896554017119333">Udvidelser m.m.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3150693969729403281">Kør sikkerhedstjek nu</translation>
 <translation id="3150927491400159470">Genindlæs fuldstændig</translation>
@@ -2496,6 +2497,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
 <translation id="326911502853238749">Vis ikke <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Aktivér synkronisering for at sikkerhedskopiere dit indhold og få adgang til det på enhver enhed</translation>
 <translation id="3269612321104318480">Lys turkis og hvid</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fil}one{# fil}other{# filer}}</translation>
 <translation id="326999365752735949">Downloader diff</translation>
@@ -4294,6 +4296,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4950993567860689081">Din session administreres af din organisation. Administratorer kan slette din profil og overvåge din netværkstrafik.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}one{# fil}other{# filer}}</translation>
 <translation id="495170559598752135">Handlinger</translation>
+<translation id="4951966678293618079">Gem aldrig adgangskoder til dette website</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
 <translation id="4955710816792587366">Vælg din pinkode</translation>
 <translation id="4959262764292427323">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed</translation>
@@ -4323,6 +4326,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Log ind<ph name="END_LINK" /> for at rydde browserdata fra alle dine synkroniserede enheder og din Google-konto.</translation>
 <translation id="4982111327868342436">Fortsæt, hvor du slap, på en hvilken som helst enhed</translation>
 <translation id="4982236238228587209">Enhedens software</translation>
+<translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4988526792673242964">Sider</translation>
 <translation id="49896407730300355">Roter m&amp;od uret</translation>

@@ -1431,6 +1431,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4646534391647090355">Visitar agora</translation>
 <translation id="4648262692072505866">O hash debe ter o formato SHA-256.</translation>
 <translation id="4652266463001779298">Permiso non concedido</translation>
+<translation id="4652440160515225514">A túa organización bloqueou este sitio porque infrinxe unha política.</translation>
 <translation id="4653167719759882810">Fusións e adquisicións</translation>
 <translation id="4658638640878098064">Grampa na parte superior esquerda</translation>
 <translation id="4660119392514473465">Agora podes navegar de forma privada sen que os outros usuarios deste dispositivo vexan a túa actividade. Non obstante, gardaranse as descargas, os marcadores e os elementos da lista de lectura.</translation>
@@ -2919,6 +2920,7 @@ Detalles adicionais:
 <translation id="8437238597147034694">&amp;Desfacer movemento</translation>
 <translation id="8438476240229491014">Lembrar esta configuración</translation>
 <translation id="8438786541497918448">Queres usar a cámara e o micrófono?</translation>
+<translation id="8438923942245957911">A túa organización marcou este sitio</translation>
 <translation id="8443613539889492016">Rap e hip-hop</translation>
 <translation id="8444543005280733648">Redes informáticas</translation>
 <translation id="8446884382197647889">Máis información</translation>

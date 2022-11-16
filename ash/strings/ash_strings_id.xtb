@@ -175,6 +175,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1862380676329487333">Update dan logout</translation>
 <translation id="1864454756846565995">Perangkat USB-C (port belakang)</translation>
 <translation id="1869497990620230175">File cepat</translation>
+<translation id="1871703283152909317">Aktifkan kedua akses</translation>
 <translation id="1879018240766558464">Jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
 <translation id="1882897271359938046">Mencerminkan ke <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6095008505822982596">Kecepatan ucapan</translation>
 <translation id="6099678161144790572">Diedit dalam sebulan terakhir</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="6107292179555508368">Akses mikrofon dan kamera nonaktif di perangkat ini</translation>
 <translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
 <translation id="6116825164611323644">Akses kamera nonaktif di perangkat ini</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6259254695169772643">Gunakan stilus untuk memilih</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Mengaktifkan...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6282694724099204652">Aktifkan akses untuk mengizinkan aplikasi dan halaman web yang memiliki izin untuk menggunakan mikrofon dan kamera di perangkat ini.</translation>
 <translation id="6283712521836204486">Mode Jangan Ganggu nonaktif.</translation>
 <translation id="6284232397434400372">Resolusi diubah</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> dapat ditambahkan ulang nanti dengan izin orang tua.</translation>

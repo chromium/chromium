@@ -232,6 +232,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2815198996063984598">2. Defolt Brauzer Tətbiqi seçiminə toxunun</translation>
 <translation id="2820289420301699633">Administrator Chrome'a nəzarət edir və oradakı dataya girişi var</translation>
 <translation id="2830972654601096923">Ünvanları İdarə Edin...</translation>
+<translation id="2834399722155632105">3. Parol Seçimlərinə toxunun</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Tərcümə Ayarlarını Sıfırlayın</translation>
 <translation id="2848086008667475748">Ayarlarda Defolt edin…</translation>
@@ -632,6 +633,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5899314093904173337">Yaxınlıqdakı insanlarla paylaşmaq üçün onlara bu QR kodu öz kameraları və ya QR skaner tətbiqi ilə skanlamaq icazəsi verin</translation>
 <translation id="5911030830365207728">Google Tərcümə</translation>
 <translation id="5913600720976431809">Səhifəni tərcümə etmək seçimləri</translation>
+<translation id="5933515656458364246">Datanızı bütün cihazlarda sinxronlaşdırın.</translation>
 <translation id="5938160824633642847">Cihaz doludur. Yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="5948291296578561264">Bu fotoları foto kitabxanada saxlamağa icazə verir.</translation>
 <translation id="5951816930277761335">Keçidi paylaşın</translation>
@@ -713,6 +715,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 
 Datanız <ph name="TIME" /> tarixində sinxronizasiya parol sözü ilə şifrələndi. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="6418346271604475326">PDF hazırlanır</translation>
+<translation id="6429213933892582367">Parol Seçimlərini açın</translation>
 <translation id="6434591244308415567">Xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="6435236283694032571">Oxu Siyahısına əlavə edin</translation>
 <translation id="6439338047467462846">Hamısına İcazə Verin</translation>
@@ -828,6 +831,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7203585745079012652">Geri Cavab</translation>
 <translation id="7207023858769244910">Maraqlarınıza əsaslanan məzmun əldə etmək üçün sinxronizasiya edin.</translation>
 <translation id="721597782417389033">Yanlış Kart Ləqəbi</translation>
+<translation id="7221173315674413369">Yeniliklər bölməsində yeni funksiyaları və məsləhətləri araşdırın</translation>
 <translation id="722454870747268814">Yeni Gizli Panel</translation>
 <translation id="7265758999917665941">Bu sayt üçün heç vaxt yadda saxlamayın</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
@@ -861,6 +865,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7531345132340165516">Cari sayt</translation>
 <translation id="7537586195939242955">Üzr istəyirik, Parolunuz indi Passbook'a yüklənilə bilmir.</translation>
+<translation id="7553234618121028547">Deaktiv etmək üçün <ph name="BEGIN_LINK" />Ayarları<ph name="END_LINK" /> açın və Parol Seçmlərinə keçin.</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7583004045319035904">Anonim tabları kiliddən çıxarmaq üçün <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> istifadə edin.</translation>
@@ -942,6 +947,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiv Edin</translation>
 <translation id="8114753159095730575">Fayl endirilməsi əlçatandır. Seçimlər ekranın aşağısında əlçatandır.</translation>
+<translation id="81313319706244542">2. Parollara toxunun</translation>
 <translation id="8132598642024322408"><ph name="PREVIOUS_PRICE" /> olan məhsul indi <ph name="PRICE" /> qiymətinədir.</translation>
 <translation id="8136856065410661948">Bu, Chrome və Google Linzadan Apple Təqvimdə tədbirlər yaratmaq üçün istifadə olunacaq.</translation>
 <translation id="8156478151976189188">Parol Sinxronizasiyası İşləmir</translation>
@@ -964,6 +970,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8319076807703933069">Yeni Axtarış</translation>
 <translation id="8323906514956095947">Əlavə tab seçimləri üçün basıb saxlayın</translation>
 <translation id="8328777765163860529">Hamısını Bağlayın</translation>
+<translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8386068868580335421">Sıfırlayın</translation>
 <translation id="8407669440184693619">Bu sayt üçün parol tapılmadı</translation>

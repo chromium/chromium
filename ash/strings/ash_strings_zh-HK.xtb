@@ -923,7 +923,7 @@
 <translation id="6095008505822982596">語速</translation>
 <translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6103838137565245112">系統</translation>
-<translation id="6107292179555508368">這部裝置已停用麥克風和相機的存取權</translation>
+<translation id="6107292179555508368">此裝置已停用麥克風和相機的存取權</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6116825164611323644">此裝置的相機存取權已關閉</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,7 +952,7 @@
 <translation id="6259254695169772643">使用觸控筆選擇</translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在啟用…</translation>
 <translation id="6274202259872570803">螢幕截圖</translation>
-<translation id="6282694724099204652">啟用這兩項存取權，允許具有權限的應用程式和網頁使用這部裝置的麥克風和相機。</translation>
+<translation id="6282694724099204652">啟用這兩項存取權，允許具有權限的應用程式和網頁使用此裝置的麥克風和相機。</translation>
 <translation id="6283712521836204486">「請勿騷擾」已關閉。</translation>
 <translation id="6284232397434400372">解像度已變更</translation>
 <translation id="6288235558961782912">您可稍後在家長許可下重新新增 <ph name="USER_EMAIL_ADDRESS" />。</translation>

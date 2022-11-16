@@ -1431,6 +1431,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4646534391647090355">Gå dit nu</translation>
 <translation id="4648262692072505866">Ett hashvärde måste ha formatet SHA-256.</translation>
 <translation id="4652266463001779298">Tillåts inte</translation>
+<translation id="4652440160515225514">Organisationen har blockerat den här webbplatsen eftersom den bryter mot en policy.</translation>
 <translation id="4653167719759882810">Företagsfusioner och förvärv</translation>
 <translation id="4658638640878098064">Häfta uppe till vänster</translation>
 <translation id="4660119392514473465">Nu kan du surfa privat. Din aktivitet visas inte för andra som använder enheten. Nedladdningar, bokmärken och objekt i läslistan sparas dock.</translation>
@@ -2919,6 +2920,7 @@ Mer information:
 <translation id="8437238597147034694">&amp;Ångra Flytta</translation>
 <translation id="8438476240229491014">Kom ihåg inställningen</translation>
 <translation id="8438786541497918448">Vill du använda kameran och mikrofonen?</translation>
+<translation id="8438923942245957911">Den här webbplatsen har markerats av organisationen</translation>
 <translation id="8443613539889492016">Rap och hip-hop</translation>
 <translation id="8444543005280733648">Datornätverk</translation>
 <translation id="8446884382197647889">Läs mer</translation>

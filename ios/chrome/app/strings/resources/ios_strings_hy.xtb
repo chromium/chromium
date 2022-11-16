@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">Չհետևել</translation>
 <translation id="3863769054730344136">Ուղարկել սեփական սարքերին</translation>
 <translation id="387280738075653372">Ներբեռնեք Chrome-ն այստեղ։</translation>
+<translation id="3888863481921783344">Սա կօգտագործվի՝ ցույց տալու ձեր միջոցառմանը հնարավոր հրավիրված օգտատերերին։</translation>
 <translation id="3892144330757387737">Պատմությունը կգտնեք այստեղ</translation>
 <translation id="3897092660631435901">Ընտրացանկ</translation>
 <translation id="3904829425754749514">Ձեր կազմակերպությունն անջատել է համաժամացումը։ Դուք նախկինի պես կարող եք տեսնել ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս կարգավորումները այս սարքում։ Սակայն ձեր կատարած փոփոխությունները չեն համաժամացվի հաշվի հետ։</translation>
@@ -942,6 +943,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8105368624971345109">Անջատել</translation>
 <translation id="8114753159095730575">Ֆայլը հասանելի է ներբեռնման համար: Ընտրանքները հասանելի են էկրանի ներքևի հատվածում:</translation>
 <translation id="8132598642024322408">Նոր գինը՝ <ph name="PRICE" />, նախկին գինը՝ <ph name="PREVIOUS_PRICE" />։</translation>
+<translation id="8136856065410661948">Սա կօգտագործվի՝ ձեր Apple Calendar-ում Chrome-ից և Google Տեսապակուց միջոցառումներ ստեղծելու համար։</translation>
 <translation id="8156478151976189188">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> հաշիվ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

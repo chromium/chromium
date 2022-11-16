@@ -1430,6 +1430,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4646534391647090355">Otvori odmah</translation>
 <translation id="4648262692072505866">Hash mora biti u formatu SHA-256.</translation>
 <translation id="4652266463001779298">Nije dopušteno</translation>
+<translation id="4652440160515225514">Vaša organizacija blokirala je ovu web-lokaciju jer krši pravila.</translation>
 <translation id="4653167719759882810">Spajanja i akvizicije</translation>
 <translation id="4658638640878098064">Spajanje pri vrhu lijevo</translation>
 <translation id="4660119392514473465">Sad možete privatno pregledavati, a ostale osobe koje upotrebljavaju vaš uređaj neće vidjeti vašu aktivnost. Međutim, preuzimanja, oznake i stavke s popisa za čitanje spremit će se.</translation>
@@ -2918,6 +2919,7 @@ Dodatne pojedinosti:
 <translation id="8437238597147034694">&amp;Poništi premještanje</translation>
 <translation id="8438476240229491014">Zapamti postavku</translation>
 <translation id="8438786541497918448">Koristiti kameru i mikrofon?</translation>
+<translation id="8438923942245957911">Vaša organizacija označila je ovu web-lokaciju</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>
 <translation id="8444543005280733648">Računalne mreže</translation>
 <translation id="8446884382197647889">Saznajte više</translation>

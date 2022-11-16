@@ -1430,7 +1430,7 @@
 <translation id="4646534391647090355">立即前往下載中心</translation>
 <translation id="4648262692072505866">雜湊必須為 SHA-256 格式。</translation>
 <translation id="4652266463001779298">不允許</translation>
-<translation id="4652440160515225514">這個網站由於違反某項政策規定，因此已遭貴機構封鎖。</translation>
+<translation id="4652440160515225514">由於此網站違反政策，因此已被您的機構封鎖。</translation>
 <translation id="4653167719759882810">合併和收購</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
 <translation id="4660119392514473465">現在您可私下瀏覽內容，而使用這部電腦的其他使用者將無法看到您的活動。不過，您的下載檔案、書籤和閱讀清單項目仍會保留在裝置上。</translation>
@@ -2919,7 +2919,7 @@
 <translation id="8437238597147034694">復原移動(&amp;U)</translation>
 <translation id="8438476240229491014">記住此設定</translation>
 <translation id="8438786541497918448">要使用攝錄機和麥克風嗎？</translation>
-<translation id="8438923942245957911">貴機構已標記這個網站</translation>
+<translation id="8438923942245957911">您的機構已標示此網站</translation>
 <translation id="8443613539889492016">饒舌音樂和 Hip-Hop</translation>
 <translation id="8444543005280733648">電腦網絡</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>

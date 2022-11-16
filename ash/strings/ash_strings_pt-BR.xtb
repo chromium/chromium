@@ -175,6 +175,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1862380676329487333">Atualizar e sair</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1869497990620230175">Arquivos de acesso rápido</translation>
+<translation id="1871703283152909317">Ativar os dois acessos</translation>
 <translation id="1879018240766558464">No momento, não há suporte para janelas anônimas. Outros apps serão salvos.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
 <translation id="1882897271359938046">Espelhamento de <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6095008505822982596">Velocidade da fala</translation>
 <translation id="6099678161144790572">Editado no último mês</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="6107292179555508368">Os acessos ao microfone e à câmera estão desativados neste dispositivo</translation>
 <translation id="6114505516289286752">Download de arquivos de fala em <ph name="LANGUAGE" /> concluído</translation>
 <translation id="6116825164611323644">O acesso à câmera está desativado neste dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6259254695169772643">Use a stylus para selecionar</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ativando...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6282694724099204652">Ative os acessos para autorizar apps e páginas da Web com a permissão de uso do microfone e da câmera neste dispositivo.</translation>
 <translation id="6283712521836204486">O "Não perturbe" está desativado.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode ser adicionado novamente com a permissão do pai/mãe.</translation>

@@ -2388,6 +2388,7 @@
 <translation id="3143515551205905069">동기화 취소</translation>
 <translation id="3143754809889689516">처음부터 재생</translation>
 <translation id="3144647712221361880">다음으로 링크 열기</translation>
+<translation id="3144896554017119333">확장 프로그램 등</translation>
 <translation id="3149510190863420837">Chrome 앱</translation>
 <translation id="3150693969729403281">지금 안전 확인 실행</translation>
 <translation id="3150927491400159470">강력 새로고침</translation>
@@ -2496,6 +2497,7 @@
 <translation id="3268451620468152448">열린 탭</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> 표시 안함</translation>
+<translation id="3269175001434213183">콘텐츠를 백업하고 어느 기기에서나 사용하려면 동기화를 사용 설정하세요</translation>
 <translation id="3269612321104318480">연한 청록색 및 흰색</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{파일}other{파일 #개}}</translation>
 <translation id="326999365752735949">diff 다운로드 중</translation>
@@ -4292,6 +4294,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4950993567860689081">조직에서 세션을 관리합니다. 관리자가 내 프로필을 삭제하고 네트워크 트래픽을 모니터링할 수도 있습니다.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="495170559598752135">작업</translation>
+<translation id="4951966678293618079">이 사이트의 비밀번호를 저장하지 않습니다</translation>
 <translation id="4953808748584563296">기본 주황색 아바타</translation>
 <translation id="4955710816792587366">PIN 선택</translation>
 <translation id="4959262764292427323">어느 기기에서나 사용할 수 있도록 비밀번호가 Google 계정에 저장됩니다.</translation>
@@ -4321,6 +4324,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4981449534399733132">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="4982111327868342436">어떤 기기에서든 중단한 곳부터 이어서 작업하기</translation>
 <translation id="4982236238228587209">기기 소프트웨어</translation>
+<translation id="4986706507552097681">언제든지 설정에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="4986728572522335985">PIN을 비롯하여 보안 키에 저장된 모든 데이터가 삭제됩니다</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="49896407730300355">반시계 방향으로 회전(&amp;O)</translation>

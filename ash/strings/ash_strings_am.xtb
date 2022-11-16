@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">አዘምን እና ዘግተህ ውጣ</translation>
 <translation id="1864454756846565995">USB-C መሣሪያ (የኋላ ወደብ)</translation>
 <translation id="1869497990620230175">ፈጣን ፋይሎች</translation>
+<translation id="1871703283152909317">ሁለቱንም መዳረሻዎች አብራ</translation>
 <translation id="1879018240766558464">ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም። ሌሎች መተግበሪያዎች ይቀመጣሉ።</translation>
 <translation id="1882814835921407042">ምንም ተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
 <translation id="1882897271359938046">ወደ <ph name="DISPLAY_NAME" /> በማንጸባረቅ ላይ</translation>
@@ -923,6 +924,7 @@
 <translation id="6095008505822982596">የንግግር ፍጥነት</translation>
 <translation id="6099678161144790572">ባለፈው ወር ውስጥ አርትዖት ተደርጓል</translation>
 <translation id="6103838137565245112">ሥርዓት</translation>
+<translation id="6107292179555508368">ማይክሮፎን እና የካሜራ መዳረሻዎች በዚህ መሣሪያ ላይ ጠፍተዋል</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="6116825164611323644">በዚህ መሣሪያ ላይ የካሜራ መዳረሻ ጠፍቷል</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@
 <translation id="6259254695169772643">ለመጠቀም የእርስዎን ስታይለስ ይጠቀሙ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />፦ በማግበር ላይ...</translation>
 <translation id="6274202259872570803">ማያ ገጽ መቅርጽ</translation>
+<translation id="6282694724099204652">በዚህ መሣሪያ ላይ ያሉትን ማይክሮፎን(ኖች) እና ካሜራ(ዎች) ለመጠቀም ፈቃድ ያላቸው መተግበሪያዎችን እና ድረ-ገጾችን ለመፍቀድ መዳረሻዎቹን ያብሩ።</translation>
 <translation id="6283712521836204486">አትረብሽ ጠፍቷል</translation>
 <translation id="6284232397434400372">ጥራቱ ተቀይሯል</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> ከወላጅ ፈቃድ ጋር እንደገና ሊታከል ይችላል።</translation>

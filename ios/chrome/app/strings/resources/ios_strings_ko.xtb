@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2. 기본 브라우저 앱 탭하기</translation>
 <translation id="2820289420301699633">관리자가 Chrome을 제어하고 Chrome 데이터에 액세스할 수 있습니다.</translation>
 <translation id="2830972654601096923">주소 관리...</translation>
+<translation id="2834399722155632105">3. 비밀번호 옵션 탭하기</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">번역 설정 재설정</translation>
 <translation id="2848086008667475748">설정에서 기본 브라우저로 지정…</translation>
@@ -632,6 +633,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5899314093904173337">근처에 있는 사용자와 공유하려면 상대방에게 카메라나 QR 스캐너 앱으로 QR 코드를 스캔해 달라고 요청하세요.</translation>
 <translation id="5911030830365207728">Google 번역</translation>
 <translation id="5913600720976431809">페이지 번역 옵션</translation>
+<translation id="5933515656458364246">모든 기기에서 데이터를 동기화해 보세요.</translation>
 <translation id="5938160824633642847">기기의 저장용량이 거의 가득 찼습니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="5948291296578561264">이렇게 하면 사진 라이브러리에 사진을 저장할 수 있습니다.</translation>
 <translation id="5951816930277761335">링크 공유</translation>
@@ -713,6 +715,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 
 <ph name="TIME" />에 동기화 암호로 데이터가 암호화되었습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="6418346271604475326">PDF 준비 중</translation>
+<translation id="6429213933892582367">비밀번호 옵션 열기</translation>
 <translation id="6434591244308415567">오류가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="6435236283694032571">읽기 목록에 추가</translation>
 <translation id="6439338047467462846">모두 허용</translation>
@@ -828,6 +831,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7203585745079012652">음성 응답</translation>
 <translation id="7207023858769244910">동기화하여 내 관심분야에 맞는 콘텐츠를 받아보세요.</translation>
 <translation id="721597782417389033">잘못된 카드 닉네임</translation>
+<translation id="7221173315674413369">'새로운 기능'에서 새로운 기능과 팁을 살펴보세요.</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7265758999917665941">이 사이트 제외</translation>
 <translation id="7272437679830969316">신원을 인증할 수 없습니다. 비밀번호가 복사되지 않았습니다.</translation>
@@ -861,6 +865,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7531345132340165516">현재 사이트</translation>
 <translation id="7537586195939242955">현재 패스를 패스북에 설치할 수 없습니다.</translation>
+<translation id="7553234618121028547">사용 중지하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 열고 비밀번호 옵션으로 이동합니다.</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7561196759112975576">항상</translation>
 <translation id="7583004045319035904">시크릿 탭을 잠금 해제하려면 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증을 사용하세요.</translation>
@@ -942,6 +947,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8101409298456377967">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
+<translation id="81313319706244542">2. 비밀번호 탭하기</translation>
 <translation id="8132598642024322408">정가 <ph name="PREVIOUS_PRICE" />인 제품을 <ph name="PRICE" />에 판매 중</translation>
 <translation id="8136856065410661948">Chrome 및 Google 렌즈에서 Apple 캘린더 일정을 만들 때 사용됩니다.</translation>
 <translation id="8156478151976189188">비밀번호 동기화가 작동하지 않음</translation>
@@ -964,6 +970,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8319076807703933069">새 검색</translation>
 <translation id="8323906514956095947">더 많은 탭 옵션을 보려면 길게 터치하세요.</translation>
 <translation id="8328777765163860529">모두 닫기</translation>
+<translation id="8343993175958086504">콘텐츠를 백업하고 어느 기기에서나 사용하세요.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8386068868580335421">재설정</translation>
 <translation id="8407669440184693619">이 사이트의 비밀번호를 찾을 수 없음</translation>

@@ -2371,6 +2371,7 @@
 <translation id="3143515551205905069">Откажи синхронизацију</translation>
 <translation id="3143754809889689516">Пусти испочетка</translation>
 <translation id="3144647712221361880">Отворите линк као</translation>
+<translation id="3144896554017119333">Додаци и друго</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3150693969729403281">Обавите безбедносну проверу одмах</translation>
 <translation id="3150927491400159470">Поново учитај са сервера</translation>
@@ -2479,6 +2480,7 @@
 <translation id="3268451620468152448">Отворене картице</translation>
 <translation id="3269093882174072735">Учитај слику</translation>
 <translation id="326911502853238749">Не приказуј <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Укључите синхронизацију да бисте правили резервне копије садржаја и да бисте га користили на било ком уређају</translation>
 <translation id="3269612321104318480">Светлотиркизна и бела</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="326999365752735949">Преузимање diff датотеке</translation>
@@ -4276,6 +4278,7 @@
 <translation id="4950993567860689081">Сесијом управља организација Администратори могу да избришу ваш профил и да надгледају ваш мрежни саобраћај.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="495170559598752135">Радње</translation>
+<translation id="4951966678293618079">Никада не чувај лозинке за овај сајт</translation>
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
 <translation id="4955710816792587366">Одаберите PIN</translation>
 <translation id="4959262764292427323">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају</translation>
@@ -4305,6 +4308,7 @@
 <translation id="4981449534399733132">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />пријавите се<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Наставите тамо где сте стали на било ком уређају</translation>
 <translation id="4982236238228587209">Софтвер уређаја</translation>
+<translation id="4986706507552097681">Увек можете да одаберете шта ћете синхронизовати у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="4986728572522335985">Тиме ћете избрисати све податке са безбедносног кључа, укључујући његов PIN</translation>
 <translation id="4988526792673242964">Странице</translation>
 <translation id="49896407730300355">Окрећи у с&amp;меру супротном од кретања казаљке на сату</translation>

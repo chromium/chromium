@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Thumbnail untuk pratinjau sheet berbagi.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="3882834874697329510">Untuk mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka, aktifkan notifikasi di Setelan.</translation>
 <translation id="3940195383040445971">Pantau harga di tab</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
 <translation id="5558362125926932819">Tutup grup tab yang berisi <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dikelompokkan</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
 <translation id="575494663145460764">Dapatkan notifikasi untuk diskon?</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
 <translation id="5846292395804797011">Tutup grup <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="NUMBER_OF_TABS" /> tab</translation>

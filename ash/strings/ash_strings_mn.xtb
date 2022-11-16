@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">Шинэчлээд, гарах</translation>
 <translation id="1864454756846565995">USB-C төхөөрөмж (ард талын порт)</translation>
 <translation id="1869497990620230175">Шуурхай файлууд</translation>
+<translation id="1871703283152909317">Хоёр хандалтыг хоёуланг нь асаах</translation>
 <translation id="1879018240766558464">Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="1882814835921407042">Мобайл сүлжээ алга</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> руу тусгаж байна</translation>
@@ -924,6 +925,7 @@
 <translation id="6095008505822982596">Ярианы хурд</translation>
 <translation id="6099678161144790572">Өнгөрсөн сард зассан</translation>
 <translation id="6103838137565245112">систем</translation>
+<translation id="6107292179555508368">Энэ төхөөрөмж дээр микрофон болон камерын хандалтууд унтраалттай байна</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
 <translation id="6116825164611323644">Энэ төхөөрөмж дээр камерын хандалтыг унтраасан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@
 <translation id="6259254695169772643">Мэдрэгч үзгээ ашиглан сонгоно уу</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: идэвхжүүлж байна...</translation>
 <translation id="6274202259872570803">Дэлгэцийн видео бичлэг</translation>
+<translation id="6282694724099204652">Зөвшөөрөлтэй аппууд болон веб хуудаснуудад энэ төхөөрөмж дээрх микрофон болон камерыг ашиглахыг зөвшөөрөхийн тулд хандалтуудыг асаана уу.</translation>
 <translation id="6283712521836204486">Бүү саад бол горим унтраалттай байна.</translation>
 <translation id="6284232397434400372">Нягтралыг өөрчилсөн</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />-г эцэг эхийн зөвшөөрөлтэйгөөр дараа дахин нэмэх боломжтой.</translation>

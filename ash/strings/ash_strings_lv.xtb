@@ -175,6 +175,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1862380676329487333">Atjaunināt un izrakstīties</translation>
 <translation id="1864454756846565995">USB-C ierīce (aizmugurējā pieslēgvieta)</translation>
 <translation id="1869497990620230175">Ātrā piekļuve failiem</translation>
+<translation id="1871703283152909317">Ieslēgt abējādu piekļuvi</translation>
 <translation id="1879018240766558464">Inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
 <translation id="1882897271359938046">Spoguļo šeit: <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6095008505822982596">Runas ātrums</translation>
 <translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
 <translation id="6103838137565245112">sistēma</translation>
+<translation id="6107292179555508368">Šajā ierīcē ir izslēgta piekļuve mikrofonam un kamerai</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Piekļuve kamerai ir izslēgta šajā ierīcē</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -951,6 +953,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6259254695169772643">Atlasīšanai izmantojiet skārienekrāna pildspalvu.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>
 <translation id="6274202259872570803">Ekrānraide</translation>
+<translation id="6282694724099204652">Ieslēdziet piekļuvi, lai ļautu lietotnēm un tīmekļa lapām ar attiecīgo atļauju izmantot ar šo ierīci savienotos mikrofonus un kameras.</translation>
 <translation id="6283712521836204486">Režīms “Netraucēt” ir izslēgts.</translation>
 <translation id="6284232397434400372">Izšķirtspēja nomainīta</translation>
 <translation id="6288235558961782912">Kontu <ph name="USER_EMAIL_ADDRESS" /> var vēlāk atkārtoti pievienot ar vecāku atļauju.</translation>

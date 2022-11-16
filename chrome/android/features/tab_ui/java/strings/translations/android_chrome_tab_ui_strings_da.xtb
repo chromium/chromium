@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Du får en notifikation, når der er en lavere pris på en åben fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Miniature med forhåndsvisning af deleark.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="3882834874697329510">Slå notifikationer til i indstillingerne for at få en underretning, når der er en lavere pris på en åben fane.</translation>
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Se butiksoplysninger. Valgmuligheden findes øverst på skærmen</translation>
 <translation id="5558362125926932819">Luk fanegruppe med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> faner blev grupperet</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}one{<ph name="TABS_COUNT_MANY" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> links fra Chrome}}</translation>
 <translation id="575494663145460764">Vil du have underretninger om prisfald?</translation>
 <translation id="58326064309361797">Træk og slip faner for at gruppere dem</translation>
 <translation id="5846292395804797011">Luk gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> faner</translation>

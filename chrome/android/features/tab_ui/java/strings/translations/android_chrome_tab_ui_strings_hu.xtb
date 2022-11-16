@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Értesítést kap, ha alacsonyabb ár áll rendelkezésre az egyik megnyitott lapon.</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
+<translation id="374923079891132274">Megosztási lap előnézeti indexképe.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="3882834874697329510">Ha értesítést szeretne kapni, amikor alacsonyabb ár áll rendelkezésre az egyik megnyitott lapon, kapcsolja be az értesítéseket a Beállításokban.</translation>
 <translation id="3940195383040445971">Árkövetés a megnyitott lapokon</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport bezárása</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> lap csoportosítva</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link a Chrome-ból}other{<ph name="TABS_COUNT_MANY" /> link a Chrome-ból}}</translation>
 <translation id="575494663145460764">Szeretne értesítéseket kapni az árcsökkenésekről?</translation>
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
 <translation id="5846292395804797011">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó csoport bezárása: <ph name="TITLE_OF_GROUP" /></translation>

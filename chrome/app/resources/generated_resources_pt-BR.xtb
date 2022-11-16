@@ -2388,6 +2388,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3143754809889689516">Reproduzir do início</translation>
 <translation id="3144647712221361880">Abrir link como</translation>
+<translation id="3144896554017119333">Extensões e mais</translation>
 <translation id="3149510190863420837">apps do Chrome</translation>
 <translation id="3150693969729403281">Executar confirmação de segurança</translation>
 <translation id="3150927491400159470">Recarregamento forçado</translation>
@@ -2496,6 +2497,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3268451620468152448">Guias abertas</translation>
 <translation id="3269093882174072735">Carregar imagem</translation>
 <translation id="326911502853238749">Não mostrar <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Ative a sincronização para fazer backup e usar seus dados em qualquer dispositivo</translation>
 <translation id="3269612321104318480">Verde-água e branco</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="326999365752735949">Fazendo o download do diff</translation>
@@ -4294,6 +4296,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4950993567860689081">A sessão é gerenciada pela sua organização. Os administradores podem excluir seu perfil e também monitorar o tráfego de rede.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="495170559598752135">Ações</translation>
+<translation id="4951966678293618079">Nunca salvar senhas para este site</translation>
 <translation id="4953808748584563296">Avatar laranja padrão</translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
@@ -4323,6 +4326,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4981449534399733132">Para limpar os dados de navegação de todos os dispositivos sincronizados e da sua Conta do Google, <ph name="BEGIN_LINK" />faça login<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Continue de onde parou em qualquer dispositivo</translation>
 <translation id="4982236238228587209">Software do dispositivo</translation>
+<translation id="4986706507552097681">Nas configurações, é possível escolher a qualquer momento o que é sincronizado. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4986728572522335985">Essa ação exclui todos os dados na chave de segurança, inclusive o PIN dela</translation>
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="49896407730300355">Girar no s&amp;entido anti-horário</translation>

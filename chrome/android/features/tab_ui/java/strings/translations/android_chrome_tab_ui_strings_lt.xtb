@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Gausite įspėjimą, kai atidarytame skirtuke bus sumažinta kaina</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Bendrinimo lapo peržiūros miniatiūra.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="3882834874697329510">Norėdami gauti įspėjimą, kai atidarytame skirtuke bus sumažinta kaina, įjunkite pranešimus Nustatymų skiltyje.</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
 <translation id="5558362125926932819">Uždaryti skirtukų grupę, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Sugrupuota tiek skirtukų: <ph name="TAB_COUNT" /></translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nuoroda iš „Chrome“}one{<ph name="TABS_COUNT_MANY" /> nuoroda iš „Chrome“}few{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}many{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}other{<ph name="TABS_COUNT_MANY" /> nuorodų iš „Chrome“}}</translation>
 <translation id="575494663145460764">Norite gauti įspėjimus apie sumažintas kainas?</translation>
 <translation id="58326064309361797">Vilkite skirtukus, kad juos sugrupuotumėte</translation>
 <translation id="5846292395804797011">Uždaryti grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" /></translation>

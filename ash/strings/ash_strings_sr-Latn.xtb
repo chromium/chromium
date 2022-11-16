@@ -175,6 +175,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi me</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
 <translation id="1869497990620230175">Brz pristup fajlovima</translation>
+<translation id="1871703283152909317">Uključi oba pristupa</translation>
 <translation id="1879018240766558464">Prozori bez arhiviranja trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
 <translation id="1882897271359938046">Preslikavanje u <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6095008505822982596">Brzina govora</translation>
 <translation id="6099678161144790572">Izmenjeno proteklog meseca</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="6107292179555508368">Pristup mikrofonu i kameri je isključen na ovom uređaju</translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Pristup kameri je isključen na ovom uređaju</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6259254695169772643">Izaberite pomoću pisaljke</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje...</translation>
 <translation id="6274202259872570803">Video snimak ekrana</translation>
+<translation id="6282694724099204652">Uključite pristup da biste omogućili aplikacijama i veb-stranicama sa dozvolom da koriste mikrofone i kamere na ovom uređaju.</translation>
 <translation id="6283712521836204486">Režim Ne uznemiravaj je isključen.</translation>
 <translation id="6284232397434400372">Rezolucija je promenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> može ponovo da se doda kasnije uz dozvolu roditelja.</translation>

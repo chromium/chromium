@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Значок для отпр. предпросм. листа</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}}</translation>
 <translation id="3882834874697329510">Чтобы получать оповещения о снижении цены на открытой вкладке, включите уведомления в настройках.</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Просмотр сведений о магазине, параметр вверху экрана</translation>
 <translation id="5558362125926932819">Закрыть группу вкладок. Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5580090775658607195">Вкладки сгруппированы (всего <ph name="TAB_COUNT" />).</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ссылка из Chrome}one{<ph name="TABS_COUNT_MANY" /> ссылка из Chrome}few{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}many{<ph name="TABS_COUNT_MANY" /> ссылок из Chrome}other{<ph name="TABS_COUNT_MANY" /> ссылки из Chrome}}</translation>
 <translation id="575494663145460764">Получать оповещения о скидках?</translation>
 <translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
 <translation id="5846292395804797011">Закрыть группу вкладок "<ph name="TITLE_OF_GROUP" />". Количество вкладок в ней – <ph name="NUMBER_OF_TABS" />.</translation>

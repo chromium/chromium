@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1869497990620230175">ඉක්මන් ගොනු</translation>
+<translation id="1871703283152909317">ප්‍රවේශ දෙකම ක්‍රියාත්මක කරන්න</translation>
 <translation id="1879018240766558464">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> වෙත කැඩපත් කරයි</translation>
@@ -923,6 +924,7 @@
 <translation id="6095008505822982596">කථන ශීඝ්‍රතාව</translation>
 <translation id="6099678161144790572">පසුගිය මාසයේ සංස්කරණය කරන ලදී</translation>
 <translation id="6103838137565245112">පද්ධතිය</translation>
+<translation id="6107292179555508368">මෙම උපාංගයෙහි මයික්‍රෆෝන සහ කැමරා ප්‍රවේශ ක්‍රියා විරහිතයි</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> කථන ගොනු බාගන්නා ලදී</translation>
 <translation id="6116825164611323644">මෙම උපාංගයෙහි කැමරා ප්‍රවේශය ක්‍රියා විරහිතයි</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -951,6 +953,7 @@
 <translation id="6259254695169772643">තෝරා ගැනීමට ඔබේ පන්හිඳ භාවිත කරන්න</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: සක්‍රීය කරමින්...</translation>
 <translation id="6274202259872570803">තිරසටහන</translation>
+<translation id="6282694724099204652">මෙම උපාංගයෙහි මයික්‍රෆෝනය(න්) සහ කැමරාව(න්) භාවිතා කිරීමට අවසර ඇති යෙදුම් සහ වෙබ් පිටුවලට ඉඩ දීමට ප්‍රවේශයන් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="6283712521836204486">'බාධා නොකරන්න' අක්‍රියයි.</translation>
 <translation id="6284232397434400372">විභේදනය වෙනස් විය</translation>
 <translation id="6288235558961782912">මාපියෙකුගේ අවසරය සමඟ පසුව <ph name="USER_EMAIL_ADDRESS" /> එක් කළ හැක.</translation>

@@ -1431,6 +1431,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4646534391647090355">Porta-m'hi ara</translation>
 <translation id="4648262692072505866">El valor resum ha de tenir el format SHA-256.</translation>
 <translation id="4652266463001779298">No permès</translation>
+<translation id="4652440160515225514">La teva organització ha bloquejat aquest lloc web perquè infringeix una política.</translation>
 <translation id="4653167719759882810">Fusions i adquisicions</translation>
 <translation id="4658638640878098064">Grapat a la part superior esquerra</translation>
 <translation id="4660119392514473465">Ara pots navegar de manera privada i les altres persones que utilitzin aquest dispositiu no veuran la teva activitat. Tanmateix, les baixades, les adreces d'interès i els elements de la llista de lectura sí que es desaran.</translation>
@@ -2919,6 +2920,7 @@ Detalls addicionals:
 <translation id="8437238597147034694">&amp;Desfés el moviment</translation>
 <translation id="8438476240229491014">Recorda aquesta opció de configuració</translation>
 <translation id="8438786541497918448">Vols utilitzar la càmera i el micròfon?</translation>
+<translation id="8438923942245957911">La teva organització ha marcat aquest lloc web</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>
 <translation id="8444543005280733648">Xarxes informàtiques</translation>
 <translation id="8446884382197647889">Més informació</translation>

@@ -1431,6 +1431,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4646534391647090355">Vii mind kohe sinna</translation>
 <translation id="4648262692072505866">Räsiväärtuse vorming peab olema SHA-256.</translation>
 <translation id="4652266463001779298">Pole lubatud</translation>
+<translation id="4652440160515225514">Teie organisatsioon on selle saidi blokeerinud, sest see rikub eeskirju.</translation>
 <translation id="4653167719759882810">Ühinemised ja omandamised</translation>
 <translation id="4658638640878098064">Kirjaklamber vasakul ülal</translation>
 <translation id="4660119392514473465">Nüüd saate sirvida privaatselt ja teised seadme kasutajad ei näe teie tegevusi. Allalaaditud failid, järjehoidjad ja lugemisloendi üksused siiski salvestatakse.</translation>
@@ -2919,6 +2920,7 @@ Lisateave:
 <translation id="8437238597147034694">&amp;Võta teisaldamine tagasi</translation>
 <translation id="8438476240229491014">Pea see seade meeles</translation>
 <translation id="8438786541497918448">Kas kasutada kaamerat ja mikrofoni?</translation>
+<translation id="8438923942245957911">Teie organisatsioon on selle saidi märgistanud</translation>
 <translation id="8443613539889492016">Räpp ja hiphop</translation>
 <translation id="8444543005280733648">Arvutivõrgud</translation>
 <translation id="8446884382197647889">Lisateave</translation>

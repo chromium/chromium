@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">Обновить и выйти</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
 <translation id="1869497990620230175">Быстрый доступ к файлам</translation>
+<translation id="1871703283152909317">Разрешить доступ к камере и микрофону</translation>
 <translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
@@ -923,6 +924,7 @@
 <translation id="6095008505822982596">Скорость речи</translation>
 <translation id="6099678161144790572">Изменено за последний месяц</translation>
 <translation id="6103838137565245112">система</translation>
+<translation id="6107292179555508368">На этом устройстве запрещен доступ к камере и микрофону</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6116825164611323644">Доступ к камере отключен на этом устройстве</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -951,6 +953,7 @@
 <translation id="6259254695169772643">Выберите нужное с помощью стилуса</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: выполняется активация...</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
+<translation id="6282694724099204652">Разрешите доступ, чтобы приложения и веб-страницы могли использовать микрофоны и камеры на этом устройстве.</translation>
 <translation id="6283712521836204486">Режим "Не беспокоить" отключен</translation>
 <translation id="6284232397434400372">Разрешение изменено</translation>
 <translation id="6288235558961782912">Аккаунт <ph name="USER_EMAIL_ADDRESS" /> можно будет добавить снова с разрешения одного из родителей.</translation>
