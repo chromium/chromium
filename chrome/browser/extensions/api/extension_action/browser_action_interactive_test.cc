@@ -727,6 +727,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   // TODO(crbug.com/1115237): Now that this is an interactive test, is this
   // ifdef still necessary?
 #if !BUILDFLAG(IS_MAC)
+  ui_test_utils::BrowserActivationWaiter waiter(popup_browser);
+  waiter.WaitForActivation();
   EXPECT_TRUE(popup_browser->window()->IsActive());
 #endif
   EXPECT_FALSE(browser()->window()->IsActive());

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -146,6 +147,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   ASSERT_EQ(url1_,
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  ui_test_utils::BrowserActivationWaiter waiter(new_browser);
+  waiter.WaitForActivation();
 
   // Ensure window has initial focus on launch.
   EXPECT_TRUE(new_browser->tab_strip_model()

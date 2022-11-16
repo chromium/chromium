@@ -709,6 +709,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   ASSERT_TRUE(
       other_browser->exclusive_access_manager()->context()->IsFullscreen());
 
+  ui_test_utils::BrowserActivationWaiter waiter(other_browser);
+  waiter.WaitForActivation();
   ASSERT_FALSE(browser()->window()->IsActive());
   ASSERT_TRUE(other_browser->window()->IsActive());
 
