@@ -786,7 +786,11 @@ template("gcc_toolchain") {
       }
     }
 
-    forward_variables_from(invoker, [ "deps" ])
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "propagates_configs",
+                           ])
   }
 }
 
@@ -823,6 +827,7 @@ template("clang_toolchain") {
                              "dwp",
                              "enable_linker_map",
                              "loadable_module_extension",
+                             "propagates_configs",
                              "use_unstripped_as_runtime_outputs",
                            ])
 

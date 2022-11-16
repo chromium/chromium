@@ -61,6 +61,12 @@ template("android_clang_toolchain") {
     # Don't use .cr.so for loadable_modules since they are always loaded via
     # absolute path.
     loadable_module_extension = ".so"
+
+    # We propagate configs to allow cross-toolchain JNI include directories to
+    # work. This flag does not otherwise affect our build, but if applied to
+    # non-android toolchains, it causes unwanted configs from perfetto to
+    # propagate from host_toolchain deps.
+    propagates_configs = true
   }
 }
 
