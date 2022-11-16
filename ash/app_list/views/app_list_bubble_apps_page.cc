@@ -68,8 +68,9 @@ namespace {
 
 constexpr int kContinueColumnCount = 2;
 
-// Insets for the vertical scroll bar.
-constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
+// Insets for the vertical scroll bar. The bottom is pushed up slightly to keep
+// the scroll bar from being clipped by the rounded corners.
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 16, 1);
 
 // The padding between different sections within the apps page. Also used for
 // interior apps page container margin.
