@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,11 +51,6 @@ public class ToolbarSnapshotStateTest {
     public void before() {
         mDefaultColorStateList = ColorStateList.valueOf(DEFAULT_TINT);
         mDefaultToolbarSnapshotState = new ToolbarSnapshotStateBuilder().build();
-    }
-
-    @After
-    public void after() {
-        ToolbarSnapshotState.sSkipVisibleHintAssertion = false;
     }
 
     @Test
@@ -123,13 +117,11 @@ public class ToolbarSnapshotStateTest {
 
     @Test
     public void testSameUrlText_DifferentHintText() {
-        ToolbarSnapshotState.sSkipVisibleHintAssertion = true;
         ToolbarSnapshotState initialToolbarSnapshotState =
                 new ToolbarSnapshotStateBuilder().setVisibleTextPrefixHint("foo").build();
         ToolbarSnapshotState otherToolbarSnapshotState = new ToolbarSnapshotStateBuilder().build();
         Assert.assertEquals(ToolbarSnapshotDifference.NONE,
                 initialToolbarSnapshotState.getAnyDifference(otherToolbarSnapshotState));
-        ToolbarSnapshotState.sSkipVisibleHintAssertion = false;
     }
 
     @Test

@@ -25,8 +25,6 @@ import java.util.Objects;
  * if a new bitmap capture is warranted.
  */
 public class ToolbarSnapshotState {
-    static boolean sSkipVisibleHintAssertion;
-
     /**
      * Reasons that two snapshots are different. Treat this list as append only and keep it in sync
      * with ToolbarSnapshotDifference in enums.xml, as well as the proto in
@@ -83,14 +81,7 @@ public class ToolbarSnapshotState {
         mOptionalButtonData = optionalButtonData;
         mVisualState = visualState;
         mUrlText = urlText;
-        boolean isVisibleTextPrefixHintValid = urlText != null && visibleTextPrefixHint != null
-                && TextUtils.indexOf(urlText, visibleTextPrefixHint) >= 0;
-        mVisibleTextPrefixHint = isVisibleTextPrefixHintValid ? visibleTextPrefixHint : null;
-        if (!sSkipVisibleHintAssertion && visibleTextPrefixHint != null) {
-            assert isVisibleTextPrefixHintValid : "The visible hint, " + visibleTextPrefixHint
-                                                  + ", should always be part of the URL text, "
-                                                  + urlText;
-        }
+        mVisibleTextPrefixHint = visibleTextPrefixHint;
         mSecurityIcon = securityIcon;
         mColorStateList = colorStateList;
         mIsShowingUpdateBadgeDuringLastCapture = isShowingUpdateBadgeDuringLastCapture;
@@ -137,7 +128,10 @@ public class ToolbarSnapshotState {
     private boolean isVisibleUrlTextSame(ToolbarSnapshotState that) {
         if (mVisibleTextPrefixHint != null
                 && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
-            return true;
+            if (TextUtils.indexOf(mUrlText, mVisibleTextPrefixHint) >= 0) return true;
+            assert false : "The visible hint, " + mVisibleTextPrefixHint
+                           + ", should always be part of the URL text, "
+                           + mUrlText;
         }
         return TextUtils.equals(mUrlText, that.mUrlText);
     }
