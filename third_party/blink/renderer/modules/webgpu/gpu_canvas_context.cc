@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
@@ -79,7 +81,7 @@ SkColorInfo GPUCanvasContext::CanvasRenderingContextSkColorInfo() const {
                      alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                          ? kOpaque_SkAlphaType
                          : kPremul_SkAlphaType,
-                     SkColorSpace::MakeSRGB());
+                     PredefinedColorSpaceToSkColorSpace(color_space_));
 }
 
 void GPUCanvasContext::Stop() {
@@ -365,20 +367,15 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
-  // TODO(crbug.com/1241375): Support additional color spaces for external
-  // textures.
-  if (descriptor->colorSpace().AsEnum() !=
-      V8PredefinedColorSpace::Enum::kSRGB) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "colorSpace !== 'srgb' isn't supported yet.");
+  if (!ValidateAndConvertColorSpace(descriptor->colorSpace(), color_space_,
+                                    exception_state)) {
     return;
   }
 
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
       static_cast<WGPUTextureUsage>(texture_descriptor_.usage),
-      texture_descriptor_.format));
+      texture_descriptor_.format, color_space_));
   swap_buffers_->SetFilterQuality(filter_quality_);
 
   // Note: SetContentsOpaque is only an optimization hint. It doesn't

@@ -40,7 +40,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
       WGPUTextureUsage usage,
-      WGPUTextureFormat format);
+      WGPUTextureFormat format,
+      PredefinedColorSpace color_space);
   ~WebGPUSwapBufferProvider() override;
 
   viz::ResourceFormat Format() const;
@@ -161,8 +162,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
   scoped_refptr<SwapBuffer> last_swap_buffer_;
-  viz::ResourceFormat format_;
-  WGPUTextureUsage usage_;
+  const viz::ResourceFormat format_;
+  const WGPUTextureUsage usage_;
+  const PredefinedColorSpace color_space_;
 
   scoped_refptr<SwapBuffer> current_swap_buffer_;
 };
