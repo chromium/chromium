@@ -30,6 +30,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
@@ -233,6 +234,46 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
   // a sync cycle (i.e. in-memory only). Clear GC directive on load to clean up
   // previously persisted values.
   model_type_state_.mutable_progress_marker()->clear_gc_directive();
+
+  if (!model_type_state_.invalidations().empty()) {
+    if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
+      if (static_cast<size_t>(model_type_state_.invalidations_size()) >
+          kMaxPendingInvalidations) {
+        DVLOG(1) << "Cleaning invalidations in |model_type_state_| due to "
+                    "invalidations overflow.";
+        model_type_state_.clear_invalidations();
+      }
+      for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
+        pending_invalidations_.emplace_back(
+            std::make_unique<SyncInvalidationAdapter>(
+                model_type_state_.invalidations(i).hint(),
+                model_type_state_.invalidations(i).has_version()
+                    ? absl::optional<int64_t>(
+                          model_type_state_.invalidations(i).version())
+                    : absl::nullopt),
+            false);
+      }
+
+      bool is_version_order_correct = true;
+      for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
+        is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
+            *pending_invalidations_[i - 1].pending_invalidation,
+            *pending_invalidations_[i].pending_invalidation));
+      }
+      if (!is_version_order_correct) {
+        DVLOG(1) << "Cleaning invalidations in |model_type_state| due to "
+                    "incorrect version order.";
+        pending_invalidations_.clear();
+        model_type_state_.clear_invalidations();
+      }
+    } else {
+      // In case the feature was enabled in previous session, some invalidations
+      // might be loaded to |model_type_state_| from storage. As feature is
+      // disabled now, invalidations in |model_type_state_| and
+      // |pending_invalidations_| should be in sync.
+      model_type_state_.clear_invalidations();
+    }
+  }
 
   if (!CommitOnlyTypes().Has(GetModelType())) {
     DCHECK_EQ(type, GetModelTypeFromSpecificsFieldNumber(

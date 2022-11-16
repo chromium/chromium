@@ -18,6 +18,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
+#include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
@@ -33,7 +34,6 @@
 #include "components/sync/nigori/nigori_storage_impl.h"
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncers involved.
@@ -46,31 +46,6 @@ namespace {
 
 const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
-
-class SyncInvalidationAdapter : public SyncInvalidation {
- public:
-  SyncInvalidationAdapter(const std::string& payload,
-                          absl::optional<int64_t> version)
-      : payload_(payload), version_(version) {}
-  ~SyncInvalidationAdapter() override = default;
-
-  bool IsUnknownVersion() const override { return !version_.has_value(); }
-
-  const std::string& GetPayload() const override { return payload_; }
-
-  int64_t GetVersion() const override {
-    DCHECK(version_.has_value());
-    return version_.value();
-  }
-
-  void Acknowledge() override {}
-
-  void Drop() override {}
-
- private:
-  const std::string payload_;
-  const absl::optional<int64_t> version_;
-};
 
 void RecordInvalidationPerModelType(ModelType type) {
   UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",

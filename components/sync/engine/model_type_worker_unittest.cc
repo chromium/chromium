@@ -177,6 +177,26 @@ class ModelTypeWorkerTest : public ::testing::Test {
     nudge_handler()->ClearCounters();
   }
 
+  void InitializeWithInvalidations() {
+    ModelTypeState initial_state;
+    initial_state.mutable_progress_marker()->set_data_type_id(
+        GetSpecificsFieldNumberFromModelType(model_type_));
+    initial_state.mutable_progress_marker()->set_token(
+        "some_saved_progress_token");
+
+    sync_pb::ModelTypeState_Invalidation* loaded_invalidation =
+        initial_state.add_invalidations();
+
+    loaded_invalidation->set_hint("loaded_hint_1");
+    loaded_invalidation->set_version(1);
+
+    initial_state.set_initial_sync_done(true);
+
+    InitializeWithState(model_type_, initial_state);
+
+    nudge_handler()->ClearCounters();
+  }
+
   void InitializeCommitOnly(ModelType model_type) {
     mock_server_ = std::make_unique<SingleTypeMockServer>(model_type);
 
@@ -2646,6 +2666,19 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
   histogram_tester.ExpectUniqueSample(
       "Sync.PasswordNotesStateInUpdate",
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
+}
+
+// Verifies persisting invalidations load from the ModelTypeProcessor.
+TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(kSyncPersistInvalidations);
+
+  InitializeWithInvalidations();
+
+  sync_pb::GetUpdateTriggers gu_trigger_1;
+  worker()->CollectPendingInvalidations(&gu_trigger_1);
+  ASSERT_EQ(1, gu_trigger_1.notification_hint_size());
+  EXPECT_THAT(gu_trigger_1.notification_hint(), Not(testing::IsEmpty()));
 }
 
 // Verifies StorePendingInvalidations() calls for every incoming invalidation.
