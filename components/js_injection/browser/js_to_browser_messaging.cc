@@ -112,8 +112,7 @@ void JsToBrowserMessaging::PostMessage(
 
   if (!host_) {
     const std::string origin_string = GetOriginString(source_origin);
-    const bool is_main_frame =
-        web_contents->GetPrimaryMainFrame() == render_frame_host_;
+    const bool is_main_frame = render_frame_host_->IsInPrimaryMainFrame();
 
     host_ = connection_factory_->CreateHost(origin_string, is_main_frame,
                                             reply_proxy_.get());
@@ -128,8 +127,7 @@ void JsToBrowserMessaging::PostMessage(
   // PostMessage() has been received.
 #if DCHECK_IS_ON()
   DCHECK_EQ(GetOriginString(source_origin), origin_string_);
-  DCHECK_EQ(is_main_frame_,
-            web_contents->GetPrimaryMainFrame() == render_frame_host_);
+  DCHECK_EQ(is_main_frame_, render_frame_host_->IsInPrimaryMainFrame());
 #endif
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
   web_message->message = std::move(message);
