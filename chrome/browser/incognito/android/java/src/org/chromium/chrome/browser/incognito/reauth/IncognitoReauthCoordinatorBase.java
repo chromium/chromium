@@ -69,7 +69,8 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
     /**
      * A method to clean-up any unwanted resource.
      */
-    protected void destroy() {
+    @Override
+    public void destroy() {
         assert mModelChangeProcessor != null : "Model must be created before its destroyed.";
         mModelChangeProcessor.destroy();
     }

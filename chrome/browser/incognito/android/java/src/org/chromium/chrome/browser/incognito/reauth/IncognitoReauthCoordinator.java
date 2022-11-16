@@ -32,4 +32,9 @@ interface IncognitoReauthCoordinator {
      *                       screen.
      */
     void hide(@DialogDismissalCause int dismissalCause);
+
+    /**
+     * A method responsible to do any clean-up when the coordinator is being destroyed.
+     */
+    void destroy();
 }
