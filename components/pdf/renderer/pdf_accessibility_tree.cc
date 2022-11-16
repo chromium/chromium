@@ -1227,9 +1227,12 @@ PdfAccessibilityTree::PdfAccessibilityTree(
   if (features::IsPdfOcrEnabled() && render_frame) {
     content::RenderAccessibility* render_accessibility =
         GetRenderAccessibilityIfEnabled();
-    DCHECK(render_accessibility);
-    ocr_service_ = std::make_unique<PdfOcrService>(
-        render_accessibility->GetTreeIDForPluginHost(), *render_frame);
+    // PdfAccessibilityTree is created even when accessibility services are not
+    // enabled and we rely on them to use PdfOcr service.
+    if (render_accessibility) {
+      ocr_service_ = std::make_unique<PdfOcrService>(
+          render_accessibility->GetTreeIDForPluginHost(), *render_frame);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
