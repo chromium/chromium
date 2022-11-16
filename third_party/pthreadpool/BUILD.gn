@@ -3,15 +3,24 @@
 # found in the LICENSE file.
 
 config("pthreadpool_config") {
-  include_dirs = [ "src/include" ]
+  include_dirs = [
+    "src/include",
+    "src/src",
+  ]
+  defines = [ "PTHREADPOOL_USE_GCD=0" ]
 }
 
 source_set("pthreadpool") {
   public = [ "src/include/pthreadpool.h" ]
 
   sources = [
+    "src/src/fastpath.c",
     "src/src/memory.c",
     "src/src/portable-api.c",
+    "src/src/threadpool-atomics.h",
+    "src/src/threadpool-common.h",
+    "src/src/threadpool-object.h",
+    "src/src/threadpool-utils.h",
   ]
 
   if (is_win) {

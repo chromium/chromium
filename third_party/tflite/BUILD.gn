@@ -14,7 +14,10 @@ proto_library("tflite-config-proto") {
 }
 
 config("tflite_config") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    "src",
+    "//third_party/pthreadpool/src/include",
+  ]
   if (is_android) {
     libs = [ "log" ]
   }
@@ -392,6 +395,7 @@ source_set("tflite_kernels") {
     "//third_party/fp16",
     "//third_party/gemmlowp",
     "//third_party/neon_2_sse",
+    "//third_party/pthreadpool",
     "//third_party/ruy",
   ]
 
@@ -529,6 +533,7 @@ static_library("tflite") {
     "//third_party/fp16",
     "//third_party/gemmlowp",
     "//third_party/neon_2_sse",
+    "//third_party/pthreadpool",
     "//third_party/ruy",
   ]
 
@@ -536,7 +541,6 @@ static_library("tflite") {
     deps += [
       ":tflite_kernel_internals",
       "//third_party/cpuinfo",
-      "//third_party/pthreadpool",
       "//third_party/xnnpack",
     ]
   }

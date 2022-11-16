@@ -384,8 +384,8 @@ TFLiteOpResolver::TFLiteOpResolver() {
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   if (features::TFLiteXNNPACKDelegateEnabled()) {
-    delegate_creators_.push_back([](int num_threads) {
-      return tflite::MaybeCreateXNNPACKDelegate(num_threads);
+    delegate_creators_.push_back([](TfLiteContext* context) {
+      return tflite::MaybeCreateXNNPACKDelegate(context);
     });
   }
 #endif
