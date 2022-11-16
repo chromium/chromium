@@ -74,9 +74,10 @@ class TestDecoderState : public mojom::ConnectionFactory {
       ConnectToInputMethodCallback callback) override {
     std::move(callback).Run(/*bound=*/false);
   }
-
-  void ConnectToMozc(mojo::PendingAssociatedReceiver<ime::mojom::Mozc> mozc,
-                     ConnectToMozcCallback callback) override {
+  void ConnectToJapaneseDecoder(
+      mojo::PendingAssociatedReceiver<ime::mojom::JapaneseDecoder>
+          japanese_decoder,
+      ConnectToJapaneseDecoderCallback callback) override {
     std::move(callback).Run(/*bound=*/false);
   }
 

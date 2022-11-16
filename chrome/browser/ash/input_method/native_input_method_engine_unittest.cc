@@ -165,8 +165,10 @@ class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
     std::move(callback).Run(/*bound=*/true);
   }
 
-  void ConnectToMozc(mojo::PendingAssociatedReceiver<ime::mojom::Mozc> mozc,
-                     ConnectToMozcCallback callback) override {
+  void ConnectToJapaneseDecoder(
+      mojo::PendingAssociatedReceiver<ime::mojom::JapaneseDecoder>
+          japanese_decoder,
+      ConnectToJapaneseDecoderCallback callback) override {
     std::move(callback).Run(false);
   }
 

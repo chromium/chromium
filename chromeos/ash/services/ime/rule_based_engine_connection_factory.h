@@ -38,8 +38,9 @@ class RuleBasedEngineConnectionFactory : public mojom::ConnectionFactory {
           pending_input_method_host,
       mojom::InputMethodSettingsPtr settings,
       ConnectToInputMethodCallback callback) override;
-  void ConnectToMozc(mojo::PendingAssociatedReceiver<mojom::Mozc> pending_mozc,
-                     ConnectToMozcCallback callback) override;
+  void ConnectToJapaneseDecoder(
+      mojo::PendingAssociatedReceiver<mojom::JapaneseDecoder> pending_mozc,
+      ConnectToJapaneseDecoderCallback callback) override;
 
   // Is the current connection factory connected to a rule based engine?
   bool IsConnected();

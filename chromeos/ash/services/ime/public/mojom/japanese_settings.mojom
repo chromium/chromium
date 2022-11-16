@@ -85,13 +85,13 @@ struct MozcConfig {
     bool send_statistics_to_google;
 };
 
-// Mozc is the interface used for communicating with the Mozc decoder for
-// Japanese input, which is hosted inside of ImeService.
-// It is just going to allow access to the user's settings and user dictionary
-// for migrating the code to settings.
-// Once the settings migration is done, this interface can be deleted.
-[Stable]
-interface Mozc {
+// JapaneseDecoder is the interface used for communicating with the Mozc
+// decoder for Japanese input, which is hosted inside of ImeService.  It is
+// just going to allow access to the user's settings and user dictionary for
+// migrating the code to settings.  Once the settings migration is done, this
+// interface can be deleted.
+[Stable, RenamedFrom="ash.ime.mojom.Mozc"]
+interface JapaneseDecoder {
     // Retrieve the config used for Mozc which is stored as a file internally.
     // If this file does not exist, this should just return the default config.
     FetchMozcConfig@0() => (MozcConfig config);

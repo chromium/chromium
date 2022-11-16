@@ -29,9 +29,9 @@ void RuleBasedEngineConnectionFactory::ConnectToInputMethod(
   std::move(callback).Run(/*bound=*/true);
 }
 
-void RuleBasedEngineConnectionFactory::ConnectToMozc(
-    mojo::PendingAssociatedReceiver<mojom::Mozc> pending_reciever,
-    ConnectToMozcCallback callback) {
+void RuleBasedEngineConnectionFactory::ConnectToJapaneseDecoder(
+    mojo::PendingAssociatedReceiver<mojom::JapaneseDecoder> pending_reciever,
+    ConnectToJapaneseDecoderCallback callback) {
   // Connecting to the Mozc engine with the Rulebased connection
   // engine is not supported.
   NOTIMPLEMENTED_LOG_ONCE();
