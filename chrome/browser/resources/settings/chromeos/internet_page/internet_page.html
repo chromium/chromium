@@ -150,6 +150,11 @@
   </internet-config>
 </template>
 
+<template is="dom-if" if="[[shouldShowApnDetailDialog_]]" restamp>
+  <apn-detail-dialog id="apnDetailDialog" on-close="onApnDetailDialogClose_">
+  </apn-detail-dialog>
+</template>
+
 <template is="dom-if" if="[[showCellularSetupDialog_]]" restamp>
   <os-settings-cellular-setup-dialog id="cellularSetupDialog"
       on-close="onCloseCellularSetupDialog_"

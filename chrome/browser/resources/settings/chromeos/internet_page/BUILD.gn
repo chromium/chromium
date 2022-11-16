@@ -185,6 +185,7 @@ js_library("internet_page") {
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ash/webui/common/resources/cellular_setup:cellular_types",
     "//ash/webui/common/resources/cellular_setup:esim_manager_utils",
+    "//ash/webui/common/resources/network:apn_detail_dialog",
     "//ash/webui/common/resources/network:cellular_utils",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:network_listener_behavior",

@@ -3644,6 +3644,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
         More actions
       </message>
+      <message name="IDS_SETTINGS_ADD_APN_DIALOG_TITLE" desc="Title for the dialog that creates a new custom APN">
+        Add a new APN
+      </message>
       <!-- End of APN -->
     </messages>
   </release>

@@ -762,6 +762,32 @@ suite('InternetPage', function() {
         'Apn subpage row should be focused');
   });
 
+  test(
+      'Create apn button opens dialogs and clicking cancel button removes it',
+      async function() {
+        loadTimeData.overrideValues({isApnRevampEnabled: true});
+        await init();
+        Router.getInstance().navigateTo(routes.APN);
+        await flushAsync();
+        const getApnDetailDialog = () =>
+            internetPage.shadowRoot.querySelector('apn-detail-dialog');
+
+        assertFalse(!!getApnDetailDialog());
+        const createCustomApnButton =
+            internetPage.shadowRoot.querySelector('#createCustomApnButton');
+        assertTrue(!!createCustomApnButton);
+        createCustomApnButton.click();
+        await flushAsync();
+
+        assertTrue(!!getApnDetailDialog());
+        const onCloseEventPromise = eventToPromise('close', window);
+        const cancelBtn = getApnDetailDialog().shadowRoot.querySelector(
+            '#apnDetailCancelBtn');
+        cancelBtn.click();
+        await onCloseEventPromise;
+
+        assertFalse(!!getApnDetailDialog());
+      });
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently
   // such tests are flaky.
 });

@@ -315,6 +315,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnMenuDisable", IDS_SETTINGS_APN_MENU_DISABLE},
       {"apnMenuRemove", IDS_SETTINGS_APN_MENU_REMOVE},
       {"apnMoreActionsTitle", IDS_SETTINGS_APN_MORE_ACTIONS_TITLE},
+      {"apnDetailAddApnDialogTitle", IDS_SETTINGS_ADD_APN_DIALOG_TITLE},
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
       {"networkProxy", IDS_SETTINGS_INTERNET_NETWORK_PROXY_PROXY},

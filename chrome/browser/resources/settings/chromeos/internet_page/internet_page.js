@@ -10,6 +10,7 @@
 
 import 'chrome://resources/ash/common/cellular_setup/cellular_setup_icons.html.js';
 import 'chrome://resources/ash/common/network/sim_lock_dialogs.js';
+import 'chrome://resources/ash/common/network/apn_detail_dialog.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -32,11 +33,11 @@ import './esim_remove_profile_dialog.js';
 
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -179,6 +180,23 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
       /** @private {boolean} */
       showInternetConfig_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * @private
+       */
+      isApnRevampEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isApnRevampEnabled') &&
+              loadTimeData.getBoolean('isApnRevampEnabled');
+        },
+      },
+
+      /** @private */
+      shouldShowApnDetailDialog_: {
         type: Boolean,
         value: false,
       },
@@ -667,6 +685,23 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
+   * TODO(b/162365553): We should pass a network's GUID in here, and what mode
+   * the dialog should be in (create/edit/view)
+   * @private
+   */
+  showApnDetailDialog_() {
+    if (!this.isApnRevampEnabled_) {
+      return;
+    }
+    this.shouldShowApnDetailDialog_ = true;
+  }
+
+  /** @private */
+  onApnDetailDialogClose_() {
+    this.shouldShowApnDetailDialog_ = false;
+  }
+
+  /**
    * @param {!CustomEvent<!OncMojo.NetworkStateProperties>} event
    * @private
    */
@@ -1001,10 +1036,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
 
   /**
    * Handles UI requests to add new APN.
-   * TODO(b/162365553): Implement.
    * @private
    */
-  onCreateCustomApnClicked_() {}
+  onCreateCustomApnClicked_() {
+    if (this.shouldShowApnDetailDialog_) {
+      return;
+    }
+    this.showApnDetailDialog_();
+  }
 }
 
 customElements.define(

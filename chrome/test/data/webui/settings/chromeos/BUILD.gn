@@ -44,6 +44,7 @@ mojom("test_api_mojom") {
 test_files = [
   "add_users_tests.js",
   "apn_subpage_tests.js",
+  "apn_detail_dialog_tests.js",
   "app_notifications_subpage_tests.js",
   "apps_page_test.js",
   "audio_and_captions_page_tests.js",

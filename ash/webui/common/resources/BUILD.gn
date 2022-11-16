@@ -84,6 +84,7 @@ web_component_files = [
   "network/network_select.js",
   "network/network_siminfo.js",
   "network/sim_lock_dialogs.js",
+  "network/apn_detail_dialog.js",
   "quick_unlock/pin_keyboard.js",
   "quick_unlock/setup_pin_keyboard.js",
   "smb_shares/add_smb_share_dialog.js",
@@ -389,6 +390,7 @@ checked_in_dts_files = [
   "network/network_proxy.d.ts",
   "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
+  "network/apn_detail_dialog.d.ts",
 ]
 
 copy("copy_checked_in_dts_files") {

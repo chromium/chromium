@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args + mojom_js_args
 
   deps = [
+    ":apn_detail_dialog",
     ":apn_list",
     ":apn_list_item",
     ":cellular_utils",
@@ -113,6 +114,17 @@ js_library("network_choose_mobile") {
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+}
+
+js_library("apn_detail_dialog") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
 js_library("network_config") {
