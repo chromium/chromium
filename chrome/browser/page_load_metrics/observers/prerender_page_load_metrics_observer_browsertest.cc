@@ -241,6 +241,57 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   CheckResponsivenessMetrics(prerender_url);
 }
 
+// Tests that metrics are not recorded if the page moves to background before
+// recording metrics is completed.
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       ActivateAndMoveToBackground_SpeculationRule) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Start an activation.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  // Changing the visibility state to HIDDEN will prevent from recording metrics
+  // such as LCP since they are supposed to be recorded only when the page is
+  // foreground.
+  web_contents()->WasHidden();
+
+  // Force navigation to another page, which should force logging of metrics
+  // persisted at the end of the page load lifetime.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+
+  const ukm::mojom::UkmEntry* prerendered_page_entry =
+      entries[prerender_url].get();
+  ASSERT_TRUE(prerendered_page_entry);
+  // `WasPrerendered` exists since it's recorded when the activation starts.
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName));
+
+  // LCP for prerender shouldn't be recorded since the page is in the
+  // background.
+  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+
+  histogram_tester().ExpectTotalCount(
+      prerender_helper_.GenerateHistogramName(
+          internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
+          content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix),
+      0);
+}
+
 // TODO(crbug.com/1329881): Re-enable this test
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Activate_Embedder_DirectURLInput \
