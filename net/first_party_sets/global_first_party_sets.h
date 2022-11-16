@@ -39,10 +39,6 @@ class NET_EXPORT GlobalFirstPartySets {
   GlobalFirstPartySets(
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
       base::flat_map<SchemefulSite, SchemefulSite> aliases);
-  GlobalFirstPartySets(
-      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
-      base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      FirstPartySetsContextConfig manual_config);
 
   GlobalFirstPartySets(GlobalFirstPartySets&&);
   GlobalFirstPartySets& operator=(GlobalFirstPartySets&&);
@@ -118,6 +114,12 @@ class NET_EXPORT GlobalFirstPartySets {
   friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                              const GlobalFirstPartySets& sets);
 
+  GlobalFirstPartySets(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases,
+      base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets,
+      FirstPartySetsContextConfig manual_config);
+
   // Same as the public version of FindEntry, but is allowed to omit the
   // `config` argument (i.e. pass nullptr instead of a reference).
   absl::optional<FirstPartySetEntry> FindEntry(
@@ -165,13 +167,13 @@ class NET_EXPORT GlobalFirstPartySets {
   // canonical representative, before looking it up in `entries_`.
   base::flat_map<SchemefulSite, SchemefulSite> aliases_;
 
-  // Stores the customizations induced by the manually-specified set. May be
-  // empty if no switch was provided.
-  FirstPartySetsContextConfig manual_config_;
-
   // A map representing the manually-specified sets. Contains entries for
   // aliases as well as canonical sites.
   base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets_;
+
+  // Stores the customizations induced by the manually-specified set. May be
+  // empty if no switch was provided.
+  FirstPartySetsContextConfig manual_config_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

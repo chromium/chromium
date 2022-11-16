@@ -120,6 +120,11 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return sets.aliases();
   }
 
+  static const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
+  manual_entries(const net::GlobalFirstPartySets& sets) {
+    return sets.manual_sets();
+  }
+
   static const net::FirstPartySetsContextConfig& manual_config(
       const net::GlobalFirstPartySets& sets) {
     return sets.manual_config();

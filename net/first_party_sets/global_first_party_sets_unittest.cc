@@ -41,6 +41,27 @@ class GlobalFirstPartySetsTest : public ::testing::Test {
   GlobalFirstPartySetsTest() = default;
 };
 
+TEST_F(GlobalFirstPartySetsTest, Clone) {
+  const SchemefulSite example(GURL("https://example.test"));
+  const SchemefulSite example_cctld(GURL("https://example.cctld"));
+  const SchemefulSite member1(GURL("https://member1.test"));
+  const FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
+  const FirstPartySetEntry member1_entry(example, SiteType::kAssociated, 1);
+
+  const SchemefulSite foo(GURL("https://foo.test"));
+  const SchemefulSite member2(GURL("https://member2.test"));
+  const FirstPartySetEntry foo_entry(foo, SiteType::kPrimary, absl::nullopt);
+  const FirstPartySetEntry member2_entry(foo, SiteType::kAssociated, 1);
+
+  GlobalFirstPartySets sets(
+      /*entries=*/
+      {{example, entry}, {member1, member1_entry}},
+      /*aliases=*/{{example_cctld, example}});
+  sets.ApplyManuallySpecifiedSet({{foo, foo_entry}, {member2, member2_entry}});
+
+  EXPECT_EQ(sets, sets.Clone());
+}
+
 TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
   SchemefulSite example(GURL("https://example.test"));
 
