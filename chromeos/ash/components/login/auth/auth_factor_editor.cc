@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user.h"
 
@@ -426,7 +427,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
   //  perhaps configurable via a command line switch for testing.
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
-          .pub_key = "STUB MEDIATOR PUB KEY",
+          .pub_key = GetRecoveryHsmPublicKey(),
           .user_gaia_id = context->GetGaiaID(),
           .device_user_id = context->GetDeviceId()});
 
