@@ -98,7 +98,7 @@ public abstract class FirstRunFlowSequencer  {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
-                    && signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false);
+                    && signinManager.isSigninSupported();
         }
 
         /** @return true if first use hints should be skipped. */

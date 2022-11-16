@@ -115,8 +115,7 @@ public abstract class SignInPromo {
         final boolean isAccountsCachePopulated =
                 AccountManagerFacadeProvider.getInstance().getAccounts().isFulfilled();
         boolean canShowPersonalizedSigninPromo = mSigninManager.isSigninAllowed()
-                && mCanShowPersonalizedSuggestions && isAccountsCachePopulated
-                && mSigninManager.isSigninSupported(/*requireUpdatedPlayServices=*/true);
+                && mCanShowPersonalizedSuggestions && isAccountsCachePopulated;
         boolean canShowPersonalizedSyncPromo = mSigninManager.isSyncOptInAllowed()
                 && isUserSignedInButNotSyncing() && mCanShowPersonalizedSuggestions
                 && isAccountsCachePopulated;
