@@ -143,7 +143,7 @@ public class MainSettings extends PreferenceFragmentCompat
         super.onStart();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (signinManager.isSigninSupported()) {
+        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.addSignInStateObserver(this);
         }
         SyncService syncService = SyncService.get();
@@ -157,7 +157,7 @@ public class MainSettings extends PreferenceFragmentCompat
         super.onStop();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (signinManager.isSigninSupported()) {
+        if (signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             signinManager.removeSignInStateObserver(this);
         }
         SyncService syncService = SyncService.get();
@@ -246,7 +246,7 @@ public class MainSettings extends PreferenceFragmentCompat
     private void updatePreferences() {
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .isSigninSupported()) {
+                        .isSigninSupported(/*requireUpdatedPlayServices=*/false)) {
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);

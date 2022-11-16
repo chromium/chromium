@@ -19,6 +19,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.os.UserManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,11 +31,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -127,6 +132,7 @@ public class SigninManagerImplTest {
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
         when(mProfile.isChild()).thenReturn(false);
         doAnswer(invocation -> {
             Runnable runnable = invocation.getArgument(0);
@@ -523,5 +529,17 @@ public class SigninManagerImplTest {
         when(mProfile.isChild()).thenReturn(true);
 
         assertFalse(mSigninManager.isSignOutAllowed());
+    }
+
+    @Test
+    public void signInShouldBeSupportedForNonDemoUsers() {
+        // Make sure that the user is not a demo user.
+        ShadowApplication shadowApplication = ShadowApplication.getInstance();
+        UserManager userManager = Mockito.mock(UserManager.class);
+        Mockito.when(userManager.isDemoUser()).thenReturn(false);
+        shadowApplication.setSystemService(Context.USER_SERVICE, userManager);
+
+        assertTrue(mSigninManager.isSigninSupported(true));
+        assertTrue(mSigninManager.isSigninSupported(false));
     }
 }
