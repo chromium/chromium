@@ -26,7 +26,7 @@ PASS XRAnchorSet interface object name
 PASS XRAnchorSet interface: existence and properties of interface prototype object
 PASS XRAnchorSet interface: existence and properties of interface prototype object's "constructor" property
 PASS XRAnchorSet interface: existence and properties of interface prototype object's @@unscopables property
-FAIL XRAnchorSet interface: setlike<XRAnchor> assert_equals: size getter have the right name expected "size" but got "get size"
+PASS XRAnchorSet interface: setlike<XRAnchor>
 PASS XRHitTestResult interface: operation createAnchor()
 FAIL XRSession interface: operation restorePersistentAnchor(DOMString) assert_own_property: interface prototype object missing non-static operation expected property "restorePersistentAnchor" missing
 FAIL XRSession interface: operation deletePersistentAnchor(DOMString) assert_own_property: interface prototype object missing non-static operation expected property "deletePersistentAnchor" missing
