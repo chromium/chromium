@@ -53,13 +53,18 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
   void CreateEventListItemView(base::Time date,
                                google_apis::calendar::CalendarEvent* event,
                                bool round_top_corners = false,
-                               bool round_bottom_corners = false) {
+                               bool round_bottom_corners = false,
+                               int max_width = 0) {
     event_list_item_view_jelly_.reset();
     controller_->UpdateMonth(date);
     controller_->selected_date_ = date;
     event_list_item_view_jelly_ =
         std::make_unique<CalendarEventListItemViewJelly>(
-            controller_.get(), *event, round_top_corners, round_bottom_corners);
+            controller_.get(),
+            SelectedDateParams{controller_->selected_date().value(),
+                               controller_->selected_date_midnight(),
+                               controller_->selected_date_midnight_utc()},
+            *event, round_top_corners, round_bottom_corners, max_width);
   }
 
   void SetSelectedDateInController(base::Time date) {
@@ -165,6 +170,30 @@ TEST_F(CalendarViewEventListItemViewJellyTest, AllRoundedCorners) {
       event_list_item_view()->GetLayersInOrder().back();
   EXPECT_EQ(gfx::RoundedCornersF(12, 12, 12, 12),
             background_layer->rounded_corner_radii());
+}
+
+TEST_F(CalendarViewEventListItemViewJellyTest, MaxLabelWidth) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
+  SetSelectedDateInController(date);
+  const char* start_time_string = "22 Nov 2021 09:00 GMT";
+  const char* end_time_string = "22 Nov 2021 10:00 GMT";
+  const auto event = CreateEvent(start_time_string, end_time_string);
+
+  // If we don't set `max_width`, it should default to 0 (which the
+  // `views::Label`) will ignore).
+  CreateEventListItemView(date, event.get(), /*round_top_corners*/ true,
+                          /*round_bottom_corners*/ true);
+
+  EXPECT_EQ(GetSummaryLabel()->GetMaximumWidth(), 0);
+
+  // If we set a `max_width`, it should exist on the Summary Label.
+  const auto max_width = 200;
+  CreateEventListItemView(date, event.get(), /*round_top_corners*/ true,
+                          /*round_bottom_corners*/ true,
+                          /*max_width=*/max_width);
+
+  EXPECT_EQ(GetSummaryLabel()->GetMaximumWidth(), 200);
 }
 
 }  // namespace ash

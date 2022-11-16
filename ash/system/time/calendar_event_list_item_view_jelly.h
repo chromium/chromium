@@ -23,6 +23,12 @@ constexpr int kTimeLabelID = 101;
 
 class CalendarViewController;
 
+struct SelectedDateParams {
+  base::Time selected_date;
+  base::Time selected_date_midnight;
+  base::Time selected_date_midnight_utc;
+};
+
 // This view displays a jelly version of a calendar event entry.
 class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
  public:
@@ -30,9 +36,11 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   CalendarEventListItemViewJelly(
       CalendarViewController* calendar_view_controller,
+      SelectedDateParams selected_date_params,
       google_apis::calendar::CalendarEvent event,
       const bool round_top_corners,
-      const bool round_bottom_corners);
+      const bool round_bottom_corners,
+      const int max_width = 0);
   CalendarEventListItemViewJelly(const CalendarEventListItemViewJelly& other) =
       delete;
   CalendarEventListItemViewJelly& operator=(
@@ -50,6 +58,8 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   // Unowned.
   CalendarViewController* const calendar_view_controller_;
+
+  const SelectedDateParams selected_date_params_;
 
   // The URL for the meeting event.
   const GURL event_url_;

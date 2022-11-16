@@ -90,7 +90,8 @@ class CalendarEventListItemDot : public views::View {
 // Creates and returns a label containing the event summary.
 views::Builder<views::Label> CreateSummaryLabel(
     const std::string& event_summary,
-    const std::u16string& tooltip_text) {
+    const std::u16string& tooltip_text,
+    const int& max_width) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
                  bubble_utils::TypographyStyle::kButton1,
@@ -100,6 +101,9 @@ views::Builder<views::Label> CreateSummaryLabel(
       .SetID(kSummaryLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
+      .SetMultiLine(true)
+      .SetMaxLines(1)
+      .SetMaximumWidth(max_width)
       .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
       .SetSubpixelRenderingEnabled(false)
       .SetTextContext(CONTEXT_CALENDAR_DATE)
@@ -126,20 +130,21 @@ views::Builder<views::Label> CreateTimeLabel(
 
 CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
     CalendarViewController* calendar_view_controller,
+    SelectedDateParams selected_date_params,
     google_apis::calendar::CalendarEvent event,
     const bool round_top_corners,
-    const bool round_bottom_corners)
+    const bool round_bottom_corners,
+    const int max_width)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       calendar_view_controller_(calendar_view_controller),
+      selected_date_params_(selected_date_params),
       event_url_(event.html_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  DCHECK(calendar_view_controller_->selected_date().has_value());
-
   const auto [start_time, end_time] = calendar_utils::GetStartAndEndTime(
-      &event, calendar_view_controller->selected_date().value(),
-      calendar_view_controller->selected_date_midnight(),
-      calendar_view_controller->selected_date_midnight_utc());
+      &event, selected_date_params_.selected_date,
+      selected_date_params_.selected_date_midnight,
+      selected_date_params_.selected_date_midnight_utc);
   const auto [start_time_accessible_name, end_time_accessible_name] =
       event_date_formatter_util::GetStartAndEndTimeAccessibleNames(start_time,
                                                                    end_time);
@@ -169,8 +174,8 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   std::u16string formatted_time_text;
   if (calendar_utils::IsMultiDayEvent(&event) || event.all_day_event()) {
     formatted_time_text = event_date_formatter_util::GetMultiDayText(
-        &event, calendar_view_controller->selected_date_midnight(),
-        calendar_view_controller->selected_date_midnight_utc());
+        &event, selected_date_params_.selected_date_midnight,
+        selected_date_params_.selected_date_midnight_utc);
   } else {
     formatted_time_text =
         event_date_formatter_util::GetFormattedInterval(start_time, end_time);
@@ -188,7 +193,8 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
               views::Builder<views::View>()
                   .SetLayoutManager(std::make_unique<views::BoxLayout>(
                       views::BoxLayout::Orientation::kVertical))
-                  .AddChild(CreateSummaryLabel(event.summary(), tooltip_text))
+                  .AddChild(CreateSummaryLabel(event.summary(), tooltip_text,
+                                               max_width))
                   .AddChild(CreateTimeLabel(formatted_time_text, tooltip_text)))
           .Build());
 }
@@ -209,10 +215,9 @@ bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
 
   GURL finalized_url;
   bool opened_pwa = false;
-  DCHECK(calendar_view_controller_->selected_date().has_value());
   Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url_, calendar_view_controller_->selected_date_midnight(),
-      opened_pwa, finalized_url);
+      event_url_, selected_date_params_.selected_date_midnight, opened_pwa,
+      finalized_url);
   return true;
 }
 

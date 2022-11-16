@@ -121,6 +121,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   std::tuple<SingleDayEventList, SingleDayEventList>
   FindEventsSplitByMultiDayAndSameDay(base::Time day) const;
 
+  // Uses the `FindEvents` method to get events for that day and then filters
+  // the result into events that start or end in the next two hours.
+  std::list<google_apis::calendar::CalendarEvent> FindUpcomingEvents(
+      base::Time now_local) const;
+
   // Checks the `FetchingStatus` of a given start time.
   FetchingStatus FindFetchingStatus(base::Time start_time) const;
 
@@ -139,6 +144,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarViewAnimationTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
+  friend class CalendarViewWithJellyEnabledTest;
+  friend class CalendarUpNextViewTest;
   friend class GlanceablesTest;
 
   // Checks if the event has allowed statuses and is eligible for insertion.

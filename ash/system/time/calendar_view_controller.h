@@ -116,6 +116,9 @@ class ASH_EXPORT CalendarViewController {
   std::tuple<SingleDayEventList, SingleDayEventList>
   SelectedDateEventsSplitByMultiDayAndSameDay();
 
+  // Returns upcoming events for the "Up next" view.
+  SingleDayEventList UpcomingEvents();
+
   // The calendar events number of the `date`.
   int GetEventNumber(base::Time date);
 

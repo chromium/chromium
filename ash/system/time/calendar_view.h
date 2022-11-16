@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_model.h"
+#include "ash/system/time/calendar_up_next_view.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -231,6 +232,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Updates the on-screen month map with the current months on screen.
   void UpdateOnScreenMonthMap();
 
+  // Returns whether or not we've finished fetching CalendarEvents.
+  bool EventsFetchComplete();
+
   // Checks if all months in the visible window have finished fetching. If so,
   // stop showing the loading bar.
   void MaybeUpdateLoadingBarVisibility();
@@ -324,6 +328,12 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // bounds.
   void SetEventListViewBounds();
 
+  // Conditionally displays the "Up next" view.
+  void MaybeShowUpNextView();
+
+  // Removes the "Up next" view.
+  void RemoveUpNextView();
+
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
@@ -362,6 +372,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
   CalendarEventListView* event_list_view_ = nullptr;
+  CalendarUpNextView* up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
   CalendarModel* calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
@@ -398,6 +409,9 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // duration is `kAnimationDisablingTimeout` ms to enable the next animation.
   base::RetainingOneShotTimer header_animation_restart_timer_;
   base::RetainingOneShotTimer months_animation_restart_timer_;
+
+  // Timer that checks upcoming events periodically.
+  base::RepeatingTimer check_upcoming_events_timer_;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::ScopedObservation<CalendarModel, CalendarModel::Observer>

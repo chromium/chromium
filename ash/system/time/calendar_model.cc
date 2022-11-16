@@ -89,6 +89,45 @@ void SortByDateAscending(
   });
 }
 
+bool EventStartsInTenMins(const CalendarEvent& event,
+                          const base::Time& now_local) {
+  const int start_time_difference_in_mins =
+      (ash::calendar_utils::GetStartTimeAdjusted(&event) - now_local)
+          .InMinutes();
+
+  return (0 <= start_time_difference_in_mins &&
+          start_time_difference_in_mins <= 10);
+}
+
+bool EventStartedLessThanOneHourAgo(const CalendarEvent& event,
+                                    const base::Time& now_local) {
+  const int start_time_difference_in_mins =
+      (ash::calendar_utils::GetStartTimeAdjusted(&event) - now_local)
+          .InMinutes();
+  const int end_time_difference_in_mins =
+      (ash::calendar_utils::GetEndTimeAdjusted(&event) - now_local).InMinutes();
+
+  return (0 <= end_time_difference_in_mins &&
+          0 > start_time_difference_in_mins &&
+          start_time_difference_in_mins >= -60);
+}
+
+// Returns events that start in 10 minutes time, or events that are in progress
+// and started less than one hour ago.
+auto FilterEventsStartingSoonOrRecentlyInProgress(
+    const ash::SingleDayEventList& list,
+    const base::Time& now_local) {
+  std::list<CalendarEvent> result;
+
+  for (const CalendarEvent& event : list) {
+    if (EventStartsInTenMins(event, now_local) ||
+        EventStartedLessThanOneHourAgo(event, now_local))
+      result.emplace_back(event);
+  }
+
+  return result;
+}
+
 }  // namespace
 
 namespace ash {
@@ -477,6 +516,12 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
 std::tuple<SingleDayEventList, SingleDayEventList>
 CalendarModel::FindEventsSplitByMultiDayAndSameDay(base::Time day) const {
   return SplitEventsIntoMultiDayAndSameDay(FindEvents(day));
+}
+
+std::list<CalendarEvent> CalendarModel::FindUpcomingEvents(
+    base::Time now_local) const {
+  return FilterEventsStartingSoonOrRecentlyInProgress(FindEvents(now_local),
+                                                      now_local);
 }
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(

@@ -158,6 +158,14 @@ CalendarViewController::SelectedDateEventsSplitByMultiDayAndSameDay() {
           ApplyTimeDifference(selected_date_.value()));
 }
 
+SingleDayEventList CalendarViewController::UpcomingEvents() {
+  return Shell::Get()
+      ->system_tray_model()
+      ->calendar_model()
+      ->FindUpcomingEvents(
+          ApplyTimeDifference(base::Time::NowFromSystemTime()));
+}
+
 int CalendarViewController::GetEventNumber(base::Time date) {
   return Shell::Get()->system_tray_model()->calendar_model()->EventsNumberOfDay(
       ApplyTimeDifference(date),

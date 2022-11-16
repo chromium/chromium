@@ -4199,6 +4199,10 @@ Connect your device to power.
         Open in Google Calendar
       </message>
 
+      <message name="IDS_ASH_CALENDAR_UP_NEXT" desc="Header label for the Calendar Up next view.">
+        Up next
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
         Loading
       </message>

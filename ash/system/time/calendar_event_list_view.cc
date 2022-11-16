@@ -232,7 +232,12 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
        ++it) {
     container->AddChildView(std::make_unique<CalendarEventListItemViewJelly>(
         /*calendar_view_controller=*/calendar_view_controller_,
-        /*event=*/*it,
+        /*selected_date_params=*/
+        SelectedDateParams{
+            calendar_view_controller_->selected_date().value(),
+            calendar_view_controller_->selected_date_midnight(),
+            calendar_view_controller_->selected_date_midnight_utc()}, /*event=*/
+        *it,
         /*round_top_corners=*/it == events.begin(),
         /*round_bottom_corners=*/it->id() == events.rbegin()->id()));
   }

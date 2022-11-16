@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -88,6 +89,9 @@ constexpr base::TimeDelta kAnimationDurationForClosingEvents =
 
 // The cool-down time for enabling animation.
 constexpr base::TimeDelta kAnimationDisablingTimeout = base::Milliseconds(500);
+
+// Periodic time delay for checking upcoming events.
+constexpr base::TimeDelta kCheckUpcomingEventsDelay = base::Seconds(15);
 
 // The multiplier used to reduce velocity of flings on the calendar view.
 // Without this, CalendarView will scroll a few years per fast swipe.
@@ -371,6 +375,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                 calendar_view->set_should_months_animate(true);
               },
               base::Unretained(this))) {
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // Focusable nodes must have an accessible name and valid role.
@@ -443,6 +449,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   // Add scroll view.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
+  // Flex the scrollview around any sibling views that are added or removed.
+  layout->SetFlexForView(scroll_view_, 1);
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
   scroll_view_->ClipHeightTo(0, INT_MAX);
@@ -483,6 +491,11 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   scoped_view_observer_.AddObservation(scroll_view_);
   scoped_view_observer_.AddObservation(content_view_);
   scoped_view_observer_.AddObservation(this);
+
+  check_upcoming_events_timer_.Start(
+      FROM_HERE, kCheckUpcomingEventsDelay,
+      base::BindRepeating(&CalendarView::MaybeShowUpNextView,
+                          base::Unretained(this)));
 }
 
 CalendarView::~CalendarView() {
@@ -497,6 +510,8 @@ CalendarView::~CalendarView() {
     RemoveChildViewT(event_list_view_);
     event_list_view_ = nullptr;
   }
+  check_upcoming_events_timer_.Stop();
+  RemoveUpNextView();
   content_view_->RemoveAllChildViews();
 }
 
@@ -712,17 +727,20 @@ void CalendarView::UpdateOnScreenMonthMap() {
   MaybeUpdateLoadingBarVisibility();
 }
 
-void CalendarView::MaybeUpdateLoadingBarVisibility() {
+bool CalendarView::EventsFetchComplete() {
   for (auto& it : on_screen_month_) {
-    // If there's an on-screen month that hasn't finished fetching or
-    // re-fetching, the loading bar should be visible.
+    // Return false if there's an on-screen month that hasn't finished fetching
+    // or re-fetching.
     if (it.second == CalendarModel::kFetching ||
         it.second == CalendarModel::kRefetching) {
-      ShowProgress(-1, true);
-      return;
+      return false;
     }
   }
-  ShowProgress(-1, false);
+  return true;
+}
+
+void CalendarView::MaybeUpdateLoadingBarVisibility() {
+  ShowProgress(-1, !EventsFetchComplete());
 }
 
 void CalendarView::FadeInCurrentMonth() {
@@ -995,6 +1013,11 @@ void CalendarView::OnEventsFetched(
     on_screen_month_[start_time] = status;
 
   MaybeUpdateLoadingBarVisibility();
+
+  // Only show up next for events that are the same month as `base::Time::Now`.
+  if (start_time == calendar_utils::GetStartOfMonthUTC(
+                        base::Time::NowFromSystemTime().UTCMidnight()))
+    MaybeShowUpNextView();
 }
 
 void CalendarView::OnTimeout(const base::Time start_time) {
@@ -1797,6 +1820,30 @@ void CalendarView::SetEventListViewBounds() {
       GetBoundsInScreen().bottom() - scroll_view_->GetBoundsInScreen().y() -
           calendar_view_controller_->row_height() +
           kEventListViewVerticalPadding);
+}
+
+void CalendarView::MaybeShowUpNextView() {
+  if (features::IsCalendarJellyEnabled() && EventsFetchComplete() &&
+      !calendar_view_controller_->UpcomingEvents().empty()) {
+    if (up_next_view_)
+      return;
+
+    up_next_view_ = AddChildView(
+        std::make_unique<CalendarUpNextView>(calendar_view_controller_.get()));
+  } else {
+    RemoveUpNextView();
+  }
+}
+
+void CalendarView::RemoveUpNextView() {
+  if (up_next_view_) {
+    RemoveChildViewT(up_next_view_);
+    up_next_view_ = nullptr;
+    // If the up next view is deleted whilst the calendar is still open, e.g.
+    // time has passed and an event no longer meets 'upcoming' criteria, then
+    // the calendar view needs to relayout after removing the upnext view.
+    InvalidateLayout();
+  }
 }
 
 BEGIN_METADATA(CalendarView, views::View)

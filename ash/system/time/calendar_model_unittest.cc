@@ -1243,4 +1243,78 @@ TEST_F(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
   EXPECT_EQ(same_day_events.back().id(), kSameDayId);
 }
 
+TEST_F(CalendarModelTest, FindUpcomingEvents) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 13:00 GMT";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+  const char* kEventStartingInTenMinsId = "event_starting_in_ten_mins";
+  const char* kEventStartingInThirtyMinsId = "event_starting_in_thirty_mins";
+  const char* kEventStartingInTwoHoursId = "event_starting_in_two_hours";
+  const char* kEventInProgressStartedLessThanOneHourAgoId =
+      "event_in_progress_started_less_than_one_hour_ago";
+  const char* kEventInProgressStartedMoreThanOneHourAgoId =
+      "event_in_progress_started_more_than_one_hour_ago";
+  const char* kEventFinishedId = "event_finished";
+
+  auto event_starting_in_ten_mins = calendar_test_utils::CreateEvent(
+      kEventStartingInTenMinsId, kSummary, "10 Nov 2022 13:10 GMT",
+      "10 Nov 2022 15:00 GMT");
+  auto event_starting_in_thirty_mins = calendar_test_utils::CreateEvent(
+      kEventStartingInThirtyMinsId, kSummary, "10 Nov 2022 13:30 GMT",
+      "10 Nov 2022 15:00 GMT");
+  auto event_starting_in_two_hours = calendar_test_utils::CreateEvent(
+      kEventStartingInTwoHoursId, kSummary, "10 Nov 2022 15:00 GMT",
+      "10 Nov 2022 16:00 GMT");
+  auto event_in_progress_started_less_than_one_hour_ago =
+      calendar_test_utils::CreateEvent(
+          kEventInProgressStartedLessThanOneHourAgoId, kSummary,
+          "10 Nov 2022 12:01:00 GMT", "10 Nov 2022 17:00 GMT");
+  auto event_in_progress_started_more_than_one_hour_ago =
+      calendar_test_utils::CreateEvent(
+          kEventInProgressStartedMoreThanOneHourAgoId, kSummary,
+          "10 Nov 2022 11:00 GMT", "10 Nov 2022 17:00 GMT");
+  auto event_finished = calendar_test_utils::CreateEvent(
+      kEventFinishedId, kSummary, "10 Nov 2022 12:30 GMT",
+      "10 Nov 2022 12:59 GMT");
+
+  // Prepare mock events list.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(std::move(event_starting_in_ten_mins));
+  event_list->InjectItemForTesting(std::move(event_starting_in_thirty_mins));
+  event_list->InjectItemForTesting(std::move(event_starting_in_two_hours));
+  event_list->InjectItemForTesting(
+      std::move(event_in_progress_started_less_than_one_hour_ago));
+  event_list->InjectItemForTesting(
+      std::move(event_in_progress_started_more_than_one_hour_ago));
+  event_list->InjectItemForTesting(std::move(event_finished));
+
+  // Mock the events are fetched.
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto events = calendar_model_->FindUpcomingEvents(now_);
+
+  auto event_list_contains = [](auto& event_list, auto& id) {
+    return base::Contains(event_list, id, &CalendarEvent::id);
+  };
+
+  // We should only get the 2 events back that start in 10 mins or were ongoing
+  // with < 60 mins passed.
+  EXPECT_EQ(events.size(), size_t(2));
+  EXPECT_TRUE(event_list_contains(events, kEventStartingInTenMinsId));
+  EXPECT_FALSE(event_list_contains(events, kEventStartingInThirtyMinsId));
+  EXPECT_FALSE(event_list_contains(events, kEventStartingInTwoHoursId));
+  EXPECT_TRUE(
+      event_list_contains(events, kEventInProgressStartedLessThanOneHourAgoId));
+  EXPECT_FALSE(
+      event_list_contains(events, kEventInProgressStartedMoreThanOneHourAgoId));
+  EXPECT_FALSE(event_list_contains(events, kEventFinishedId));
+}
+
 }  // namespace ash
