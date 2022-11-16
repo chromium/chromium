@@ -82,6 +82,14 @@ VaapiPictureNativePixmapAngle::~VaapiPictureNativePixmapAngle() {
 
   if (x_pixmap_ != x11::Pixmap::None)
     x11::Connection::Get()->FreePixmap({x_pixmap_});
+
+  // Reset |va_surface_| before |gl_image_| to preserve the order of destruction
+  // before the refactoring done in
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4025005.
+  // TODO(crbug.com/1366367): Determine whether preserving this order matters
+  // and remove these calls if not.
+  va_surface_.reset();
+  gl_image_.reset();
 }
 
 VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
