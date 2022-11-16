@@ -47,8 +47,9 @@ class FakeCrosHealthdAudioObserver
 
  protected:
   void AddObserver() override {
-    ash::cros_healthd::ServiceConnection::GetInstance()->AddAudioObserver(
-        BindNewPipeAndPassRemote());
+    ash::cros_healthd::ServiceConnection::GetInstance()
+        ->GetEventService()
+        ->AddAudioObserver(BindNewPipeAndPassRemote());
   }
 };
 

@@ -29,8 +29,9 @@ void AudioEventsObserver::OnSevereUnderrun() {
 }
 
 void AudioEventsObserver::AddObserver() {
-  ash::cros_healthd::ServiceConnection::GetInstance()->AddAudioObserver(
-      BindNewPipeAndPassRemote());
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetEventService()
+      ->AddAudioObserver(BindNewPipeAndPassRemote());
 }
 
 }  // namespace reporting

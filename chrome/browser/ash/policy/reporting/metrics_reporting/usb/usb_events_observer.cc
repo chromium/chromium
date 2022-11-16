@@ -36,8 +36,9 @@ void UsbEventsObserver::OnRemove(UsbEventInfoPtr info) {
 }
 
 void UsbEventsObserver::AddObserver() {
-  ash::cros_healthd::ServiceConnection::GetInstance()->AddUsbObserver(
-      BindNewPipeAndPassRemote());
+  ash::cros_healthd::ServiceConnection::GetInstance()
+      ->GetEventService()
+      ->AddUsbObserver(BindNewPipeAndPassRemote());
 }
 
 void UsbEventsObserver::FillUsbTelemetry(UsbTelemetry* data,

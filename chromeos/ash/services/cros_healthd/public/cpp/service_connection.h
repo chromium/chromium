@@ -37,56 +37,6 @@ class ServiceConnection {
       base::RepeatingCallback<mojo::PendingRemote<
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
-  // TODO(b/256946276): remove these wrapper functions for
-  // |CrosHealthdEventService|.
-  // Subscribes to cros_healthd's Bluetooth-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddBluetoothObserver(
-      mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver>
-          pending_observer) = 0;
-
-  // Subscribes to cros_healthd's lid-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddLidObserver(
-      mojo::PendingRemote<mojom::CrosHealthdLidObserver> pending_observer) = 0;
-
-  // Subscribes to cros_healthd's power-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddPowerObserver(
-      mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
-          pending_observer) = 0;
-
-  // Subscribes to cros_healthd's network-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddNetworkObserver(
-      mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkEventsObserver>
-          pending_observer) = 0;
-
-  // Subscribes to cros_healthd's audio-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddAudioObserver(
-      mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
-          pending_observer) = 0;
-
-  // Subscribes to cros_healthd's Thunderbolt-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddThunderboltObserver(
-      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
-          pending_observer) = 0;
-
-  // Subscribes to cros_healthd's USB-related events. See
-  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
-  // details.
-  virtual void AddUsbObserver(
-      mojo::PendingRemote<mojom::CrosHealthdUsbObserver> pending_observer) = 0;
-
   // Gets the interface for the bound diagnostics service. In production, this
   // implementation is provided by cros_healthd. To customize mojo disconnect
   // handler, use |BindDiagnosticsService| instead. See
@@ -100,6 +50,12 @@ class ServiceConnection {
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual mojom::CrosHealthdProbeService* GetProbeService() = 0;
+
+  // Gets the interface for the bound event service. In production, this
+  // implementation is provided by cros_healthd. See
+  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual mojom::CrosHealthdEventService* GetEventService() = 0;
 
   // Binds |service| to an implementation of CrosHealthdDiagnosticsService. This
   // function is only used to customize mojo disconnect handler, otherwise use
