@@ -84,9 +84,10 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 absl::optional<std::string> StatusCollector::GetBootMode(
     chromeos::system::StatisticsProvider* statistics_provider) {
-  std::string dev_switch_mode;
-  if (!statistics_provider->GetMachineStatistic(
-          chromeos::system::kDevSwitchBootKey, &dev_switch_mode)) {
+  const absl::optional<base::StringPiece> dev_switch_mode =
+      statistics_provider->GetMachineStatistic(
+          chromeos::system::kDevSwitchBootKey);
+  if (!dev_switch_mode) {
     return absl::nullopt;
   }
 

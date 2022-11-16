@@ -2284,10 +2284,10 @@ bool DeviceStatusCollector::GetVersionInfo(
 
 bool DeviceStatusCollector::GetWriteProtectSwitch(
     em::DeviceStatusReportRequest* status) {
-  std::string firmware_write_protect;
-  if (!statistics_provider_->GetMachineStatistic(
-          chromeos::system::kFirmwareWriteProtectCurrentKey,
-          &firmware_write_protect)) {
+  const absl::optional<base::StringPiece> firmware_write_protect =
+      statistics_provider_->GetMachineStatistic(
+          chromeos::system::kFirmwareWriteProtectCurrentKey);
+  if (!firmware_write_protect) {
     return false;
   }
 
