@@ -51,7 +51,8 @@ void LayoutIFrame::UpdateLayout() {
   UpdateLogicalHeight();
 
   ClearLayoutOverflow();
-  UpdateAfterLayout();
+  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
+    UpdateAfterLayout();
 
   ClearNeedsLayout();
 }

@@ -275,7 +275,8 @@ void LayoutSVGRoot::UpdateLayout() {
       Layer()->SetNeedsCompositingInputsUpdate();
   }
 
-  UpdateAfterLayout();
+  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
+    UpdateAfterLayout();
   ClearNeedsLayout();
 }
 

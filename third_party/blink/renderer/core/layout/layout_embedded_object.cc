@@ -100,7 +100,8 @@ void LayoutEmbeddedObject::UpdateLayout() {
 
   ClearLayoutOverflow();
 
-  UpdateAfterLayout();
+  if (!RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled())
+    UpdateAfterLayout();
 
   if (!GetEmbeddedContentView() && GetFrameView())
     GetFrameView()->AddPartToUpdate(*this);

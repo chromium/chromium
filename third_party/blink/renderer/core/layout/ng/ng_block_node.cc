@@ -1393,7 +1393,8 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
 
   // Replaced elements already have |LayoutBox::UpdateAfterLayout| called when
   // we force a layout for them inside |NGBlockNode::FinishLayout|.
-  if (!box_->IsLayoutReplaced())
+  if (RuntimeEnabledFeatures::LayoutNGUnifyUpdateAfterLayoutEnabled() ||
+      !box_->IsLayoutReplaced())
     box_->UpdateAfterLayout();
 
   if (needs_full_invalidation)
