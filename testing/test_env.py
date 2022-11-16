@@ -120,7 +120,6 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
     if lsan:
       msan_options.append('detect_leaks=1')
     extra_env['MSAN_OPTIONS'] = ' '.join(msan_options)
-    extra_env['LD_LIBRARY_PATH'] = 'instrumented_libraries_prebuilt/lib'
     extra_env['VK_ICD_FILENAMES'] = ''
 
   if tsan:
