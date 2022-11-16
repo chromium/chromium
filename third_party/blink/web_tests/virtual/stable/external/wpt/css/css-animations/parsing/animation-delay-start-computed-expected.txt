@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+FAIL Property animation-delay-start value 'initial' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value '-500ms' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'calc(2 * 3s)' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value '20s, 10s' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'cover 0%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'COVER 0%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'cover 100%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'cover 120%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'cover 42%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'cover -42%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'contain 42%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'exit 42%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'exit calc(41% + 1%)' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+FAIL Property animation-delay-start value 'exit 1%, cover 2%, contain 100%' assert_true: animation-delay-start doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+
