@@ -514,8 +514,6 @@ class CORE_EXPORT NGFragmentItem final {
   // LayoutSVGInlineText.
   const Font& ScaledFont() const;
 
-  bool IsTextDecorationBoundary() const;
-
   // Get a description of |this| for the debug purposes.
   String ToString() const;
 

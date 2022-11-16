@@ -1130,11 +1130,6 @@ unsigned NGFragmentItem::TextOffsetForPoint(
   return inline_offset <= size.inline_size / 2 ? StartOffset() : EndOffset();
 }
 
-bool NGFragmentItem::IsTextDecorationBoundary() const {
-  const LayoutObject* object = GetLayoutObject();
-  return object->IsTextDecorationBoundary(StyleVariant());
-}
-
 void NGFragmentItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
   // Looking up |const_trace_type_| inside Trace() is safe since it is const.

@@ -1912,8 +1912,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Returns true if this object is a proper descendant of any list marker.
   bool IsInListMarker() const;
 
-  bool IsTextDecorationBoundary(NGStyleVariant) const;
-
   // The pseudo element style can be cached or uncached. Use the cached method
   // if the pseudo element doesn't respect any pseudo classes (and therefore
   // has no concept of changing state). The cached pseudo style always inherits

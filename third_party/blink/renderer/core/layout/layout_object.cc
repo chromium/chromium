@@ -838,19 +838,6 @@ LayoutObject* LayoutObject::NonCulledParent() const {
   return nullptr;
 }
 
-bool LayoutObject::IsTextDecorationBoundary(NGStyleVariant variant) const {
-  const LayoutObject* parent = NonCulledParent();
-  if (!parent)
-    return true;
-  const ComputedStyle& style = EffectiveStyle(variant);
-  const ComputedStyle& parent_style = variant == NGStyleVariant::kEllipsis
-                                          ? parent->FirstLineStyleRef()
-                                          : parent->EffectiveStyle(variant);
-  if (!style.IsAppliedTextDecorationsSame(parent_style))
-    return true;
-  return false;
-}
-
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {
   NOT_DESTROYED();
   LayoutObject* o = NextSibling();
