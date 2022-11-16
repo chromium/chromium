@@ -35,8 +35,10 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -732,8 +734,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerTerminated) {
 }
 
 class AppBannerManagerBrowserTestWithChromeBFCache
-    : public AppBannerManagerBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public AppBannerManagerBrowserTest {
  public:
   AppBannerManagerBrowserTestWithChromeBFCache() = default;
   ~AppBannerManagerBrowserTestWithChromeBFCache() override = default;
@@ -757,13 +758,6 @@ class AppBannerManagerBrowserTestWithChromeBFCache
                               "true");
     // Allow BackForwardCache for all devices regardless of their memory.
     DisableFeature(::features::kBackForwardCacheMemoryControls);
-
-    if (GetParam()) {
-      EnableFeatureAndSetParams(blink::features::kBackForwardCacheAppBanner, "",
-                                "");
-    } else {
-      DisableFeature(blink::features::kBackForwardCacheAppBanner);
-    }
 
     SetupFeaturesAndParameters();
   }
@@ -801,15 +795,15 @@ class AppBannerManagerBrowserTestWithChromeBFCache
     return embedded_test_server()->GetURL("/banners/nested_sw_test_page.html");
   }
 
-  bool IsBackForwardCacheAppBannerEnabled() {
-    return base::FeatureList::IsEnabled(
-        blink::features::kBackForwardCacheAppBanner);
+  bool IsRenderHostStoredInBackForwardCache(content::RenderFrameHost* rfh) {
+    return rfh->IsInLifecycleState(
+        content::RenderFrameHost::LifecycleState::kInBackForwardCache);
   }
 
-  bool IsRenderHostStoredInBackForwardCache(
-      content::RenderFrameHost::LifecycleState state) {
-    return state ==
-           content::RenderFrameHost::LifecycleState::kInBackForwardCache;
+  void AssertBackForwardCacheIsUsedAsExpected(
+      const content::RenderFrameHostWrapper& rfh) {
+    ASSERT_EQ(IsRenderHostStoredInBackForwardCache(rfh.get()),
+              content::BackForwardCache::IsBackForwardCacheFeatureEnabled());
   }
 
  private:
@@ -819,8 +813,8 @@ class AppBannerManagerBrowserTestWithChromeBFCache
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTestWithChromeBFCache,
-                       VerifyBFCacheBehaviorWithFlag) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTestWithChromeBFCache,
+                       VerifyBFCacheBehavior) {
   ASSERT_TRUE(embedded_test_server()->Start());
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
@@ -831,7 +825,7 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTestWithChromeBFCache,
                                   /*expected_will_show=*/false,
                                   State::PENDING_PROMPT_NOT_CANCELED);
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
-  EXPECT_EQ(manager->state(),
+  ASSERT_EQ(manager->state(),
             AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
 
@@ -840,38 +834,26 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTestWithChromeBFCache,
   TriggerBannerFlowWithNavigation(browser(), manager.get(),
                                   Get2ndInstallableURL(),
                                   /*expected_will_show=*/false, absl::nullopt);
+  AssertBackForwardCacheIsUsedAsExpected(rfh_a);
+
   content::RenderFrameHostWrapper rfh_b(current_frame_host());
 
-  EXPECT_EQ(IsRenderHostStoredInBackForwardCache(rfh_a->GetLifecycleState()),
-            IsBackForwardCacheAppBannerEnabled());
-
-  // Navigate backward.
+  // Navigate backward to 1st installable URL.
   web_contents()->GetController().GoBack();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   // Verify pipeline has been triggered for new page load.
   EXPECT_NE(manager->state(), AppBannerManager::State::INACTIVE);
 
-  // Depending on whether kBackForwardCacheAppBanner is enabled or disabled, the
-  // corresponding RenderFrameHost will also be either stored in the
-  // BackForwardCache or not.
-  EXPECT_EQ(IsRenderHostStoredInBackForwardCache(rfh_b->GetLifecycleState()),
-            IsBackForwardCacheAppBannerEnabled());
+  AssertBackForwardCacheIsUsedAsExpected(rfh_b);
 
-  // Navigate forward.
+  // Navigate forward to 2nd installable URL.
   web_contents()->GetController().GoForward();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   // Verify pipeline has been triggered for new page load.
   EXPECT_NE(manager->state(), AppBannerManager::State::INACTIVE);
 
-  // Navigating back to B, A should either be stored in the BFCache or not
-  // depending on whether kBackForwardCacheAppBanner is enabled or disabled.
-  EXPECT_EQ(IsRenderHostStoredInBackForwardCache(rfh_a->GetLifecycleState()),
-            IsBackForwardCacheAppBannerEnabled());
+  AssertBackForwardCacheIsUsedAsExpected(rfh_a);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppBannerManagerBrowserTestWithChromeBFCache,
-                         ::testing::Bool());
 
 namespace {
 class FailingInstallableManager : public InstallableManager {

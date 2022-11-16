@@ -524,10 +524,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultEnabled);
 // kOriginAgentClusterDefaultEnabled above.)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOriginAgentClusterDefaultWarning);
 
-// Allows pages that support App Install Banners to stay eligible for the
-// back/forward cache.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheAppBanner);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSystemColorChooser);
 
 // Disables forced frame updates for web tests. Used by web test runner only.

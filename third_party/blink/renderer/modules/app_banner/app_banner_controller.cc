@@ -69,15 +69,6 @@ void AppBannerController::BannerPromptRequest(
   // TODO(http://crbug/1289079): Test that prompt() behaves correctly when
   // called in pagehide().
 
-  if (!base::FeatureList::IsEnabled(features::kBackForwardCacheAppBanner)) {
-    // With the current implementation, bfcache could cause prompt() event to be
-    // lost if called after being put into the cache, and the banner will not be
-    // hidden properly. We disable bfcache to avoid these issues.
-    GetSupplementable()->GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-        blink::SchedulingPolicy::Feature::kAppBanner,
-        {blink::SchedulingPolicy::DisableBackForwardCache()});
-  }
-
   mojom::AppBannerPromptReply reply =
       GetSupplementable()->DispatchEvent(*BeforeInstallPromptEvent::Create(
           event_type_names::kBeforeinstallprompt, *GetSupplementable(),

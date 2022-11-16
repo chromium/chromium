@@ -1806,26 +1806,6 @@
             ]
         }
     ],
-    "BackForwardCacheAppBanner": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardCacheAppBanner"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheDedicatedWorker": [
         {
             "platforms": [

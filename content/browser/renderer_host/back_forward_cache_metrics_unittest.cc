@@ -242,6 +242,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kWebVR =*/30,
       /* WebSchedulerTrackedFeature::kWakeLock =*/35,
       /* WebSchedulerTrackedFeature::kWebFileSystem =*/39,
+      /* WebSchedulerTrackedFeature::kAppBanner =*/42,
       /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};
 
   // Combine the result of |GetDisallowedFeatures()| and |GetAllowedFeatures()|.

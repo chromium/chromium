@@ -1218,11 +1218,6 @@ BASE_FEATURE(kOriginAgentClusterDefaultWarning,
              "OriginAgentClusterDefaultWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1276864): Delete this flag.
-BASE_FEATURE(kBackForwardCacheAppBanner,
-             "BackForwardCacheAppBanner",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSystemColorChooser,
              "SystemColorChooser",
              base::FEATURE_DISABLED_BY_DEFAULT);

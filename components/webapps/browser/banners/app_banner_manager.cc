@@ -710,30 +710,11 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
     return;
   }
 
-  // If the page gets stored in the back-forward cache we will not trigger the
-  // pipeline again when navigating back (DidFinishLoad will not trigger). So
-  // only allow the page to enter the cache if we know for sure that no
-  // installation is needed. Note: this check must happen before calling
-  // Terminate as it might set the installable_web_app_check_result_ to kNo.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheAppBanner)) {
-    if (installable_web_app_check_result_ !=
-            InstallableWebAppCheckResult::kNo &&
-        state_ != State::INACTIVE) {
-      content::BackForwardCache::DisableForRenderFrameHost(
-          handle->GetPreviousRenderFrameHostId(),
-          back_forward_cache::DisabledReason(
-              back_forward_cache::DisabledReasonId::kAppBannerManager));
-    }
-  }
-
   if (state_ != State::COMPLETE && state_ != State::INACTIVE)
     Terminate();
   ResetCurrentPageData();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheAppBanner) &&
-      handle->IsServedFromBackForwardCache()) {
+  if (handle->IsServedFromBackForwardCache()) {
     UpdateState(State::INACTIVE);
     RequestAppBanner(validated_url_);
   }

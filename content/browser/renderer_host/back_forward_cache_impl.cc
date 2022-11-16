@@ -157,7 +157,6 @@ bool ShouldIgnoreBlocklists() {
 // when actually the blocking is flag controlled and they are not registered
 // as being used if we don't want them to block.
 constexpr WebSchedulerTrackedFeatures kDisallowedFeatures(
-    WebSchedulerTrackedFeature::kAppBanner,
     WebSchedulerTrackedFeature::kBroadcastChannel,
     WebSchedulerTrackedFeature::kContainsPlugins,
     WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
