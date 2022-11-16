@@ -20,6 +20,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 
 namespace extensions {
@@ -68,8 +69,7 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayNotKioskEnabled) {
       api_test_utils::RunFunctionAndReturnError(
           set_info_function.get(), "[\"display_id\", {}]", browser_context()));
 
-  std::unique_ptr<base::DictionaryValue> set_info =
-      provider_->GetSetInfoValue();
+  absl::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
   EXPECT_FALSE(set_info);
 }
 
@@ -97,18 +97,16 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "}]",
       browser_context()));
 
-  std::unique_ptr<base::DictionaryValue> set_info_value =
-      provider_->GetSetInfoValue();
-  ASSERT_TRUE(set_info_value);
-  base::Value::Dict set_info = std::move(*set_info_value).TakeDict();
+  absl::optional<base::Value::Dict> set_info = provider_->GetSetInfoValue();
+  ASSERT_TRUE(set_info);
 
-  EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
+  EXPECT_TRUE(api_test_utils::GetBoolean(*set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
-            api_test_utils::GetString(set_info, "mirroringSourceId"));
-  EXPECT_EQ(100, api_test_utils::GetInteger(set_info, "boundsOriginX"));
-  EXPECT_EQ(200, api_test_utils::GetInteger(set_info, "boundsOriginY"));
-  EXPECT_EQ(90, api_test_utils::GetInteger(set_info, "rotation"));
-  base::Value::Dict overscan = api_test_utils::GetDict(set_info, "overscan");
+            api_test_utils::GetString(*set_info, "mirroringSourceId"));
+  EXPECT_EQ(100, api_test_utils::GetInteger(*set_info, "boundsOriginX"));
+  EXPECT_EQ(200, api_test_utils::GetInteger(*set_info, "boundsOriginY"));
+  EXPECT_EQ(90, api_test_utils::GetInteger(*set_info, "rotation"));
+  base::Value::Dict overscan = api_test_utils::GetDict(*set_info, "overscan");
   EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
   EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
   EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));

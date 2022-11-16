@@ -27,8 +27,7 @@ void MockDisplayInfoProvider::SetDisplayProperties(
     ErrorCallback callback) {
   // Should get called only once per test case.
   DCHECK(!set_info_value_);
-  set_info_value_ = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(properties.ToValue())));
+  set_info_value_ = properties.ToValue();
   set_info_display_id_ = display_id;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
