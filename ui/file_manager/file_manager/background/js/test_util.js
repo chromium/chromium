@@ -13,6 +13,14 @@ import {test} from './test_util_base.js';
 export {test};
 
 /**
+ * Sanitizes the formatted date. Replaces unusual space with normal space.
+ * @param {string} strDate the date already in the string format.
+ * @return {string}
+ */
+export function sanitizeDate(strDate) {
+  return strDate.replace('\u202f', ' ');
+}
+/**
  * Opens the main Files app's window and waits until it is ready.
  *
  * @param {!FilesAppState} appState App state.
@@ -64,7 +72,7 @@ test.util.sync.getFileList = contentWindow => {
       row.querySelector('.filename-label').textContent,
       row.querySelector('.size').textContent,
       row.querySelector('.type').textContent,
-      row.querySelector('.date').textContent,
+      sanitizeDate(row.querySelector('.date').textContent || ''),
     ]);
   }
   return fileList;

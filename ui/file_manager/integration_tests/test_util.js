@@ -1689,12 +1689,28 @@ export function getDateWithDayDiff(diffDays) {
   const nowDate = new Date();
   nowDate.setDate(nowDate.getDate() - diffDays);
   // Format: "May 2, 2021, 11:25 AM"
-  return nowDate.toLocaleString('default', {
+  return formatDate(nowDate);
+}
+
+/**
+ * Formats the date to be able to compare to Files app date.
+ */
+export function formatDate(date) {
+  return sanitizeDate(date.toLocaleString('default', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     hour12: true,
     hour: 'numeric',
     minute: 'numeric',
-  });
+  }));
+}
+
+/**
+ * Sanitizes the formatted date. Replaces unusual space with normal space.
+ * @param {string} strDate the date already in the string format.
+ * @return {string}
+ */
+export function sanitizeDate(strDate) {
+  return strDate.replace('\u202f', ' ');
 }

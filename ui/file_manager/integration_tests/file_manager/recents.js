@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, formatDate, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -1077,7 +1077,7 @@ function prepareFileFor1AMToday(timezone) {
   const nowDate = new Date();
   nowDate.setHours(1, 0, 0, 0);
   // Format: "May 2, 2021, 11:25 AM GMT+1000"
-  const modifiedDate = nowDate.toLocaleString('default', {
+  const modifiedDate = sanitizeDate(nowDate.toLocaleString('default', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -1086,7 +1086,7 @@ function prepareFileFor1AMToday(timezone) {
     minute: 'numeric',
     timeZone: timezone,
     timeZoneName: 'longOffset',
-  });
+  }));
   return ENTRIES.beautiful.cloneWithModifiedDate(modifiedDate);
 }
 

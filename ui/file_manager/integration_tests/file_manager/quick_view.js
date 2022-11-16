@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {DialogType} from '../dialog_type.js';
 import {ExecuteScriptError} from '../remote_call.js';
-import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, mountGuestOs, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -339,7 +339,11 @@ async function getQuickViewMetadataBoxField(appId, name, hidden = '') {
   }
 
   const element = await remoteCall.waitForElement(appId, quickViewQuery);
-  return element.text;
+  if (name === 'Date modified') {
+    return sanitizeDate(element.text || '');
+  } else {
+    return element.text;
+  }
 }
 
 /**
