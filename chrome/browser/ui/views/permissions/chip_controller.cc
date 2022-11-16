@@ -387,7 +387,7 @@ void ChipController::HandleConfirmation(
       chip_->SetVisible(true);
       chip_->AnimateExpand(kExpandDuration);
     }
-    chip_->RequestFocus();
+
     chip_->SetCallback(base::BindRepeating(&ChipController::ShowPageInfoDialog,
                                            base::Unretained(this)));
     collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
