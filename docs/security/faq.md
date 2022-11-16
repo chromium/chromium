@@ -514,12 +514,11 @@ information about the transport security of that page.
 
 When the browser needs to show trustworthy information, such as the bubble
 resulting from a click on the lock icon, it does so by making the bubble overlap
-chrome. In the case of the lock bubble, it is a small triangular bump in the
-border of the bubble that overlays the chrome. This visual detail can't be
-imitated by the page itself since the page is confined to the viewport.
+chrome. This visual detail can't be imitated by the page itself since the page
+is confined to the viewport.
 
-<a name="TOC-Why-does-Chrome-show-a-green-lock-even-if-my-HTTPS-connection-is-being-proxied-"></a>
-### Why does Chrome show a green lock, even if my HTTPS connection is being proxied?
+<a name="TOC-Why-does-Chrome-show-a-lock-even-if-my-HTTPS-connection-is-being-proxied-"></a>
+### Why does Chrome show a lock, even if my HTTPS connection is being proxied?
 
 Some types of software intercept HTTPS connections. Examples include anti-virus
 software, corporate network monitoring tools, and school censorship software. In
@@ -559,13 +558,13 @@ that the current server is not the true server.
 ### How does key pinning interact with local proxies and filters?
 
 To enable certificate chain validation, Chrome has access to two stores of trust
-anchors (i.e. certificates that are empowered as issuers). One trust anchor
-store is the system or public trust anchor store, and the other other is the
-local or private trust anchor store. The public store is provided as part of
-the operating system, and intended to authenticate public internet servers. The
-private store contains certificates installed by the user or the administrator
-of the client machine. Private intranet servers should authenticate themselves
-with certificates issued by a private trust anchor.
+anchors (i.e., certificates that are empowered as issuers). One trust anchor
+store is for authenticating public internet servers, and depending on the 
+version of Chrome being used and the platform it is running on, the
+[Chrome Root Store](https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md#what-is-the-chrome-root-store)
+might be in use. The private store contains certificates installed by the user
+or the administrator of the client machine. Private intranet servers should
+authenticate themselves with certificates issued by a private trust anchor.
 
 Chrome’s key pinning feature is a strong form of web site authentication that
 requires a web server’s certificate chain not only to be valid and to chain to a
@@ -580,9 +579,10 @@ expectations.
 Chrome does not perform pin validation when the certificate chain chains up to a
 private trust anchor. A key result of this policy is that private trust anchors
 can be used to proxy (or
-[MITM](https://en.wikipedia.org/wiki/Man-in-the-middle_attack)) connections, even
-to pinned sites. “Data loss prevention” appliances, firewalls, content filters,
-and malware can use this feature to defeat the protections of key pinning.
+[MITM](https://en.wikipedia.org/wiki/Man-in-the-middle_attack)) connections,
+even to pinned sites. “Data loss prevention” appliances, firewalls, content
+filters, and malware can use this feature to defeat the protections of key
+pinning.
 
 We deem this acceptable because the proxy or MITM can only be effective if the
 client machine has already been configured to trust the proxy’s issuing
@@ -673,40 +673,40 @@ for more details.
 <a name="TOC-What-s-the-story-with-certificate-revocation-"></a>
 ### What's the story with certificate revocation?
 
-Chrome's primary mechanism for checking the revocation status of HTTPS
-certificates is
-[CRLsets](https://dev.chromium.org/Home/chromium-security/crlsets).
+Chrome's primary mechanism for checking certificate revocation status is
+[CRLsets](https://dev.chromium.org/Home/chromium-security/crlsets). 
+Additionally, by default, [stapled Online Certificate Status Protocol (OCSP)
+responses](https://en.wikipedia.org/wiki/OCSP_stapling) are honored.
 
-Chrome also supports Online Certificate Status Protocol (OCSP). However, the
-effectiveness of OCSP is is essentially 0 unless the client fails hard (refuses
-to connect) if it cannot get a live, valid OCSP response. No browser has OCSP
-set to hard-fail by default, for good reasons explained by Adam Langley (see
-[https://www.imperialviolet.org/2014/04/29/revocationagain.html](https://www.imperialviolet.org/2014/04/29/revocationagain.html) and
-[https://www.imperialviolet.org/2014/04/19/revchecking.html](https://www.imperialviolet.org/2014/04/19/revchecking.html)).
+"Online" certificate revocation status checks using Certificate Revocation
+List (CRL) or OCSP URLs included in certificates are disabled by default. This
+is because unless a client, like Chrome, refuses to connect to a website if it
+cannot get a valid response, online checks offer limited security value. 
 
-Stapled OCSP with the Must Staple option (hard-fail if a valid OCSP response is
-not stapled to the certificate) is a much better solution to the revocation
-problem than non-stapled OCSP. CAs and browsers are working toward that solution
-(see the
-[Internet-Draft](https://tools.ietf.org/html/draft-hallambaker-tlssecuritypolicy-03)).
+Unfortunately, there are many widely-prevalent causes for why a client
+might be unable to get a valid certificate revocation status response to
+include:
+* timeouts (e.g., an OCSP responder is online but does not respond within an
+  acceptable time limit), 
+* availability issues (e.g., the OCSP responder is offline), 
+* invalid responses (e.g., a "stale" or malformed status response), and 
+* local network attacks misrouting traffic or blocking responses. 
 
-Additionally, non-stapled OCSP poses a privacy problem: in order to check the
-status of a certificate, the client must query an OCSP responder for the status
-of the certificate, thus exposing a user's HTTPS browsing history to the
-responder (a third party).
+Additional concern with OCSP checks are related to privacy. OCSP 
+requests reveal details of individuals' browsing history to the operator of the
+OCSP responder (i.e., a third party). These details can be exposed accidentally
+(e.g., via data breach of logs) or intentionally (e.g., via subpoena). Chrome
+used to perform revocation checks for Extended Validation certificates, but that
+behavior was disabled in 2022 for [privacy reasons](https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/S6A14e_X-T0/m/T4WxWgajAAAJ).
 
-That said, you can use enterprise policies to [enable soft-fail
-OCSP](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=EnableOnlineRevocationChecks)
-and hard-fail OCSP for [local trust
-anchors](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=RequireOnlineRevocationChecksForLocalAnchors).
+For more discussion on challenges with certificate revocation status checking,
+explained by Adam Langley, see [https://www.imperialviolet.org/2014/04/29/revocationagain.html](https://www.imperialviolet.org/2014/04/29/revocationagain.html)
+and [https://www.imperialviolet.org/2014/04/19/revchecking.html](https://www.imperialviolet.org/2014/04/19/revchecking.html).
 
-Chrome performs online checking for [Extended
-Validation](https://cabforum.org/about-ev-ssl/) certificates if it does not
-already have a non-expired CRLSet entry covering the domain. If Chrome does not
-get a response, it simply downgrades the security indicator to Domain Validated.
-
-See also [Issue 361820](https://crbug.com/361820) for more discussion of the
-user-facing UX.
+The following enterprise policies can be used to change the default revocation
+checking behavior in Chrome, though these may be removed in the future:
+* [enable soft-fail OCSP](https://chromeenterprise.google/policies/#EnableOnlineRevocationChecks)
+* [hard-fail for local trust anchors](https://chromeenterprise.google/policies/#RequireOnlineRevocationChecksForLocalAnchors).
 
 ## Passwords & Local Data
 
