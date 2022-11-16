@@ -3,14 +3,28 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scrolling_overflow_indicator_strategy.h"
+
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+
+// Must be kept the same as kTabScrollingButtonPositionVariations values
+enum OverflowFeatureFlag {
+  kNone = 0,
+  kDivider = 1,
+  kFade = 2,
+  kShadow = 3,
+};
+
+}  // anonymous namespace
 
 TabStripScrollingOverflowIndicatorStrategy::
     TabStripScrollingOverflowIndicatorStrategy(views::ScrollView* scroll_view,
@@ -137,4 +151,51 @@ void ShadowOverflowIndicatorStrategy::FrameColorsChanged() {
 
   left_overflow_indicator()->SetShadowColor(shadow_color);
   right_overflow_indicator()->SetShadowColor(shadow_color);
+}
+
+FadeOverflowIndicatorStrategy::FadeOverflowIndicatorStrategy(
+    views::ScrollView* scroll_view,
+    TabStrip* tab_strip)
+    : GradientOverflowIndicatorStrategy(scroll_view, tab_strip) {}
+
+void FadeOverflowIndicatorStrategy::Init() {
+  scroll_view()->SetDrawOverflowIndicator(true);
+
+  std::unique_ptr<GradientIndicatorView> left_overflow_indicator =
+      std::make_unique<GradientIndicatorView>(
+          views::OverflowIndicatorAlignment::kLeft);
+  left_overflow_indicator_ = left_overflow_indicator.get();
+
+  std::unique_ptr<GradientIndicatorView> right_overflow_indicator =
+      std::make_unique<GradientIndicatorView>(
+          views::OverflowIndicatorAlignment::kRight);
+  right_overflow_indicator_ = right_overflow_indicator.get();
+
+  int min_tab_width = TabStyleViews::GetMinimumInactiveWidth();
+
+  left_overflow_indicator_->SetShadowBlurWidth(std::min(64, min_tab_width * 2));
+  right_overflow_indicator_->SetShadowBlurWidth(
+      std::min(64, min_tab_width * 2));
+
+  scroll_view()->SetCustomOverflowIndicator(
+      views::OverflowIndicatorAlignment::kLeft,
+      std::move(left_overflow_indicator),
+      left_overflow_indicator_->GetTotalWidth(), false);
+
+  scroll_view()->SetCustomOverflowIndicator(
+      views::OverflowIndicatorAlignment::kRight,
+      std::move(right_overflow_indicator),
+      right_overflow_indicator_->GetTotalWidth(), false);
+}
+
+void FadeOverflowIndicatorStrategy::FrameColorsChanged() {
+  SkColor4f frame_color =
+      SkColor4f::FromColor(tab_strip()->controller()->GetFrameColor(
+          BrowserFrameActiveState::kUseCurrent));
+
+  left_overflow_indicator()->SetFrameColor(frame_color);
+  right_overflow_indicator()->SetFrameColor(frame_color);
+
+  left_overflow_indicator()->SetShadowColor(frame_color);
+  right_overflow_indicator()->SetShadowColor(frame_color);
 }

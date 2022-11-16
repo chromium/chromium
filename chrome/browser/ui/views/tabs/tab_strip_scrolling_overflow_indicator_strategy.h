@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLLING_OVERFLOW_INDICATOR_STRATEGY_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_SCROLLING_OVERFLOW_INDICATOR_STRATEGY_H_
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -50,13 +49,12 @@ class TabStripScrollingOverflowIndicatorStrategy {
 
 class GradientIndicatorView : public views::View {
  public:
-  METADATA_HEADER(GradientIndicatorView);
+  explicit GradientIndicatorView(views::OverflowIndicatorAlignment side);
   GradientIndicatorView(views::OverflowIndicatorAlignment side,
                         int opaque_width,
                         int shadow_opaque_width,
                         int shadow_blur_width);
-
-  explicit GradientIndicatorView(views::OverflowIndicatorAlignment side);
+  METADATA_HEADER(GradientIndicatorView);
 
   // Making this smaller than the margin provided by the leftmost/rightmost
   // tab's tail (TabStyle::kTabOverlap / 2) makes the transition in and out of
@@ -72,9 +70,18 @@ class GradientIndicatorView : public views::View {
   // views::View overrides:
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // Functions to update the colors for the overflow
+  // Mutators for colors for the overflow.
   void SetShadowColor(SkColor4f new_shadow_color);
   void SetFrameColor(SkColor4f new_frame_color);
+
+  // Mutators for widths for the overflow.
+  void SetOpaqueWidth(int opaque_width) { opaque_width_ = opaque_width; }
+  void SetShadowOpaqueWidth(int shadow_opaque_width) {
+    shadow_opaque_width_ = shadow_opaque_width;
+  }
+  void SetShadowBlurWidth(int shadow_blur_width) {
+    shadow_blur_width_ = shadow_blur_width;
+  }
 
   // Accessor for the full width of the GradientView
   int GetTotalWidth() {
@@ -115,7 +122,7 @@ class GradientOverflowIndicatorStrategy
     return right_overflow_indicator_;
   }
 
- private:
+ protected:
   // The views, owned by |scroll_view_|, that indicate that there are more
   // tabs overflowing to the left or right.
   raw_ptr<GradientIndicatorView> left_overflow_indicator_;
@@ -129,6 +136,16 @@ class ShadowOverflowIndicatorStrategy
                                   TabStrip* tab_strip);
   ~ShadowOverflowIndicatorStrategy() override = default;
 
+  void FrameColorsChanged() override;
+};
+
+class FadeOverflowIndicatorStrategy : public GradientOverflowIndicatorStrategy {
+ public:
+  FadeOverflowIndicatorStrategy(views::ScrollView* scroll_view,
+                                TabStrip* tab_strip);
+  ~FadeOverflowIndicatorStrategy() override = default;
+
+  void Init() override;
   void FrameColorsChanged() override;
 };
 
