@@ -1017,7 +1017,7 @@ HRESULT SearchForListInStringDictUTF8(
 
   auto* value = json_obj->FindListPath(base::JoinString(path, "."));
   if (value && value->is_list()) {
-    for (const base::Value& entry : value->GetListDeprecated()) {
+    for (const base::Value& entry : value->GetList()) {
       if (entry.FindKey(list_key) && entry.FindKey(list_key)->is_string()) {
         output->push_back(entry.FindKey(list_key)->GetString());
       } else {

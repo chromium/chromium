@@ -87,7 +87,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   }
 
   if (experiments_value->is_list()) {
-    for (const auto& item : experiments_value->GetListDeprecated()) {
+    for (const auto& item : experiments_value->GetList()) {
       auto* f = item.FindStringKey(kResponseFeatureKeyName);
       auto* v = item.FindStringKey(kResponseValueKeyName);
       if (!f || !v) {
