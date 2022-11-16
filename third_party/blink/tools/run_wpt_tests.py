@@ -857,7 +857,8 @@ def get_devices(args):
                 instances.append(instance)
 
             SyncParallelizer(instances).Start(writable_system=True,
-                                              window=args.emulator_window)
+                                              window=args.emulator_window,
+                                              require_fast_start=True)
 
         #TODO(weizhong): when choose device, make sure abi matches with target
         yield device_utils.DeviceUtils.HealthyDevices()

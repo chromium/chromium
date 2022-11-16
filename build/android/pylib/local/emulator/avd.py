@@ -770,13 +770,14 @@ class _AvdInstance:
             writable_system=False,
             gpu_mode=_DEFAULT_GPU_MODE,
             wipe_data=False,
-            debug_tags=None):
+            debug_tags=None,
+            require_fast_start=False):
     """Starts the emulator running an instance of the given AVD.
 
     Note when ensure_system_settings is True, the program will wait until the
     emulator is fully booted, and then update system settings.
     """
-    is_slow_start = False
+    is_slow_start = not require_fast_start
     # Force to load system snapshot if detected.
     if self.HasSystemSnapshot():
       if not writable_system:
@@ -879,7 +880,10 @@ class _AvdInstance:
     # turn-around on rolling AVD.
     if ensure_system_settings:
       assert self.device is not None, '`instance.device` not initialized.'
-      self.device.WaitUntilFullyBooted(timeout=120 if is_slow_start else 30)
+      logging.info('Waiting for device to be fully booted.')
+      self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
+                                       retries=0)
+      logging.info('Device fully booted, verifying system settings.')
       _EnsureSystemSettings(self.device)
 
   def Stop(self, force=False):

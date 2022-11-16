@@ -60,7 +60,8 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
       def impl(inst):
         try:
           inst.Start(window=self._emulator_window,
-                     writable_system=self._writable_system)
+                     writable_system=self._writable_system,
+                     require_fast_start=True)
         except avd.AvdException:
           logging.exception('Failed to start emulator instance.')
           return None

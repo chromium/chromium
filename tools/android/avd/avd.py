@@ -161,6 +161,11 @@ def main(raw_args):
       'disable debug messages from specific parts of the emulator, e.g. '
       'init, snapshot. See "emulator -help-debug-tags" '
       'for a full list of tags.')
+  subparser.add_argument(
+      '--require-fast-start',
+      action='store_true',
+      help='Shortens the start-up timeout. Used by bots to avoid startup '
+      'regressions.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
@@ -179,7 +184,8 @@ def main(raw_args):
                writable_system=args.writable_system,
                gpu_mode=args.gpu_mode,
                wipe_data=args.wipe_data,
-               debug_tags=debug_tags)
+               debug_tags=debug_tags,
+               require_fast_start=args.require_fast_start)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 
