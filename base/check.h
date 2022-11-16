@@ -57,17 +57,17 @@ class VoidifyStream {
        : ::logging::VoidifyStream(expr) & (*::logging::g_swallow_stream)
 BASE_EXPORT extern std::ostream* g_swallow_stream;
 
-class CheckOpResult;
 class LogMessage;
 
 // Class used for raising a check error upon destruction.
 class BASE_EXPORT CheckError {
  public:
+  // Used by CheckOp. Takes ownership of `log_message`.
+  explicit CheckError(LogMessage* log_message) : log_message_(log_message) {}
+
   static CheckError Check(const char* file, int line, const char* condition);
-  static CheckError CheckOp(const char* file, int line, CheckOpResult* result);
 
   static CheckError DCheck(const char* file, int line, const char* condition);
-  static CheckError DCheckOp(const char* file, int line, CheckOpResult* result);
 
   static CheckError PCheck(const char* file, int line, const char* condition);
   static CheckError PCheck(const char* file, int line);
@@ -94,8 +94,6 @@ class BASE_EXPORT CheckError {
   }
 
  private:
-  explicit CheckError(LogMessage* log_message);
-
   LogMessage* const log_message_;
 };
 

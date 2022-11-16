@@ -121,23 +121,32 @@ CheckOpValueStr(const T& v) {
 }
 
 // Captures the result of a CHECK_op and facilitates testing as a boolean.
-class CheckOpResult {
+class BASE_EXPORT CheckOpResult {
  public:
   // An empty result signals success.
   constexpr CheckOpResult() {}
 
-  // A non-success result. expr_str is something like "foo != bar". v1_str and
-  // v2_str are the stringified run-time values of foo and bar. Takes ownership
-  // of v1_str and v2_str.
-  BASE_EXPORT CheckOpResult(const char* expr_str, char* v1_str, char* v2_str);
+  constexpr explicit CheckOpResult(LogMessage* log_message)
+      : log_message_(log_message) {}
 
   // Returns true if the check succeeded.
-  constexpr explicit operator bool() const { return !message_; }
+  constexpr explicit operator bool() const { return !log_message_; }
 
-  friend class CheckError;
+  LogMessage* log_message() { return log_message_; }
+
+  // TODO(pbos): Annotate this ABSL_ATTRIBUTE_RETURNS_NONNULL after solving
+  // compile failure.
+  // Takes ownership of `v1_str` and `v2_str`, destroying them with free(). For
+  // use with CheckOpValueStr() which allocates these strings using strdup().
+  static LogMessage* CreateLogMessage(bool is_dcheck,
+                                      const char* file,
+                                      int line,
+                                      const char* expr_str,
+                                      char* v1_str,
+                                      char* v2_str);
 
  private:
-  char* message_ = nullptr;
+  LogMessage* const log_message_ = nullptr;
 };
 
 // Helper macro for binary operators.
@@ -145,16 +154,17 @@ class CheckOpResult {
 // macro is used in an 'if' clause such as:
 // if (a == 1)
 //   CHECK_EQ(2, a);
-#define CHECK_OP_FUNCTION_IMPL(check_function, name, op, val1, val2) \
-  switch (0)                                                         \
-  case 0:                                                            \
-  default:                                                           \
-    if (::logging::CheckOpResult true_if_passed =                    \
-            ::logging::Check##name##Impl((val1), (val2),             \
-                                         #val1 " " #op " " #val2))   \
-      ;                                                              \
-    else                                                             \
-      check_function(__FILE__, __LINE__, &true_if_passed)
+#define CHECK_OP_FUNCTION_IMPL(is_dcheck, name, op, val1, val2)         \
+  switch (0)                                                            \
+  case 0:                                                               \
+  default:                                                              \
+    if (::logging::CheckOpResult true_if_passed =                       \
+            ::logging::Check##name##Impl(is_dcheck, __FILE__, __LINE__, \
+                                         (val1), (val2),                \
+                                         #val1 " " #op " " #val2))      \
+      ;                                                                 \
+    else                                                                \
+      ::logging::CheckError(true_if_passed.log_message())
 
 #if !CHECK_WILL_STREAM()
 
@@ -164,34 +174,38 @@ class CheckOpResult {
 #else
 
 #define CHECK_OP(name, op, val1, val2) \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, val2)
+  CHECK_OP_FUNCTION_IMPL(/*is_dcheck=*/false, name, op, val1, val2)
 
 #endif
 
 // The second overload avoids address-taking of static members for
 // fundamental types.
-#define DEFINE_CHECK_OP_IMPL(name, op)                                         \
-  template <typename T, typename U,                                            \
-            std::enable_if_t<!std::is_fundamental<T>::value ||                 \
-                                 !std::is_fundamental<U>::value,               \
-                             int> = 0>                                         \
-  constexpr ::logging::CheckOpResult Check##name##Impl(                        \
-      const T& v1, const U& v2, const char* expr_str) {                        \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                        \
-      return ::logging::CheckOpResult();                                       \
-    return ::logging::CheckOpResult(expr_str, CheckOpValueStr(v1),             \
-                                    CheckOpValueStr(v2));                      \
-  }                                                                            \
-  template <typename T, typename U,                                            \
-            std::enable_if_t<std::is_fundamental<T>::value &&                  \
-                                 std::is_fundamental<U>::value,                \
-                             int> = 0>                                         \
-  constexpr ::logging::CheckOpResult Check##name##Impl(T v1, U v2,             \
-                                                       const char* expr_str) { \
-    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                        \
-      return ::logging::CheckOpResult();                                       \
-    return ::logging::CheckOpResult(expr_str, CheckOpValueStr(v1),             \
-                                    CheckOpValueStr(v2));                      \
+#define DEFINE_CHECK_OP_IMPL(name, op)                                      \
+  template <typename T, typename U,                                         \
+            std::enable_if_t<!std::is_fundamental<T>::value ||              \
+                                 !std::is_fundamental<U>::value,            \
+                             int> = 0>                                      \
+  constexpr ::logging::CheckOpResult Check##name##Impl(                     \
+      bool is_dcheck, const char* file, int line, const T& v1, const U& v2, \
+      const char* expr_str) {                                               \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
+      return ::logging::CheckOpResult();                                    \
+    return CheckOpResult(CheckOpResult::CreateLogMessage(                   \
+        is_dcheck, file, line, expr_str, CheckOpValueStr(v1),               \
+        CheckOpValueStr(v2)));                                              \
+  }                                                                         \
+  template <typename T, typename U,                                         \
+            std::enable_if_t<std::is_fundamental<T>::value &&               \
+                                 std::is_fundamental<U>::value,             \
+                             int> = 0>                                      \
+  constexpr ::logging::CheckOpResult Check##name##Impl(                     \
+      bool is_dcheck, const char* file, int line, T v1, U v2,               \
+      const char* expr_str) {                                               \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2))                                     \
+      return ::logging::CheckOpResult();                                    \
+    return CheckOpResult(CheckOpResult::CreateLogMessage(                   \
+        is_dcheck, file, line, expr_str, CheckOpValueStr(v1),               \
+        CheckOpValueStr(v2)));                                              \
   }
 
 // clang-format off
@@ -213,7 +227,7 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 #if DCHECK_IS_ON()
 
 #define DCHECK_OP(name, op, val1, val2) \
-  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::DCheckOp, name, op, val1, val2)
+  CHECK_OP_FUNCTION_IMPL(/*is_dcheck=*/true, name, op, val1, val2)
 
 #else
 

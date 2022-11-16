@@ -124,31 +124,11 @@ CheckError CheckError::Check(const char* file,
   return CheckError(log_message);
 }
 
-CheckError CheckError::CheckOp(const char* file,
-                               int line,
-                               CheckOpResult* check_op_result) {
-  auto* const log_message = new LogMessage(file, line, LOGGING_FATAL);
-  log_message->stream() << "Check failed: " << check_op_result->message_;
-  free(check_op_result->message_);
-  check_op_result->message_ = nullptr;
-  return CheckError(log_message);
-}
-
 CheckError CheckError::DCheck(const char* file,
                               int line,
                               const char* condition) {
   auto* const log_message = new DCheckLogMessage(file, line, LOGGING_DCHECK);
   log_message->stream() << "Check failed: " << condition << ". ";
-  return CheckError(log_message);
-}
-
-CheckError CheckError::DCheckOp(const char* file,
-                                int line,
-                                CheckOpResult* check_op_result) {
-  auto* const log_message = new DCheckLogMessage(file, line, LOGGING_DCHECK);
-  log_message->stream() << "Check failed: " << check_op_result->message_;
-  free(check_op_result->message_);
-  check_op_result->message_ = nullptr;
   return CheckError(log_message);
 }
 
@@ -215,8 +195,6 @@ CheckError::~CheckError() {
   // See cl/306632920.
   delete log_message_;
 }
-
-CheckError::CheckError(LogMessage* log_message) : log_message_(log_message) {}
 
 void RawCheck(const char* message) {
   RawLog(LOGGING_FATAL, message);
