@@ -57883,6 +57883,7 @@ from previous Chrome versions.
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
   <int value="-2082462043" label="ViewPasswords:disabled"/>
+  <int value="-2082411152" label="PasswordsGrouping:disabled"/>
   <int value="-2082042818"
       label="AutofillCreditCardLastUsedDateDisplay:enabled"/>
   <int value="-2081943876"
@@ -59047,6 +59048,7 @@ from previous Chrome versions.
   <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
   <int value="-1420478723" label="EapGtcWifiAuthentication:enabled"/>
+  <int value="-1420160984" label="PasswordsGrouping:enabled"/>
   <int value="-1419908365"
       label="EnableWebHidOnExtensionServiceWorker:disabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>

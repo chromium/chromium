@@ -4375,6 +4375,11 @@ const char kOmniboxExperimentalKeywordModeDescription[] =
     "Enables various experimental features related to keyword mode, its "
     "suggestions and layout.";
 
+const char kPasswordsGroupingName[] = "Passwords grouping";
+const char kPasswordsGroupingDescription[] =
+    "Enables displaying passwords grouped together using information from "
+    "the affiliation service.";
+
 const char kPasswordManagerRedesignName[] = "Password Manager new UI";
 const char kPasswordManagerRedesignDescription[] =
     "Enables new Password Manager UI on Desktop";
