@@ -6445,6 +6445,8 @@ crbug.com/1380078 [ Mac11 ] external/wpt/resource-timing/nested-context-navigati
 crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearance-no-default-width.html [ Failure ]
 crbug.com/1376986 [ Mac11 ] virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Timeout ]
 crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
+crbug.com/1384671 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
+crbug.com/1384671 [ Linux ] external/wpt/speculation-rules/prerender/opt-out.html [ Failure Timeout ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
