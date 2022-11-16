@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+#
 # Copyright 2021 Google LLC.
 # Copyright (c) Microsoft Corporation.
 #
@@ -12,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#
 # This script implements Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
@@ -95,9 +97,9 @@ async def main():
 
     # Puppeteer:
     # const page = await browser.newPage();
-
+    #
     # Part 1. Execute BiDi command and wait for result.
-    # ... await browser.newPage();
+    # await browser.newPage();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
     command_result = await run_and_wait_command({
         "id": 1000,
@@ -106,10 +108,11 @@ async def main():
             "type": "tab"
         }}, websocket)
 
+    # Puppeteer:
     # Part 2. Get the command result.
-    # const page = ...
+    # const page = ...;
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
-    # The `command_result` should be like this:
+    # `command_result` should be like this:
     # {
     #     "id": 1000,
     #     "result": {
@@ -123,7 +126,7 @@ async def main():
     # Puppeteer:
     # await page.goto('https://news.ycombinator.com/');
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
-    # To avoid the network dependency in this test, we use a local, static copy.
+    # To avoid network dependency in this test, use a local (static) copy.
     pageUrl = f'file://{Path(__file__).parent.resolve()}/app.html'
     await run_and_wait_command({
         "id": 1001,
@@ -141,14 +144,11 @@ async def main():
         "type": "string",
         "value": ".titlelink"}
 
-    # `script.callFunction` is not implemented by Firefox yet:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=1750541
-
     # Puppeteer:
     # const links = await page.evaluate((resultsSelector) => {...}, resultsSelector);
-
+    #
     # Part 1. Execute BiDi command.
-    # ... await page.evaluate((resultsSelector) => {...}, resultsSelector);
+    # await page.evaluate((resultsSelector) => {...}, resultsSelector);
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
     command_result = await run_and_wait_command({
         "id": 1002,
@@ -167,9 +167,9 @@ async def main():
         websocket)
 
     # Part 2. Get the command result.
-    # const links = ...
+    # const links = ...;
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
-    # The `command_result` should be like this:
+    # `command_result` should be like this:
     # {
     #     "id": 1002,
     #     "result": {

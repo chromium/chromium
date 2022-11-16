@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        headful-argument: [ headful, headless ]
+        headful-argument: [headful, headless]
 
     steps:
       - name: Checkout

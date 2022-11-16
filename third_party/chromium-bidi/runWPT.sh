@@ -6,9 +6,9 @@ npm run build && \
 ./wpt/wpt run \
   --webdriver-binary ./runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
-  --manifest ./wpt/MANIFEST.json \
-  --metadata ./wpt-metadata \
+  --manifest wpt/MANIFEST.json \
+  --metadata wpt-metadata \
   --log-wptreport wptreport.json \
   --timeout-multiplier 8 \
   chromium \
-  "$1")
+  "$@")

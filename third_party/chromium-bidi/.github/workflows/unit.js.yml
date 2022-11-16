@@ -25,5 +25,6 @@ jobs:
         run: du -sh src/.build/bidiMapper/mapper.js
       - name: Run unit tests
         run: npm run unit
+
 env:
   FORCE_COLOR: 3
