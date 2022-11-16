@@ -31,10 +31,6 @@ class Browser;
     browserCoordinatorCommandsHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
 
-// Set this flag to YES when the keyboard command bound to the Escape key should
-// dismiss modals.
-@property(nonatomic, assign) BOOL canDismissModals;
-
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

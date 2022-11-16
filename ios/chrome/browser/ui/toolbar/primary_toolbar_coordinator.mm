@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
@@ -60,6 +61,8 @@
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 // Whether the omnibox focusing should happen with animation.
 @property(nonatomic, assign) BOOL enableAnimationsForOmniboxFocus;
+// Whether the omnibox is currently focused.
+@property(nonatomic, assign) BOOL locationBarFocused;
 
 @end
 
@@ -164,6 +167,7 @@
                       toolbarExpanded:focused && !IsRegularXRegularSizeClass(
                                                      self.viewController)
                              animated:self.enableAnimationsForOmniboxFocus];
+  self.locationBarFocused = focused;
 }
 
 - (id<ViewRevealingAnimatee>)animatee {
@@ -237,6 +241,14 @@
 
 - (void)exitFullscreen {
     FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+}
+
+- (void)close {
+  if (self.locationBarFocused) {
+    id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationCommandsHandler dismissModalDialogs];
+  }
 }
 
 #pragma mark - NewTabPageControllerDelegate

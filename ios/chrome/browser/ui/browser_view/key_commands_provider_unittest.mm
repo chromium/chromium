@@ -353,16 +353,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_EditingTextActions) {
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only
-// available when canDismissModals is ON.
-TEST_F(KeyCommandsProviderTest, CanPerform_CanDismissModalsActions) {
-  ASSERT_FALSE(provider_.canDismissModals);
-  EXPECT_FALSE(CanPerform(@"keyCommand_close"));
-
-  provider_.canDismissModals = YES;
-  EXPECT_TRUE(CanPerform(@"keyCommand_close"));
-}
-
-// Checks whether KeyCommandsProvider can perform the actions that are only
 // available when there are at least two tabs.
 TEST_F(KeyCommandsProviderTest, CanPerform_ShowPreviousAndNextTab) {
   // No tabs.
@@ -533,7 +523,6 @@ TEST_F(KeyCommandsProviderTest, Metrics) {
   ExpectUMA(@"keyCommand_forward", "MobileKeyCommandForward");
   ExpectUMA(@"keyCommand_showHistory", "MobileKeyCommandShowHistory");
   ExpectUMA(@"keyCommand_voiceSearch", "MobileKeyCommandVoiceSearch");
-  ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
   ExpectUMA(@"keyCommand_showSettings", "MobileKeyCommandShowSettings");
   ExpectUMA(@"keyCommand_stop", "MobileKeyCommandStop");
   ExpectUMA(@"keyCommand_showHelp", "MobileKeyCommandShowHelp");
@@ -579,7 +568,6 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_forward];
   [provider_ keyCommand_showHistory];
   [provider_ keyCommand_voiceSearch];
-  [provider_ keyCommand_close];
   [provider_ keyCommand_showSettings];
   [provider_ keyCommand_stop];
   [provider_ keyCommand_showHelp];

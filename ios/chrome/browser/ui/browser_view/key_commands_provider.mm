@@ -109,7 +109,6 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_showPreviousTab_2,
       UIKeyCommand.cr_showNextTab_3,
       UIKeyCommand.cr_showPreviousTab_3,
-      UIKeyCommand.cr_close,
       UIKeyCommand.cr_back_2,
       UIKeyCommand.cr_forward_2,
       UIKeyCommand.cr_showDownloads_2,
@@ -147,7 +146,6 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_forward_2,
       UIKeyCommand.cr_showHistory,
       UIKeyCommand.cr_voiceSearch,
-      UIKeyCommand.cr_close,
       UIKeyCommand.cr_openNewRegularTab,
       UIKeyCommand.cr_showSettings,
       UIKeyCommand.cr_stop,
@@ -215,9 +213,6 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_findNext)) ||
       sel_isEqual(action, @selector(keyCommand_findPrevious))) {
     return [self isFindInPageActive];
-  }
-  if (sel_isEqual(action, @selector(keyCommand_close))) {
-    return self.canDismissModals;
   }
   if (sel_isEqual(action, @selector(keyCommand_showNextTab)) ||
       sel_isEqual(action, @selector(keyCommand_showPreviousTab))) {
@@ -404,11 +399,6 @@ using base::UserMetricsAction;
   [LayoutGuideCenterForBrowser(_browser) referenceView:nil
                                              underName:kVoiceSearchButtonGuide];
   [_dispatcher startVoiceSearch];
-}
-
-- (void)keyCommand_close {
-  RecordAction(UserMetricsAction("MobileKeyCommandClose"));
-  [_dispatcher dismissModalDialogs];
 }
 
 - (void)keyCommand_showSettings {
