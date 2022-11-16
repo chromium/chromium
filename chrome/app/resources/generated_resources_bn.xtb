@@ -1467,7 +1467,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />দ্রষ্টব্য:<ph name="END_BOLD" />  এটি করলে সিস্টেম রিবুট করা হবে।</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" অতিরিক্ত অনুমতির অনুরোধ জানিয়েছে৷</translation>
-<translation id="23055578400314116">একটি ইউজারনেম বেছে নিন</translation>
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
 <translation id="2307553512430195144">আপনি রাজি থাকলে, Google Assistant স্ট্যান্ডবাই মোডে অপেক্ষা করবে “Ok Google” শনাক্ত করার জন্য এবং <ph name="SUPERVISED_USER_NAME" /> কথা বলেছে কিনা তা Voice Match-এর সাহায্যে শনাক্ত করতে পারবে।
     <ph name="BR" />
@@ -3453,6 +3452,7 @@
 <translation id="4147911968024186208">আবার চেষ্টা করুন। সমস্যাটি আবার হলে, কাস্টমার সাপোর্টের সাথে যোগাযোগ করুন।</translation>
 <translation id="4150201353443180367">প্রদর্শন</translation>
 <translation id="4150569944729499860">স্ক্রিনের তথ্য</translation>
+<translation id="4152011295694446843">আপনি নিজের বুকমার্ক এখানে খুঁজে পাবেন</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{১টি ট্যাব}one{#টি ট্যাব}other{#টি ট্যাব}}</translation>
 <translation id="4154664944169082762">আঙ্গুলের ছাপ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

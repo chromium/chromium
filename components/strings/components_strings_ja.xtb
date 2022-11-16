@@ -1685,7 +1685,6 @@
 <translation id="52517543715119994">Chrome の機能を確認します</translation>
 <translation id="5251803541071282808">クラウド</translation>
 <translation id="5254043433801397071">印刷コンテンツの最適化</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">このままキャプチャする</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にコピーすることは推奨されていません}}</translation>

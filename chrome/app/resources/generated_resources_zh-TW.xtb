@@ -1451,7 +1451,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在過程中重新啟動。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
-<translation id="23055578400314116">請選取使用者名稱</translation>
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="2307553512430195144">如果你同意，Google 助理會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能辨識<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
@@ -3438,6 +3437,7 @@
 <translation id="4147911968024186208">請再試一次。如果這個錯誤再次發生，請與你的產品支援代表聯絡。</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4150569944729499860">畫面內容</translation>
+<translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

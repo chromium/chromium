@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">Прекратяване на следенето</translation>
 <translation id="3863769054730344136">Изпращане до устройствата ви</translation>
 <translation id="387280738075653372">Изтеглете Chrome оттук.</translation>
+<translation id="3888863481921783344">Това ще даде възможност да се покаже кого бихте могли да поканите на събитието си.</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904829425754749514">Организацията ви изключи синхронизирането. Пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
@@ -942,6 +943,7 @@
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Това ще даде възможност за създаване на събития в Apple Calendar чрез съдържание от Chrome и Google Обектив.</translation>
 <translation id="8156478151976189188">Синхронизирането на паролите не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> профила</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

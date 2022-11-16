@@ -449,11 +449,6 @@ Als dit beleid wordt toegepast of niet is ingesteld, bepaalt de browser welk Use
       Extensieprinters staan ook bekend als afdrukproviderbestemmingen en omvatten elke bestemming die bij een <ph name="PRODUCT_NAME" />-extensie hoort.
 
       Lokale printers staan ook bekend als systeemeigen afdrukbestemmingen en omvatten bestemmingen die beschikbaar zijn voor de lokale computer en gedeelde netwerkprinters.</translation>
-<translation id="1456449214426764016">De niet-standaard API window.webkitStorageInfo is beëindigd en wordt binnenkort verwijderd.
-      Dit beleid zet de API opnieuw aan.
-      Als je dit beleid toepast, is de API window.webkitStorageInfo beschikbaar.
-      Als je dit beleid niet toepast of niet instelt, is de API window.webkitStorageInfo niet beschikbaar.
-      </translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />-clients):</translation>
 <translation id="1464848559468748897">Bepaal het gebruikersgedrag tijdens een sessie met meerdere profielen op <ph name="PRODUCT_OS_NAME" />-apparaten.
 
@@ -825,16 +820,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
-<translation id="1805056271257244521">Als het beleid wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms niet vastgezet op 1 ms.
-          Als het beleid niet wordt toegepast, wordt de JavaScript-functie setTimeout() met een time-out van 0 ms vastgezet op 1 ms.
-          Als het beleid niet is ingesteld, wordt het standaardgedrag van de browser gebruikt voor het vastzetten van de functie setTimeout().
-
-          Deze functie voldoet aan de internetstandaarden, maar kan de taakvolgorde op een webpagina veranderen, wat kan leiden tot onverwacht gedrag op sites die afhankelijk zijn van een bepaalde volgorde. De functie kan ook van invloed zijn op sites die veel instanties van setTimeout() met een time-out van 0 ms gebruiken. De CPU-belasting kan bijvoorbeeld toenemen.
-
-          Voor gebruikers waarvoor dit beleid niet is ingesteld, rolt Chrome de wijziging geleidelijk uit op het stabiele kanaal.
-
-          Dit is een tijdelijk beleid dat volgens de planning wordt verwijderd in Chrome 105. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
-          </translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant-tethering toestaan</translation>
 <translation id="1813638828646876133">Automatisch versturen van pincode op het vergrendel- en inlogscherm aanzetten</translation>
@@ -3030,6 +3015,13 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
 
       Als je het beleid instelt op 2, worden advertenties geblokkeerd op alle sites met opdringerige advertenties.</translation>
 <translation id="3877517141460819966">Geïntegreerde modus voor authenticatie met twee factoren</translation>
+<translation id="3877908683993837673">Dit beleid beheert welke softwarestack wordt gebruikt voor communicatie met de DNS-server: de DNS-client van het besturingssysteem of de ingebouwde DNS-client van <ph name="PRODUCT_NAME" />. Dit beleid heeft geen invloed op welke DNS-servers worden gebruikt: als het besturingssysteem bijvoorbeeld is ingesteld voor gebruik van een zakelijke DNS-server, wordt diezelfde server gebruikt door de ingebouwde DNS-client. Ook wordt met dit beleid niet beheerd of DNS-over-HTTPS wordt gebruikt: <ph name="PRODUCT_NAME" /> gebruikt altijd de ingebouwde resolver voor DNS-over-HTTPS-verzoeken. Zie het <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />-beleid voor informatie over het beheer van DNS-over-HTTPS.
+
+      Als je dit beleid toepast, wordt de ingebouwde DNS-client gebruikt (indien beschikbaar).
+
+      Als je dit beleid niet toepast, wordt de ingebouwde DNS-client alleen gebruikt als DNS-over-HTTPS wordt gebruikt.
+
+      Als je dit beleid niet instelt, wordt de ingebouwde DNS-client standaard aangezet op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="ANDROID_NAME" /> (als Privé-DNS en VPN niet aanstaan) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3879208481373875102">Lijst met afgedwongen geïnstalleerde web-apps instellen</translation>
 <translation id="3879700444818346084">Import van opgeslagen wachtwoorden bij eerste uitvoering uitzetten</translation>
 <translation id="388237772682176890">Dit beleid is beëindigd in M53 en is verwijderd in M54, omdat de ondersteuning voor SPDY/3.1 is verwijderd.
@@ -5525,6 +5517,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Opmerking: Automatisch opnieuw opstarten staat alleen aan terwijl het inlogscherm wordt getoond of er een kiosk-app-sessie wordt uitgevoerd.</translation>
 <translation id="6556586932263358975">Schermvergrendeling toestaan</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
+<translation id="65591220958874949">De ingebouwde DNS-client gebruiken op Windows, macOS, Android en ChromeOS</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 
       Als je het beleid niet toepast, worden gebruikers wel als inactief gezien, ook als er audio wordt afgespeeld.</translation>
@@ -6019,7 +6012,6 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
       Als U2F is geselecteerd, gedraagt de geïntegreerde tweede factor zich overeenkomstig de FIDO U2F-specificatie.
 
       Als U2F_EXTENDED is geselecteerd, verstrekt de geïntegreerde tweede factor de U2F-functies plus enkele extensies voor individuele bevestiging.</translation>
-<translation id="6998179760789945134">WebSQL in niet-beveiligde contexten uitzetten, tenzij aangezet via een Chrome-vlag.</translation>
 <translation id="6999948519306285655">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Als je het beleid instelt, kun je een URL naar een pac-bestand voor de proxy opgeven. Dit beleid is alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven en je <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> hebt geselecteerd met <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -8087,9 +8079,6 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
       Als dit beleid niet wordt ingesteld, wordt voor geen enkele site automatische selectie uitgevoerd.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
-<translation id="906349948439898016">WebSQL in niet-beveiligde contexten staat standaard aan vanaf M105, maar kan worden uitgezet via Chrome-flag.
-          Als je dit beleid instelt op False of niet instelt, kan WebSQL in niet-beveiligde contexten worden uitgezet.
-          Als je dit beleid instelt op True, kan WebSQL niet worden uitgezet.</translation>
 <translation id="9068629430243705879">poort 6566 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
 <translation id="9069588907259547232">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
 

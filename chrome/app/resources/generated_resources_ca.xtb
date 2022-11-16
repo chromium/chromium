@@ -1451,7 +1451,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: el sistema es reiniciarà durant el procés.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha sol·licitat permisos addicionals.</translation>
-<translation id="23055578400314116">Selecciona un nom d'usuari</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
 <translation id="2307553512430195144">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera per detectar "Hey Google" i pot reconèixer la veu de <ph name="SUPERVISED_USER_NAME" /> amb Voice Match.
     <ph name="BR" />
@@ -3436,6 +3435,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4147911968024186208">Torna-ho a provar. Si tornes a veure aquest error, contacta amb el representant del servei d'assistència.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Context de la pantalla</translation>
+<translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestanya}other{# pestanyes}}</translation>
 <translation id="4154664944169082762">Empremtes</translation>
 <translation id="4157869833395312646">Xifratge activat per servidor de Microsoft</translation>

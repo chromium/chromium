@@ -1432,6 +1432,7 @@
 <translation id="4646534391647090355">දැන් මාව එතැනට ගෙන යන්න</translation>
 <translation id="4648262692072505866">හැෂ් SHA-256 ආකෘතියෙන් විය යුතු වේ.</translation>
 <translation id="4652266463001779298">ඉඩ නොදේ</translation>
+<translation id="4652440160515225514">ඔබේ සංවිධානය මෙම අඩවිය එය ප්‍රතිපත්තියක් උල්ලංඝනය කරන නිසා අවහිර කර ඇත.</translation>
 <translation id="4653167719759882810">ඒකාබද්ධ කිරීම් සහ අත්පත් කර ගැනීම්</translation>
 <translation id="4658638640878098064">ඉහළ වම ස්ටේපල් කරන්න</translation>
 <translation id="4660119392514473465">දැන් ඔබට පෞද්ගලිකව බ්‍රවුස් කළ හැකි අතර, මෙම උපාංගය භාවිතා කරන වෙනත් පුද්ගලයින් ඔබගේ ක්‍රියාකාරකම් නොදකිනු ඇත. කෙසේ වෙතත්, බාගැනීම්, පිටුසන් සහ කියවීම් ලැයිස්තු අයිතම සුරකිනු ඇත.</translation>
@@ -1685,7 +1686,6 @@
 <translation id="52517543715119994">Chrome විශේෂාංග ගැන දැන ගන්න</translation>
 <translation id="5251803541071282808">වලාකුළ</translation>
 <translation id="5254043433801397071">මුද්‍රණ අන්තර්ගතය ප්‍රශස්ත කරන්න</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">කෙසේ වෙතත් ග්‍රහණය කර ගන්න</translation>
 <translation id="5255833070095767006">මිමි 350 x 460</translation>
 <translation id="5257739419779698609">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> වෙත පිටපත් කිරීම නිර්දේශ නොකරයි}}</translation>
@@ -2920,6 +2920,7 @@
 <translation id="8437238597147034694">ගෙන යාම &amp;පසුගමනය කරන්න</translation>
 <translation id="8438476240229491014">මෙම සැකසීම මතක තබා ගන්න</translation>
 <translation id="8438786541497918448">කැමරාව සහ මයික්‍රෆෝනය භාවිත කරන්නද?</translation>
+<translation id="8438923942245957911">මෙම අඩවිය ඔබේ සංවිධානය විසින් සලකුණු කර ඇත</translation>
 <translation id="8443613539889492016">රැප් සහ හිප්-හොප්</translation>
 <translation id="8444543005280733648">පරිගණක ජාල</translation>
 <translation id="8446884382197647889">තවත් දැනගන්න</translation>

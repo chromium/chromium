@@ -449,11 +449,6 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
       Les extensions permettant d'imprimer depuis un navigateur, ou destinations des fournisseurs d'impression, englobent toutes les destinations appartenant à une extension <ph name="PRODUCT_NAME" />.
 
       Les imprimantes locales, ou destinations d'impression native, englobent les destinations disponibles sur l'ordinateur local et les imprimantes réseau partagées.</translation>
-<translation id="1456449214426764016">L'API non standard window.webkitStorageInfo est obsolète et sera supprimée prochainement.
-      Cette règle réactive l'API.
-      Si cette règle est activée, l'API window.webkitStorageInfo sera disponible.
-      Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitStorageInfo ne sera pas disponible.
-      </translation>
 <translation id="1456822151187621582">Windows (clients <ph name="PRODUCT_OS_NAME" />) :</translation>
 <translation id="1464848559468748897">Contrôle le comportement des utilisateurs dans une session multiprofil sur des appareils <ph name="PRODUCT_OS_NAME" />.
 
@@ -508,6 +503,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1488724823347505879">Activer le partage des applis Android vers les applis Web</translation>
 <translation id="1494138678487405397">Désactiver le contraste élevé sur l'écran de connexion</translation>
+<translation id="1499129134689253257">Contrôler le nouveau comportement de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Appliquer uniquement les connexions en ligne depuis l'écran de connexion</translation>
 <translation id="1502843533062797703">Activer le blocage de l'injection de logiciels tiers</translation>
 <translation id="1503969899251962413">Cette règle permet de spécifier la clé de licence <ph name="PLUGIN_VM_NAME" /> pour cet appareil.
@@ -824,16 +820,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 
       Si cette règle n'est pas définie, les utilisateurs peuvent manipuler toute la liste des langues préférées.</translation>
 <translation id="1803646570632580723">Liste des applications épinglées à afficher dans le lanceur d'applications</translation>
-<translation id="1805056271257244521">Si cette règle est activée, les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms ne seront pas ramenées à 1 ms.
-          Si cette règle est activée, les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms seront ramenées à 1 ms.
-          Si cette règle n'est pas configurée, le comportement par défaut du navigateur est appliqué pour l'écrêtage de la fonction setTimeout().
-
-          Bien que conforme aux normes Web, cette fonctionnalité peut modifier l'ordre d'exécution des tâches sur une page et provoquer un comportement inattendu sur les sites qui dépendent de cet ordre. Les sites qui emploient de nombreuses fonctions setTimeout() avec un délai d'expiration de 0 ms peuvent également être affectés (par exemple, ils peuvent davantage solliciter le processeur).
-
-          Le changement sera déployé graduellement sur la version stable de Chrome pour les utilisateurs chez qui cette règle n'est pas configurée.
-
-          Cette règle est temporaire et devrait être supprimée dans Chrome 105. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
-          </translation>
 <translation id="1808715480127969042">Bloquer les cookies sur ces sites</translation>
 <translation id="1810261428246410396">Autoriser le partage de connexion instantané</translation>
 <translation id="1813638828646876133">Activer l'envoi automatique du code PIN sur l'écran de connexion et de verrouillage</translation>
@@ -2363,6 +2349,17 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> charge tous les hôtes de messagerie native qui sont installés.</translation>
 <translation id="3211426942294667684">Paramètres de connexion au navigateur</translation>
+<translation id="3217774577897351942">L'API <ph name="OFFSET_PARENT" /> est modifiée dans <ph name="PRODUCT_NAME" /> afin de respecter les modifications apportées dans <ph name="FIREFOX_PRODUCT_NAME" /> et <ph name="SAFARI_PRODUCT_NAME" />. Cette règle rétablit l'ancien comportement jusqu'à M120.
+
+Le nouveau comportement risque de d'endommager certains sites Web propres à <ph name="PRODUCT_NAME" /> qui utilisent <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> ou <ph name="OFFSET_LEFT" /> avec Shadow DOM.
+
+Voici quelques polyfills qui rétablissent l'ancien comportement pour faciliter la migration : https://github.com/josepharhar/offsetparent-polyfills
+
+Si cette règle est activée, le nouveau comportement sera utilisé.
+
+Si elle est désactivée, l'ancien comportement sera utilisé.
+
+Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tout comme le reste des utilisateurs de Chromium.</translation>
 <translation id="3219421230122020860">Mode navigation privée disponible</translation>
 <translation id="3220624000494482595">Si l'application kiosque est une application Android, elle ne contrôlera pas la version <ph name="PRODUCT_OS_NAME" /> même si cette règle est définie sur "<ph name="TRUE" />".</translation>
 <translation id="3222088741899353813">Le bouton de gauche est le bouton principal sur l'écran de connexion</translation>
@@ -2765,6 +2762,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
+<translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
 
@@ -3064,6 +3062,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3891357445869647828">Activer JavaScript</translation>
 <translation id="3891769546914233112">Possibilité d'imprimer le PDF en tant qu'image</translation>
 <translation id="3897218615484393758">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion sur l'écran de verrouillage</translation>
+<translation id="3897860452756794695">Le nouveau comportement offsetParent sera utilisé.</translation>
 <translation id="3898345958122666461">Désactiver NTLMv2</translation>
 <translation id="3898795800259311780">Autoriser ou interdire la capture d'écran</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
@@ -4845,6 +4844,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Les utilisateurs ne peuvent pas modifier ce paramètre.</translation>
 <translation id="5838452040629810808">Activer la mise en surbrillance du curseur</translation>
+<translation id="5842283830553218200">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé par défaut.</translation>
 <translation id="5848438019586925019">Algorithme pour la génération de paires de clés.</translation>
 <translation id="5851248808417680865">Utiliser le thème sombre</translation>
 <translation id="585270638818921943">Empêche l'utilisateur de se servir d'applications Android provenant de sources non approuvées</translation>
@@ -5325,6 +5325,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle est désactivée ou n'est pas configurée, les utilisateurs peuvent décider d'utiliser ou non <ph name="CHROME_SYNC_NAME" />.
 
       Remarque : Cette règle ne doit pas être activée si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> l'est également, car elles partagent la même fonctionnalité côté client. Dans ce cas, le service de synchronisation hébergé par Google est totalement désactivé.</translation>
+<translation id="6320935916601887506">Le nouveau comportement offsetParent sera utilisé par défaut.</translation>
 <translation id="6327643515544933974">Paramètres USB Web</translation>
 <translation id="6330882599388782338">Autoriser les sites à accéder aux capteurs</translation>
 <translation id="6331167725613770725">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
@@ -5461,6 +5462,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>
 <translation id="6473623140202114570">Configurez la liste des domaines sur lesquels la navigation sécurisée ne déclenchera aucun avertissement.</translation>
+<translation id="6474194795370862403">L'ancien comportement offsetParent sera utilisé.</translation>
 <translation id="647645276885673708">Activer <ph name="LACROS_NAME" /> et en faire le navigateur principal</translation>
 <translation id="647698599569353771">Autorisez l'activation du Partage à proximité.</translation>
 <translation id="6477685422297715670">Rétroéclairage du clavier vert</translation>
@@ -6054,7 +6056,6 @@ Si vous sélectionnez les options suivantes :
       Si vous sélectionnez "U2F", le deuxième facteur intégré se comporte conformément à la norme FIDO U2F.
 
       Si vous sélectionnez "U2F_EXTENDED", le deuxième facteur intégré fournit les fonctionnalités U2F ainsi que certaines extensions pour chaque attestation.</translation>
-<translation id="6998179760789945134">Désactiver WebSQL dans les contextes non sécurisés, sauf activation par l'indicateur Chrome.</translation>
 <translation id="6999948519306285655">Cette règle étant obsolète, veuillez utiliser la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> à la place.
 
        Elle permet de définir l'URL d'un fichier .pac proxy. Elle ne s'applique que si la règle <ph name="PROXY_SETTINGS_POLICY_NAME" /> n'est pas spécifiée et si vous avez sélectionné l'option <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dans la règle <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -7462,6 +7463,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
 <translation id="841977920223099909">Déclencheur d'avertissement de protection par mot de passe</translation>
 <translation id="8420426128163801949">Autoriser les utilisateurs à activer ou désactiver le Bluetooth</translation>
+<translation id="8422658829373743789">Contrôler le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées</translation>
 <translation id="8422866312638683210">Si cette règle est configurée, <ph name="PRODUCT_NAME" /> tente de s'inscrire à la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Elle a pour valeur un jeton d'inscription que vous pouvez récupérer dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Pour en savoir plus, consultez la page https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
@@ -8000,6 +8002,19 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8947415621777543415">Indiquer l'emplacement de l'appareil</translation>
 <translation id="8948062138228904066">Liste d'autorisation des serveurs d'authentification</translation>
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
+<translation id="8952611478149810182">L'envoi des événements sur les commandes de formulaire désactivées est modifié dans Chromium afin d'améliorer l'expérience développeur et la compatibilité avec les autres navigateurs.
+
+Désormais, les événements MouseEvents sont envoyés sur les éléments de commandes de formulaire désactivées, sauf pour les "click", "mouseup" et "mousedown". Les nouveaux événements incluent, entre autres, "mousemove", "mouseenter" et "mouseleave".
+
+Cette modification tronque également le chemin d'accès aux événements "click", "mouseup" et "mousedown" lorsqu'ils sont envoyés sur des enfants de commandes de formulaire désactivées, de sorte qu'ils ne soient pas envoyés sur la commande de formulaire désactivée ni sur aucun de ses ancêtres.
+
+Le nouveau comportement risque d'endommager certains sites Web.
+
+Si cette règle est activée, le nouveau comportement sera utilisé.
+
+Si elle est désactivée, l'ancien comportement sera utilisé.
+
+Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tout comme le reste des utilisateurs de Chromium.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -8109,9 +8124,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle n'est pas définie, la sélection automatique n'est effectuée pour aucun site.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="906349948439898016">WebSQL dans les contextes non sécurisés est activé par défaut à partir de M105, mais peut être désactivé via l'indicateur Chrome.
-          Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL dans les contextes non sécurisés peut être désactivé.
-          Si cette règle est définie sur "True", WebSQL ne peut pas être désactivé.</translation>
 <translation id="9068629430243705879">port 6566 (peut être débloqué jusqu'au 15/10/2021)</translation>
 <translation id="9069588907259547232">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés signalent leur volume audio.
 
@@ -8185,6 +8197,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="9135033364005346124">Activer le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136212796239682721">Désactiver l'interface utilisateur de la bulle de téléchargement</translation>
 <translation id="9136399279941091445">Intervalles pendant lesquels les règles spécifiées pour les appareils sont disponibles (lorsque l'appareil est éteint)</translation>
+<translation id="9142561920976791097">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="9148720248753722892">Interdire les certificats signés SHA-1</translation>
 <translation id="9149678135092892302">Désactiver les rapports sur les informations liées à la version</translation>
 <translation id="9150416707757015439">Cette règle est obsolète. Veuillez utiliser la règle "IncognitoModeAvailability". 

@@ -1432,6 +1432,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4646534391647090355">Odpri zdaj</translation>
 <translation id="4648262692072505866">Zgoščena vrednost mora biti v obliki zapisa SHA-256.</translation>
 <translation id="4652266463001779298">Ni dovoljeno</translation>
+<translation id="4652440160515225514">Vaša organizacija je blokirala to spletno mesto, ker krši pravilnik.</translation>
 <translation id="4653167719759882810">Združitve in pridobitve</translation>
 <translation id="4658638640878098064">Spenjanje zgoraj levo</translation>
 <translation id="4660119392514473465">Zdaj je mogoče brskati zasebno in drugi, ki uporabljajo to napravo, ne bodo videli vaše dejavnosti. Prenosi, zaznamki in elementi na bralnem seznamu bodo vseeno shranjeni.</translation>
@@ -1685,7 +1686,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="52517543715119994">Več o funkcijah Chroma</translation>
 <translation id="5251803541071282808">Oblak</translation>
 <translation id="5254043433801397071">Optimiziranje vsebine za tiskanje</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Vseeno zajemi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Pravilnik skrbnika ne priporoča kopiranja te datoteke sem: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča kopiranja teh datotek sem: <ph name="DESTINATION_NAME" />.}}</translation>
@@ -2920,6 +2920,7 @@ Dodatne podrobnosti:
 <translation id="8437238597147034694">&amp;Razveljavi premik</translation>
 <translation id="8438476240229491014">Zapomni si to nastavitev</translation>
 <translation id="8438786541497918448">Želite uporabiti kamero in mikrofon?</translation>
+<translation id="8438923942245957911">To spletno mesto je označila vaša organizacija</translation>
 <translation id="8443613539889492016">Rap in hip-hop</translation>
 <translation id="8444543005280733648">Računalniška omrežja</translation>
 <translation id="8446884382197647889">Več o tem</translation>

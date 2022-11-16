@@ -282,6 +282,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1622571349153632031">Cozinha vegetariana</translation>
 <translation id="1623104350909869708">Evitar que esta página crie caixas de diálogo adicionais</translation>
+<translation id="1633137413609266904">{0,plural, =1{A abertura deste ficheiro foi bloqueada pela política do administrador}other{A abertura de # ficheiros foi bloqueada pela política do administrador}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Preparação e planeamento de impostos</translation>
 <translation id="1638780421120290329">Não é possível guardar o cartão</translation>
@@ -896,6 +897,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3270847123878663523">&amp;Anular reordenação</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> pretende estabelecer ligação</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="3282497668470633863">Adicionar nome no cartão</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -1295,6 +1297,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277028893293644418">Repor palavra-passe</translation>
 <translation id="4278390842282768270">Permitido</translation>
+<translation id="4281998142035485137">{0,plural, =1{Abrir ficheiro confidencial?}other{Abrir ficheiros confidenciais?}}</translation>
 <translation id="4282346679996504092">Os alertas para este produto foram desativados e o marcador foi removido</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Este cartão foi guardado na sua Conta Google.}other{Estes cartões foram guardados na sua Conta Google.}}</translation>
@@ -1686,7 +1689,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="52517543715119994">Saiba mais acerca das funcionalidades do Chrome</translation>
 <translation id="5251803541071282808">Nuvem</translation>
 <translation id="5254043433801397071">Otimizar conteúdo para impressão</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
@@ -1929,6 +1931,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5903264686717710770">Título:</translation>
 <translation id="5904360430676679685">Família e relações</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
+<translation id="5911110632211230665">Abertura bloqueada</translation>
 <translation id="59174027418879706">Ativada</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 em utilização}other{# em utilização}}</translation>

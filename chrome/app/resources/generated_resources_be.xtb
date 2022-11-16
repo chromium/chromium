@@ -1454,7 +1454,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Пасля запуску гэтага працэсу сістэма перазагрузіцца.</translation>
 <translation id="23030561267973084">Праграма "<ph name="EXTENSION_NAME" />" запатрабавала дадатковыя дазволы.</translation>
-<translation id="23055578400314116">Выберыце імя карыстальніка</translation>
 <translation id="2307462900900812319">Наладзіць сетку</translation>
 <translation id="2307553512430195144">Калі вы дасце на гэта згоду, Памочнік Google будзе ў рэжыме чакання выяўляць фразу "Ok Google". З дапамогай функцыі Voice Match ён зможа распазнаць, што гаворыць іменна <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3440,6 +3439,7 @@
 <translation id="4147911968024186208">Паўтарыце спробу. Калі вы бачыце гэту памылку паўторна, звярніцеся да прадстаўніка службы падтрымкі.</translation>
 <translation id="4150201353443180367">Дысплэй</translation>
 <translation id="4150569944729499860">Кантэкст экрана</translation>
+<translation id="4152011295694446843">Вашы закладкі знаходзяцца тут</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4157869833395312646">Крыптаграфія праз сервер Microsoft</translation>

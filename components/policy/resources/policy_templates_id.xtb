@@ -450,11 +450,6 @@ kebijakan ini tidak melarang screenshot yang diambil dengan aplikasi sistem oper
       Printer ekstensi juga disebut sebagai tujuan penyedia cetak, dan menyertakan semua tujuan yang termasuk dalam ekstensi <ph name="PRODUCT_NAME" />.
 
       Printer lokal juga disebut sebagai tujuan cetak native, dan menyertakan tujuan yang tersedia untuk mesin lokal dan printer jaringan bersama.</translation>
-<translation id="1456449214426764016">API non-standar window.webkitStorageInfo tidak digunakan lagi dan akan dihapus.
-      Kebijakan ini akan mengaktifkan kembali API tersebut.
-      Jika kebijakan ini disetel ke Aktif, window.webkitStorageInfo API akan tersedia.
-      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, window.webkitStorageInfo API tidak akan tersedia.
-      </translation>
 <translation id="1456822151187621582">Windows (klien <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Mengontrol perilaku pengguna di sesi multi profil di perangkat <ph name="PRODUCT_OS_NAME" />.
 
@@ -825,19 +820,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 
       Jika kebijakan tidak disetel, pengguna akan dapat memanipulasi seluruh daftar bahasa pilihan.</translation>
 <translation id="1803646570632580723">Daftar aplikasi tersemat untuk ditampilkan pada peluncur</translation>
-<translation id="1805056271257244521">Jika kebijakan disetel ke Aktif, fungsi setTimeout() JavaScript dengan waktu tunggu 0 md tidak akan dibulatkan ke 1 md.
-          Jika kebijakan disetel ke Nonaktif, fungsi setTimeout() JavaScript dengan waktu tunggu 0 md akan dibulatkan ke 1 md.
-          Jika kebijakan tidak disetel, perilaku default browser akan digunakan untuk penundaan minimum fungsi setTimeout().
-
-          Ini merupakan fitur kepatuhan standar web, tetapi dapat mengubah urutan tugas
-          di suatu halaman web, yang menyebabkan perilaku tak terduga di situs yang bergantung pada
-          urutan tertentu dengan cara tertentu pula. Kebijakan ini juga dapat memengaruhi situs yang menggunakan banyak setTimeout()
-          dengan waktu tunggu 0 md, misalnya penambahan beban CPU.
-
-          Bagi pengguna yang tidak menyetel kebijakan ini, Chrome akan meluncurkan perubahan secara bertahap pada saluran Stabil.
-
-          Kebijakan ini bersifat sementara dan akan dihapus di Chrome 105. Batas waktu ini dapat diperpanjang jika diperlukan di antara perusahaan.
-          </translation>
 <translation id="1808715480127969042">Cekal cookie di situs ini</translation>
 <translation id="1810261428246410396">Izinkan Tethering Instan untuk digunakan.</translation>
 <translation id="1813638828646876133">Aktifkan pengiriman otomatis PIN di layar kunci dan layar login</translation>
@@ -4164,6 +4146,7 @@ dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan roo
 <translation id="5025239932007658691">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan sesekali mengirimkan kueri ke server Google untuk mengambil stempel waktu yang akurat.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan berhenti mengirimkan kueri tersebut.</translation>
+<translation id="5033070732967197381">Izinkan permintaan WebAuthn API di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="5034504101537897433">Aktifkan pelaporan informasi laporan kerusakan perangkat</translation>
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>
@@ -5737,6 +5720,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
 <translation id="6609867253856597039">Menyetel pengalaman pengguna fitur yang dinonaktifkan</translation>
 <translation id="6614557704487944013">Izinkan pengguna menggunakan browser <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">Jangan izinkan permintaan WebAuthn API di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="6617589895942747919">Waktu mulai interval, inklusif.</translation>
 <translation id="6621830999036927230">Jika kebijakan disetel, host akses jarak jauh akan menggunakan URL ini untuk memvalidasi token autentikasi dari klien akses jarak jauh agar dapat menerima koneksi. Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.
 
@@ -6039,6 +6023,12 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6907778402784621686">Blokir konten tidak aman di situs ini</translation>
 <translation id="6908640907898649429">Mengonfigurasi penyedia penelusuran default. Anda dapat menentukan penyedia penelusuran default yang akan digunakan pengguna atau memilih menonaktifkan penelusuran default.</translation>
 <translation id="6913068954484253496">Izinkan <ph name="PRODUCT_NAME" /> untuk terhubung ke perangkat Cast di semua alamat IP.</translation>
+<translation id="6915493311660114995">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan
+mengizinkan permintaan Autentikasi Web di situs yang memiliki sertifikat TLS yang mengalami
+error (yaitu, situs yang dianggap tidak aman).
+
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, perilaku default
+pemblokiran permintaan semacam itu akan diterapkan.</translation>
 <translation id="6919819553978815392">Jika kebijakan ini disetel ke benar (true) atau tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> akan mengaktifkan login tamu. Login tamu adalah profil <ph name="PRODUCT_NAME" /> saat semua jendela berada dalam mode Samaran.
 
       Jika kebijakan ini disetel ke salah (false), <ph name="PRODUCT_NAME" /> dan <ph name="LACROS_NAME" /> tidak akan mengizinkan profil tamu dimulai.
@@ -6144,7 +6134,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika 'U2F' dipilih, faktor kedua yang diintegrasikan akan melakukan proses sesuai spesifikasi FIDO U2F.
 
       Jika 'U2F_EXTENDED' dipilih, faktor kedua yang diintegrasikan akan memberikan fungsi U2F, ditambah beberapa ekstensi untuk masing-masing pengesahan.</translation>
-<translation id="6998179760789945134">Nonaktifkan WebSQL di konteks tidak aman kecuali jika diaktifkan oleh tanda Chrome.</translation>
 <translation id="6999948519306285655">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Menyetel kebijakan memungkinkan Anda menentukan URL untuk file .pac proxy. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan dan Anda memilih <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> dengan <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6953,6 +6942,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="782661371433719637">Jangan izinkan situs apa pun meminta akses baca ke file dan direktori melalui File System API</translation>
 <translation id="7827127381981620448">Aplikasi platform</translation>
 <translation id="7829436838673974723">Izinkan halaman mengirim permintaan XHR sinkron selama penutupan halaman</translation>
+<translation id="782978857350824974">Mengizinkan permintaan Autentikasi Web di situs dengan sertifikat TLS yang rusak.</translation>
 <translation id="7832225468415136704">Cegah Pembersih Chrome memindai sistem secara berkala dan nonaktifkan pemindaian manual</translation>
 <translation id="7833148823006528332">ID aplikasi Android, mis. "com.google.android.gm" untuk Gmail.</translation>
 <translation id="7835218570504220753">Nonaktifkan klik otomatis</translation>
@@ -7342,6 +7332,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8250048892729838843">Kebijakan ini tidak digunakan lagi. Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
 <translation id="82530263956734297">ID Ekstensi yang dikeluarkan dari daftar yang tidak diizinkan</translation>
+<translation id="8256006033157034334">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Mengontrol nama akun yang ditampilkan <ph name="PRODUCT_OS_NAME" /> di layar masuk untuk akun lokal perangkat yang sesuai.
 
       Jika kebijakan ini disetel, layar masuk akan menggunakan string yang ditentukan dalam pemilih masuk berdasarkan gambar untuk akun lokal perangkat yang sesuai.
@@ -8218,9 +8209,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Jika kebijakan ini tidak disetel, pemilihan otomatis tidak akan dilakukan untuk situs apa pun.
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="906349948439898016">WebSQL di konteks yang tidak aman aktif secara default mulai M105, tetapi dapat dinonaktifkan melalui tanda Chrome.
-          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL di konteks yang tidak aman dapat dinonaktifkan.
-          Jika kebijakan ini disetel ke benar (true), WebSQL tidak dapat dinonaktifkan.</translation>
 <translation id="9068629430243705879">port 6566 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
 <translation id="9069588907259547232">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan volume audio perangkat.
 

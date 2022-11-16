@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ይደርስዎታል</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">ለሉህ ቅድመ ዕይታን አጋራ ጥፍር አከል</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}}</translation>
 <translation id="3882834874697329510">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ለማግኘት በቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
 <translation id="5558362125926932819">የትር ቡድንን ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር ይዝጉ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ትሮች ተሰብስበዋል</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> አገናኝ ከChrome}one{<ph name="TABS_COUNT_MANY" /> አገናኝ ከChrome}other{<ph name="TABS_COUNT_MANY" /> አገናኞች ከChrome}}</translation>
 <translation id="575494663145460764">ለዋጋ ቅነሳዎች ማንቂያዎችን ያግኙ?</translation>
 <translation id="58326064309361797">ለመቦደን ትሮችን ይጎትቱ</translation>
 <translation id="5846292395804797011">የ<ph name="TITLE_OF_GROUP" /> ቡድንን ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር ይዝጉ</translation>

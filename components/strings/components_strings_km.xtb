@@ -283,6 +283,7 @@
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1622571349153632031">ម្ហូប​បួស</translation>
 <translation id="1623104350909869708">បង្ការទំព័រនេះពីការបង្កើតប្រអប់បន្ថែម។</translation>
+<translation id="1633137413609266904">{0,plural, =1{ការបើក​ឯកសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}other{ការបើក​ឯកសារ # ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}}</translation>
 <translation id="1634828734222219955">សរុប</translation>
 <translation id="163669211644121865">ការរៀបចំ​ផែនការ និងការរៀបចំ​លិខិតប្រកាសពន្ធ</translation>
 <translation id="1638780421120290329">មិនអាចរក្សាទុក​បណ្ណបានទេ</translation>
@@ -899,6 +900,7 @@
 <translation id="3270847123878663523">បកក្រោយការតម្រៀបឡើងវិញ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ចង់ភ្ជាប់</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​នេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​បើក​ឯកសារ​ទាំងនេះ​នៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
 <translation id="3282085321714087552">ស្ថាប័នរបស់អ្នក <ph name="ENROLLMENT_DOMAIN" /> បានបញ្ជូនព័ត៌មានមួយចំនួនទៅគេហទំព័រខាងក្រោមដូចជា ការកំណត់ ឬគោលការណ៍ជាដើម។</translation>
 <translation id="3282497668470633863">បញ្ចូលឈ្មោះលើកាត</translation>
 <translation id="3286372614333682499">បញ្ឈរ​</translation>
@@ -1298,6 +1300,7 @@
 <translation id="4275830172053184480">ចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញ</translation>
 <translation id="4277028893293644418">កំណត់​ពាក្យ​សម្ងាត់​ឡើងវិញ</translation>
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
+<translation id="4281998142035485137">{0,plural, =1{បើក​ឯកសារ​សម្ងាត់​ឬ?}other{បើក​ឯកសារ​សម្ងាត់ឬ?}}</translation>
 <translation id="4282346679996504092">ការជូនដំណឹង​សម្រាប់​ផលិតផល​នេះ​ត្រូវបាន​បិទ ហើយ​ចំណាំ​ត្រូវបានដកចេញ</translation>
 <translation id="4285498937028063278">ដកការដៅ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{បណ្ណនេះ​ត្រូវបានរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក}other{បណ្ណទាំងនេះ​ត្រូវបានរក្សាទុក​នៅក្នុងគណនី Google របស់អ្នក}}</translation>
@@ -1690,7 +1693,6 @@
 <translation id="52517543715119994">ស្វែងយល់អំពី​មុខងារ Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">បង្កើនប្រសិទ្ធភាព​ខ្លឹមសារបោះពុម្ព</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">មិនអីទេ ថតចុះ</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​ចម្លង​ឯកសារ​នេះ​ទៅ​ក្នុង <ph name="DESTINATION_NAME" /> ទេ}other{គោលការណ៍​អ្នកគ្រប់គ្រង​មិន​ណែនាំ​ឱ្យ​​ចម្លង​ឯកសារ​ទាំង​នេះ​ទៅក្នុង <ph name="DESTINATION_NAME" /> ទេ}}</translation>
@@ -1933,6 +1935,7 @@
 <translation id="5903264686717710770">ចំណង​ជើង៖</translation>
 <translation id="5904360430676679685">គ្រួសារ និង​ទំនាក់ទំនង</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (បានធ្វើសមកាលកម្ម)</translation>
+<translation id="5911110632211230665">បានទប់ស្កាត់ការបើក</translation>
 <translation id="59174027418879706">បានបើកដំណើរការ</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{បានប្រើ 1}other{បានប្រើ #}}</translation>

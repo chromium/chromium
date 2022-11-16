@@ -443,10 +443,6 @@
       擴充印表機也稱為列印服務提供者目的地，其中包含所有屬於 <ph name="PRODUCT_NAME" /> 擴充功能的目的地。
 
       本機印表機也稱為原生列印目的地，其中包含可供本機電腦和共用網路印表機使用的目的地。</translation>
-<translation id="1456449214426764016">非標準 API window.webkitStorageInfo 已淘汰，我們也計劃將這個 API 移除。
-      這項政策會重新啟用這個 API。
-      如果將這項政策設為啟用，系統將開放使用 window.webkitStorageInfo API。如果將這項政策設為停用或不設定，window.webkitStorageInfo API 就無法使用。
-      </translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />用戶端)：</translation>
 <translation id="1464848559468748897">針對使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置多重設定檔工作階段中的行為進行控制。
 
@@ -818,16 +814,6 @@
 
       如果不設定這項政策，使用者就能完全控制偏好語言清單。</translation>
 <translation id="1803646570632580723">要顯示在啟動器中的固定應用程式清單</translation>
-<translation id="1805056271257244521">如果啟用這項政策，逾時 0 毫秒的 JavaScript setTimeout() 將不會延遲到 1 毫秒。
-          如果停用這項政策，逾時 0 毫秒的 JavaScript setTimeout() 將延遲到 1 毫秒。
-          如果未設定這項政策，請為 setTimeout() 延遲函式使用瀏覽器的預設行為。
-
-          這項功能符合網路標準，但可能會改變網頁上的工作排序，導致網站上出現與某種特定排序相關的非預期行為，也可能影響許多將 setTimeout() 設為逾時 0 毫秒使用量 (例如增加 CPU 負載) 的網站。
-
-          對於未設定這項政策的使用者，Chrome 將在穩定版上逐步推出變更。
-
-          這項政策是暫時性的，預計會在 Chrome 105 中移除。如果企業之間有需要，我們將會延長這個期限。
-          </translation>
 <translation id="1808715480127969042">封鎖這些網站的 Cookie</translation>
 <translation id="1810261428246410396">允許使用即時網路共用功能。</translation>
 <translation id="1813638828646876133">在鎖定畫面和登入畫面上啟用 PIN 碼自動提交功能</translation>
@@ -5981,7 +5967,6 @@
       如果選取 [U2F]，整合式雙重驗證將依照 FIDO U2F 規格運作。
 
       如果選取 [U2F_EXTENDED]，整合式雙重驗證會為個人認證提供 U2F 功能和一些擴充功能。</translation>
-<translation id="6998179760789945134">除非已經透過 Chrome 旗標加以啟用，否則請在不安全內容中停用 WebSQL。</translation>
 <translation id="6999948519306285655">這項政策已遭淘汰，請改用 <ph name="PROXY_SETTINGS_POLICY_NAME" />。
 
        你可以透過這項政策，指定 Proxy .pac 檔案的網址。只有在 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策未設定，且你為 <ph name="PROXY_MODE_POLICY_NAME" /> 選取 <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> 時，這項政策才會生效。
@@ -8023,9 +8008,6 @@
       如果不設定這項政策，系統不會為任何網站自動選取憑證。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
-<translation id="906349948439898016">自 M105 起，系統預設會在不安全的內容中啟用 WebSQL，但你可以透過 Chrome 旗標停用。
-          如果這項政策設為 False 或不設定，就可以停用不安全內容中的 WebSQL。
-          如果將這項政策設為 True，系統將無法停用 WebSQL。</translation>
 <translation id="9068629430243705879">通訊埠 6566 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="9069588907259547232">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
 

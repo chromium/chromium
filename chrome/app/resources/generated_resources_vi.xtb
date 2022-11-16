@@ -1466,7 +1466,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" />  Hệ thống sẽ khởi động lại trong quá trình này.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
-<translation id="23055578400314116">Chọn tên người dùng</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
 <translation id="2307553512430195144">Nếu bạn đồng ý, thì Trợ lý Google sẽ đợi ở chế độ chờ để phát hiện câu lệnh “Ok Google” và có thể nhận ra đó là giọng nói của <ph name="SUPERVISED_USER_NAME" /> bằng tính năng Voice Match.
     <ph name="BR" />
@@ -2387,6 +2386,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3143515551205905069">Hủy đồng bộ hóa</translation>
 <translation id="3143754809889689516">Phát từ đầu</translation>
 <translation id="3144647712221361880">Mở đường liên kết bằng tài khoản</translation>
+<translation id="3144896554017119333">Tiện ích và nhiều nội dung khác</translation>
 <translation id="3149510190863420837">Ứng dụng Chrome</translation>
 <translation id="3150693969729403281">Chạy tính năng kiểm tra an toàn ngay</translation>
 <translation id="3150927491400159470">Tải lại cứng</translation>
@@ -2495,6 +2495,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3268451620468152448">Thẻ đang mở</translation>
 <translation id="3269093882174072735">Tải hình ảnh</translation>
 <translation id="326911502853238749">Không hiện <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Bật tính năng đồng bộ hoá để sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị</translation>
 <translation id="3269612321104318480">Xanh két nhạt và trắng</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Tệp}other{# tệp}}</translation>
 <translation id="326999365752735949">Đang tải xuống phần khác nhau</translation>
@@ -3452,6 +3453,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4147911968024186208">Vui lòng thử lại. Nếu bạn vẫn thấy lỗi này, vui lòng liên hệ với người đại diện hỗ trợ của bạn.</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4150569944729499860">Ngữ cảnh trên màn hình</translation>
+<translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="4154664944169082762">Dấu vân tay</translation>
 <translation id="4157869833395312646">Mã hóa Cổng Máy chủ của Microsoft</translation>
@@ -4293,6 +4295,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4950993567860689081">Phiên của bạn chịu sự quản lý của tổ chức của bạn. Quản trị viên có thể xoá hồ sơ của bạn cũng như giám sát lưu lượng truy cập mạng của bạn.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{một tệp}other{# tệp}}</translation>
 <translation id="495170559598752135">Tác vụ</translation>
+<translation id="4951966678293618079">Không bao giờ lưu mật khẩu cho trang web này</translation>
 <translation id="4953808748584563296">Hình đại diện màu cam mặc định</translation>
 <translation id="4955710816792587366">Chọn mã PIN</translation>
 <translation id="4959262764292427323">Các mật khẩu được lưu trong Tài khoản Google của bạn, vì vậy, bạn có thể sử dụng các mật khẩu đó trên bất cứ thiết bị nào</translation>
@@ -4322,6 +4325,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4981449534399733132">Để xóa dữ liệu duyệt web khỏi tất cả các thiết bị đã đồng bộ hóa và Tài khoản Google của bạn, hãy <ph name="BEGIN_LINK" />đăng nhập<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Tiếp tục công việc dang dở trên mọi thiết bị</translation>
 <translation id="4982236238228587209">Phần mềm trên thiết bị</translation>
+<translation id="4986706507552097681">Bạn có thể chọn nội dung muốn đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4986728572522335985">Thao tác này sẽ xóa toàn bộ dữ liệu trên khóa bảo mật, bao gồm cả mã PIN của khóa</translation>
 <translation id="4988526792673242964">Trang</translation>
 <translation id="49896407730300355">Xoay &amp;ngược chiều kim đồng hồ</translation>

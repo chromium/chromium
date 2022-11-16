@@ -1465,7 +1465,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />గమనిక:<ph name="END_BOLD" />  ప్రాసెస్ సమయంలో సిస్టమ్ రీబూట్ అవుతుంది.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" అదనపు అనుమతులను అభ్యర్థించింది.</translation>
-<translation id="23055578400314116">ఒక యూజర్‌నేమ్ ఎంచుకోండి</translation>
 <translation id="2307462900900812319">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయి</translation>
 <translation id="2307553512430195144">మీరు అంగీకరిస్తే, Google Assistant "Ok Google"ను గుర్తించడానికి స్టాండ్‌బై మోడ్‌లో ఉండి, వాయిస్ మ్యాచ్ సహాయంతో మాట్లాడేది <ph name="SUPERVISED_USER_NAME" /> అని గుర్తుపట్టగలదు.
     <ph name="BR" />
@@ -3451,6 +3450,7 @@
 <translation id="4147911968024186208">దయచేసి మళ్లీ ప్రయత్నించండి. మీకు ఈ ఎర్రర్ మళ్లీ కనిపిస్తే, దయచేసి మీ మద్దతు ప్రతినిధిని సంప్రదించండి.</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
 <translation id="4150569944729499860">స్క్రీన్ కాంటెక్ట్స్</translation>
+<translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="4154664944169082762">వేలిముద్రలు</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

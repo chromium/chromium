@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">Frissítés és kijelentkezés</translation>
 <translation id="1864454756846565995">C típusú USB-vel kompatibilis eszköz (hátsó port)</translation>
 <translation id="1869497990620230175">Gyorsfájlok</translation>
+<translation id="1871703283152909317">Mindkét hozzáférés bekapcsolása</translation>
 <translation id="1879018240766558464">Az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="1882814835921407042">Nincs mobilhálózat</translation>
 <translation id="1882897271359938046">Tükrözés: <ph name="DISPLAY_NAME" /></translation>
@@ -925,6 +926,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6095008505822982596">Beszéd sebessége</translation>
 <translation id="6099678161144790572">Az elmúlt egy hónapban szerkesztette</translation>
 <translation id="6103838137565245112">rendszer</translation>
+<translation id="6107292179555508368">A mikrofon- és a kamera-hozzáférés ki van kapcsolva ezen az eszközön</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nyelvű beszédfájlok letöltve</translation>
 <translation id="6116825164611323644">A kamera-hozzáférés ki van kapcsolva ezen az eszközön</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -953,6 +955,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6259254695169772643">A kiválasztáshoz használja az érintőceruzát</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiválás...</translation>
 <translation id="6274202259872570803">Képernyőátküldés</translation>
+<translation id="6282694724099204652">Kapcsolja be a hozzáféréseket, ha engedélyezni szeretné az engedéllyel rendelkező alkalmazások és weboldalak számára az eszköz mikrofonjainak vagy kameráinak használatát.</translation>
 <translation id="6283712521836204486">A Ne zavarjanak funkció ki van kapcsolva.</translation>
 <translation id="6284232397434400372">A felbontás módosult</translation>
 <translation id="6288235558961782912">A(z) <ph name="USER_EMAIL_ADDRESS" /> felhasználót később szülői engedéllyel újra hozzáadhatja.</translation>

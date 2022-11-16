@@ -1430,6 +1430,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4646534391647090355">Megnézem most</translation>
 <translation id="4648262692072505866">A hashnek SHA-256 formátumúnak kell lennie.</translation>
 <translation id="4652266463001779298">Nem engedélyezett</translation>
+<translation id="4652440160515225514">Szervezete letiltotta ezt a webhelyet, mert az irányelvet sért.</translation>
 <translation id="4653167719759882810">Összeolvadások és felvásárlások</translation>
 <translation id="4658638640878098064">Kapocs balra fent</translation>
 <translation id="4660119392514473465">Most privát módon böngészhet, így az eszközt használó többi személy nem láthatja az Ön tevékenységeit. A letöltéseket, a könyvjelzőket és az olvasólista elemeit azonban elmenti a rendszer.</translation>
@@ -1683,7 +1684,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="52517543715119994">További információ a Chrome funkcióiról</translation>
 <translation id="5251803541071282808">Felhő</translation>
 <translation id="5254043433801397071">Nyomattartalom optimalizálása</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Rögzítés mindenképpen</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a másolását a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a másolását a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
@@ -2918,6 +2918,7 @@ További részletek:
 <translation id="8437238597147034694">&amp;Áthelyezés visszavonása</translation>
 <translation id="8438476240229491014">Jegyezze meg ezt a beállítást</translation>
 <translation id="8438786541497918448">Engedélyezi a kamera és a mikrofon használatát?</translation>
+<translation id="8438923942245957911">Szervezete megjelölte ezt a webhelyet</translation>
 <translation id="8443613539889492016">Rap és hip-hop</translation>
 <translation id="8444543005280733648">Számítógép-hálózatok</translation>
 <translation id="8446884382197647889">További információ</translation>

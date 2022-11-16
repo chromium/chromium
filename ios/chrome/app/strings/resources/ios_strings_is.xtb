@@ -232,6 +232,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2815198996063984598">2. Ýttu á „Sjálfgefið vafraforrit“</translation>
 <translation id="2820289420301699633">Kerfisstjórinn þinn hefur stjórn á Chrome og getur skoðað gögn vafrans.</translation>
 <translation id="2830972654601096923">Stjórna heimilisföngum ...</translation>
+<translation id="2834399722155632105">3. Ýttu á „Valkostir fyrir aðgangsorð“</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Endurstilla þýðingarstillingar</translation>
 <translation id="2848086008667475748">Gera sjálfgefinn í stillingum…</translation>
@@ -632,6 +633,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5899314093904173337">Ef þú vilt deila með fólki í nágrenninu skaltu láta það skanna þennan QR-kóða með myndavélinni sinni eða QR-forriti</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Valkostir fyrir þýðingu þessarar síðu</translation>
+<translation id="5933515656458364246">Samstilltu gögnin þín í öllum tækjum.</translation>
 <translation id="5938160824633642847">Tækið er næstum því fullt. Losaðu um pláss og reyndu aftur.</translation>
 <translation id="5948291296578561264">Þetta gerir þér kleift að vista myndir í myndasafninu þínu.</translation>
 <translation id="5951816930277761335">Deildu tenglinum</translation>
@@ -713,6 +715,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 
 Gögnin þín voru dulkóðuð með aðgangsorði samstillingar <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="6418346271604475326">Undirbýr PDF</translation>
+<translation id="6429213933892582367">Opnaðu „Valkostir fyrir aðgangsorð“</translation>
 <translation id="6434591244308415567">Villa kom upp. Reyndu aftur síðar.</translation>
 <translation id="6435236283694032571">Bæta við leslista</translation>
 <translation id="6439338047467462846">Leyfa öll</translation>
@@ -828,6 +831,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7203585745079012652">Lesa upp svör</translation>
 <translation id="7207023858769244910">Samstilltu til að fá efni sem byggist á áhugasviðum þínum.</translation>
 <translation id="721597782417389033">Ógilt gælunafn korts</translation>
+<translation id="7221173315674413369">Kannaðu nýja eiginleika og ábendingar í „Nýjungar“</translation>
 <translation id="722454870747268814">Nýr huliðsflipi</translation>
 <translation id="7265758999917665941">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
@@ -861,6 +865,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7531345132340165516">Þessi síða</translation>
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>
+<translation id="7553234618121028547">Til að slökkva á þessu skaltu opna <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og fara í „Valkostir fyrir aðgangsorð“</translation>
 <translation id="7554791636758816595">Nýr flipi</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7583004045319035904">Notaðu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til að taka huliðsflipana þína úr lás.</translation>
@@ -942,6 +947,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8101409298456377967">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slökkva</translation>
 <translation id="8114753159095730575">Hægt er að sækja skrá. Valkostir eru í boði neðarlega á skjánum.</translation>
+<translation id="81313319706244542">2. Ýttu á „Aðgangsorð“</translation>
 <translation id="8132598642024322408">Verð nú <ph name="PRICE" />, verð áður <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Þetta verður notað til að búa til viðburði í Apple Calendar frá Chrome og Google-linsu.</translation>
 <translation id="8156478151976189188">Samstilling aðgangsorða virkar ekki</translation>
@@ -964,6 +970,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8319076807703933069">Ný leit</translation>
 <translation id="8323906514956095947">Haltu inni til að sjá fleiri valkosti fyrir flipa</translation>
 <translation id="8328777765163860529">Loka öllu</translation>
+<translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8386068868580335421">Endurstilla</translation>
 <translation id="8407669440184693619">Engin aðgangsorð fundust fyrir þetta vefsvæði</translation>

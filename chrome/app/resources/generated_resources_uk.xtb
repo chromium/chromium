@@ -1469,7 +1469,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Примітка<ph name="END_BOLD" />. Під час цього процесу система перезапуститься.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" запитує додаткові дозволи.</translation>
-<translation id="23055578400314116">Виберіть ім'я користувача</translation>
 <translation id="2307462900900812319">Установити параметри мережі</translation>
 <translation id="2307553512430195144">Якщо ви погодитеся, Google Асистент виявлятиме фразу "Ok Google" у режимі очікування. За допомогою Voice Match він розпізнаватиме, що говорить саме <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3457,6 +3456,7 @@
 <translation id="4147911968024186208">Повторіть спробу. Якщо повідомлення про помилку з’явиться знову, зв’яжіться з представником служби підтримки.</translation>
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4150569944729499860">Екранний контекст</translation>
+<translation id="4152011295694446843">Тут відображатимуться ваші закладки</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="4154664944169082762">Відбитки</translation>
 <translation id="4157869833395312646">Серверне шифрування Microsoft</translation>

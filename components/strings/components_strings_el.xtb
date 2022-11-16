@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622571349153632031">Κουζίνα για χορτοφάγους</translation>
 <translation id="1623104350909869708">Αποτροπή δημιουργίας πρόσθετων παραθύρων διαλόγου από αυτήν τη σελίδα</translation>
+<translation id="1633137413609266904">{0,plural, =1{Το άνοιγμα αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή}other{Το άνοιγμα # αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή}}</translation>
 <translation id="1634828734222219955">Σύνολο</translation>
 <translation id="163669211644121865">Προετοιμασία και προγραμματισμός φόρου</translation>
 <translation id="1638780421120290329">Δεν είναι δυνατή η αποθήκευση της κάρτας</translation>
@@ -897,6 +898,7 @@
 <translation id="3270847123878663523">&amp;Αναίρεση αναδιάταξης</translation>
 <translation id="3271648667212143903">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύνδεση</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτού του αρχείου στο <ph name="DESTINATION_NAME" />}other{Η πολιτική διαχειριστή δεν συνιστά το άνοιγμα αυτών των αρχείων στο <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ο οργανισμός σας, <ph name="ENROLLMENT_DOMAIN" />, έστειλε ορισμένες πληροφορίες στους παρακάτω ιστοτόπους, όπως ρυθμίσεις ή πολιτικές.</translation>
 <translation id="3282497668470633863">Προσθήκη ονόματος στην κάρτα</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
@@ -1297,6 +1299,7 @@
 <translation id="4275830172053184480">Επανεκκινήστε τη συσκευή σας</translation>
 <translation id="4277028893293644418">Επαναφορά κωδικού πρόσβασης</translation>
 <translation id="4278390842282768270">Επιτρέπεται</translation>
+<translation id="4281998142035485137">{0,plural, =1{Άνοιγμα εμπιστευτικού αρχείου;}other{Άνοιγμα εμπιστευτικών αρχείων;}}</translation>
 <translation id="4282346679996504092">Οι ειδοποιήσεις για αυτό το προϊόν έχουν απενεργοποιηθεί και ο σελιδοδείκτης καταργήθηκε.</translation>
 <translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Αυτή η κάρτα αποθηκεύτηκε στον Λογαριασμό σας Google}other{Αυτές οι κάρτες αποθηκεύτηκαν στον Λογαριασμό σας Google}}</translation>
@@ -1434,6 +1437,7 @@
 <translation id="4646534391647090355">Μετάβαση εκεί τώρα</translation>
 <translation id="4648262692072505866">Ο κατακερματισμός πρέπει να έχει τη μορφή SHA-256.</translation>
 <translation id="4652266463001779298">Δεν επιτρέπεται</translation>
+<translation id="4652440160515225514">Ο οργανισμός σας έχει αποκλείσει αυτόν τον ιστότοπο, επειδή παραβαίνει μια πολιτική.</translation>
 <translation id="4653167719759882810">Συγχωνεύσεις και εξαγορές</translation>
 <translation id="4658638640878098064">Συρραφή επάνω αριστερά</translation>
 <translation id="4660119392514473465">Στο εξής μπορείτε να περιηγηθείτε ιδιωτικά και η δραστηριότητά σας δεν θα είναι ορατή στα άλλα άτομα που χρησιμοποιούν αυτήν τη συσκευή. Ωστόσο, οι λήψεις, οι σελιδοδείκτες και τα στοιχεία στη λίστα ανάγνωσης θα αποθηκεύονται.</translation>
@@ -1688,7 +1692,6 @@
 <translation id="52517543715119994">Μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">Βελτιστοποίηση περιεχομένου εκτύπωσης</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Λήψη ούτως ή άλλως</translation>
 <translation id="5255833070095767006">350 x 460 χιλ.</translation>
 <translation id="5257739419779698609">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
@@ -1932,6 +1935,7 @@
 <translation id="5903264686717710770">Τίτλος:</translation>
 <translation id="5904360430676679685">Οικογένεια και σχέσεις</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (συγχρονισμένο)</translation>
+<translation id="5911110632211230665">Το άνοιγμα έχει αποκλειστεί</translation>
 <translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 σε χρήση}other{# σε χρήση}}</translation>
@@ -2925,6 +2929,7 @@
 <translation id="8437238597147034694">&amp;Αναίρεση μετακίνησης</translation>
 <translation id="8438476240229491014">Απομνημόνευση αυτής της ρύθμισης</translation>
 <translation id="8438786541497918448">Χρήση της κάμερας και του μικροφώνου;</translation>
+<translation id="8438923942245957911">Αυτός ο ιστότοπος έχει επισημανθεί από τον οργανισμό σας</translation>
 <translation id="8443613539889492016">Ραπ και χιπ χοπ</translation>
 <translation id="8444543005280733648">Δίκτυα υπολογιστών</translation>
 <translation id="8446884382197647889">Μάθετε περισσότερα</translation>

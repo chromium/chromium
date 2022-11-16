@@ -447,11 +447,6 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
       As impressoras de extensão também são conhecidas como destinos de provedores de impressão e incluem qualquer destino que pertença a uma extensão do <ph name="PRODUCT_NAME" />.
 
       As impressoras locais também são conhecidas como destinos de impressão nativos e incluem os destinos disponíveis para as impressoras de rede compartilhada e de máquinas locais.</translation>
-<translation id="1456449214426764016">A API window.webkitStorageInfo não padrão foi descontinuada e vai ser removida.
-      A política reativa essa API.
-      Se a política for ativada, a API window.webkitStorageInfo vai ficar disponível.
-      Se ela for desativada ou deixada sem definição, a API não vai ficar disponível.
-      </translation>
 <translation id="1456822151187621582">Windows (clientes do <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla o comportamento do usuário em uma sessão de diversos perfis nos dispositivos com <ph name="PRODUCT_OS_NAME" />.
 
@@ -822,19 +817,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 
       Se a política não for definida, será possível manipular toda a lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicativos fixados a serem mostrados no iniciador</translation>
-<translation id="1805056271257244521">Quando esta política estiver ativada, a função setTimeout() do JavaScript com um tempo limite de 0 ms não vai ser limitada a 1 ms.
-          Quando ela estiver desativada, a função setTimeout() do JavaScript com um tempo limite de 0 ms vai ser limitada a 1 ms.
-          Se a política for deixada sem definição, use o comportamento padrão do navegador para o tempo limite da função setTimeout().
-
-          Esse é um recurso que obedece aos padrões da Web, mas pode mudar a ordem das tarefas
-           em uma página da Web, levando a um comportamento inesperado em sites que dependem de
-           uma certa ordenação. Também pode afetar sites com muitas funções setTimeout()
-           com um tempo limite de uso de 0ms, por exemplo, aumentando a carga da CPU.
-
-          Para usuários em que essa política não está definida, o Chrome vai lançar a mudança gradualmente no canal estável.
-
-          Esta é uma política temporária que está planejada para ser removida no Chrome 105. Este prazo pode ser prorrogado para as empresas, caso seja necessário.
-          </translation>
 <translation id="1808715480127969042">Bloquear cookies nestes sites</translation>
 <translation id="1810261428246410396">Permitir que o tethering instantâneo seja usado.</translation>
 <translation id="1813638828646876133">Ativar o envio automático do PIN na tela de bloqueio e login</translation>
@@ -4153,6 +4135,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5025239932007658691">Se a política for definida como "Ativada" ou não for definida, o <ph name="PRODUCT_NAME" /> enviará consultas ocasionais a um servidor do Google para recuperar um carimbo de data/hora preciso.
 
       Se ela for definida como "Desativada", o <ph name="PRODUCT_NAME" /> não enviará essas consultas.</translation>
+<translation id="5033070732967197381">Permitir solicitações da API WebAuthn em sites com certificados TLS corrompidos.</translation>
 <translation id="5034504101537897433">Ativar relatórios de erros do dispositivo</translation>
 <translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
@@ -5719,6 +5702,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="6609867253856597039">Definir a experiência do usuário com recursos desativados</translation>
 <translation id="6614557704487944013">Permitir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">Não permitir solicitações da API WebAuthn em sites com certificados TLS corrompidos.</translation>
 <translation id="6617589895942747919">Horário de início do intervalo (incluso).</translation>
 <translation id="6621830999036927230">Se a política for definida, o host de acesso remoto usará este URL na validação dos tokens de autenticação para aceitar conexões de clientes de acesso remoto. Este recurso será desativado se for deixado vazio ou sem definição.
 
@@ -6018,6 +6002,12 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6907778402784621686">Bloquear conteúdo não seguro nesses sites</translation>
 <translation id="6908640907898649429">Configura o provedor de pesquisa padrão. É possível especificar o provedor de pesquisa padrão que será usado ou escolhido pelo usuário para desativar a pesquisa padrão.</translation>
 <translation id="6913068954484253496">Permitir que o <ph name="PRODUCT_NAME" /> conecte-se a dispositivos de transmissão em todos os endereços IP.</translation>
+<translation id="6915493311660114995">Se a política for ativada, o <ph name="PRODUCT_NAME" /> vai permitir
+solicitações de autenticação da Web em sites que tenham certificados TLS com
+erros, ou seja, sites considerados não seguros.
+
+Se ela for desativada ou deixada sem definição, o comportamento padrão de
+bloqueio dessas solicitações será aplicado.</translation>
 <translation id="6919819553978815392">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão ativar os logins de visitantes. Esses são perfis do <ph name="PRODUCT_NAME" /> em que todas as janelas estão no modo de navegação anônima.
 
       Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que perfis de visitantes sejam iniciados.
@@ -6123,7 +6113,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a opção U2F for selecionada, o segundo fator integrado se comportará de acordo com a especificação FIDO U2F.
 
       Se a opção U2F_EXTENDED for selecionada, o segundo fator integrado fornecerá as funções de U2F, além de algumas extensões para declaração individual.</translation>
-<translation id="6998179760789945134">Desativar o WebSQL em contextos não seguros, a menos que ele seja ativado pela Flag do Chrome.</translation>
 <translation id="6999948519306285655">Esta política está obsoleta. Use a <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Se a política for definida, você poderá especificar um URL de um arquivo proxy .pac. Esta política só terá efeito se a <ph name="PROXY_SETTINGS_POLICY_NAME" /> não tiver sido especificada e você tiver selecionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> com <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6931,6 +6920,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="782661371433719637">Não permitir que nenhum site solicite acesso de leitura de arquivos e diretórios pela API File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
 <translation id="7829436838673974723">Permitir que as páginas enviem solicitações XHR síncronas ao dispensar a página</translation>
+<translation id="782978857350824974">Permitir solicitações de autenticação da Web em sites com certificados TLS corrompidos.</translation>
 <translation id="7832225468415136704">Impedir que a Varredura do Chrome verifique o sistema periodicamente e desativar as verificações manuais</translation>
 <translation id="7833148823006528332">Identificador do app Android, por exemplo, "com.google.android.gm" para o Gmail.</translation>
 <translation id="7835218570504220753">Desativar clique automático</translation>
@@ -7320,6 +7310,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8250048892729838843">Esta política foi descontinuada. Se ela for ativada ou deixada sem definição, o dispositivo poderá receber controles de geração de relatórios granulares.
       Se ela for desativada, os dispositivos registrados não vão receber controles de geração de relatórios granulares.</translation>
 <translation id="82530263956734297">IDs de extensão que serão isentos da lista de bloqueio</translation>
+<translation id="8256006033157034334">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controla o nome da conta que o <ph name="PRODUCT_OS_NAME" /> mostra na tela de login para a conta local de dispositivo correspondente.
 
       Se esta política estiver definida, a tela de login usará a string especificada no seletor de login baseado em imagem para a conta local de dispositivo correspondente.
@@ -8196,9 +8187,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Se esta política não for definida, não haverá seleção automática para nenhum site.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
-<translation id="906349948439898016">O WebSQL em contextos não seguros fica ativado por padrão da versão M105 em diante, mas pode ser desativado por uma Sinalização do Chrome.
-          Se a política é definida como falsa ou deixada sem definição, o WebSQL em contextos não seguros pode ser desativado.
-          Se ela é definida como verdadeira, o WebSQL não pode ser desativado.</translation>
 <translation id="9068629430243705879">porta 6566 (pode ser desbloqueada até 15/10/2021)</translation>
 <translation id="9069588907259547232">Se a política for ativada ou deixada sem definição, os dispositivos registrados vão informar o volume do áudio.
 

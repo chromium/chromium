@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2. පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න</translation>
 <translation id="2820289420301699633">ඔබගේ පරිපාලකට Chrome පාලනය කළ හැකි අතර එහි දත්තවලට ප්‍රවේශ විය හැකිය.</translation>
 <translation id="2830972654601096923">ලිපින කළමනාකරණය...</translation>
+<translation id="2834399722155632105">3. මුරපද විකල්ප තට්ටු කරන්න</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">පරිවර්තන සැකසීම් නැවත සකසන්න</translation>
 <translation id="2848086008667475748">සැකසීම් තුළ පෙරනිමි බවට පත් කරන්න…</translation>
@@ -370,6 +371,7 @@
 <translation id="3861486700625780712">අනුගමනය කිරීමෙන් ඉවත් වන්න</translation>
 <translation id="3863769054730344136">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="387280738075653372">මෙතැනින් Chrome බා ගන්න.</translation>
+<translation id="3888863481921783344">ඔබේ සිදුවීමට හැකි ආරාධිතයන් පෙන්වීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="3892144330757387737">ඔබට ඔබේ ඉතිහාසය මෙහි හමුවනු ඇත</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3904829425754749514">ඔබගේ සංවිධානය සමමුහුර්ත කිරීම ක්‍රියාවිරහිත කර ඇත. ඔබට තවම ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් මෙම උපාංගයෙහි බැලිය හැකිය. ඔබ වෙනස් කිරීම් සිදු කළහොත්, ඒවා ඔබගේ ගිණුමට සමමුහුර්ත නොවනු ඇත.</translation>
@@ -631,6 +633,7 @@
 <translation id="5899314093904173337">ආසන්නයේ සිටින පුද්ගලයින් සමග බෙදා ගැනීමට, ඔවුන්ට මෙම QR කේතය ඔවුන්ගේ කැමරාවෙන් හෝ QR සැකෑන් කිරීමේ යෙදුමෙන් ස්කෑන් කිරීමට ඉඩ දෙන්න</translation>
 <translation id="5911030830365207728">Google පරිවර්තනය</translation>
 <translation id="5913600720976431809">පිටුව පරිවර්තන කිරීමට විවෘත කරන්න</translation>
+<translation id="5933515656458364246">සියලු උපාංගවල ඔබේ දත්ත සමමුහුර්ත කරන්න.</translation>
 <translation id="5938160824633642847">ඔබේ උපාංගය මුළුමනින්ම පිරී ඇත. ඉඩ නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="5948291296578561264">මෙය ඔබට ඔබේ ඡායාරූප පුස්තකාලයට ඡායාරූප සුරැකීමට ඉඩ සලසයි.</translation>
 <translation id="5951816930277761335">සබැඳිය බෙදා ගන්න</translation>
@@ -712,6 +715,7 @@
 
 ඔබේ දත්ත <ph name="TIME" /> විට ඔබේ සමමුහුර්ත මුරවදන සමඟ සංකේතනය කර ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට ඇතුළු කරන්න.</translation>
 <translation id="6418346271604475326">PDF සූදානම් කිරීම</translation>
+<translation id="6429213933892582367">මුරපද විකල්ප විවෘත කරන්න</translation>
 <translation id="6434591244308415567">දෝෂයක් සිදු විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="6435236283694032571">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
 <translation id="6439338047467462846">සියල්ල ඉඩ දෙන්න</translation>
@@ -827,6 +831,7 @@
 <translation id="7203585745079012652">පිළිතුරු ආපසු දෙන්න</translation>
 <translation id="7207023858769244910">ඔබගේ ලැදිකම් මත පදනම්ව අන්තර්ගතය ලබා ගැනීමට සමමුහුර්ත කරන්න.</translation>
 <translation id="721597782417389033">වලංගු නොවන කාඩ්පත් අපනාමය</translation>
+<translation id="7221173315674413369">අලුත් දේ තුළ නව විශේෂාංග සහ ඉඟි ගවේෂණය කරන්න</translation>
 <translation id="722454870747268814">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="7265758999917665941">කිසි විටෙක මෙම වෙබ් අඩවිය සඳහා නැත</translation>
 <translation id="7272437679830969316">ඔබගේ අනන්‍යතාව තහවුරු කළ නොහැකිය. මුරපදය පිටපත් නොකරන ලදී.</translation>
@@ -860,6 +865,7 @@
 <translation id="7514365320538308">බාගන්න</translation>
 <translation id="7531345132340165516">වත්මන් අඩවිය</translation>
 <translation id="7537586195939242955">කනගාටුයි, ඔබේ අවසර පත මේ අවස්ථාවේදී අවසර පොත වෙතට ස්ථාපනය කළ නොහැකිය.</translation>
+<translation id="7553234618121028547">ක්‍රියාවිරහිත කිරීම සඳහා, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> විවෘත කර මුරපද විකල්ප වෙත යන්න.</translation>
 <translation id="7554791636758816595">නව ටැබය</translation>
 <translation id="7561196759112975576">සැමවිටම</translation>
 <translation id="7583004045319035904">ඔබගේ අප්‍රකට ටැබ අගුලු හැරීමට <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> භාවිත කරන්න.</translation>
@@ -941,7 +947,9 @@
 <translation id="8101409298456377967">ඔබට පහසුවෙන් අඩවි සහ යෙදුම්වලට පිරීමට හැකි වන පරිදි ඔබගේ මුරපද තනන්න, සුරකින්න සහ කළමනාකරණය කරන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ක්‍රියා විරහිත කරන්න</translation>
 <translation id="8114753159095730575">ගොනුව බාගත හැකි වේ. තිරයේ පහළට ආසන්නව විකල්ප තිබේ.</translation>
+<translation id="81313319706244542">2. මුරපද තට්ටු කරන්න</translation>
 <translation id="8132598642024322408">දැන් <ph name="PRICE" /> පෙරදී <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Chrome සහ Google Lens වෙතින් ඔබේ Apple දින දර්ශනයේ සිදුවීම් තැනීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="8156478151976189188">මුරපද සමමුහුර්තය ක්‍රියා නොකරයි</translation>
 <translation id="8157532349231307196">ගිණුම් <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -962,6 +970,7 @@
 <translation id="8319076807703933069">අලුත් සෙවීම</translation>
 <translation id="8323906514956095947">තවත් පටිති විකල්ප සඳහා ස්පර්ශ කරගෙන සිටින්න</translation>
 <translation id="8328777765163860529">සියල්ල වසන්න</translation>
+<translation id="8343993175958086504">ඔබේ දේවල් උපස්ථ කර එය ඕනෑම උපාංගයක භාවිතා කරන්න.</translation>
 <translation id="8378714024927312812">ඔබේ ආයතනය විසින් කළමනා කෙරේ</translation>
 <translation id="8386068868580335421">යළි සකසන්න</translation>
 <translation id="8407669440184693619">මෙම වෙබ් අඩවිය සඳහා මුරපද කිසිවක් හමු නොවිය</translation>

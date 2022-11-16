@@ -1453,7 +1453,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Ուշադրություն.<ph name="END_BOLD" /> գործողության ժամանակ համակարգը կվերաբեռնվի։</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />»-ը լրացուցիչ թույլտվություններ է խնդրել:</translation>
-<translation id="23055578400314116">Ընտրեք օգտանուն</translation>
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
 <translation id="2307553512430195144">Եթե համաձայն եք, Google Օգնականը կսպասի «Ok Google» հրահանգին և Voice Match գործառույթի միջոցով կկարողանա որոշել, որ խոսում է <ph name="SUPERVISED_USER_NAME" /> օգտատերը։
     <ph name="BR" />
@@ -3439,6 +3438,7 @@
 <translation id="4147911968024186208">Խնդրում ենք նորից փորձել։ Եթե խնդիրը չլուծվի, կապվեք աջակցման կենտրոնի մասնագետների հետ:</translation>
 <translation id="4150201353443180367">Էկրան</translation>
 <translation id="4150569944729499860">Էկրանի համատեքստ</translation>
+<translation id="4152011295694446843">Ձեր էջանիշները կգտնեք այստեղ</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="4154664944169082762">Մատնահետքեր</translation>
 <translation id="4157869833395312646">Microsoft սերվերի գաղտնագրում</translation>

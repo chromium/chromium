@@ -175,6 +175,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1862380676329487333">Cập nhật và đăng xuất</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1869497990620230175">Tệp nhanh</translation>
+<translation id="1871703283152909317">Bật cả hai quyền truy cập</translation>
 <translation id="1879018240766558464">Hiện không hỗ trợ cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6095008505822982596">Tốc độ đọc</translation>
 <translation id="6099678161144790572">Chỉnh sửa tháng trước</translation>
 <translation id="6103838137565245112">hệ thống</translation>
+<translation id="6107292179555508368">Quyền truy cập vào micrô và máy ảnh trên thiết bị này đều đang tắt</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="6116825164611323644">Quyền truy cập vào máy ảnh đang tắt trên thiết bị này</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Đang kích hoạt...</translation>
 <translation id="6274202259872570803">Video ghi lại chuyển động trên màn hình</translation>
+<translation id="6282694724099204652">Bật cả hai quyền truy cập để cho phép ứng dụng và trang web có quyền này sử dụng (các) micrô và máy ảnh trên thiết bị này.</translation>
 <translation id="6283712521836204486">Chế độ Không làm phiền đang tắt.</translation>
 <translation id="6284232397434400372">Đã thay đổi độ phân giải</translation>
 <translation id="6288235558961782912">Bạn có thể thêm <ph name="USER_EMAIL_ADDRESS" /> lại sau nếu cha mẹ cho phép.</translation>

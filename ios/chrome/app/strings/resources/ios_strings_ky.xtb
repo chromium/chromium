@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">Жазылууну токтотуу</translation>
 <translation id="3863769054730344136">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="387280738075653372">Chrome'ду бул жерден жүктөп алыңыз.</translation>
+<translation id="3888863481921783344">Бул иш-чараңызга чакырыла турган адамдарды көрсөтүү үчүн колдонулат.</translation>
 <translation id="3892144330757387737">Таржымалыңызды ушул жерден табасыз</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904829425754749514">Уюмуңуз шайкештирүүнү өчүрүп койду. Ушул түзмөгүңүздө кыстармаларды, таржымалды, сырсөздөрдү жана башка жөндөөлөрүңүздү дагы деле көрүп турасыз. Эгер өзгөртүүлөрдү киргизсеңиз, алар аккаунтуңузга шайкештирилбейт.</translation>
@@ -942,6 +943,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8105368624971345109">Өчүрүү</translation>
 <translation id="8114753159095730575">Файлды жүктөп алууга болот. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="8132598642024322408">Азыркы баасы: <ph name="PRICE" />, мурунку баасы: <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Бул Chrome жана Google Lens кызматындагы Apple Жылнаамасында иш-чараларды түзүү үчүн колдонулат.</translation>
 <translation id="8156478151976189188">Сырсөздү шайкештирүү иштеген жок</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> каттоо эсеби</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Түзмөктөрүңүз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

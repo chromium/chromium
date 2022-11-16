@@ -1432,6 +1432,7 @@
 <translation id="4646534391647090355">મને હવે ડાઉનલોડ હોમ પર લઈ જાઓ</translation>
 <translation id="4648262692072505866">હૅશનું ફૉર્મેટ SHA-256 હોવું આવશ્યક છે.</translation>
 <translation id="4652266463001779298">આ સાઇટને મંજૂરી નથી</translation>
+<translation id="4652440160515225514">આ સાઇટ કોઈ પૉલિસીનું ઉલ્લંઘન કરતી હોવાને કારણે તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="4653167719759882810">વિલીનીકરણ અને અધિગ્રહણ</translation>
 <translation id="4658638640878098064">ઉપર ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="4660119392514473465">હવે તમે ખાનગીમાં બ્રાઉઝ કરી શકો છો અને આ ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકો તમારી પ્રવૃત્તિ જોઈ શકશે નહીં. જોકે, ડાઉનલોડ, બુકમાર્ક અને વાંચન સૂચિની આઇટમ સાચવવામાં આવશે.</translation>
@@ -1685,7 +1686,6 @@
 <translation id="52517543715119994">Chromeની સુવિધાઓ વિશે જાણો</translation>
 <translation id="5251803541071282808">મેઘ</translation>
 <translation id="5254043433801397071">પ્રિન્ટ કન્ટેન્ટને ઑપ્ટિમાઇઝ કરો</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">તેમ છતાં કૅપ્ચર કરો</translation>
 <translation id="5255833070095767006">350 x 460 મિમી</translation>
 <translation id="5257739419779698609">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}}</translation>
@@ -2920,6 +2920,7 @@
 <translation id="8437238597147034694">&amp;ખસેડવું પૂર્વવત્‌ કરો</translation>
 <translation id="8438476240229491014">આ સેટિંગ યાદ રાખો</translation>
 <translation id="8438786541497918448">કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરીએ?</translation>
+<translation id="8438923942245957911">તમારી સંસ્થા દ્વારા આ સાઇટને ચિહ્નિત કરવામાં આવી છે</translation>
 <translation id="8443613539889492016">રૅપ અને હિપ-હૉપ</translation>
 <translation id="8444543005280733648">કમ્પ્યુટર નેટવર્ક</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>

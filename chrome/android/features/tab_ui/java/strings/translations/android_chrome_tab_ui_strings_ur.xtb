@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">کھلے ہوئے ٹیب میں قیمت کم ہونے پر آپ کو الرٹ کیا جائے گا</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">شیٹ پیش منظر شیئر کریں کیلئے تھمب نیل</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="3882834874697329510">کھلے ہوئے ٹیب میں کم قیمت ہونے پر الرٹ حاصل کرنے کے لئے، ترتیبات میں موجود اطلاعات آن کریں۔</translation>
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">اسٹور کی معلومات دیکھنے کا اختیار اسکرین کے اوپری حصے کے قریپ دستیاب ہے</translation>
 <translation id="5558362125926932819">ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ٹیبز کا گروپ بن گیا</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏Chrome سے <ph name="TABS_COUNT_ONE" /> لنک}other{‏Chrome سے <ph name="TABS_COUNT_MANY" /> لنکس}}</translation>
 <translation id="575494663145460764">قیمتوں میں کمی کے لیے الرٹس حاصل کریں؟</translation>
 <translation id="58326064309361797">ان کی گروپ بندی کرنے کے لیے ٹیبز کو گھسیٹیں</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ بند کریں</translation>

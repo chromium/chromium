@@ -175,6 +175,7 @@
 <translation id="1862380676329487333">ອັບເດດ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="1864454756846565995">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານຫຼັງ)</translation>
 <translation id="1869497990620230175">ໄຟລ໌ດ່ວນ</translation>
+<translation id="1871703283152909317">ເປີດສິດເຂົ້າເຖິງທັງສອງຢ່າງ</translation>
 <translation id="1879018240766558464">ຕອນນີ້ບໍ່ຮອງຮັບໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
 <translation id="1882814835921407042">ບໍ່ມີເຄືອຂ່າຍມືຖື</translation>
 <translation id="1882897271359938046">ການສ່ອງໜ້າຈໍໃສ່ <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@
 <translation id="6095008505822982596">ອັດຕາການເວົ້າ</translation>
 <translation id="6099678161144790572">ແກ້ໄຂເດືອນແລ້ວ</translation>
 <translation id="6103838137565245112">ລະບົບ</translation>
+<translation id="6107292179555508368">ສິດເຂົ້າເຖິງໄມໂຄຣໂຟນ ແລະ ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບແມ່ນປິດຢູ່ໃນອຸປະກອນນີ້</translation>
 <translation id="6114505516289286752">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າ <ph name="LANGUAGE" /> ແລ້ວ</translation>
 <translation id="6116825164611323644">ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຖືກປິດໄວ້ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -952,6 +954,7 @@
 <translation id="6259254695169772643">ໃຊ້ປາຍປາກກາຂອງທ່ານເພື່ອເລືອກ</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6282694724099204652">ເປີດສິດເຂົ້າເຖິງເພື່ອອະນຸຍາດໃຫ້ແອັບ ແລະ ໜ້າເວັບທີ່ມີການອະນຸຍາດດັ່ງກ່າວໃຊ້ໄມໂຄຣໂຟນ ແລະ ກ້ອງຖ່າຍຮູບຢູ່ໃນອຸປະກອນນີ້.</translation>
 <translation id="6283712521836204486">ໂໝດຫ້າມລົບກວນປິດຢູ່.</translation>
 <translation id="6284232397434400372">ປ່ຽນຄວາມລະອຽດແລ້ວ</translation>
 <translation id="6288235558961782912">ສາມາດເພີ່ມ <ph name="USER_EMAIL_ADDRESS" /> ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້ໂດຍມີການອະນຸຍາດຂອງພໍ່ແມ່.</translation>

@@ -1451,7 +1451,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" />  პროცესის მსვლელობისას სისტემა გადაიტვირთება.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“-მა მოითხოვა დამატებითი ნებართვები.</translation>
-<translation id="23055578400314116">აირჩიეთ მომხმარებლის სახელი</translation>
 <translation id="2307462900900812319">ქსელის კონფიგურაცია</translation>
 <translation id="2307553512430195144">თანხმობის შემთხვევაში, Google ასისტენტი მოლოდინის რეჟიმში დალოდება როგორც „Ok Google“-ის, ისე <ph name="SUPERVISED_USER_NAME" />-ის საუბრის ამოცნობას Voice Match-ის მეშვეობით.
     <ph name="BR" />
@@ -3439,6 +3438,7 @@
 <translation id="4147911968024186208">გთხოვთ, ცადოთ ხელახლა. თუ ეს შეცდომა კვლავ შეგხვდებათ, გთხოვთ, დაუკავშირდეთ მხარდაჭერის გუნდის წარმომადგენელს.</translation>
 <translation id="4150201353443180367">ჩვენება</translation>
 <translation id="4150569944729499860">ეკრანის კონტექსტი</translation>
+<translation id="4152011295694446843">აქ იპოვით თქვენს სანიშნეებს</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="4154664944169082762">თითის ანაბეჭდები</translation>
 <translation id="4157869833395312646">Microsoft სერვერის მართული კრიპტოგრაფია</translation>

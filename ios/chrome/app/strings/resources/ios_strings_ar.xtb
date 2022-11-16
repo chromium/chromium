@@ -234,6 +234,7 @@
 <translation id="2815198996063984598">2- انقر على تطبيق المتصفِّح التلقائي.</translation>
 <translation id="2820289420301699633">‏يمكن لمشرفك التحكّم في Chrome والوصول إلى بياناته.</translation>
 <translation id="2830972654601096923">إدارة العناوين...</translation>
+<translation id="2834399722155632105">‏3‏. انقر على Password Options (خيارات كلمات المرور).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2843803966603263712">إعادة ضبط إعدادات الترجمة</translation>
 <translation id="2848086008667475748">الضبط كمتصفِّح تلقائي في "الإعدادات"…</translation>
@@ -372,6 +373,7 @@
 <translation id="3861486700625780712">إلغاء المتابعة</translation>
 <translation id="3863769054730344136">إرسال إلى أجهزتك</translation>
 <translation id="387280738075653372">‏يمكنك تنزيل Chrome هنا.</translation>
+<translation id="3888863481921783344">سيتم استخدام هذه البيانات لعرض المدعوين المحتملين إلى الحدث الخاص بك.</translation>
 <translation id="3892144330757387737">سيظهر لك السجلّ هنا</translation>
 <translation id="3897092660631435901">قائمة</translation>
 <translation id="3904829425754749514">أوقفت مؤسستك ميزة المزامنة. سيظل بإمكانك الاطّلاع على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على هذا الجهاز. وفي حال إجراء أي تغييرات، لن تتم مزامنتها مع حسابك.</translation>
@@ -634,6 +636,7 @@
 <translation id="5899314093904173337">يمكنك مشاركته مع المستخدمين القريبين من خلال السماح لهم بمسح رمز الاستجابة السريعة ضوئيًا باستخدام الكاميرا أو تطبيق ماسح رمز الاستجابة السريعة.</translation>
 <translation id="5911030830365207728">‏الترجمة من Google</translation>
 <translation id="5913600720976431809">خيارات ترجمة الصفحة</translation>
+<translation id="5933515656458364246">يمكنك مزامنة بياناتك على جميع الأجهزة.</translation>
 <translation id="5938160824633642847">جهازك ممتلئ تقريبًا. يمكنك إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="5948291296578561264">يسمح لك ذلك بحفظ الصور في مكتبة صورك.</translation>
 <translation id="5951816930277761335">شارِك الرابط.</translation>
@@ -715,6 +718,7 @@
 
 تم ترميز بياناتك باستخدام عبارة مرور المزامنة في <ph name="TIME" />. أدخلها لبدء المزامنة.</translation>
 <translation id="6418346271604475326">‏جارٍ إعداد PDF</translation>
+<translation id="6429213933892582367">‏افتح Password Options (خيارات كلمات المرور).</translation>
 <translation id="6434591244308415567">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6435236283694032571">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="6439338047467462846">السماح بالكل</translation>
@@ -830,6 +834,7 @@
 <translation id="7203585745079012652">النطق بالإجابات</translation>
 <translation id="7207023858769244910">يمكنك تفعيل المزامنة للحصول على محتوى استنادًا إلى اهتماماتك.</translation>
 <translation id="721597782417389033">لقب البطاقة غير صالح</translation>
+<translation id="7221173315674413369">تعرَّف على ميزات ومعلومات جديدة في صفحة "الميزات الجديدة".</translation>
 <translation id="722454870747268814">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="7265758999917665941">عدم حفظ كلمة المرور لهذا الموقع الإلكتروني</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
@@ -863,6 +868,7 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7531345132340165516">الموقع الإلكتروني الحالي</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
+<translation id="7553234618121028547">‏لإيقاف ميزة "الملء التلقائي"، افتح <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (الإعدادات) ثم انتقِل إلى Password Options (خيارات كلمة المرور).</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7561196759112975576">دومًا</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
@@ -944,7 +950,9 @@
 <translation id="8101409298456377967">يمكنك إنشاء كلمات المرور الخاصة بحسابك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">إيقاف</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
+<translation id="81313319706244542">‏2‏. انقر على Passwords (كلمات المرور).</translation>
 <translation id="8132598642024322408">السعر الآن <ph name="PRICE" /> بعدما كان <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">‏سيتم استخدام هذه البيانات لإنشاء الأحداث في Apple Calendar (تطبيق "التقويم" من Apple) من Chrome و"عدسة Google".</translation>
 <translation id="8156478151976189188">ميزة "مزامنة كلمات المرور" لا تعمل حاليًا</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> من الحسابات</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -965,6 +973,7 @@
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8323906514956095947">النقر مع الاستمرار لعرض المزيد من خيارات علامات التبويب</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
+<translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8386068868580335421">إعادة ضبط</translation>
 <translation id="8407669440184693619">لم يتم العثور على كلمات مرور لهذا الموقع الإلكتروني</translation>

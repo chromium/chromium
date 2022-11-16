@@ -1459,7 +1459,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ಗಮನಿಸಿ:<ph name="END_BOLD" /> ಪ್ರಕ್ರಿಯೆ ನಡೆಯುವಾಗ ಸಿಸ್ಟಂ ರೀಬೂಟ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸಿದ್ದಾರೆ.</translation>
-<translation id="23055578400314116">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2307462900900812319">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡು</translation>
 <translation id="2307553512430195144">ನೀವು ಸಮ್ಮತಿಸುವುದಾದರೆ, "Ok Google" ಅನ್ನು ಪತ್ತೆಮಾಡಲು Google Assistant ಸ್ಟ್ಯಾಂಡ್‌ಬೈ ಮೋಡ್‌ನಲ್ಲಿ ಕಾಯುತ್ತದೆ ಮತ್ತು Voice Match ಮೂಲಕ <ph name="SUPERVISED_USER_NAME" /> ಅವರು ಮಾತನಾಡುತ್ತಿದ್ದಾರೆ ಎಂಬುದನ್ನು ಗುರುತಿಸಬಹುದು.
     <ph name="BR" />
@@ -3446,6 +3445,7 @@
 <translation id="4147911968024186208">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಈ ದೋಷವು ಮತ್ತೊಮ್ಮೆ ಕಂಡುಬಂದರೆ, ನಿಮ್ಮ ಬೆಂಬಲ ಪ್ರತಿನಿಧಿಯನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="4150569944729499860">ಸ್ಕ್ರೀನ್ ಸಂದರ್ಭ</translation>
+<translation id="4152011295694446843">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="4154664944169082762">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳು</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

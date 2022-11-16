@@ -1428,6 +1428,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4646534391647090355">Eraman nazazu hara</translation>
 <translation id="4648262692072505866">Hash-ak SHA-256 formatua izan behar du.</translation>
 <translation id="4652266463001779298">Baimenik gabe</translation>
+<translation id="4652440160515225514">Erakundeak blokeatu egin du webgunea, gidalerro bat urratzen duelako.</translation>
 <translation id="4653167719759882810">Fusioak eta erosketak</translation>
 <translation id="4658638640878098064">Grapa bat goian, ezkerretara</translation>
 <translation id="4660119392514473465">Modu pribatuan araka dezakezu sarea, gailua erabiltzen duten gainerakoek zure jardueren berririk izan ez dezaten. Hala ere, deskargak, laster-markak eta irakurketa-zerrendako elementuak gorde egingo dira.</translation>
@@ -1681,7 +1682,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="52517543715119994">Lortu informazio gehiago Chrome-ren eginbideei buruz</translation>
 <translation id="5251803541071282808">Hodeia</translation>
 <translation id="5254043433801397071">Optimizatu inprimatu beharreko edukia</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Egin pantaila-argazki edo -grabaketa bat, halere</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratzailearen gidalerroek ez dute gomendatzen fitxategia hemen kopiatzea: <ph name="DESTINATION_NAME" />}other{Administratzailearen gidalerroek ez dute gomendatzen fitxategiak hemen kopiatzea: <ph name="DESTINATION_NAME" />}}</translation>
@@ -2915,6 +2915,7 @@ Xehetasun gehiago:
 <translation id="8437238597147034694">&amp;Desegin mugitzea</translation>
 <translation id="8438476240229491014">Gogoratu ezarpen hau</translation>
 <translation id="8438786541497918448">Kamera eta mikrofonoa erabili nahi dituzu?</translation>
+<translation id="8438923942245957911">Webgune hau markatuta dauka erakundeak</translation>
 <translation id="8443613539889492016">Rapa eta hip-hopa</translation>
 <translation id="8444543005280733648">Ordenagailu-sareak</translation>
 <translation id="8446884382197647889">Lortu informazio gehiago</translation>

@@ -1467,7 +1467,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" />  Kerfið mun endurræsa sig í ferlinu.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ hefur óskað eftir frekari heimildum.</translation>
-<translation id="23055578400314116">Velja notandanafn</translation>
 <translation id="2307462900900812319">Stilla net</translation>
 <translation id="2307553512430195144">Ef þú samþykkir verður Google hjálparinn í biðstöðu þar til hann greinir „Ok, Google“ og greinir þegar <ph name="SUPERVISED_USER_NAME" /> talar með Voice Match.
     <ph name="BR" />
@@ -2388,6 +2387,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3143515551205905069">Hætta við samstillingu</translation>
 <translation id="3143754809889689516">Spila frá byrjun</translation>
 <translation id="3144647712221361880">Opna tengil sem</translation>
+<translation id="3144896554017119333">Viðbætur og fleira</translation>
 <translation id="3149510190863420837">Chrome forrit</translation>
 <translation id="3150693969729403281">Keyra öryggisathugun núna</translation>
 <translation id="3150927491400159470">Algjör endurhleðsla</translation>
@@ -2496,6 +2496,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3268451620468152448">Opna flipa</translation>
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="326911502853238749">Ekki sýna <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Kveiktu á samstillingu til að afrita efnið þitt og nota það í hvaða tæki sem er</translation>
 <translation id="3269612321104318480">Ljósblágrænn og hvítur</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="326999365752735949">Sækir breytingaskrá</translation>
@@ -3453,6 +3454,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4147911968024186208">Reyndu aftur. Ef þú sérð þessa villu aftur skaltu hafa samband við þjónustufulltrúa.</translation>
 <translation id="4150201353443180367">Skjár</translation>
 <translation id="4150569944729499860">Skjáumhverfi</translation>
+<translation id="4152011295694446843">Þú finnur bókamerkin þín hér</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Einn flipi}one{# flipi}other{# flipar}}</translation>
 <translation id="4154664944169082762">Fingraför</translation>
 <translation id="4157869833395312646">Microsoft-dulritun með hliðvörð frá þjóni</translation>
@@ -4294,6 +4296,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4950993567860689081">Lotunni er stýrt af fyrirtækinu þínu. Stjórnendur geta eytt prófílnum þínum og fylgst með netumferð þinni.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
+<translation id="4951966678293618079">Aldrei vista aðgangsorð fyrir þetta vefsvæði</translation>
 <translation id="4953808748584563296">Sjálfgefin appelsínugul notandamynd</translation>
 <translation id="4955710816792587366">Veldu þér PIN-númer</translation>
 <translation id="4959262764292427323">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er</translation>
@@ -4323,6 +4326,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4981449534399733132">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />skrá þig inn<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Haltu áfram þaðan sem frá var horfið í hvaða tæki sem er</translation>
 <translation id="4982236238228587209">Hugbúnaður tækis</translation>
+<translation id="4986706507552097681">Þú getur alltaf valið hvað á að samstilla í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4986728572522335985">Þetta eyðir öllum gögnum á öryggislyklinum, þar á meðal PIN-númerinu</translation>
 <translation id="4988526792673242964">Síður</translation>
 <translation id="49896407730300355">Snúa rangsælis</translation>

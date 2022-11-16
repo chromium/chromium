@@ -1466,7 +1466,6 @@ You can manage this account’s settings by installing the Family Link app on yo
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> The system will reboot during the process.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
-<translation id="23055578400314116">Select a username</translation>
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="2307553512430195144">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise it is <ph name="SUPERVISED_USER_NAME" /> speaking with Voice Match.
     <ph name="BR" />
@@ -3454,6 +3453,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4147911968024186208">Please retry. If you see this error again, please contact your support representative.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Screen context</translation>
+<translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

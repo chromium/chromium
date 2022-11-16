@@ -282,6 +282,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1622571349153632031">Vegetarijanska prehrana</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica stvori dodatne dijaloške okvire</translation>
+<translation id="1633137413609266904">{0,plural, =1{Otvaranje te datoteke blokirano je prema administratorskim pravilima}one{Otvaranje # datoteke blokirano je prema administratorskim pravilima}few{Otvaranje # datoteke blokirano je prema administratorskim pravilima}other{Otvaranje # datoteka blokirano je prema administratorskim pravilima}}</translation>
 <translation id="1634828734222219955">Ukupno</translation>
 <translation id="163669211644121865">Priprema i planiranje poreza</translation>
 <translation id="1638780421120290329">Kartica nije spremljena</translation>
@@ -896,6 +897,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3270847123878663523">&amp;Poništi promjenu rasporeda</translation>
 <translation id="3271648667212143903">Web-lokacija <ph name="ORIGIN" /> želi se povezati</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Prema pravilima administratora ne preporučuje se otvaranje ove datoteke na odredištu <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se otvaranje ovih datoteka na odredištu <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se otvaranje ovih datoteka na odredištu <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se otvaranje ovih datoteka na odredištu <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, poslala je neke podatke, poput postavki ili pravila, sljedećim web-lokacijama.</translation>
 <translation id="3282497668470633863">Dodajte ime na kartici</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -1294,6 +1296,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4275830172053184480">Ponovo pokrenite svoj uređaj</translation>
 <translation id="4277028893293644418">Poništi zaporku</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
+<translation id="4281998142035485137">{0,plural, =1{Želite li otvoriti povjerljivu datoteku?}one{Želite li otvoriti povjerljive datoteke?}few{Želite li otvoriti povjerljive datoteke?}other{Želite li otvoriti povjerljive datoteke?}}</translation>
 <translation id="4282346679996504092">Upozorenja za ovaj proizvod isključena su, a oznaka je uklonjena</translation>
 <translation id="4285498937028063278">Otkvači</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ova je kartica spremljena na vašem Google računu}one{Ove su kartice spremljene na vašem Google računu}few{Ove su kartice spremljene na vašem Google računu}other{Ove su kartice spremljene na vašem Google računu}}</translation>
@@ -1431,6 +1434,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4646534391647090355">Otvori odmah</translation>
 <translation id="4648262692072505866">Hash mora biti u formatu SHA-256.</translation>
 <translation id="4652266463001779298">Nije dopušteno</translation>
+<translation id="4652440160515225514">Vaša organizacija blokirala je ovu web-lokaciju jer krši pravila.</translation>
 <translation id="4653167719759882810">Spajanja i akvizicije</translation>
 <translation id="4658638640878098064">Spajanje pri vrhu lijevo</translation>
 <translation id="4660119392514473465">Sad možete privatno pregledavati, a ostale osobe koje upotrebljavaju vaš uređaj neće vidjeti vašu aktivnost. Međutim, preuzimanja, oznake i stavke s popisa za čitanje spremit će se.</translation>
@@ -1684,7 +1688,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="52517543715119994">Saznajte više o Chromeovim značajkama</translation>
 <translation id="5251803541071282808">Oblak</translation>
 <translation id="5254043433801397071">Optimizacija sadržaja ispisa</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Ipak snimi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Prema pravilima administratora ne preporučuje se kopiranje te datoteke u <ph name="DESTINATION_NAME" />}one{Prema pravilima administratora ne preporučuje se kopiranje tih datoteka u <ph name="DESTINATION_NAME" />}few{Prema pravilima administratora ne preporučuje se kopiranje tih datoteka u <ph name="DESTINATION_NAME" />}other{Prema pravilima administratora ne preporučuje se kopiranje tih datoteka u <ph name="DESTINATION_NAME" />}}</translation>
@@ -1927,6 +1930,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5903264686717710770">Naslov:</translation>
 <translation id="5904360430676679685">Obitelj i veze</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sinkronizirano)</translation>
+<translation id="5911110632211230665">Otvaranje je blokirano</translation>
 <translation id="59174027418879706">Omogućeno</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 u upotrebi}one{# u upotrebi}few{# u upotrebi}other{# u upotrebi}}</translation>
@@ -2919,6 +2923,7 @@ Dodatne pojedinosti:
 <translation id="8437238597147034694">&amp;Poništi premještanje</translation>
 <translation id="8438476240229491014">Zapamti postavku</translation>
 <translation id="8438786541497918448">Koristiti kameru i mikrofon?</translation>
+<translation id="8438923942245957911">Vaša organizacija označila je ovu web-lokaciju</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>
 <translation id="8444543005280733648">Računalne mreže</translation>
 <translation id="8446884382197647889">Saznajte više</translation>

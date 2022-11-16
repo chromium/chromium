@@ -1450,7 +1450,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ശ്രദ്ധിക്കുക:<ph name="END_BOLD" />  പ്രോസസിനിടെ സിസ്റ്റം റീബൂട്ട് ചെയ്യും.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" കൂടുതൽ അനുമതികൾ അഭ്യർത്ഥിച്ചു.</translation>
-<translation id="23055578400314116">ഒരു ഉപയോക്തൃനാമം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2307462900900812319">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="2307553512430195144">നിങ്ങൾ അംഗീകരിക്കുന്നുവെങ്കിൽ “Ok Google” എന്ന് പറയുന്നത് തിരിച്ചറിയാൻ Google Assistant സ്‌റ്റാൻഡ്‌ബെെ മോഡിൽ കാത്തിരിക്കും, Voice Match ഉപയോഗിച്ച് സംസാരിക്കുന്നത് <ph name="SUPERVISED_USER_NAME" /> ആണെന്ന് തിരിച്ചറിയാനും അതിന് കഴിയും.
     <ph name="BR" />
@@ -3435,6 +3434,7 @@
 <translation id="4147911968024186208">വീണ്ടും ശ്രമിക്കുക. ഈ പിശക് വീണ്ടും കാണുകയാണെങ്കിൽ, നിങ്ങളുടെ പിന്തുണാ പ്രതിനിധിയെ ബന്ധപ്പെടുക.</translation>
 <translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
 <translation id="4150569944729499860">സ്‌ക്രീൻ പശ്ചാത്തലം</translation>
+<translation id="4152011295694446843">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ ഇവിടെ കാണാം</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{ഒരു ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="4154664944169082762">ഫിംഗര്‍‌പ്രിന്‍റുകള്‍‌</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

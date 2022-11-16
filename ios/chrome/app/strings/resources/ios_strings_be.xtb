@@ -370,6 +370,7 @@
 <translation id="3861486700625780712">Адпісацца</translation>
 <translation id="3863769054730344136">Адправіць на вашы прылады</translation>
 <translation id="387280738075653372">Спампуйце Chrome тут.</translation>
+<translation id="3888863481921783344">Гэта інфармацыя будзе выкарыстоўвацца, каб паказваць вам людзей, якіх можна запрасіць прыняць удзел у падзеі.</translation>
 <translation id="3892144330757387737">Ваша гісторыя знаходзіцца тут</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3904829425754749514">Ваша арганізацыя выключыла сінхранізацыю. Як і раней, вы можаце праглядаць свае закладкі, гісторыю, паролі і іншыя налады на гэтай прыладзе. Зробленыя вамі змяненні не будуць сінхранізавацца з вашым уліковым запісам.</translation>
@@ -942,6 +943,7 @@
 <translation id="8105368624971345109">Выключыць</translation>
 <translation id="8114753159095730575">Файл даступны для спампоўвання. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="8132598642024322408">Цяпер: <ph name="PRICE" />, раней: <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">Гэта інфармацыя будзе выкарыстоўвацца для стварэння падзей у Apple Calendar непасрэдна з Chrome і Google Аб'ектыва.</translation>
 <translation id="8156478151976189188">Сінхранізацыя пароляў не працуе</translation>
 <translation id="8157532349231307196">Уліковых запісаў: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

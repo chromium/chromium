@@ -449,11 +449,6 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
       Le stampanti estensione sono note anche come destinazioni dei provider di stampa e includono le eventuali destinazioni appartenenti a un'estensione di <ph name="PRODUCT_NAME" />.
 
       Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di macchine locali e quelle di rete condivise.</translation>
-<translation id="1456449214426764016">L'API non standard window.webkitStorageInfo è deprecata e verrà rimossa.
-      Questo criterio consente di riattivare l'API.
-      Se questo criterio viene impostato su Enabled, l'API window.webkitStorageInfo sarà disponibile.
-      Se questo criterio viene impostato su Disabled o se non viene configurato, l'API window.webkitStorageInfo non sarà disponibile.
-      </translation>
 <translation id="1456822151187621582">Windows (client <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Consente di controllare il comportamento degli utenti in una sessione multiprofilo su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
@@ -820,19 +815,6 @@ Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione 
 
       Se il criterio non viene configurato, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
-<translation id="1805056271257244521">Se il criterio è impostato su Attivo, la funzione JavaScript setTimeout() con un timeout di 0 ms non verrà regolata su 1 ms.
-          Se il criterio è impostato su Disattivato, la funzione JavaScript setTimeout() con un timeout di 0 ms verrà impostata su 1 ms.
-          Se il criterio non è stato impostato, usa il comportamento predefinito del browser per l'impostazione della funzione setTimeout().
-
-          Si tratta di una funzionalità conforme agli standard web, ma potrebbe modificare l'ordine delle attività
-          su una pagina web, causando comportamenti imprevisti sui siti che dipendono
-          in qualche misura da un ordine specifico. Potrebbe anche incidere sui siti che utilizzano spesso la funzione setTimeout()
-          con timeout di 0 ms, ad esempio causando un aumento del carico CPU.
-
-          Per gli utenti per i quali il criterio non è stato impostato, Chrome renderà disponibile gradualmente la modifica sul canale stabile.
-
-          Si tratta di un criterio temporaneo di cui è prevista la rimozione nella versione Chrome 105. Questo termine potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
-          </translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
 <translation id="1813638828646876133">Attiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>
@@ -6057,7 +6039,6 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
       Se selezioni l'opzione "U2F", il funzionamento dell'autenticazione a due fattori integrata dipenderà dalla specifica FIDO U2F.
 
       Se selezioni l'opzione "U2F_EXTENDED", l'autenticazione a due fattori integrata fornirà le funzioni U2F più alcune estensioni per la singola attestazione.</translation>
-<translation id="6998179760789945134">Disattiva WebSQL in contesti non sicuri, a meno che non venga attivato dal flag di Chrome.</translation>
 <translation id="6999948519306285655">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        La configurazione del criterio consente di specificare un URL a un file proxy .pac. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e hai selezionato <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -8120,9 +8101,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
       Se questo criterio non è impostato, la selezione automatica non avviene per nessun sito.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="906349948439898016">WebSQL in contesti non sicuri è attivo per impostazione predefinita a partire da M105, ma può essere disattivato tramite il flag di Chrome.
-          Se questo criterio viene impostato su false o se non viene configurato, WebSQL in contesti non sicuri può essere disattivato.
-          Se viene impostato su true, WebSQL non può essere disattivato.</translation>
 <translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="9069588907259547232">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano il relativo volume dell'audio.
 

@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">공유 시트 미리보기 썸네일</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="3882834874697329510">열린 탭에서 더 낮은 가격이 발견되었을 때 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
 <translation id="5558362125926932819">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 탭 그룹 닫기</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />개의 탭 그룹화됨</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 링크 <ph name="TABS_COUNT_ONE" />개}other{Chrome 링크 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="575494663145460764">가격 인하 알림을 받으시겠습니까?</translation>
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
 <translation id="5846292395804797011">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 그룹 닫기</translation>

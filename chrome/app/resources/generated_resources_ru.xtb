@@ -1453,7 +1453,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Система будет перезагружена.</translation>
 <translation id="23030561267973084">Приложение "<ph name="EXTENSION_NAME" />" запросило дополнительные разрешения.</translation>
-<translation id="23055578400314116">Выберите имя пользователя.</translation>
 <translation id="2307462900900812319">Настройка сети</translation>
 <translation id="2307553512430195144">Если вы согласитесь, Google Ассистент будет ждать команды "Окей, Google" и с помощью функции Voice Match сможет определять, что говорит пользователь <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -2374,6 +2373,7 @@
 <translation id="3143515551205905069">Отмена</translation>
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
 <translation id="3144647712221361880">Открыть ссылку как</translation>
+<translation id="3144896554017119333">Расширения и прочее</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3150693969729403281">Запустить проверку безопасности</translation>
 <translation id="3150927491400159470">Жесткая перезагрузка</translation>
@@ -2482,6 +2482,7 @@
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="326911502853238749">Не показывать <ph name="MODULE_NAME" /></translation>
+<translation id="3269175001434213183">Включите синхронизацию, чтобы создавать резервные копии своих данных и использовать их на любом устройстве</translation>
 <translation id="3269612321104318480">Светло-бирюзовый с белым</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="326999365752735949">Утилита diff скачивается</translation>
@@ -3439,6 +3440,7 @@
 <translation id="4147911968024186208">Повторите попытку. Если сообщение об ошибке появится снова, свяжитесь со службой поддержки.</translation>
 <translation id="4150201353443180367">Экран</translation>
 <translation id="4150569944729499860">Содержимое экрана</translation>
+<translation id="4152011295694446843">Здесь вы найдете свои закладки</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="4154664944169082762">Отпечатки</translation>
 <translation id="4157869833395312646">Серверное шифрование Microsoft</translation>
@@ -4279,6 +4281,7 @@
 <translation id="4950993567860689081">Сеансом управляет ваша организация. Администраторы могут удалять профили и следить за сетевым трафиком.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
+<translation id="4951966678293618079">Никогда не сохранять пароли для этого сайта</translation>
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4955710816792587366">Установите PIN-код</translation>
 <translation id="4959262764292427323">Пароли сохраняются в аккаунте Google и будут доступны на любом устройстве.</translation>
@@ -4308,6 +4311,7 @@
 <translation id="4981449534399733132">Чтобы удалить данные о работе в браузере со всех синхронизированных устройств и из аккаунта Google, <ph name="BEGIN_LINK" />войдите в систему<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Продолжайте работу на любом устройстве с того места, где остановились.</translation>
 <translation id="4982236238228587209">ПО на устройстве</translation>
+<translation id="4986706507552097681">Вы всегда можете выбрать, что синхронизировать, в настройках. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
 <translation id="4986728572522335985">С электронного ключа будут удалены все данные, включая PIN-код</translation>
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="49896407730300355">Повернуть п&amp;ротив часовой стрелки</translation>

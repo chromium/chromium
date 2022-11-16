@@ -232,6 +232,7 @@
 <translation id="2815198996063984598">2۔ ڈیفالٹ براؤزر ایپ تھپتھپائیں</translation>
 <translation id="2820289420301699633">‏آپ کے منتظم کو Chrome پر کنٹرول حاصل ہے اور وہ اس کے ڈیٹا تک رسائی حاصل کر سکتا ہے</translation>
 <translation id="2830972654601096923">پتوں کا نظم کریں...</translation>
+<translation id="2834399722155632105">3. پاس ورڈ کے اختیارات پر تھپتھپائیں۔</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2843803966603263712">‏Translate کی ترتیبات کو دوبارہ ترتیب دیں</translation>
 <translation id="2848086008667475748">ترتیبات میں ڈیفالٹ بنائیں…</translation>
@@ -632,6 +633,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5899314093904173337">‏قریبی لوگوں سے اشتراک کرنے کے لیے، انہیں اس QR کوڈ کو ان کے کیمرے یا QR اسکینر ایپ سے اسکین کرنے دیں</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">صفحہ کا ترجمہ کرنے کے اختیارات</translation>
+<translation id="5933515656458364246">تمام آلات پر اپنے ڈیٹا کی مطابقت پذیری کریں۔</translation>
 <translation id="5938160824633642847">آپ کے آلہ کا اسٹوریج تقریباً بھرا ہوا ہے۔ جگہ خالی کر کے دوبارہ کوشش کریں۔</translation>
 <translation id="5948291296578561264">یہ آپ کو اپنی تصویری لائبریری میں تصاویر محفوظ کرنے دیتا ہے۔</translation>
 <translation id="5951816930277761335">لنک کا اشتراک کریں</translation>
@@ -713,6 +715,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 
 آپ کے ڈیٹا کی آپ کے مطابقت پذیر پاس فریز کے ساتھ <ph name="TIME" /> پر مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6418346271604475326">‏PDF تیار ہو رہی ہے</translation>
+<translation id="6429213933892582367">پاس ورڈ کے اختیارات کھولیں</translation>
 <translation id="6434591244308415567">ایک خرابی پیش آ گئی۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6435236283694032571">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="6439338047467462846">سبھی کو اجازت دیں</translation>
@@ -828,6 +831,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7203585745079012652">جوابات دوبارہ بولیں</translation>
 <translation id="7207023858769244910">اپنی دلچسپیوں کی بنیاد پر مواد حاصل کرنے کے لیے مطابقت پذیری کریں۔</translation>
 <translation id="721597782417389033">کارڈ کا غلط عرفی نام</translation>
+<translation id="7221173315674413369">نیا کیا ہے میں نئی خصوصیات اور تجاویز دریافت کریں</translation>
 <translation id="722454870747268814">نیا پوشیدگی ٹیب</translation>
 <translation id="7265758999917665941">اس سائٹ کیلئے کبھی نہیں</translation>
 <translation id="7272437679830969316">آپ کی شناخت کی توثیق نہیں کی جا سکتی۔ پاس ورڈ کاپی نہیں ہوا۔</translation>
@@ -861,6 +865,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7531345132340165516">موجودہ سائٹ</translation>
 <translation id="7537586195939242955">‏معذرت، آپ کا Pass اس وقت Passbook میں انسٹال نہیں کیا جا سکتا ہے۔</translation>
+<translation id="7553234618121028547">آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کھولیں اور پاس ورڈ کے اختیارات پر جائیں۔</translation>
 <translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7583004045319035904">اپنے پوشیدگی ٹیبز کو غیر مقفل کرنے کیلئے <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> کا استعمال کریں۔</translation>
@@ -942,6 +947,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8101409298456377967">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">آف کریں</translation>
 <translation id="8114753159095730575">فائل ڈاؤن لوڈ دستیاب ہے۔ اختیارات اسکرین کے نچلے حصے کے قریب دستیاب ہیں۔</translation>
+<translation id="81313319706244542">2. پاس ورڈز پر تھپتھپائیں</translation>
 <translation id="8132598642024322408">اب <ph name="PRICE" /> پہلے <ph name="PREVIOUS_PRICE" /> تھی۔</translation>
 <translation id="8136856065410661948">‏اس کا استعمال Chrome اور Google لینز سے آپ کے Apple کیلنڈر میں ایونٹس تخلیق کرنے کے لیے کیا جائے گا۔</translation>
 <translation id="8156478151976189188">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
@@ -964,6 +970,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8319076807703933069">نئی تلاش</translation>
 <translation id="8323906514956095947">ٹیب کے مزید اختیارات کیلئے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="8328777765163860529">تمام بند کریں</translation>
+<translation id="8343993175958086504">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں۔</translation>
 <translation id="8378714024927312812">آپ کی تنظیم کے زیر نظم</translation>
 <translation id="8386068868580335421">ری سیٹ کریں</translation>
 <translation id="8407669440184693619">اس سائٹ کے لیے کوئی پاس ورڈ نہیں ملا</translation>

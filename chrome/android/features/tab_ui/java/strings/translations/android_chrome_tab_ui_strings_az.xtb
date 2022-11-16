@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Paylaşım vərəqi önizləməsi üçün miniatür.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="3882834874697329510">Qiymət endirildikdə açıq tabda bildiriş almaq üçün Ayarlarda bildirişləri aktiv edin.</translation>
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Mağaza məlumatlarına baxın, seçim ekranın yuxarı hissəsində əlçatandır</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> tab olan tab qrupunu bağlayın</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab qruplaşdırıldı</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> keçid}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> keçid}}</translation>
 <translation id="575494663145460764">Qiymət endirimləri üçün xəbərdarlıq alınsın?</translation>
 <translation id="58326064309361797">Tabları qruplaşdırmaq üçün sürüşdürün</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> tab olan <ph name="TITLE_OF_GROUP" /> qrupunu bağlayın</translation>

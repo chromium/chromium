@@ -371,6 +371,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3861486700625780712">Prestani pratiti</translation>
 <translation id="3863769054730344136">Pošaljite na svoje uređaje</translation>
 <translation id="387280738075653372">Ovdje preuzmite Chrome.</translation>
+<translation id="3888863481921783344">To će se upotrebljavati da bi vam se prikazale osobe koje se mogu pozvati na vaš događaj.</translation>
 <translation id="3892144330757387737">Ovdje ćete pronaći svoju povijest</translation>
 <translation id="3897092660631435901">Izbornik</translation>
 <translation id="3904829425754749514">Vaša je organizacija isključila sinkronizaciju. Vaše oznake, povijest, zaporke i druge postavke i dalje su vam vidljive na ovom uređaju. Ako nešto promijenite, te se promjene neće sinkronizirati s vašim računom.</translation>
@@ -948,6 +949,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8114753159095730575">Dostupno je preuzimanje datoteka. Opcije su dostupne pri dnu zaslona.</translation>
 <translation id="81313319706244542">2. Dodirnite Zaporke</translation>
 <translation id="8132598642024322408">Sad <ph name="PRICE" /> umjesto <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="8136856065410661948">To će se upotrebljavati za izradu događaja u vašem Apple kalendaru iz Chromea i Google objektiva.</translation>
 <translation id="8156478151976189188">Sinkronizacija zaporki ne radi</translation>
 <translation id="8157532349231307196">Broj računa: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

@@ -1453,7 +1453,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> Systém sa počas príslušného procesu reštartuje.</translation>
 <translation id="23030561267973084">Rozšírenie <ph name="EXTENSION_NAME" /> vyžaduje ďalšie povolenia.</translation>
-<translation id="23055578400314116">Vyberte používateľské meno</translation>
 <translation id="2307462900900812319">Konfigurovať sieť</translation>
 <translation id="2307553512430195144">Ak vyjadríte súhlas, Asistent Google bude čakať v pohotovostnom režime na rozpoznanie kľúčového výrazu „Hey Google“ a pomocou funkcie Voice Match bude môcť rozpoznávať, že hovorí dieťa <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3441,6 +3440,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4147911968024186208">Skúste to znova. Ak sa vám znova zobrazí táto chyba, kontaktujte zástupcu podpory.</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4150569944729499860">Kontext obrazovky</translation>
+<translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# karty}other{# kariet}}</translation>
 <translation id="4154664944169082762">Odtlačky</translation>
 <translation id="4157869833395312646">Šifrovanie Server Gated Cryptography spoločnosti Microsoft</translation>

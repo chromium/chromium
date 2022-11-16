@@ -1433,6 +1433,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4646534391647090355">Ir ahora</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
 <translation id="4652266463001779298">No se permite.</translation>
+<translation id="4652440160515225514">Tu organización bloqueó este sitio porque infringe una política.</translation>
 <translation id="4653167719759882810">Fusiones y adquisiciones</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
 <translation id="4660119392514473465">Ahora puedes navegar de forma privada; las demás personas que usan este dispositivo no verán tu actividad. Sin embargo, se guardarán las descargas, los favoritos y los elementos de la lista de lectura.</translation>
@@ -1686,7 +1687,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="52517543715119994">Más información sobre las funciones de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo a <ph name="DESTINATION_NAME" />.}other{La política del administrador no recomienda copiar estos archivos a <ph name="DESTINATION_NAME" />.}}</translation>
@@ -2921,6 +2921,7 @@ Detalles adicionales:
 <translation id="8437238597147034694">&amp;Deshacer Mover</translation>
 <translation id="8438476240229491014">Recordar esta configuración</translation>
 <translation id="8438786541497918448">¿Quieres permitir el uso de la cámara y el micrófono?</translation>
+<translation id="8438923942245957911">Tu organización marcó este sitio</translation>
 <translation id="8443613539889492016">Rap y hip-hop</translation>
 <translation id="8444543005280733648">Redes de computadoras</translation>
 <translation id="8446884382197647889">Más información</translation>

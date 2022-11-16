@@ -1432,6 +1432,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4646534391647090355">Më ço atje tani</translation>
 <translation id="4648262692072505866">Vlera hash duhet të jenë në formatin SHA-256.</translation>
 <translation id="4652266463001779298">Nuk lejohet</translation>
+<translation id="4652440160515225514">Organizata jote e ka bllokuar këtë sajt sepse ai shkel një politikë.</translation>
 <translation id="4653167719759882810">Shkrirjet dhe blerjet</translation>
 <translation id="4658638640878098064">Kapje me tel lart majtas</translation>
 <translation id="4660119392514473465">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do ta shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
@@ -1685,7 +1686,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="52517543715119994">Mëso për veçoritë e Chrome</translation>
 <translation id="5251803541071282808">Reja kompjuterike</translation>
 <translation id="5254043433801397071">Optimizo përmbajtjen e printimit</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Shkrepe gjithsesi</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Politika e administratorit nuk rekomandon kopjimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon kopjimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
@@ -2919,6 +2919,7 @@ Detaje shtesë:
 <translation id="8437238597147034694">&amp;Zhbëj zhvendosjen</translation>
 <translation id="8438476240229491014">Kujtoje këtë cilësim</translation>
 <translation id="8438786541497918448">Të përdoret kamera dhe mikrofoni?</translation>
+<translation id="8438923942245957911">Ky sajt është raportuar nga organizata jote</translation>
 <translation id="8443613539889492016">Muzika rap dhe hip-hop</translation>
 <translation id="8444543005280733648">Rrjetet kompjuterike</translation>
 <translation id="8446884382197647889">Mëso më shumë</translation>

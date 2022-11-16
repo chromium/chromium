@@ -282,6 +282,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuchnia wegetariańska</translation>
 <translation id="1623104350909869708">Zapobiegaj wyświetlaniu dodatkowych okien dialogowych na tej stronie</translation>
+<translation id="1633137413609266904">{0,plural, =1{Otwieranie tego pliku jest zablokowane przez zasady administratora}few{Otwieranie # plików jest zablokowane przez zasady administratora}many{Otwieranie # plików jest zablokowane przez zasady administratora}other{Otwieranie # pliku jest zablokowane przez zasady administratora}}</translation>
 <translation id="1634828734222219955">Suma</translation>
 <translation id="163669211644121865">Pomoc i planowanie dotyczące rozliczeń podatkowych</translation>
 <translation id="1638780421120290329">Nie można zapisać karty</translation>
@@ -896,6 +897,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3270847123878663523">&amp;Cofnij zmianę kolejności</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> chce się połączyć</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się otwierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="3282497668470633863">Dodaj imię i nazwisko na karcie</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
@@ -1295,6 +1297,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4275830172053184480">Zrestartuj urządzenie</translation>
 <translation id="4277028893293644418">Resetuj hasło</translation>
 <translation id="4278390842282768270">Dopuszczone</translation>
+<translation id="4281998142035485137">{0,plural, =1{Otworzyć poufny plik?}few{Otworzyć poufne pliki?}many{Otworzyć poufne pliki?}other{Otworzyć poufne pliki?}}</translation>
 <translation id="4282346679996504092">Alerty dotyczące tego produktu zostały wyłączone, a zakładka usunięta</translation>
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ta karta została zapisana na Twoim koncie Google}few{Te karty zostały zapisane na Twoim koncie Google}many{Te karty zostały zapisane na Twoim koncie Google}other{Te karty zostały zapisane na Twoim koncie Google}}</translation>
@@ -1432,6 +1435,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4646534391647090355">Przejdź tam teraz</translation>
 <translation id="4648262692072505866">Hasz musi mieć format SHA-256.</translation>
 <translation id="4652266463001779298">Nie zezwolono</translation>
+<translation id="4652440160515225514">Twoja organizacja zablokowała tę witrynę, ponieważ narusza ona zasady.</translation>
 <translation id="4653167719759882810">Fuzje i przejęcia</translation>
 <translation id="4658638640878098064">Zszywka w lewym górnym rogu</translation>
 <translation id="4660119392514473465">Teraz możesz przeglądać prywatnie, a inne osoby korzystające z tego urządzenia nie zobaczą Twojej aktywności. Pobrane pliki, zakładki i elementy na liście Do przeczytania zostaną jednak zapisane.</translation>
@@ -1685,7 +1689,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="52517543715119994">Poznaj funkcje Chrome</translation>
 <translation id="5251803541071282808">Chmura</translation>
 <translation id="5254043433801397071">Optymalizuj zawartość wydruku</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Wykonaj mimo to</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się kopiowania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się kopiowania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
@@ -1928,6 +1931,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5903264686717710770">Tytuł:</translation>
 <translation id="5904360430676679685">Rodziny i związki</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (zsynchronizowane)</translation>
+<translation id="5911110632211230665">Otwieranie zostało zablokowane</translation>
 <translation id="59174027418879706">Włączony</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{W użyciu: 1}few{W użyciu: #}many{W użyciu: #}other{W użyciu: #}}</translation>
@@ -2920,6 +2924,7 @@ Dodatkowe informacje:
 <translation id="8437238597147034694">&amp;Cofnij przeniesienie</translation>
 <translation id="8438476240229491014">Zapamiętaj to ustawienie</translation>
 <translation id="8438786541497918448">Korzystać z kamery i mikrofonu?</translation>
+<translation id="8438923942245957911">Ta witryna została oznaczona przez Twoją organizację</translation>
 <translation id="8443613539889492016">Rap i hip-hop</translation>
 <translation id="8444543005280733648">Sieci komputerowe</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>

@@ -451,11 +451,6 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
       Las impresoras de extensiones, también conocidas como destinos del proveedor de impresión, incluyen los destinos que pertenecen a las extensiones de <ph name="PRODUCT_NAME" />.
 
       Las impresoras locales, también conocidas como destinos nativos de impresión, incluyen los destinos disponibles en la máquina local y las impresoras de redes compartidas.</translation>
-<translation id="1456449214426764016">La API no estándar de window.webkitStorageInfo dejó de estar disponible y se planea quitarla.
-      Esta política vuelve a habilitar la API.
-      Si habilitas esta política, la API de window.webkitStorageInfo estará disponible.
-      Si inhabilitas esta política o no la estableces, la API de window.webkitStorageInfo no estará disponible.
-      </translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario durante una sesión de perfiles múltiples en dispositivos con <ph name="PRODUCT_OS_NAME" />.
 
@@ -826,19 +821,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
-<translation id="1805056271257244521">Si habilitas la política, la función setTimeout() de JavaScript con un tiempo de espera de 0 ms no se restringirá a 1 ms.
-          Cuando inhabilitas la política, la función setTimeout() de JavaScript con un tiempo de espera de 0ms se restringirá a 1 ms.
-          Cuando no la estableces, se utiliza el comportamiento predeterminado para la restricción de la función setTimeout().
-
-          Esta función cumple con los estándares web, pero es posible que cambie el orden de las tareas
-          en una página web, lo que genera un comportamiento inesperado en sitios que dependen de
-          un orden determinado de alguna manera. También puede afectar a los sitios que tienen muchas funciones setTimeout()
-          con un tiempo de espera de 0 ms de uso; por ejemplo, puede aumentar la carga de CPU.
-
-          Para los usuarios que no establezcan esta política, Chrome lanzará el cambio gradualmente en el canal estable.
-
-          Esta es una política temporal que se planea quitar en Chrome 105. Es posible que se extienda la fecha límite si las empresas lo necesitan.
-          </translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
 <translation id="1813638828646876133">Habilitar el envío automático de PIN en la pantalla de bloqueo y de acceso</translation>
@@ -4149,6 +4131,7 @@ Se planea quitar esta política en la versión 113 de <ph name="PRODUCT_NAME" />
 <translation id="5025239932007658691">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> enviará consultas ocasionales a un servidor de Google para recuperar una marca de tiempo precisa.
 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> dejará de enviar estas consultas.</translation>
+<translation id="5033070732967197381">Permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="5034504101537897433">Habilitar los informes de fallos del dispositivo</translation>
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
@@ -5725,6 +5708,7 @@ principal del string usuario-agente en 99.
       - Si la inhabilitas, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6609867253856597039">Establece la experiencia del usuario de las funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="661610294649586421">No permitir solicitudes a la API de WebAuthn en sitios con certificados TLS rotos</translation>
 <translation id="6617589895942747919">La hora de inicio (inclusive) del intervalo.</translation>
 <translation id="6621830999036927230">Si estableces esta política, el host de acceso remoto usará esta URL para validar los tokens de autenticación de los clientes de acceso remoto, a fin de aceptar las conexiones. Si dejas la política vacía o no la estableces, se inhabilitará esta función.
 
@@ -6027,6 +6011,12 @@ principal del string usuario-agente en 99.
 <translation id="6907778402784621686">Bloquea el contenido no seguro de estos sitios</translation>
 <translation id="6908640907898649429">Configura el proveedor de búsqueda predeterminado. Se puede especificar el proveedor de búsqueda predeterminado que el usuario usará u optar por inhabilitar la búsqueda predeterminada.</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a los dispositivos de transmisión en todas las direcciones IP</translation>
+<translation id="6915493311660114995">Si habilitas la política, <ph name="PRODUCT_NAME" /> permitirá
+las solicitudes de autenticación web en sitios web que tengan certificados TLS con
+errores (es decir, sitios web considerados no seguros).
+
+Si inhabilitas la política o no la estableces, se aplicará
+el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6919819553978815392">Si la estableces como verdadera o no la configuras, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> habilitarán los accesos de invitado. Los accesos de invitado son perfiles de <ph name="PRODUCT_NAME" /> en donde todas las ventanas están en el modo Incógnito.
 
       Si estableces esta política como falsa, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> no permitirán que se inicien perfiles de invitado.
@@ -6130,7 +6120,6 @@ Si se selecciona "Inhabilitada", no se proporciona un segundo factor.
 Si se selecciona "U2F", el segundo factor integrado se comportará de acuerdo con la especificación de FIDO U2F.
 
 Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará funciones de U2F además de algunas extensiones para la atestación individual.</translation>
-<translation id="6998179760789945134">Inhabilitar WebSQL en contextos no seguros, a menos que la función experimental de Chrome lo habilite</translation>
 <translation id="6999948519306285655">Esta política no está disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si configuras la política, podrás especificar una dirección URL para el archivo de proxy en formato .pac. Esta política solo tendrá efecto si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> y si seleccionas <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -6939,6 +6928,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
+<translation id="782978857350824974">Permitir solicitudes de autenticación web en sitios con certificados TLS rotos</translation>
 <translation id="7832225468415136704">Impedir que Limpiar Chrome escanee el sistema de forma periódica y, luego, inhabilitar los escaneos manuales</translation>
 <translation id="7833148823006528332">Identificador de la app para Android, p. ej., "com.google.android.gm" para Gmail.</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
@@ -7328,6 +7318,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8250048892729838843">Esta política dejó de estar disponible. Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>
 <translation id="82530263956734297">Identificadores de extensión para excluir de la lista de elementos bloqueados</translation>
+<translation id="8256006033157034334">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="8256688113167012935">Controla el nombre de cuenta <ph name="PRODUCT_OS_NAME" /> que aparece en la pantalla de acceso de la cuenta local del dispositivo que corresponda.
 
       Si esta política se establece, la pantalla de acceso utilizará la cadena especificada en el selector de acceso basado en imágenes de la cuenta local del dispositivo que corresponda.
@@ -8226,9 +8217,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
       Si no se configura esta política, no se implementará la selección automática para ningún sitio.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="906349948439898016">A partir de M105, WebSQL está activado de forma predeterminada en contextos no seguros, pero se puede inhabilitar a través de la función experimental de Chrome.
-          Si estableces esta política como falsa o no la estableces, se podrá inhabilitar WebSQL en contextos no seguros.
-          Si la estableces como verdadera, WebSQL no podrá inhabilitarse.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9069588907259547232">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el volumen del audio del dispositivo.
 

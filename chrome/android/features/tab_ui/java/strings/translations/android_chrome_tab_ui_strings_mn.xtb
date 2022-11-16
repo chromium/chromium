@@ -32,6 +32,7 @@
 <translation id="3291470810748040983">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авна</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="374923079891132274">Хуваалцах хүснэгтийн урьдчилсан үзэлтийн өнгөц зураг.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг хураах.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" /> бүлэг табыг хураах.}}</translation>
 <translation id="3882834874697329510">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авахын тулд Тохиргоо хэсэгт мэдэгдлийг асаана уу.</translation>
 <translation id="3940195383040445971">Табууд дээрх үнийг хянах</translation>
@@ -56,6 +57,7 @@
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг хаах.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> табыг бүлэглэсэн</translation>
+<translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-н <ph name="TABS_COUNT_ONE" /> холбоос}other{Chrome-н <ph name="TABS_COUNT_MANY" /> холбоос}}</translation>
 <translation id="575494663145460764">Үнэ бууралтын сэрэмжлүүлэг авах уу?</translation>
 <translation id="58326064309361797">Бүлэглэхийн тулд табыг чирж зөөнө үү</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> таб бүхий <ph name="TITLE_OF_GROUP" /> бүлгийг хаах</translation>

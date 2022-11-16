@@ -1466,7 +1466,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />系統會在程序中途重新啟動。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
-<translation id="23055578400314116">請選取使用者名稱</translation>
 <translation id="2307462900900812319">設定網絡</translation>
 <translation id="2307553512430195144">如果您同意，「Google 助理」會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能識別<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
@@ -2387,7 +2386,7 @@
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3143754809889689516">從頭開始播放</translation>
 <translation id="3144647712221361880">以其他身分開啟連結</translation>
-<translation id="3144896554017119333">擴充功能和其他項目</translation>
+<translation id="3144896554017119333">擴充程式和其他項目</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3150693969729403281">即刻執行安全檢查</translation>
 <translation id="3150927491400159470">強制重新載入</translation>
@@ -3454,6 +3453,7 @@
 <translation id="4147911968024186208">請重試。如果出現同樣問題，請聯絡您的支援代表。</translation>
 <translation id="4150201353443180367">顯示屏</translation>
 <translation id="4150569944729499860">畫面內容</translation>
+<translation id="4152011295694446843">您可在此查看書籤</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
@@ -4295,7 +4295,7 @@
 <translation id="4950993567860689081">工作階段由您的機構管理。管理員可刪除設定檔並監察網絡流量。</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
-<translation id="4951966678293618079">一律不儲存這個網站的密碼</translation>
+<translation id="4951966678293618079">一律不儲存此網站的密碼</translation>
 <translation id="4953808748584563296">預設橙色圖片</translation>
 <translation id="4955710816792587366">選擇 PIN</translation>
 <translation id="4959262764292427323">密碼會儲存在您的 Google 帳戶中，讓您可在任何裝置上使用</translation>
@@ -4325,7 +4325,7 @@
 <translation id="4981449534399733132">如要從所有已同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
 <translation id="4982111327868342436">在任何裝置上繼續未完成的工作</translation>
 <translation id="4982236238228587209">裝置軟件</translation>
-<translation id="4986706507552097681">你隨時可以在設定中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
+<translation id="4986706507552097681">您隨時可在設定中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4986728572522335985">此操作將刪除這個安全密鑰上的所有資料，包括 PIN</translation>
 <translation id="4988526792673242964">網頁</translation>
 <translation id="49896407730300355">逆時針旋轉(&amp;O)</translation>
@@ -8387,7 +8387,7 @@
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823559166155093873">封鎖 Cookie</translation>
 <translation id="8823704566850948458">建議密碼…</translation>
-<translation id="8823963789776061136">您也可以選取印表機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="8823963789776061136">您亦可選取打印機 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">新增網頁(&amp;G)…</translation>
 <translation id="8827125715368568315">已封鎖<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8827289157496676362">固定擴充功能</translation>
@@ -8644,7 +8644,7 @@
 <translation id="9057007989365783744">「<ph name="SUPERVISED_USER_NAME" />」要求存取以下內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天約傳送 1 則通知}other{每天約傳送 {NUM_NOTIFICATION} 則通知}}</translation>
-<translation id="9058760336383947367">查看印表機 PPD</translation>
+<translation id="9058760336383947367">查看打印機 PPD</translation>
 <translation id="9061383912634843744">使用已儲存的憑證自動登入網站和應用程式。如果關閉此功能，系統將會在每次登入網站或應用程式前要求您進行確認。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>

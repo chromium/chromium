@@ -175,6 +175,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1862380676329487333">Posodobi in odjavi</translation>
 <translation id="1864454756846565995">Naprava USB-C (vrata zadaj)</translation>
 <translation id="1869497990620230175">Hitre datoteke</translation>
+<translation id="1871703283152909317">Vklopi oba dostopa</translation>
 <translation id="1879018240766558464">Anonimna okna trenutno niso podprta. Druge aplikacije bodo shranjene.</translation>
 <translation id="1882814835921407042">Ni mobilnih omrežij</translation>
 <translation id="1882897271359938046">Zrcaljenje na <ph name="DISPLAY_NAME" /></translation>
@@ -924,6 +925,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6095008505822982596">Hitrost govora</translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
+<translation id="6107292179555508368">Dostop do mikrofona in kamere je izklopljen v tej napravi</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6116825164611323644">Dostop do kamere je izklopljen v tej napravi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
@@ -952,6 +954,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6259254695169772643">Uporabite pisalo za izbiranje</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje ...</translation>
 <translation id="6274202259872570803">Snemanje zaslona</translation>
+<translation id="6282694724099204652">Omogočite dostop, če želite aplikacijam in spletnim stranem, ki imajo dovoljenje, dovoliti uporabo mikrofonov in kamer v tej napravi.</translation>
 <translation id="6283712521836204486">Način »ne moti« je izklopljen.</translation>
 <translation id="6284232397434400372">Ločljivost je bila spremenjena</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> lahko dodate pozneje z dovoljenjem starša.</translation>

@@ -282,6 +282,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarisk mat</translation>
 <translation id="1623104350909869708">Hindra sidan från att skapa fler dialogrutor</translation>
+<translation id="1633137413609266904">{0,plural, =1{Möjligheten att öppna den här filen blockeras av administratörspolicyn}other{Möjligheten att öppna # filer blockeras av administratörspolicyn}}</translation>
 <translation id="1634828734222219955">Totalt</translation>
 <translation id="163669211644121865">Skattefrågor och skatteplanering</translation>
 <translation id="1638780421120290329">Det gick inte att spara kortet</translation>
@@ -896,6 +897,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3270847123878663523">&amp;Ångra Ändra ordning</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vill ansluta</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att öppna filen i <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att öppna filerna i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisationen <ph name="ENROLLMENT_DOMAIN" /> har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>
 <translation id="3282497668470633863">Lägg till namnet på kortet</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -1295,6 +1297,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4275830172053184480">Starta om enheten</translation>
 <translation id="4277028893293644418">Återställ lösenord</translation>
 <translation id="4278390842282768270">Tillåts</translation>
+<translation id="4281998142035485137">{0,plural, =1{Vill du öppna den konfidentiella filen?}other{Vill du öppna de konfidentiella filerna?}}</translation>
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Det här kortet har sparats i ditt Google-konto}other{De här korten har sparats i ditt Google-konto}}</translation>
@@ -1432,6 +1435,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4646534391647090355">Gå dit nu</translation>
 <translation id="4648262692072505866">Ett hashvärde måste ha formatet SHA-256.</translation>
 <translation id="4652266463001779298">Tillåts inte</translation>
+<translation id="4652440160515225514">Organisationen har blockerat den här webbplatsen eftersom den bryter mot en policy.</translation>
 <translation id="4653167719759882810">Företagsfusioner och förvärv</translation>
 <translation id="4658638640878098064">Häfta uppe till vänster</translation>
 <translation id="4660119392514473465">Nu kan du surfa privat. Din aktivitet visas inte för andra som använder enheten. Nedladdningar, bokmärken och objekt i läslistan sparas dock.</translation>
@@ -1685,7 +1689,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="52517543715119994">Läs mer om funktioner i Chrome</translation>
 <translation id="5251803541071282808">Moln</translation>
 <translation id="5254043433801397071">Optimera utskriftsinnehåll</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Ta bild/spela in ändå</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att kopiera den här filen till <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att kopiera dessa filer till <ph name="DESTINATION_NAME" />}}</translation>
@@ -1928,6 +1931,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5903264686717710770">Namn:</translation>
 <translation id="5904360430676679685">Familj och relationer</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synkroniserade)</translation>
+<translation id="5911110632211230665">Öppning har blockerats</translation>
 <translation id="59174027418879706">Aktiverad</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 används}other{# används}}</translation>
@@ -2920,6 +2924,7 @@ Mer information:
 <translation id="8437238597147034694">&amp;Ångra Flytta</translation>
 <translation id="8438476240229491014">Kom ihåg inställningen</translation>
 <translation id="8438786541497918448">Vill du använda kameran och mikrofonen?</translation>
+<translation id="8438923942245957911">Den här webbplatsen har markerats av organisationen</translation>
 <translation id="8443613539889492016">Rap och hip-hop</translation>
 <translation id="8444543005280733648">Datornätverk</translation>
 <translation id="8446884382197647889">Läs mer</translation>

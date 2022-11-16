@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622571349153632031">Bucătărie pentru vegetarieni</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
+<translation id="1633137413609266904">{0,plural, =1{Deschiderea acestui fișier este blocată de politica implementată de administrator}few{Deschiderea a # fișiere este blocată de politica implementată de administrator}other{Deschiderea a # de fișiere este blocată de politica implementată de administrator}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Pregătirea și planificarea impozitelor</translation>
 <translation id="1638780421120290329">Nu se poate salva cardul</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;Anulați reordonarea</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> dorește să se conecteze</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Politica implementată de administrator nu recomandă să deschizi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să deschizi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organizația ta, <ph name="ENROLLMENT_DOMAIN" />, a trimis câteva informații următoarelor site-uri, cum ar fi setări sau politici.</translation>
 <translation id="3282497668470633863">Adaugă numele de pe card</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4277028893293644418">Resetează parola</translation>
 <translation id="4278390842282768270">Se permite</translation>
+<translation id="4281998142035485137">{0,plural, =1{Deschizi fișierul confidențial?}few{Deschizi fișierele confidențiale?}other{Deschizi fișierele confidențiale?}}</translation>
 <translation id="4282346679996504092">Alertele pentru acest produs au fost dezactivate și marcajul a fost eliminat</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Acest card a fost salvat în Contul tău Google}few{Aceste carduri au fost salvate în Contul tău Google}other{Aceste carduri au fost salvate în Contul tău Google}}</translation>
@@ -1686,7 +1689,6 @@
 <translation id="52517543715119994">Află despre funcțiile Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
 <translation id="5254043433801397071">Optimizează conținutul printării</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Capturează oricum</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Politica implementată de administrator nu recomandă să copiezi acest fișier în <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să copiezi aceste fișiere în <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să copiezi aceste fișiere în <ph name="DESTINATION_NAME" />}}</translation>
@@ -1929,6 +1931,7 @@
 <translation id="5903264686717710770">Titlul:</translation>
 <translation id="5904360430676679685">Familie și relații</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizat)</translation>
+<translation id="5911110632211230665">Deschidere blocată</translation>
 <translation id="59174027418879706">Activat</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 în uz}few{# în uz}other{# în uz}}</translation>

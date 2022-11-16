@@ -282,6 +282,7 @@
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1622571349153632031">Cuisine végétarienne</translation>
 <translation id="1623104350909869708">Empêcher cette page de générer des boîtes de dialogue supplémentaires</translation>
+<translation id="1633137413609266904">{0,plural, =1{La politique de l'administrateur bloque l'ouverture de ce fichier}one{La politique de l'administrateur bloque l'ouverture de # fichier}other{La politique de l'administrateur bloque l'ouverture de # fichiers}}</translation>
 <translation id="1634828734222219955">Total</translation>
 <translation id="163669211644121865">Planification et déclarations fiscales</translation>
 <translation id="1638780421120290329">Impossible d'enregistrer la carte</translation>
@@ -896,6 +897,7 @@
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> veut se connecter</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
 <translation id="3282497668470633863">Ajouter le nom sur la carte</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -1295,6 +1297,7 @@
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
 <translation id="4278390842282768270">Autorisé</translation>
+<translation id="4281998142035485137">{0,plural, =1{Ouvrir un fichier confidentiel?}one{Ouvrir un fichier confidentiel?}other{Ouvrir des fichiers confidentiels?}}</translation>
 <translation id="4282346679996504092">Les alertes pour ce produit ont été désactivées, et le favori a été supprimé</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{La carte a été enregistrée dans votre compte Google}one{La carte a été enregistrée dans votre compte Google}other{Les cartes ont été enregistrées dans votre compte Google}}</translation>
@@ -1686,7 +1689,6 @@
 <translation id="52517543715119994">En savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="5251803541071282808">Politique provenant du nuage</translation>
 <translation id="5254043433801397071">Optimiser le contenu d'impression</translation>
-<translation id="5254958791078852567">E</translation>
 <translation id="5255690596502591079">Prendre une capture d'écran quand même</translation>
 <translation id="5255833070095767006">350 mm x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
@@ -1929,6 +1931,7 @@
 <translation id="5903264686717710770">Titre :</translation>
 <translation id="5904360430676679685">Famille et relations personnelles</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synchronisé)</translation>
+<translation id="5911110632211230665">Ouverture bloquée</translation>
 <translation id="59174027418879706">Activé</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 en cours d'utilisation}one{# en cours d'utilisation}other{# en cours d'utilisation}}</translation>

@@ -1467,7 +1467,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" />  प्रोसेस के दौरान, सिस्टम को फिर चालू किया जाएगा.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ने अतिरिक्त अनुमतियों का अनुरोध किया है.</translation>
-<translation id="23055578400314116">कोई उपयोगकर्ता नाम चुनें</translation>
 <translation id="2307462900900812319">नेटवर्क कॉन्फ़िगर करें</translation>
 <translation id="2307553512430195144">अगर आप सहमति देते हैं, तो "Ok Google" पहचानने के लिए Google Assistant स्टैंडबाय मोड में इंतज़ार करेगी. साथ ही, Assistant पहचान सकती है कि <ph name="SUPERVISED_USER_NAME" /> वॉइस मैच के साथ बोल रहे हैं.
     <ph name="BR" />
@@ -3452,6 +3451,7 @@
 <translation id="4147911968024186208">कृपया फिर से कोशिश करें. अगर आपको यह गड़बड़ी फिर से दिखाई देती है, तो कृपया अपने सहायता प्रतिनिधि से संपर्क करें.</translation>
 <translation id="4150201353443180367">डिसप्ले</translation>
 <translation id="4150569944729499860">स्क्रीन कॉन्टेक्स्ट</translation>
+<translation id="4152011295694446843">आपको अपने बुकमार्क यहां मिलेंगे</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

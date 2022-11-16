@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
 <translation id="8394832520002899662">点按即可返回到网站</translation>
 <translation id="8409345997656833551">当文章能以简化版视图显示时通知我</translation>
+<translation id="8423565414844018592">文字缩放比例目前设为 <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8441146129660941386">后退</translation>
 <translation id="8444433999583714703">若要允许 <ph name="APP_NAME" /> 获取您的位置信息，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启位置信息服务。</translation>

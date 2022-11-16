@@ -353,6 +353,7 @@
 <translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
 <translation id="8409345997656833551">記事を簡易表示できる場合に通知する</translation>
+<translation id="8423565414844018592">テキストの表示倍率を <ph name="TEXT_SCALING" /> に設定しました</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>

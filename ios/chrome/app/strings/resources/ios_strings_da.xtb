@@ -232,6 +232,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2815198996063984598">2. Tryk på Standardbrowserapp</translation>
 <translation id="2820289420301699633">Din administrator har kontrol over Chrome og har adgang til browserens data</translation>
 <translation id="2830972654601096923">Administrer adresser...</translation>
+<translation id="2834399722155632105">3. Tryk på Valgmuligheder for adgangskoder</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Nulstil oversættelsesindstillinger</translation>
 <translation id="2848086008667475748">Angiv som standard i Indstillinger…</translation>
@@ -632,6 +633,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5899314093904173337">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode med deres kamera eller app til scanning af QR-koder</translation>
 <translation id="5911030830365207728">Google Oversæt</translation>
 <translation id="5913600720976431809">Valgmuligheder for oversættelse af side</translation>
+<translation id="5933515656458364246">Synkroniser dine data på alle enheder.</translation>
 <translation id="5938160824633642847">Din enhed er ved at løbe tør for plads. Frigør plads, og prøv igen.</translation>
 <translation id="5948291296578561264">Dermed kan du gemme fotos i din fotosamling.</translation>
 <translation id="5951816930277761335">Del linket</translation>
@@ -713,6 +715,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 
 Dine data blev krypteret med din adgangssætning til synkronisering d. <ph name="TIME" />. Angiv adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6418346271604475326">Forbereder PDF</translation>
+<translation id="6429213933892582367">Åbn Valgmuligheder for adgangskoder</translation>
 <translation id="6434591244308415567">Der opstod en fejl. Prøv igen senere.</translation>
 <translation id="6435236283694032571">Føj til læselisten</translation>
 <translation id="6439338047467462846">Tillad alle</translation>
@@ -828,6 +831,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7203585745079012652">Giv talte svar</translation>
 <translation id="7207023858769244910">Synkroniser for at få indhold baseret på dine interesser.</translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
+<translation id="7221173315674413369">Se nye funktioner og tips i Nyheder</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
 <translation id="7272437679830969316">Din identitet kunne ikke bekræftes. Adgangskoden blev ikke kopieret.</translation>
@@ -861,6 +865,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7514365320538308">Download</translation>
 <translation id="7531345132340165516">Aktuelt website</translation>
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
+<translation id="7553234618121028547">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Valgmuligheder for adgangskoder.</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7583004045319035904">Brug <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til at låse dine inkognitofaner op.</translation>
@@ -942,6 +947,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiver</translation>
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
+<translation id="81313319706244542">2. Tryk på Adgangskoder</translation>
 <translation id="8132598642024322408">Koster nu <ph name="PRICE" />. Førprisen var <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8136856065410661948">Dette bruges til at oprette begivenheder i din Apple Kalender via Chrome og Google Lens.</translation>
 <translation id="8156478151976189188">Password Sync fungerer ikke</translation>
@@ -964,6 +970,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8323906514956095947">Tryk og hold nede for at se flere faneindstillinger</translation>
 <translation id="8328777765163860529">Luk alt</translation>
+<translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8386068868580335421">Nulstil</translation>
 <translation id="8407669440184693619">Der blev ikke fundet nogen adgangskoder til dette website</translation>

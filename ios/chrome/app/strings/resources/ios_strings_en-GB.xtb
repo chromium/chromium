@@ -87,6 +87,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1552525382687785070">Sync is disabled by your administrator</translation>
 <translation id="1554477036522844996">New window</translation>
+<translation id="1565371473877914088">New incognito tab</translation>
 <translation id="1580715474678097352">Stay protected from dangerous websites</translation>
 <translation id="1580783302095112590">Mail sent.</translation>
 <translation id="1582732959743469162">This will stop all progress for your current download.</translation>
@@ -133,6 +134,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="199425419756152024">View password</translation>
+<translation id="2010008505735295285">Reload</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="2021670401941426298">See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="202292859882676807">Microphone access allowed</translation>
@@ -299,6 +301,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3277021493514034324">Site address copied</translation>
 <translation id="3285962946108803577">Share page…</translation>
+<translation id="3289505634533552500">Voice search</translation>
 <translation id="3290875554372353449">Choose an Account</translation>
 <translation id="3305294846493618482">more</translation>
 <translation id="3311748811247479259">Off</translation>
@@ -556,6 +559,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5295239312320826323">Remove account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5317780077021120954">Save</translation>
+<translation id="5318298563956633672">You're already tracking this product.</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
 <translation id="536067926684072644">Show Bookmarks</translation>
 <translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
@@ -619,6 +623,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="581659025233126501">Turn On Sync</translation>
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">Save passwords, payment methods and addresses for Chrome to auto-fill later.</translation>
+<translation id="5834415013958049700">Lens image that you copied</translation>
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857090052475505287">New Folder</translation>
@@ -646,6 +651,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5988097621740394599">See price drops on your tabs.</translation>
 <translation id="5988851877894965432">Open URLs in Chrome</translation>
+<translation id="6006672969046233841">New tab</translation>
 <translation id="6012140227487808125">Encrypting…</translation>
 <translation id="6021332621416007159">Open in...</translation>
 <translation id="6027945736510816438">Did you mean <ph name="WEBSITE" />?</translation>
@@ -832,6 +838,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7207023858769244910">Sync to get content based on your interests.</translation>
 <translation id="721597782417389033">Invalid card nickname</translation>
 <translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
+<translation id="7223102419539744003">Close tab</translation>
 <translation id="722454870747268814">New incognito tab</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
@@ -903,6 +910,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="785938070103630874">Open passwords, payment methods or address and more</translation>
 <translation id="7859704718976024901">Browsing history</translation>
+<translation id="7870750252270996949">Lens copied image</translation>
 <translation id="7879275349003161544">Show downloads</translation>
 <translation id="7884694604461143138">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
@@ -1027,6 +1035,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">Default site view</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="882557203579758546">Find in page…</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8843129975935593190">Your organisation limits what you can sync.</translation>
 <translation id="8849001918648564819">Hidden</translation>

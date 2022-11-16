@@ -1466,7 +1466,6 @@
         <ph name="BR" />
         <ph name="BEGIN_BOLD" />கவனத்திற்கு:<ph name="END_BOLD" /> இந்தச் செயல்முறையின்போது சிஸ்டம் மறுபடி தொடங்கும்.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ஆனது கூடுதல் அனுமதிகளைக் கோரியுள்ளது.</translation>
-<translation id="23055578400314116">பயனர்பெயரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="2307462900900812319">நெட்வொர்க்கை உள்ளமை</translation>
 <translation id="2307553512430195144">நீங்கள் அனுமதித்தால் “Ok Google” என்பதைப் புரிந்துகொள்ள Google Assistant காத்திருப்புப் பயன்முறையில் இருக்கும். அத்துடன் பேசுவது <ph name="SUPERVISED_USER_NAME" /> என்பதை Voice Match உதவியுடன் அடையாளம் காணவும் முடியும்.
     <ph name="BR" />
@@ -3452,6 +3451,7 @@
 <translation id="4147911968024186208">மீண்டும் முயலவும். இந்தப் பிழை மீண்டும் ஏற்பட்டால், உங்கள் உதவி மையப் பிரதிநிதியைத் தொடர்பு கொள்ளவும்.</translation>
 <translation id="4150201353443180367">திரை</translation>
 <translation id="4150569944729499860">திரையில் இருப்பவை குறித்து காட்டும் அம்சம்</translation>
+<translation id="4152011295694446843">உங்கள் புக்மார்க்குகளை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 தாவல்}other{# தாவல்கள்}}</translation>
 <translation id="4154664944169082762">விரல் அச்சுகள்</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

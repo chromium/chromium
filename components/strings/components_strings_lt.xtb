@@ -1433,6 +1433,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4646534391647090355">Eiti dabar</translation>
 <translation id="4648262692072505866">Maišos formatas turi būti SHA-256.</translation>
 <translation id="4652266463001779298">Neleidžiama</translation>
+<translation id="4652440160515225514">Jūsų organizacija užblokavo šią svetainę, nes ji pažeidžia politiką.</translation>
 <translation id="4653167719759882810">Susiliejimai ir įsigijimai</translation>
 <translation id="4658638640878098064">Sankabėlė viršuje kairėje</translation>
 <translation id="4660119392514473465">Dabar galite naršyti privačiai, o kiti šį įrenginį naudojantys žmonės nematys jūsų veiklos. Tačiau atsisiuntimai, žymės ir skaitymo sąrašo elementai bus išsaugoti.</translation>
@@ -1686,7 +1687,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="52517543715119994">Sužinokite apie „Chrome“ funkcijas</translation>
 <translation id="5251803541071282808">Debesis</translation>
 <translation id="5254043433801397071">Optimizuoti spausdinimo turinį</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Vis tiek užfiksuoti</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šio failo į <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama kopijuoti šių failų į <ph name="DESTINATION_NAME" />}}</translation>
@@ -2921,6 +2921,7 @@ Papildoma išsami informacija:
 <translation id="8437238597147034694">&amp;Anuliuoti perkėlimą</translation>
 <translation id="8438476240229491014">Įsiminti šį nustatymą</translation>
 <translation id="8438786541497918448">Naudoti fotoaparatą ir mikrofoną?</translation>
+<translation id="8438923942245957911">Šią svetainę pažymėjo jūsų organizacija</translation>
 <translation id="8443613539889492016">Repas ir hiphopas</translation>
 <translation id="8444543005280733648">Kompiuterių tinklai</translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>

@@ -1448,7 +1448,6 @@
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> бұл процесс барысында жүйе қайта жүктеледі.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" қосымша рұқсат сұрады.</translation>
-<translation id="23055578400314116">Пайдаланушы атын таңдаңыз.</translation>
 <translation id="2307462900900812319">Желіні реттеу</translation>
 <translation id="2307553512430195144">Келіссеңіз, Google Assistant күту режимінде "Ok Google" пәрменін күтеді және баланың (<ph name="SUPERVISED_USER_NAME" />) сөйлегенін Voice Match арқылы тани алады.
     <ph name="BR" />
@@ -3434,6 +3433,7 @@
 <translation id="4147911968024186208">Қайталап көруіңізді сұраймыз. Егер бұл қате қайта шықса, қолдау қызметі өкіліне хабарласыңыз.</translation>
 <translation id="4150201353443180367">Дисплей</translation>
 <translation id="4150569944729499860">Экран контексі</translation>
+<translation id="4152011295694446843">Бетбелгілер осы жерге шығады</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 қойынды}other{# қойынды}}</translation>
 <translation id="4154664944169082762">Саусақ іздері</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

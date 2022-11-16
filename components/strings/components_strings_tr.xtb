@@ -1432,6 +1432,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4646534391647090355">İndirilenlere git</translation>
 <translation id="4648262692072505866">Karma, SHA-256 biçiminde olmalıdır.</translation>
 <translation id="4652266463001779298">İzin verilmiyor</translation>
+<translation id="4652440160515225514">Kuruluşunuz, bir politikayı ihlal ettiği için bu siteyi engelledi.</translation>
 <translation id="4653167719759882810">Birleşmeler ve satın almalar</translation>
 <translation id="4658638640878098064">Sol üstte tel zımba</translation>
 <translation id="4660119392514473465">Artık gizli olarak göz atabilirsiniz. Bu cihazı kullanan diğer kişiler etkinliğinizi görmez. Yine de indirdikleriniz, yer işaretleri ve okuma listesi öğeleri kaydedilir.</translation>
@@ -1685,7 +1686,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="52517543715119994">Chrome özellikleri hakkında bilgi edinin</translation>
 <translation id="5251803541071282808">Bulut</translation>
 <translation id="5254043433801397071">Yazdırma içeriğini optimize et</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Yine de görüntü al</translation>
 <translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Yönetici politikası bu dosyayı <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}other{Yönetici politikası bu dosyaları <ph name="DESTINATION_NAME" /> hedefine kopyalamanızı önermiyor}}</translation>
@@ -2920,6 +2920,7 @@ Ek ayrıntılar:
 <translation id="8437238597147034694">Taşımayı &amp;geri al</translation>
 <translation id="8438476240229491014">Bu ayarı hatırla</translation>
 <translation id="8438786541497918448">Kamera ve mikrofon kullanılsın mı?</translation>
+<translation id="8438923942245957911">Bu site, kuruluşunuz tarafından işaretlendi</translation>
 <translation id="8443613539889492016">Rap ve hip-hop</translation>
 <translation id="8444543005280733648">Bilgisayar ağları</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>

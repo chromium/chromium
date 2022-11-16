@@ -553,6 +553,7 @@
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
 <translation id="4035877632587724847">Չթույլատրել</translation>
+<translation id="4036177530563778041">Հեշտությամբ շարունակեք այնտեղից, որտեղ կանգ էիք առել</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
@@ -1126,6 +1127,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7029390216614421513">Դիրքավորեք QR-կոդը կամ գծակոդը այս շրջանակի մեջ</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030304022046916278">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։</translation>
+<translation id="7030585293819777123">Վերսկսե՞լ ձեր վերջին առաջադրանքը</translation>
 <translation id="7037830628447527439">Մուտք գործեք Chrome ձեր Google հաշվով</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>

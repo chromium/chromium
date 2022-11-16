@@ -87,6 +87,7 @@
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
 <translation id="1552525382687785070">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="1554477036522844996">หน้าต่างใหม่</translation>
+<translation id="1565371473877914088">แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="1580715474678097352">รับการปกป้องจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="1580783302095112590">ส่งอีเมลแล้ว</translation>
 <translation id="1582732959743469162">การดำเนินการนี้จะหยุดการดาวน์โหลดที่ดำเนินอยู่ทั้งหมด</translation>
@@ -133,6 +134,7 @@
 <translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="199425419756152024">ดูรหัสผ่าน</translation>
+<translation id="2010008505735295285">โหลดซ้ำ</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="2021670401941426298">ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="202292859882676807">อนุญาตให้เข้าถึงไมโครโฟน</translation>
@@ -299,6 +301,7 @@
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3277021493514034324">คัดลอกที่อยู่เว็บไซต์แล้ว</translation>
 <translation id="3285962946108803577">แชร์หน้าเว็บ...</translation>
+<translation id="3289505634533552500">ค้นหาด้วยเสียง</translation>
 <translation id="3290875554372353449">เลือกบัญชี</translation>
 <translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3311748811247479259">ปิด</translation>
@@ -556,6 +559,7 @@
 <translation id="5295239312320826323">นำบัญชี <ph name="USER_EMAIL" /> ออกใช่ไหม</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
+<translation id="5318298563956633672">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>
@@ -619,6 +623,7 @@
 <translation id="581659025233126501">เปิดการซิงค์</translation>
 <translation id="5819208479324046259">จัดการโดย <ph name="MANAGER" /> <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5833643789537100742">บันทึกรหัสผ่าน วิธีการชําระเงิน และที่อยู่เพื่อให้ Chrome ป้อนข้อความอัตโนมัติภายหลัง</translation>
+<translation id="5834415013958049700">รูปภาพที่คุณคัดลอกด้วย Lens</translation>
 <translation id="5846482154967366008">เครื่องมือค้นหา</translation>
 <translation id="5854790677617711513">เกิน 30 วัน</translation>
 <translation id="5857090052475505287">โฟลเดอร์ใหม่</translation>
@@ -646,6 +651,7 @@
 <translation id="5984222099446776634">เข้าชมล่าสุด</translation>
 <translation id="5988097621740394599">ดูการลดราคาในแท็บ</translation>
 <translation id="5988851877894965432">เปิด URL ใน Chrome</translation>
+<translation id="6006672969046233841">แท็บใหม่</translation>
 <translation id="6012140227487808125">กำลังเข้ารหัส…</translation>
 <translation id="6021332621416007159">เปิดใน...</translation>
 <translation id="6027945736510816438">คุณหมายถึง <ph name="WEBSITE" /> ใช่ไหม</translation>
@@ -832,6 +838,7 @@
 <translation id="7207023858769244910">ซิงค์เพื่อรับเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="721597782417389033">ชื่อเล่นของบัตรไม่ถูกต้อง</translation>
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
+<translation id="7223102419539744003">ปิดแท็บ</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="7265758999917665941">ไม่จดจำสำหรับเว็บไซต์นี้</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
@@ -903,6 +910,7 @@
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="785938070103630874">เปิดรหัสผ่าน วิธีการชําระเงิน หรือที่อยู่ และอื่นๆ</translation>
 <translation id="7859704718976024901">ประวัติการเข้าชม</translation>
+<translation id="7870750252270996949">รูปภาพที่คัดลอกด้วย Lens</translation>
 <translation id="7879275349003161544">แสดงการดาวน์โหลด</translation>
 <translation id="7884694604461143138">ประวัติการค้นหา (พบ <ph name="COUNT" /> รายการ)</translation>
 <translation id="7887198238286927132">Chrome จะไม่ป้อนข้อความลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
@@ -1027,6 +1035,7 @@
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8810413591309742901">มุมมองเริ่มต้นของเว็บไซต์</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
+<translation id="882557203579758546">ค้นหาในหน้าเว็บ…</translation>
 <translation id="8840513115188359703">คุณจะไม่ออกจากระบบบัญชี Google</translation>
 <translation id="8843129975935593190">องค์กรของคุณจำกัดสิ่งที่คุณสามารถซิงค์</translation>
 <translation id="8849001918648564819">ซ่อน</translation>

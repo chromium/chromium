@@ -1449,7 +1449,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ଧ୍ୟାନ ଦିଅନ୍ତୁ:<ph name="END_BOLD" />  ପ୍ରକ୍ରିୟା ଚାଲିଥିବା ସମୟରେ ସିଷ୍ଟମ ରିବୁଟ ହେବ।</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ଅତିରିକ୍ତ ଅନୁମତିଗୁଡ଼ିକ ଅନୁରୋଧ କରିଛନ୍ତି।</translation>
-<translation id="23055578400314116">ଏକ ଉପଯୋଗକର୍ତ୍ତାନାମ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2307462900900812319">ନେଟ୍‍ୱର୍କ କନ୍‌ଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="2307553512430195144">ଯଦି ଆପଣ ରାଜି ହୁଅନ୍ତି, ତେବେ “Hey Google”କୁ ଚିହ୍ନଟ କରିବା ପାଇଁ Google Assistant ଷ୍ଟାଣ୍ଡବାଏ ମୋଡରେ ଅପେକ୍ଷା କରିବ ଏବଂ Voice Match ମାଧ୍ୟମରେ ଏହା <ph name="SUPERVISED_USER_NAME" /> କହୁଛି ବୋଲି ଚିହ୍ନଟ କରିପାରିବ।
     <ph name="BR" />
@@ -3436,6 +3435,7 @@
 <translation id="4147911968024186208">ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ଯଦି ଆପଣ ପୁଣି ଏହି ତ୍ରୁଟି ଦେଖନ୍ତି, ତେବେ ଆପଣଙ୍କ ସହଯୋଗ ପ୍ରତିନିଧିଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="4150201353443180367">ଡିସ୍‌ପ୍ଲେ</translation>
 <translation id="4150569944729499860">ସ୍କ୍ରିନ୍ ପ୍ରସଙ୍ଗ</translation>
+<translation id="4152011295694446843">ଆପଣ ଏଠାରେ ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକ ପାଇବେ</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1ଟି ଟାବ୍‌}other{#ଟି ଟାବ୍‌}}</translation>
 <translation id="4154664944169082762">ଟିପଚିହ୍ନ</translation>
 <translation id="4157869833395312646">Microsoft ସର୍ଭର୍‌ ଗେଟେଡ୍‌ କ୍ରିପ୍ଟୋଗ୍ରାଫି</translation>

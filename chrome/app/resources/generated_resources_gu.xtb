@@ -1449,7 +1449,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />નોંધ:<ph name="END_BOLD" />  પ્રક્રિયા દરમિયાન સિસ્ટમ રીબૂટ થશે.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" એ અતિરિક્ત પરવાનગીઓની વિનંતી કરી છે.</translation>
-<translation id="23055578400314116">વપરાશકર્તાનું નામ પસંદ કરો</translation>
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
 <translation id="2307553512430195144">જો તમે સંમત થાઓ, તો “Ok Google”ની ભાળ મેળવવા માટે Google Assistant સ્ટેન્ડબાય મોડમાં રહેશે અને <ph name="SUPERVISED_USER_NAME" /> Voice Match વડે બોલી રહ્યાં છે એ ઓળખી શકશે.
     <ph name="BR" />
@@ -3435,6 +3434,7 @@
 <translation id="4147911968024186208">કૃપા કરીને ફરી પ્રયાસ કરો. જો તમને આ ભૂલ ફરી દેખાય તો કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
 <translation id="4150569944729499860">સ્ક્રીન સંદર્ભ</translation>
+<translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ટેબ}one{# ટેબ્સ}other{# ટેબ્સ}}</translation>
 <translation id="4154664944169082762">ફિંગરપ્રીંટ્સ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

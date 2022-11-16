@@ -282,6 +282,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetariese kos</translation>
 <translation id="1623104350909869708">Verhoed hierdie bladsy om bykomende dialoë te skep</translation>
+<translation id="1633137413609266904">{0,plural, =1{Administrateursbeleid verhoed dat hierdie lêer oopgemaak kan word}other{Administrateursbeleid verhoed dat # lêers oopgemaak word}}</translation>
 <translation id="1634828734222219955">Totaal</translation>
 <translation id="163669211644121865">Belastingvoorbereiding en -beplanning</translation>
 <translation id="1638780421120290329">Kan nie kaart stoor nie.</translation>
@@ -896,6 +897,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3270847123878663523">Ontdoen herrangskikking</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> wil koppel</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3281350579597955952">{0,plural, =1{Adminbeleid beveel aan dat jy nie hierdie lêer in <ph name="DESTINATION_NAME" /> oopmaak nie}other{Adminbeleid beveel aan dat jy nie hierdie lêers in<ph name="DESTINATION_NAME" /> oopmaak nie}}</translation>
 <translation id="3282085321714087552">Jou organisasie, <ph name="ENROLLMENT_DOMAIN" />, het sommige inligting, soos instellings of beleide, na die volgende webwerwe gestuur.</translation>
 <translation id="3282497668470633863">Voeg naam op kaart by</translation>
 <translation id="3286372614333682499">portret</translation>
@@ -1295,6 +1297,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4275830172053184480">Herbegin jou toestel</translation>
 <translation id="4277028893293644418">Stel wagwoord terug</translation>
 <translation id="4278390842282768270">Toegelaat</translation>
+<translation id="4281998142035485137">{0,plural, =1{Maak vertroulike lêer oop?}other{Maak vertroulike lêers oop?}}</translation>
 <translation id="4282346679996504092">Opletberigte vir hierdie produk is afgeskakel en die boekmerk is verwyder</translation>
 <translation id="4285498937028063278">Ontspeld</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Hierdie kaart is in jou Google-rekening gestoor}other{Hierdie kaarte is in jou Google-rekening gestoor}}</translation>
@@ -1686,7 +1689,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="52517543715119994">Leer meer oor Chrome-kenmerke</translation>
 <translation id="5251803541071282808">Wolk</translation>
 <translation id="5254043433801397071">Optimeer drukinhoud</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Vang nogtans vas</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Adminbeleid beveel aan dat jy nie hierdie lêer na <ph name="DESTINATION_NAME" /> toe kopieer nie}other{Adminbeleid beveel aan dat jy nie hierdie lêers na <ph name="DESTINATION_NAME" /> toe kopieer nie}}</translation>
@@ -1929,6 +1931,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5904360430676679685">Gesin en verhoudings</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (gesinkroniseer)</translation>
+<translation id="5911110632211230665">Oopmaak word verhoed</translation>
 <translation id="59174027418879706">Geaktiveer</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{1 word gebruik}other{# word gebruik}}</translation>

@@ -1448,7 +1448,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" />  यो प्रक्रियाका क्रममा सिस्टम रिबुट गरिने छ।</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ले थप अनुमतिहरू अनुरोध गरेको छ।</translation>
-<translation id="23055578400314116">युजरनेम चयन गर्नुहोस्</translation>
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="2307553512430195144">तपाईंले यसमा सहमति जनाउनुभयो भने Google सहायक “Ok Google” भनेको कुरा पहिचान गर्न स्ट्यान्डबाई मोडमा तयार भएर बस्ने छ र यसले Voice Match को सहयोगले बोल्ने व्यक्ति <ph name="SUPERVISED_USER_NAME" /> हो भन्ने कुरा चिन्न सक्छ।
     <ph name="BR" />
@@ -3434,6 +3433,7 @@
 <translation id="4147911968024186208">कृपया पुनः प्रयास गर्नुहोस्। यो त्रुटि फेरि देख्नुभयो भने कृपया सहायता प्रतिनिधिलाई सम्पर्क गर्नुहोला।</translation>
 <translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4150569944729499860">स्क्रिन कन्टेक्स्ट</translation>
+<translation id="4152011295694446843">तपाईंका बुकमार्कहरू यहाँ देखिने छन्</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{१ ट्याब}other{# ट्याबहरू}}</translation>
 <translation id="4154664944169082762">औँलाछापहरू</translation>
 <translation id="4157869833395312646">Microsoft सर्भर गेटेड क्रिप्टोग्राफी</translation>

@@ -1469,7 +1469,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Sylwer:<ph name="END_BOLD" />  Bydd y system yn ailgychwyn yn ystod y broses.</translation>
 <translation id="23030561267973084">Mae "<ph name="EXTENSION_NAME" />" wedi gofyn am ganiatadau ychwanegol.</translation>
-<translation id="23055578400314116">Dewiswch enw defnyddiwr</translation>
 <translation id="2307462900900812319">Ffurfweddu rhwydwaith</translation>
 <translation id="2307553512430195144">Os ydych yn cytuno, bydd Google Assistant yn aros yn y modd segur i ganfod "Hei Google" a gall adnabod mai <ph name="SUPERVISED_USER_NAME" /> sy'n siarad â Voice Match.
     <ph name="BR" />
@@ -3455,6 +3454,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4147911968024186208">Rhowch gynnig arall arni. Os gwelwch y gwall hwn eto, cysylltwch â'ch cynrychiolydd cymorth.</translation>
 <translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4150569944729499860">Cyd-destun sgrîn</translation>
+<translation id="4152011295694446843">Cewch hyd i'ch nodau tudalen yma</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}zero{# tab}two{# dab}few{# thab}many{# thab}other{# tab}}</translation>
 <translation id="4154664944169082762">Olion bysedd</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>

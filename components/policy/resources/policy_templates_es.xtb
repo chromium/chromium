@@ -449,11 +449,6 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
       Las impresoras de extensión, también llamadas "destinos de proveedor de impresión", incluyen cualquier destino que pertenezca a una extensión de <ph name="PRODUCT_NAME" />.
 
       Las impresoras locales, que también se denominan "destinos de impresión nativos", incluyen los destinos que están disponibles para los equipos locales y las impresoras compartidas de la red.</translation>
-<translation id="1456449214426764016">La API no estándar window.webkitStorageInfo está obsoleta y está previsto que se retire.
-      Esta política vuelve a habilitar dicha API.
-      Si se habilita esta política, la API window.webkitStorageInfo estará disponible.
-      Si se inhabilita esta política o no se define, la API window.webkitStorageInfo no estará disponible.
-      </translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario en una sesión de varios perfiles en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
@@ -508,6 +503,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
 <translation id="1488724823347505879">Habilitar la opción de compartir de aplicaciones Android a aplicaciones web</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de inicio de sesión</translation>
+<translation id="1499129134689253257">Controlar el nuevo comportamiento de <ph name="OFFSET_PARENT" /></translation>
 <translation id="1501644502684303995">Requerir que se inicie sesión online solo en la pantalla de inicio de sesión</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="1503969899251962413">Si se le asigna un valor a esta política, se especificará la clave de licencia de <ph name="PLUGIN_VM_NAME" /> de este dispositivo.
@@ -822,19 +818,6 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 
       Si no se establece esta política, los usuarios podrán gestionar la lista completa de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijadas que deben aparecer en la barra de aplicaciones</translation>
-<translation id="1805056271257244521">Si se habilita esta política, cuando la función de JavaScript setTimeout() tenga un tiempo de espera de 0 ms, no se redondeará a 1 ms.
-          Si se inhabilita esta política, cuando la función de JavaScript setTimeout() tenga un tiempo de espera de 0 ms, se redondeará a 1 ms.
-          Si no se configura esta política, se usará el comportamiento predeterminado del navegador para el redondeo de la función setTimeout().
-
-          Esta función cumple los estándares web, pero es posible que cambie el orden de las tareas
-          en una página web, lo que podría provocar un comportamiento inesperado en sitios que
-          dependan, de algún modo, de un orden determinado. También puede afectar a sitios que usen mucho la función setTimeout()
-          con un tiempo de espera de 0 ms (por ejemplo, podría aumentar la carga de la CPU).
-
-          Para los usuarios que no tengan esta política configurada, Chrome lanzará el cambio de forma gradual en el canal estable.
-
-          Esta es una política temporal y se prevé que se elimine en la versión 105 de Chrome. Este plazo puede ampliarse si lo necesitan las empresas.
-          </translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir conexión compartida instantánea.</translation>
 <translation id="1813638828646876133">Habilitar el envío automático de PIN en la pantalla de bloqueo y de inicio de sesión</translation>
@@ -2371,6 +2354,17 @@ Esta política es temporal y se eliminará más adelante.</translation>
 
       Si no se le asigna un valor a la política, <ph name="PRODUCT_NAME" /> cargará todos los hosts de mensajes nativos instalados.</translation>
 <translation id="3211426942294667684">Configuración de inicio de sesión en el navegador</translation>
+<translation id="3217774577897351942">La API <ph name="OFFSET_PARENT" /> se va a modificar en <ph name="PRODUCT_NAME" /> para ajustarse a los cambios que se han hecho en <ph name="FIREFOX_PRODUCT_NAME" /> y <ph name="SAFARI_PRODUCT_NAME" />. Esta política revierte el comportamiento anterior hasta la versión M120.
+
+El nuevo comportamiento puede provocar que fallen algunos sitios web específicos de <ph name="PRODUCT_NAME" /> que usen <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
+
+Aquí tienes algunos polyfills que recuperan el comportamiento anterior para ayudar a hacer la migración: https://github.com/josepharhar/offsetparent-polyfills.
+
+Si esta política se habilita, se usará el nuevo comportamiento.
+
+Si se inhabilita, se usará el comportamiento anterior.
+
+Si la política no se establece, se usará el nuevo comportamiento, tal como sucede con el resto de los usuarios de Chromium.</translation>
 <translation id="3219421230122020860">Modo Incógnito disponible</translation>
 <translation id="3220624000494482595">Si la aplicación de kiosco es una aplicación para Android, no tendrá control sobre la versión de <ph name="PRODUCT_OS_NAME" />, incluso si se asigna el valor <ph name="TRUE" /> a esta política.</translation>
 <translation id="3222088741899353813">El botón izquierdo es el principal en la pantalla de inicio de sesión</translation>
@@ -2779,6 +2773,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3589193811812796052">Evitar que los módulos de WebAssembly se envíen a otros orígenes</translation>
 <translation id="3591527072193107424">Habilitar la función de compatibilidad con navegadores antiguos.</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
+<translation id="3593905652755912452">Se usará el comportamiento anterior de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de las máquinas virtuales</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
 
@@ -3078,6 +3073,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
 <translation id="3891769546914233112">Imprimir PDF como imagen disponible</translation>
 <translation id="3897218615484393758">Limita el tiempo durante el que un usuario autenticado mediante SAML puede iniciar sesión sin conexión en la pantalla de bloqueo</translation>
+<translation id="3897860452756794695">Se usará el nuevo comportamiento de offsetParent.</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permitir o denegar capturas de pantalla</translation>
 <translation id="3903313632842363082">Inhabilitar los informes sobre los usuarios del dispositivo</translation>
@@ -4875,6 +4871,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Los usuarios no podrán modificar este ajuste.</translation>
 <translation id="5838452040629810808">Habilitar el resaltado del cursor</translation>
+<translation id="5842283830553218200">Se usará el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados de forma predeterminada.</translation>
 <translation id="5848438019586925019">El algoritmo para generar pares de claves.</translation>
 <translation id="5851248808417680865">Usar el tema oscuro</translation>
 <translation id="585270638818921943">Evitar que el usuario utilice aplicaciones Android de fuentes que no son de confianza</translation>
@@ -5372,6 +5369,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita esta política o no se le asigna ningún valor, los usuarios podrán elegir si quieren usar <ph name="CHROME_SYNC_NAME" />.
 
       Nota: No actives esta política si se ha habilitado <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, ya que ambas comparten la misma funcionalidad del cliente. La sincronización alojada por Google se desactivará por completo en este caso.</translation>
+<translation id="6320935916601887506">Se usará el nuevo comportamiento de offsetParent de forma predeterminada.</translation>
 <translation id="6327643515544933974">Configuración de USB web</translation>
 <translation id="6330882599388782338">Permitir a los sitios web acceder a los sensores</translation>
 <translation id="6331167725613770725">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
@@ -5509,6 +5507,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6464074037294098618">Habilitar la función Autocompletar para direcciones</translation>
 <translation id="6467613372414922590">Permitir hosts de mensajes nativos en el nivel de usuario (instalados sin permisos de administrador)</translation>
 <translation id="6473623140202114570">Configura la lista de dominios en los que la Navegación segura no activará advertencias.</translation>
+<translation id="6474194795370862403">Se usará el comportamiento anterior de offsetParent.</translation>
 <translation id="647645276885673708">Habilitar <ph name="LACROS_NAME" /> y convertirlo en el navegador principal</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6477685422297715670">Color verde para la retroiluminación del teclado</translation>
@@ -6102,7 +6101,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se selecciona la opción U2F, la autenticación de dos factores integrada sigue la especificación FIDO U2F.
 
       Si se selecciona la opción U2F_EXTENDED, la autenticación de dos factores integrada proporciona las funciones de U2F y algunas extensiones de confirmación individual.</translation>
-<translation id="6998179760789945134">Inhabilitar WebSQL en contextos no seguros a menos que lo habilite una marca de Chrome.</translation>
 <translation id="6999948519306285655">Esta política está obsoleta. Se debe usar la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si se le asigna un valor a esta política, se especificará la URL de un archivo .pac de proxy. Esta política solo tiene validez si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> y se ha seleccionado <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.
@@ -7309,6 +7307,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8250048892729838843">Esta política está obsoleta. Si se habilita esta política o no se establece, el dispositivo podrá recibir controles de informes granulares.
       Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>
 <translation id="82530263956734297">ID de extensiones excluidas de la lista de bloqueados</translation>
+<translation id="8256006033157034334">Esta política está obsoleta y no se admite. Usa <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> en su lugar.</translation>
 <translation id="8256688113167012935">Permite controlar el nombre de la cuenta que <ph name="PRODUCT_OS_NAME" /> muestra en la pantalla de inicio de sesión para la cuenta local del dispositivo correspondiente.
 
       Si esta política se establece, la pantalla de inicio de sesión utilizará la cadena especificada en el selector de inicio de sesión basado en imágenes para la cuenta local del dispositivo correspondiente.
@@ -7520,6 +7519,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8417305981081876834">Definir la longitud máxima del PIN para la pantalla de bloqueo</translation>
 <translation id="841977920223099909">Activar advertencia de protección de contraseña</translation>
 <translation id="8420426128163801949">Permitir que los usuarios activen o desactiven el Bluetooth</translation>
+<translation id="8422658829373743789">Controlar el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados</translation>
 <translation id="8422866312638683210">Si se asigna un valor a esta política, <ph name="PRODUCT_NAME" /> intentará registrarse con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. El valor de esta política es un token de registro que puedes obtener desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
@@ -8065,6 +8065,19 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8947415621777543415">Informar de ubicación del dispositivo</translation>
 <translation id="8948062138228904066">Lista de permitidos de servidores de autenticación</translation>
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
+<translation id="8952611478149810182">El envío de eventos en controles de formulario inhabilitados se va a modificar en Chromium para mejorar la compatibilidad con otros navegadores y la experiencia de los desarrolladores.
+
+Este cambio hace que los MouseEvents se envíen en elementos de control de formulario inhabilitados, a excepción de click, mouseup y mousedown. Por ejemplo, entre los nuevos eventos se incluirán mousemove, mouseenter y mouseleave.
+
+Este cambio también trunca la ruta de los eventos click, mouseup y mousedown cuando se envían en elementos secundarios de controles de formulario inhabilitados. Por lo tanto, no se envían en los controles de formulario inhabilitados ni en ninguno de sus antecedentes.
+
+El nuevo comportamiento puede provocar que algunos sitios web fallen.
+
+Si esta política se habilita, se usará el nuevo comportamiento.
+
+Si se inhabilita, se usará el comportamiento anterior.
+
+Si la política no se establece, se usará el nuevo comportamiento, tal como sucede con el resto de los usuarios de Chromium.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -8174,9 +8187,6 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si no se asigna ningún valor a esta política, no se aplicará la selección automática en ningún sitio web.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
-<translation id="906349948439898016">WebSQL está habilitado en contextos no seguros de forma predeterminada a partir de la versión M105, pero puede inhabilitarse mediante una marca de Chrome.
-          Si se asigna el valor false a esta política o no se le asigna ninguno, se podrá inhabilitar WebSQL en contextos no seguros.
-          Si se le asigna el valor true, WebSQL no se podrá inhabilitar.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="9069588907259547232">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el volumen de audio del dispositivo.
 
@@ -8250,6 +8260,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136212796239682721">Inhabilitar la interfaz del cuadro de descargas</translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
+<translation id="9142561920976791097">Se usará el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="9148720248753722892">No permitir certificados SHA-1 firmados</translation>
 <translation id="9149678135092892302">Inhabilitar informes de datos sobre versiones</translation>
 <translation id="9150416707757015439">Esta política está obsoleta. Te recomendamos que uses IncognitoModeAvailability en su lugar.

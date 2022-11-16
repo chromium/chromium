@@ -1467,7 +1467,6 @@
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> системот ќе се рестартира во текот на процесот.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ побара дополнителни дозволи.</translation>
-<translation id="23055578400314116">Изберете корисничко име</translation>
 <translation id="2307462900900812319">Конфигурирај мрежа</translation>
 <translation id="2307553512430195144">Ако се согласите, „Помошникот на Google“ ќе чека во режим на подготвеност за да слушне „Ok Google”, а преку Voice Match може да препознае дека зборува <ph name="SUPERVISED_USER_NAME" />.
     <ph name="BR" />
@@ -3455,6 +3454,7 @@
 <translation id="4147911968024186208">Обидете се повторно. Доколку повторно ја гледате грешкава, контактирајте со претставникот за поддршка.</translation>
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4150569944729499860">Контекст на екранот</translation>
+<translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
 <translation id="4154664944169082762">Отпечатоци</translation>
 <translation id="4157869833395312646">Шифрирање на сервер со порти на Microsoft</translation>

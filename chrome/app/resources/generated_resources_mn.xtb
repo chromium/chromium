@@ -1462,7 +1462,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Уг явцын үеэр системийг дахин асаана.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" нь нэмэлт зөвшөөрөл хүссэн байна.</translation>
-<translation id="23055578400314116">Хэрэглэгчийн нэр сонгоно уу</translation>
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
 <translation id="2307553512430195144">Хэрэв та зөвшөөрч байвал Google Туслах “Ok Google”-г илрүүлэхийн тулд зогсолтын горимд хүлээх бөгөөд Voice Match-тай ярьж байгаа хүн <ph name="SUPERVISED_USER_NAME" /> болохыг таних боломжтой.
     <ph name="BR" />
@@ -2383,6 +2382,7 @@
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3143754809889689516">Эхнээс нь тоглуулах</translation>
 <translation id="3144647712221361880">Холбоосыг нээх</translation>
+<translation id="3144896554017119333">Өргөтгөл болон бусад</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3150693969729403281">Аюулгүй байдлын шалгалтыг одоо хийх</translation>
 <translation id="3150927491400159470">Хатуу дискийг дахин ачаалах</translation>
@@ -2491,6 +2491,7 @@
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" />-г бүү харуул</translation>
+<translation id="3269175001434213183">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглахын тулд синк хийхийг асаана уу</translation>
 <translation id="3269612321104318480">Цайвар номин ногоон ба цагаан</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
 <translation id="326999365752735949">Татаж авахын ялгаа</translation>
@@ -3447,6 +3448,7 @@
 <translation id="4147911968024186208">Дахин оролдоно уу. Та энэ алдааг дахин харвал дэмжлэгийн төлөөлөгчтэйгээ холбогдоно уу.</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
 <translation id="4150569944729499860">Дэлгэцийн хам сэдэв</translation>
+<translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 цонх}other{# цонх}}</translation>
 <translation id="4154664944169082762">Хурууны хээ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
@@ -4288,6 +4290,7 @@
 <translation id="4950993567860689081">Таны харилцан үйлдлийг танай байгууллагаас удирддаг. Администраторууд таны профайлыг устгаж, мөн сүлжээний ачааллыг тань хянах боломжтой.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
+<translation id="4951966678293618079">Энэ сайтад нууц үгнүүдийг хэзээ ч бүү хадгал</translation>
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
 <translation id="4955710816792587366">ПИН-ээ сонгох</translation>
 <translation id="4959262764292427323">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно</translation>
@@ -4317,6 +4320,7 @@
 <translation id="4981449534399733132">Хөтчийн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">Зогсоосон хэсгээсээ дурын төхөөрөмжөөс үргэлжлүүлээрэй</translation>
 <translation id="4982236238228587209">Төхөөрөмжийн программ хангамж</translation>
+<translation id="4986706507552097681">Та синк хийх зүйлээ тохиргооноос хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="4986728572522335985">Энэ нь аюулгүй байдлын түлхүүрийн ПИН зэрэг бүх өгөгдлийг устгана</translation>
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="49896407730300355">Цагийн зүүний эсрэг эргүүлэх</translation>

@@ -435,11 +435,6 @@
       拡張機能プリンタは、印刷プロバイダの送信先のことで、<ph name="PRODUCT_NAME" /> の拡張機能で利用できる送信先が該当します。
 
       ローカル プリンタは、ネイティブ印刷の送信先のことで、ローカルマシンや共有ネットワークのプリンタで利用できる送信先が該当します。</translation>
-<translation id="1456449214426764016">標準以外の API window.webkitStorageInfo は非推奨で、削除される予定です。
-      このポリシーでは、API を再度有効にします。
-      このポリシーを [有効] に設定した場合、window.webkitStorageInfo API が使用可能になります。
-      このポリシーを [無効] に設定するか未設定のままにした場合、window.webkitStorageInfo API は使用できなくなります。
-      </translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" /> クライアント）:</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> デバイス上のマルチプロフィール セッションでのユーザーの行動を制御します。
 
@@ -797,16 +792,6 @@
 <translation id="1798559516913615713">GPO のキャッシュ期間</translation>
 <translation id="180130467244315277">このポリシーでは、管理者が <ph name="PRODUCT_NAME" /> の設定で使用言語の順序を設定できるようにします。リストの順序は、chrome://settings/languages の [言語を希望の順序に並べ替えます] の順序と同じになります。ユーザーは、ポリシーで設定された言語を削除したり、並べ替えたりできませんが、ポリシーで設定された言語の下に言語を追加することができます。また、他のポリシーで強制されていない限り、ユーザーはブラウザの UI の言語と翻訳やスペルチェックの設定を自由に管理できます。このポリシーを未設定のままにした場合、ユーザーは使用言語のリスト全体を操作できます。</translation>
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
-<translation id="1805056271257244521">このポリシーを有効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトは含められません。
-          このポリシーを無効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトが含められます。
-          このポリシーを未設定のままにした場合、setTimeout() 関数のタイムアウト処理にブラウザのデフォルトの動作を使用します。
-
-          これはウェブ標準に準拠した機能ですが、ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
-
-          このポリシーを未設定のままにした場合、Chorme の Stable チャンネルで段階的に変更が適用されます。
-
-          これは、Chrome 105 で削除が計画されている一時的なポリシーです。企業からのニーズがある場合、この期限は延長される可能性があります。
-          </translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
 <translation id="1813638828646876133">ロック画面とログイン画面で PIN の自動送信を有効にする</translation>
@@ -5776,7 +5761,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       [U2F] を選択した場合は、統合 2 段階認証プロセスが FIDO U2F 仕様に沿って適用されます。
 
       [U2F_EXTENDED] を選択した場合は、統合 2 段階認証プロセスで U2F の機能と個人認証用の拡張機能を使用できます。</translation>
-<translation id="6998179760789945134">Chrome フラグで有効になっていない限り、セキュアでないコンテキストでの WebSQL を無効にする</translation>
 <translation id="6999948519306285655">このポリシーはサポートが終了しています。代わりに <ph name="PROXY_SETTINGS_POLICY_NAME" /> を使用してください。
 
        このポリシーでは、プロキシ .pac ファイルへの URL を指定できます。このポリシーは、<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを指定せずに、<ph name="PROXY_MODE_POLICY_NAME" /> で <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> を選択した場合のみ適用されます。
@@ -6896,6 +6880,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="824818544897669723">ブラウザとダウンロードの履歴の削除を無効にする</translation>
 <translation id="8250048892729838843">このポリシーはサポートを終了しました。このポリシーを有効に設定するか未設定のままにした場合、デバイスで詳細なレポート コントロールを受けることができます。このポリシーを無効に設定した場合、登録済みデバイスは詳細なレポート コントロールを受けません。</translation>
 <translation id="82530263956734297">拒否リストから除外する拡張機能 ID</translation>
+<translation id="8256006033157034334">このポリシーは非推奨で、サポートされていません。代わりに <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> を使用してください。</translation>
 <translation id="8256688113167012935">対応するデバイスのローカル アカウントに対し、ログイン画面でアカウント名 <ph name="PRODUCT_OS_NAME" /> を表示するかどうかを指定します。
 
       このポリシーが設定されている場合、対応するデバイスのローカル アカウントに対し、ログイン画面では画像ベースのログイン選択ツール内で指定の文字列が使用されます。
@@ -7746,9 +7731,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       このポリシーを設定しない場合、どのサイトに対しても自動選択は行われません。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
-<translation id="906349948439898016">セキュアでないコンテキストでの WebSQL は、M105 ではデフォルトで有効になっていますが、Chrome フラグで無効にできます。
-          このポリシーを False に設定するか未設定のままにした場合、セキュアでないコンテキストでの WebSQL を無効にできます。
-          このポリシーを True に設定した場合、WebSQL を無効にすることはできません。</translation>
 <translation id="9068629430243705879">ポート 6566（ブロックの解除は 2021 年 10 月 15 日まで可能）</translation>
 <translation id="9069588907259547232">このポリシーを有効に設定するか未設定のままにした場合、登録済みのデバイスはデバイスの音量を報告します。
 

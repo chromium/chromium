@@ -1428,6 +1428,7 @@
 <translation id="4646534391647090355">立即前往</translation>
 <translation id="4648262692072505866">哈希值格式必须为 SHA-256。</translation>
 <translation id="4652266463001779298">不允许</translation>
+<translation id="4652440160515225514">贵组织已屏蔽此网站，因为它违反了相关政策。</translation>
 <translation id="4653167719759882810">并购</translation>
 <translation id="4658638640878098064">钉装（左上角）</translation>
 <translation id="4660119392514473465">现在，您便可进行私密浏览了。与您共用此设备的其他用户将不会看到您的活动，但您的下载内容、书签和阅读清单项将会保存在此设备上。</translation>
@@ -1681,7 +1682,6 @@
 <translation id="52517543715119994">了解各项 Chrome 功能</translation>
 <translation id="5251803541071282808">云端</translation>
 <translation id="5254043433801397071">优化打印内容</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">仍然截取/录制</translation>
 <translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理员政策不建议将这个文件复制到<ph name="DESTINATION_NAME" />}other{管理员政策不建议将这些文件复制到<ph name="DESTINATION_NAME" />}}</translation>
@@ -2915,6 +2915,7 @@
 <translation id="8437238597147034694">撤消移动(&amp;U)</translation>
 <translation id="8438476240229491014">记住此设置</translation>
 <translation id="8438786541497918448">使用摄像头和麦克风？</translation>
+<translation id="8438923942245957911">贵组织已标记此网站</translation>
 <translation id="8443613539889492016">说唱</translation>
 <translation id="8444543005280733648">计算机网络</translation>
 <translation id="8446884382197647889">了解详情</translation>

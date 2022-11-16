@@ -1449,7 +1449,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Shënim.<ph name="END_BOLD" />  Sistemi do të rindizet gjatë procesit.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
-<translation id="23055578400314116">Zgjidh një emër përdoruesi</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="2307553512430195144">Nëse je dakord, "Asistenti i Google" do të presë në modalitetin e gatishmërisë për të zbuluar “Ok Google” dhe mund të dallojë që është <ph name="SUPERVISED_USER_NAME" /> duke folur me Voice Match.
     <ph name="BR" />
@@ -3435,6 +3434,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4147911968024186208">Provo përsëri. Nëse e shikon përsëri këtë gabim, kontakto me përfaqësuesin e shërbimit të mbështetjes.</translation>
 <translation id="4150201353443180367">Ekrani</translation>
 <translation id="4150569944729499860">Konteksti i ekranit</translation>
+<translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="4154664944169082762">Gjurmë gishtash</translation>
 <translation id="4157869833395312646">Kriptografia e rrethuar e serverit të Microsoft</translation>

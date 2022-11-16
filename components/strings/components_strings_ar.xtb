@@ -1426,6 +1426,7 @@
 <translation id="4646534391647090355">الانتقال الآن</translation>
 <translation id="4648262692072505866">‏يجب أن يكون تنسيق التجزئة SHA-256.</translation>
 <translation id="4652266463001779298">غير مسموح به</translation>
+<translation id="4652440160515225514">حظرت مؤسستك هذا الموقع الإلكتروني لأنه ينتهك إحدى السياسات.</translation>
 <translation id="4653167719759882810">دمج شركات واستحواذ</translation>
 <translation id="4658638640878098064">وضع دبوس أعلى اليسار</translation>
 <translation id="4660119392514473465">يمكنك الآن التصفُّح بخصوصية تامّة، ولن يتمكّن الأشخاص الآخرون الذين يستخدمون هذا الجهاز من الاطّلاع على نشاطك، ولكن سيتم حفظ عمليات التنزيل والإشارات المرجعية وعناصر قائمة القراءة.</translation>
@@ -1679,7 +1680,6 @@
 <translation id="52517543715119994">‏التعرّف على ميزات Chrome</translation>
 <translation id="5251803541071282808">السحابة الإلكترونية</translation>
 <translation id="5254043433801397071">أدوات تحسين أداء محتوى الطباعة</translation>
-<translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">التقاط على أي حال</translation>
 <translation id="5255833070095767006">350 × 460 ملم</translation>
 <translation id="5257739419779698609">{0,plural, =1{لا تنصح سياسة المشرف بنسخ هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنسخ هذين الملفين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
@@ -2912,6 +2912,7 @@
 <translation id="8437238597147034694">تراجع عن ال&amp;نقل</translation>
 <translation id="8438476240229491014">تذكر هذا الإعداد</translation>
 <translation id="8438786541497918448">هل تريد استخدام الكاميرا والميكروفون؟</translation>
+<translation id="8438923942245957911">أبلغت مؤسستك عن هذا الموقع الإلكتروني.</translation>
 <translation id="8443613539889492016">موسيقى "راب" و"هيب هوب"</translation>
 <translation id="8444543005280733648">شبكات كمبيوتر</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
