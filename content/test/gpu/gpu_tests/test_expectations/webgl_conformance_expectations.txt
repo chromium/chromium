@@ -508,7 +508,6 @@ crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_text
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buffers [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm ] conformance/textures/video/* [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
