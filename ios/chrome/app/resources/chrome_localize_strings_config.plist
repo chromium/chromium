@@ -22,6 +22,8 @@
 				<string>IDS_IOS_SAFE_MODE_RELOAD_CHROME</string>
 				<string>IDS_IOS_SAFE_MODE_AW_SNAP</string>
 				<string>IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE</string>
+				<string>IDS_IOS_KEYBOARD_BOOKMARKS</string>
+				<string>IDS_IOS_KEYBOARD_HISTORY</string>
 				<string>IDS_IOS_KEYBOARD_NEW_TAB</string>
 				<string>IDS_IOS_KEYBOARD_NEW_INCOGNITO_TAB</string>
 				<string>IDS_IOS_KEYBOARD_NEW_WINDOW</string>
