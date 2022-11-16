@@ -160,7 +160,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
-  engine_handler->Enable("test");
 
   ASSERT_TRUE(activated_listener.WaitUntilSatisfied()) << message_;
   ASSERT_TRUE(menu_listener.WaitUntilSatisfied()) << message_;
@@ -168,7 +167,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
 
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
       kTestIMEID2, false /* show_message */);
-  engine_handler->Enable("test2");
   ASSERT_TRUE(list_listenter.WaitUntilSatisfied()) << message_;
 }
 

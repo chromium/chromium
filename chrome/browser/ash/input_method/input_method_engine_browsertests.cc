@@ -194,9 +194,6 @@ INSTANTIATE_TEST_SUITE_P(InputMethodEngineComponentExtensionBrowserTest,
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   LoadTestInputMethod();
 
-  InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
-      kIdentityIMEID, false /* show_message */);
-
   std::unique_ptr<ui::MockIMEInputContextHandler> mock_input_context(
       new ui::MockIMEInputContextHandler());
   std::unique_ptr<MockIMECandidateWindowHandler> mock_candidate_window(
@@ -205,15 +202,16 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ui::IMEBridge::Get()->SetInputContextHandler(mock_input_context.get());
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
 
+  // onActivate event should be fired when changing input methods.
+  ExtensionTestMessageListener activated_listener("onActivate");
+  InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
+      kIdentityIMEID, false /* show_message */);
+  ASSERT_TRUE(activated_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(activated_listener.was_satisfied());
+
   ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
-
-  // onActivate event should be fired if Enable function is called.
-  ExtensionTestMessageListener activated_listener("onActivate");
-  engine_handler->Enable("IdentityIME");
-  ASSERT_TRUE(activated_listener.WaitUntilSatisfied());
-  ASSERT_TRUE(activated_listener.was_satisfied());
 
   // onFocus event should be fired if Focus function is called.
   ExtensionTestMessageListener focus_listener(
@@ -265,9 +263,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
   ASSERT_TRUE(blur_listener.WaitUntilSatisfied());
   ASSERT_TRUE(blur_listener.was_satisfied());
 
-  // onDeactivated should be fired if Disable is called.
+  // onDeactivated should be fired when changing input methods.
   ExtensionTestMessageListener disabled_listener("onDeactivated");
-  engine_handler->Disable();
+  InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
+      kAPIArgumentIMEID, false /* show_message */);
   ASSERT_TRUE(disabled_listener.WaitUntilSatisfied());
   ASSERT_TRUE(disabled_listener.was_satisfied());
 
@@ -302,7 +301,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, APIArgumentTest) {
           extension_->id());
   ASSERT_TRUE(host);
 
-  engine_handler->Enable("APIArgumentIME");
   engine_handler->Focus(
       CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT));
 
@@ -1317,8 +1315,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, RestrictedKeyboard) {
           extension_->id());
   ASSERT_TRUE(host);
 
-  engine_handler->Enable("APIArgumentIME");
-
   {
     SCOPED_TRACE("Text");
 
@@ -1418,7 +1414,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, ShouldDoLearning) {
   ui::TextInputMethod* engine_handler =
       ui::IMEBridge::Get()->GetCurrentEngineHandler();
   ASSERT_TRUE(engine_handler);
-  engine_handler->Enable("IdentityIME");
 
   // onFocus event should be fired if Focus function is called.
   ExtensionTestMessageListener focus_listener(
