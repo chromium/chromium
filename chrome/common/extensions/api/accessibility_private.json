@@ -568,6 +568,12 @@
             "name": "keyEvent",
             "$ref": "SyntheticKeyboardEvent",
             "description": "The event to send."
+          },
+          {
+            "name": "useRewriters",
+            "type": "boolean",
+            "description": "If true, uses rewriters for the key event; only allowed if used from Dictation. Otherwise indicates that rewriters should be skipped.",
+            "optional": true
           }
         ]
       },

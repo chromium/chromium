@@ -1306,15 +1306,14 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
 // and ensure that you can't run the Dictation
 // Commands under that feature flag.
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_NavStartTextSimple) {
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextSimple) {
   SendFinalResultAndWaitForEditableValue("Is good", "Is good");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
   SendFinalResultAndWaitForEditableValue("the weather outside",
                                          "the weather outside Is good");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
-                       DISABLED_NavStartTextMultiLineString) {
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
   if (!RunOnMultilineContent())
     return;
 

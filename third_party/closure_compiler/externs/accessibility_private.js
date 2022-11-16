@@ -471,8 +471,11 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * Sends a fabricated key event.
  * @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} keyEvent The
  *     event to send.
+ * @param {boolean=} useRewriters If true, uses rewriters for the key event;
+ *     only allowed if used from Dictation. Otherwise indicates that rewriters
+ *     should be skipped.
  */
-chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent) {};
+chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
 
 /**
  * Enables or disables mouse events in accessibility extensions
