@@ -31,8 +31,7 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // Strings for parsing actions.
 constexpr char kTapAction[] = "tap";
@@ -424,7 +423,7 @@ void TouchInjector::DispatchTouchCancelEvent() {
       VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
                  "stored touch event.";
     }
-    arc::TouchIdManager::GetInstance()->ReleaseTouchID(
+    TouchIdManager::GetInstance()->ReleaseTouchID(
         touch_info.second.rewritten_touch_id);
   }
   rewritten_touch_infos_.clear();
@@ -471,7 +470,7 @@ void TouchInjector::DispatchTouchReleaseEvent() {
       VLOG(0) << "Undispatched event due to destroyed dispatcher for releasing "
                  "stored touch event.";
     }
-    arc::TouchIdManager::GetInstance()->ReleaseTouchID(
+    TouchIdManager::GetInstance()->ReleaseTouchID(
         touch_info.second.rewritten_touch_id);
   }
   rewritten_touch_infos_.clear();
@@ -702,7 +701,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
     // Generate new touch id that we can manage and add to map.
     absl::optional<int> managed_touch_id =
-        arc::TouchIdManager::GetInstance()->ObtainTouchID();
+        TouchIdManager::GetInstance()->ObtainTouchID();
     DCHECK(managed_touch_id);
     TouchPointInfo touch_point = {
         .rewritten_touch_id = *managed_touch_id,
@@ -715,7 +714,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
     absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
     DCHECK(managed_touch_id);
     rewritten_touch_infos_.erase(original_id);
-    arc::TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
+    TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
     return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
                             root_location_f);
   }
@@ -944,5 +943,4 @@ DisplayOverlayController* TouchInjector::GetControllerForTesting() {
   return display_overlay_controller_;
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

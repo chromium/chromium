@@ -15,8 +15,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 // About Json strings.
 constexpr char kMouseAction[] = "mouse_action";
@@ -116,7 +115,6 @@ class InputElement {
   int mouse_flags_ = 0;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_INPUT_ELEMENT_H_

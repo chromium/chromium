@@ -16,8 +16,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // About the whole view.
@@ -159,5 +158,4 @@ void EditFinishView::OnCancelButtonPressed() {
   display_overlay_controller_->OnCustomizeCancel();
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

@@ -12,8 +12,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 int ModifierDomCodeToEventFlag(ui::DomCode code) {
   switch (code) {
@@ -211,5 +210,4 @@ bool InputElement::operator!=(const InputElement& other) const {
   return !(*this == other);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

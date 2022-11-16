@@ -25,8 +25,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 
 // TODO(cuicuiruan): Create test for other device scale.
@@ -1095,5 +1094,4 @@ TEST_F(TouchInjectorTest, TestDeleteAction) {
   EXPECT_TRUE(injector_->actions()[1]->deleted());
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

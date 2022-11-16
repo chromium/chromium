@@ -8,8 +8,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/background.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // UI specs.
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x99);
@@ -109,5 +108,4 @@ void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

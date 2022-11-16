@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace test {
 EventCapturer::EventCapturer() = default;
 EventCapturer::~EventCapturer() = default;
@@ -29,5 +28,4 @@ void EventCapturer::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 }  // namespace test
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

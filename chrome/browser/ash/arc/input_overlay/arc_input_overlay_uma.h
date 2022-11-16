@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 void RecordInputOverlayFeatureState(bool enable);
 
@@ -14,7 +13,6 @@ void RecordInputOverlayMappingHintState(bool enable);
 
 void RecordInputOverlayCustomizedUsage();
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_UMA_H_

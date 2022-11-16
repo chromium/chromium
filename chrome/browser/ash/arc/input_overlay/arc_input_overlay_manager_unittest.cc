@@ -23,7 +23,7 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/views/widget/widget.h"
 
-namespace arc {
+namespace arc::input_overlay {
 namespace {
 // I/O time to wait.
 constexpr base::TimeDelta kIORead = base::Milliseconds(50);
@@ -39,8 +39,7 @@ constexpr const float kTolerance = 0.999f;
 class MockDisplayOverlayController
     : public input_overlay::DisplayOverlayController {
  public:
-  explicit MockDisplayOverlayController(
-      input_overlay::TouchInjector* touch_injector)
+  explicit MockDisplayOverlayController(TouchInjector* touch_injector)
       : DisplayOverlayController(touch_injector, false) {}
   ~MockDisplayOverlayController() override = default;
 
@@ -54,8 +53,7 @@ std::unique_ptr<views::Widget> CreateArcWindowSyncAndWait(
     const gfx::Rect& bounds,
     const std::string& package_name) {
   task_environment->RunUntilIdle();
-  auto window =
-      input_overlay::CreateArcWindow(root_window, bounds, package_name);
+  auto window = CreateArcWindow(root_window, bounds, package_name);
   // I/O takes time here.
   task_environment->FastForwardBy(kIORead);
   return window;
@@ -72,8 +70,7 @@ class TestArcInputOverlayManager : public ArcInputOverlayManager {
 
  private:
   // ArcInputOverlayManager:
-  void AddDisplayOverlayController(
-      input_overlay::TouchInjector* touch_injector) override {
+  void AddDisplayOverlayController(TouchInjector* touch_injector) override {
     DCHECK(registered_top_level_window_);
     DCHECK(touch_injector);
     if (!registered_top_level_window_ || !touch_injector)
@@ -111,7 +108,7 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
         .size();
   }
 
-  input_overlay::TouchInjector* GetTouchInjector(aura::Window* window) {
+  TouchInjector* GetTouchInjector(aura::Window* window) {
     auto it =
         arc_test_input_overlay_manager_->input_overlay_enabled_windows_.find(
             window);
@@ -130,7 +127,7 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
     return arc_test_input_overlay_manager_->key_event_source_rewriter_.get();
   }
 
-  input_overlay::DisplayOverlayController* GetDisplayOverlayController() {
+  DisplayOverlayController* GetDisplayOverlayController() {
     return arc_test_input_overlay_manager_->display_overlay_controller_.get();
   }
 
@@ -184,9 +181,9 @@ TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
 TEST_F(ArcInputOverlayManagerTest, TestWindowDestroyNoWait) {
   // This test is to check UAF issue reported in crbug.com/1363030.
   task_environment()->RunUntilIdle();
-  auto arc_window = input_overlay::CreateArcWindow(
-      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
-      kEnabledPackageName);
+  auto arc_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
   const auto* arc_window_ptr = arc_window->GetNativeWindow();
 
   // Destroy window before finishing I/O reading. The window can't be destroyed
@@ -284,7 +281,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // window.
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   task_environment()->RunUntilIdle();
-  auto arc_window = input_overlay::CreateArcWindow(
+  auto arc_window = CreateArcWindow(
       root_windows[1], gfx::Rect(1010, 910, 100, 100), kEnabledPackageName);
   arc_window->GetNativeWindow()->SetBoundsInScreen(
       gfx::Rect(1010, 910, 100, 100), display1);
@@ -300,7 +297,7 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // receive simulated touch events on the secondary window.
   auto event_generator =
       std::make_unique<ui::test::EventGenerator>(root_windows[0]);
-  input_overlay::test::EventCapturer event_capturer;
+  test::EventCapturer event_capturer;
   root_windows[1]->AddPostTargetHandler(&event_capturer);
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer.key_events().empty());
@@ -468,9 +465,9 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   arc_app_test.app_instance()->set_app_category_of_pkg(
       kRandomGamePackageName, arc::mojom::AppCategory::kGame);
   task_environment()->RunUntilIdle();
-  auto game_window = input_overlay::CreateArcWindow(
-      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
-      kRandomGamePackageName);
+  auto game_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
   exo::SetShellApplicationId(
       game_window->GetNativeWindow(),
       base::StringPrintf("org.chromium.arc.%d", task_id));
@@ -483,17 +480,17 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   EnableBetaFlag();
   // Create an app with default mapping.
   task_environment()->RunUntilIdle();
-  auto mapped_window = input_overlay::CreateArcWindow(
-      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
-      kEnabledPackageName);
+  auto mapped_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kEnabledPackageName);
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(mapped_window->GetNativeWindow());
   EXPECT_TRUE(injector);
   // Create a random non-game app.
   task_environment()->RunUntilIdle();
-  auto app_window = input_overlay::CreateArcWindow(
-      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
-      kRandomPackageName);
+  auto app_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomPackageName);
   task_environment()->FastForwardBy(kIORead);
   injector = GetTouchInjector(app_window->GetNativeWindow());
   EXPECT_FALSE(injector);
@@ -504,9 +501,9 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   arc_app_test.app_instance()->set_app_category_of_pkg(
       kRandomGamePackageName, arc::mojom::AppCategory::kGame);
   task_environment()->RunUntilIdle();
-  game_window = input_overlay::CreateArcWindow(
-      ash::Shell::GetPrimaryRootWindow(), gfx::Rect(10, 10, 100, 100),
-      kRandomGamePackageName);
+  game_window =
+      CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                      gfx::Rect(10, 10, 100, 100), kRandomGamePackageName);
   exo::SetShellApplicationId(
       game_window->GetNativeWindow(),
       base::StringPrintf("org.chromium.arc.%d", task_id));
@@ -516,4 +513,4 @@ TEST_F(ArcInputOverlayManagerTest, TestFeatureAvailability) {
   arc_app_test.TearDown();
 }
 
-}  // namespace arc
+}  // namespace arc::input_overlay

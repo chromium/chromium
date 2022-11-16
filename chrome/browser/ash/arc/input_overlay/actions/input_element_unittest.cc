@@ -7,8 +7,7 @@
 #include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 class InputElementTest : public testing::Test {
  protected:
@@ -32,5 +31,4 @@ TEST(InputElementTest, TestInputElementEquality) {
   EXPECT_FALSE(*tap_primary_click1 == *tap_secondary_click);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

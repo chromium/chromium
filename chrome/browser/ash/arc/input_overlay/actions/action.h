@@ -26,8 +26,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 constexpr char kKeyboard[] = "keyboard";
 constexpr char kMouse[] = "mouse";
@@ -237,7 +236,6 @@ class Action {
   bool beta_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_

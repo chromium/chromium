@@ -12,8 +12,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
  public:
@@ -72,5 +71,4 @@ TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
   EXPECT_EQ(updated_bounds, new_bounds);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

@@ -10,8 +10,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/aura/window.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 // UI specs.
 constexpr int kActionMoveMinRadius = 99;
 
@@ -124,7 +123,6 @@ class ActionMove : public Action {
   std::vector<std::unique_ptr<Position>> target_area_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_MOVE_H_

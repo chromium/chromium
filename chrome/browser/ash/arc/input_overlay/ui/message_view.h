@@ -10,8 +10,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "ui/views/controls/label.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 class DisplayOverlayController;
 
 // MessageView shows info or error message on the top center of the window.
@@ -38,7 +37,6 @@ class MessageView : public views::LabelButton {
   std::unique_ptr<ash::ViewShadow> view_shadow_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_MESSAGE_VIEW_H_

@@ -9,8 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 // ActionTap transform key/mouse events to touch events.
 class ActionTap : public Action {
  public:
@@ -80,7 +79,6 @@ class ActionTap : public Action {
                          std::list<ui::TouchEvent>& rewritten_events);
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_H_

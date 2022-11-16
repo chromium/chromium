@@ -26,9 +26,8 @@ namespace ash {
 class PillButton;
 }  // namespace ash
 
-namespace arc {
+namespace arc::input_overlay {
 class ArcInputOverlayManagerTest;
-namespace input_overlay {
 class TouchInjector;
 class InputMappingView;
 class InputMenuView;
@@ -94,7 +93,7 @@ class DisplayOverlayController : public ui::EventHandler,
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
  private:
-  friend class ::arc::ArcInputOverlayManagerTest;
+  friend class ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
   friend class EducationalView;
   friend class InputMenuView;
@@ -177,7 +176,6 @@ class DisplayOverlayController : public ui::EventHandler,
   DisplayMode display_mode_ = DisplayMode::kNone;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_

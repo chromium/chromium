@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 // Display mode for display overlay.
 enum class DisplayMode {
@@ -68,7 +67,6 @@ enum class PositionType {
   kDependent = 1,
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_

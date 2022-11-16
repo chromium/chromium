@@ -14,8 +14,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button_factory.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 constexpr int kMenuEntryOffset = 4;
 
@@ -308,5 +307,4 @@ void ActionView::ChangePositionBinding(const gfx::Point& new_touch_center) {
   action_->PrepareToBindPosition(new_touch_center);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

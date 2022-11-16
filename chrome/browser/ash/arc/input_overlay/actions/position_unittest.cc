@@ -9,8 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // Epsilon value used to compare float values to zero.
@@ -541,5 +540,4 @@ TEST(PositionTest, TestProtoConversion) {
                       gfx::Vector2dF(0.5, 0.5));
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

@@ -16,8 +16,7 @@
 #undef ENABLED_VLOG_LEVEL
 #define ENABLED_VLOG_LEVEL 1
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // Json strings.
 constexpr char kID[] = "id";
@@ -610,5 +609,4 @@ void Action::CreateTouchEvent(ui::EventType type,
       .set_target(touch_injector_->window());
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

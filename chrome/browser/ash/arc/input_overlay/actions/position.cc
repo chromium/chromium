@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // Key strings in the Json file.
 constexpr char kAnchor[] = "anchor";
@@ -267,5 +266,4 @@ bool Position::operator!=(const Position& other) const {
   return !(*this == other);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

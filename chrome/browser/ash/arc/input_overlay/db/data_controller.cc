@@ -14,8 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 
 // Base directory for saving customized data in the user profile.
@@ -99,5 +98,4 @@ void DataController::CreateEmptyFile(base::FilePath file_path) {
   base::CloseFile(file);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

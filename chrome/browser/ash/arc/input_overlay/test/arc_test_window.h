@@ -9,8 +9,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_helper.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace test {
 
 // ArcTestWindow creates window with exo/surface.
@@ -34,7 +33,6 @@ class ArcTestWindow {
 };
 
 }  // namespace test
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_ARC_TEST_WINDOW_H_

@@ -34,8 +34,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/widget/widget.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // UI specs.
@@ -721,5 +720,4 @@ void DisplayOverlayController::DismissEducationalViewForTesting() {
   OnEducationalViewDismissed();
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

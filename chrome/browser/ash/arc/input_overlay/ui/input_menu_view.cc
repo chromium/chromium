@@ -40,9 +40,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
 
-namespace arc {
-
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // If the parent's width smaller than |kParentWidthThreshold|, it uses smaller
@@ -454,6 +452,4 @@ void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
       ash::AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
 }
 
-}  // namespace input_overlay
-
-}  // namespace arc
+}  // namespace arc::input_overlay

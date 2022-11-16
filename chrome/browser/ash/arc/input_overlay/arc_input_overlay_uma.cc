@@ -6,8 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 void RecordInputOverlayFeatureState(bool enable) {
   base::UmaHistogramBoolean("Arc.InputOverlay.FeatureState", enable);
@@ -21,5 +20,4 @@ void RecordInputOverlayCustomizedUsage() {
   base::UmaHistogramBoolean("Arc.InputOverlay.Customized", true);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

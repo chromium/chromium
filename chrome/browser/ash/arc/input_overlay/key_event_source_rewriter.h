@@ -17,7 +17,7 @@ namespace ui {
 class EventSource;
 }  // namespace ui
 
-namespace arc {
+namespace arc::input_overlay {
 // KeyEventSourceRewriter forwards the key event from primary root window to
 // the extended root window event source when the input-overlay enabled window
 // is on the extended display.
@@ -40,6 +40,6 @@ class KeyEventSourceRewriter : public ui::EventRewriter {
   raw_ptr<aura::Window> top_level_window_;
 };
 
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_KEY_EVENT_SOURCE_REWRITER_H_

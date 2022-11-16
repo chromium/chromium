@@ -33,9 +33,7 @@ class ToggleButton;
 //   | Send feedback                   |
 //   +---------------------------------+
 
-namespace arc {
-
-namespace input_overlay {
+namespace arc::input_overlay {
 class DisplayOverlayController;
 class InputMenuView : public views::View {
  public:
@@ -87,7 +85,6 @@ class InputMenuView : public views::View {
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_INPUT_MENU_VIEW_H_

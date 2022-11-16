@@ -8,8 +8,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace test {
 
 // EventCapturer captures events of different types for unit tests.
@@ -43,7 +42,6 @@ class EventCapturer : public ui::EventHandler {
   std::vector<std::unique_ptr<ui::MouseEvent>> mouse_events_;
 };
 }  // namespace test
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TEST_EVENT_CAPTURER_H_

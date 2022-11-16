@@ -14,8 +14,7 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 constexpr char kFontStyle[] = "Roboto";
 constexpr int kFontSize = 16;
@@ -209,5 +208,4 @@ void ActionEditMenu::OnResetButtonPressed() {
   display_overlay_controller_->RemoveActionEditMenu();
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

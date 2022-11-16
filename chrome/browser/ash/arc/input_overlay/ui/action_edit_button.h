@@ -7,8 +7,7 @@
 
 #include "ui/views/controls/button/image_button.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 // ActionEditButton is menu entry for editing each action.
 class ActionEditButton : public views::ImageButton {
@@ -22,7 +21,6 @@ class ActionEditButton : public views::ImageButton {
   class CircleBackground;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_EDIT_BUTTON_H_

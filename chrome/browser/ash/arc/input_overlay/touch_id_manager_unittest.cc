@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace arc {
+namespace arc::input_overlay {
 
 class TouchIdManagerTest : public testing::Test {
  protected:
@@ -66,4 +66,4 @@ TEST_F(TouchIdManagerTest, TestIdManage) {
   EXPECT_TRUE(IsTouchIDsEqual(0));
 }
 
-}  // namespace arc
+}  // namespace arc::input_overlay

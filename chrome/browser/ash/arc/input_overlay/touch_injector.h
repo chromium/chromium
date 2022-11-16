@@ -25,9 +25,8 @@ namespace ui {
 class EventSource;
 }  // namespace ui
 
-namespace arc {
+namespace arc::input_overlay {
 class ArcInputOverlayManagerTest;
-namespace input_overlay {
 class DisplayOverlayController;
 class Action;
 
@@ -162,7 +161,7 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
-  friend class ::arc::ArcInputOverlayManagerTest;
+  friend class ArcInputOverlayManagerTest;
   friend class TouchInjectorTest;
 
   struct TouchPointInfo {
@@ -309,7 +308,6 @@ class TouchInjector : public ui::EventRewriter {
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_

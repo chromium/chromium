@@ -11,8 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/views/controls/button/label_button.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 constexpr char kUnknownBind[] = "?";
 
@@ -70,7 +69,6 @@ class ActionLabel : public views::LabelButton {
 
   MouseAction mouse_action_ = MouseAction::NONE;
 };
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_LABEL_H_

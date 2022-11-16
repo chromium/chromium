@@ -31,7 +31,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
 
-namespace arc {
+namespace arc::input_overlay {
 namespace {
 
 // Singleton factory for ArcInputOverlayManager.
@@ -101,7 +101,7 @@ ArcInputOverlayManager* ArcInputOverlayManager::GetForBrowserContext(
 
 ArcInputOverlayManager::ArcInputOverlayManager(
     content::BrowserContext* browser_context,
-    ArcBridgeService* arc_bridge_service)
+    ::arc::ArcBridgeService* arc_bridge_service)
     : input_method_observer_(std::make_unique<InputMethodObserver>(this)) {
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
@@ -125,16 +125,17 @@ ArcInputOverlayManager::ArcInputOverlayManager(
   // For test. The unittest is based on ExoTestBase which must run on
   // Chrome_UIThread. While TestingProfileManager::CreateTestingProfile runs on
   // MainThread.
-  if (browser_context)
-    data_controller_ = std::make_unique<input_overlay::DataController>(
-        *browser_context, task_runner_);
+  if (browser_context) {
+    data_controller_ =
+        std::make_unique<DataController>(*browser_context, task_runner_);
+  }
 }
 
 ArcInputOverlayManager::~ArcInputOverlayManager() = default;
 
 void ArcInputOverlayManager::ReadData(const std::string& package_name,
                                       aura::Window* top_level_window) {
-  auto touch_injector = std::make_unique<input_overlay::TouchInjector>(
+  auto touch_injector = std::make_unique<TouchInjector>(
       top_level_window,
       base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -148,10 +149,9 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
                      Unretained(this), package_name));
 }
 
-std::unique_ptr<input_overlay::TouchInjector>
-ArcInputOverlayManager::ReadDefaultData(
+std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     const std::string& package_name,
-    std::unique_ptr<input_overlay::TouchInjector> touch_injector) {
+    std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
 
   auto resource_id = GetInputOverlayResourceId(package_name);
@@ -176,7 +176,7 @@ ArcInputOverlayManager::ReadDefaultData(
 
 void ArcInputOverlayManager::OnFinishReadDefaultData(
     const std::string& package_name,
-    std::unique_ptr<input_overlay::TouchInjector> touch_injector) {
+    std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
 
   if (touch_injector->actions().empty()) {
@@ -217,7 +217,7 @@ void ArcInputOverlayManager::OnFinishReadDefaultData(
 }
 
 void ArcInputOverlayManager::OnReceiveAppCategory(
-    std::unique_ptr<input_overlay::TouchInjector> touch_injector,
+    std::unique_ptr<TouchInjector> touch_injector,
     arc::mojom::AppCategory category) {
   VLOG(2) << "ARC app category is: " << category;
   if (category != arc::mojom::AppCategory::kGame) {
@@ -235,7 +235,7 @@ void ArcInputOverlayManager::OnReceiveAppCategory(
   RegisterFocusedWindow();
 }
 
-std::unique_ptr<input_overlay::AppDataProto> ArcInputOverlayManager::GetProto(
+std::unique_ptr<AppDataProto> ArcInputOverlayManager::GetProto(
     const std::string& package_name) {
   // |data_controller_| is null for test.
   return data_controller_ ? data_controller_->ReadProtoFromFile(package_name)
@@ -243,8 +243,8 @@ std::unique_ptr<input_overlay::AppDataProto> ArcInputOverlayManager::GetProto(
 }
 
 void ArcInputOverlayManager::OnProtoDataAvailable(
-    std::unique_ptr<input_overlay::TouchInjector> touch_injector,
-    std::unique_ptr<input_overlay::AppDataProto> proto) {
+    std::unique_ptr<TouchInjector> touch_injector,
+    std::unique_ptr<AppDataProto> proto) {
   DCHECK(touch_injector);
 
   if (proto) {
@@ -270,7 +270,7 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
 }
 
 void ArcInputOverlayManager::OnSaveProtoFile(
-    std::unique_ptr<input_overlay::AppDataProto> proto,
+    std::unique_ptr<AppDataProto> proto,
     const std::string& package_name) {
   task_runner_->PostTask(
       FROM_HERE,
@@ -278,9 +278,8 @@ void ArcInputOverlayManager::OnSaveProtoFile(
                      std::move(proto), package_name));
 }
 
-void ArcInputOverlayManager::SaveFile(
-    std::unique_ptr<input_overlay::AppDataProto> proto,
-    const std::string& package_name) {
+void ArcInputOverlayManager::SaveFile(std::unique_ptr<AppDataProto> proto,
+                                      const std::string& package_name) {
   if (data_controller_)
     data_controller_->WriteProtoToFile(std::move(proto), package_name);
 }
@@ -362,16 +361,15 @@ void ArcInputOverlayManager::RegisterFocusedWindow() {
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(
-    input_overlay::TouchInjector* touch_injector) {
+    TouchInjector* touch_injector) {
   DCHECK(registered_top_level_window_);
   DCHECK(touch_injector);
   if (!registered_top_level_window_ || !touch_injector)
     return;
   DCHECK(!display_overlay_controller_);
 
-  display_overlay_controller_ =
-      std::make_unique<input_overlay::DisplayOverlayController>(
-          touch_injector, touch_injector->first_launch());
+  display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
+      touch_injector, touch_injector->first_launch());
 }
 
 void ArcInputOverlayManager::RemoveDisplayOverlayController() {
@@ -522,9 +520,9 @@ void ArcInputOverlayManager::OnDisplayMetricsChanged(
 }
 
 void ArcInputOverlayManager::ResetForPendingTouchInjector(
-    std::unique_ptr<input_overlay::TouchInjector> touch_injector) {
+    std::unique_ptr<TouchInjector> touch_injector) {
   loading_data_windows_.erase(touch_injector->window());
   touch_injector.reset();
 }
 
-}  // namespace arc
+}  // namespace arc::input_overlay

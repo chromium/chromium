@@ -20,8 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // UI specs.
 constexpr int kSideInset = 6;
@@ -388,5 +387,4 @@ bool ActionLabel::IsInputUnbound() {
   return base::UTF16ToUTF8(GetText()) == kUnknownBind;
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

@@ -12,8 +12,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // UI specs.
@@ -110,5 +109,4 @@ void MessageView::AddShadow() {
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

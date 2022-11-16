@@ -14,8 +14,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 // Returns true if there is no value of |key| or there is positive value of the
 // |key|.
@@ -127,7 +126,6 @@ class Position {
   absl::optional<float> aspect_ratio_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_

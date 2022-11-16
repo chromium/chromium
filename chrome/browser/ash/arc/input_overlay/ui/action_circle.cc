@@ -10,8 +10,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 constexpr SkColor kViewColor = SK_ColorTRANSPARENT;
 constexpr SkColor kEditDefaultColor = SkColorSetA(SK_ColorWHITE, 0x80);
@@ -77,5 +76,4 @@ void ActionCircle::SetDisplayMode(DisplayMode mode) {
   current_mode_ = mode;
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

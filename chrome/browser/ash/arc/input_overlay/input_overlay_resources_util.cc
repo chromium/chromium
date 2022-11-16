@@ -8,7 +8,7 @@
 
 #include "components/arc/grit/input_overlay_resources.h"
 
-namespace arc {
+namespace arc::input_overlay {
 
 absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
   std::map<std::string, int> resource_id_map = {
@@ -57,4 +57,4 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
                                        : absl::optional<int>();
 }
 
-}  // namespace arc
+}  // namespace arc::input_overlay

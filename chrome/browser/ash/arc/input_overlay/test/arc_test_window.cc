@@ -9,8 +9,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/screen.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace test {
 
 ArcTestWindow::ArcTestWindow(exo::test::ExoTestHelper* helper,
@@ -46,5 +45,4 @@ void ArcTestWindow::SetBounds(display::Display& display, gfx::Rect bounds) {
 }
 
 }  // namespace test
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

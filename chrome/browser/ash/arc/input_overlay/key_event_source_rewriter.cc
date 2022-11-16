@@ -9,7 +9,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event_source.h"
 
-namespace arc {
+namespace arc::input_overlay {
 
 KeyEventSourceRewriter::KeyEventSourceRewriter(aura::Window* top_level_window)
     : top_level_window_{top_level_window} {
@@ -28,4 +28,4 @@ ui::EventDispatchDetails KeyEventSourceRewriter::RewriteEvent(
   return root_window->GetHost()->GetEventSource()->SendEventToSink(&event);
 }
 
-}  // namespace arc
+}  // namespace arc::input_overlay

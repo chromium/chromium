@@ -15,8 +15,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // UI specs.
 constexpr SkColor kBackgroundColor = gfx::kGoogleGrey200;
@@ -71,5 +70,4 @@ ActionEditButton::ActionEditButton(PressedCallback callback)
 
 ActionEditButton::~ActionEditButton() = default;
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

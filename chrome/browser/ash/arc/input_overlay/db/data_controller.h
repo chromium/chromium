@@ -10,8 +10,7 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "content/public/browser/browser_context.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 class DataController {
  public:
@@ -43,7 +42,6 @@ class DataController {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DB_DATA_CONTROLLER_H_

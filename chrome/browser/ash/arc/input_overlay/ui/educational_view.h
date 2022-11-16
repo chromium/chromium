@@ -15,8 +15,7 @@ namespace ash {
 class PillButton;
 }  // namespace ash
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 class DisplayOverlayController;
 
 // Educational view that is displayed on the first run per app/game, it contains
@@ -50,7 +49,6 @@ class EducationalView : public views::View {
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 };
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDUCATIONAL_VIEW_H_

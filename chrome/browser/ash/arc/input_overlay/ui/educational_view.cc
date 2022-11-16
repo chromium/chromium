@@ -26,8 +26,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/flex_layout.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 namespace {
 // Full view size.
@@ -284,5 +283,4 @@ void EducationalView::OnAcceptedPressed() {
   display_overlay_controller_->OnEducationalViewDismissed();
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay

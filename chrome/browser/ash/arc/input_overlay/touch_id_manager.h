@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace arc {
+namespace arc::input_overlay {
 
 // TouchIdManager manages the touch id for input overlay feature.
 class TouchIdManager {
@@ -40,6 +40,6 @@ class TouchIdManager {
   int touch_ids_ = 0;
 };
 
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_

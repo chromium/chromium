@@ -17,8 +17,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 
 class Action;
 class DisplayOverlayController;
@@ -154,7 +153,6 @@ class ActionView : public views::View {
   bool beta_;
 };
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_ACTION_VIEW_H_

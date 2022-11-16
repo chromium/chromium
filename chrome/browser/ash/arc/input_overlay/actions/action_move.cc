@@ -18,8 +18,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace arc {
-namespace input_overlay {
+namespace arc::input_overlay {
 namespace {
 // About Json strings.
 constexpr char kKeys[] = "keys";
@@ -609,5 +608,4 @@ std::unique_ptr<ActionProto> ActionMove::ConvertToProtoIfCustomized() const {
   return action_proto;
 }
 
-}  // namespace input_overlay
-}  // namespace arc
+}  // namespace arc::input_overlay
