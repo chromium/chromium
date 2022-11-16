@@ -31,6 +31,10 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public abstract class CronetEngine {
     private static final String TAG = CronetEngine.class.getSimpleName();
+    /**
+     * The value of the active request count is unknown
+     */
+    public static final int ACTIVE_REQUEST_COUNT_UNKNOWN = -1;
 
     /**
      * The value of a connection metric is unknown.
@@ -604,6 +608,25 @@ public abstract class CronetEngine {
      */
     public abstract UrlRequest.Builder newUrlRequestBuilder(
             String url, UrlRequest.Callback callback, Executor executor);
+
+    /**
+     * Returns the number of in-flight requests.
+     * <p>
+     * A request is in-flight if its start() method has been called but it hasn't reached a final
+     * state yet. A request reaches the final state when one of the following callbacks has been
+     * called:
+     * <ul>
+     *    <li>onSucceeded</li>
+     *    <li>onCanceled</li>
+     *    <li>onFailed</li>
+     * </ul>
+     *
+     * <a href="https://developer.android.com/guide/topics/connectivity/cronet/lifecycle">Cronet
+     *         requests's lifecycle</a> for more information.
+     */
+    public int getActiveRequestCount() {
+        return ACTIVE_REQUEST_COUNT_UNKNOWN;
+    }
 
     /**
      * Creates a builder for {@link BidirectionalStream} objects. All callbacks for generated {@code

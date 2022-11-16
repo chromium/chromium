@@ -319,6 +319,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return "Cronet/" + ImplVersion.getCronetVersionWithLastChange();
     }
 
+    @Override
+    public int getActiveRequestCount() {
+        return mActiveRequestCount.get();
+    }
+
     private CronetVersion buildCronetVersion() {
         String version = getVersionString();
         // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares

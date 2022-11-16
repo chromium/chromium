@@ -198,6 +198,11 @@ public final class JavaCronetEngine extends CronetEngineBase {
     }
 
     @Override
+    public int getActiveRequestCount() {
+        return mActiveRequestCount.get();
+    }
+
+    @Override
     public void bindToNetwork(long networkHandle) {
         throw new UnsupportedOperationException(
                 "The multi-network API is not supported by the Java implementation "

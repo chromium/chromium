@@ -263,6 +263,13 @@ final class FakeCronetEngine extends CronetEngineBase {
     }
 
     @Override
+    public int getActiveRequestCount() {
+        synchronized (mLock) {
+            return mActiveRequestCount;
+        }
+    }
+
+    @Override
     protected ExperimentalBidirectionalStream createBidirectionalStream(String url,
             BidirectionalStream.Callback callback, Executor executor, String httpMethod,
             List<Map.Entry<String, String>> requestHeaders, @StreamPriority int priority,
