@@ -72,6 +72,7 @@ constexpr char kTestDomain[] = "EXAMPLE.COM";
 constexpr char kSharePath[] = "\\\\server\\foobar";
 constexpr char kSharePath2[] = "\\\\server2\\second_share";
 constexpr char kShareUrl[] = "smb://server/foobar";
+constexpr char kInvalidShareUrl[] = "smb://server";
 constexpr char kDisplayName[] = "My Share";
 constexpr char kMountPath[] = "/share/mount/path";
 constexpr char kMountPath2[] = "/share/mount/second_path";
@@ -572,7 +573,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_ActiveDirectory) {
   EXPECT_TRUE(info->use_kerberos());
 }
 
-TEST_F(SmbServiceWithSmbfsTest, PreconfiguredMount) {
+TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
   const char kPremountPath[] = "smb://preconfigured/share";
   const char kPreconfiguredShares[] =
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
@@ -619,6 +620,27 @@ TEST_F(SmbServiceWithSmbfsTest, PreconfiguredMount) {
                 smbfs_delegate_remote.BindNewPipeAndPassReceiver()));
         run_loop.Quit();
       });
+
+  run_loop.Run();
+}
+
+TEST_F(SmbServiceWithSmbfsTest, MountInvalidPreconfigured) {
+  const char kPreconfiguredShares[] =
+      R"([{"mode":"pre_mount","share_url":"\\\\preconfigured"}])";
+  auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
+  ASSERT_TRUE(parsed_shares);
+  profile_->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
+                            *parsed_shares);
+
+  CreateService(profile_);
+
+  base::RunLoop run_loop;
+  smb_service_->SetRestoredShareMountDoneCallbackForTesting(
+      base::BindLambdaForTesting([&run_loop](SmbMountResult mount_result,
+                                             const base::FilePath& mount_path) {
+        EXPECT_EQ(mount_result, SmbMountResult::kInvalidUrl);
+        run_loop.Quit();
+      }));
 
   run_loop.Run();
 }
@@ -695,6 +717,29 @@ TEST_F(SmbServiceWithSmbfsTest, MountSaved) {
   absl::optional<SmbShareInfo> info = registry.Get(SmbUrl(kShareUrl));
   EXPECT_FALSE(info);
   EXPECT_TRUE(registry.GetAll().empty());
+}
+
+TEST_F(SmbServiceWithSmbfsTest, MountInvalidSaved) {
+  const std::vector<uint8_t> kSalt = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  // Save an (invalid) share in profile. This can't occur in practice.
+  {
+    SmbPersistedShareRegistry registry(profile_);
+    SmbShareInfo info(SmbUrl(kInvalidShareUrl), kDisplayName, kTestUser,
+                      kTestDomain, /*use_kerberos=*/false, kSalt);
+    registry.Save(info);
+  }
+
+  CreateService(profile_);
+
+  base::RunLoop run_loop;
+  smb_service_->SetRestoredShareMountDoneCallbackForTesting(
+      base::BindLambdaForTesting([&run_loop](SmbMountResult mount_result,
+                                             const base::FilePath& mount_path) {
+        EXPECT_EQ(mount_result, SmbMountResult::kInvalidUrl);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
 }
 
 TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {

@@ -319,7 +319,7 @@ void SmbService::Mount(const std::string& display_name,
   SmbShareInfo info(parsed_url, display_name, username, workgroup, use_kerberos,
                     salt);
   MountInternal(info, password, save_credentials, false /* skip_connect */,
-                base::BindOnce(&SmbService::MountInternalDone,
+                base::BindOnce(&SmbService::OnUserInitiatedMountDone,
                                base::Unretained(this), std::move(callback),
                                info, should_open_file_manager_after_mount));
 
@@ -327,11 +327,12 @@ void SmbService::Mount(const std::string& display_name,
                                   share_path.value());
 }
 
-void SmbService::MountInternalDone(MountResponse callback,
-                                   const SmbShareInfo& info,
-                                   bool should_open_file_manager_after_mount,
-                                   SmbMountResult result,
-                                   const base::FilePath& mount_path) {
+void SmbService::OnUserInitiatedMountDone(
+    MountResponse callback,
+    const SmbShareInfo& info,
+    bool should_open_file_manager_after_mount,
+    SmbMountResult result,
+    const base::FilePath& mount_path) {
   if (result != SmbMountResult::kSuccess) {
     std::move(callback).Run(result);
     return;
@@ -464,15 +465,24 @@ void SmbService::OnHostsDiscovered(
   }
 }
 
+void SmbService::SetRestoredShareMountDoneCallbackForTesting(
+    MountInternalCallback callback) {
+  restored_share_mount_done_callback_ = std::move(callback);
+}
+
 void SmbService::MountSavedSmbfsShare(const SmbShareInfo& info) {
   MountInternal(
       info, "" /* password */, true /* save_credentials */,
       true /* skip_connect */,
-      base::BindOnce(
-          [](SmbMountResult result, const base::FilePath& mount_path) {
-            LOG_IF(ERROR, result != SmbMountResult::kSuccess)
-                << "Error restoring saved share: " << static_cast<int>(result);
-          }));
+      restored_share_mount_done_callback_.is_null()
+          ? base::BindOnce(&SmbService::OnMountSavedSmbfsShareDone, AsWeakPtr())
+          : std::move(restored_share_mount_done_callback_));
+}
+
+void SmbService::OnMountSavedSmbfsShareDone(SmbMountResult result,
+                                            const base::FilePath& mount_path) {
+  LOG_IF(ERROR, result != SmbMountResult::kSuccess)
+      << "Error restoring saved share: " << static_cast<int>(result);
 }
 
 void SmbService::MountPreconfiguredShare(const SmbUrl& share_url) {
@@ -481,10 +491,12 @@ void SmbService::MountPreconfiguredShare(const SmbUrl& share_url) {
   // Note: Preconfigured shares are mounted without credentials.
   SmbShareInfo info(share_url, display_name, "" /* username */,
                     "" /* workgroup */, false /* use_kerberos */);
-  MountInternal(
-      info, "" /* password */, false /* save_credentials */,
-      true /* skip_connect */,
-      base::BindOnce(&SmbService::OnMountPreconfiguredShareDone, AsWeakPtr()));
+  MountInternal(info, "" /* password */, false /* save_credentials */,
+                true /* skip_connect */,
+                restored_share_mount_done_callback_.is_null()
+                    ? base::BindOnce(&SmbService::OnMountPreconfiguredShareDone,
+                                     AsWeakPtr())
+                    : std::move(restored_share_mount_done_callback_));
 }
 
 void SmbService::OnMountPreconfiguredShareDone(
