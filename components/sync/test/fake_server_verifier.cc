@@ -50,9 +50,7 @@ AssertionResult VerifySessionsHierarchyEquality(
                             << "; Expected contents: " << expected.ToString();
 }
 
-// Caller maintains ownership of |entities|.
-string ConvertFakeServerContentsToString(
-    const base::DictionaryValue& entities) {
+string ConvertFakeServerContentsToString(const base::Value::Dict& entities) {
   string entities_str;
   if (!JSONWriter::WriteWithOptions(entities, JSONWriter::OPTIONS_PRETTY_PRINT,
                                     &entities_str)) {
@@ -71,16 +69,14 @@ FakeServerVerifier::~FakeServerVerifier() = default;
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,
     syncer::ModelType model_type) const {
-  std::unique_ptr<base::DictionaryValue> entities =
-      fake_server_->GetEntitiesAsDictionaryValue();
+  std::unique_ptr<base::Value::Dict> entities =
+      fake_server_->GetEntitiesAsDict();
   if (!entities) {
     return DictionaryCreationAssertionFailure();
   }
-  base::DictAdapterForMigration entities_dict =
-      base::DictAdapterForMigration(*entities);
   string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list;
-  entity_list = entities_dict.FindList(model_type_string);
+  const base::Value::List* entity_list = entities->FindList(model_type_string);
+  DCHECK(entity_list);
   if (expected_count != entity_list->size()) {
     return VerificationCountAssertionFailure(entity_list->size(),
                                              expected_count)
@@ -95,18 +91,14 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     size_t expected_count,
     syncer::ModelType model_type,
     const string& name) const {
-  std::unique_ptr<base::DictionaryValue> entities =
-      fake_server_->GetEntitiesAsDictionaryValue();
+  std::unique_ptr<base::Value::Dict> entities =
+      fake_server_->GetEntitiesAsDict();
   if (!entities) {
     return DictionaryCreationAssertionFailure();
   }
 
-  base::DictAdapterForMigration entities_dict =
-      base::DictAdapterForMigration(*entities);
-
   string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list;
-  entity_list = entities_dict.FindList(model_type_string);
+  const base::Value::List* entity_list = entities->FindList(model_type_string);
   size_t actual_count = 0;
   base::Value name_value(name);
 

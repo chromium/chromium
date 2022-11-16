@@ -136,15 +136,12 @@ void ClearSyncServerData() {
 }
 
 int GetNumberOfSyncEntities(syncer::ModelType type) {
-  std::unique_ptr<base::DictionaryValue> entities =
-      gSyncFakeServer->GetEntitiesAsDictionaryValue();
+  std::unique_ptr<base::Value::Dict> entities =
+      gSyncFakeServer->GetEntitiesAsDict();
 
-  std::string model_type_string = ModelTypeToDebugString(type);
-  base::ListValue* entity_list = NULL;
-  if (!entities->GetList(model_type_string, &entity_list)) {
-    return 0;
-  }
-  return entity_list->GetListDeprecated().size();
+  base::Value::List* entity_list =
+      entities->FindList(ModelTypeToDebugString(type));
+  return entity_list ? static_cast<int>(entity_list->size()) : 0;
 }
 
 BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,

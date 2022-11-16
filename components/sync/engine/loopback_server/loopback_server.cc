@@ -792,17 +792,14 @@ LoopbackServer::GetPermanentSyncEntitiesByModelType(ModelType model_type) {
   return sync_entities;
 }
 
-std::unique_ptr<base::DictionaryValue>
-LoopbackServer::GetEntitiesAsDictionaryValue() {
+std::unique_ptr<base::Value::Dict> LoopbackServer::GetEntitiesAsDict() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
+  auto dictionary = std::make_unique<base::Value::Dict>();
 
   // Initialize an empty Value::List for all ModelTypes.
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    dictionary->SetKey(ModelTypeToDebugString(type),
-                       base::Value(base::Value::Type::LIST));
+    dictionary->Set(ModelTypeToDebugString(type), base::Value::List());
   }
 
   for (const auto& [id, entity] : entities_) {
@@ -812,11 +809,12 @@ LoopbackServer::GetEntitiesAsDictionaryValue() {
       // consider them.
       continue;
     }
-    base::Value* list_value;
-    if (!dictionary->Get(ModelTypeToDebugString(entity->GetModelType()),
-                         &list_value)) {
+
+    base::Value::List* list_value =
+        dictionary->FindList(ModelTypeToDebugString(entity->GetModelType()));
+    if (!list_value)
       return nullptr;
-    }
+
     // TODO(pvalenzuela): Store more data for each entity so additional
     // verification can be performed. One example of additional verification
     // is checking the correctness of the bookmark hierarchy.

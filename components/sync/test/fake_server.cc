@@ -365,10 +365,9 @@ void FakeServer::OverrideResponseType(
   loopback_server_->OverrideResponseType(std::move(response_type_override));
 }
 
-std::unique_ptr<base::DictionaryValue>
-FakeServer::GetEntitiesAsDictionaryValue() {
+std::unique_ptr<base::Value::Dict> FakeServer::GetEntitiesAsDict() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return loopback_server_->GetEntitiesAsDictionaryValue();
+  return loopback_server_->GetEntitiesAsDict();
 }
 
 std::vector<sync_pb::SyncEntity> FakeServer::GetSyncEntitiesByModelType(
