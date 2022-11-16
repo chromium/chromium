@@ -196,8 +196,14 @@ bool KeyboardLockInteractiveBrowserTest::DisablePreventDefaultOnTestPage() {
                                          false, false, false);
 }
 
+// https://crbug.com/1382717 Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RequestedButNotActive DISABLED_RequestedButNotActive
+#else
+#define MAYBE_RequestedButNotActive RequestedButNotActive
+#endif
 IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
-                       RequestedButNotActive) {
+                       MAYBE_RequestedButNotActive) {
   ASSERT_NO_FATAL_FAILURE(StartFullscreenLockPage());
   ASSERT_TRUE(DisablePreventDefaultOnTestPage());
   ASSERT_TRUE(KeyboardLockApiExists());
