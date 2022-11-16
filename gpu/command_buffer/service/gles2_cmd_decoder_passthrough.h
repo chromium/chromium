@@ -51,6 +51,7 @@ class ContextGroup;
 class GPUTracer;
 class MultiDrawManager;
 class PassthroughAbstractTextureImpl;
+class GLES2ExternalFramebuffer;
 
 struct MappedBuffer {
   GLsizeiptr size;
@@ -187,6 +188,12 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void TakeFrontBuffer(const Mailbox& mailbox) override;
 
   void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
+
+  void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                        int samples,
+                                        bool preserve,
+                                        bool needs_depth,
+                                        bool needs_stencil) override;
 
   // Resize an offscreen frame buffer.
   bool ResizeOffscreenFramebuffer(const gfx::Size& size) override;
@@ -851,7 +858,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool offscreen_target_buffer_preserved_;
   std::vector<std::unique_ptr<EmulatedColorBuffer>> in_use_color_textures_;
   std::vector<std::unique_ptr<EmulatedColorBuffer>> available_color_textures_;
-  size_t create_color_buffer_count_for_test_;
+  size_t create_color_buffer_count_for_test_ = 0;
+  std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes
   GLint max_renderbuffer_size_ = 0;

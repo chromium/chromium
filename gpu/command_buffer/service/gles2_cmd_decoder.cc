@@ -61,6 +61,7 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/gles2_cmd_srgb_converter.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
+#include "gpu/command_buffer/service/gles2_external_framebuffer.h"
 #include "gpu/command_buffer/service/gles2_query_manager.h"
 #include "gpu/command_buffer/service/gpu_fence_manager.h"
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
@@ -673,6 +674,11 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void ReleaseSurface() override;
   void TakeFrontBuffer(const Mailbox& mailbox) override;
   void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
+  void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                        int samples,
+                                        bool preserve,
+                                        bool needs_depth,
+                                        bool needs_stencil) override;
   bool ResizeOffscreenFramebuffer(const gfx::Size& size) override;
   bool MakeCurrent() override;
   gl::GLApi* api() const { return state_.api(); }
@@ -2570,6 +2576,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
   std::unique_ptr<BackRenderbuffer> offscreen_target_color_render_buffer_;
   std::unique_ptr<BackRenderbuffer> offscreen_target_depth_render_buffer_;
   std::unique_ptr<BackRenderbuffer> offscreen_target_stencil_render_buffer_;
+
+  std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // The format of the texture or renderbuffer backing the offscreen
   // framebuffer. Also the format of the texture backing the saved offscreen
@@ -5285,6 +5293,11 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     iter->OnDecoderWillDestroy(have_context);
   abstract_textures_.clear();
 
+  if (external_default_framebuffer_) {
+    external_default_framebuffer_->Destroy(have_context);
+    external_default_framebuffer_.reset();
+  }
+
   ReleaseAllBackTextures(have_context);
   if (have_context) {
     if (copy_tex_image_blit_.get()) {
@@ -5507,6 +5520,24 @@ void GLES2DecoderImpl::ReleaseSurface() {
   }
   context_->ReleaseCurrent(surface_.get());
   surface_ = nullptr;
+}
+
+void GLES2DecoderImpl::SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                                        int samples,
+                                                        bool preserve,
+                                                        bool needs_depth,
+                                                        bool needs_stencil) {
+  if (!external_default_framebuffer_) {
+    external_default_framebuffer_ = std::make_unique<GLES2ExternalFramebuffer>(
+        /*passthrough=*/false, *group_->feature_info(),
+        group_->shared_image_representation_factory());
+  }
+
+  if (!external_default_framebuffer_->AttachSharedImage(
+          mailbox, samples, preserve, needs_depth, needs_stencil)) {
+    return;
+  }
+  RestoreCurrentFramebufferBindings();
 }
 
 void GLES2DecoderImpl::TakeFrontBuffer(const Mailbox& mailbox) {
@@ -6220,6 +6251,10 @@ void GLES2DecoderImpl::ApplyDirtyState() {
 }
 
 GLuint GLES2DecoderImpl::GetBackbufferServiceId() const {
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached())
+    return external_default_framebuffer_->GetFramebufferId();
+
   return (offscreen_target_frame_buffer_.get())
              ? offscreen_target_frame_buffer_->id()
              : (surface_.get() ? surface_->GetBackingFramebufferObject() : 0);

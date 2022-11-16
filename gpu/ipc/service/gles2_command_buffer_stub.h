@@ -59,6 +59,12 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   // CommandBufferStub overrides:
   void OnTakeFrontBuffer(const Mailbox& mailbox) override;
   void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
+  void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                          int samples_count,
+                                          bool preserve,
+                                          bool needs_depth,
+                                          bool needs_stencil) override;
+
   void CreateGpuFenceFromHandle(uint32_t id,
                                 gfx::GpuFenceHandle handle) override;
   void GetGpuFenceHandle(uint32_t gpu_fence_id,
@@ -72,6 +78,8 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   // Keep a more specifically typed reference to the decoder to avoid
   // unnecessary casts. Owned by parent class.
   raw_ptr<gles2::GLES2Decoder> gles2_decoder_;
+
+  const bool use_shared_images_swapchain_for_ppapi_;
 
   base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_{this};
 };

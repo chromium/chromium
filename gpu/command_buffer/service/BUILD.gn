@@ -156,6 +156,8 @@ target(link_target_type, "gles2_sources") {
     "gles2_cmd_validation.h",
     "gles2_cmd_validation_autogen.h",
     "gles2_cmd_validation_implementation_autogen.h",
+    "gles2_external_framebuffer.cc",
+    "gles2_external_framebuffer.h",
     "gles2_query_manager.cc",
     "gles2_query_manager.h",
     "gpu_command_buffer_memory_tracker.cc",

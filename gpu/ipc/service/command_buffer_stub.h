@@ -228,6 +228,11 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   virtual void OnTakeFrontBuffer(const Mailbox& mailbox) {}
   virtual void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {}
+  virtual void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                                  int samples_count,
+                                                  bool preserve,
+                                                  bool needs_depth,
+                                                  bool needs_stencil) {}
 
   std::unique_ptr<MemoryTracker> CreateMemoryTracker() const;
 

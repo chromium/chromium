@@ -159,6 +159,14 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   virtual void TakeFrontBuffer(const Mailbox& mailbox) = 0;
   virtual void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) = 0;
 
+  // This is intended only for use with NaCL swapchain, replacing
+  // TakeFrontBuffer/ReturnFrontBuffer flow.
+  virtual void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
+                                                int samples,
+                                                bool preserve,
+                                                bool needs_depth,
+                                                bool needs_stencil) = 0;
+
   // Resize an offscreen frame buffer.
   virtual bool ResizeOffscreenFramebuffer(const gfx::Size& size) = 0;
 

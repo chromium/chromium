@@ -58,6 +58,12 @@ class MockGLES2Decoder : public GLES2Decoder {
   MOCK_METHOD0(ReleaseSurface, void());
   MOCK_METHOD1(TakeFrontBuffer, void(const Mailbox& mailbox));
   MOCK_METHOD2(ReturnFrontBuffer, void(const Mailbox& mailbox, bool is_lost));
+  MOCK_METHOD5(SetDefaultFramebufferSharedImage,
+               void(const Mailbox& mailbox,
+                    int samples,
+                    bool preserve,
+                    bool needs_depth,
+                    bool needs_stencil));
   MOCK_METHOD0(GetSavedBackTextureCountForTest, size_t());
   MOCK_METHOD0(GetCreatedBackTextureCountForTest, size_t());
   MOCK_METHOD1(ResizeOffscreenFramebuffer, bool(const gfx::Size& size));
