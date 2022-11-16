@@ -70,15 +70,15 @@ ExtensionApiTest::~ExtensionApiTest() = default;
 void ExtensionApiTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
-  test_config_ = std::make_unique<base::DictionaryValue>();
-  test_config_->SetStringPath(kTestDataDirectory,
-                              net::FilePathToFileURL(test_data_dir_).spec());
+  test_config_ = std::make_unique<base::Value::Dict>();
+  test_config_->Set(kTestDataDirectory,
+                    net::FilePathToFileURL(test_data_dir_).spec());
 
   if (embedded_test_server()->Started()) {
     // InitializeEmbeddedTestServer was called before |test_config_| was set.
     // Set the missing port key.
-    test_config_->SetIntPath(kEmbeddedTestServerPort,
-                             embedded_test_server()->port());
+    test_config_->SetByDottedPath(kEmbeddedTestServerPort,
+                                  embedded_test_server()->port());
   }
 
   TestGetConfigFunction::set_test_config_state(test_config_.get());
@@ -238,8 +238,8 @@ bool ExtensionApiTest::InitializeEmbeddedTestServer() {
   // access the test server and local file system.  Tests can see these values
   // using the extension API function chrome.test.getConfig().
   if (test_config_) {
-    test_config_->SetIntPath(kEmbeddedTestServerPort,
-                             embedded_test_server()->port());
+    test_config_->SetByDottedPath(kEmbeddedTestServerPort,
+                                  embedded_test_server()->port());
   }
   // else SetUpOnMainThread has not been called yet. Possibly because the
   // caller needs a valid port in an overridden SetUpCommandLine method.
@@ -261,14 +261,14 @@ bool ExtensionApiTest::StartWebSocketServer(
   if (!websocket_server_->Start())
     return false;
 
-  test_config_->SetIntPath(kTestWebSocketPort,
-                           websocket_server_->host_port_pair().port());
+  test_config_->Set(kTestWebSocketPort,
+                    websocket_server_->host_port_pair().port());
 
   return true;
 }
 
 void ExtensionApiTest::SetCustomArg(base::StringPiece custom_arg) {
-  test_config_->SetKey(kTestCustomArg, base::Value(custom_arg));
+  test_config_->Set(kTestCustomArg, base::Value(custom_arg));
 }
 
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {

@@ -294,7 +294,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
     return;
   }
 
-  test_config_.SetIntPath(kTestServerPort, embedded_test_server()->port());
+  test_config_.SetByDottedPath(kTestServerPort, embedded_test_server()->port());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath test_data_dir;
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITestUserAgentOverride, TestSetUserAgentOverride
       net::test_server::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
   ASSERT_TRUE(https_server.Start());
   base::HistogramTester histogram;
-  test_config_.SetIntPath(kTestServerPort, https_server.port());
+  test_config_.SetByDottedPath(kTestServerPort, https_server.port());
   RunTest("testSetUserAgentOverride", "web_view/apitest");
   content::FetchHistogramsFromChildProcesses();
   histogram.ExpectBucketCount(

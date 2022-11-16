@@ -103,7 +103,7 @@ class TestGetConfigFunction : public TestExtensionFunction {
 
   // Set the dictionary returned by chrome.test.getConfig().
   // Does not take ownership of |value|.
-  static void set_test_config_state(base::DictionaryValue* value);
+  static void set_test_config_state(base::Value::Dict* value);
 
  protected:
   // Tests that set configuration state do so by calling
@@ -117,17 +117,17 @@ class TestGetConfigFunction : public TestExtensionFunction {
 
     static TestConfigState* GetInstance();
 
-    void set_config_state(base::DictionaryValue* config_state) {
+    void set_config_state(base::Value::Dict* config_state) {
       config_state_ = config_state;
     }
 
-    const base::DictionaryValue* config_state() { return config_state_; }
+    const base::Value::Dict* config_state() { return config_state_; }
 
    private:
     friend struct base::DefaultSingletonTraits<TestConfigState>;
     TestConfigState();
 
-    raw_ptr<base::DictionaryValue, DanglingUntriaged> config_state_;
+    raw_ptr<base::Value::Dict, DanglingUntriaged> config_state_;
   };
 
   ~TestGetConfigFunction() override;

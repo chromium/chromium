@@ -125,8 +125,7 @@ ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
 }
 
 // static
-void TestGetConfigFunction::set_test_config_state(
-    base::DictionaryValue* value) {
+void TestGetConfigFunction::set_test_config_state(base::Value::Dict* value) {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
   test_config_state->set_config_state(value);
 }
@@ -146,9 +145,8 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
   if (!test_config_state->config_state())
     return RespondNow(Error(kNoTestConfigDataError));
-  return RespondNow(OneArgument(base::Value::FromUniquePtrValue(
-      base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-          test_config_state->config_state()->Clone())))));
+  return RespondNow(
+      OneArgument(base::Value(test_config_state->config_state()->Clone())));
 }
 
 TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() {}

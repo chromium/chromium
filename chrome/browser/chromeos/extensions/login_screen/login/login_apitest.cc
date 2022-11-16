@@ -171,7 +171,7 @@ class LoginApitest : public LoginScreenApitestBase {
   }
 
   void SetTestCustomArg(const std::string custom_arg) {
-    config_.SetKey("customArg", base::Value(custom_arg));
+    config_.Set("customArg", base::Value(custom_arg));
     extensions::TestGetConfigFunction::set_test_config_state(&config_);
   }
 
@@ -195,7 +195,7 @@ class LoginApitest : public LoginScreenApitestBase {
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-  base::DictionaryValue config_;
+  base::Value::Dict config_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {

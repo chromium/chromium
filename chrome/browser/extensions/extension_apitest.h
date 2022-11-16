@@ -133,7 +133,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // If it failed, what was the error message?
   std::string message_;
 
-  base::DictionaryValue* GetTestConfig() { return test_config_.get(); }
+  base::Value::Dict* GetTestConfig() { return test_config_.get(); }
 
   // Creates a new secure test server that can be used in place of the default
   // HTTP embedded_test_server defined in BrowserTestBase. The new test server
@@ -154,7 +154,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
-  std::unique_ptr<base::DictionaryValue> test_config_;
+  std::unique_ptr<base::Value::Dict> test_config_;
 
   // Hold the test WebSocket server.
   std::unique_ptr<net::SpawnedTestServer> websocket_server_;

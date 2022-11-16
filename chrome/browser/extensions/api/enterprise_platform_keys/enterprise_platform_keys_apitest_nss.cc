@@ -482,10 +482,9 @@ class EnterprisePlatformKeysLoginScreenTest
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {
   AddScreenplayTag();
-  base::DictionaryValue config;
-  config.SetStringKey("customArg",
-                      BuildCustomArg(/*user_session_test=*/false,
-                                     /*system_token_enabled=*/true));
+  base::Value::Dict config;
+  config.Set("customArg", BuildCustomArg(/*user_session_test=*/false,
+                                         /*system_token_enabled=*/true));
   extensions::TestGetConfigFunction::set_test_config_state(&config);
 
   extensions::ResultCatcher catcher;

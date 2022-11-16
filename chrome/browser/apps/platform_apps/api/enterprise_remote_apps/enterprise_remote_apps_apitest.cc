@@ -133,7 +133,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   }
 
   void LoadExtensionAndRunTest(const std::string& test_name) {
-    config_.SetKey("customArg", base::Value(test_name));
+    config_.Set("customArg", base::Value(test_name));
     extensions::TestGetConfigFunction::set_test_config_state(&config_);
 
     std::unique_ptr<ash::FakeIdGenerator> id_generator =
@@ -185,7 +185,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
 
  private:
   Profile* profile_;
-  base::DictionaryValue config_;
+  base::Value::Dict config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 

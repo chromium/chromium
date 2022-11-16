@@ -188,13 +188,14 @@ class LoginStatusTestConfig {
     extensions::TestGetConfigFunction::set_test_config_state(nullptr);
   }
   void SetConfig(bool logged_in, bool screen_locked) {
-    test_config_.SetPath({"loginStatus", "isLoggedIn"}, base::Value(logged_in));
-    test_config_.SetPath({"loginStatus", "isScreenLocked"},
-                         base::Value(screen_locked));
+    test_config_.SetByDottedPath("loginStatus.isLoggedIn",
+                                 base::Value(logged_in));
+    test_config_.SetByDottedPath("loginStatus.isScreenLocked",
+                                 base::Value(screen_locked));
   }
 
  private:
-  base::DictionaryValue test_config_;
+  base::Value::Dict test_config_;
 };
 
 class UsersPrivateApiLoginStatusTest : public ExtensionApiTest {
