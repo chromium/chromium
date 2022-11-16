@@ -303,7 +303,11 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   // Find out which potential singletons are actually singletons; delete
   // members whose owners left; and reparent the sets that intersected with
   // an addition set.
-  for (const auto& [member, set_entry] : entries_) {
+  // Note: use a null config here, to avoid taking unrelated policy sets into
+  // account.
+  ForEachEffectiveSetEntry(/*config=*/nullptr, [&](const SchemefulSite& member,
+                                                   const FirstPartySetEntry&
+                                                       set_entry) {
     // Reparent all sites in any intersecting addition sets.
     if (auto entry = addition_intersected_owners.find(set_entry.primary());
         entry != addition_intersected_owners.end() &&
@@ -316,7 +320,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
                                      absl::nullopt));
     }
     if (member == set_entry.primary())
-      continue;
+      return true;
     // Remove non-singletons from the potential list.
     if (auto entry = potential_singletons.find(set_entry.primary());
         entry != potential_singletons.end() &&
@@ -331,7 +335,9 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
         !addition_intersected_owners.contains(set_entry.primary())) {
       site_to_entry.emplace_back(member, absl::nullopt);
     }
-  }
+
+    return true;
+  });
   // Any owner remaining in `potential_singleton` is a real singleton, so delete
   // it:
   for (auto& [owner, members] : potential_singletons) {
@@ -415,6 +421,50 @@ bool GlobalFirstPartySets::ForEachPublicSetEntry(
       return false;
   }
   return true;
+}
+
+bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
+    const FirstPartySetsContextConfig& config,
+    base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
+    const {
+  return ForEachEffectiveSetEntry(&config, f);
+}
+
+bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
+    const FirstPartySetsContextConfig* config,
+    base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
+    const {
+  // Policy sets have highest precedence:
+  if (config != nullptr) {
+    if (!config->ForEachCustomizationEntry(
+            [&](const SchemefulSite& site,
+                const absl::optional<FirstPartySetEntry>& maybe_entry) {
+              if (maybe_entry.has_value())
+                return f(site, *maybe_entry);
+              return true;
+            })) {
+      return false;
+    }
+  }
+
+  // Then the manual set:
+  if (!manual_config_.ForEachCustomizationEntry(
+          [&](const SchemefulSite& site,
+              const absl::optional<FirstPartySetEntry>& maybe_entry) {
+            if (maybe_entry.has_value() && (!config || !config->Contains(site)))
+              return f(site, *maybe_entry);
+            return true;
+          })) {
+    return false;
+  }
+
+  // Finally, the public sets.
+  return ForEachPublicSetEntry([&](const SchemefulSite& site,
+                                   const FirstPartySetEntry& entry) {
+    if ((!config || !config->Contains(site)) && !manual_config_.Contains(site))
+      return f(site, entry);
+    return true;
+  });
 }
 
 std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {

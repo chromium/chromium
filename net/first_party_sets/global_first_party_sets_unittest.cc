@@ -25,6 +25,8 @@ using ::testing::UnorderedElementsAre;
 
 namespace net {
 
+namespace {
+
 const SchemefulSite kPrimary(GURL("https://primary.test"));
 const SchemefulSite kPrimary2(GURL("https://primary2.test"));
 const SchemefulSite kPrimary3(GURL("https://primary3.test"));
@@ -34,7 +36,29 @@ const SchemefulSite kAssociated1Cctld2(GURL("https://associated1.cctld2"));
 const SchemefulSite kAssociated2(GURL("https://associated2.test"));
 const SchemefulSite kAssociated3(GURL("https://associated3.test"));
 const SchemefulSite kAssociated4(GURL("https://associated4.test"));
+const SchemefulSite kAssociated5(GURL("https://associated5.test"));
 const SchemefulSite kService(GURL("https://service.test"));
+
+base::flat_map<SchemefulSite, FirstPartySetEntry> CollectEffectiveSetEntries(
+    const GlobalFirstPartySets& sets,
+    const FirstPartySetsContextConfig& config) {
+  base::flat_map<SchemefulSite, FirstPartySetEntry> got;
+  sets.ForEachEffectiveSetEntry(
+      config, [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
+        DCHECK(!got.contains(site));
+        got[site] = entry;
+        return true;
+      });
+
+  // Consistency check: verify that all of the returned entries are what we'd
+  // get if we called FindEntry directly.
+  for (const auto& [site, entry] : got) {
+    DCHECK_EQ(sets.FindEntry(site, config).value(), entry);
+  }
+  return got;
+}
+
+}  // namespace
 
 class GlobalFirstPartySetsTest : public ::testing::Test {
  public:
@@ -222,6 +246,55 @@ TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyManualSet) {
       {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
   });
   EXPECT_FALSE(sets.empty());
+}
+
+TEST_F(GlobalFirstPartySetsTest,
+       ForEachEffectiveSetEntry_ManualSetAndConfig_FullIteration) {
+  GlobalFirstPartySets global_sets;
+  global_sets.ApplyManuallySpecifiedSet({
+      {kPrimary,
+       FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+      {kAssociated5, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+  });
+
+  // Modify kPrimary's set by removing kAssociated5 and modifying kAssociated4,
+  // via policy.
+  FirstPartySetsContextConfig config = global_sets.ComputeConfig(
+      /*replacement_sets=*/
+      {
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)},
+              {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kService,
+               FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
+          },
+      },
+      /*addition_sets=*/{});
+
+  // Note that since the policy sets take precedence over the manual set,
+  // kAssociated5 is no longer in an FPS.
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets, config),
+      UnorderedElementsAre(
+          Pair(kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)),
+          Pair(kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kService, FirstPartySetEntry(kPrimary, SiteType::kService,
+                                            absl::nullopt))));
 }
 
 class PopulatedGlobalFirstPartySetsTest : public GlobalFirstPartySetsTest {
@@ -446,6 +519,148 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntry_EarlyReturn) {
         return count < 4;
       }));
   EXPECT_EQ(count, 4);
+}
+
+TEST_F(PopulatedGlobalFirstPartySetsTest,
+       ForEachEffectiveSetEntry_PublicSetsOnly_FullIteration) {
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets(), FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)),
+          Pair(kAssociated1,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)),
+          Pair(kAssociated2,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)),
+          Pair(kAssociated3,
+               FirstPartySetEntry(kPrimary2, SiteType::kAssociated, 0)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                             absl::nullopt)),
+          Pair(kService, FirstPartySetEntry(kPrimary, SiteType::kService,
+                                            absl::nullopt))));
+}
+
+TEST_F(PopulatedGlobalFirstPartySetsTest,
+       ForEachEffectiveSetEntry_PublicSetsWithManualSet_FullIteration) {
+  // Replace kPrimary's set (including the alias and service site) with just
+  // {kPrimary, kAssociated4}.
+  global_sets().ApplyManuallySpecifiedSet({
+      {kPrimary,
+       FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+  });
+
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets(), FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(kAssociated3,
+               FirstPartySetEntry(kPrimary2, SiteType::kAssociated, 0)),
+          Pair(kAssociated4,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                             absl::nullopt))));
+}
+
+TEST_F(PopulatedGlobalFirstPartySetsTest,
+       ForEachEffectiveSetEntry_PublicSetsWithConfig_FullIteration) {
+  // Modify kPrimary's set by removing kAssociated2 and adding kAssociated4, via
+  // policy.
+  FirstPartySetsContextConfig config = global_sets().ComputeConfig(
+      /*replacement_sets=*/
+      {
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)},
+              {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kService,
+               FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
+          },
+      },
+      /*addition_sets=*/{});
+
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets(), config),
+      UnorderedElementsAre(
+          Pair(kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)),
+          Pair(kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kAssociated3,
+               FirstPartySetEntry(kPrimary2, SiteType::kAssociated, 0)),
+          Pair(kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                             absl::nullopt)),
+          Pair(kService, FirstPartySetEntry(kPrimary, SiteType::kService,
+                                            absl::nullopt))));
+}
+
+TEST_F(
+    PopulatedGlobalFirstPartySetsTest,
+    ForEachEffectiveSetEntry_PublicSetsWithManualSetAndConfig_FullIteration) {
+  // Replace kPrimary's set (including the alias and service site) with just
+  // {kPrimary, kAssociated4, kAssociated5}.
+  global_sets().ApplyManuallySpecifiedSet({
+      {kPrimary,
+       FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+      {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
+      {kAssociated5, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
+  });
+
+  // Modify kPrimary's set by removing kAssociated2 and adding kAssociated4, via
+  // policy.
+  FirstPartySetsContextConfig config = global_sets().ComputeConfig(
+      /*replacement_sets=*/
+      {
+          {
+              {kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
+              {kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)},
+              {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)},
+              {kService,
+               FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
+          },
+      },
+      /*addition_sets=*/{});
+
+  // Note that since the policy sets take precedence over the manual set,
+  // kAssociated5 is no longer in an FPS.
+  EXPECT_THAT(
+      CollectEffectiveSetEntries(global_sets(), config),
+      UnorderedElementsAre(
+          Pair(kAssociated1Cctld,
+               FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                  absl::nullopt)),
+          Pair(kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kAssociated3,
+               FirstPartySetEntry(kPrimary2, SiteType::kAssociated, 0)),
+          Pair(kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
+                                                absl::nullopt)),
+          Pair(kPrimary,
+               FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
+          Pair(kPrimary2, FirstPartySetEntry(kPrimary2, SiteType::kPrimary,
+                                             absl::nullopt)),
+          Pair(kService, FirstPartySetEntry(kPrimary, SiteType::kService,
+                                            absl::nullopt))));
 }
 
 TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata_EmptyContext) {
