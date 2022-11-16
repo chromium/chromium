@@ -120,7 +120,7 @@ enum FormDeserializationStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Metrics: "PasswordManager.PasswordSyncState2"
+// Metrics: "PasswordManager.PasswordSyncState3"
 enum class PasswordSyncState {
   kSyncingOk = 0,
   kNotSyncingFailedRead = 1,

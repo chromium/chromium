@@ -887,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
   // during startup, and the credential added by the PRE_ test should be gone.
   EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(), IsEmpty());
   histograms.ExpectUniqueSample(
-      "PasswordManager.AccountStorage.ClearedOnStartup",
+      "PasswordManager.AccountStorage.ClearedOnStartup2",
       /*sample=*/kNotOptedInAndHadToClear, 1);
 
   // Just as a sanity check: The credential in the profile-scoped store should

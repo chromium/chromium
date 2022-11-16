@@ -83,7 +83,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
   if (user_it == https_credentials_map_.end()) {
     // Credentials are not migrated yet.
     base::UmaHistogramEnumeration(
-        "PasswordManager.HttpCredentials",
+        "PasswordManager.HttpCredentials2",
         is_hsts ? HttpCredentialType::kHasNoMatchingHttpsWithHsts
                 : HttpCredentialType::kHasNoMatchingHttpsWithoutHsts);
     if (is_hsts) {
@@ -99,7 +99,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
     // The password store contains the same credentials (signon_realm, scheme,
     // username and password) on HTTPS version of the form.
     base::UmaHistogramEnumeration(
-        "PasswordManager.HttpCredentials",
+        "PasswordManager.HttpCredentials2",
         is_hsts ? HttpCredentialType::kHasEquivalentHttpsWithHsts
                 : HttpCredentialType::kHasEquivalentHttpsWithoutHsts);
     if (is_hsts) {
@@ -108,7 +108,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(
     }
   } else {
     base::UmaHistogramEnumeration(
-        "PasswordManager.HttpCredentials",
+        "PasswordManager.HttpCredentials2",
         is_hsts ? HttpCredentialType::kHasConflictingHttpsWithHsts
                 : HttpCredentialType::kHasConflictingHttpsWithoutHsts);
   }

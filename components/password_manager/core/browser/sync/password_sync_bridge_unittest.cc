@@ -885,7 +885,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotDeleteSyncMetadataWhenDoesNotExist) {
       PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
                          mock_password_store_sync(), base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       /*kNone*/ 0, 1);
 }
 
@@ -911,7 +911,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
       PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
                          mock_password_store_sync(), base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       3, 1);
 }
 
@@ -949,7 +949,7 @@ TEST_F(PasswordSyncBridgeTest,
       mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
       base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       4, 1);
 }
 
@@ -1015,7 +1015,7 @@ TEST_F(PasswordSyncBridgeTest,
       mock_processor().CreateForwardingProcessor(), mock_password_store_sync(),
       base::DoNothing());
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       5, 1);
 }
 

@@ -320,7 +320,7 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch->SetModelTypeState(model_state);
     }
   }
-  base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",
+  base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError2",
                                 sync_metadata_read_error);
 
   if (batch) {

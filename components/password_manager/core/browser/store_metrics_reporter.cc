@@ -78,7 +78,7 @@ void LogNumberOfAccountsForScheme(base::StringPiece suffix_for_store,
                                   int sample) {
   base::UmaHistogramCustomCounts(
       base::StrCat({kPasswordManager, suffix_for_store,
-                    ".TotalAccountsHiRes2.WithScheme.", scheme}),
+                    ".TotalAccountsHiRes3.WithScheme.", scheme}),
       sample, 1, 1000, 100);
 }
 
@@ -115,7 +115,7 @@ void ReportNumberOfAccountsMetrics(
     }
 
     constexpr base::StringPiece kAccountsPerSiteSuffix =
-        ".AccountsPerSiteHiRes2";
+        ".AccountsPerSiteHiRes3";
 
     if (password_type == PasswordForm::Type::kGenerated) {
       total_generated_accounts += accounts_per_site;
@@ -138,7 +138,7 @@ void ReportNumberOfAccountsMetrics(
   }
 
   static constexpr base::StringPiece kTotalAccountsByTypeSuffix =
-      ".TotalAccountsHiRes2.ByType";
+      ".TotalAccountsHiRes3.ByType";
 
   LogAccountStatHiRes(
       base::StrCat({kPasswordManager, store_suffix, kTotalAccountsByTypeSuffix,
@@ -156,7 +156,7 @@ void ReportNumberOfAccountsMetrics(
       total_user_created_accounts + total_generated_accounts);
 
   LogAccountStatHiRes(
-      base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes2",
+      base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes3",
                     custom_passphrase_suffix}),
       blocklisted_sites);
 }
@@ -215,12 +215,12 @@ void ReportPasswordNotesMetrics(
 
   base::UmaHistogramCounts1000(
       base::StrCat({kPasswordManager, suffix_for_store,
-                    ".PasswordNotes.CountCredentialsWithNonEmptyNotes"}),
+                    ".PasswordNotes.CountCredentialsWithNonEmptyNotes2"}),
       credentials_with_non_empty_notes_count);
 
   const std::string histogram_name =
       base::StrCat({kPasswordManager, suffix_for_store,
-                    ".PasswordNotes.CountNotesPerCredential"});
+                    ".PasswordNotes.CountNotesPerCredential2"});
   base::ranges::for_each(forms, [histogram_name](const auto& form) {
     base::UmaHistogramCounts100(histogram_name, form->notes.size());
   });
@@ -239,7 +239,7 @@ void ReportTimesPasswordUsedMetrics(
     const int times_used = form->times_used;
 
     static constexpr base::StringPiece kTimesPasswordUsedSuffix =
-        ".TimesPasswordUsed2";
+        ".TimesPasswordUsed3";
 
     if (type == PasswordForm::Type::kGenerated) {
       LogTimesUsedStat(
@@ -281,7 +281,7 @@ void ReportSyncingAccountStateMetrics(
                  ? SyncingAccountState::kSyncingAndSyncPasswordSaved
                  : SyncingAccountState::kSyncingAndSyncPasswordNotSaved);
   base::UmaHistogramEnumeration(
-      base::StrCat({kPasswordManager, ".SyncingAccountState2"}),
+      base::StrCat({kPasswordManager, ".SyncingAccountState3"}),
       sync_account_state);
 }
 
@@ -318,10 +318,10 @@ void ReportDuplicateCredentialsMetrics(
   }
 
   base::UmaHistogramCustomCounts(
-      base::StrCat({kPasswordManager, ".CredentialsWithDuplicates2"}),
+      base::StrCat({kPasswordManager, ".CredentialsWithDuplicates3"}),
       credentials_with_duplicates, 0, 32, 6);
   base::UmaHistogramCustomCounts(
-      base::StrCat({kPasswordManager, ".CredentialsWithMismatchedDuplicates2"}),
+      base::StrCat({kPasswordManager, ".CredentialsWithMismatchedDuplicates3"}),
       credentials_with_mismatched_duplicates, 0, 32, 6);
 }
 
@@ -332,12 +332,12 @@ void ReportPasswordIssuesMetrics(
     return !form->password_issues.contains(InsecureType::kLeaked);
   });
   base::UmaHistogramCounts100(
-      base::StrCat({kPasswordManager, ".CompromisedCredentials2.CountLeaked"}),
+      base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountLeaked"}),
       count_leaked);
   if (bulk_check_done) {
     base::UmaHistogramCounts100(
         base::StrCat({kPasswordManager,
-                      ".CompromisedCredentials2.CountLeakedAfterBulkCheck"}),
+                      ".CompromisedCredentials3.CountLeakedAfterBulkCheck"}),
         count_leaked);
   }
 
@@ -345,7 +345,7 @@ void ReportPasswordIssuesMetrics(
     return !form->password_issues.contains(InsecureType::kPhished);
   });
   base::UmaHistogramCounts100(
-      base::StrCat({kPasswordManager, ".CompromisedCredentials2.CountPhished"}),
+      base::StrCat({kPasswordManager, ".CompromisedCredentials3.CountPhished"}),
       count_phished);
 }
 
@@ -410,19 +410,19 @@ void ReportMultiStoreMetrics(
   if (is_opted_in) {
     base::UmaHistogramCounts100(
         base::StrCat(
-            {kPasswordManager, ".AccountStoreVsProfileStore3.Additional"}),
+            {kPasswordManager, ".AccountStoreVsProfileStore4.Additional"}),
         additional);
     base::UmaHistogramCounts100(
         base::StrCat(
-            {kPasswordManager, ".AccountStoreVsProfileStore3.Missing"}),
+            {kPasswordManager, ".AccountStoreVsProfileStore4.Missing"}),
         missing);
     base::UmaHistogramCounts100(
         base::StrCat(
-            {kPasswordManager, ".AccountStoreVsProfileStore3.Identical"}),
+            {kPasswordManager, ".AccountStoreVsProfileStore4.Identical"}),
         identical);
     base::UmaHistogramCounts100(
         base::StrCat(
-            {kPasswordManager, ".AccountStoreVsProfileStore3.Conflicting"}),
+            {kPasswordManager, ".AccountStoreVsProfileStore4.Conflicting"}),
         conflicting);
   }
 }
@@ -430,7 +430,7 @@ void ReportMultiStoreMetrics(
 void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::UmaHistogramBoolean(
-      base::StrCat({kPasswordManager, ".BiometricAuthBeforeFillingEnabled"}),
+      base::StrCat({kPasswordManager, ".BiometricAuthBeforeFillingEnabled2"}),
       prefs->GetBoolean(
           password_manager::prefs::kBiometricAuthenticationBeforeFilling));
 #endif
@@ -486,7 +486,7 @@ StoreMetricsReporter::StoreMetricsReporter(
   is_opted_in_ = features_util::IsOptedInForAccountStorage(prefs, sync_service);
 
   base::UmaHistogramBoolean(
-      base::StrCat({kPasswordManager, ".Enabled3"}),
+      base::StrCat({kPasswordManager, ".Enabled4"}),
       prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs);

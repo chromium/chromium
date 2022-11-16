@@ -1551,11 +1551,11 @@ TEST_F(LoginDatabaseTest, ReportMetricsTest) {
   db().ReportMetrics();
   account_db.ReportMetrics();
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.InaccessiblePasswords",
+  histogram_tester.ExpectUniqueSample("PasswordManager.InaccessiblePasswords2",
                                       0, 1);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.BubbleSuppression.AccountsInStatisticsTable", 4, 1);
+      "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2", 4, 1);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
@@ -1581,7 +1581,7 @@ TEST_F(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
   account_db.ReportMetrics();
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.InaccessiblePasswords", 0, 1);
+      "PasswordManager.AccountStore.InaccessiblePasswords2", 0, 1);
 }
 
 TEST_F(LoginDatabaseTest, NoMetadata) {

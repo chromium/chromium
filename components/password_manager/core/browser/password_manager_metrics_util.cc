@@ -169,7 +169,7 @@ void LogFilledCredentialIsFromAndroidApp(bool from_android) {
 }
 
 void LogPasswordSyncState(PasswordSyncState state) {
-  base::UmaHistogramEnumeration("PasswordManager.PasswordSyncState2", state);
+  base::UmaHistogramEnumeration("PasswordManager.PasswordSyncState3", state);
 }
 
 void LogApplySyncChangesState(ApplySyncChangesState state) {
@@ -358,7 +358,7 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in) {
-  base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount",
+  base::UmaHistogramCounts100("PasswordManager.SavedGaiaPasswordHashCount2",
                               static_cast<int>(gaia_hash_count));
 
   // Log parallel metrics for sync and signed-in non-sync accounts in addition
@@ -366,11 +366,11 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
   // are protecting compared to syncing users.
   if (does_primary_account_exists) {
     base::UmaHistogramCounts100(
-        "PasswordManager.SavedGaiaPasswordHashCount.Sync",
+        "PasswordManager.SavedGaiaPasswordHashCount2.Sync",
         static_cast<int>(gaia_hash_count));
   } else if (is_signed_in) {
     base::UmaHistogramCounts100(
-        "PasswordManager.SavedGaiaPasswordHashCount.SignedInNonSync",
+        "PasswordManager.SavedGaiaPasswordHashCount2.SignedInNonSync",
         static_cast<int>(gaia_hash_count));
   }
 }

@@ -278,7 +278,7 @@ bool DoesMatchConstraints(const PasswordForm& form) {
 }
 
 void LogDatabaseInitError(DatabaseInitError error) {
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.LoginDatabaseInit", error,
+  UMA_HISTOGRAM_ENUMERATION("PasswordManager.LoginDatabaseInit2", error,
                             DATABASE_INIT_ERROR_COUNT);
 }
 
@@ -952,7 +952,7 @@ bool LoginDatabase::Init() {
 void LoginDatabase::ReportBubbleSuppressionMetrics() {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   base::UmaHistogramCustomCounts(
-      "PasswordManager.BubbleSuppression.AccountsInStatisticsTable",
+      "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2",
       stats_table_.GetNumAccounts(), 0, 1000, 100);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
@@ -975,7 +975,7 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
   base::StringPiece suffix_for_store =
       is_account_store_.value() ? ".AccountStore" : "";
   base::UmaHistogramCounts100(base::StrCat({kPasswordManager, suffix_for_store,
-                                            ".InaccessiblePasswords"}),
+                                            ".InaccessiblePasswords2"}),
                               failed_encryption);
 }
 

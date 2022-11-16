@@ -218,7 +218,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   task_environment.RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.HttpCredentials",
+      "PasswordManager.HttpCredentials2",
       static_cast<HttpCredentialCleaner::HttpCredentialType>(
           static_cast<int>(test.expected) * 2 + test.is_hsts_enabled),
       1);

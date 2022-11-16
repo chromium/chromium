@@ -446,11 +446,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AccountStorage.ClearedOnStartup"
     enum="PasswordAccountStoreClearedOnStartup" expires_after="2023-04-16">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Records whether the account-scoped password storage had to be cleared during
     profile initialization.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.AccountStorage.ClearedOnStartup2"
+    enum="PasswordAccountStoreClearedOnStartup" expires_after="2023-04-16">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records whether the account-scoped password storage had to be cleared during
+    regular profile initialization.
   </summary>
 </histogram>
 
@@ -584,12 +598,43 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore3.{DifferenceType}"
     units="accounts" expires_after="2023-05-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     The number of accounts {DifferenceType}. Recorded once per Chrome profile,
     soon after startup, only for users who are opted in to the account-scoped
     storage. Recorded at most once per day.
+  </summary>
+  <token key="DifferenceType">
+    <variant name="Additional"
+        summary="stored in the password manager's account-scoped store that
+                 don't exist in the profile-scoped store"/>
+    <variant name="Conflicting"
+        summary="stored in the password manager with a conflicting password
+                 between the account-scoped store and profile-scoped store
+                 (i.e. the signon realm and username match, but the password
+                 does not)"/>
+    <variant name="Identical"
+        summary="stored in both the password manager's account-scoped store
+                 and profile-scoped store"/>
+    <variant name="Missing"
+        summary="stored in the password manager's profile-scoped store that
+                 don't exist in the account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.AccountStoreVsProfileStore4.{DifferenceType}"
+    units="accounts" expires_after="2023-05-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of accounts {DifferenceType}. Recorded soon after startup at most
+    one per day for regular profiles and only if user opted in to the
+    account-scoped storage.
   </summary>
   <token key="DifferenceType">
     <variant name="Additional"
@@ -851,12 +896,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.BiometricAuthBeforeFillingEnabled"
     enum="BooleanEnabled" expires_after="M112">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Indicates whether biometric authentication before filling is enabled.
     Recorded 30 seconds after PasswordStore is created which happens once per
     profile, and at most once per day.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BiometricAuthBeforeFillingEnabled2"
+    enum="BooleanEnabled" expires_after="M112">
+  <owner>kazinova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Indicates whether biometric authentication before filling is enabled.
+    Recorded 30 seconds after PasswordStore is created which happens at most
+    once per day for regular profiles.
   </summary>
 </histogram>
 
@@ -896,6 +956,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable"
     units="accounts" expires_after="2023-04-23">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -903,6 +967,19 @@ chromium-metrics-reviews@google.com.
     are accounts for which the user ignored the save bubble at least once. The
     count is recorded once per browser start-up. (In case of multiple profiles,
     the counts are for the profile that first has a WebContents created.)
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BubbleSuppression.AccountsInStatisticsTable2"
+    units="accounts" expires_after="2023-04-23">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in password_manager::StatisticsTable. These
+    are accounts for which the user ignored the save bubble at least once. The
+    count is recorded once per browser start-up for regular profiles. (In case
+    of multiple profiles, the counts are for the profile that first has a
+    WebContents created.)
   </summary>
 </histogram>
 
@@ -1089,12 +1166,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CompromisedCredentials2.{Issue}"
-    units="credentials" expires_after="M114">
+    units="credentials" expires_after="M110">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Count of known {Issue}. Recorded once per Chrome profile at most once per
     day.
+  </summary>
+  <token key="Issue">
+    <variant name="CountLeaked" summary="leaked credentials in the database"/>
+    <variant name="CountLeakedAfterBulkCheck"
+        summary="leaked credentials in the database if password bulk check
+                 was executed at least once"/>
+    <variant name="CountPhished" summary="phished credentials in the database"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
+    units="credentials" expires_after="M114">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of known {Issue}. Recorded at most once per day for regular profiles.
   </summary>
   <token key="Issue">
     <variant name="CountLeaked" summary="leaked credentials in the database"/>
@@ -1201,6 +1298,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.CredentialsWithDuplicates2" units="units"
     expires_after="2023-03-19">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1213,8 +1314,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.CredentialsWithDuplicates3" units="units"
+    expires_after="2023-03-19">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;duplicates&quot; exist. A duplicate is a credential with the same
+    signon realm, username, and password - i.e. indistinguishable from the
+    user's point of view. This records the number of *sets* of duplicated
+    credentials; the number of credentials in each set of duplicates is not
+    recorded. Recorded at most once per day for regular profiles.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates2"
     units="units" expires_after="2023-04-09">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1224,6 +1343,20 @@ chromium-metrics-reviews@google.com.
     This records the number of *sets* of duplicated credentials; the number of
     credentials in each set of duplicates is not recorded. Recorded once per
     Chrome profile at most once per day.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.CredentialsWithMismatchedDuplicates3"
+    units="units" expires_after="2023-04-09">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;mismatched duplicates&quot; exist. A mismatched duplicate is a
+    credential with the same signon realm and username, but different password.
+    This records the number of *sets* of duplicated credentials; the number of
+    credentials in each set of duplicates is not recorded. Recorded at most once
+    per day for regular profiles.
   </summary>
 </histogram>
 
@@ -1283,13 +1416,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Enabled3" enum="BooleanEnabled"
-    expires_after="2023-05-07">
+    expires_after="2023-03-05">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Indicates whether the password manager is enabled. Recorded 30 seconds after
     PasswordStore is created which happens once per profile, and at most once
     per day.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Enabled4" enum="BooleanEnabled"
+    expires_after="2023-05-07">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager is enabled. Recorded 30 seconds after
+    PasswordStore is created at most once per day for regular profiles.
   </summary>
 </histogram>
 
@@ -1461,18 +1608,37 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.HttpCredentials"
     enum="PasswordManagerHttpCredentialType" expires_after="2023-03-26">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Breakdown of HTTP credentials with regard to the existence of a HTTPS
     credential with the same username and whether the corresponding website has
-    HSTS enabled. Recorded once for each HTTP credential of the profile on
-    startup.
+    HSTS enabled. Recorded once for each HTTP credential on profile open.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.HttpCredentials2"
+    enum="PasswordManagerHttpCredentialType" expires_after="2023-03-26">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Breakdown of HTTP credentials with regard to the existence of a HTTPS
+    credential with the same username and whether the corresponding website has
+    HSTS enabled. Recorded once for each HTTP credential on regular profile
+    open.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.HttpPasswordMigrationCount"
     units="saved credentials" expires_after="2023-03-19">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1481,13 +1647,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.HttpPasswordMigrationCount2"
+    units="saved credentials" expires_after="2023-03-19">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Number of HTTP saved passwords that were migrated to HTTPS. Recorded for the
+    regular profiles on HTTPS password form load when there are no credentials
+    saved.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.HttpPasswordMigrationMode"
     enum="HttpPasswordMigrationMode" expires_after="2023-03-26">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     The mode of migration applied to HTTP passwords migrating to HTTPS. Recorded
     on HTTPS password form load when there are no credentials saved.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.HttpPasswordMigrationMode2"
+    enum="HttpPasswordMigrationMode" expires_after="2023-03-26">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The mode of migration applied to HTTP passwords migrating to HTTPS. Recorded
+    for the regular profiles on HTTPS password form load when there are no
+    credentials saved.
   </summary>
 </histogram>
 
@@ -1737,10 +1929,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.LoginDatabaseInit"
-    enum="LoginDatabaseInitError" expires_after="2023-04-30">
+    enum="LoginDatabaseInitError" expires_after="2023-02-26">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>An error on LoginDatabase initialization.</summary>
+</histogram>
+
+<histogram name="PasswordManager.LoginDatabaseInit2"
+    enum="LoginDatabaseInitError" expires_after="2023-04-30">
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    An error on LoginDatabase initialization. Recorded when error was
+    encountered during login database initialization.
+  </summary>
 </histogram>
 
 <histogram name="PasswordManager.ManagePasswordsReferrer"
@@ -2472,12 +2678,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreInitResult" enum="BooleanSuccess"
-    expires_after="2023-07-30">
+    expires_after="M110">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>src/components/password_manager/OWNERS</owner>
   <summary>
     Success rate of initialization of password store. Recorded for every user
     once on the Chrome profile startup.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordStoreInitResult2"
+    enum="BooleanSuccess" expires_after="M110">
+  <owner>vasilii@chromium.org</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Success rate of initialization of password store. Recorded for every user
+    once on the Chrome profile startup. Only recorded for &quot;regular&quot;
+    profiles, i.e. those in which Password Manager might actually work. This
+    excludes incognito profiles, guest profiles, system profiles (used for the
+    profile picker), lockscreen profiles, etc.
   </summary>
 </histogram>
 
@@ -2701,11 +2924,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordSyncState2" enum="PasswordSyncState"
     expires_after="2023-04-30">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Whether the passwords are syncing and, if not, then what's causing sync
     failures. Recorded after the first sync attempt either succeeds or fails.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordSyncState3" enum="PasswordSyncState"
+    expires_after="2023-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Whether the passwords are syncing and, if not, then what's causing sync
+    failures. Recorded after the first sync attempt either succeeds or fails for
+    the regular profiles.
   </summary>
 </histogram>
 
@@ -2801,8 +3039,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.SavedGaiaPasswordHashCount2{SyncConsentStatus}"
+    units="count" expires_after="2023-03-26">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of Gaia password hashes that have been saved for password
+    reuse detection {SyncConsentStatus}. This is logged during the
+    initialization of the PasswordReuseManagerImpl class.
+  </summary>
+  <token key="SyncConsentStatus">
+    <variant name="" summary=""/>
+    <variant name=".SignedInNonSync"
+        summary="when the primary account for the profile does not have Sync
+                 consent"/>
+    <variant name=".Sync"
+        summary="when the primary account for the profile has Sync consent"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.SavedGaiaPasswordHashCount{SyncConsentStatus}"
     units="count" expires_after="2023-03-26">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3063,6 +3325,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SyncingAccountState2"
     enum="PasswordManagerSyncingAccountState" expires_after="2023-04-30">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
@@ -3073,13 +3339,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SyncingAccountState3"
+    enum="PasswordManagerSyncingAccountState" expires_after="2023-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Information about the user's current sync status crossed with whether their
+    synced password is saved. Recorded at most once per day for regular
+    profiles.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.SyncMetadataReadError"
     enum="PasswordSyncMetadataReadError" expires_after="2023-04-23">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
     This metric reports the error observed when trying to read the Sync metadata
     from the password store during the start of Password sync.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SyncMetadataReadError2"
+    enum="PasswordSyncMetadataReadError" expires_after="2023-04-23">
+  <owner>mamir@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    This metric reports the error observed when trying to read the Sync metadata
+    from the password store during the start of Password sync. Recorded only if
+    password store was created.
   </summary>
 </histogram>
 
@@ -3224,18 +3517,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus"
-    enum="UnifiedPasswordManagerActiveStatus" expires_after="M114">
+    enum="UnifiedPasswordManagerActiveStatus" expires_after="2023-03-19">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
-    Recorded on startup after the sync service is initialized and once per
+    Recorded on profile open after the sync service is initialized and once per
     profile. It is recorded for clients that have UPM enabled and logs whether
     UPM is actually active for them. Reasons why UPM might be inactive are:
     passwords sync off or client unenrolled due to unresolvable errors. Note a
     client can have both sync off and be unenrolled, in which case it will still
     only appear in the sync off bucket, since this is considered the main reason
     why the client is inactive for UPM.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
+    enum="UnifiedPasswordManagerActiveStatus" expires_after="M114">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Recorded on profile open after the sync service is initialized and once per
+    regular profile. It is recorded for clients that have UPM enabled and logs
+    whether UPM is actually active for them. Reasons why UPM might be inactive
+    are: passwords sync off or client unenrolled due to unresolvable errors.
+    Note a client can have both sync off and be unenrolled, in which case it
+    will still only appear in the sync off bucket, since this is considered the
+    main reason why the client is inactive for UPM.
   </summary>
 </histogram>
 
@@ -3405,6 +3718,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes2{CustomPassphraseStatus}"
     units="sites" expires_after="2023-05-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -3418,14 +3735,49 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram
+    name="PasswordManager.{Store}BlacklistedSitesHiRes3{CustomPassphraseStatus}"
+    units="sites" expires_after="2023-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total number of sites that the user has blocklisted in the password
+    manager's {Store}. Recorded by iterating over stored passwords at most once
+    per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}InaccessiblePasswords"
+    units="saved passwords" expires_after="2023-06-26">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
+  <owner>derinel@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    The number of saved passwords that could not be decrypted in the password
+    manager's {Store}. Recorded once for the profile when it's opened.
+  </summary>
+  <token key="Store">
+    <variant name="" summary="profile-scoped store"/>
+    <variant name="AccountStore." summary="account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.{Store}InaccessiblePasswords2"
     units="saved passwords" expires_after="2023-06-26">
   <owner>derinel@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
     The number of saved passwords that could not be decrypted in the password
-    manager's {Store}. Recorded once for the profile on startup.
+    manager's {Store}. Recorded once for the regular profile when it's opened.
   </summary>
   <token key="Store">
     <variant name="" summary="profile-scoped store"/>
@@ -3436,6 +3788,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.{Store}PasswordNotes.CountCredentialsWithNonEmptyNotes"
     units="count" expires_after="2023-01-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -3445,8 +3801,24 @@ chromium-metrics-reviews@google.com.
   <token key="Store" variants="Store"/>
 </histogram>
 
+<histogram
+    name="PasswordManager.{Store}PasswordNotes.CountCredentialsWithNonEmptyNotes2"
+    units="count" expires_after="2023-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Total number of credentials with non-empty notes in the password manager's
+    {Store}. Recorded at most once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential"
     units="count" expires_after="2023-01-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -3457,9 +3829,25 @@ chromium-metrics-reviews@google.com.
   <token key="Store" variants="Store"/>
 </histogram>
 
+<histogram name="PasswordManager.{Store}PasswordNotes.CountNotesPerCredential2"
+    units="count" expires_after="2023-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Total number of notes attached to a password in the password manager's
+    {Store}. Recorded once for each credential at most once per day for regular
+    profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram
     name="PasswordManager.{Store}TimesPasswordUsed2.{PasswordType}{CustomPassphraseStatus}"
     units="PasswordUses" expires_after="2023-06-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -3476,8 +3864,31 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram
+    name="PasswordManager.{Store}TimesPasswordUsed3.{PasswordType}{CustomPassphraseStatus}"
+    units="PasswordUses" expires_after="2023-06-01">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of times each saved password from the {Store} has been used to
+    log in. Split by whether created by the user or generated by Chrome, and
+    further by whether the user used sync with custom passphrase or not.
+    Recorded by iterating over stored passwords soon after startup, at most once
+    per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+  <token key="PasswordType" variants="PasswordType"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes2.WithScheme{Scheme}"
     units="accounts" expires_after="2023-11-30">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -3492,9 +3903,29 @@ chromium-metrics-reviews@google.com.
   <token key="Scheme" variants="Scheme"/>
 </histogram>
 
+<histogram name="PasswordManager.{Store}TotalAccountsHiRes3.WithScheme{Scheme}"
+    units="accounts" expires_after="2023-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's {Store} (across all
+    sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as given in the
+    histogram suffix. For each scheme, the count is recorded at most once per
+    day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+  <token key="Scheme" variants="Scheme"/>
+</histogram>
+
 <histogram
     name="PasswordManager.{Store}{Metric2}.{PasswordType}{CustomPassphraseStatus}"
     units="units" expires_after="2023-05-01">
+  <obsolete>
+    Obsolete in M110 after PasswordStore is no longer created for non-regular,
+    guest, system and incognito profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -3510,6 +3941,29 @@ chromium-metrics-reviews@google.com.
   <token key="Metric2">
     <variant name="AccountsPerSiteHiRes2" summary="per site"/>
     <variant name="TotalAccountsHiRes2.ByType" summary="across all sites"/>
+  </token>
+  <token key="PasswordType" variants="PasswordType"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{Store}{Metric3}.{PasswordType}{CustomPassphraseStatus}"
+    units="units" expires_after="2023-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The number of accounts stored {Metric3} in the password manager's {Store}. ,
+    split by whether created by the user or generated by Chrome, and further by
+    whether the user use sync with custom passphrase or not. Recorded during
+    browser start-up, at most once per day for regular profiles.
+  </summary>
+  <token key="Store" variants="Store"/>
+  <token key="Metric3">
+    <variant name="AccountsPerSiteHiRes3" summary="per site"/>
+    <variant name="TotalAccountsHiRes3.ByType" summary="across all sites"/>
   </token>
   <token key="PasswordType" variants="PasswordType"/>
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>

@@ -135,9 +135,9 @@ void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
 
   // Only log data if there was at least one migrated password.
   if (!results_.empty()) {
-    base::UmaHistogramCounts100("PasswordManager.HttpPasswordMigrationCount",
+    base::UmaHistogramCounts100("PasswordManager.HttpPasswordMigrationCount2",
                                 results_.size());
-    base::UmaHistogramEnumeration("PasswordManager.HttpPasswordMigrationMode",
+    base::UmaHistogramEnumeration("PasswordManager.HttpPasswordMigrationMode2",
                                   mode_);
   }
 

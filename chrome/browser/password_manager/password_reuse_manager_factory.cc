@@ -75,6 +75,15 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
+  password_manager::PasswordStoreInterface* store =
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS)
+          .get();
+  // Incognito, guest, or system profiles doesn't have PasswordStore so
+  // PasswordReuseManager shouldn't be created as well.
+  if (!store)
+    return nullptr;
+
   password_manager::PasswordReuseManager* reuse_manager =
       new password_manager::PasswordReuseManagerImpl();
   reuse_manager->Init(profile->GetPrefs(),

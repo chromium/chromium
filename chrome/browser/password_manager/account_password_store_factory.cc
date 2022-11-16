@@ -47,6 +47,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::UnsyncedCredentialsDeletionNotifier;
@@ -139,6 +143,20 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::features::kEnablePasswordsAccountStorage));
 
   Profile* profile = Profile::FromBrowserContext(context);
+
+  DCHECK(!profile->IsOffTheRecord());
+
+  // Incognito profiles don't have their own password stores. Guest, or system
+  // profiles aren't relevant for Password Manager, and no PasswordStore should
+  // even be created for those types of profiles.
+  if (!profile->IsRegularProfile())
+    return nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, there are additional non-interesting profile types (sign-in
+  // profile and lockscreen profile).
+  if (!ash::ProfileHelper::IsUserProfile(profile))
+    return nullptr;
+#endif
 
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(

@@ -62,7 +62,7 @@ constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
 constexpr char kRetryHistogramBase[] =
     "PasswordManager.PasswordStoreAndroidBackend.Retry";
 constexpr char kUPMActiveHistogram[] =
-    "PasswordManager.UnifiedPasswordManager.ActiveStatus";
+    "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
 constexpr char kAliveAfterApiNotConnectedHistogram[] =
     "PasswordManager.AliveAfterApiNotConnectedError";
 constexpr char kAliveAfterConnectionSuspendedHistogram[] =

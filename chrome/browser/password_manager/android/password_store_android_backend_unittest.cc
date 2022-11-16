@@ -59,7 +59,7 @@ constexpr char kBackendErrorCodeMetric[] =
 constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
 constexpr char kUPMActiveHistogram[] =
-    "PasswordManager.UnifiedPasswordManager.ActiveStatus";
+    "PasswordManager.UnifiedPasswordManager.ActiveStatus2";
 constexpr char kUptimeOnAPIErrorHistogram[] =
     "PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError";
 constexpr char kRetryHistogramBase[] =

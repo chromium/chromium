@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(
   // fields, running into the initial sync flow is not expected. Since the
   // bridge is initialized for both account and profile store, the metric is
   // expected to be recorded twice.
-  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError2",
                                       kNone, /*expected_bucket_count=*/2);
 }
 
