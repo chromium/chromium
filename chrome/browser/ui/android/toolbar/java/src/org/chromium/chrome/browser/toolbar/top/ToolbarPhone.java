@@ -221,6 +221,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     protected final Point mNtpSearchBoxTranslation = new Point();
 
     protected final int mToolbarSidePadding;
+    private final int mBackgroundHeightIncreaseWhenFocus;
 
     private ValueAnimator mBrandColorTransitionAnimation;
     private boolean mBrandColorTransitionActive;
@@ -301,6 +302,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 ? R.dimen.toolbar_edge_padding_modern
                 : R.dimen.toolbar_edge_padding;
         mToolbarSidePadding = getResources().getDimensionPixelOffset(edgePaddingRes);
+
+        mBackgroundHeightIncreaseWhenFocus = mShouldShowModernizeVisualUpdate
+                ? getResources().getDimensionPixelSize(
+                        OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+                                ? R.dimen.toolbar_url_focus_height_increase_active_color
+                                : R.dimen.toolbar_url_focus_height_increase_no_active_color)
+                : 0;
     }
 
     @Override
@@ -873,6 +881,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         float expansion = getExpansionFractionForVisualState(visualState);
         int leftViewPosition = getLeftPositionOfLocationBarBackground(visualState);
         int rightViewPosition = getRightPositionOfLocationBarBackground(visualState);
+        int verticalInset = mLocationBarBackgroundVerticalInset - calculateOnFocusHeightIncrease();
 
         // The bounds are set by the following:
         // - The left most visible location bar child view.
@@ -880,11 +889,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // - The right most visible location bar child view.
         // - The bottom of the viewport is aligned with the bottom of the location bar.
         // Additional padding can be applied for use during animations.
-        out.set(leftViewPosition,
-                mLocationBar.getPhoneCoordinator().getTop() + mLocationBarBackgroundVerticalInset,
-                rightViewPosition,
-                mLocationBar.getPhoneCoordinator().getBottom()
-                        - mLocationBarBackgroundVerticalInset);
+        out.set(leftViewPosition, mLocationBar.getPhoneCoordinator().getTop() + verticalInset,
+                rightViewPosition, mLocationBar.getPhoneCoordinator().getBottom() - verticalInset);
     }
 
     /**
@@ -990,7 +996,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
-        updateToolbarLayoutForExpansionAnimation();
         updateLocationBarLayoutForExpansionAnimation();
     }
 
@@ -1106,6 +1111,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                         themedLocationBarColor, defaultLocationBarColor, mUrlFocusChangeFraction));
 
                 updateModernLocationBarCorners();
+                updateToolbarLayoutForUrlFocusChangeAnimation();
             }
         }
 
@@ -1117,32 +1123,22 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     /**
-     * Updates the toolbar height and bottom padding, as the result of either a focus change or
-     * scrolling the New Tab Page.
+     * Updates the toolbar height and bottom padding during URL focus changing.
      */
-    private void updateToolbarLayoutForExpansionAnimation() {
+    private void updateToolbarLayoutForUrlFocusChangeAnimation() {
         if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
             return;
         }
 
-        int heightIncreaseFactor = getResources().getDimensionPixelSize(
-                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                        ? R.dimen.toolbar_url_focus_height_increase_active_color
-                        : R.dimen.toolbar_url_focus_height_increase_no_active_color);
-        int heightIncrease = (int) (heightIncreaseFactor * mUrlExpansionFraction);
+        int heightIncrease = calculateOnFocusHeightIncrease();
 
         var layoutParams = getLayoutParams();
         layoutParams.height = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                 + heightIncrease;
         setLayoutParams(layoutParams);
 
-        // Apply extra bottom padding for no active-color treatments.
-        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            int bottomPadding = (int) (getResources().getDimensionPixelSize(
-                                               R.dimen.toolbar_url_focus_bottom_padding)
-                    * mUrlExpansionFraction);
-            setPaddingRelative(getPaddingStart(), getPaddingTop(), getPaddingEnd(), bottomPadding);
-        }
+        // Apply extra bottom padding.
+        setPaddingRelative(getPaddingStart(), getPaddingTop(), getPaddingEnd(), heightIncrease);
     }
 
     /**
@@ -2735,5 +2731,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         updateToolbarBackground(toolbarDefaultColor);
         updateModernLocationBarColor(
                 getLocationBarDefaultColorForToolbarColor(toolbarDefaultColor));
+    }
+
+    private int calculateOnFocusHeightIncrease() {
+        return (int) (mBackgroundHeightIncreaseWhenFocus * mUrlFocusChangeFraction / 2);
     }
 }
