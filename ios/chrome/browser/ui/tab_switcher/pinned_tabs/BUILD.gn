@@ -2,6 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("pinned_tabs_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "pinned_tabs_constants.h",
+    "pinned_tabs_constants.mm",
+    "pinned_tabs_view_controller.h",
+    "pinned_tabs_view_controller.mm",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

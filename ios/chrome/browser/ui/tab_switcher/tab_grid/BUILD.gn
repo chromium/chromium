@@ -151,6 +151,8 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/ui/keyboard:features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
+    "//ios/chrome/browser/ui/tab_switcher/pinned_tabs:features",
+    "//ios/chrome/browser/ui/tab_switcher/pinned_tabs:pinned_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/table_view:styler",

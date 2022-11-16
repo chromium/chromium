@@ -23,6 +23,9 @@
 #import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -140,6 +143,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Child view controllers.
 @property(nonatomic, strong) GridViewController* regularTabsViewController;
 @property(nonatomic, strong) GridViewController* incognitoTabsViewController;
+@property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
+
 // Disabled tab view controllers shown when a certain browser mode is disabled.
 @property(nonatomic, strong)
     DisabledTabViewController* incognitoDisabledTabViewController;
@@ -241,6 +246,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         ];
         break;
     }
+    _pinnedTabsViewController = [[PinnedTabsViewController alloc] init];
   }
   return self;
 }
@@ -274,6 +280,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupTopToolbar];
   [self setupBottomToolbar];
   [self setupEditButton];
+
+  if (IsPinnedTabsEnabled()) {
+    [self setupPinnedTabsViewController];
+  }
 
   // Hide the toolbars and the floating button, so they can fade in the first
   // time there's a transition into this view controller.
@@ -1055,6 +1065,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                     nil);
   }
+  if (IsPinnedTabsEnabled()) {
+    BOOL isTabGridPageRegularTabs =
+        currentPage == TabGridPage::TabGridPageRegularTabs;
+    [self.pinnedTabsViewController
+        pinnedTabsAvailable:isTabGridPageRegularTabs];
+  }
 }
 
 // Sets the value of `currentPage`, adjusting the position of the scroll view
@@ -1455,6 +1471,39 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   foregroundView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   [self.view insertSubview:foregroundView aboveSubview:self.plusSignButton];
   AddSameConstraints(foregroundView, self.view);
+}
+
+// Adds the PinnedTabsViewController and sets constraints.
+- (void)setupPinnedTabsViewController {
+  PinnedTabsViewController* pinnedTabsViewController =
+      self.pinnedTabsViewController;
+  [self.view addSubview:pinnedTabsViewController.view];
+
+  NSMutableArray* pinnedTabsConstraints =
+      [[NSMutableArray alloc] initWithArray:@[
+        [pinnedTabsViewController.view.leadingAnchor
+            constraintEqualToAnchor:self.view.leadingAnchor
+                           constant:kPinnedViewHorizontalPadding],
+        [pinnedTabsViewController.view.trailingAnchor
+            constraintEqualToAnchor:self.view.trailingAnchor
+                           constant:-kPinnedViewHorizontalPadding],
+      ]];
+  switch (GetPinnedTabsPosition()) {
+    case PinnedTabsTopPosition::kBottomPosition:
+      [pinnedTabsConstraints
+          addObject:[pinnedTabsViewController.view.bottomAnchor
+                        constraintEqualToAnchor:self.bottomToolbar.topAnchor
+                                       constant:-kPinnedViewBottomPadding]];
+      break;
+
+    case PinnedTabsTopPosition::kTopPosition:
+      [pinnedTabsConstraints
+          addObject:[pinnedTabsViewController.view.topAnchor
+                        constraintEqualToAnchor:self.topToolbar.bottomAnchor
+                                       constant:kPinnedViewTopPadding]];
+      break;
+  }
+  [NSLayoutConstraint activateConstraints:pinnedTabsConstraints];
 }
 
 // Adds the thumb strip's plus sign button, which is visible when the plus sign
