@@ -136,14 +136,6 @@ static void RecordVideoCodecStats(container_names::MediaContainerName container,
   }
 }
 
-static const char kCodecNone[] = "none";
-
-static const char* GetCodecName(enum AVCodecID id) {
-  const AVCodecDescriptor* codec_descriptor = avcodec_descriptor_get(id);
-  // If the codec name can't be determined, return none for tracking.
-  return codec_descriptor ? codec_descriptor->name : kCodecNone;
-}
-
 static base::Value GetTimeValue(base::TimeDelta value) {
   if (value == kInfiniteDuration)
     return base::Value("kInfiniteDuration");
@@ -1300,24 +1292,8 @@ void FFmpegDemuxer::OnFindStreamInfoDone(int result) {
     }
 
     if (codec_type == AVMEDIA_TYPE_AUDIO) {
-      // Log the codec detected, whether it is supported or not, and whether or
-      // not we have already detected a supported codec in another stream.
-      const int32_t codec_hash = HashCodecName(GetCodecName(codec_id));
-      base::UmaHistogramSparse("Media.DetectedAudioCodecHash", codec_hash);
-      if (is_local_file_) {
-        base::UmaHistogramSparse("Media.DetectedAudioCodecHash.Local",
-                                 codec_hash);
-      }
+      // Keep audio streams.
     } else if (codec_type == AVMEDIA_TYPE_VIDEO) {
-      // Log the codec detected, whether it is supported or not, and whether or
-      // not we have already detected a supported codec in another stream.
-      const int32_t codec_hash = HashCodecName(GetCodecName(codec_id));
-      base::UmaHistogramSparse("Media.DetectedVideoCodecHash", codec_hash);
-      if (is_local_file_) {
-        base::UmaHistogramSparse("Media.DetectedVideoCodecHash.Local",
-                                 codec_hash);
-      }
-
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       if (codec_id == AV_CODEC_ID_HEVC) {
         // If ffmpeg is built without HEVC parser/decoder support, it will be
