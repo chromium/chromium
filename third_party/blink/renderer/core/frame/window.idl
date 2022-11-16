@@ -42,6 +42,7 @@
     [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Custom=Getter] readonly attribute Location location;
     [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
     readonly attribute History history;
+    [Replaceable] readonly attribute Navigation navigation;
     [Replaceable, MeasureAs=BarPropLocationbar] readonly attribute BarProp locationbar;
     [Replaceable, MeasureAs=BarPropMenubar] readonly attribute BarProp menubar;
     [Replaceable, MeasureAs=BarPropPersonalbar] readonly attribute BarProp personalbar;

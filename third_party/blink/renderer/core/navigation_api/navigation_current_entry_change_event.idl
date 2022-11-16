@@ -4,8 +4,7 @@
 
 // https://wicg.github.io/navigation-api/
 [
-  Exposed=Window,
-  RuntimeEnabled=NavigationApi
+  Exposed=Window
 ] interface NavigationCurrentEntryChangeEvent : Event {
   constructor(DOMString type, NavigationCurrentEntryChangeEventInit eventInit);
   readonly attribute NavigationNavigationType? navigationType;

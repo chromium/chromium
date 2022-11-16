@@ -79,6 +79,7 @@ class LocalFrame;
 class MediaQueryList;
 class MessageEvent;
 class Modulator;
+class NavigationApi;
 class Navigator;
 class Screen;
 class ScriptController;
@@ -498,6 +499,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void IncrementNavigationId() { navigation_id_++; }
   uint32_t GetNavigationId() const { return navigation_id_; }
 
+  NavigationApi* navigation();
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -548,6 +551,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   mutable Member<StyleMedia> media_;
   mutable Member<CustomElementRegistry> custom_elements_;
   Member<External> external_;
+
+  Member<NavigationApi> navigation_;
 
   String status_;
   String default_status_;

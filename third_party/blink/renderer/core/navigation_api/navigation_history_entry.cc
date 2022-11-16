@@ -42,9 +42,7 @@ String NavigationHistoryEntry::id() const {
 }
 
 int64_t NavigationHistoryEntry::index() {
-  return DomWindow()
-             ? NavigationApi::navigation(*DomWindow())->GetIndexFor(this)
-             : -1;
+  return DomWindow() ? DomWindow()->navigation()->GetIndexFor(this) : -1;
 }
 
 KURL NavigationHistoryEntry::url() {
@@ -68,7 +66,7 @@ ScriptValue NavigationHistoryEntry::getState() const {
 
 void NavigationHistoryEntry::SetAndSaveState(
     scoped_refptr<SerializedScriptValue> state) {
-  DCHECK_EQ(this, NavigationApi::navigation(*DomWindow())->currentEntry());
+  DCHECK_EQ(this, DomWindow()->navigation()->currentEntry());
   state_ = state;
   DomWindow()->document()->Loader()->GetHistoryItem()->SetNavigationApiState(
       state_.get());

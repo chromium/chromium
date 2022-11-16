@@ -1531,10 +1531,8 @@ bool AXNodeObject::IsLoaded() const {
 
   // Check for a navigation API single-page app navigation in progress.
   if (auto* window = GetDocument()->domWindow()) {
-    if (auto* navigation_api = NavigationApi::navigation(*window)) {
-      if (navigation_api->HasNonDroppedOngoingNavigation())
-        return false;
-    }
+    if (window->navigation()->HasNonDroppedOngoingNavigation())
+      return false;
   }
 
   return true;

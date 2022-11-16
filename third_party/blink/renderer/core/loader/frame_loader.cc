@@ -416,11 +416,8 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
     // for a JS-provided promise to resolve, so check it as well.
     if (!document_loader_->SentDidFinishLoad() || HasProvisionalNavigation())
       return;
-    if (auto* navigation_api =
-            NavigationApi::navigation(*frame_->DomWindow())) {
-      if (navigation_api->HasNonDroppedOngoingNavigation())
-        return;
-    }
+    if (frame_->DomWindow()->navigation()->HasNonDroppedOngoingNavigation())
+      return;
   }
 
   // This code in this block is meant to prepare a document for display, but
@@ -754,21 +751,19 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
-    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
-        (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
-                               frame_->DomWindow()->GetSecurityOrigin()))) {
-      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-          url, NavigateEventType::kCrossDocument, frame_load_type);
-      params->form = request.Form();
-      if (request.GetTriggeringEventInfo() ==
-          mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-        params->involvement = UserNavigationInvolvement::kActivation;
-      }
-      if (navigation_api->DispatchNavigateEvent(params) !=
-          NavigationApi::DispatchResult::kContinue) {
-        return;
-      }
+  if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
+      (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
+                             frame_->DomWindow()->GetSecurityOrigin()))) {
+    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+        url, NavigateEventType::kCrossDocument, frame_load_type);
+    params->form = request.Form();
+    if (request.GetTriggeringEventInfo() ==
+        mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+      params->involvement = UserNavigationInvolvement::kActivation;
+    }
+    if (frame_->DomWindow()->navigation()->DispatchNavigateEvent(params) !=
+        NavigationApi::DispatchResult::kContinue) {
+      return;
     }
   }
 
@@ -1007,19 +1002,18 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
-    if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
-      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-          navigation_params->url, NavigateEventType::kCrossDocument,
-          WebFrameLoadType::kBackForward);
-      if (navigation_params->is_browser_initiated)
-        params->involvement = UserNavigationInvolvement::kBrowserUI;
-      params->destination_item = navigation_params->history_item;
-      auto result = navigation_api->DispatchNavigateEvent(params);
-      DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
-      if (!document_loader_)
-        return;
-    }
+  if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
+    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+        navigation_params->url, NavigateEventType::kCrossDocument,
+        WebFrameLoadType::kBackForward);
+    if (navigation_params->is_browser_initiated)
+      params->involvement = UserNavigationInvolvement::kBrowserUI;
+    params->destination_item = navigation_params->history_item;
+    auto result =
+        frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+    DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
+    if (!document_loader_)
+      return;
   }
 
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
@@ -1207,8 +1201,7 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
-    navigation_api->InformAboutCanceledNavigation();
+  frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)
@@ -1535,9 +1528,7 @@ bool FrameLoader::ShouldClose(bool is_reload) {
         frame_->GetDocument());
     if (!frame_->GetDocument()->DispatchBeforeUnloadEvent(
             &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-      if (auto* navigation_api =
-              NavigationApi::navigation(*frame_->DomWindow()))
-        navigation_api->InformAboutCanceledNavigation();
+      frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
       return false;
     }
 
@@ -1560,9 +1551,7 @@ bool FrameLoader::ShouldClose(bool is_reload) {
               descendant_frame->GetDocument());
       if (!descendant_frame->GetDocument()->DispatchBeforeUnloadEvent(
               &page->GetChromeClient(), is_reload, did_allow_navigation)) {
-        if (auto* navigation_api =
-                NavigationApi::navigation(*frame_->DomWindow()))
-          navigation_api->InformAboutCanceledNavigation();
+        frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
         return false;
       }
     }
@@ -1642,8 +1631,7 @@ void FrameLoader::CancelClientNavigation(CancelNavigationReason reason) {
   if (!client_navigation_)
     return;
 
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
-    navigation_api->InformAboutCanceledNavigation(reason);
+  frame_->DomWindow()->navigation()->InformAboutCanceledNavigation(reason);
 
   ResourceError error = ResourceError::CancelledError(client_navigation_->url);
   ClearClientNavigation();

@@ -523,7 +523,6 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/navigation_api/navigation_result.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_transition.idl",
           "//third_party/blink/renderer/core/navigation_api/navigation_update_current_entry_options.idl",
-          "//third_party/blink/renderer/core/navigation_api/window_navigation.idl",
           "//third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.idl",
           "//third_party/blink/renderer/core/page/color_page_popup_controller.idl",
           "//third_party/blink/renderer/core/page/page_popup_controller.idl",

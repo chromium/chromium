@@ -5,7 +5,6 @@
 // https://wicg.github.io/navigation-api/
 [
   Exposed=Window,
-  RuntimeEnabled=NavigationApi,
   ImplementedAs=NavigationApi
 ] interface Navigation : EventTarget {
   readonly attribute NavigationHistoryEntry? currentEntry;

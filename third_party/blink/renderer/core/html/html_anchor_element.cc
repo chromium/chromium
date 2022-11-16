@@ -463,23 +463,21 @@ void HTMLAnchorElement::HandleClick(Event& event) {
       return;
     }
 
-    if (auto* navigation_api = NavigationApi::navigation(*window)) {
-      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-          completed_url, NavigateEventType::kCrossDocument,
-          WebFrameLoadType::kStandard);
-      if (event.isTrusted())
-        params->involvement = UserNavigationInvolvement::kActivation;
-      params->download_filename = download_attr;
-      if (navigation_api->DispatchNavigateEvent(params) !=
-          NavigationApi::DispatchResult::kContinue) {
-        return;
-      }
-      // A download will never notify blink about its completion. Tell the
-      // NavigationApi that the navigation was dropped, so that it doesn't
-      // leave the frame thinking it is loading indefinitely.
-      navigation_api->InformAboutCanceledNavigation(
-          CancelNavigationReason::kDropped);
+    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+        completed_url, NavigateEventType::kCrossDocument,
+        WebFrameLoadType::kStandard);
+    if (event.isTrusted())
+      params->involvement = UserNavigationInvolvement::kActivation;
+    params->download_filename = download_attr;
+    if (window->navigation()->DispatchNavigateEvent(params) !=
+        NavigationApi::DispatchResult::kContinue) {
+      return;
     }
+    // A download will never notify blink about its completion. Tell the
+    // NavigationApi that the navigation was dropped, so that it doesn't
+    // leave the frame thinking it is loading indefinitely.
+    window->navigation()->InformAboutCanceledNavigation(
+        CancelNavigationReason::kDropped);
 
     request.SetSuggestedFilename(download_attr);
     request.SetRequestContext(mojom::blink::RequestContextType::DOWNLOAD);

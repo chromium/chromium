@@ -354,14 +354,12 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     return;
   }
 
-  if (auto* navigation_api = NavigationApi::navigation(*window)) {
-    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-        full_url, NavigateEventType::kHistoryApi, type);
-    params->state_object = data.get();
-    if (navigation_api->DispatchNavigateEvent(params) !=
-        NavigationApi::DispatchResult::kContinue) {
-      return;
-    }
+  auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+      full_url, NavigateEventType::kHistoryApi, type);
+  params->state_object = data.get();
+  if (window->navigation()->DispatchNavigateEvent(params) !=
+      NavigationApi::DispatchResult::kContinue) {
+    return;
   }
 
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(

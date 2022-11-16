@@ -96,8 +96,8 @@ TEST_F(NavigationApiTest, DispatchNavigateEventAfterPurgeMemory) {
 
   KURL dest_url = url_test_helpers::ToKURL("https://example.com/foo.html#frag");
   // Should not crash.
-  NavigationApi::navigation(*frame->DomWindow())
-      ->DispatchNavigateEvent(MakeGarbageCollected<NavigateEventDispatchParams>(
+  frame->DomWindow()->navigation()->DispatchNavigateEvent(
+      MakeGarbageCollected<NavigateEventDispatchParams>(
           dest_url, NavigateEventType::kFragment, WebFrameLoadType::kStandard));
 }
 
@@ -113,8 +113,8 @@ TEST_F(NavigationApiTest, UpdateForNavigationAfterPurgeMemory) {
 
   HistoryItem* item = frame->Loader().GetDocumentLoader()->GetHistoryItem();
   // Should not crash.
-  NavigationApi::navigation(*frame->DomWindow())
-      ->UpdateForNavigation(*item, WebFrameLoadType::kStandard);
+  frame->DomWindow()->navigation()->UpdateForNavigation(
+      *item, WebFrameLoadType::kStandard);
 }
 
 TEST_F(NavigationApiTest, InformAboutCanceledNavigationAfterPurgeMemory) {
@@ -129,8 +129,8 @@ TEST_F(NavigationApiTest, InformAboutCanceledNavigationAfterPurgeMemory) {
   KURL dest_url = url_test_helpers::ToKURL("https://example.com/foo.html#frag");
   // DispatchNavigateEvent() will ensure NavigationApi::ongoing_navigate_event_
   // is non-null.
-  NavigationApi::navigation(*frame->DomWindow())
-      ->DispatchNavigateEvent(MakeGarbageCollected<NavigateEventDispatchParams>(
+  frame->DomWindow()->navigation()->DispatchNavigateEvent(
+      MakeGarbageCollected<NavigateEventDispatchParams>(
           dest_url, NavigateEventType::kFragment, WebFrameLoadType::kStandard));
   // Purging memory will invalidate the v8::Context then call
   // FrameLoader::StopAllLoaders(), which will in turn call

@@ -1815,10 +1815,6 @@
       public: true,
     },
     {
-      name: "NavigationApi",
-      status: "stable",
-    },
-    {
       name: "NavigationId",
       status: "experimental",
       base_feature: "NavigationId",

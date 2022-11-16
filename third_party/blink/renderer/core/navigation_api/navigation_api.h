@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -39,17 +38,11 @@ class SerializedScriptValue;
 
 class CORE_EXPORT NavigationApi final
     : public EventTargetWithInlineData,
-      public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-  static NavigationApi* navigation(LocalDOMWindow&);
-  // Unconditionally creates NavigationApi, even if the RuntimeEnabledFeatures
-  // is disabled.
-  static NavigationApi* From(LocalDOMWindow&);
-  explicit NavigationApi(LocalDOMWindow&);
+  explicit NavigationApi(LocalDOMWindow*);
   ~NavigationApi() final = default;
 
   void InitializeForNewWindow(HistoryItem& current,
@@ -137,7 +130,7 @@ class CORE_EXPORT NavigationApi final
   // EventTargetWithInlineData overrides:
   const AtomicString& InterfaceName() const final;
   ExecutionContext* GetExecutionContext() const final {
-    return GetSupplementable();
+    return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
   void Trace(Visitor*) const final;
@@ -178,6 +171,7 @@ class CORE_EXPORT NavigationApi final
 
   NavigationHistoryEntry* MakeEntryFromItem(HistoryItem&);
 
+  Member<LocalDOMWindow> window_;
   HeapVector<Member<NavigationHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
   int current_entry_index_ = -1;

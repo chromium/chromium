@@ -1231,26 +1231,20 @@ void LocalFrameMojoHandler::GetOpenGraphMetadata(
 
 void LocalFrameMojoHandler::SetNavigationApiHistoryEntriesForRestore(
     mojom::blink::NavigationApiHistoryEntryArraysPtr entry_arrays) {
-  if (NavigationApi* navigation_api =
-          NavigationApi::navigation(*frame_->DomWindow()))
-    navigation_api->SetEntriesForRestore(entry_arrays);
+  frame_->DomWindow()->navigation()->SetEntriesForRestore(entry_arrays);
 }
 
 void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
     const WTF::Vector<WTF::String>& keys) {
-  if (NavigationApi* navigation_api =
-          NavigationApi::navigation(*frame_->DomWindow())) {
-    navigation_api->DisposeEntriesForSessionHistoryRemoval(keys);
-  }
+  frame_->DomWindow()->navigation()->DisposeEntriesForSessionHistoryRemoval(
+      keys);
 }
 
 void LocalFrameMojoHandler::TraverseCancelled(
     const String& navigation_api_key,
     mojom::blink::TraverseCancelledReason reason) {
-  if (NavigationApi* navigation_api =
-          NavigationApi::navigation(*frame_->DomWindow())) {
-    navigation_api->TraverseCancelled(navigation_api_key, reason);
-  }
+  frame_->DomWindow()->navigation()->TraverseCancelled(navigation_api_key,
+                                                       reason);
 }
 
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,

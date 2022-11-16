@@ -4,8 +4,7 @@
 
 // https://wicg.github.io/navigation-api/
 [
-  Exposed=Window,
-  RuntimeEnabled=NavigationApi
+  Exposed=Window
 ] interface NavigationHistoryEntry : EventTarget {
   readonly attribute DOMString key;
   readonly attribute DOMString id;

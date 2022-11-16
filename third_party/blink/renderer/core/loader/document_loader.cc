@@ -927,8 +927,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   if (should_send_stop_notification)
     GetFrameLoader().Progress().ProgressCompleted();
 
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow()))
-    navigation_api->UpdateForNavigation(*history_item_, type);
+  frame_->DomWindow()->navigation()->UpdateForNavigation(*history_item_, type);
   if (!frame_)
     return;
 
@@ -1443,25 +1442,23 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
 
   mojom::blink::SameDocumentNavigationType same_document_navigation_type =
       mojom::blink::SameDocumentNavigationType::kFragment;
-  if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
-    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-        url, NavigateEventType::kFragment, frame_load_type);
-    if (is_browser_initiated) {
-      params->involvement = UserNavigationInvolvement::kBrowserUI;
-    } else if (triggering_event_info ==
-               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-      params->involvement = UserNavigationInvolvement::kActivation;
-    }
-    params->destination_item = history_item;
-    params->is_browser_initiated = is_browser_initiated;
-    params->is_synchronously_committed_same_document =
-        is_synchronously_committed;
-    auto dispatch_result = navigation_api->DispatchNavigateEvent(params);
-    if (dispatch_result == NavigationApi::DispatchResult::kAbort)
-      return mojom::blink::CommitResult::Aborted;
-    if (dispatch_result == NavigationApi::DispatchResult::kIntercept)
-      return mojom::blink::CommitResult::Ok;
+  auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+      url, NavigateEventType::kFragment, frame_load_type);
+  if (is_browser_initiated) {
+    params->involvement = UserNavigationInvolvement::kBrowserUI;
+  } else if (triggering_event_info ==
+             mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+    params->involvement = UserNavigationInvolvement::kActivation;
   }
+  params->destination_item = history_item;
+  params->is_browser_initiated = is_browser_initiated;
+  params->is_synchronously_committed_same_document = is_synchronously_committed;
+  auto dispatch_result =
+      frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+  if (dispatch_result == NavigationApi::DispatchResult::kAbort)
+    return mojom::blink::CommitResult::Aborted;
+  if (dispatch_result == NavigationApi::DispatchResult::kIntercept)
+    return mojom::blink::CommitResult::Ok;
 
   // If the requesting document is cross-origin, perform the navigation
   // asynchronously to minimize the navigator's ability to execute timing
@@ -2565,11 +2562,10 @@ void DocumentLoader::CommitNavigation() {
   // or opaque-origin documents.
   if (commit_reason_ != CommitReason::kInitialization &&
       !frame_->DomWindow()->GetSecurityOrigin()->IsOpaque()) {
-    NavigationApi::From(*frame_->DomWindow())
-        ->InitializeForNewWindow(*history_item_, load_type_, commit_reason_,
-                                 NavigationApi::navigation(*previous_window),
-                                 navigation_api_back_entries_,
-                                 navigation_api_forward_entries_);
+    frame_->DomWindow()->navigation()->InitializeForNewWindow(
+        *history_item_, load_type_, commit_reason_,
+        previous_window->navigation(), navigation_api_back_entries_,
+        navigation_api_forward_entries_);
     // Now that the navigation API's entries array is initialized, we don't need
     // to retain the state from which it was initialized.
     navigation_api_back_entries_.Clear();
