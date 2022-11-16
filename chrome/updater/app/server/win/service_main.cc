@@ -197,9 +197,11 @@ HRESULT ServiceMain::InitializeComSecurity() {
   CDacl dacl;
   constexpr auto com_rights_execute_local =
       COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL;
-  dacl.AddAllowedAce(Sids::System(), com_rights_execute_local);
-  dacl.AddAllowedAce(Sids::Admins(), com_rights_execute_local);
-  dacl.AddAllowedAce(Sids::Interactive(), com_rights_execute_local);
+  if (!dacl.AddAllowedAce(Sids::System(), com_rights_execute_local) ||
+      !dacl.AddAllowedAce(Sids::Admins(), com_rights_execute_local) ||
+      !dacl.AddAllowedAce(Sids::Interactive(), com_rights_execute_local)) {
+    return E_ACCESSDENIED;
+  }
 
   CSecurityDesc sd;
   sd.SetDacl(dacl);
