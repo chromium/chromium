@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.EarlyHints.Preload.RequestDestination"
-    enum="RequestDestination" expires_after="2022-12-25">
+    enum="RequestDestination" expires_after="2023-04-15">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
