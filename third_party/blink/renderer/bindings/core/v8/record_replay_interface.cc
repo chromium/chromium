@@ -518,13 +518,14 @@ function protocolIdToScope(scopeId) {
 function createProtocolObject(objectId, level) {
   const obj = protocolIdToRemoteObject(objectId);
   const className = obj.subtype == "proxy" ? "Proxy" : (obj.className || "Function");
+  const { persistentId } = obj;
 
   let preview;
   if (level != "none") {
     preview = new ProtocolObjectPreview(obj, level).fill();
   }
 
-  return { objectId, className, preview };
+  return { objectId, persistentId, className, preview };
 }
 
 // Target limit for the number of items (properties etc.) to include in object
