@@ -48,6 +48,12 @@ class Ed25519Implementation : public AlgorithmImplementation {
                                 blink::WebCryptoKey* key) const override;
 
  private:
+  Status ImportKeyRaw(base::span<const uint8_t> key_data,
+                      const blink::WebCryptoAlgorithm& algorithm,
+                      bool extractable,
+                      blink::WebCryptoKeyUsageMask usages,
+                      blink::WebCryptoKey* key) const;
+
   Status ImportKeyPkcs8(base::span<const uint8_t> key_data,
                         const blink::WebCryptoAlgorithm& algorithm,
                         bool extractable,
@@ -60,11 +66,23 @@ class Ed25519Implementation : public AlgorithmImplementation {
                        blink::WebCryptoKeyUsageMask usages,
                        blink::WebCryptoKey* key) const;
 
+  Status ImportKeyJwk(base::span<const uint8_t> key_data,
+                      const blink::WebCryptoAlgorithm& algorithm,
+                      bool extractable,
+                      blink::WebCryptoKeyUsageMask usages,
+                      blink::WebCryptoKey* key) const;
+
+  Status ExportKeyRaw(const blink::WebCryptoKey& key,
+                      std::vector<uint8_t>* buffer) const;
+
   Status ExportKeyPkcs8(const blink::WebCryptoKey& key,
                         std::vector<uint8_t>* buffer) const;
 
   Status ExportKeySpki(const blink::WebCryptoKey& key,
                        std::vector<uint8_t>* buffer) const;
+
+  Status ExportKeyJwk(const blink::WebCryptoKey& key,
+                      std::vector<uint8_t>* buffer) const;
 
   const blink::WebCryptoKeyUsageMask all_public_key_usages_{
       blink::kWebCryptoKeyUsageVerify};

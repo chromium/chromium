@@ -281,6 +281,10 @@ class Status {
   // algorithms.
   static Status ErrorImportExtractableKdfKey();
 
+  // The key data buffer provided for importKey() is an incorrect length for
+  // Ed25519.
+  static Status ErrorImportEd25519KeyLength();
+
  private:
   enum Type { TYPE_ERROR, TYPE_SUCCESS };
 

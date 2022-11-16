@@ -184,6 +184,11 @@ Status Status::ErrorAesCtrInputTooLongCounterRepeated() {
                 "The input is too large for the counter length.");
 }
 
+Status Status::ErrorImportEd25519KeyLength() {
+  return Status(blink::kWebCryptoErrorTypeData,
+                "Ed25519 key data must be 256 bits");
+}
+
 Status Status::ErrorDataTooLarge() {
   return Status(blink::kWebCryptoErrorTypeOperation,
                 "The provided data is too large");
