@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,6 +26,14 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include "base/barrier_callback.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/task/thread_pool.h"
+#include "content/public/browser/file_system_access_permission_context.h"
+#endif
+
 using blink::mojom::FileSystemAccessEntry;
 using blink::mojom::FileSystemAccessEntryPtr;
 using blink::mojom::FileSystemAccessHandle;
@@ -36,6 +45,86 @@ namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
 using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
+#if BUILDFLAG(IS_POSIX)
+using PathType = FileSystemAccessPermissionContext::PathType;
+using SensitiveEntryResult =
+    FileSystemAccessPermissionContext::SensitiveEntryResult;
+using UserAction = FileSystemAccessPermissionContext::UserAction;
+#endif
+
+namespace {
+// Returns whether the specified extension receives special handling by the
+// Windows shell.
+bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
+  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
+
+  // .lnk and .scf files may be used to execute arbitrary code (see
+  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
+  // https://crbug.com/1227995, respectively). '.url' files can be used to read
+  // arbitrary files (see https://crbug.com/1307930 and
+  // https://crbug.com/1354518).
+  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
+      extension_lower == FILE_PATH_LITERAL("scf") ||
+      extension_lower == FILE_PATH_LITERAL("url")) {
+    return true;
+  }
+
+  // Setting a file's extension to a CLSID may conceal its actual file type on
+  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
+  if (!extension_lower.empty() &&
+      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
+      (extension_lower.back() == FILE_PATH_LITERAL('}')))
+    return true;
+  return false;
+}
+
+#if BUILDFLAG(IS_POSIX)
+base::FilePath ReadSymbolicLink(const base::FilePath& path) {
+  DCHECK(!path.empty());
+  base::FilePath resolved_file_path;
+  if (base::IsLink(path) && base::ReadSymbolicLink(path, &resolved_file_path)) {
+    return resolved_file_path;
+  }
+  // Returns an empty path if it is not a symbolic link, or fails to read the
+  // link.
+  return base::FilePath();
+}
+#endif
+
+}  // namespace
+
+struct FileSystemAccessDirectoryHandleImpl::
+    FileSystemAccessDirectoryEntriesListenerHolder
+    : base::RefCountedDeleteOnSequence<
+          FileSystemAccessDirectoryEntriesListenerHolder> {
+  FileSystemAccessDirectoryEntriesListenerHolder(
+      mojo::PendingRemote<
+          blink::mojom::FileSystemAccessDirectoryEntriesListener>
+          pending_listener,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : base::RefCountedDeleteOnSequence<
+            FileSystemAccessDirectoryEntriesListenerHolder>(
+            std::move(task_runner)),
+        listener(mojo::Remote<
+                 blink::mojom::FileSystemAccessDirectoryEntriesListener>(
+            std::move(pending_listener))) {
+    listener.reset_on_disconnect();
+  }
+
+  FileSystemAccessDirectoryEntriesListenerHolder(
+      const FileSystemAccessDirectoryEntriesListenerHolder&) = delete;
+  FileSystemAccessDirectoryEntriesListenerHolder& operator=(
+      const FileSystemAccessDirectoryEntriesListenerHolder&) = delete;
+
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener> listener;
+
+ private:
+  ~FileSystemAccessDirectoryEntriesListenerHolder() = default;
+  friend class base::RefCountedDeleteOnSequence<
+      FileSystemAccessDirectoryEntriesListenerHolder>;
+  friend class base::DeleteHelper<
+      FileSystemAccessDirectoryEntriesListenerHolder>;
+};
 
 FileSystemAccessDirectoryHandleImpl::FileSystemAccessDirectoryHandleImpl(
     FileSystemAccessManagerImpl* manager,
@@ -82,6 +171,75 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     return;
   }
 
+#if BUILDFLAG(IS_POSIX)
+  // While this directory handle already has obtained the permission and checked
+  // for the blocklist, a child symlink file may be created, pointing to a
+  // blocklisted file or directory. Before returning a child file handle, check
+  // for the validity of the file path pointed by a symlink, if any.
+  // Currently, symlink checks are not available on Windows.
+  auto callback_after_access_check = base::BindOnce(
+      &FileSystemAccessDirectoryHandleImpl::DoGetFile,
+      weak_factory_.GetWeakPtr(), create, child_url, std::move(callback));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&ReadSymbolicLink, child_url.path()),
+      base::BindOnce(
+          &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
+          weak_factory_.GetWeakPtr(), child_url,
+          std::move(callback_after_access_check)));
+#else
+  DoGetFile(create, child_url, std::move(callback), /*allowed=*/true);
+#endif
+}
+
+#if BUILDFLAG(IS_POSIX)
+void FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess(
+    storage::FileSystemURL url,
+    base::OnceCallback<void(bool)> callback,
+    const base::FilePath& symbolic_link) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (symbolic_link.empty() || !manager()->permission_context()) {
+    // Not a symlink, or missing a permission context to check the path;
+    // no need to do an additional check for blocklist.
+    std::move(callback).Run(/*allowed=*/true);
+    return;
+  }
+
+  manager()->permission_context()->ConfirmSensitiveEntryAccess(
+      context().storage_key.origin(),
+      url.type() == storage::FileSystemType::kFileSystemTypeLocal
+          ? PathType::kLocal
+          : PathType::kExternal,
+      symbolic_link, HandleType::kFile, UserAction::kNone, context().frame_id,
+      base::BindOnce(
+          &FileSystemAccessDirectoryHandleImpl::DidCheckSymbolicLinkAccess,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FileSystemAccessDirectoryHandleImpl::DidCheckSymbolicLinkAccess(
+    base::OnceCallback<void(bool)> callback,
+    SensitiveEntryResult sensitive_entry_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::move(callback).Run(sensitive_entry_result ==
+                          SensitiveEntryResult::kAllowed);
+}
+#endif
+
+void FileSystemAccessDirectoryHandleImpl::DoGetFile(bool create,
+                                                    storage::FileSystemURL url,
+                                                    GetFileCallback callback,
+                                                    bool allowed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!allowed) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kSecurityError),
+                            mojo::NullRemote());
+    return;
+  }
+
   if (create) {
     // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
@@ -89,7 +247,7 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     RunWithWritePermission(
         base::BindOnce(
             &FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission,
-            weak_factory_.GetWeakPtr(), child_url),
+            weak_factory_.GetWeakPtr(), url),
         base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                           GetFileCallback callback) {
           std::move(callback).Run(std::move(result), mojo::NullRemote());
@@ -99,9 +257,8 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::FileExists,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFile,
-                       weak_factory_.GetWeakPtr(), child_url,
-                       std::move(callback)),
-        child_url);
+                       weak_factory_.GetWeakPtr(), url, std::move(callback)),
+        url);
   }
 }
 
@@ -155,18 +312,13 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
         pending_listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<
-      mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener>,
-      base::OnTaskRunnerDeleter>
-      listener(new mojo::Remote<
-                   blink::mojom::FileSystemAccessDirectoryEntriesListener>(
-                   std::move(pending_listener)),
-               base::OnTaskRunnerDeleter(
-                   base::SequencedTaskRunner::GetCurrentDefault()));
-  listener->reset_on_disconnect();
+  auto listener_holder =
+      base::MakeRefCounted<FileSystemAccessDirectoryEntriesListenerHolder>(
+          std::move(pending_listener),
+          base::SequencedTaskRunner::GetCurrentDefault());
 
   if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    (*listener)->DidReadDirectory(
+    listener_holder->listener->DidReadDirectory(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kPermissionDenied),
         {}, false);
@@ -177,7 +329,7 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
       FROM_HERE, &FileSystemOperationRunner::ReadDirectory,
       base::BindRepeating(
           &FileSystemAccessDirectoryHandleImpl::DidReadDirectory,
-          weak_factory_.GetWeakPtr(), base::Owned(std::move(listener))),
+          weak_factory_.GetWeakPtr(), std::move(listener_holder)),
       url());
 }
 
@@ -409,23 +561,75 @@ void FileSystemAccessDirectoryHandleImpl::DidGetDirectory(
 }
 
 void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
-    mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener>*
-        listener,
+    scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
+        listener_holder,
     base::File::Error result,
     std::vector<filesystem::mojom::DirectoryEntry> file_list,
     bool has_more_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!*listener)
+  if (!listener_holder->listener)
     return;
 
   if (result != base::File::FILE_OK) {
     DCHECK(!has_more_entries);
-    (*listener)->DidReadDirectory(
+    listener_holder->listener->DidReadDirectory(
         file_system_access_error::FromFileError(result), {}, false);
     return;
   }
 
+#if BUILDFLAG(IS_POSIX)
+  // While this directory handle already has obtained the permission and checked
+  // for the blocklist, a child symlink file may be created, pointing to a
+  // blocklisted file or directory. Before merging a child into a result vector,
+  // check for the validity of the file path pointed by a symlink, if any.
+  // Currently, symlink checks are not available on Windows.
+  auto final_callback = base::BindOnce(
+      &FileSystemAccessDirectoryHandleImpl::AllEntriesReady,
+      weak_factory_.GetWeakPtr(), has_more_entries, std::move(listener_holder));
+
+  // Barrier callback is used to wait for checking each path in the `file_list`
+  // and creating a FileSystemAccessEntryPtr if the path is valid; otherwise,
+  // nullopt is returned for the callback. Since the barrier callback expects
+  // a fixed number of callbacks to be invoked before the final callback is
+  // invoked, each item in `file_list` must trigger the barrier callback with
+  // a valid FileSystemAccessEntryPtr or nullopt.
+  auto barrier_callback = base::BarrierCallback<FileSystemAccessEntryPtr>(
+      file_list.size(),
+      base::BindOnce(&FileSystemAccessDirectoryHandleImpl::MergeAllEntries,
+                     weak_factory_.GetWeakPtr(), std::move(final_callback)));
+
+  for (const auto& entry : file_list) {
+    std::string basename = storage::FilePathToString(entry.name);
+
+    storage::FileSystemURL child_url;
+    blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
+        GetChildURL(basename, &child_url);
+
+    // Skip any entries with names that aren't allowed to be accessed by
+    // this API, such as files with disallowed characters in their names.
+    if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
+      barrier_callback.Run(nullptr);
+      continue;
+    }
+
+    auto callback_after_access_check = base::BindOnce(
+        &FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck,
+        weak_factory_.GetWeakPtr(), std::move(basename), child_url,
+        entry.type == filesystem::mojom::FsFileType::DIRECTORY
+            ? HandleType::kDirectory
+            : HandleType::kFile,
+        barrier_callback);
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&ReadSymbolicLink, child_url.path()),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
+            weak_factory_.GetWeakPtr(), child_url,
+            std::move(callback_after_access_check)));
+  }
+#else
   std::vector<FileSystemAccessEntryPtr> entries;
   for (const auto& entry : file_list) {
     std::string basename = storage::FilePathToString(entry.name);
@@ -445,38 +649,59 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
                         ? HandleType::kDirectory
                         : HandleType::kFile));
   }
-  (*listener)->DidReadDirectory(file_system_access_error::Ok(),
-                                std::move(entries), has_more_entries);
+  AllEntriesReady(has_more_entries, std::move(listener_holder),
+                  std::move(entries));
+#endif
 }
 
-namespace {
+#if BUILDFLAG(IS_POSIX)
+void FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck(
+    std::string basename,
+    storage::FileSystemURL child_url,
+    HandleType handle_type,
+    base::OnceCallback<void(FileSystemAccessEntryPtr)> barrier_callback,
+    bool allowed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-// Returns whether the specified extension receives special handling by the
-// Windows shell.
-bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
-  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
-
-  // .lnk and .scf files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively). '.url' files can be used to read
-  // arbitrary files (see https://crbug.com/1307930 and
-  // https://crbug.com/1354518).
-  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
-      extension_lower == FILE_PATH_LITERAL("scf") ||
-      extension_lower == FILE_PATH_LITERAL("url")) {
-    return true;
+  if (!allowed) {
+    std::move(barrier_callback).Run(nullptr);
+    return;
   }
 
-  // Setting a file's extension to a CLSID may conceal its actual file type on
-  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
-  if (!extension_lower.empty() &&
-      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}')))
-    return true;
-  return false;
+  auto entry = CreateEntry(basename, child_url, handle_type);
+  std::move(barrier_callback).Run(std::move(entry));
 }
 
-}  // namespace
+void FileSystemAccessDirectoryHandleImpl::MergeAllEntries(
+    base::OnceCallback<void(std::vector<FileSystemAccessEntryPtr>)>
+        final_callback,
+    std::vector<FileSystemAccessEntryPtr> entries) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<FileSystemAccessEntryPtr> filtered_entries;
+  for (auto& entry : entries) {
+    // Filter any entry that did not pass the access check.
+    if (entry) {
+      filtered_entries.push_back(std::move(entry));
+    }
+  }
+  std::move(final_callback).Run(std::move(filtered_entries));
+}
+#endif
+
+void FileSystemAccessDirectoryHandleImpl::AllEntriesReady(
+    bool has_more_entries,
+    scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
+        listener_holder,
+    std::vector<FileSystemAccessEntryPtr> entries) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!listener_holder->listener)
+    return;
+
+  listener_holder->listener->DidReadDirectory(
+      file_system_access_error::Ok(), std::move(entries), has_more_entries);
+}
 
 // static
 bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(

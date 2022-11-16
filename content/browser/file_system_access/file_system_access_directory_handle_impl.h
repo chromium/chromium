@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 
 namespace content {
+
 // This is the browser side implementation of the
 // FileSystemAccessDirectoryHandle mojom interface. Instances of this class are
 // owned by the FileSystemAccessManagerImpl instance passed in to the
@@ -26,6 +27,12 @@ namespace content {
 class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
     : public FileSystemAccessHandleBase,
       public blink::mojom::FileSystemAccessDirectoryHandle {
+  // A struct holding FileSystemAccessDirectoryEntriesListener mojo remote.
+  // This mojo remote needs to be ref-counted and deleted on the right sequence
+  // via `base::RefCountedDeleteOnSequence`. Since mojo::Remote is move-only,
+  // a struct holding the mojo remote is used instead.
+  struct FileSystemAccessDirectoryEntriesListenerHolder;
+
  public:
   FileSystemAccessDirectoryHandleImpl(FileSystemAccessManagerImpl* manager,
                                       const BindingContext& context,
@@ -89,6 +96,10 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   // the implementation for passing create=true to GetFile.
   void GetFileWithWritePermission(const storage::FileSystemURL& child_url,
                                   GetFileCallback callback);
+  void DoGetFile(bool create,
+                 storage::FileSystemURL url,
+                 GetFileCallback callback,
+                 bool allowed);
   void DidGetFile(const storage::FileSystemURL& url,
                   GetFileCallback callback,
                   base::File::Error result);
@@ -100,14 +111,41 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
                        GetDirectoryCallback callback,
                        base::File::Error result);
   void DidReadDirectory(
-      mojo::Remote<blink::mojom::FileSystemAccessDirectoryEntriesListener>*
-          listener,
+      scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
+          listener_holder,
       base::File::Error result,
       std::vector<filesystem::mojom::DirectoryEntry> file_list,
       bool has_more_entries);
+  void AllEntriesReady(
+      bool has_more_entries,
+      scoped_refptr<FileSystemAccessDirectoryEntriesListenerHolder>
+          listener_holder,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);
 
   void ResolveImpl(ResolveCallback callback,
                    FileSystemAccessTransferTokenImpl* possible_child);
+
+#if BUILDFLAG(IS_POSIX)
+  // Optionally checks for the blocklist for symbolic link.
+  void CheckSymbolicLinkAccess(storage::FileSystemURL url,
+                               base::OnceCallback<void(bool)> callback,
+                               const base::FilePath& symbolic_link);
+  void DidCheckSymbolicLinkAccess(
+      base::OnceCallback<void(bool)> callback,
+      FileSystemAccessPermissionContext::SensitiveEntryResult
+          sensitive_entry_result);
+  void AfterSymbolicLinkAccessCheck(
+      std::string basename,
+      storage::FileSystemURL child_url,
+      FileSystemAccessPermissionContext::HandleType handle_type,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessEntryPtr)>
+          barrier_callback,
+      bool allowed);
+  void MergeAllEntries(
+      base::OnceCallback<void(
+          std::vector<blink::mojom::FileSystemAccessEntryPtr>)> final_callback,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr> entries);
+#endif
 
   // Helper to create a blink::mojom::FileSystemAccessEntry struct.
   blink::mojom::FileSystemAccessEntryPtr CreateEntry(

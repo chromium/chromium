@@ -44,6 +44,10 @@ class FileSystemAccessPermissionContext {
     // drag&drop operation. Read access should start out granted, but write
     // access will require a prompt.
     kDragAndDrop,
+    // The path for which a permission grant is requested was not the result of
+    // a user action. This is used for checking additional blocklist check of
+    // a path when obtaining a handle, therefore no prompt needs to be shown.
+    kNone,
   };
 
   // This enum helps distinguish between file or directory File System Access

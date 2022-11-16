@@ -14,12 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -34,6 +36,11 @@
 namespace content {
 
 using storage::FileSystemURL;
+using testing::_;
+using HandleType = FileSystemAccessPermissionContext::HandleType;
+using SensitiveEntryResult =
+    FileSystemAccessPermissionContext::SensitiveEntryResult;
+using UserAction = FileSystemAccessPermissionContext::UserAction;
 using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
@@ -52,8 +59,7 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
                                                base::FilePath(), nullptr);
 
     manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
-        file_system_context_, chrome_blob_context_,
-        /*permission_context=*/nullptr,
+        file_system_context_, chrome_blob_context_, &permission_context_,
         /*off_the_record=*/false);
 
     auto url = manager_->CreateFileSystemURLFromPath(
@@ -74,7 +80,10 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
                                                        deny_grant_));
   }
 
-  void TearDown() override { task_environment_.RunUntilIdle(); }
+  void TearDown() override {
+    manager_.reset();
+    task_environment_.RunUntilIdle();
+  }
 
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> GetHandleWithPermissions(
       const base::FilePath& path,
@@ -109,6 +118,8 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
+  testing::StrictMock<MockFileSystemAccessPermissionContext>
+      permission_context_;
 
   scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
@@ -245,6 +256,27 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   }
   EXPECT_THAT(names, testing::UnorderedElementsAreArray(kSafeNames));
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_Symlink) {
+  base::FilePath symlink_path(dir_.GetPath().AppendASCII("symlink"));
+  base::FilePath target_path(dir_.GetPath().AppendASCII("target"));
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, _, target_path, HandleType::kFile,
+                                           UserAction::kNone, _, _))
+      .WillOnce(base::test::RunOnceCallback<6>(SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle_->GetFile("symlink", /*create=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+}
+#endif
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
