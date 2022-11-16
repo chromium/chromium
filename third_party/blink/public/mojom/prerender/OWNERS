@@ -1,4 +1,4 @@
-file://chrome/browser/prefetch/no_state_prefetch/OWNERS
+file://chrome/browser/preloading/prefetch/no_state_prefetch/OWNERS
 file://content/browser/preloading/prerender/OWNERS
 
 per-file *.mojom=set noparent
