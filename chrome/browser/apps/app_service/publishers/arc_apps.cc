@@ -496,26 +496,6 @@ apps::WindowInfoPtr SetSessionId(apps::WindowInfoPtr window_info) {
   return window_info;
 }
 
-// Sets the session id for |window_info|. If the full restore feature is
-// disabled, or the session id has been set, returns |window_info|. Otherwise,
-// fetches a new ARC session id, and sets to window_id for |window_info|.
-// TODO(crbug.com/1253250): Remove. Prefer the non mojom SetSessionId.
-apps::mojom::WindowInfoPtr SetSessionId(
-    apps::mojom::WindowInfoPtr window_info) {
-  if (!window_info) {
-    window_info = apps::mojom::WindowInfo::New();
-    window_info->display_id = display::kInvalidDisplayId;
-  }
-
-  if (window_info->window_id != -1) {
-    return window_info;
-  }
-
-  window_info->window_id =
-      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
-  return window_info;
-}
-
 absl::optional<bool> GetResizeLocked(ArcAppListPrefs* prefs,
                                      const std::string& app_id) {
   // Set null to resize lock state until the Mojo connection to ARC++ has been
@@ -1121,35 +1101,6 @@ void ArcApps::Connect(
   subscriber->OnApps(std::move(apps), apps::mojom::AppType::kArc,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
-}
-
-void ArcApps::Launch(const std::string& app_id,
-                     int32_t event_flags,
-                     apps::mojom::LaunchSource launch_source,
-                     apps::mojom::WindowInfoPtr window_info) {
-  auto user_interaction_type = GetUserInterationType(
-      ConvertMojomLaunchSourceToLaunchSource(launch_source));
-  if (!user_interaction_type.has_value()) {
-    return;
-  }
-
-  if (app_id == arc::kPlayStoreAppId &&
-      apps_util::IsHumanLaunch(
-          ConvertMojomLaunchSourceToLaunchSource(launch_source))) {
-    arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
-                                          /*launched=*/true);
-  }
-
-  auto new_window_info = SetSessionId(std::move(window_info));
-  int32_t session_id = new_window_info->window_id;
-  int64_t display_id = new_window_info->display_id;
-
-  arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
-                 MakeArcWindowInfo(std::move(new_window_info)));
-
-  full_restore::SaveAppLaunchInfo(
-      profile_->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
-                               app_id, event_flags, session_id, display_id));
 }
 
 void ArcApps::SetResizeLocked(const std::string& app_id,

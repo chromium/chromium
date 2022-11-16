@@ -170,10 +170,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
-  void Launch(const std::string& app_id,
-              int32_t event_flags,
-              apps::mojom::LaunchSource launch_source,
-              apps::mojom::WindowInfoPtr window_info) override;
   void OpenNativeSettings(const std::string& app_id) override;
 
   // extensions::ExtensionPrefsObserver overrides.
@@ -225,23 +221,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   void ConvertVector(const extensions::ExtensionSet& extensions,
                      apps::mojom::Readiness readiness,
                      std::vector<apps::mojom::AppPtr>* apps_out);
-
-  // TODO(crbug.com/1253250): This function is used as `callback` for
-  // RunExtensionEnableFlow. The Launch interface can't be used as `callback`
-  // with `base::BindOnce`, because we have both mojom and non mojom Launch
-  // function. Remove this function after migrating to the non mojom Launch
-  // interface when we have one non mojom Launch interface only.
-  void LaunchWhenEnabled(const std::string& app_id,
-                         int32_t event_flags,
-                         LaunchSource launch_source,
-                         WindowInfoPtr window_info);
-
-  // TODO(crbug.com/1253250): Remove after migrating to the non mojom Launch
-  // interface.
-  void LaunchMojom(const std::string& app_id,
-                   int32_t event_flags,
-                   apps::mojom::LaunchSource launch_source,
-                   apps::mojom::WindowInfoPtr window_info);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 

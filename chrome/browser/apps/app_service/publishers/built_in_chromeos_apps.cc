@@ -207,15 +207,6 @@ void BuiltInChromeOsApps::Connect(
   // lifetime of the Chrome OS session. There won't be any further updates.
 }
 
-void BuiltInChromeOsApps::Launch(const std::string& app_id,
-                                 int32_t event_flags,
-                                 apps::mojom::LaunchSource launch_source,
-                                 apps::mojom::WindowInfoPtr window_info) {
-  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
-    ash::ToggleKeyboardShortcutViewer();
-  }
-}
-
 void BuiltInChromeOsApps::GetMenuModel(const std::string& app_id,
                                        apps::mojom::MenuType menu_type,
                                        int64_t display_id,

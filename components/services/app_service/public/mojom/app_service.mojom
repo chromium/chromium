@@ -25,18 +25,6 @@ interface AppService {
   // itself with the App Service.
   RegisterSubscriber(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
 
-  // Launches an app identified by |app_id|. |event_flags| contains launch
-  // options (e.g. window disposition). |launch_source| contains the source
-  // of the launch. When provided, |window_info| contains the expected window
-  // bounds, etc. that are requested for the placement of the launched app
-  // window.
-  Launch(
-      AppType app_type,
-      string app_id,
-      int32 event_flags,
-      LaunchSource launch_source,
-      WindowInfo? window_info);
-
   // Pauses an app to stop the current running app, and apply the icon effect.
   PauseApp(
       AppType app_type,
@@ -89,17 +77,6 @@ interface AppService {
 interface Publisher {
   // App Registry methods.
   Connect(pending_remote<Subscriber> subscriber, ConnectOptions? opts);
-
-  // Launches an app identified by |app_id|. |event_flags| contains launch
-  // options (e.g. window disposition). |launch_source| contains the source
-  // of the launch. When provided, |window_info| contains the expected window
-  // bounds, etc. that are requested for the placement of the launched app
-  // window.
-  Launch(
-      string app_id,
-      int32 event_flags,
-      LaunchSource launch_source,
-      WindowInfo? window_info);
 
   // Requests that the app identified by |app_id| is marked as paused. Paused
   // apps cannot be launched. Implemented if the publisher supports the pausing

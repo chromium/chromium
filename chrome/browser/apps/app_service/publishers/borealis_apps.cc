@@ -452,14 +452,6 @@ void BorealisApps::Connect(
                                          weak_factory_.GetWeakPtr()));
 }
 
-void BorealisApps::Launch(const std::string& app_id,
-                          int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::WindowInfoPtr window_info) {
-  borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      app_id, base::DoNothing());
-}
-
 void BorealisApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

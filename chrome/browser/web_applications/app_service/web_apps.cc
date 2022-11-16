@@ -265,16 +265,6 @@ void WebApps::Connect(
                                 std::move(subscriber_remote)));
 }
 
-void WebApps::Launch(const std::string& app_id,
-                     int32_t event_flags,
-                     apps::mojom::LaunchSource launch_source,
-                     apps::mojom::WindowInfoPtr window_info) {
-  publisher_helper().Launch(
-      app_id, event_flags,
-      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      apps::ConvertMojomWindowInfoToWindowInfo(window_info), base::DoNothing());
-}
-
 void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }

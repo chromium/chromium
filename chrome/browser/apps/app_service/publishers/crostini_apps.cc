@@ -298,15 +298,6 @@ void CrostiniApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void CrostiniApps::Launch(const std::string& app_id,
-                          int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::WindowInfoPtr window_info) {
-  crostini::LaunchCrostiniApp(
-      profile_, app_id,
-      window_info ? window_info->display_id : display::kInvalidDisplayId);
-}
-
 void CrostiniApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

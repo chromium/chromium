@@ -195,14 +195,6 @@ void StandaloneBrowserApps::Connect(
   subscribers_.Add(std::move(subscriber));
 }
 
-void StandaloneBrowserApps::Launch(const std::string& app_id,
-                                   int32_t event_flags,
-                                   apps::mojom::LaunchSource launch_source,
-                                   apps::mojom::WindowInfoPtr window_info) {
-  DCHECK_EQ(app_constants::kLacrosAppId, app_id);
-  crosapi::BrowserManager::Get()->Launch();
-}
-
 void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
                                          apps::mojom::MenuType menu_type,
                                          int64_t display_id,

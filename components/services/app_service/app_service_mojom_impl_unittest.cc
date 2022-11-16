@@ -95,12 +95,6 @@ class FakePublisher : public apps::PublisherBase {
     CallOnCapabilityAccesses(subscriber.get(), known_app_ids_);
     subscribers_.Add(std::move(subscriber));
   }
-
-  void Launch(const std::string& app_id,
-              int32_t event_flags,
-              apps::mojom::LaunchSource launch_source,
-              apps::mojom::WindowInfoPtr window_info) override {}
-
   void CallOnApps(apps::mojom::Subscriber* subscriber,
                   std::vector<std::string>& app_ids,
                   bool uninstall) {

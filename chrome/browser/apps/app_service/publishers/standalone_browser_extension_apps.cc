@@ -329,38 +329,6 @@ void StandaloneBrowserExtensionApps::Connect(
                                true /* should_notify_initialized */);
 }
 
-void StandaloneBrowserExtensionApps::Launch(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound())
-    return;
-
-  // The following code assumes |app_type_| must be
-  // AppType::kStandaloneBrowserChromeApp. Therefore, the app must be either
-  // platform app or hosted app.
-  // In the future, this class is possible to be instantiated with other
-  // AppType, please make sure to modify the logic if necessary.
-  controller_->Launch(
-      CreateCrosapiLaunchParamsWithEventFlags(
-          proxy(), app_id, event_flags,
-          ConvertMojomLaunchSourceToLaunchSource(launch_source),
-          window_info ? window_info->display_id : display::kInvalidDisplayId),
-      /*callback=*/base::DoNothing());
-
-  if (ShouldSaveToFullRestore(proxy(), app_id)) {
-    auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        app_id, apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
-        std::vector<base::FilePath>{}, nullptr);
-    full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
-                                    std::move(launch_info));
-  }
-}
-
 void StandaloneBrowserExtensionApps::GetMenuModel(
     const std::string& app_id,
     apps::mojom::MenuType menu_type,
