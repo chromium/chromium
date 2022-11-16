@@ -152,7 +152,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceMachName(scope) : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
+    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
+    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
   };
 
   return base::ScopedCFTypeRef<CFDictionaryRef>(
@@ -178,7 +179,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
+    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
+    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
   };
 
   return base::ScopedCFTypeRef<CFDictionaryRef>(
@@ -210,7 +212,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateUpdateServiceInternalLaunchdPlist(
     @LAUNCH_JOBKEY_MACHSERVICES :
         @{GetUpdateServiceInternalMachName(scope) : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
+    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
+    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
   };
 
   return base::ScopedCFTypeRef<CFDictionaryRef>(
