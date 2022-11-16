@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamTy
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -507,11 +508,16 @@ public class FeedSurfaceMediatorTest {
     @Config(qualifiers = "en-sw600dp")
     @Test
     public void testOnHeaderSelected_selectedWithLatestOptionsOnTablet() {
-        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
-        OnSectionHeaderSelectedListener listener =
-                getOnSectionHeaderSelectedListener(model, forYou, true);
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
         when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.REVERSE_CHRON);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+        mFeedSurfaceMediator.updateContent();
+        OnSectionHeaderSelectedListener listener =
+                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderSelected(1);
 
         verify(mListLayoutHelper).setSpanCount(2);
@@ -520,11 +526,17 @@ public class FeedSurfaceMediatorTest {
     @Config(qualifiers = "en-sw600dp")
     @Test
     public void testOnHeaderSelected_selectedWithSortOptionsOnTablet() {
-        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
-        OnSectionHeaderSelectedListener listener =
-                getOnSectionHeaderSelectedListener(model, forYou, true);
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
         when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+        mFeedSurfaceMediator.updateContent();
+        OnSectionHeaderSelectedListener listener =
+                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+
         listener.onSectionHeaderSelected(1);
 
         verify(mListLayoutHelper).setSpanCount(1);
@@ -532,11 +544,36 @@ public class FeedSurfaceMediatorTest {
 
     @Config(qualifiers = "en-sw600dp")
     @Test
-    public void testOnOptionSelected() {
-        FeedSurfaceMediator mediator = createMediator();
+    public void testOnOptionSelectedOnTablet() {
+        when(mFollowingStream.supportsOptions()).thenReturn(true);
         when(mOptionsCoordinator.getSelectedOptionId()).thenReturn(ContentOrder.GROUPED);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+        mFeedSurfaceMediator.updateContent();
 
-        mediator.onOptionChanged();
+        mFeedSurfaceMediator.onOptionChanged();
+
+        verify(mListLayoutHelper).setSpanCount(1);
+    }
+
+    @Config(qualifiers = "en-sw600dp")
+    @DisableFeatures(ChromeFeatureList.WEB_FEED_SORT)
+    @Test
+    public void testOnHeaderSelected_withFollowingAndSortDisabledOnTablet() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator =
+                createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
+        mFeedSurfaceMediator.updateContent();
+
+        OnSectionHeaderSelectedListener listener =
+                mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
+
+        listener.onSectionHeaderSelected(1);
 
         verify(mListLayoutHelper).setSpanCount(1);
     }

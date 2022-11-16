@@ -60,7 +60,6 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -279,23 +278,31 @@ public class FeedSurfaceMediator
 
     @Override
     public void onOptionChanged() {
-        updateLayout(true, false);
+        updateLayout(false);
     }
 
-    private void updateLayout(boolean optionsSupported, boolean overrideSingleSpan) {
+    private void updateLayout(boolean isSmallLayoutWidth) {
         ListLayoutHelper listLayoutHelper =
                 mCoordinator.getHybridListRenderer().getListLayoutHelper();
         if (!FeedFeatures.isMultiColumnFeedEnabled(mContext) || listLayoutHelper == null) return;
-        int spanCount = overrideSingleSpan ? SPAN_COUNT_SMALL_WIDTH : SPAN_COUNT_LARGE_WIDTH;
-        if (!overrideSingleSpan && optionsSupported) {
+        int spanCount = shouldUseSingleSpan(isSmallLayoutWidth) ? SPAN_COUNT_SMALL_WIDTH
+                                                                : SPAN_COUNT_LARGE_WIDTH;
+        listLayoutHelper.setSpanCount(spanCount);
+    }
+
+    private boolean shouldUseSingleSpan(boolean isSmallLayoutWidth) {
+        boolean supportsOptions = mCurrentStream != null && mCurrentStream.supportsOptions();
+        boolean isFollowingFeedSortDisabled =
+                (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)
+                        && mCurrentStream.getStreamKind() == StreamKind.FOLLOWING);
+        boolean isFeedSortedBySite = false;
+        if (supportsOptions) {
             @ContentOrder
             int selectedOption = mOptionsCoordinator.getSelectedOptionId();
-            // Override to single span count when showing following feed sort by site.
-            if (ContentOrder.GROUPED == selectedOption) {
-                spanCount = SPAN_COUNT_SMALL_WIDTH;
-            }
+            // Use single span count when showing following feed sorted by site.
+            isFeedSortedBySite = (ContentOrder.GROUPED == selectedOption);
         }
-        listLayoutHelper.setSpanCount(spanCount);
+        return isFollowingFeedSortDisabled || isSmallLayoutWidth || isFeedSortedBySite;
     }
 
     private void switchToStream(int headerIndex) {
@@ -314,7 +321,7 @@ public class FeedSurfaceMediator
                     .set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                             ViewVisibility.VISIBLE);
         }
-        updateLayout(newStream.supportsOptions(), false);
+        updateLayout(false);
         if (!mSettingUpStreams) {
             logSwitchedFeeds(newStream);
             bindStream(newStream, /*shouldScrollToTop=*/true);
@@ -349,14 +356,7 @@ public class FeedSurfaceMediator
                     int widthDp = (int) ((right - left) / pixelToDp);
                     int heightDp = (int) ((bottom - top) / pixelToDp);
                     mIsStickyHeaderEnabledInLayout = (widthDp >= 360 && heightDp >= 360);
-                    if (FeedFeatures.isMultiColumnFeedEnabled(mContext)) {
-                        boolean useSingleSpan =
-                                (right - left) <= ViewUtils.dpToPx(mContext, SMALL_WIDTH_DP);
-                        Stream stream = mTabToStreamMap.get(mSectionHeaderModel.get(
-                                SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
-                        boolean supportsOptions = (stream != null) && stream.supportsOptions();
-                        updateLayout(supportsOptions, useSingleSpan);
-                    }
+                    updateLayout(widthDp < SMALL_WIDTH_DP);
                 });
     }
 
