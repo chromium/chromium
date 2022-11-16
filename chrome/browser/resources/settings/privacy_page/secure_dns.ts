@@ -23,8 +23,9 @@ import '../settings_shared.css.js';
 import './secure_dns_input.js';
 
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -139,7 +140,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsRadio_: SecureDnsMode;
   private resolverOptions_: ResolverOption[];
   private lastResolverOption_: string;
-  private privacyPolicyString_: string;
+  private privacyPolicyString_: TrustedHTML;
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -393,9 +394,9 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       return;
     }
 
-    this.privacyPolicyString_ = loadTimeData.substituteString(
+    this.privacyPolicyString_ = sanitizeInnerHtml(loadTimeData.substituteString(
         loadTimeData.getString('secureDnsSecureDropdownModePrivacyPolicy'),
-        resolver.policy);
+        resolver.policy));
   }
 
   /**

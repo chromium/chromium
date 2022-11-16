@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../settings_shared.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
@@ -74,6 +75,10 @@ export class SettingsCheckboxElement extends SettingsCheckboxElementBase {
 
   private hasSubLabel_(subLabel: string, subLabelHtml: string): boolean {
     return !!subLabel || !!subLabelHtml;
+  }
+
+  private sanitizeInnerHtml_(rawString: string): TrustedHTML {
+    return sanitizeInnerHtml(rawString);
   }
 }
 

@@ -25,7 +25,7 @@
 <div id="descriptionItemWrapper">
   <iron-icon icon="[[icon]]" aria-hidden="true"></iron-icon>
   <div class="secondary">
-    <div inner-h-t-m-l="[[labelHtml]]"></div>
+    <div inner-h-t-m-l="[[sanitizeInnerHtml_(labelHtml)]]"></div>
     [[label]]
   </div>
 </div>

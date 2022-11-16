@@ -28,7 +28,7 @@
       aria-label="[[label]]">
     <div id="label" class="label">[[label]] <slot></slot></div>
     <div id="subLabel" class="secondary label">
-      <div inner-h-t-m-l="[[subLabelHtml]]"></div>
+      <div inner-h-t-m-l="[[sanitizeInnerHtml_(subLabelHtml)]]"></div>
       [[subLabel]]
     </div>
   </cr-checkbox>
