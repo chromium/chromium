@@ -27,8 +27,6 @@ struct LaunchData {
   // TODO(crbug.com/1199206): This is no longer needed and can be removed when
   // the search_result_ranker/ directory is removed.
   RankingItemType ranking_item_type = RankingItemType::kUnknown;
-  // TODO(crbug.com/1258415): Deprecate and can be removed along with app launch
-  // logging. Where the app was launched from.
   ash::AppListLaunchedFrom launched_from =
       ash::AppListLaunchedFrom::kLaunchedFromShelf;
   // The type of app launched.

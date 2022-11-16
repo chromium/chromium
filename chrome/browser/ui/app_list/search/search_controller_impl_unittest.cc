@@ -7,159 +7,31 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
+#include "chrome/browser/ui/app_list/search/test/search_controller_test_util.h"
+#include "chrome/browser/ui/app_list/search/test/test_ranker_manager.h"
 #include "chrome/browser/ui/app_list/search/test/test_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_provider.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
-#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace app_list {
-namespace {
 
-// TODO(crbug.com/1258415): Since we have a lot of class fakes now, we should
-// generalize them and split them into a test utils directory. This has been
-// done for the TestResult class, and could also be done for various util
-// functions such as MakeResults().
+namespace {
 
 using testing::ElementsAreArray;
 using testing::UnorderedElementsAreArray;
 using Category = ash::AppListSearchResultCategory;
 using DisplayType = ash::SearchResultDisplayType;
 using Result = ash::AppListSearchResultType;
-
-class TestSearchProvider : public SearchProvider {
- public:
-  TestSearchProvider(ash::AppListSearchResultType result_type,
-                     base::TimeDelta delay)
-      : result_type_(result_type), delay_(delay) {}
-
-  ~TestSearchProvider() override = default;
-
-  void SetNextResults(
-      std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-    results_ = std::move(results);
-  }
-
-  ash::AppListSearchResultType ResultType() const override {
-    return result_type_;
-  }
-
-  void Start(const std::u16string& query) override {
-    if (ash::IsZeroStateResultType(result_type_))
-      return;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TestSearchProvider::SetResults,
-                       query_weak_factory_.GetWeakPtr()),
-        delay_);
-  }
-
-  void StopQuery() override { query_weak_factory_.InvalidateWeakPtrs(); }
-
-  void StartZeroState() override {
-    if (!ash::IsZeroStateResultType(result_type_))
-      return;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TestSearchProvider::SetResults, base::Unretained(this)),
-        delay_);
-  }
-
- private:
-  void SetResults() { SwapResults(&results_); }
-
-  std::vector<std::unique_ptr<ChromeSearchResult>> results_;
-  ash::AppListSearchResultType result_type_;
-  base::TimeDelta delay_;
-  base::WeakPtrFactory<TestSearchProvider> query_weak_factory_{this};
-};
-
-// A test ranker manager that circumvents all result rankings, and hardcodes
-// category ranking.
-class TestRankerManager : public RankerManager {
- public:
-  explicit TestRankerManager(Profile* profile)
-      : RankerManager(profile, nullptr) {}
-  ~TestRankerManager() override {}
-
-  TestRankerManager(const TestRankerManager&) = delete;
-  TestRankerManager& operator=(const TestRankerManager&) = delete;
-
-  void SetCategoryRanks(base::flat_map<Category, double> category_ranks) {
-    category_ranks_ = category_ranks;
-  }
-
-  // Ranker:
-  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override {
-    // Noop.
-  }
-
-  // Ranker:
-  void UpdateCategoryRanks(const ResultsMap& results,
-                           CategoriesList& categories,
-                           ProviderType provider) override {
-    for (auto& category : categories) {
-      const auto it = category_ranks_.find(category.category);
-      if (it != category_ranks_.end())
-        category.score = it->second;
-    }
-  }
-
-  // Ranker:
-  void Start(const std::u16string& query,
-             ResultsMap& results,
-             CategoriesList& categories) override {}
-  void Train(const LaunchData& launch) override {}
-  void Remove(ChromeSearchResult* result) override {}
-
- private:
-  base::flat_map<Category, double> category_ranks_;
-};
-
-std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
-    const std::vector<std::string>& ids,
-    const std::vector<DisplayType>& display_types,
-    const std::vector<Category>& categories,
-    const std::vector<int>& best_match_ranks,
-    const std::vector<double>& scores) {
-  std::vector<std::unique_ptr<ChromeSearchResult>> results;
-  for (size_t i = 0; i < ids.size(); ++i) {
-    results.emplace_back(std::make_unique<TestResult>(
-        ids[i], display_types[i], categories[i], best_match_ranks[i],
-        /*relevance=*/scores[i], /*ftrl_result_score=*/scores[i]));
-  }
-  return results;
-}
-
-std::vector<std::unique_ptr<ChromeSearchResult>> MakeListResults(
-    const std::vector<std::string>& ids,
-    const std::vector<Category>& categories,
-    const std::vector<int>& best_match_ranks,
-    const std::vector<double>& scores) {
-  std::vector<DisplayType> display_types(ids.size(), DisplayType::kList);
-  return MakeResults(ids, display_types, categories, best_match_ranks, scores);
-}
-
-// Returns a pointer to a search provider. Only valid until the next call to
-// SimpleProvider.
-static std::unique_ptr<SearchProvider> kProvider;
-SearchProvider* SimpleProvider(ash::AppListSearchResultType result_type) {
-  kProvider =
-      std::make_unique<TestSearchProvider>(result_type, base::Seconds(0));
-  return kProvider.get();
-}
 
 }  // namespace
 
