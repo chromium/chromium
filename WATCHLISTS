@@ -1560,15 +1560,17 @@
                   '|chrome/browser/android/offline_pages/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/offlinepages/'
     },
-    'omnibox': {
+    'omnibox_desktop': {
       'filepath': '^chrome/browser/autocomplete/|'\
                   '^chrome/browser/resources/new_tab_page/realbox/|'\
                   '^chrome/browser/resources/omnibox|'\
                   '^chrome/browser/ui/location_bar/|'\
                   '^chrome/browser/ui/omnibox/|'\
-                  '^chrome/browser/ui/.*/location_bar/|'\
-                  '^chrome/browser/ui/.*/omnibox/|'\
-                  '^chrome/browser/ui/.*/realbox/|'\
+                  '^chrome/browser/ui/app_list/search/omnibox/|'\
+                  '^chrome/browser/ui/views/location_bar/|'\
+                  '^chrome/browser/ui/views/omnibox/|'\
+                  '^chrome/browser/ui/webui/omnibox/|'\
+                  '^chrome/browser/ui/webui/realbox/|'\
                   '^chrome/test/data/webui/new_tab_page/realbox/|'\
                   '^components/omnibox/|'\
                   '^components/search_engines/'
@@ -2848,8 +2850,8 @@
                       'dimich+watch@chromium.org',
                       'fgorski+watch@chromium.org',
                       'petewil+watch@chromium.org'],
-    'omnibox': ['jdonnelly+watch@chromium.org',
-                'mahmadi+watch@chromium.org'],
+    'omnibox_desktop': ['jdonnelly+watch@chromium.org',
+                        'mahmadi+watch@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
     'os_crypt': ['wfh+watch@chromium.org'],
