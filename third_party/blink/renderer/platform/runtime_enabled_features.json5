@@ -2140,7 +2140,7 @@
     {
       name: "PrefixedStorageInfo",
       public: true,
-      status: "stable",
+      status: "test",
       base_feature: "PrefixedStorageInfo",
       base_feature_status: "disabled",
     },
