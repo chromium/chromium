@@ -1484,5 +1484,13 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/devtools/extensions", "http/tests/devtools/tracing", "http/tests/devtools/coverage"],
     "args": ["--content-shell-devtools-tab-target"]
+  },
+  {
+    "prefix": "split-user-media-queues",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/mediacapture-streams/parallel-capture-requests.https.html"
+    ],
+    "args": ["--enable-features=SplitUserMediaQueues"]
   }
 ]
