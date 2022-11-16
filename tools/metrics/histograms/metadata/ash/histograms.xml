@@ -2256,16 +2256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Display.PrimaryDisplayZoomAtStartup" units="%"
-    expires_after="2020-09-06">
-  <owner>jamescook@chromium.org</owner>
-  <owner>jessejames@chromium.org</owner>
-  <owner>cros-system-services@google.com</owner>
-  <summary>
-    The display zoom setting for the primary display, recorded on startup.
-  </summary>
-</histogram>
-
 <histogram name="Ash.DisplayChangeDialog.Saved" enum="BooleanSaved"
     expires_after="2020-06-30">
   <owner>zentaro@chromium.org</owner>
