@@ -11,19 +11,8 @@ import sys
 from typing import Iterator, Optional
 
 from common import REPO_ALIAS, register_device_args, run_ffx_command
-from ffx_integration import get_config
 
 _REPO_NAME = 'chromium-test-package-server'
-
-
-def _ensure_ffx_config(key: str, value: str) -> bool:
-    """Ensures ffx config for a given key is value. Returns True if the config
-    was changed, False otherwise."""
-
-    if get_config(key) == value:
-        return False
-    run_ffx_command(['config', 'set', key, value])
-    return True
 
 
 def _stop_serving(repo_name: str, target: Optional[str]) -> None:
@@ -47,12 +36,7 @@ def _start_serving(repo_dir: str, repo_name: str,
         target: Fuchsia device the repository is served to.
     """
 
-    # Check ffx configs, restart daemon if the configuration was updated.
-    config_updated = False
-    config_updated |= _ensure_ffx_config('ffx_repository', 'true')
-    config_updated |= _ensure_ffx_config('repository.server.mode', '\"ffx\"')
-    if config_updated:
-        run_ffx_command(['doctor', '--restart-daemon'])
+    run_ffx_command(('config', 'set', 'repository.server.mode', '\"ffx\"'))
 
     run_ffx_command(['repository', 'server', 'start'])
     run_ffx_command(['repository', 'add-from-pm', repo_dir, '-r', repo_name])

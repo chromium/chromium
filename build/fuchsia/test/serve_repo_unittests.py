@@ -26,33 +26,11 @@ class ServeRepoTest(unittest.TestCase):
                                              target_id=_TARGET)
 
     @mock.patch('serve_repo.run_ffx_command')
-    @mock.patch('serve_repo.get_config')
-    def test_ffx_config(self, mock_get_config, mock_ffx) -> None:
-        """Test |_ensure_ffx_config| returns True if config is changed,
-        False otherwise."""
-
-        mock_get_config.side_effect = ['true', '\"ffx\"']
-
-        serve_repo.run_serve_cmd('start', self._namespace)
-        self.assertEqual(mock_ffx.call_count, 3)
-
-        mock_ffx.reset_mock()
-        mock_get_config.reset_mock()
-        mock_get_config.side_effect = ['false', '\"not_ffx\"']
-
-        serve_repo.run_serve_cmd('start', self._namespace)
-        self.assertEqual(mock_ffx.call_count, 6)
-
-    @mock.patch('serve_repo.run_ffx_command')
-    @mock.patch('serve_repo._ensure_ffx_config', return_value=True)
-    def test_run_serve_cmd_start(self, mock_config, mock_ffx) -> None:
+    def test_run_serve_cmd_start(self, mock_ffx) -> None:
         """Test |run_serve_cmd| function for start."""
 
         serve_repo.run_serve_cmd('start', self._namespace)
-        self.assertEqual(mock_config.call_count, 2)
         self.assertEqual(mock_ffx.call_count, 4)
-        first_call = mock_ffx.call_args_list[0]
-        self.assertEqual(['doctor', '--restart-daemon'], first_call[0][0])
         second_call = mock_ffx.call_args_list[1]
         self.assertEqual(['repository', 'server', 'start'], second_call[0][0])
         third_call = mock_ffx.call_args_list[2]
