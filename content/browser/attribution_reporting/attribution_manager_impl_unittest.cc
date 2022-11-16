@@ -21,6 +21,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -2077,14 +2078,36 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   task_environment_.RunUntilIdle();
   EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
-  // Trigger registered outside a fenced frame tree failed with debug reporting
-  // and debug cookie is set.
-  attribution_manager_->HandleTrigger(TriggerBuilder()
-                                          .SetReportingOrigin(reporting_origin)
-                                          .SetDebugReporting(true)
-                                          .Build());
-  task_environment_.RunUntilIdle();
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+  {
+    // Trigger registered outside a fenced frame tree failed with debug
+    // reporting and debug cookie is set, but feature off.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        kAttributionVerboseDebugReporting);
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetDebugReporting(true)
+            .Build());
+    task_environment_.RunUntilIdle();
+    EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+  }
+
+  {
+    // Trigger registered outside a fenced frame tree failed with debug
+    // reporting and debug cookie is set, and feature on.
+    base::test::ScopedFeatureList scoped_feature_list{
+        kAttributionVerboseDebugReporting};
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetDebugReporting(true)
+            .Build());
+    task_environment_.RunUntilIdle();
+    EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+  }
 }
 
 class AttributionManagerImplDebugReportTest
@@ -2124,26 +2147,51 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   EXPECT_THAT(StoredSources(), SizeIs(1));
   EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
 
-  // Source registered outside a fenced frame failed with debug reporting.
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetDestinationOrigin(destination_origin)
-          .SetDebugReporting(true)
-          .Build());
+  {
+    // Source registered outside a fenced frame failed with debug reporting, but
+    // feature off.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        kAttributionVerboseDebugReporting);
 
-  task_environment_.RunUntilIdle();
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetDestinationOrigin(destination_origin)
+            .SetDebugReporting(true)
+            .Build());
 
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-  EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+    task_environment_.RunUntilIdle();
 
-  base::Value::List report_body =
-      report_sender_->verbose_debug_calls().front().ReportBody();
-  ASSERT_EQ(report_body.size(), 1u);
-  ASSERT_TRUE(report_body.front().is_dict());
-  const base::Value::Dict* report_data =
-      report_body.front().GetDict().FindDict("body");
-  ASSERT_TRUE(report_data);
-  EXPECT_TRUE(report_data->Find("source_site"));
+    EXPECT_THAT(StoredSources(), SizeIs(1));
+    EXPECT_THAT(report_sender_->verbose_debug_calls(), IsEmpty());
+  }
+
+  {
+    // Source registered outside a fenced frame failed with debug reporting, and
+    // feature on.
+    base::test::ScopedFeatureList scoped_feature_list{
+        kAttributionVerboseDebugReporting};
+
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetDestinationOrigin(destination_origin)
+            .SetDebugReporting(true)
+            .Build());
+
+    task_environment_.RunUntilIdle();
+
+    EXPECT_THAT(StoredSources(), SizeIs(1));
+    EXPECT_THAT(report_sender_->verbose_debug_calls(), SizeIs(1));
+
+    base::Value::List report_body =
+        report_sender_->verbose_debug_calls().front().ReportBody();
+    ASSERT_EQ(report_body.size(), 1u);
+    ASSERT_TRUE(report_body.front().is_dict());
+    const base::Value::Dict* report_data =
+        report_body.front().GetDict().FindDict("body");
+    ASSERT_TRUE(report_data);
+    EXPECT_TRUE(report_data->Find("source_site"));
+  }
 }
 
 class AttributionManagerImplCookieBasedDebugReportTest

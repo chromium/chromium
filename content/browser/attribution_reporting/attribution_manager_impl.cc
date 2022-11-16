@@ -329,6 +329,10 @@ bool g_run_in_memory = false;
 
 }  // namespace
 
+BASE_FEATURE(kAttributionVerboseDebugReporting,
+             "AttributionVerboseDebugReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
@@ -1025,6 +1029,9 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const AttributionStorage::StoreSourceResult& result) {
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting))
+    return;
+
   if (absl::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(source, is_debug_cookie_set, result)) {
     report_sender_->SendReport(std::move(*debug_report));
@@ -1035,6 +1042,9 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const AttributionTrigger& trigger,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting))
+    return;
+
   if (absl::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(trigger, is_debug_cookie_set,
                                          result)) {
