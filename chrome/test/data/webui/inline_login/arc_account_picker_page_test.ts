@@ -9,7 +9,6 @@ import {Account} from 'chrome://chrome-signin/arc_account_picker/arc_account_pic
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -71,8 +70,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
   }
 
   test(
-      assert(arc_account_picker_page_test.TestNames.ArcPickerActive),
-      async () => {
+      arc_account_picker_page_test.TestNames.ArcPickerActive, async () => {
         await testSetup(
             {isAvailableInArc: true, showArcAvailabilityPicker: true},
             getFakeAccountsNotAvailableInArcList(),
@@ -92,7 +90,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
       });
 
   test(
-      assert(arc_account_picker_page_test.TestNames.ArcPickerHiddenForReauth),
+      arc_account_picker_page_test.TestNames.ArcPickerHiddenForReauth,
       async () => {
         await testSetup(
             {isAvailableInArc: true, showArcAvailabilityPicker: true},
@@ -106,7 +104,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
       });
 
   test(
-      assert(arc_account_picker_page_test.TestNames.ArcPickerHiddenNoAccounts),
+      arc_account_picker_page_test.TestNames.ArcPickerHiddenNoAccounts,
       async () => {
         await testSetup(
             {isAvailableInArc: true, showArcAvailabilityPicker: true},
@@ -120,7 +118,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
                 ' not available in ARC');
       });
 
-  test(assert(arc_account_picker_page_test.TestNames.AddAccount), async () => {
+  test(arc_account_picker_page_test.TestNames.AddAccount, async () => {
     await testSetup(
         {isAvailableInArc: true, showArcAvailabilityPicker: true},
         getFakeAccountsNotAvailableInArcList(),
@@ -141,8 +139,7 @@ suite(arc_account_picker_page_test.suiteName, () => {
   });
 
   test(
-      assert(arc_account_picker_page_test.TestNames.MakeAvailableInArc),
-      async () => {
+      arc_account_picker_page_test.TestNames.MakeAvailableInArc, async () => {
         await testSetup(
             {isAvailableInArc: true, showArcAvailabilityPicker: true},
             getFakeAccountsNotAvailableInArcList(),

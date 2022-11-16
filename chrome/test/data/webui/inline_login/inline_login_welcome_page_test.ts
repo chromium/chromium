@@ -7,7 +7,6 @@ import 'chrome://chrome-signin/inline_login_app.js';
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,7 +58,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   });
 
   test(
-      assert(inline_login_welcome_page_test.TestNames.Reauthentication), () => {
+      inline_login_welcome_page_test.TestNames.Reauthentication, () => {
         testSetup(/*dialogArgs=*/ null);
         webUIListenerCallback(
             'load-auth-extension', fakeAuthExtensionDataWithEmail);
@@ -69,7 +68,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
             'Welcome screen should be active');
       });
 
-  test(assert(inline_login_welcome_page_test.TestNames.OkButton), () => {
+  test(inline_login_welcome_page_test.TestNames.OkButton, () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     const okButton =
@@ -96,7 +95,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     });
   });
 
-  test(assert(inline_login_welcome_page_test.TestNames.Checkbox), () => {
+  test(inline_login_welcome_page_test.TestNames.Checkbox, () => {
     testSetup(/*dialogArgs=*/ null);
 
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
@@ -119,7 +118,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     });
   });
 
-  test(assert(inline_login_welcome_page_test.TestNames.GoBack), () => {
+  test(inline_login_welcome_page_test.TestNames.GoBack, () => {
     testSetup(/*dialogArgs=*/ null);
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     const backButton =
@@ -151,7 +150,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
   });
 
   test(
-      assert(inline_login_welcome_page_test.TestNames.IsAvailableInArc), () => {
+      inline_login_welcome_page_test.TestNames.IsAvailableInArc, () => {
         const dialogArgs = {
           isAvailableInArc: true,
           showArcAvailabilityPicker: false,
@@ -175,7 +174,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
         });
       });
 
-  test(assert(inline_login_welcome_page_test.TestNames.ToggleHidden), () => {
+  test(inline_login_welcome_page_test.TestNames.ToggleHidden, () => {
     const dialogArgs = {
       isAvailableInArc: true,
       showArcAvailabilityPicker: true,
@@ -190,7 +189,7 @@ suite(inline_login_welcome_page_test.suiteName, () => {
     assertTrue(toggle.hidden, 'ARC toggle should be hidden');
   });
 
-  test(assert(inline_login_welcome_page_test.TestNames.LinkClick), async () => {
+  test(inline_login_welcome_page_test.TestNames.LinkClick, async () => {
     const dialogArgs = {
       isAvailableInArc: true,
       showArcAvailabilityPicker: false,

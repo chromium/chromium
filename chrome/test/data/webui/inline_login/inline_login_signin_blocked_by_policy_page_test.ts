@@ -14,7 +14,6 @@ import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/
 import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {SigninBlockedByPolicyPageElement} from 'chrome://chrome-signin/signin_blocked_by_policy_page.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -61,8 +60,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
   }
 
   test(
-      assert(inline_login_signin_blocked_by_policy_page_test.TestNames
-                 .BlockedSigninPage),
+      inline_login_signin_blocked_by_policy_page_test.TestNames
+          .BlockedSigninPage,
       () => {
         testSetup(/*dialogArgs=*/ null);
         // Fire web UI listener to switch the ui view to
@@ -92,8 +91,8 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
       });
 
   test(
-      assert(inline_login_signin_blocked_by_policy_page_test.TestNames
-                 .FireWebUIListenerCallback),
+      inline_login_signin_blocked_by_policy_page_test.TestNames
+          .FireWebUIListenerCallback,
       () => {
         testSetup(/*dialogArgs=*/ null);
         // Fire web UI listener to switch the ui view to
@@ -135,8 +134,7 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
       });
 
   test(
-      assert(
-          inline_login_signin_blocked_by_policy_page_test.TestNames.OkButton),
+      inline_login_signin_blocked_by_policy_page_test.TestNames.OkButton,
       async () => {
         testSetup(/*dialogArgs=*/ null);
         // Fire web UI listener to switch the ui view to
