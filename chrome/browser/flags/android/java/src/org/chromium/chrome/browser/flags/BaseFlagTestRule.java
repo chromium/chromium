@@ -11,6 +11,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.Flag;
 
 import java.util.HashMap;
 import java.util.Map;

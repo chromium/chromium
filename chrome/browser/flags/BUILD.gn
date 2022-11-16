@@ -16,7 +16,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
-    "android/java/src/org/chromium/chrome/browser/flags/Flag.java",
     "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/MutableFlagWithSafeDefault.java",
     "android/java/src/org/chromium/chrome/browser/flags/PostNativeFlag.java",

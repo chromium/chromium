@@ -199,7 +199,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      */
     @CallSuper
     protected List<TestHook> getPreTestHooks() {
-        return Arrays.asList(CommandLineFlags.getPreTestHook(), new UnitTestNoBrowserProcessHook());
+        return Arrays.asList(CommandLineFlags.getPreTestHook(), new UnitTestNoBrowserProcessHook(),
+                new ResetCachedFlagValuesTestHook());
     }
 
     /**

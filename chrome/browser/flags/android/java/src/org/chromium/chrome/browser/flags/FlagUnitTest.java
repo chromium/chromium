@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Flag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /**

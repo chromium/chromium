@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.Flag;
 
 /**
  * Flags of this type are un-cached flags that may be called before native,
@@ -17,6 +18,7 @@ import org.chromium.base.FeatureList;
  */
 public class MutableFlagWithSafeDefault extends Flag {
     private final boolean mDefaultValue;
+    private Boolean mInMemoryCachedValue;
 
     public MutableFlagWithSafeDefault(String featureName, boolean defaultValue) {
         super(featureName);
@@ -25,14 +27,21 @@ public class MutableFlagWithSafeDefault extends Flag {
 
     @Override
     public boolean isEnabled() {
-        if (isFeatureListInitialized(mFeatureName)) {
+        if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
+        if (FeatureList.hasTestFeature(mFeatureName)) {
             return ChromeFeatureList.isEnabled(mFeatureName);
-        } else {
-            return mDefaultValue;
         }
+
+        if (FeatureList.isNativeInitialized()) {
+            mInMemoryCachedValue = ChromeFeatureList.isEnabled(mFeatureName);
+            return mInMemoryCachedValue;
+        }
+
+        return mDefaultValue;
     }
 
-    private static boolean isFeatureListInitialized(String featureName) {
-        return FeatureList.hasTestFeature(featureName) || FeatureList.isNativeInitialized();
+    @Override
+    protected void clearInMemoryCachedValueForTesting() {
+        mInMemoryCachedValue = null;
     }
 }
