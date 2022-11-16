@@ -1549,7 +1549,7 @@
       name: "LayoutMediaNGContainer",
       // This feature doesn't work in the legacy layout.
       depends_on: ["LayoutNGPrinting"],
-      status: "test",
+      status: "stable",
       base_feature: "LayoutMediaNGContainer",
     },
     {
