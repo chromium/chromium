@@ -77,6 +77,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUtil.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/ThreeStateCookieSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
     "java/src/org/chromium/components/browser_ui/site_settings/Website.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteAddress.java",
