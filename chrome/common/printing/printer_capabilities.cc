@@ -60,17 +60,29 @@ namespace {
 // `display_name` members, localizing where possible. We expect the
 // backend to have populated non-empty display names already, so we
 // don't touch media display names that we can't localize.
-void PopulateAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
-  std::string default_paper_display =
+// The `Papers` will be sorted in place when this function returns.
+void PopulateAndSortAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
+  MediaSizeInfo default_paper_display =
       LocalizePaperDisplayName(info.default_paper.vendor_id);
-  if (!default_paper_display.empty()) {
-    info.default_paper.display_name = default_paper_display;
+  if (!default_paper_display.name.empty()) {
+    info.default_paper.display_name =
+        base::UTF16ToUTF8(default_paper_display.name);
   }
 
+  // Pair the paper entries with their sort info so they can be sorted.
+  std::vector<PaperWithSizeInfo> size_list;
   for (PrinterSemanticCapsAndDefaults::Paper& paper : info.papers) {
-    std::string display = LocalizePaperDisplayName(paper.vendor_id);
-    if (!display.empty()) {
-      paper.display_name = display;
+    size_list.emplace_back(LocalizePaperDisplayName(paper.vendor_id),
+                           std::move(paper));
+  }
+
+  // Sort and recreate the list with localizations inserted.
+  SortPaperDisplayNames(size_list);
+  info.papers.clear();
+  for (auto& pair : size_list) {
+    auto& paper = info.papers.emplace_back(std::move(pair.paper));
+    if (!pair.size_info.name.empty()) {
+      paper.display_name = base::UTF16ToUTF8(pair.size_info.name);
     }
   }
 }
@@ -116,7 +128,7 @@ base::Value AssemblePrinterCapabilities(
       base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend);
 #endif
   if (populate_paper_display_names)
-    PopulateAllPaperDisplayNames(*caps);
+    PopulateAndSortAllPaperDisplayNames(*caps);
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
   caps->user_defined_papers = std::move(user_defined_papers);

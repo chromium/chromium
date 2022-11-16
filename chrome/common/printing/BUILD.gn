@@ -73,6 +73,7 @@ source_set("printing") {
 
   if (enable_print_media_l10n) {
     deps += [
+      "//base:i18n",
       "//components/device_event_log",
       "//third_party/re2",
     ]

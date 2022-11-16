@@ -2,8 +2,8 @@
 <grit-part>
   <if expr="enable_print_preview">
     <message name="PRINT_PREVIEW_MEDIA_ASME_F_28X40IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``E1''">
-      E1
+             desc="In Title Case: Media size shown to user in print preview for media ``28 x 40 in'' with dimensions in inches">
+      28 x 40 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ISO_2A0_1189X1682MM"
              desc="In Title Case: Media size shown to user in print preview for media ``2A0''">
