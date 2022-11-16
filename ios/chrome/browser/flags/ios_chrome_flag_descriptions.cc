@@ -755,6 +755,11 @@ const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
     "icon or the app switcher.";
 
+const char kDownloadServiceForegroundSessionName[] =
+    "Download service foreground download";
+const char kDownloadServiceForegroundSessionDescription[] =
+    "Enable download service to download in app foreground only";
+
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";

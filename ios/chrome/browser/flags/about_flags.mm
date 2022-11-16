@@ -30,6 +30,7 @@
 #import "components/commerce/core/flag_descriptions.h"
 #import "components/content_settings/core/common/features.h"
 #import "components/dom_distiller/core/dom_distiller_switches.h"
+#import "components/download/public/background_service/features.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
@@ -1039,6 +1040,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
+    {"enable-download-service-foreground-session",
+     flag_descriptions::kDownloadServiceForegroundSessionName,
+     flag_descriptions::kDownloadServiceForegroundSessionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(download::kDownloadServiceForegroundSessionIOSFeature)},
     {"enable-tflite-language-detection",
      flag_descriptions::kTFLiteLanguageDetectionName,
      flag_descriptions::kTFLiteLanguageDetectionDescription, flags_ui::kOsIos,

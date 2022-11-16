@@ -2133,6 +2133,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-download-service-foreground-session",
+    "owners": [ "rajendrant", "mcrouse", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
     "expiry_milestone": 118
@@ -3107,12 +3112,12 @@
   {
     "name": "enable-tflite-language-detection",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "enable-tflite-language-detection-ignore",
     "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",

@@ -62160,6 +62160,8 @@ from previous Chrome versions.
   <int value="410400234" label="WebAppEnableProtocolHandlers:disabled"/>
   <int value="411250226" label="AutoplayMutedVideos:disabled"/>
   <int value="411536809" label="AutofillAcrossIframes:enabled"/>
+  <int value="412185345"
+      label="DownloadServiceForegroundSessionIOSFeature:enabled"/>
   <int value="412957264" label="tab-close-buttons-hidden-with-touch"/>
   <int value="413062443" label="MessagesForAndroidInfrastructure:disabled"/>
   <int value="413081240" label="enable-new-md-input-view"/>
@@ -64830,6 +64832,8 @@ from previous Chrome versions.
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>
   <int value="2009097351" label="memlog-sampling-rate"/>
   <int value="2009362691" label="AllowStartingServiceManagerOnly:enabled"/>
+  <int value="2009697597"
+      label="DownloadServiceForegroundSessionIOSFeature:disabled"/>
   <int value="2013593624"
       label="HappinessTrackingSurveysForDesktopDemo:enabled"/>
   <int value="2014331873" label="NTPDownloadSuggestions:disabled"/>

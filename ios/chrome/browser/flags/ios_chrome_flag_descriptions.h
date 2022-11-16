@@ -559,6 +559,11 @@ extern const char kIOSOmniboxUpdatedPopupUIDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
+// Title and description for the flag enable download service to download in
+// foreground.
+extern const char kDownloadServiceForegroundSessionName[];
+extern const char kDownloadServiceForegroundSessionDescription[];
+
 // Title and description for the flag to enable TFLite model downloading.
 extern const char kOptimizationGuideModelDownloadingName[];
 extern const char kOptimizationGuideModelDownloadingDescription[];

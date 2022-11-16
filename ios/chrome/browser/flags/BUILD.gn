@@ -21,6 +21,7 @@ source_set("flags") {
     "//components/breadcrumbs/core:feature_flags",
     "//components/commerce/core:feature_list",
     "//components/dom_distiller/core",
+    "//components/download/public/background_service:public",
     "//components/enterprise",
     "//components/feature_engagement/public",
     "//components/feed:feature_list",
