@@ -484,7 +484,6 @@ if (is_mac && build_with_internal_optimization_guide) {
 }
 
 if (build_with_tflite_lib) {
-  # TODO(b/249585782): Extend this to support NL models as well.
   template("bert_model_fuzzer") {
     forward_variables_from(invoker, "*")
 
@@ -509,5 +508,18 @@ if (build_with_tflite_lib) {
   bert_model_fuzzer("page_topics") {
     optimization_target = "OPTIMIZATION_TARGET_PAGE_TOPICS_V2"
     model_file_basename = "bert_page_topics_model.tflite"
+  }
+
+  fuzzer_test("optimization_guide_page_visibility_model_fuzzer") {
+    sources = [ "page_visibility_model_fuzzer.cc" ]
+    deps = [
+      ":core",
+      ":features",
+      ":machine_learning",
+      ":model_executor",
+      "//base:base",
+      "//base/test:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+    ]
   }
 }
