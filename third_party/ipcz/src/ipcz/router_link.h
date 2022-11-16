@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "ipcz/atomic_queue_state.h"
 #include "ipcz/fragment_ref.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_name.h"
@@ -84,19 +83,6 @@ class RouterLink : public RefCounted {
   // in this case we don't know the final sequence length and can't guarantee
   // delivery of any further parcels.
   virtual void AcceptRouteDisconnected(const OperationContext& context) = 0;
-
-  // Returns the AtomicQueueState for the other side of this link if available.
-  // Otherwise returns null.
-  virtual AtomicQueueState* GetPeerQueueState() = 0;
-
-  // Returns the AtomicQueueState for this side of the link if available.
-  // Otherwise returns null.
-  virtual AtomicQueueState* GetLocalQueueState() = 0;
-
-  // Notifies the other side that this side has updated its visible queue state
-  // in some way which may be interesting to them. This should be called
-  // sparingly to avoid redundant IPC traffic and redundant idle wakes.
-  virtual void SnapshotPeerQueueState(const OperationContext& context) = 0;
 
   // Signals that this side of the link is in a stable state suitable for one
   // side or the other to lock the link, either for bypass or closure

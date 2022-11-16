@@ -125,8 +125,4 @@ bool RouterLinkState::ResetWaitingBit(LinkSide side) {
   return true;
 }
 
-AtomicQueueState& RouterLinkState::GetQueueState(LinkSide side) {
-  return SelectBySide(side, side_a_queue_state, side_b_queue_state);
-}
-
 }  // namespace ipcz

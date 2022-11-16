@@ -303,26 +303,6 @@ void RemoteRouterLink::AcceptRouteClosure(const OperationContext& context,
   node_link()->Transmit(route_closed);
 }
 
-AtomicQueueState* RemoteRouterLink::GetPeerQueueState() {
-  if (auto* state = GetLinkState()) {
-    return &state->GetQueueState(side_.opposite());
-  }
-  return nullptr;
-}
-
-AtomicQueueState* RemoteRouterLink::GetLocalQueueState() {
-  if (auto* state = GetLinkState()) {
-    return &state->GetQueueState(side_);
-  }
-  return nullptr;
-}
-
-void RemoteRouterLink::SnapshotPeerQueueState(const OperationContext& context) {
-  msg::SnapshotPeerQueueState snapshot;
-  snapshot.params().sublink = sublink_;
-  node_link()->Transmit(snapshot);
-}
-
 void RemoteRouterLink::AcceptRouteDisconnected(
     const OperationContext& context) {
   msg::RouteDisconnected route_disconnected;

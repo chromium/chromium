@@ -366,13 +366,6 @@ IPCZ_MSG_BEGIN(RouteDisconnected, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SublinkId, sublink)
 IPCZ_MSG_END()
 
-// Notifies a router that it may be interested in a recent change to its outward
-// peer's visible queue state.
-IPCZ_MSG_BEGIN(SnapshotPeerQueueState, IPCZ_MSG_ID(24), IPCZ_MSG_VERSION(0))
-  // Identifies the router to receive this message.
-  IPCZ_MSG_PARAM(SublinkId, sublink)
-IPCZ_MSG_END()
-
 // Informs a router that its outward peer can be bypassed. Given routers X and Y
 // on the central link, and a router Z as Y's inward peer:
 //
