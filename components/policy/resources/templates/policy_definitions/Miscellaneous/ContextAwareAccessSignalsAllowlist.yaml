@@ -1,16 +1,14 @@
-caption: Enable attestation flow for a list of URLs
+caption: Enable the <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph> attestation flow for a list of URLs
 desc: |-
-  Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs.
+  Enable <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph> for a list of URLs.
 
-        Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
+  Setting this policy specifies for which URLs <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer to start the attestation flow. The latter allows those websites to get an attested set of context-aware signals from the device.
 
-        Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
+  Leaving this policy unset or empty means that no website will be able to start the attestation flow nor get signals from the device.
 
-        Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+  For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the server. For usage of the attestation flow on the device's login screen, please use the <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">DeviceLoginScreenContextAwareAccessSignalsAllowlist</ph> policy.
 
-        For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
-
-        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+  For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 example_value:
 - https://example1.com
 - example2.com
@@ -32,7 +30,9 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.*:95-
-- chrome_os:95-
+- chrome.win:108-
+- chrome.linux:108-
+- chrome.mac:109-
+- chrome_os:108-
 tags: []
 type: list
