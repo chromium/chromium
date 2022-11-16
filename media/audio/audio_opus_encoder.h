@@ -54,7 +54,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   CodecDescription PrepareExtraData();
 
-  EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder();
+  EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder(
+      const absl::optional<AudioEncoder::OpusOptions>& opus_options);
 
   AudioParameters input_params_;
 
@@ -64,6 +65,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   AudioParameters converted_params_;
 
   std::unique_ptr<ConvertingAudioFifo> fifo_;
+  bool fifo_has_data_ = false;
 
   // Used to mix incoming Encode() buffers to match the expect input channel
   // count.

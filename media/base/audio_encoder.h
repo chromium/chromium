@@ -61,6 +61,14 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
 // Defines an interface for audio encoders.
 class MEDIA_EXPORT AudioEncoder {
  public:
+  struct MEDIA_EXPORT OpusOptions {
+    base::TimeDelta frame_duration;
+    unsigned int complexity;
+    unsigned int packet_loss_perc;
+    bool use_in_band_fec;
+    bool use_dtx;
+  };
+
   struct MEDIA_EXPORT Options {
     Options();
     Options(const Options&);
@@ -73,6 +81,8 @@ class MEDIA_EXPORT AudioEncoder {
     int channels;
 
     int sample_rate;
+
+    absl::optional<OpusOptions> opus;
   };
 
   // A sequence of codec specific bytes, commonly known as extradata.

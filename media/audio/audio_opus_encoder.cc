@@ -12,6 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/encoder_status.h"
@@ -31,19 +32,24 @@ constexpr int kOpusMaxDataBytes = 4000;
 // to have: https://wiki.xiph.org/MatroskaOpus.
 constexpr int kOpusPreferredSamplingRate = 48000;
 
-// For Opus, we try to encode 60ms, the maximum Opus buffer, for quality
-// reasons.
-constexpr int kOpusPreferredBufferDurationMs = 60;
+// For Opus, 20ms is the suggested default.
+constexpr base::TimeDelta kDefaultOpusBufferDuration = base::Milliseconds(20);
 
 // Deletes the libopus encoder instance pointed to by |encoder_ptr|.
 inline void OpusEncoderDeleter(OpusEncoder* encoder_ptr) {
   opus_encoder_destroy(encoder_ptr);
 }
 
-AudioParameters CreateInputParams(const AudioEncoder::Options& options) {
-  const int frames_per_buffer = options.sample_rate *
-                                kOpusPreferredBufferDurationMs /
-                                base::Time::kMillisecondsPerSecond;
+base::TimeDelta GetFrameDuration(
+    const absl::optional<AudioEncoder::OpusOptions> opus_options) {
+  return opus_options.has_value() ? opus_options.value().frame_duration
+                                  : kDefaultOpusBufferDuration;
+}
+
+AudioParameters CreateInputParams(const AudioEncoder::Options& options,
+                                  base::TimeDelta frame_duration) {
+  const int frames_per_buffer =
+      AudioTimestampHelper::TimeToFrames(frame_duration, options.sample_rate);
   AudioParameters result(media::AudioParameters::AUDIO_PCM_LINEAR,
                          {media::CHANNEL_LAYOUT_DISCRETE, options.channels},
                          options.sample_rate, frames_per_buffer);
@@ -52,7 +58,8 @@ AudioParameters CreateInputParams(const AudioEncoder::Options& options) {
 
 // Creates the audio parameters of the converted audio format that Opus prefers,
 // which will be used as the input to the libopus encoder.
-AudioParameters CreateOpusCompatibleParams(const AudioParameters& params) {
+AudioParameters CreateOpusCompatibleParams(const AudioParameters& params,
+                                           base::TimeDelta frame_duration) {
   // third_party/libopus supports up to 2 channels (see implementation of
   // opus_encoder_create()): force |converted_params| to at most those.
   // Also, the libopus encoder can accept sample rates of 8, 12, 16, 24, and the
@@ -63,8 +70,8 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params) {
                          input_rate == 16000 || input_rate == 24000)
                             ? input_rate
                             : kOpusPreferredSamplingRate;
-  const int frames_per_buffer = used_rate * kOpusPreferredBufferDurationMs /
-                                base::Time::kMillisecondsPerSecond;
+  const int frames_per_buffer =
+      AudioTimestampHelper::TimeToFrames(frame_duration, used_rate);
 
   AudioParameters result(
       AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -99,14 +106,15 @@ void AudioOpusEncoder::Initialize(const Options& options,
   }
 
   options_ = options;
-  input_params_ = CreateInputParams(options);
+  const base::TimeDelta frame_duration = GetFrameDuration(options_.opus);
+  input_params_ = CreateInputParams(options, frame_duration);
   if (!input_params_.IsValid()) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
 
-  converted_params_ = CreateOpusCompatibleParams(input_params_);
-  if (!input_params_.IsValid()) {
+  converted_params_ = CreateOpusCompatibleParams(input_params_, frame_duration);
+  if (!converted_params_.IsValid()) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
@@ -121,7 +129,7 @@ void AudioOpusEncoder::Initialize(const Options& options,
       std::make_unique<AudioTimestampHelper>(converted_params_.sample_rate());
   buffer_.resize(converted_params_.channels() *
                  converted_params_.frames_per_buffer());
-  auto status_or_encoder = CreateOpusEncoder();
+  auto status_or_encoder = CreateOpusEncoder(options.opus);
   if (!status_or_encoder.has_value()) {
     std::move(done_cb).Run(std::move(status_or_encoder).error());
     return;
@@ -200,6 +208,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 
   // This might synchronously call OnFifoOutput().
   fifo_->Push(std::move(audio_bus));
+  fifo_has_data_ = true;
 
   if (current_done_cb_) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
@@ -220,7 +229,26 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
 
   current_done_cb_ = std::move(done_cb);
 
-  fifo_->Flush();
+  if (fifo_has_data_) {
+    int32_t encoder_delay = 0;
+    opus_encoder_ctl(opus_encoder_.get(), OPUS_GET_LOOKAHEAD(&encoder_delay));
+
+    // Add enough silence to the queue to guarantee that all audible frames will
+    // be output from the encoder.
+    if (encoder_delay) {
+      int encoder_delay_in_input_frames = std::ceil(
+          static_cast<double>(encoder_delay) * input_params_.sample_rate() /
+          converted_params_.sample_rate());
+
+      auto silent_delay = AudioBus::Create(input_params_.channels(),
+                                           encoder_delay_in_input_frames);
+      silent_delay->Zero();
+      fifo_->Push(std::move(silent_delay));
+    }
+
+    fifo_->Flush();
+    fifo_has_data_ = false;
+  }
 
   timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
   if (current_done_cb_) {
@@ -285,7 +313,8 @@ void AudioOpusEncoder::OnFifoOutput(AudioBus* audio_bus) {
 
 // Creates and returns the libopus encoder instance. Returns nullptr if the
 // encoder creation fails.
-EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder() {
+EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
+    const absl::optional<AudioEncoder::OpusOptions>& opus_options) {
   int opus_result;
   OwnedOpusEncoder encoder(
       opus_encoder_create(converted_params_.sample_rate(),
@@ -293,7 +322,7 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder() {
                           &opus_result),
       OpusEncoderDeleter);
 
-  if (opus_result < 0) {
+  if (opus_result < 0 || !encoder) {
     return EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf(
@@ -302,13 +331,52 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder() {
             converted_params_.channels()));
   }
 
-  int bitrate =
+  const int bitrate =
       options_.bitrate.has_value() ? options_.bitrate.value() : OPUS_AUTO;
-  if (encoder &&
-      opus_encoder_ctl(encoder.get(), OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_BITRATE(bitrate)) != OPUS_OK) {
     return EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf("Failed to set Opus bitrate: %d", bitrate));
+  }
+
+  // The remaining parameters are all purely optional.
+  if (!opus_options.has_value())
+    return encoder;
+
+  const unsigned int complexity = opus_options.value().complexity;
+  DCHECK_LE(complexity, 10u);
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_COMPLEXITY(complexity)) !=
+      OPUS_OK) {
+    return EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        base::StringPrintf("Failed to set Opus complexity: %d", complexity));
+  }
+
+  const unsigned int packet_loss_perc = opus_options.value().packet_loss_perc;
+  DCHECK_LE(packet_loss_perc, 100u);
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_PACKET_LOSS_PERC(
+                                          packet_loss_perc)) != OPUS_OK) {
+    return EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        base::StringPrintf("Failed to set Opus packetlossperc: %d",
+                           packet_loss_perc));
+  }
+
+  const unsigned int use_in_band_fec =
+      opus_options.value().use_in_band_fec ? 1 : 0;
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_INBAND_FEC(use_in_band_fec)) !=
+      OPUS_OK) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                         base::StringPrintf("Failed to set Opus inband FEC: %d",
+                                            use_in_band_fec));
+  }
+
+  const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_INBAND_FEC(use_dtx)) !=
+      OPUS_OK) {
+    return EncoderStatus(
+        EncoderStatus::Codes::kEncoderInitializationError,
+        base::StringPrintf("Failed to set Opus DTX: %d", use_dtx));
   }
 
   return encoder;

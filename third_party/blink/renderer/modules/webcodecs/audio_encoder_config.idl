@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/web-codecs
+// https://github.com/w3c/web-codecs
 
 // NOTE: Keep this structure in sync with CopyConfig() defined in
 // audio_encoder.cc.
@@ -16,4 +16,7 @@ dictionary AudioEncoderConfig {
   required [EnforceRange] unsigned short numberOfChannels;
 
   [EnforceRange] unsigned long long bitrate;
+
+  // Codec-specific extensions
+  OpusEncoderConfig opus;
 };

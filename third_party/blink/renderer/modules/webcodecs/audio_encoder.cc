@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_encoder_config.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
@@ -45,6 +47,109 @@ namespace blink {
 namespace {
 
 constexpr const char kCategory[] = "media";
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || defined(ARCH_CPU_ARM_FAMILY)
+constexpr uint32_t kDefaultOpusComplexity = 5;
+#else
+constexpr uint32_t kDefaultOpusComplexity = 9;
+#endif
+
+template <typename T>
+bool VerifyParameterValues(const T& value,
+                           ExceptionState* exception_state,
+                           WTF::String error_message,
+                           WTF::Vector<T> supported_values) {
+  if (base::Contains(supported_values, value))
+    return true;
+
+  if (exception_state) {
+    WTF::StringBuilder error_builder;
+    error_builder.Append(error_message);
+    error_builder.Append(" Supported values: ");
+    for (auto i = 0u; i < supported_values.size(); i++) {
+      if (i != 0)
+        error_builder.Append(", ");
+      error_builder.AppendNumber(supported_values[i]);
+    }
+    exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                       error_builder.ToString());
+  }
+  return false;
+}
+
+AudioEncoderTraits::ParsedConfig* ParseOpusConfigStatic(
+    const OpusEncoderConfig* opus_config,
+    AudioEncoderTraits::ParsedConfig* result,
+    ExceptionState& exception_state) {
+  constexpr uint32_t kComplexityUpperBound = 10;
+  uint32_t complexity = opus_config->getComplexityOr(kDefaultOpusComplexity);
+  if (complexity > kComplexityUpperBound) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::IndexExceedsMaximumBound<uint32_t>(
+            "Opus complexity", complexity, kComplexityUpperBound));
+    return nullptr;
+  }
+
+  constexpr uint32_t kPacketLossPercUpperBound = 100;
+  uint32_t packet_loss_perc = opus_config->packetlossperc();
+  if (packet_loss_perc > kPacketLossPercUpperBound) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::IndexExceedsMaximumBound<uint32_t>(
+            "Opus packetlossperc", packet_loss_perc,
+            kPacketLossPercUpperBound));
+    return nullptr;
+  }
+
+  // `frame_duration` must be a valid frame duration, defined in section 2.1.4.
+  // of RFC6716.
+  constexpr base::TimeDelta kFrameDurationLowerBound = base::Microseconds(2500);
+  constexpr base::TimeDelta kFrameDurationUpperBound = base::Milliseconds(120);
+  uint64_t frame_duration = opus_config->frameDuration();
+  if (frame_duration < kFrameDurationLowerBound.InMicroseconds() ||
+      frame_duration > kFrameDurationUpperBound.InMicroseconds()) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::IndexOutsideRange<uint64_t>(
+            "Opus frameDuration", frame_duration,
+            kFrameDurationLowerBound.InMicroseconds(),
+            ExceptionMessages::BoundType::kInclusiveBound,
+            kFrameDurationUpperBound.InMicroseconds(),
+            ExceptionMessages::BoundType::kInclusiveBound));
+    return nullptr;
+  }
+
+  // Any multiple of a frame duration is allowed by RFC6716. Concretely, this
+  // means any multiple of 2500 microseconds.
+  if (frame_duration % kFrameDurationLowerBound.InMicroseconds() != 0) {
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid Opus frameDuration; expected a multiple of %" PRIu64
+        ", received %" PRIu64 ".",
+        kFrameDurationLowerBound.InMicroseconds(), frame_duration));
+    return nullptr;
+  }
+
+  // TODO(crbug.com/1378399): Support all multiples of basic frame durations.
+  if (!VerifyParameterValues(frame_duration, &exception_state,
+                             "Unsupported Opus frameDuration.",
+                             {2500, 5000, 10000, 20000, 40000, 60000})) {
+    return nullptr;
+  }
+
+  if (opus_config->format().AsEnum() == V8OpusBitstreamFormat::Enum::kOgg) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Opus Ogg format is unsupported");
+    return nullptr;
+  }
+
+  result->options.opus = {
+      .frame_duration = base::Microseconds(frame_duration),
+      .complexity = complexity,
+      .packet_loss_perc = packet_loss_perc,
+      .use_in_band_fec = opus_config->useinbandfec(),
+      .use_dtx = opus_config->usedtx(),
+  };
+
+  return result;
+}
 
 AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
     const AudioEncoderConfig* config,
@@ -95,30 +200,13 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
     result->options.bitrate = static_cast<int>(config->bitrate());
   }
 
-  return result;
-}
+  // Only Opus supports codec-specific parameters for now.
+  if (result->options.codec != media::AudioCodec::kOpus)
+    return result;
 
-template <typename T>
-bool VerifyParameterValues(const T& value,
-                           ExceptionState* exception_state,
-                           WTF::String error_message,
-                           WTF::Vector<T> supported_values) {
-  if (!base::Contains(supported_values, value)) {
-    if (exception_state) {
-      WTF::StringBuilder error_builder;
-      error_builder.Append(error_message);
-      error_builder.Append(" Supported values: ");
-      for (auto i = 0u; i < supported_values.size(); i++) {
-        if (i != 0)
-          error_builder.Append(", ");
-        error_builder.AppendNumber(supported_values[i]);
-      }
-      exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                         error_builder.ToString());
-    }
-    return false;
-  }
-  return true;
+  return ParseOpusConfigStatic(
+      config->hasOpus() ? config->opus() : OpusEncoderConfig::Create(), result,
+      exception_state);
 }
 
 bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
@@ -184,6 +272,17 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
   }
 }
 
+OpusEncoderConfig* CopyOpusConfig(const OpusEncoderConfig& config) {
+  auto* opus_result = OpusEncoderConfig::Create();
+  opus_result->setFormat(config.format());
+  opus_result->setFrameDuration(config.frameDuration());
+  opus_result->setComplexity(config.getComplexityOr(kDefaultOpusComplexity));
+  opus_result->setPacketlossperc(config.packetlossperc());
+  opus_result->setUseinbandfec(config.useinbandfec());
+  opus_result->setUsedtx(config.usedtx());
+  return opus_result;
+}
+
 AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
   auto* result = AudioEncoderConfig::Create();
   result->setCodec(config.codec());
@@ -191,6 +290,10 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
   result->setNumberOfChannels(config.numberOfChannels());
   if (config.hasBitrate())
     result->setBitrate(config.bitrate());
+
+  if (config.codec() == String("opus") && config.hasOpus())
+    result->setOpus(CopyOpusConfig(*config.opus()));
+
   return result;
 }
 
