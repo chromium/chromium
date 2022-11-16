@@ -3948,7 +3948,10 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
   EXPECT_EQ(kAccountId1, client_.get_save_wallpaper_to_drive_fs_account_id());
 }
 
-TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionId) {
+TEST_F(WallpaperControllerTest,
+       SetDailyRefreshCollectionId_UpdatesDailyRefreshTimer) {
+  using base::Time;
+
   pref_manager_->SetUserWallpaperInfo(
       kAccountId1,
       WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER,
@@ -3967,6 +3970,15 @@ TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionId) {
   EXPECT_EQ(expected, actual);
   EXPECT_EQ(collection_id,
             controller_->GetDailyRefreshCollectionId(kAccountId1));
+
+  Time run_time =
+      controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+  base::TimeDelta delay = run_time - Time::Now();
+  base::TimeDelta one_day = base::Days(1);
+  // Leave a little wiggle room, as well as account for the hour fuzzing that
+  // we do.
+  EXPECT_GE(delay, one_day - base::Minutes(1));
+  EXPECT_LE(delay, one_day + base::Minutes(61));
 }
 
 TEST_F(WallpaperControllerTest, SetDailyRefreshCollectionId_Empty) {
@@ -5019,6 +5031,41 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   RunAllTasksUntilIdle();
 
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       SetGooglePhotosDailyRefreshAlbumId_UpdatesDailyRefreshTimer) {
+  using base::Time;
+
+  pref_manager_->SetUserWallpaperInfo(
+      kAccountId1,
+      WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER,
+                    WallpaperType::kOnline, DayBeforeYesterdayish()));
+
+  std::string album_id = "fun_album";
+  controller_->SetGooglePhotosDailyRefreshAlbumId(kAccountId1, album_id);
+  WallpaperInfo expected = {std::string(), WALLPAPER_LAYOUT_CENTER,
+                            WallpaperType::kDailyGooglePhotos,
+                            DayBeforeYesterdayish()};
+  expected.collection_id = album_id;
+
+  WallpaperInfo actual;
+  pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual);
+  // Type should be `WallpaperType::kDailyGooglePhotos` now, and collection_id
+  // should be updated.
+  if (GooglePhotosEnabled()) {
+    EXPECT_EQ(expected, actual);
+    EXPECT_EQ(album_id,
+              controller_->GetGooglePhotosDailyRefreshAlbumId(kAccountId1));
+    Time run_time =
+        controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
+    base::TimeDelta delay = run_time - Time::Now();
+    base::TimeDelta one_day = base::Days(1);
+    // Leave a little wiggle room, as well as account for the hour fuzzing that
+    // we do.
+    EXPECT_GE(delay, one_day - base::Minutes(1));
+    EXPECT_LE(delay, one_day + base::Minutes(61));
+  }
 }
 
 }  // namespace ash
