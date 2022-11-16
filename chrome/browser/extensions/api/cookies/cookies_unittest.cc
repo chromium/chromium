@@ -126,7 +126,7 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_EQ(10000, *cookie2.expiration_date);
 
   TestingProfile profile;
-  auto tab_ids_list = std::make_unique<base::ListValue>();
+  base::Value::List tab_ids_list;
   std::vector<int> tab_ids;
   CookieStore cookie_store =
       cookies_helpers::CreateCookieStore(&profile, std::move(tab_ids_list));
@@ -157,9 +157,10 @@ TEST_F(ExtensionCookiesTest, GetURLFromCanonicalCookie) {
 }
 
 TEST_F(ExtensionCookiesTest, EmptyDictionary) {
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   GetAll::Params::Details details;
-  bool rv = GetAll::Params::Details::Populate(dict, &details);
+  bool rv =
+      GetAll::Params::Details::Populate(base::Value(std::move(dict)), &details);
   ASSERT_TRUE(rv);
   cookies_helpers::MatchFilter filter(&details);
   net::CanonicalCookie cookie;
@@ -167,7 +168,7 @@ TEST_F(ExtensionCookiesTest, EmptyDictionary) {
 }
 
 TEST_F(ExtensionCookiesTest, DomainMatching) {
-  const DomainMatchCase tests[] = {
+  static constexpr DomainMatchCase tests[] = {
       {"bar.com", "bar.com", true},       {".bar.com", "bar.com", true},
       {"bar.com", "food.bar.com", true},  {"bar.com", "bar.foo.com", false},
       {".bar.com", ".foo.bar.com", true}, {".bar.com", "baz.foo.bar.com", true},

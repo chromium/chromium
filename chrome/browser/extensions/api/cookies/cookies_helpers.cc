@@ -132,18 +132,14 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   return cookie;
 }
 
-CookieStore CreateCookieStore(Profile* profile,
-                              std::unique_ptr<base::ListValue> tab_ids) {
+CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   DCHECK(profile);
-  DCHECK(tab_ids);
-  base::DictionaryValue dict;
-  dict.SetStringKey(cookies_api_constants::kIdKey,
-                    GetStoreIdFromProfile(profile));
-  dict.SetKey(cookies_api_constants::kTabIdsKey,
-              base::Value::FromUniquePtrValue(std::move(tab_ids)));
+  base::Value::Dict dict;
+  dict.Set(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
+  dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
 
   CookieStore cookie_store;
-  bool rv = CookieStore::Populate(dict, &cookie_store);
+  bool rv = CookieStore::Populate(base::Value(std::move(dict)), &cookie_store);
   CHECK(rv);
   return cookie_store;
 }
@@ -198,12 +194,11 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
   }
 }
 
-void AppendToTabIdList(Browser* browser, base::ListValue* tab_ids) {
+void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
   DCHECK(browser);
-  DCHECK(tab_ids);
   TabStripModel* tab_strip = browser->tab_strip_model();
   for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids->Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+    tab_ids.Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
   }
 }
 

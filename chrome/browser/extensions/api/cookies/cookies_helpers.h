@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_monster.h"
@@ -23,10 +24,6 @@
 
 class Browser;
 class Profile;
-
-namespace base {
-class ListValue;
-}
 
 namespace net {
 class CanonicalCookie;
@@ -54,9 +51,8 @@ api::cookies::Cookie CreateCookie(const net::CanonicalCookie& cookie,
                                   const std::string& store_id);
 
 // Constructs a new CookieStore object as defined by the cookies API.
-api::cookies::CookieStore CreateCookieStore(
-    Profile* profile,
-    std::unique_ptr<base::ListValue> tab_ids);
+api::cookies::CookieStore CreateCookieStore(Profile* profile,
+                                            base::Value::List tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
 // |url|.
@@ -96,7 +92,7 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
 
 // Appends the IDs of all tabs belonging to the given browser to the
 // given list.
-void AppendToTabIdList(Browser* browser, base::ListValue* tab_ids);
+void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids);
 
 // A class representing the cookie filter parameters passed into
 // cookies.getAll().

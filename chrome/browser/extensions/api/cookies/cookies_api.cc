@@ -595,15 +595,13 @@ void CookiesRemoveFunction::RemoveCookieCallback(uint32_t /* num_deleted */) {
 ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   Profile* original_profile = Profile::FromBrowserContext(browser_context());
   DCHECK(original_profile);
-  std::unique_ptr<base::ListValue> original_tab_ids(new base::ListValue());
+  base::Value::List original_tab_ids;
   Profile* incognito_profile = nullptr;
-  std::unique_ptr<base::ListValue> incognito_tab_ids;
+  base::Value::List incognito_tab_ids;
   if (include_incognito_information() &&
       original_profile->HasPrimaryOTRProfile()) {
     incognito_profile =
         original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    if (incognito_profile)
-      incognito_tab_ids = std::make_unique<base::ListValue>();
   }
   DCHECK(original_profile != incognito_profile);
 
@@ -612,20 +610,18 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   // whether the browser is regular or incognito.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == original_profile) {
-      cookies_helpers::AppendToTabIdList(browser, original_tab_ids.get());
-    } else if (incognito_tab_ids.get() &&
-               browser->profile() == incognito_profile) {
-      cookies_helpers::AppendToTabIdList(browser, incognito_tab_ids.get());
+      cookies_helpers::AppendToTabIdList(browser, original_tab_ids);
+    } else if (browser->profile() == incognito_profile) {
+      cookies_helpers::AppendToTabIdList(browser, incognito_tab_ids);
     }
   }
   // Return a list of all cookie stores with at least one open tab.
   std::vector<api::cookies::CookieStore> cookie_stores;
-  if (original_tab_ids->GetList().size() > 0) {
+  if (!original_tab_ids.empty()) {
     cookie_stores.push_back(cookies_helpers::CreateCookieStore(
         original_profile, std::move(original_tab_ids)));
   }
-  if (incognito_tab_ids.get() && incognito_tab_ids->GetList().size() > 0 &&
-      incognito_profile) {
+  if (incognito_profile && !incognito_tab_ids.empty()) {
     cookie_stores.push_back(cookies_helpers::CreateCookieStore(
         incognito_profile, std::move(incognito_tab_ids)));
   }
