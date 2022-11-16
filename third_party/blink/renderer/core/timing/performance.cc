@@ -160,7 +160,30 @@ void SwapEntries(PerformanceEntryVector& entries,
   entries[rightIndex] = tmp;
 }
 
+void InsertEntryIntoSortedList(std::list<Member<PerformanceEntry>>& all_entries,
+                               const Member<PerformanceEntry>& entry) {
+  for (auto it = all_entries.begin(); it != all_entries.end(); ++it) {
+    if (entry->startTime() <= it->Get()->startTime()) {
+      all_entries.insert(it, entry);
+      return;
+    }
+  }
+
+  all_entries.push_back(entry);
+}
+
 }  // namespace
+
+// TODO (jaspreetsandhu): If benchmarks suggest that the below algorithm is
+// inefficient we will look towards optimization.
+void MergePerformanceEntryVectorIntoList(
+    std::list<Member<PerformanceEntry>>& all_entries,
+    const PerformanceEntryVector& new_entries) {
+  std::list<Member<PerformanceEntry>> new_entries_list(new_entries.begin(),
+                                                       new_entries.end());
+  all_entries.merge(new_entries_list,
+                    PerformanceEntry::StartTimeCompareLessThan);
+}
 
 using PerformanceObserverVector = HeapVector<Member<PerformanceObserver>>;
 
@@ -249,36 +272,44 @@ DOMHighResTimeStamp Performance::timeOrigin() const {
 }
 
 PerformanceEntryVector Performance::getEntries() {
-  PerformanceEntryVector entries;
+  std::list<Member<PerformanceEntry>> entries_list;
 
-  entries.AppendVector(resource_timing_buffer_);
+  MergePerformanceEntryVectorIntoList(entries_list, resource_timing_buffer_);
   if (first_input_timing_)
-    entries.push_back(first_input_timing_);
+    InsertEntryIntoSortedList(entries_list, *(first_input_timing_.Get()));
   if (!navigation_timing_)
     navigation_timing_ = CreateNavigationTimingInstance();
   // This extra checking is needed when WorkerPerformance
   // calls this method.
   if (navigation_timing_)
-    entries.push_back(navigation_timing_);
+    InsertEntryIntoSortedList(entries_list, *navigation_timing_);
 
   if (user_timing_) {
-    entries.AppendVector(user_timing_->GetMarks());
-    entries.AppendVector(user_timing_->GetMeasures());
+    MergePerformanceEntryVectorIntoList(entries_list, user_timing_->GetMarks());
+    MergePerformanceEntryVectorIntoList(entries_list,
+                                        user_timing_->GetMeasures());
   }
 
   if (first_paint_timing_)
-    entries.push_back(first_paint_timing_);
-  if (first_contentful_paint_timing_)
-    entries.push_back(first_contentful_paint_timing_);
+    InsertEntryIntoSortedList(entries_list, *first_paint_timing_);
+  if (first_contentful_paint_timing_) {
+    InsertEntryIntoSortedList(entries_list, *first_contentful_paint_timing_);
+  }
 
-  if (RuntimeEnabledFeatures::NavigationIdEnabled())
-    entries.AppendVector(back_forward_cache_restoration_buffer_);
+  if (RuntimeEnabledFeatures::NavigationIdEnabled()) {
+    MergePerformanceEntryVectorIntoList(entries_list,
+                                        back_forward_cache_restoration_buffer_);
+  }
 
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled())
-    entries.AppendVector(soft_navigation_buffer_);
+    MergePerformanceEntryVectorIntoList(entries_list, soft_navigation_buffer_);
 
-  std::sort(entries.begin(), entries.end(),
-            PerformanceEntry::StartTimeCompareLessThan);
+  // Convert entries_list into a PerformanceEntryVector.
+  PerformanceEntryVector entries;
+  for (auto& entry : entries_list) {
+    entries.push_back(entry);
+  }
+
   return entries;
 }
 
@@ -350,15 +381,15 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kPaint: {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kPaintTimingRequested);
-      PerformanceEntryVector paint_entries;
-      if (first_paint_timing_)
-        paint_entries.push_back(first_paint_timing_);
-      if (first_contentful_paint_timing_)
-        paint_entries.push_back(first_contentful_paint_timing_);
 
-      // TODO: Use merge sort to join sorted buffers.
-      std::sort(paint_entries.begin(), paint_entries.end(),
-                PerformanceEntry::StartTimeCompareLessThan);
+      PerformanceEntryVector paint_entries;
+      if (first_paint_timing_) {
+        InsertEntryIntoSortedBuffer(paint_entries, *first_paint_timing_);
+      }
+      if (first_contentful_paint_timing_) {
+        InsertEntryIntoSortedBuffer(paint_entries,
+                                    *first_contentful_paint_timing_);
+      }
 
       return paint_entries;
     }

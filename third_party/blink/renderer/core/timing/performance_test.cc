@@ -231,7 +231,7 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
   PerformanceEntryVector test_buffer_;
 
   PerformanceEventTiming* test_entry =
-      PerformanceEventTiming::Create("event", 0.0, 0.0, 0.0, false, NULL, 0);
+      PerformanceEventTiming::Create("event", 0.0, 0.0, 0.0, false, nullptr, 0);
 
   base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry);
 
@@ -252,12 +252,12 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, NULL, 0);
+        "event", tmp * i, 0.0, 0.0, false, nullptr, 0);
     test_buffer_.push_back(*entry);
   }
 
   PerformanceEventTiming* test_entry =
-      PerformanceEventTiming::Create("event", 1.0, 0.0, 0.0, false, NULL, 0);
+      PerformanceEventTiming::Create("event", 1.0, 0.0, 0.0, false, nullptr, 0);
 
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
@@ -282,12 +282,12 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        "event", tmp * i, 0.0, 0.0, false, NULL, 0);
+        "event", tmp * i, 0.0, 0.0, false, nullptr, 0);
     test_buffer_.push_back(*entry);
   }
 
   PerformanceEventTiming* test_entry =
-      PerformanceEventTiming::Create("event", 0.0, 0.0, 0.0, false, NULL, 0);
+      PerformanceEventTiming::Create("event", 0.0, 0.0, 0.0, false, nullptr, 0);
 
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
@@ -299,6 +299,45 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
             PerformanceEntry::StartTimeCompareLessThan);
 
   EXPECT_EQ(test_buffer_, sorted_buffer_);
+}
+
+TEST_F(PerformanceTest, MergePerformanceEntryVectorIntoListTest) {
+  PerformanceEntryVector first_vector;
+  PerformanceEntryVector second_vector;
+
+  std::list<Member<PerformanceEntry>> all_entries;
+
+  PerformanceEntryVector test_vector;
+
+  for (int i = 0; i < 6; i += 2) {
+    double tmp = 1.0;
+    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
+        "event", tmp * i, 0.0, 0.0, false, nullptr, 0);
+    first_vector.push_back(*entry);
+    test_vector.push_back(*entry);
+  }
+
+  MergePerformanceEntryVectorIntoList(all_entries, first_vector);
+
+  for (int i = 1; i < 6; i += 2) {
+    double tmp = 1.0;
+    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
+        "event", tmp * i, 0.0, 0.0, false, nullptr, 0);
+    second_vector.push_back(*entry);
+    test_vector.push_back(*entry);
+  }
+
+  MergePerformanceEntryVectorIntoList(all_entries, second_vector);
+
+  PerformanceEntryVector entries;
+  for (auto& entry : all_entries) {
+    entries.push_back(entry);
+  }
+
+  std::sort(test_vector.begin(), test_vector.end(),
+            PerformanceEntry::StartTimeCompareLessThan);
+
+  EXPECT_EQ(entries, test_vector);
 }
 
 }  // namespace blink
