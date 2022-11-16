@@ -19,6 +19,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "net/base/url_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -27,6 +28,26 @@ namespace {
 constexpr int kDialogWidth = 512;
 constexpr int kDefaultConsentDialogHeight = 569;
 constexpr int kDefaultNoticeDialogHeight = 494;
+
+GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
+  GURL base_url = GURL(chrome::kChromeUIPrivacySandboxDialogURL);
+  GURL combined_dialog_url =
+      base_url.Resolve(chrome::kChromeUIPrivacySandboxDialogCombinedPath);
+  switch (prompt_type) {
+    case PrivacySandboxService::PromptType::kConsent:
+    case PrivacySandboxService::PromptType::kNotice:
+      return base_url;
+    case PrivacySandboxService::PromptType::kM1Consent:
+      return combined_dialog_url;
+    case PrivacySandboxService::PromptType::kM1NoticeROW:
+      return base_url.Resolve(chrome::kChromeUIPrivacySandboxDialogNoticePath);
+    case PrivacySandboxService::PromptType::kM1NoticeEEA:
+      return net::AppendQueryParameter(combined_dialog_url, "step", "notice");
+    case PrivacySandboxService::PromptType::kNone:
+      NOTREACHED();
+      return GURL();
+  }
+}
 
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
@@ -83,10 +104,11 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
-  web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxDialogURL));
+  web_view_->LoadInitialURL(GetDialogURL(prompt_type));
 
   auto width =
       views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogWidth);
+  // TODO(crbug.com/1378703): Adjust default values for new prompt types.
   auto height = prompt_type == PrivacySandboxService::PromptType::kConsent
                     ? kDefaultConsentDialogHeight
                     : kDefaultNoticeDialogHeight;

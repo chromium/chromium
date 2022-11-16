@@ -8,6 +8,15 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
+namespace {
+
+bool IsConsent(PrivacySandboxService::PromptType prompt_type) {
+  return prompt_type == PrivacySandboxService::PromptType::kConsent ||
+         prompt_type == PrivacySandboxService::PromptType::kM1Consent;
+}
+
+}  // namespace
+
 PrivacySandboxDialogHandler::PrivacySandboxDialogHandler(
     base::OnceClosure close_callback,
     base::OnceCallback<void(int)> resize_callback,
@@ -58,7 +67,7 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
     return;
 
   // If user hasn't made a decision, notify the service.
-  if (prompt_type_ == PrivacySandboxService::PromptType::kConsent) {
+  if (IsConsent(prompt_type_)) {
     NotifyServiceAboutPromptAction(
         PrivacySandboxService::PromptAction::kConsentClosedNoDecision);
   } else {
@@ -115,7 +124,7 @@ void PrivacySandboxDialogHandler::HandleShowDialog(
 
   // Notify the service that the DOM was loaded and the dialog was shown to
   // user.
-  if (prompt_type_ == PrivacySandboxService::PromptType::kConsent) {
+  if (IsConsent(prompt_type_)) {
     NotifyServiceAboutPromptAction(
         PrivacySandboxService::PromptAction::kConsentShown);
   } else {

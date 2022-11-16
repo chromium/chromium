@@ -166,6 +166,8 @@ const char kChromeUIPrintURL[] = "chrome://print/";
 const char kChromeUIPrivacySandboxDialogHost[] = "privacy-sandbox-dialog";
 const char kChromeUIPrivacySandboxDialogURL[] =
     "chrome://privacy-sandbox-dialog";
+const char kChromeUIPrivacySandboxDialogCombinedPath[] = "combined";
+const char kChromeUIPrivacySandboxDialogNoticePath[] = "notice";
 const char kChromeUIQuitHost[] = "quit";
 const char kChromeUIQuitURL[] = "chrome://quit/";
 const char kChromeUIQuotaInternalsHost[] = "quota-internals";
