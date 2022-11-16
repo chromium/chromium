@@ -38,7 +38,7 @@ bool IsKnownProtocolForPresentationUrl(const KURL& url) {
 }
 
 int GetPlayoutDelay(const PresentationSource& source) {
-  if (!source.hasLatencyHint()) {
+  if (!source.hasLatencyHint() || !source.latencyHint()) {
     return 400;
   }
   switch (source.latencyHint()->AsEnum()) {
@@ -52,7 +52,7 @@ int GetPlayoutDelay(const PresentationSource& source) {
 }
 
 KURL CreateMirroringUrl(const PresentationSource& source) {
-  int capture_audio = !source.hasAudioPlayback() ||
+  int capture_audio = !source.hasAudioPlayback() || !source.audioPlayback() ||
                               (source.audioPlayback()->AsEnum() ==
                                V8AudioPlaybackDestination::Enum::kReceiver)
                           ? 1
