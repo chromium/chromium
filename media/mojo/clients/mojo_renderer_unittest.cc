@@ -40,6 +40,7 @@ using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
@@ -474,9 +475,6 @@ TEST_F(MojoRendererTest, Destroy_PendingSetCdm) {
   Destroy();
 }
 
-// TODO(xhwang): Add more tests on OnError. For example, ErrorDuringFlush,
-// ErrorAfterFlush etc.
-
 TEST_F(MojoRendererTest, ErrorDuringPlayback) {
   Initialize();
 
@@ -489,6 +487,30 @@ TEST_F(MojoRendererTest, ErrorDuringPlayback) {
 
   EXPECT_CALL(*mock_renderer_, SetPlaybackRate(0.0)).Times(1);
   mojo_renderer_->SetPlaybackRate(0.0);
+  Flush();
+}
+
+TEST_F(MojoRendererTest, ErrorBeforeFlush) {
+  Initialize();
+  Play();
+
+  EXPECT_CALL(renderer_client_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  remote_renderer_client_->OnError(PIPELINE_ERROR_DECODE);
+  Flush();
+}
+
+TEST_F(MojoRendererTest, ErrorDuringFlush) {
+  Initialize();
+  Play();
+
+  EXPECT_CALL(renderer_client_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)))
+      .Times(1);
+  EXPECT_CALL(*mock_renderer_, OnFlush(_))
+      .WillOnce(DoAll(InvokeWithoutArgs([&]() {
+                        remote_renderer_client_->OnError(PIPELINE_ERROR_DECODE);
+                      }),
+                      RunOnceClosure<0>()));
   Flush();
 }
 

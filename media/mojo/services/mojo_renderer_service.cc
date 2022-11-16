@@ -87,7 +87,12 @@ void MojoRendererService::Initialize(
 
 void MojoRendererService::Flush(FlushCallback callback) {
   DVLOG(2) << __func__;
-  DCHECK_EQ(state_, STATE_PLAYING);
+  DCHECK(state_ == STATE_PLAYING || state_ == STATE_ERROR);
+
+  if (state_ == STATE_ERROR) {
+    std::move(callback).Run();
+    return;
+  }
 
   state_ = STATE_FLUSHING;
   CancelPeriodicMediaTimeUpdates();
@@ -256,23 +261,26 @@ void MojoRendererService::CancelPeriodicMediaTimeUpdates() {
   DVLOG(2) << __func__;
 
   time_update_timer_.Stop();
-  UpdateMediaTime(false);
+  UpdateMediaTime(/*force=*/false);
 }
 
 void MojoRendererService::SchedulePeriodicMediaTimeUpdates() {
   DVLOG(2) << __func__;
 
-  UpdateMediaTime(true);
+  UpdateMediaTime(/*force=*/true);
   time_update_timer_.Start(
       FROM_HERE, kTimeUpdateInterval,
       base::BindRepeating(&MojoRendererService::UpdateMediaTime, weak_this_,
-                          false));
+                          /*force=*/false));
 }
 
 void MojoRendererService::OnFlushCompleted(FlushCallback callback) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(state_, STATE_FLUSHING);
-  state_ = STATE_PLAYING;
+  DCHECK(state_ == STATE_FLUSHING || state_ == STATE_ERROR);
+
+  if (state_ == STATE_FLUSHING)
+    state_ = STATE_PLAYING;
+
   std::move(callback).Run();
 }
 
