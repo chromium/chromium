@@ -50,6 +50,26 @@ class WebApprovalsManager {
   // successfully.
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
 
+  // The result of local web approval flow used for metrics.
+  // Those values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // "FamilyLinkUserLocalWebApprovalResult" in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class LocalApprovalResultMetric {
+    kApproved = 0,
+    kDeclined = 1,
+    kCanceled = 2,
+    kError = 3,
+    kMaxValue = kError
+  };
+
+  // Returns the name of the local approval duration histogram.
+  // The duration is recorded in milliseconds.
+  static const char* GetLocalApprovalDurationMillisecondsHistogram();
+
+  // Returns the name of the local approval result histogram.
+  static const char* GetLocalApprovalResultHistogram();
+
   WebApprovalsManager();
 
   WebApprovalsManager(const WebApprovalsManager&) = delete;

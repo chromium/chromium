@@ -219,8 +219,19 @@ chromium-metrics-reviews@google.com.
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The different outcomes that a user may come accross the local web approval
-    flow. Currently available on Android only (as the Chrome OS implementation
-    is not yet available).
+    flow. Available on Android only.
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.LocalWebApprovalResult"
+    enum="FamilyLinkUserLocalWebApprovalResult" expires_after="2023-03-26">
+  <owner>agawronska@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records the result of local web approval request on ChromeOS and Android.
+    Reported by the browser once platform specific approval flow finishes and
+    returns the result.
   </summary>
 </histogram>
 

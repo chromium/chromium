@@ -37514,7 +37514,7 @@ Called by update_extension_permission.py.-->
   <int value="0" label="Approved by parent">
     Request to allow visiting a host was approved by the parent i.e. the parent
     completed the verification flow and selected the (&quot;Approve&quot;
-    button).
+    button). Available on Android.
   </int>
   <int value="1" label="Denied by parent">
     Request to allow visiting a host was denied by the parent, i.e. the parent
@@ -37541,6 +37541,24 @@ Called by update_extension_permission.py.-->
   <int value="7" label="Verification widget unexpected exception">
     An unexpected exception occured during parent verification.
   </int>
+</enum>
+
+<enum name="FamilyLinkUserLocalWebApprovalResult">
+  <summary>
+    The result of local web approval request. Reported by the browser once
+    platform specific approval flow finishes and returns the result.
+  </summary>
+  <int value="0" label="Approved">
+    Request was explicitely approved after parent verification.
+  </int>
+  <int value="1" label="Declined">
+    Request was explicitely declined after parent verification.
+  </int>
+  <int value="2" label="Canceled">
+    Request was canceled at any point (before, during or after parent
+    verification).
+  </int>
+  <int value="3" label="Error">An error occured during the request flow.</int>
 </enum>
 
 <enum name="FamilyLinkUserLogSegment">

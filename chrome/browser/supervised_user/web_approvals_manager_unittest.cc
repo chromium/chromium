@@ -95,9 +95,6 @@ class MockSupervisedUserSettingsService
   MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
 };
 
-constexpr char kLocalWebApprovalDurationHistogramName[] =
-    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
-
 }  // namespace
 
 class WebApprovalsManagerTest : public ::testing::Test {
@@ -230,16 +227,25 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kRejected);
 
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
-  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
-                                         elapsed_time, 1);
+  histogram_tester.ExpectBucketCount(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kDeclined, 1);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
+      elapsed_time, 1);
 
   // Receive a request cancelled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
   web_approvals_manager().OnLocalApprovalRequestCompleted(
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kIncomplete);
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kCanceled, 1);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.
@@ -253,9 +259,17 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
   web_approvals_manager().OnLocalApprovalRequestCompleted(
       &supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kApproved);
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 2);
-  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
-                                         elapsed_time, 1);
+  histogram_tester.ExpectBucketCount(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kApproved, 1);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(), 3);
+
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 2);
+  histogram_tester.ExpectTimeBucketCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
+      elapsed_time, 1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -281,9 +295,14 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalApprovedChromeOSTest) {
       &supervisedUserSettingsServiceMock, url, start_time,
       std::move(dialog_result));
 
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
-  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
-                                         approval_duration, 1);
+  histogram_tester.ExpectUniqueSample(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kApproved, 1);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
+      approval_duration, 1);
 }
 
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
@@ -309,9 +328,14 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalDeclinedChromeOSTest) {
       &supervisedUserSettingsServiceMock, url, start_time,
       std::move(dialog_result));
 
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
-  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
-                                         approval_duration, 1);
+  histogram_tester.ExpectUniqueSample(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kDeclined, 1);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(),
+      approval_duration, 1);
 }
 
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalCancelledChromeOSTest) {
@@ -338,7 +362,11 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalCancelledChromeOSTest) {
       std::move(dialog_result));
 
   // Check that the approval duration was NOT recorded for canceled request.
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 0);
+  histogram_tester.ExpectUniqueSample(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kCanceled, 1);
 }
 
 TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
@@ -365,6 +393,10 @@ TEST_F(WebApprovalsManagerTest, LocalWebApprovalErrorChromeOSTest) {
       std::move(dialog_result));
 
   // Check that the approval duration was NOT recorded on error.
-  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram(), 0);
+  histogram_tester.ExpectUniqueSample(
+      WebApprovalsManager::GetLocalApprovalResultHistogram(),
+      WebApprovalsManager::LocalApprovalResultMetric::kError, 1);
 }
 #endif

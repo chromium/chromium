@@ -32,6 +32,8 @@ namespace {
 
 constexpr char kLocalWebApprovalDurationHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+constexpr char kLocalWebApprovalResultHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalResult";
 
 void CreateURLAccessRequest(
     const GURL& url,
@@ -53,6 +55,28 @@ std::string EnumLocalWebApprovalFlowOutcomeToString(
   }
 }
 
+void RecordLocalApprovalResultMetricForAndroidOutcome(
+    AndroidLocalWebApprovalFlowOutcome outcome) {
+  WebApprovalsManager::LocalApprovalResultMetric histogram_enum =
+      WebApprovalsManager::LocalApprovalResultMetric::kError;
+  switch (outcome) {
+    case AndroidLocalWebApprovalFlowOutcome::kApproved:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kApproved;
+      break;
+    case AndroidLocalWebApprovalFlowOutcome::kRejected:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kDeclined;
+      break;
+    case AndroidLocalWebApprovalFlowOutcome::kIncomplete:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kCanceled;
+      break;
+  }
+  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName,
+                                histogram_enum);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper method for getting human readable outcome for a local web approval.
 std::string ParentAccessResultToLoggingStringChromeOS(
@@ -68,6 +92,31 @@ std::string ParentAccessResultToLoggingStringChromeOS(
       return "Error";
   }
 }
+
+void RecordLocalApprovalResultMetricForChromeOSResult(
+    ash::ParentAccessDialog::Result::Status result) {
+  WebApprovalsManager::LocalApprovalResultMetric histogram_enum =
+      WebApprovalsManager::LocalApprovalResultMetric::kError;
+  switch (result) {
+    case ash::ParentAccessDialog::Result::Status::kApproved:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kApproved;
+      break;
+    case ash::ParentAccessDialog::Result::Status::kDeclined:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kDeclined;
+      break;
+    case ash::ParentAccessDialog::Result::Status::kCancelled:
+      histogram_enum =
+          WebApprovalsManager::LocalApprovalResultMetric::kCanceled;
+      break;
+    case ash::ParentAccessDialog::Result::Status::kError:
+      histogram_enum = WebApprovalsManager::LocalApprovalResultMetric::kError;
+      break;
+  }
+  base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName,
+                                histogram_enum);
+}
 #endif
 
 void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
@@ -76,6 +125,17 @@ void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
 }
 
 }  // namespace
+
+// static
+const char*
+WebApprovalsManager::GetLocalApprovalDurationMillisecondsHistogram() {
+  return kLocalWebApprovalDurationHistogramName;
+}
+
+// static
+const char* WebApprovalsManager::GetLocalApprovalResultHistogram() {
+  return kLocalWebApprovalResultHistogramName;
+}
 
 WebApprovalsManager::WebApprovalsManager() = default;
 
@@ -115,6 +175,8 @@ void WebApprovalsManager::RequestLocalApproval(
   if (result != ash::ParentAccessDialogProvider::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: "
                << static_cast<int>(result);
+    base::UmaHistogramEnumeration(kLocalWebApprovalResultHistogramName,
+                                  LocalApprovalResultMetric::kError);
     std::move(callback).Run(false);
     return;
   }
@@ -216,6 +278,8 @@ void WebApprovalsManager::OnLocalApprovalRequestCompleted(
     RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
   }
 
+  RecordLocalApprovalResultMetricForAndroidOutcome(request_outcome);
+
   if (request_outcome == AndroidLocalWebApprovalFlowOutcome::kApproved) {
     settings_service->RecordLocalWebsiteApproval(url.host());
   }
@@ -236,7 +300,8 @@ void WebApprovalsManager::OnLocalApprovalRequestCompletedChromeOS(
     RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
   }
 
-  // TODO(b/250947827): Add request result metric for CrOS.
+  RecordLocalApprovalResultMetricForChromeOSResult(result->status);
+
   if (result->status == ash::ParentAccessDialog::Result::Status::kApproved) {
     settings_service->RecordLocalWebsiteApproval(url.host());
   }
