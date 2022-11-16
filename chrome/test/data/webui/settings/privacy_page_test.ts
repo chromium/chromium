@@ -518,7 +518,7 @@ suite('NotificationPermissionReview', function() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.innerHTML = '';
   });
 
   teardown(function() {

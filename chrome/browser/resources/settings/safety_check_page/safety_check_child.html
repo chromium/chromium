@@ -43,9 +43,8 @@
     aria-label="[[getStatusIconAriaLabel_(iconStatus)]]">
 </iron-icon>
 <div class="flex cr-padded-text">
-  <div id="label" inner-h-t-m-l="[[sanitizeInnerHtml_(label)]]"></div>
-  <div id="subLabel" class="secondary" no-search
-      inner-h-t-m-l="[[sanitizeInnerHtml_(subLabel)]]">
+  <div id="label" inner-h-t-m-l="[[label]]"></div>
+  <div id="subLabel" class="secondary" no-search inner-h-t-m-l="[[subLabel]]">
   </div>
 </div>
 <template is="dom-if" if="[[showButton_(buttonLabel)]]" restamp>

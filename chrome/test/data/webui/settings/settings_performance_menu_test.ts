@@ -16,7 +16,7 @@ suite('SettingsMenuPerformance', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.innerHTML = '';
     Router.getInstance().navigateTo(routes.PERFORMANCE, undefined);
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.pageVisibility = pageVisibility;

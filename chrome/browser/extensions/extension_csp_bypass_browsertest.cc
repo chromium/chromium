@@ -133,11 +133,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
   EXPECT_TRUE(CanLoadScript(ext_without_permission));
 
   // chrome-extension:-URLs can never bypass CSP in WebUI.
-  // TODO(crbug.com/1098690): Find a way to make this test work for pages that
-  // do use TrustedTypes. In the meantime, just use a WebUI that has not
-  // enabled TrustedTypes yet.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIWelcomeURL)));
+                                           GURL(chrome::kChromeUISettingsURL)));
 
   EXPECT_FALSE(CanLoadScript(component_ext_with_permission));
   EXPECT_FALSE(CanLoadScript(component_ext_without_permission));

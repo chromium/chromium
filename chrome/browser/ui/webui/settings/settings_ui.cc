@@ -413,7 +413,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
       IDR_SETTINGS_SETTINGS_HTML);
-  webui::EnableTrustedTypesCSP(html_source);
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 

@@ -69,8 +69,7 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types parse-html-subset sanitize-inner-html static-types "
-      // Add TrustedTypes policies used during tests.
-      "webui-test-script webui-test-html "
+      "webui-test-script "
       // Add TrustedTypes policies necessary for using Polymer.
       "polymer-html-literal polymer-template-event-attribute-policy;");
 }
