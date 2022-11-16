@@ -8,7 +8,6 @@ import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {Trash} from './trash.js';
 
 /**
  * FileOperationManagerImpl: implementation of {FileOperationManager}.
@@ -26,12 +25,6 @@ export class FileOperationManagerImpl {
      * @private {number}
      */
     this.taskIdCounter_ = 0;
-
-    /**
-     * @private {!Trash}
-     * @const
-     */
-    this.trash_ = new Trash();
   }
 
   /**
@@ -73,18 +66,6 @@ export class FileOperationManagerImpl {
 
     // Remove null entries.
     return result.filter(entry => !!entry);
-  }
-
-  /**
-   * Returns true if all entries will use trash for delete.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {!Array<!Entry>} entries The entries.
-   * @return {boolean}
-   */
-  willUseTrash(volumeManager, entries) {
-    return entries.every(
-        entry => this.trash_.shouldMoveToTrash(volumeManager, entry));
   }
 
   /**

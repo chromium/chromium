@@ -24,15 +24,6 @@ export class FileOperationManager {
   filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
 
   /**
-   * Returns true if all entries will use trash for delete.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {!Array<!Entry>} entries The entries.
-   * @return {boolean}
-   */
-  willUseTrash(volumeManager, entries) {}
-
-  /**
    * Writes file to destination dir.
    *
    * @param {!File} file The file entry to be written.

@@ -28,7 +28,6 @@ group("js_modules") {
     ":metrics_start",
     ":progress_center",
     ":test_util",
-    ":trash",
   ]
 }
 
@@ -51,7 +50,6 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center",
     ":runtime_loaded_test_util",
     ":test_util_base",
-    ":trash",
     ":volume_info_impl",
     ":volume_info_list_impl",
     ":volume_manager_factory",
@@ -239,7 +237,6 @@ js_library("mock_file_operation_manager") {
 js_library("file_operation_manager") {
   deps = [
     ":file_operation_util",
-    ":trash",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:entry_location",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
@@ -372,30 +369,6 @@ js_library("test_util") {
   ]
 }
 
-js_library("trash") {
-  deps = [
-    ":file_operation_util",
-    "//ui/file_manager/file_manager/common/js:trash",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_unittest("trash_unittest") {
-  deps = [
-    ":mock_volume_manager",
-    ":trash",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:trash",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
 js_library("volume_info_list_impl") {
   deps = [
     "//ui/file_manager/file_manager/common/js:array_data_model",
@@ -457,7 +430,6 @@ js_test_type_check("js_test_type_check") {
     ":drive_sync_handler_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
-    ":trash_unittest",
     ":volume_manager_unittest",
   ]
 

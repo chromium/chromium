@@ -25,6 +25,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {metrics} from './metrics.js';
+import {util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -127,6 +128,51 @@ export function isAllTrashEntries(entries, volumeManager) {
       if (e.toURL().startsWith(volumeURL)) {
         return true;
       }
+    }
+    return false;
+  });
+}
+
+/**
+ * Returns true if all entries are on a trashable volume and they aren't already
+ * trashed.
+ * @param {!Array<!Entry>} entries List of entries to verify.
+ * @param {!VolumeManager} volumeManager Volume manager used to get trash
+ *     location URLs.
+ * @returns {boolean} True if all entries can be sent to trash.
+ */
+export function shouldMoveToTrash(entries, volumeManager) {
+  if (!util.isTrashEnabled()) {
+    return false;
+  }
+  const urls = [];
+  for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
+    const volumeInfo = volumeManager.volumeInfoList.item(i);
+    for (const config of TrashConfig.CONFIG) {
+      if (volumeInfo.volumeType === config.volumeType) {
+        let fileSystemRootURL = volumeInfo.fileSystem.root.toURL();
+        if (fileSystemRootURL.endsWith('/')) {
+          fileSystemRootURL =
+              fileSystemRootURL.substring(0, fileSystemRootURL.length - 1);
+        }
+        const trashURLs = {
+          volume: volumeInfo.fileSystem.root.toURL(),
+          volumeAndTrashPath: fileSystemRootURL + config.trashDir,
+        };
+        urls.push(trashURLs);
+      }
+    }
+  }
+  return entries.every(e => {
+    for (const {volume, volumeAndTrashPath} of urls) {
+      const entryURL = e.toURL();
+      if (!entryURL.startsWith(volume)) {
+        continue;
+      }
+      if (entryURL.startsWith(volumeAndTrashPath)) {
+        return false;
+      }
+      return true;
     }
     return false;
   });
@@ -330,32 +376,6 @@ export class TrashEntry {
   /** @override FilesAppEntry */
   getNativeEntry() {
     return this.filesEntry;
-  }
-
-  /**
-   * Parse Path from info entry text, or null if parse fails.
-   * @param {string} text text of info entry.
-   * @return {?string} path or null if parse fails.
-   */
-  static parsePath(text) {
-    const found = text.match(/^Path=(.*)/m);
-    return found ? found[1] : null;
-  }
-
-  /**
-   * Parse DeletionDate from info entry text, or null if parse fails.
-   * @param {string} text text of info entry.
-   * @return {?Date} deletion date or null if parse fails.
-   */
-  static parseDeletionDate(text) {
-    const found = text.match(/^DeletionDate=(.*)/m);
-    if (found) {
-      const n = Date.parse(found[1]);
-      if (!Number.isNaN(n)) {
-        return new Date(n);
-      }
-    }
-    return null;
   }
 }
 

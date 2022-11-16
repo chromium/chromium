@@ -35,7 +35,6 @@ static_js_files = [
   "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
   "file_manager/background/js/test_util_base.js",
-  "file_manager/background/js/trash.js",
   "file_manager/background/js/volume_info_impl.js",
   "file_manager/background/js/volume_info_list_impl.js",
   "file_manager/background/js/volume_manager_factory.js",
@@ -401,7 +400,6 @@ unittest_files = [
   "file_manager/background/js/drive_sync_handler_unittest.js",
   "file_manager/background/js/file_operation_handler_unittest.js",
   "file_manager/background/js/file_operation_manager_unittest.js",
-  "file_manager/background/js/trash_unittest.js",
   "file_manager/background/js/volume_manager_unittest.js",
   "file_manager/background/js/crostini_unittest.js",
 
