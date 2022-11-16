@@ -33,7 +33,7 @@ class AppIconReader {
   // Reads specified app icons from the local disk for an app identified by
   // `app_id`.
   void ReadIcons(const std::string& app_id,
-                 int32_t size_hint_in_dip,
+                 int32_t size_in_dip,
                  IconEffects icon_effects,
                  IconType icon_type,
                  LoadIconCallback callback);
@@ -43,10 +43,14 @@ class AppIconReader {
                             LoadIconCallback callback,
                             std::vector<uint8_t> icon_data);
 
-  void OnUncompressedIconRead(IconType icon_type,
+  void OnUncompressedIconRead(int32_t size_in_dip,
+                              IconEffects icon_effects,
+                              IconType icon_type,
                               LoadIconCallback callback,
                               AppIconDecoder* decoder,
                               gfx::ImageSkia image);
+
+  void OnCompleteWithIconValue(LoadIconCallback callback, IconValuePtr iv);
 
   const raw_ptr<Profile> profile_;
 
