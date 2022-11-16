@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ark.browser.ui.widget.CheckLayout;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.ShadowLayout;
 import com.zpj.progressbar.ZProgressBar;
@@ -25,7 +26,7 @@ public class ArkBrowserApplicationImpl extends ChromeApplicationImpl {
     public void onCreate() {
         super.onCreate();
 
-//        SkinEngine.registerSkinApplicator(CheckLayout.class, new CheckLayoutApplicator());
+        SkinEngine.registerSkinApplicator(CheckLayout.class, new CheckLayoutApplicator());
         SkinEngine.registerSkinApplicator(SimpleSettingItem.class, new SimpleSettingItemApplicator());
         SkinEngine.registerSkinApplicator(SwitchSettingItem.class, new SettingItemApplicator());
         SkinEngine.registerSkinApplicator(DrawableTintTextView.class, new DrawableTintTextViewApplicator());
@@ -53,23 +54,23 @@ public class ArkBrowserApplicationImpl extends ChromeApplicationImpl {
                 });
     }
 
-//    public static class CheckLayoutApplicator extends SkinViewApplicator {
-//        public CheckLayoutApplicator() {
-//            super();
-//            addAttributeApplicator("title_text_color", new IAttributeApplicator<CheckLayout>() {
-//                @Override
-//                public void onApply(CheckLayout view, TypedArray typedArray, int typedArrayIndex) {
-//                    view.setTitleTextColor(typedArray.getColor(typedArrayIndex, view.getContext().getResources().getColor(R.color.color_text_major)));
-//                }
-//            });
-//            addAttributeApplicator("content_text_color", new IAttributeApplicator<CheckLayout>() {
-//                @Override
-//                public void onApply(CheckLayout view, TypedArray typedArray, int typedArrayIndex) {
-//                    view.setContentTextColor(typedArray.getColor(typedArrayIndex, view.getContext().getResources().getColor(R.color.color_text_major)));
-//                }
-//            });
-//        }
-//    }
+    public static class CheckLayoutApplicator extends SkinViewApplicator {
+        public CheckLayoutApplicator() {
+            super();
+            addAttributeApplicator("title_text_color", new IAttributeApplicator<CheckLayout>() {
+                @Override
+                public void onApply(CheckLayout view, TypedArray typedArray, int typedArrayIndex) {
+                    view.setTitleTextColor(typedArray.getColor(typedArrayIndex, view.getContext().getResources().getColor(R.color.color_text_major)));
+                }
+            });
+            addAttributeApplicator("content_text_color", new IAttributeApplicator<CheckLayout>() {
+                @Override
+                public void onApply(CheckLayout view, TypedArray typedArray, int typedArrayIndex) {
+                    view.setContentTextColor(typedArray.getColor(typedArrayIndex, view.getContext().getResources().getColor(R.color.color_text_major)));
+                }
+            });
+        }
+    }
 
     public static class SimpleSettingItemApplicator extends SkinViewApplicator {
         public SimpleSettingItemApplicator() {

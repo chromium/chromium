@@ -395,11 +395,12 @@ by a child template that "extends" this file.
 
         <activity
             android:name="com.ark.browser.ArkBrowserActivity"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+            android:hardwareAccelerated="false"
             android:exported="false"
             android:launchMode="singleTask"
-            android:theme="@style/DayTheme" />
+            android:theme="@style/ArkDayTheme" />
 
         <!-- ChromeTabbedActivity related -->
         <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"

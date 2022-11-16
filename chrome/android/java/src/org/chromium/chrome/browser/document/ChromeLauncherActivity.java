@@ -58,11 +58,5 @@ public class ChromeLauncherActivity extends Activity {
 
     private void applyThemeOverlays() {
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
-
-        // The effect of this activity's theme is currently limited to CCTs, so we should only apply
-        // dynamic colors when we enable them everywhere.
-        if (ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue()) {
-            DynamicColors.applyIfAvailable(this);
-        }
     }
 }

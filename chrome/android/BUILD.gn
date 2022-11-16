@@ -200,11 +200,14 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
     "//chrome/android/java/res_app/layout/fragment_dialog_main_menu.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_exit.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
 
     "//chrome/android/java/res_app/layout/item_collection.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/item_menu.xml",
+    "//chrome/android/java/res_app/layout/layout_check.xml",
+    "//chrome/android/java/res_app/layout/layout_dialog_header.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
     "//chrome/android/java/res_app/layout/menu_action_mode.xml",
@@ -245,6 +248,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_vconsole.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_enter_arrow.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_bookmark.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_close.webp",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_360.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_360_logo.png",

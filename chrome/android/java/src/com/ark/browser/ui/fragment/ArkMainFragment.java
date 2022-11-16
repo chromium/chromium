@@ -1,6 +1,7 @@
 package com.ark.browser.ui.fragment;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,13 +41,14 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements
-        PauseResumeWithNativeObserver, StartStopWithNativeObserver {
+        PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
 
     private static final String TAG = "ArkMainFragment";
 
@@ -205,6 +207,20 @@ public class ArkMainFragment extends BaseFragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        ViewGroup rootView = (ViewGroup) _mActivity.getWindow().getDecorView().getRootView();
+
+        // Setting fitsSystemWindows to false ensures that the root view doesn't consume the
+        // insets.
+        rootView.setFitsSystemWindows(false);
+
+        // Add a custom view right after the root view that stores the insets to access later.
+        // WebContents needs the insets to determine the portion of the screen obscured by
+        // non-content displaying things such as the OSK.
+        InsetObserverView insetObserverView = InsetObserverView.create(context);
+        rootView.addView(insetObserverView, 0);
+
+        mViewHolder.setInsetObserverView(insetObserverView);
 
         initCompositor();
 
@@ -385,5 +401,19 @@ public class ArkMainFragment extends BaseFragment implements
 
     public ArkCompositorViewHolder getViewHolder() {
         return mViewHolder;
+    }
+
+    @Override
+    public void onInsetChanged(int left, int top, int right, int bottom) {
+        if (mViewHolder != null) {
+            mViewHolder.onInsetChanged(left, top, right, bottom);
+        }
+    }
+
+    @Override
+    public void onSafeAreaChanged(Rect area) {
+        if (mViewHolder != null) {
+            mViewHolder.onSafeAreaChanged(area);
+        }
     }
 }

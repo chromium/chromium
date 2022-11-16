@@ -18,6 +18,12 @@
         android:orientation="vertical"
         >
 
+        <com.ark.browser.ui.widget.StatusBarView
+            android:id="@+id/space_status_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black_alpha_20"
+            />
 
         <org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer
             android:layout_width="match_parent"

@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.SPenSupport;
@@ -69,23 +68,35 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     private static final String TAG = "ArkLayoutManager";
 
-    /** Sampling at 60 fps. */
+    /**
+     * Sampling at 60 fps.
+     */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
-    /** Used to convert pixels to dp. */
+    /**
+     * Used to convert pixels to dp.
+     */
     protected final float mPxToDp;
 
-    /** The {@link LayoutManagerHost}, who is responsible for showing the active {@link Layout}. */
+    /**
+     * The {@link LayoutManagerHost}, who is responsible for showing the active {@link Layout}.
+     */
     protected final LayoutManagerHost mHost;
 
-    /** The last X coordinate of the last {@link MotionEvent#ACTION_DOWN} event. */
+    /**
+     * The last X coordinate of the last {@link MotionEvent#ACTION_DOWN} event.
+     */
     protected int mLastTapX;
 
-    /** The last Y coordinate of the last {@link MotionEvent#ACTION_DOWN} event. */
+    /**
+     * The last Y coordinate of the last {@link MotionEvent#ACTION_DOWN} event.
+     */
     protected int mLastTapY;
 
     // Layouts
-    /** A {@link Layout} used for showing a normal web page. */
+    /**
+     * A {@link Layout} used for showing a normal web page.
+     */
     protected ArkStaticLayout mStaticLayout;
 
     // External Observers
@@ -114,21 +125,28 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     // Whether the currently active event filter has changed.
     private boolean mIsNewEventFilter;
 
-    /** The animation handler responsible for updating all the browser compositor's animations. */
+    /**
+     * The animation handler responsible for updating all the browser compositor's animations.
+     */
     private final CompositorAnimationHandler mAnimationHandler;
 
     private final CompositorModelChangeProcessor.FrameRequestSupplier mFrameRequestSupplier;
 
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    /** The overlays that can be drawn on top of the active layout. */
+    /**
+     * The overlays that can be drawn on top of the active layout.
+     */
     protected final List<SceneOverlay> mSceneOverlays = new ArrayList<>();
 
-    /** A map of {@link SceneOverlay} to its position relative to the others. */
+    /**
+     * A map of {@link SceneOverlay} to its position relative to the others.
+     */
     private final Map<Class<?>, Integer> mOverlayOrderMap = new HashMap<>();
 
     /**
      * Creates a {@link ArkLayoutManager} instance.
+     *
      * @param host A {@link LayoutManagerHost} instance.
      */
     public ArkLayoutManager(LayoutManagerHost host) {
@@ -138,7 +156,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
         // clang-format off
         // Overlays are ordered back (closest to the web content) to front.
-        Class[] overlayOrder = new Class[] {
+        Class[] overlayOrder = new Class[]{
                 ContextualSearchPanel.class};
         // clang-format on
 
@@ -165,10 +183,11 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     /**
      * Gives the {@link ArkLayoutManager} a chance to intercept and process touch events from the
      * Android {@link View} system.
+     *
      * @param e                 The {@link MotionEvent} that might be intercepted.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
-     * @return                  Whether or not this current touch gesture should be intercepted and
-     *                          continually forwarded to this class.
+     * @return Whether or not this current touch gesture should be intercepted and
+     * continually forwarded to this class.
      */
     public boolean onInterceptTouchEvent(MotionEvent e, boolean isKeyboardShowing) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
@@ -208,8 +227,9 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     /**
      * Gives the {@link ArkLayoutManager} a chance to process the touch events from the Android
      * {@link View} system.
+     *
      * @param e A {@link MotionEvent} instance.
-     * @return  Whether or not {@code e} was consumed.
+     * @return Whether or not {@code e} was consumed.
      */
     public boolean onTouchEvent(MotionEvent e) {
         if (mActiveEventFilter == null) return false;
@@ -264,9 +284,10 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Updates the state of the layout.
+     *
      * @param timeMs The time in milliseconds.
      * @param dtMs   The delta time since the last update in milliseconds.
-     * @return       Whether or not the {@link ArkLayoutManager} needs more updates.
+     * @return Whether or not the {@link ArkLayoutManager} needs more updates.
      */
     @VisibleForTesting
     boolean onUpdate(long timeMs, long dtMs) {
@@ -307,7 +328,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Initializes the {@link ArkLayoutManager}.  Must be called before using this object.
-     * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
+     *
+     * @param dynamicResourceLoader A {@link DynamicResourceLoader} instance.
      */
     public void init(TabContentManager tabContentManager, DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
@@ -328,7 +350,9 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         if (mStaticLayout != null) mStaticLayout.destroy();
     }
 
-    /** @return A resource manager to pull textures from. */
+    /**
+     * @return A resource manager to pull textures from.
+     */
     public ResourceManager getResourceManager() {
         if (mHost.getLayoutRenderHost() == null) return null;
         return mHost.getLayoutRenderHost().getResourceManager();
@@ -365,7 +389,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     @Override
     public SceneLayer getUpdatedActiveSceneLayer(TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsManager browserControlsManager) {
+                                                 ResourceManager resourceManager, BrowserControlsManager browserControlsManager) {
         updateControlsHidingState(browserControlsManager);
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
@@ -448,7 +472,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * @return The default {@link Layout} to show when {@link Layout}s get hidden and the next
-     *         {@link Layout} to show isn't known.
+     * {@link Layout} to show isn't known.
      */
     protected Layout getDefaultLayout() {
         return mStaticLayout;
@@ -465,6 +489,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     /**
      * Should be called when a tab creating event is triggered (called before the tab is done being
      * created).
+     *
      * @param sourceId    The id of the creating tab if any.
      * @param isIncognito Whether or not created tab will be incognito.
      */
@@ -474,6 +499,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Called when a tab closure has been committed and all tab cleanup should happen.
+     *
      * @param id        The id of the closed tab.
      * @param incognito Whether or not the closed tab is incognito.
      */
@@ -485,6 +511,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Called when the selected tab model has switched.
+     *
      * @param incognito Whether or not the new current tab model is incognito.
      */
     protected void tabModelSwitched(boolean incognito) {
@@ -521,8 +548,9 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
         layoutTab.initFromHost(Color.WHITE, shouldStall(tab),
                 canUseLiveTexture, tab.getThemeColor(),
-                ThemeUtils.getTextBoxColorForToolbarBackground(
-                        mContext, tab, Color.BLUE),
+                Color.WHITE,
+//                ThemeUtils.getTextBoxColorForToolbarBackground(
+//                        mContext, tab, Color.BLUE),
                 0.5f);
 
         mStaticLayout.updateStaticTab(tab);
@@ -558,7 +586,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     }
 
     @Override
-    public void releaseResourcesForTab(int tabId) {}
+    public void releaseResourcesForTab(int tabId) {
+    }
 
     @Override
     public Layout getActiveLayout() {
@@ -636,7 +665,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Should be called by control logic to show a new {@link Layout}.
-     *
+     * <p>
      * TODO(dtrainor, clholgat): Clean up the show logic to guarantee startHiding/doneHiding get
      * called.
      *
@@ -686,6 +715,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Should be called when the user presses the back button on the phone.
+     *
      * @return Whether or not the back button was consumed by the active {@link Layout}.
      */
     public boolean onBackPressed() {
@@ -718,6 +748,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     /**
      * Clears all content associated with {@code tabId} from the internal caches.
+     *
      * @param tabId The id of the tab to clear.
      */
     protected void emptyCachesExcept(int tabId) {
@@ -726,7 +757,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         if (tab != null) mTabCache.put(tabId, tab);
     }
 
-    private @Orientation int getOrientation() {
+    private @Orientation
+    int getOrientation() {
         return mHost.getWidth() > mHost.getHeight() ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
     }
 

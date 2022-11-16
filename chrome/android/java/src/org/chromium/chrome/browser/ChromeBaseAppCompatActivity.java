@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
+
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,11 +32,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-
-import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
@@ -168,7 +167,7 @@ public class ChromeBaseAppCompatActivity extends SupportActivity
     /**
      * Apply theme overlay to this activity class.
      */
-    @CallSuper
+//    @CallSuper
     protected void applyThemeOverlays() {
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
 
@@ -199,10 +198,6 @@ public class ChromeBaseAppCompatActivity extends SupportActivity
         // still use dynamic colors, as in the android:textColorHighlight example where we use a
         // color state list that depends on colorPrimary.
         setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
-
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID)) {
-            setTheme(R.style.ThemeOverlay_DynamicButtons);
-        }
     }
 
     /**
@@ -210,7 +205,7 @@ public class ChromeBaseAppCompatActivity extends SupportActivity
      * if full dynamic colors are enabled.
      */
     protected boolean supportsDynamicColors() {
-        return ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue();
+        return false;
     }
 
     /**

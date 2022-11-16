@@ -51,7 +51,7 @@
 <!--    <color name="google_grey_200">#EEEEEE</color>-->
 <!--    <color name="google_grey_300">#E0E0E0</color>-->
     <color name="google_grey_400">#BDBDBD</color>
-<!--    <color name="google_grey_500">#9E9E9E</color>-->
+    <color name="google_grey_500">#9E9E9E</color>
 <!--    <color name="google_grey_600">#757575</color>-->
     <color name="google_black_400">#222222</color>
 <!--    <color name="grey_alpha_90">#E6505050</color>-->

@@ -10,9 +10,6 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Handler;
 
-import com.ark.browser.tab.TabInfoObserver;
-import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.IPage;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -29,14 +26,10 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabSwitchMetrics;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -96,9 +89,6 @@ public class ArkStaticLayout extends Layout {
     private final CompositorAnimationHandler mAnimationHandler;
 
 //    private boolean mIsActive;
-
-    private static Integer sToolbarTextBoxBackgroundColorForTesting;
-    private static Float sToolbarTextBoxAlphaForTesting;
 
     private float mPxToDp;
 
@@ -313,15 +303,11 @@ public class ArkStaticLayout extends Layout {
     }
 
     private int getToolbarTextBoxBackgroundColor(Tab tab) {
-        if (sToolbarTextBoxBackgroundColorForTesting != null) {
-            return sToolbarTextBoxBackgroundColorForTesting;
-        }
-
-        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, Color.BLUE);
+        return Color.WHITE;
+//        return ThemeUtils.getTextBoxColorForToolbarBackground(mContext, tab, Color.BLUE);
     }
 
     private float getTextBoxAlphaForToolbarBackground(Tab tab) {
-        if (sToolbarTextBoxAlphaForTesting != null) return sToolbarTextBoxAlphaForTesting;
         return 0.5f;
     }
 

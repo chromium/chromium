@@ -1682,7 +1682,7 @@ public class ChromeTabbedActivity extends ChromeActivity
 
     @Override
     protected boolean supportsDynamicColors() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
+        return false;
     }
 
     /**

@@ -1,15 +1,22 @@
 package com.ark.browser;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.ViewCompat;
 
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
@@ -60,8 +67,23 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
+    protected void applyThemeOverlays() {
+//        if (true) {
+//            return;
+//        }
+//        super.applyThemeOverlays();
+
+        SkinEngine.changeSkin(AppConfig.isNightMode() ? R.style.ArkNightTheme : R.style.ArkDayTheme);
+        setTheme(SkinEngine.getSkin());
+    }
+
+    @Override
     protected void onPreCreate() {
         super.onPreCreate();
+
+        translucentStatusBar(this, true);
+
+        SkinEngine.changeSkin(AppConfig.isNightMode() ? R.style.ArkNightTheme : R.style.ArkDayTheme);
 
         getLayoutInflater();
         mLayoutInflater.applyCurrentSkin();
@@ -71,7 +93,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
             mLayoutInflater.setFactory2((LayoutInflater.Factory2) delegate);
         }
 
-        SkinEngine.changeSkin(AppConfig.isNightMode() ? R.style.NightTheme : R.style.DayTheme);
+
 
         mFragment = findFragment(ArkMainFragment.class);
         if (mFragment == null) {
@@ -83,7 +105,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onPostCreate(savedInstanceState, persistentState);
-        StatusBarUtils.transparentStatusBar(getWindow());
     }
 
     @Override
@@ -119,7 +140,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
             SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();
 
             enableHardwareAcceleration();
-            setLowEndTheme();
+//            setLowEndTheme();
 
             WarmupManager warmupManager = WarmupManager.getInstance();
             warmupManager.clearViewHierarchy();
@@ -141,6 +162,8 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         // non-content displaying things such as the OSK.
         InsetObserverView insetObserverView = InsetObserverView.create(this);
         rootView.addView(insetObserverView, 0);
+
+        insetObserverView.addObserver(mFragment);
 
         super.onInitialLayoutInflationComplete();
 
@@ -188,11 +211,11 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         }
     }
 
-    private void setLowEndTheme() {
-        if (ActivityUtils.getThemeId() == R.style.Theme_Chromium_WithWindowAnimation_LowEnd) {
-            setTheme(R.style.Theme_Chromium_WithWindowAnimation_LowEnd);
-        }
-    }
+//    private void setLowEndTheme() {
+//        if (ActivityUtils.getThemeId() == R.style.Theme_Chromium_WithWindowAnimation_LowEnd) {
+//            setTheme(R.style.Theme_Chromium_WithWindowAnimation_LowEnd);
+//        }
+//    }
 
     public Tab getActivityTab() {
         IPage page = TabListManager.getInstance().getCurrentPage();
@@ -209,6 +232,32 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
             pop();
         } else {
             getOnBackPressedDispatcher().onBackPressed();
+        }
+    }
+
+    static void translucentStatusBar(Activity activity, boolean hideStatusBarBackground) {
+        Window window = activity.getWindow();
+        //添加Flag把状态栏设为可绘制模式
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        if (hideStatusBarBackground) {
+            //如果为全透明模式，取消设置Window半透明的Flag
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //设置状态栏为透明
+            window.setStatusBarColor(Color.TRANSPARENT);
+            //设置window的状态栏不可见
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        } else {
+            //如果为半透明模式，添加设置Window半透明的Flag
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //设置系统状态栏处于可见状态
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+        //view不根据系统窗口来调整自己的布局
+        ViewGroup mContentView = (ViewGroup) window.findViewById(Window.ID_ANDROID_CONTENT);
+        View mChildView = mContentView.getChildAt(0);
+        if (mChildView != null) {
+            ViewCompat.setFitsSystemWindows(mChildView, false);
+            ViewCompat.requestApplyInsets(mChildView);
         }
     }
 

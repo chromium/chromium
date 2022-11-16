@@ -5,6 +5,20 @@
         <attr name="drawable_tint_color" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="DialogHeaderLayout">
+        <attr name="dialog_header_title" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="CheckLayout">
+        <attr name="check_title" format="string"/>
+        <attr name="check_content" format="string" />
+        <attr name="check_icon" format="reference" />
+        <attr name="content_text_color" format="color"/>
+        <attr name="content_text_size" format="integer"/>
+        <attr name="title_text_color" format="color"/>
+        <attr name="title_text_size" format="integer"/>
+    </declare-styleable>
+
     <declare-styleable name="ShadowLayout">
         <!--阴影的圆角大小-->
 

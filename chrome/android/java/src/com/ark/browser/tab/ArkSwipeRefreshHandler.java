@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
+import com.zpj.skin.SkinEngine;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -139,7 +140,7 @@ public class ArkSwipeRefreshHandler
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor = incognito
                 ? context.getResources().getColor(R.color.default_icon_color_blue_light)
-                : SemanticColorUtils.getDefaultIconColorAccent1(context);
+                : SkinEngine.getColor(context, R.attr.colorAccent);
         mSwipeRefreshLayout.setColorSchemeColors(iconColor);
         if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);
 

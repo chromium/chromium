@@ -1,5 +1,6 @@
 package com.ark.browser.ui.fragment.base;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,26 @@ public abstract class SkinFragment extends BaseFragment {
                 darkStatusBar();
             }
         }
+    }
+
+    @Override
+    public void lightStatusBar() {
+        super.lightStatusBar();
+    }
+
+    @Override
+    public void darkStatusBar() {
+        super.darkStatusBar();
+    }
+
+    private void setAndroidNativeLightStatusBar(boolean dark) {
+        View decor = _mActivity.getWindow().getDecorView();
+        if (dark) {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        } else {
+            decor.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+        _mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 
     @Override

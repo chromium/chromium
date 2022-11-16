@@ -67,7 +67,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
                             .setDuration(500)
                             .setStartRunnable(() -> {
                                 boolean isNightMode = AppConfig.isNightMode();
-                                SkinEngine.changeSkin(isNightMode ? R.style.DayTheme : R.style.NightTheme);
+                                SkinEngine.changeSkin(isNightMode ? R.style.ArkDayTheme : R.style.ArkNightTheme);
                                 tvNightMode.setTint(getResources().getColor(isNightMode ? R.color.google_black_400 : R.color.colorPrimary));
 //                                IPage page = TabListManager.getInstance().getCurrentPage();
 //                                Tab tab = page == null ? null : page.getNativePage();
@@ -148,7 +148,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
         } else if (R.id.tv_manager == id) {
 //            new ManagerFragment().show(context);
         } else if (R.id.tv_exit == id) {
-//            new ExitDialog().show(context);
+            new ExitDialog().show(context);
         }
         dismiss();
     }

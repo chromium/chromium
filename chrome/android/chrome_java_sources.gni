@@ -88,12 +88,17 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
 
   "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/ExitDialog.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
+  "java/src/com/ark/browser/ui/widget/CheckLayout.java",
+  "java/src/com/ark/browser/ui/widget/DialogHeaderLayout.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/ShadowLayout.java",
   "java/src/com/ark/browser/ui/widget/SmartSearchPanel.java",
+  "java/src/com/ark/browser/ui/widget/StatusBarView.java",
+  "java/src/com/ark/browser/ui/widget/ZCheckBox.java",
   "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
 
   "java/src/com/ark/browser/utils/ArkLogger.java",

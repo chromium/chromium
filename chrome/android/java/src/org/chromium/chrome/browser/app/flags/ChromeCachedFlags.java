@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +65,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);
                 add(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID);
                 add(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE);
-                add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
-                add(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);
@@ -111,7 +108,6 @@ public class ChromeCachedFlags {
                         add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);
-                        add(ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS);
                     }
                 };
         tryToCatchMissingParameters(fieldTrialsToCache);

@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.styles;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -46,7 +47,7 @@ public class ChromeColors {
      */
     public static @ColorInt int getPrimaryBackgroundColor(Context context, boolean isIncognito) {
         return isIncognito ? context.getColor(R.color.default_bg_color_dark)
-                           : SemanticColorUtils.getDefaultBgColor(context);
+                           : Color.TRANSPARENT; // SemanticColorUtils.getDefaultBgColor(context)
     }
 
     /**

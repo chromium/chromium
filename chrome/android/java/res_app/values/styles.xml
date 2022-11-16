@@ -2,18 +2,18 @@
 <resources xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-    <style name="ArkBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ArkBaseTheme" parent="Theme.Chromium.TabbedMode">
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowFullscreen">true</item>
+<!--        <item name="android:windowFullscreen">true</item>-->
         <item name="android:windowActionBar">false</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="DayTheme" parent="ArkBaseTheme">
+    <style name="ArkDayTheme" parent="ArkBaseTheme">
         <item name="backgroundColor">@android:color/white</item>
         <item name="backgroundColorDark">#FAFAFA</item>
         <!--        @color/dark_gray_5-->
@@ -39,7 +39,7 @@
         <item name="_dialog_text_color_minus">@color/color_text_minor</item>
     </style>
 
-    <style name="NightTheme" parent="ArkBaseTheme">
+    <style name="ArkNightTheme" parent="ArkBaseTheme">
         <!--        <item name="backgroundColor">@android:color/black</item>-->
         <item name="backgroundColor">#1C1C1C</item>
         <item name="backgroundColorDark">#303030</item>
