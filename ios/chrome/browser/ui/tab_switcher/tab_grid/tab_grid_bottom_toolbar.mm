@@ -227,8 +227,17 @@
   // zero rect frame. An arbitrary non-zero frame fixes this issue.
   _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   _toolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  _toolbar.barStyle = UIBarStyleBlack;
-  _toolbar.translucent = YES;
+  if (UseSymbols()) {
+    UIToolbarAppearance* appearance = [[UIToolbarAppearance alloc] init];
+    appearance.backgroundColor =
+        [UIColor colorWithWhite:0 alpha:kToolbarBackgroundAlpha];
+    appearance.backgroundEffect = [UIBlurEffect
+        effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialLight];
+    _toolbar.standardAppearance = appearance;
+  } else {
+    _toolbar.barStyle = UIBarStyleBlack;
+    _toolbar.translucent = YES;
+  }
   // Remove the border of UIToolbar.
   [_toolbar setShadowImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny];
@@ -249,7 +258,16 @@
                            action:nil];
 
   if (UseSymbols()) {
-    _smallNewTabButton = [[TabGridNewTabButton alloc] init];
+    if (@available(iOS 15, *)) {
+      _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
+    } else {
+      _smallNewTabButton = [[TabGridNewTabButton alloc]
+          initWithRegularImage:[UIImage
+                                   imageNamed:@"tab_grid_new_tab_button_ios14"]
+                incognitoImage:
+                    [UIImage
+                        imageNamed:@"tab_grid_new_tab_button_incognito_ios14"]];
+    }
   } else {
     _smallNewTabButton = [[TabGridNewTabButton alloc]
         initWithRegularImage:[UIImage imageNamed:@"new_tab_toolbar_button"]
@@ -295,7 +313,28 @@
 
   // For other layout, display a floating new tab button.
   if (UseSymbols()) {
-    _largeNewTabButton = [[TabGridNewTabButton alloc] init];
+    if (@available(iOS 15, *)) {
+      _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
+
+      // When a11y font size is used, long press on UIBarButtonItem will show a
+      // built-in a11y modal panel with image and title if set. The size is not
+      // taken into account.
+      _newTabButtonItem.image =
+          CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
+    } else {
+      UIImage* regularImage =
+          [UIImage imageNamed:@"tab_grid_new_tab_floating_button_ios14"];
+      UIImage* incognitoImage = [UIImage
+          imageNamed:@"tab_grid_new_tab_floating_button_incognito_ios14"];
+      _largeNewTabButton =
+          [[TabGridNewTabButton alloc] initWithRegularImage:regularImage
+                                             incognitoImage:incognitoImage];
+
+      // When a11y font size is used, long press on UIBarButtonItem will show a
+      // built-in a11y modal panel with image and title if set. The size is not
+      // taken into account.
+      _newTabButtonItem.image = DefaultSymbolWithPointSize(kPlusSymbol, 0);
+    }
   } else {
     UIImage* incognitoImage =
         [UIImage imageNamed:@"new_tab_floating_button_incognito"];

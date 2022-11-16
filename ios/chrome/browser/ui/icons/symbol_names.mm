@@ -42,6 +42,7 @@ NSString* const kShieldSymbol = @"shield";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
+NSString* const kNewTabSymbol = @"plus_circle_fill";
 
 // Default symbol names.
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";

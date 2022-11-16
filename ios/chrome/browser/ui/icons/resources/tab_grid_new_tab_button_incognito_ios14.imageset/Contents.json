@@ -1,0 +1,18 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "tab_grid_new_tab_button_incognito_ios14@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "tab_grid_new_tab_button_incognito_ios14@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}
