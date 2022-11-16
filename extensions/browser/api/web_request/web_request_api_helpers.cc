@@ -743,11 +743,10 @@ bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
   return a.extension_install_time > b.extension_install_time;
 }
 
-base::Value StringToCharList(const std::string& s) {
-  base::Value result(base::Value::Type::LIST);
-  for (size_t i = 0, n = s.size(); i < n; ++i) {
-    result.Append(*reinterpret_cast<const unsigned char*>(&s[i]));
-  }
+base::Value::List StringToCharList(const std::string& s) {
+  base::Value::List result;
+  for (const auto& c : s)
+    result.Append(*reinterpret_cast<const unsigned char*>(&c));
   return result;
 }
 

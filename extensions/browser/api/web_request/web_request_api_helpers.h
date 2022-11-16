@@ -363,7 +363,7 @@ bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
                                                 const EventResponseDelta& b);
 
 // Converts a string to a list of integers, each in 0..255.
-base::Value StringToCharList(const std::string& s);
+base::Value::List StringToCharList(const std::string& s);
 
 // Converts a list of integer values between 0 and 255 into a string |*out|.
 // Returns true if the conversion was successful.
