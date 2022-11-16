@@ -180,9 +180,6 @@ try_.builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     tryjob = try_.job(),
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
@@ -228,9 +225,6 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.compilator_builder(
@@ -257,9 +251,6 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
@@ -277,9 +268,6 @@ try_.orchestrator_builder(
     ),
     main_list_view = "try",
     tryjob = try_.job(),
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.compilator_builder(
@@ -337,9 +325,6 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
@@ -390,9 +375,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
@@ -411,7 +393,6 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
-    omit_python2 = False,
     use_orchestrator_pool = True,
 )
 
@@ -502,9 +483,6 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     main_list_view = "try",
     tryjob = try_.job(),
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
@@ -583,9 +561,6 @@ try_.orchestrator_builder(
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-
-    # TODO(crbug.com/1366987): remove this.
-    omit_python2 = False,
 )
 
 try_.orchestrator_builder(
@@ -605,7 +580,6 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts_bail_early": 100,
     },
     use_orchestrator_pool = True,
-    omit_python2 = False,
 )
 
 try_.compilator_builder(
