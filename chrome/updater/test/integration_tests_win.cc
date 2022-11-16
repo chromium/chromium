@@ -360,13 +360,13 @@ void SleepFor(int seconds) {
 void SetupAppCommand(UpdaterScope scope,
                      const std::wstring& app_id,
                      const std::wstring& command_id,
+                     const std::wstring& parameters,
                      base::ScopedTempDir& temp_dir) {
   base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
   SetupCmdExe(scope, cmd_exe_command_line, temp_dir);
   CreateAppCommandRegistry(
       scope, app_id, command_id,
-      base::StrCat(
-          {cmd_exe_command_line.GetCommandLineString(), L" /c \"exit %1\""}));
+      base::StrCat({cmd_exe_command_line.GetCommandLineString(), parameters}));
 }
 
 base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
@@ -1108,6 +1108,28 @@ void DeleteLaunchCommandElevated(const std::wstring& app_id,
             ERROR_SUCCESS);
 }
 
+HRESULT ProcessLaunchCmdElevated(
+    Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher,
+    const std::wstring& appid,
+    const std::wstring& commandid,
+    const int expected_exit_code) {
+  ULONG_PTR proc_handle = 0;
+  HRESULT hr = process_launcher->LaunchCmdElevated(
+      appid.c_str(), commandid.c_str(), ::GetCurrentProcessId(), &proc_handle);
+  if (FAILED(hr))
+    return hr;
+
+  EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
+
+  const base::Process process(reinterpret_cast<HANDLE>(proc_handle));
+  int exit_code = 0;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(exit_code, expected_exit_code);
+
+  return hr;
+}
+
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   // ProcessLauncher is only implemented for kSystem at the moment.
   if (scope != UpdaterScope::kSystem)
@@ -1119,29 +1141,28 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
 
   constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
   constexpr wchar_t kCommandId[] = L"CmdExit0";
-  ULONG_PTR proc_handle = 0;
-  DWORD caller_proc_id = ::GetCurrentProcessId();
 
   // Succeeds when the command is present in the registry.
   base::ScopedTempDir temp_dir;
   SetupLaunchCommandElevated(kAppId1, kCommandId, L" /c \"exit 5420\"",
                              temp_dir);
-  EXPECT_HRESULT_SUCCEEDED(process_launcher->LaunchCmdElevated(
-      kAppId1, kCommandId, caller_proc_id, &proc_handle));
-  EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
 
-  base::Process process = base::Process(reinterpret_cast<HANDLE>(proc_handle));
-  int exit_code = 0;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(exit_code, 5420);
+  // Succeeds when the command is present in the registry.
+  ASSERT_HRESULT_SUCCEEDED(
+      ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 5420));
 
   DeleteLaunchCommandElevated(kAppId1, kCommandId);
+  EXPECT_EQ(
+      HRESULT_FROM_WIN32(ERROR_BAD_COMMAND),
+      ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 5420));
 
-  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_BAD_COMMAND),
-            process_launcher->LaunchCmdElevated(kAppId1, kCommandId,
-                                                caller_proc_id, &proc_handle));
-  EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
+  base::ScopedTempDir app_command_temp_dir;
+  SetupAppCommand(scope, kAppId1, kCommandId, L" /c \"exit 11555\"",
+                  app_command_temp_dir);
+  ASSERT_HRESULT_SUCCEEDED(
+      ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 11555));
+
+  DeleteAppClientKey(scope, kAppId1);
 }
 
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
@@ -1156,7 +1177,7 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   const std::wstring appid = base::UTF8ToWide(app_id);
   const std::wstring commandid = base::UTF8ToWide(command_id);
 
-  SetupAppCommand(scope, appid, commandid, temp_dir);
+  SetupAppCommand(scope, appid, commandid, L" /c \"exit %1\"", temp_dir);
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   InitializeBundle(scope, bundle);
