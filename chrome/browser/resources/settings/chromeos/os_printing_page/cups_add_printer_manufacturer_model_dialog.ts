@@ -227,10 +227,6 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     this.newUserPPD_ = getBaseName(path);
   }
 
-  private onLearnMoreTap_() {
-    window.open(loadTimeData.getString('printingCUPSPrintPpdLearnMoreUrl'));
-  }
-
   private onCancelTap_(): void {
     this.close();
     this.browserProxy_.cancelPrinterSetUp(this.activePrinter);
