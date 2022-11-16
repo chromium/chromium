@@ -21,7 +21,7 @@ import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_page_styles.css.js';
 import '../../settings_shared.css.js';
-import '../os_icons.js';
+import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';

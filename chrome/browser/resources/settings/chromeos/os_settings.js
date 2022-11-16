@@ -83,7 +83,7 @@ import './os_bluetooth_page/os_paired_bluetooth_list_item.js';
 import './os_bluetooth_page/os_saved_devices_list.js';
 import './os_bluetooth_page/os_saved_devices_list_item.js';
 import './os_bluetooth_page/settings_fast_pair_constants.js';
-import './os_icons.js';
+import './os_settings_icons.html.js';
 import './os_people_page/account_manager.js';
 import './os_people_page/os_people_page.js';
 import './os_people_page/os_sync_controls.js';

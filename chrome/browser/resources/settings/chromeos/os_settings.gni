@@ -165,7 +165,10 @@ foreach(filename, web_component_files) {
   }
 }
 
-icons_html_files = [ "icons.html" ]
+icons_html_files = [
+  "icons.html",
+  "chromeos/os_settings_icons.html",
+]
 
 html_files = icons_html_files + web_component_html_files
 
@@ -393,7 +396,6 @@ generated_web_component_files = [
   "chromeos/os_bluetooth_page/os_saved_devices_list.js",
   "chromeos/os_bluetooth_page/os_saved_devices_list_item.js",
   "chromeos/os_bluetooth_page/settings_fast_pair_toggle.js",
-  "chromeos/os_icons.js",
   "chromeos/os_people_page/account_manager.js",
   "chromeos/os_people_page/fingerprint_list.js",
   "chromeos/os_people_page/lock_screen.js",

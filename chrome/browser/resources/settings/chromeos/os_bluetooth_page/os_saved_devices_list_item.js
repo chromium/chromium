@@ -9,7 +9,7 @@
  */
 
 import '../../settings_shared.css.js';
-import '../os_icons.js';
+import '../os_settings_icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 

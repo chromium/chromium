@@ -8,11 +8,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../os_icons.js';
+import '../os_settings_icons.html.js';
 import '../../settings_shared.css.js';
 
-import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {HTMLEscape} from 'chrome://resources/js/util.js';
 import {ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
