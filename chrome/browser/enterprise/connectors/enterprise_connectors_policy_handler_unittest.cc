@@ -259,8 +259,7 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                      kOnFileTransferPref,
 #endif
-                                     kOnSecurityEventPref,
-                                     kSendDownloadToCloudPref),
+                                     kOnSecurityEventPref),
                      testing::Bool()));
 
 }  // namespace enterprise_connectors
