@@ -1032,10 +1032,8 @@ TEST_F(RlzLibTest, ClearRlzState) {
 
 TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   // Verify the event is recorded when |kShouldSendRlzPingKey| is true.
-  std::string should_send_rlz_ping_value;
-  ASSERT_TRUE(statistics_provider_->GetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey, &should_send_rlz_ping_value));
-  ASSERT_EQ(should_send_rlz_ping_value,
+  ASSERT_EQ(statistics_provider_->GetMachineStatistic(
+                chromeos::system::kShouldSendRlzPingKey),
             chromeos::system::kShouldSendRlzPingValueTrue);
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
@@ -1047,9 +1045,8 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   statistics_provider_->SetMachineStatistic(
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueFalse);
-  ASSERT_TRUE(statistics_provider_->GetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey, &should_send_rlz_ping_value));
-  ASSERT_EQ(should_send_rlz_ping_value,
+  ASSERT_EQ(statistics_provider_->GetMachineStatistic(
+                chromeos::system::kShouldSendRlzPingKey),
             chromeos::system::kShouldSendRlzPingValueFalse);
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
@@ -1060,7 +1057,7 @@ TEST_F(RlzLibTest, DoNotRecordEventUnlessShouldSendRlzPingKeyIsTrue) {
   statistics_provider_->ClearMachineStatistic(
       chromeos::system::kShouldSendRlzPingKey);
   ASSERT_FALSE(statistics_provider_->GetMachineStatistic(
-      chromeos::system::kShouldSendRlzPingKey, &should_send_rlz_ping_value));
+      chromeos::system::kShouldSendRlzPingKey));
   RLZTracker::RecordProductEvent(rlz_lib::CHROME, RLZTracker::ChromeOmnibox(),
                                  rlz_lib::FIRST_SEARCH);
   ExpectEventRecorded(OmniboxFirstSearch(), false);
