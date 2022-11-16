@@ -7,5 +7,5 @@
 
 dictionary HIDDeviceRequestOptions {
     required sequence<HIDDeviceFilter> filters;
-    [RuntimeEnabled=WebHIDExclusionFiltersOption] sequence<HIDDeviceFilter> exclusionFilters;
+    sequence<HIDDeviceFilter> exclusionFilters;
 };

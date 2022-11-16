@@ -38,7 +38,7 @@ enum USBTransferStatus {
 
     [CallWith=ScriptState, MeasureAs=UsbDeviceOpen, RaisesException] Promise<void> open();
     [CallWith=ScriptState, MeasureAs=UsbDeviceClose, RaisesException] Promise<void> close();
-    [CallWith=ScriptState, MeasureAs=UsbDeviceForget, RaisesException, RuntimeEnabled=WebUsbDeviceForget] Promise<void> forget();
+    [CallWith=ScriptState, MeasureAs=UsbDeviceForget, RaisesException] Promise<void> forget();
     [CallWith=ScriptState, MeasureAs=UsbDeviceSelectConfiguration, RaisesException] Promise<void> selectConfiguration(octet configurationValue);
     [CallWith=ScriptState, MeasureAs=UsbDeviceClaimInterface, RaisesException] Promise<void> claimInterface(octet interfaceNumber);
     [CallWith=ScriptState, MeasureAs=UsbDeviceReleaseInterface, RaisesException] Promise<void> releaseInterface(octet interfaceNumber);

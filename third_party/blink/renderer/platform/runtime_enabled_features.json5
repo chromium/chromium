@@ -1410,11 +1410,6 @@
         "default": "experimental",
       },
     },
-    {
-      name: "HidDeviceForget",
-      depends_on: ["WebHID"],
-      status: {"Android": "", "default": "stable"},
-    },
     // HighlightAPI's custom highlights use HighlightInheritance's behavior even
     // if the HighlightInheritance feature is not enabled.
     {
@@ -2458,10 +2453,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "SerialPortForget",
-      status: {"Android": "", "default": "stable"},
-    },
-    {
       name: "ServiceWorkerClientLifecycleState",
       status: "experimental",
     },
@@ -3105,10 +3096,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "WebHIDExclusionFiltersOption",
-      status: "stable",
-    },
-    {
       // It is only enabled in extension environment for now.
       name: "WebHIDOnServiceWorkers",
       depends_on: ["WebHID"],
@@ -3123,11 +3110,6 @@
     {
       name: "WebNFC",
       public: true,
-      status: {"Android": "stable", "default": "test"},
-    },
-    {
-      name: "WebNFCMakeReadOnly",
-      depends_on: ["WebNFC"],
       status: {"Android": "stable", "default": "test"},
     },
     {
@@ -3165,10 +3147,6 @@
     {
       name: "WebUSB",
       public: true,
-      status: "stable",
-    },
-    {
-      name: "WebUsbDeviceForget",
       status: "stable",
     },
     {

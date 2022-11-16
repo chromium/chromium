@@ -24,6 +24,6 @@ typedef (DOMString or BufferSource or NDEFMessageInit) NDEFMessageSource;
         NDEFMessageSource message,
         optional NDEFWriteOptions options={});
 
-    [CallWith=ScriptState, RaisesException, MeasureAs=WebNfcNdefMakeReadOnly, RuntimeEnabled=WebNFCMakeReadOnly] Promise<void> makeReadOnly(
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebNfcNdefMakeReadOnly] Promise<void> makeReadOnly(
         optional NDEFMakeReadOnlyOptions options={});
 };
