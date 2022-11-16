@@ -84,11 +84,9 @@ TEST_F(CSSSelectorWatchTest, RecalcOnDocumentChange) {
 }
 
 class CSSSelectorWatchCQTest : public CSSSelectorWatchTest,
-                               private ScopedCSSContainerQueriesForTest,
                                private ScopedLayoutNGForTest {
  protected:
-  CSSSelectorWatchCQTest()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  CSSSelectorWatchCQTest() : ScopedLayoutNGForTest(true) {}
 };
 
 TEST_F(CSSSelectorWatchCQTest, ContainerQueryDisplayNone) {

@@ -1886,8 +1886,8 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenRange& range,
   while (true) {
     id = range.Peek().Id();
     if ((id == CSSValueID::kSize ||
-         (RuntimeEnabledFeatures::CSSContainSize1DEnabled() &&
-          (id == CSSValueID::kInlineSize))) &&
+
+         id == CSSValueID::kInlineSize) &&
         !size) {
       size = css_parsing_utils::ConsumeIdent(range);
     } else if (id == CSSValueID::kLayout && !layout) {

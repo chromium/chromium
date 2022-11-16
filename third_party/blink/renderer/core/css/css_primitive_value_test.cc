@@ -241,8 +241,6 @@ TEST_F(CSSPrimitiveValueTest, TestCanonicalizingNumberUnitCategory) {
 }
 
 TEST_F(CSSPrimitiveValueTest, HasContainerRelativeUnits) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
   EXPECT_TRUE(HasContainerRelativeUnits("1cqw"));
   EXPECT_TRUE(HasContainerRelativeUnits("1cqh"));
   EXPECT_TRUE(HasContainerRelativeUnits("1cqi"));

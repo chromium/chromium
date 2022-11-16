@@ -99,9 +99,7 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kContainerBlockSize:
     case CSSPrimitiveValue::UnitType::kContainerMin:
     case CSSPrimitiveValue::UnitType::kContainerMax:
-      return RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled()
-                 ? kCalcLength
-                 : kCalcOther;
+      return kCalcLength;
     case CSSPrimitiveValue::UnitType::kIcs:
       return RuntimeEnabledFeatures::CSSIcUnitEnabled() ? kCalcLength
                                                         : kCalcOther;

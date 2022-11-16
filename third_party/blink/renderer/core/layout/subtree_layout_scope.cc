@@ -52,7 +52,6 @@ SubtreeLayoutScope::~SubtreeLayoutScope() {
     // NOT_DESTROYED() triggers a DCHECK failure in AssertLaidOut() or
     // AssertFragmentTree().
     if (layout_object->is_destroyed_) {
-      DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
       continue;
     }
     // There are situations where the object to layout was never laid out, such

@@ -128,10 +128,9 @@ StringKeyframeVector KeyframesAtZeroAndOne(CSSPropertyID property,
   return keyframes;
 }
 
-StringKeyframeVector KeyframesAtZeroAndOne(
-    AtomicString property_name,
-    const String& zero_value,
-    const String& one_value) {
+StringKeyframeVector KeyframesAtZeroAndOne(AtomicString property_name,
+                                           const String& zero_value,
+                                           const String& one_value) {
   StringKeyframeVector keyframes(2);
   keyframes[0] = MakeGarbageCollected<StringKeyframe>();
   keyframes[0]->SetOffset(0.0);
@@ -800,7 +799,6 @@ TEST_F(AnimationKeyframeEffectModel, CompositorUpdateColorProperty) {
 }
 
 TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotContainerRelative) {
-  ScopedCSSContainerQueriesForTest container_queries(true);
   ScopedLayoutNGForTest layout_ng(true);
 
   SetBodyInnerHTML(R"HTML(

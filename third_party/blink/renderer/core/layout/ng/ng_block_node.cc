@@ -483,7 +483,7 @@ const NGLayoutResult* NGBlockNode::Layout(
         CalculateInitialFragmentGeometry(constraint_space, *this, break_token);
   }
 
-  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
+  if (
       // Only consider the size of the first container fragment.
       !IsBreakInside(break_token) && CanMatchSizeContainerQueries()) {
     if (auto* element = DynamicTo<Element>(GetDOMNode())) {

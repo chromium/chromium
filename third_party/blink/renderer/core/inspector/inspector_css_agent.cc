@@ -2230,8 +2230,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   result->setScopes(std::move(scopes_list));
   std::reverse(layers_list.get()->begin(), layers_list.get()->end());
   result->setLayers(std::move(layers_list));
-  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
-    result->setContainerQueries(std::move(container_queries_list));
+  result->setContainerQueries(std::move(container_queries_list));
 }
 
 std::unique_ptr<protocol::CSS::CSSScope> InspectorCSSAgent::BuildScopeObject(

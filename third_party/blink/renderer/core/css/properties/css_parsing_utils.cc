@@ -951,8 +951,6 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kContainerBlockSize:
       case CSSPrimitiveValue::UnitType::kContainerMin:
       case CSSPrimitiveValue::UnitType::kContainerMax:
-        if (!RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled())
-          return nullptr;
         break;
       case CSSPrimitiveValue::UnitType::kIcs:
         if (!RuntimeEnabledFeatures::CSSIcUnitEnabled())

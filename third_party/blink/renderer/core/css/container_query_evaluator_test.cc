@@ -31,11 +31,9 @@
 namespace blink {
 
 class ContainerQueryEvaluatorTest : public PageTestBase,
-                                    private ScopedCSSContainerQueriesForTest,
                                     private ScopedLayoutNGForTest {
  public:
-  ContainerQueryEvaluatorTest()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  ContainerQueryEvaluatorTest() : ScopedLayoutNGForTest(true) {}
 
   void SetUp() override {
     PageTestBase::SetUp();

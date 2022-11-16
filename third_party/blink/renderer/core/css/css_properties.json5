@@ -2409,7 +2409,6 @@
       converter: "ConvertContainerName",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSContainerQueries",
     },
     {
       name: "container-type",
@@ -2422,7 +2421,6 @@
       type_name: "unsigned",
       converter: "ConvertFlags<EContainerType, CSSValueID::kNormal>",
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSContainerQueries",
     },
     {
       name: "content",
@@ -6677,7 +6675,6 @@
         "container-name", "container-type"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSContainerQueries",
     },
     {
       name: "flex",

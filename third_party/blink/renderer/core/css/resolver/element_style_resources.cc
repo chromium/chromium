@@ -160,7 +160,6 @@ StyleImage* StyleImageLoader::CrossfadeArgument(
 
 const PreCachedContainerSizes::ContainerSizes& PreCachedContainerSizes::Get()
     const {
-  DCHECK(RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled());
   if (!cache_) {
     if (conversion_data_) {
       cache_ = conversion_data_->PreCachedContainerSizesCopy();

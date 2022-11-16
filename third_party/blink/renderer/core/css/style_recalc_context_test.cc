@@ -15,11 +15,9 @@
 namespace blink {
 
 class StyleRecalcContextTest : public PageTestBase,
-                               private ScopedCSSContainerQueriesForTest,
                                private ScopedLayoutNGForTest {
  public:
-  StyleRecalcContextTest()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  StyleRecalcContextTest() : ScopedLayoutNGForTest(true) {}
 };
 
 TEST_F(StyleRecalcContextTest, FromAncestors) {

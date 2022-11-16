@@ -42,11 +42,8 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   }
   if (EqualIgnoringASCIICase(name, "property"))
     return CSSAtRuleID::kCSSAtRuleProperty;
-  if (EqualIgnoringASCIICase(name, "container")) {
-    if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
-      return CSSAtRuleID::kCSSAtRuleContainer;
-    return CSSAtRuleID::kCSSAtRuleInvalid;
-  }
+  if (EqualIgnoringASCIICase(name, "container"))
+    return CSSAtRuleID::kCSSAtRuleContainer;
   if (EqualIgnoringASCIICase(name, "counter-style"))
     return CSSAtRuleID::kCSSAtRuleCounterStyle;
   if (EqualIgnoringASCIICase(name, "scroll-timeline")) {

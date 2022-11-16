@@ -106,8 +106,6 @@ TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
 }
 
 TEST(CSSGradientValueTest, IsUsingContainerRelativeUnits) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
   EXPECT_TRUE(
       IsUsingContainerRelativeUnits("linear-gradient(green 5cqw, blue 10cqh)"));
   EXPECT_TRUE(

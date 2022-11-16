@@ -208,7 +208,6 @@ TEST(CSSCalculationValue, AddToLengthUnitValues) {
 
 TEST(CSSCalculationValue, CSSLengthArrayUnits) {
   ScopedCSSViewportUnits4ForTest scoped_viewport_units(true);
-  ScopedCSSContainerRelativeUnitsForTest scoped_container_units(true);
 
   CSSLengthArray unused;
 

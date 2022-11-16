@@ -2759,9 +2759,6 @@ void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
     Element& container) {
   DCHECK(InRebuildLayoutTree());
 
-  if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
-    return;
-
   // This method is called from AttachLayoutTree() when we are forced to use
   // legacy layout for a query container. At the time of RecalcStyle, it is not
   // necessarily known that some sibling tree may enforce us to have legacy

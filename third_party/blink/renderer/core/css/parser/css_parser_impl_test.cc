@@ -181,8 +181,6 @@ TEST(CSSParserImplTest, AtCounterStyleOffsets) {
 }
 
 TEST(CSSParserImplTest, AtContainerOffsets) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
   String sheet_text = "@container (max-width: 100px) { }";
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -198,23 +196,6 @@ TEST(CSSParserImplTest, AtContainerOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 30u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 31u);
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 32u);
-}
-
-TEST(CSSParserImplTest, AtContainerDisabled) {
-  ScopedNullExecutionContext execution_context;
-  String rule = "@container (max-width: 100px) { }";
-  {
-    ScopedCSSContainerQueriesForTest scoped_feature(true);
-    Document* document =
-        Document::CreateForTest(execution_context.GetExecutionContext());
-    EXPECT_TRUE(css_test_helpers::ParseRule(*document, rule));
-  }
-  {
-    ScopedCSSContainerQueriesForTest scoped_feature(false);
-    Document* document =
-        Document::CreateForTest(execution_context.GetExecutionContext());
-    EXPECT_FALSE(css_test_helpers::ParseRule(*document, rule));
-  }
 }
 
 TEST(CSSParserImplTest, DirectNesting) {

@@ -25,12 +25,9 @@
 
 namespace blink {
 
-class ContainerQueryTest : public PageTestBase,
-                           private ScopedCSSContainerQueriesForTest,
-                           private ScopedLayoutNGForTest {
+class ContainerQueryTest : public PageTestBase, private ScopedLayoutNGForTest {
  public:
-  ContainerQueryTest()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  ContainerQueryTest() : ScopedLayoutNGForTest(true) {}
 
   bool HasUnknown(StyleRuleContainer* rule) {
     return rule && rule->GetContainerQuery().Query().HasUnknown();
@@ -468,8 +465,6 @@ TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
 
 TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
   using css_test_helpers::RegisterProperty;
-
-  ScopedCSSContainerRelativeUnitsForTest feature(true);
 
   RegisterProperty(GetDocument(), "--cqw", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--cqi", "<length>", "0px", false);
@@ -1107,28 +1102,6 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
          "violation since it says the work _should_ be avoided. If this "
          "expectation changes because we are able to optimize this case, that "
          "is fine too.";
-}
-
-TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
-  ScopedCSSContainerQueriesForTest scope(false);
-
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #container {
-        container-type: size;
-      }
-      @container (min-width: 200px) {
-        span { color: pink; }
-      }
-    </style>
-    <div id="container">
-      <span></span>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(
-      GetDocument().getElementById("container")->GetContainerQueryEvaluator());
 }
 
 TEST_F(ContainerQueryTest, QueryViewportDependency) {

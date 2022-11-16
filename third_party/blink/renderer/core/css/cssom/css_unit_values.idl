@@ -43,12 +43,12 @@
   [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmin(double value);
   [NewObject, RuntimeEnabled=CSSViewportUnits4] CSSUnitValue dvmax(double value);
 
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqw(double value);
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqh(double value);
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqi(double value);
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqb(double value);
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqmin(double value);
-  [NewObject, RuntimeEnabled=CSSContainerRelativeUnits] CSSUnitValue cqmax(double value);
+  [NewObject] CSSUnitValue cqw(double value);
+  [NewObject] CSSUnitValue cqh(double value);
+  [NewObject] CSSUnitValue cqi(double value);
+  [NewObject] CSSUnitValue cqb(double value);
+  [NewObject] CSSUnitValue cqmin(double value);
+  [NewObject] CSSUnitValue cqmax(double value);
 
   [NewObject] CSSUnitValue cm(double value);
   [NewObject] CSSUnitValue mm(double value);

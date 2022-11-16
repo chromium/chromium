@@ -658,32 +658,6 @@
       status:  "experimental",
     },
     {
-      // Flag for supporting size and inline-size container-types along with the
-      // @container rules for size queries. Also implies support for container
-      // relative units and inline-size containment.
-      // https://drafts.csswg.org/css-contain-3/#container-queries
-      name: "CSSContainerQueries",
-      status: "stable"
-    },
-    {
-      // https://drafts.csswg.org/css-contain-3/#container-lengths
-      name: "CSSContainerRelativeUnits",
-      implied_by: ["CSSContainerQueries"]
-    },
-    {
-      // With this flag disabled, we run UpdateStyle() over the full DOM tree
-      // before running interleaved style/layout. With this flag enabled, we
-      // skip style recalc in UpdateStyle() for containers which are guaranteed
-      // to be reachable in the following layout.
-      name: "CSSContainerSkipStyleRecalc",
-      implied_by: ["CSSContainerQueries"]
-    },
-    {
-      // Support for contain:inline-size
-      name: "CSSContainSize1D",
-      implied_by: ["CSSContainerQueries"]
-    },
-    {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
       // https://crbug.com/949807
       name: "CSSEnumeratedCustomProperties",

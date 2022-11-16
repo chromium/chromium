@@ -327,8 +327,6 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
 }
 
 TEST_F(DisplayLockUtilitiesTest, ContainerQueryCrash) {
-  ScopedCSSContainerQueriesForTest cq_enabled(true);
-
   SetHtmlInnerHTML(R"HTML(
     <style>
       #container {

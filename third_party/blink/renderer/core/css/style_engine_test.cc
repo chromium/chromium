@@ -161,11 +161,9 @@ class StyleEngineTest : public PageTestBase {
 };
 
 class StyleEngineContainerQueryTest : public StyleEngineTest,
-                                      private ScopedCSSContainerQueriesForTest,
                                       private ScopedLayoutNGForTest {
  public:
-  StyleEngineContainerQueryTest()
-      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+  StyleEngineContainerQueryTest() : ScopedLayoutNGForTest(true) {}
 };
 
 StyleEngineTest::RuleSetInvalidation
@@ -4212,38 +4210,6 @@ TEST_F(StyleEngineContainerQueryTest,
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));
 }
 
-TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
-  String css = R"CSS(
-    top: 1cqw;
-    left: 1cqh;
-    bottom: 1cqi;
-    right: 1cqb;
-    padding-top: 1cqmin;
-    padding-right: 1cqmax;
-    padding-bottom: calc(1cqw);
-    margin-left: 1px;
-  )CSS";
-
-  {
-    ScopedCSSContainerQueriesForTest cq_feature(false);
-    ScopedCSSContainerRelativeUnitsForTest feature(false);
-    const CSSPropertyValueSet* set =
-        css_test_helpers::ParseDeclarationBlock(css);
-    ASSERT_TRUE(set);
-    EXPECT_EQ(1u, set->PropertyCount());
-    EXPECT_TRUE(set->HasProperty(CSSPropertyID::kMarginLeft));
-  }
-
-  {
-    ScopedCSSContainerQueriesForTest cq_feature(false);
-    ScopedCSSContainerRelativeUnitsForTest feature(true);
-    const CSSPropertyValueSet* set =
-        css_test_helpers::ParseDeclarationBlock(css);
-    ASSERT_TRUE(set);
-    EXPECT_EQ(8u, set->PropertyCount());
-  }
-}
-
 TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
   Vector<String> units = {"vi",  "vb",    "svi",   "svb",   "svw",
                           "svh", "svmin", "svmax", "lvi",   "lvb",
@@ -4269,31 +4235,6 @@ TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
       ASSERT_TRUE(set);
       EXPECT_EQ(1u, set->PropertyCount());
       EXPECT_TRUE(set->HasProperty(CSSPropertyID::kTop));
-    }
-  }
-}
-
-TEST_F(StyleEngineTest, ContainerPropertiesRuntimeFlag) {
-  Vector<String> declarations = {"container-type:inline-size",
-                                 "container-name:foo", "container:inline-size"};
-
-  {
-    ScopedCSSContainerQueriesForTest feature(false);
-
-    for (const String& decl : declarations) {
-      const auto* set = css_test_helpers::ParseDeclarationBlock(decl);
-      ASSERT_TRUE(set);
-      EXPECT_EQ(0u, set->PropertyCount());
-    }
-  }
-
-  {
-    ScopedCSSContainerQueriesForTest feature(true);
-
-    for (const String& decl : declarations) {
-      const auto* set = css_test_helpers::ParseDeclarationBlock(decl);
-      ASSERT_TRUE(set);
-      EXPECT_GT(set->PropertyCount(), 0u);
     }
   }
 }

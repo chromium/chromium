@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 [
-    Exposed=Window,
-    RuntimeEnabled=CSSContainerQueries
+    Exposed=Window
 ] interface CSSContainerRule : CSSConditionRule {
     // TODO(crbug.com/1145970): Spec and implement.
 };

@@ -17,16 +17,10 @@ namespace blink {
 
 class StyleRecalcChangeTest : public PageTestBase {};
 
-class StyleRecalcChangeTestCQ
-    : public StyleRecalcChangeTest,
-      private ScopedCSSContainerQueriesForTest,
-      private ScopedCSSContainerSkipStyleRecalcForTest,
-      private ScopedLayoutNGForTest {
+class StyleRecalcChangeTestCQ : public StyleRecalcChangeTest,
+                                private ScopedLayoutNGForTest {
  public:
-  StyleRecalcChangeTestCQ()
-      : ScopedCSSContainerQueriesForTest(true),
-        ScopedCSSContainerSkipStyleRecalcForTest(true),
-        ScopedLayoutNGForTest(true) {}
+  StyleRecalcChangeTestCQ() : ScopedLayoutNGForTest(true) {}
 };
 
 TEST_F(StyleRecalcChangeTest, SuppressRecalc) {
