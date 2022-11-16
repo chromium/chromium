@@ -321,9 +321,9 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
   params.target = texture_target;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  auto shared_image = std::make_unique<GLImageBacking>(
+  auto shared_image = base::WrapUnique<GLImageBacking>(new GLImageBacking(
       std::move(image), mailbox, si_format, size, color_space, surface_origin,
-      alpha_type, usage, params, true);
+      alpha_type, usage, params, true));
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
   shared_image->gl_texture_retained_for_legacy_mailbox_ = true;

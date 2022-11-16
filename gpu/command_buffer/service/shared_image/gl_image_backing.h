@@ -183,6 +183,16 @@ class GPU_GLES2_EXPORT GLImageBacking
       GLenum texture_target,
       scoped_refptr<gles2::TexturePassthrough> wrapped_gl_texture);
 
+  GLImageBacking(const GLImageBacking& other) = delete;
+  GLImageBacking& operator=(const GLImageBacking& other) = delete;
+  ~GLImageBacking() override;
+
+  GLenum GetGLTarget() const;
+  GLuint GetGLServiceId() const;
+  std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
+  void SetReleaseFence(gfx::GpuFenceHandle release_fence);
+
+ private:
   GLImageBacking(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
@@ -194,16 +204,7 @@ class GPU_GLES2_EXPORT GLImageBacking
       uint32_t usage,
       const GLTextureImageBackingHelper::InitializeGLTextureParams& params,
       bool is_passthrough);
-  GLImageBacking(const GLImageBacking& other) = delete;
-  GLImageBacking& operator=(const GLImageBacking& other) = delete;
-  ~GLImageBacking() override;
 
-  GLenum GetGLTarget() const;
-  GLuint GetGLServiceId() const;
-  std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
-  void SetReleaseFence(gfx::GpuFenceHandle release_fence);
-
- private:
   // SharedImageBacking:
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
   void OnMemoryDump(const std::string& dump_name,
