@@ -486,8 +486,11 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
 #if BUILDFLAG(IS_MAC)
   computer_model = base::mac::GetModelIdentifier();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      chromeos::system::kHardwareClassKey, &computer_model);
+  if (const absl::optional<base::StringPiece> computer_model_statistic =
+          chromeos::system::StatisticsProvider::GetInstance()
+              ->GetMachineStatistic(chromeos::system::kHardwareClassKey)) {
+    computer_model = std::string(computer_model_statistic.value());
+  }
 #endif
   LogToCircularBuffer("Computer model: " + computer_model);
 
