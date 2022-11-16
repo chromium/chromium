@@ -1164,6 +1164,41 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
+      'CREATE VIEW',
+      (
+        'SQL views are disabled in Chromium feature code',
+        'https://chromium.googlesource.com/chromium/src/+/HEAD/sql#no-views',
+      ),
+      True,
+      (
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # sql/ itself uses views when using memory-mapped IO.
+        r'^sql/.*',
+        # Various performance tools that do not build as part of Chrome.
+        r'^infra/.*',
+        r'^tools/perf.*',
+        r'.*perfetto.*',
+      ),
+    ),
+    BanRule(
+      'CREATE VIRTUAL TABLE',
+      (
+        'SQL virtual tables are disabled in Chromium feature code',
+        'https://chromium.googlesource.com/chromium/src/+/HEAD/sql#no-virtual-tables',
+      ),
+      True,
+      (
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # sql/ itself uses virtual tables in the recovery module and tests.
+        r'^sql/.*',
+        # TODO(https://crbug.com/695592): Remove once WebSQL is deprecated.
+        r'third_party/blink/web_tests/storage/websql/.*'
+        # Various performance tools that do not build as part of Chrome.
+        r'^tools/perf.*',
+        r'.*perfetto.*',
+      ),
+    ),
+    BanRule(
       'std::random_shuffle',
       (
         'std::random_shuffle is deprecated in C++14, and removed in C++17. Use',
