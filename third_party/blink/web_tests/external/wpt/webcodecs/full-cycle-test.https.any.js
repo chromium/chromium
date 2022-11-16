@@ -10,10 +10,11 @@
 var ENCODER_CONFIG = null;
 promise_setup(async () => {
   const config = {
+    // FIXME: AV1 and H.264 have embedded color space information too.
     '?av1': {codec: 'av01.0.04M.08'},
-    '?vp8': {codec: 'vp8'},
-    '?vp9_p0': {codec: 'vp09.00.10.08'},
-    '?vp9_p2': {codec: 'vp09.02.10.10'},
+    '?vp8': {codec: 'vp8', hasEmbeddedColorSpace: false},
+    '?vp9_p0': {codec: 'vp09.00.10.08', hasEmbeddedColorSpace: true},
+    '?vp9_p2': {codec: 'vp09.02.10.10', hasEmbeddedColorSpace: true},
     '?h264_avc': {codec: 'avc1.42001E', avc: {format: 'avc'}},
     '?h264_annexb': {codec: 'avc1.42001E', avc: {format: 'annexb'}}
   }[location.search];
@@ -26,7 +27,7 @@ promise_setup(async () => {
   ENCODER_CONFIG = config;
 });
 
-promise_test(async t => {
+async function runFullCycleTest(t, options) {
   let encoder_config = { ...ENCODER_CONFIG };
   const w = encoder_config.width;
   const h = encoder_config.height;
@@ -68,6 +69,12 @@ promise_test(async t => {
       let config = metadata.decoderConfig;
       if (config) {
         config.hardwareAcceleration = encoder_config.hardwareAcceleration;
+
+        // Removes the color space provided by the encoder so that color space
+        // information in the underlying bitstream is exposed during decode.
+        if (options.stripDecoderConfigColorSpace)
+          config.colorSpace = {};
+
         decoder.configure(config);
       }
       decoder.decode(chunk);
@@ -101,5 +108,13 @@ promise_test(async t => {
   decoder.close();
   assert_equals(frames_encoded, frames_to_encode, "frames_encoded");
   assert_equals(frames_decoded, frames_to_encode, "frames_decoded");
+}
+
+promise_test(async t => {
+  return runFullCycleTest(t, {});
 }, 'Encoding and decoding cycle');
 
+promise_test(async t => {
+  if (ENCODER_CONFIG.hasEmbeddedColorSpace)
+    return runFullCycleTest(t, {stripDecoderConfigColorSpace: true});
+}, 'Encoding and decoding cycle w/ stripped color space');

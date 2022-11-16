@@ -42,6 +42,8 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
                     base::TimeDelta ts,
                     gfx::ColorSpace color_space);
 
+  void UpdateEncoderColorSpace();
+
   using vpx_codec_unique_ptr =
       std::unique_ptr<vpx_codec_ctx_t, void (*)(vpx_codec_ctx_t*)>;
 
