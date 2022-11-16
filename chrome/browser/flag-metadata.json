@@ -2185,12 +2185,12 @@
   {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 130
   },
   {
     "name": "enable-experimental-accessibility-language-detection-dynamic",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 130
   },
   {
     "name": "enable-experimental-accessibility-select-to-speak-voice-switching",
