@@ -5048,6 +5048,30 @@ def CheckAccessibilityTreeTestsAreIncludedForAndroid(input_api, output_api):
     return [output_api.PresubmitPromptWarning(message)]
 
 
+def CheckEsLintConfigChanges(input_api, output_api):
+    """Suggest using "git cl presubmit --files" when .eslintrc.js files are
+    modified. This is important because enabling an error in .eslintrc.js can
+    trigger errors in any .js or .ts files in its directory, leading to hidden
+    presubmit errors."""
+    results = []
+    eslint_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=[r'.*\.eslintrc\.js$'])
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=eslint_filter):
+        local_dir = input_api.os_path.dirname(f.LocalPath())
+        # Use / characters so that the commands printed work on any OS.
+        local_dir = local_dir.replace(input_api.os_path.sep, '/')
+        if local_dir:
+            local_dir += '/'
+        results.append(
+            output_api.PresubmitNotifyResult(
+                '%(file)s modified. Consider running \'git cl presubmit --files '
+                '"%(dir)s*.js;%(dir)s*.ts"\' in order to check and fix the affected '
+                'files before landing this change.' %
+                { 'file' : f.LocalPath(), 'dir' : local_dir}))
+    return results
+
+
 # string pattern, sequence of strings to show when pattern matches,
 # error flag. True if match is a presubmit error, otherwise it's a warning.
 _NON_INCLUSIVE_TERMS = (
