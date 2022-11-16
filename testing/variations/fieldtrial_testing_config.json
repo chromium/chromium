@@ -3352,8 +3352,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "action_chip": "false",
-                        "action_chip_time_ms": "3000",
+                        "action_chip": "true",
+                        "action_chip_time_ms": "6000",
                         "action_chip_with_different_color": "false",
                         "enable_ui": "true",
                         "reader_mode_session_rate_limiting": "false"
