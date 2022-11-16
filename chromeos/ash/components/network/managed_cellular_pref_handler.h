@@ -50,6 +50,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   // |iccid|.
   void RemovePairWithIccid(const std::string& iccid);
 
+  // Marks cellular network with iccid |iccid| as migrated to the APN revamp
+  // feature. See (b/162365553).
+  void AddApnMigratedIccid(const std::string& iccid);
+
+  // Return true if the |iccid| has been migrated to the APN Revamp feature.
+  bool ContainsApnMigratedIccid(const std::string& iccid) const;
+
   // Returns the corresponding SMDP+ address for the given |iccid|. Returns
   // nullptr if no such |iccid| is found.
   const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;

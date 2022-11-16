@@ -13,8 +13,9 @@ namespace ash {
 
 namespace {
 
-const char kIccid[] = "1234567890";
-const char kSmdpAddress[] = "LPA:1$SmdpAddress$ActivationCode";
+constexpr char kIccid1[] = "1234567890";
+constexpr char kIccid2[] = "0987654321";
+constexpr char kSmdpAddress[] = "LPA:1$SmdpAddress$ActivationCode";
 
 class FakeObserver : public ManagedCellularPrefHandler::Observer {
  public:
@@ -77,6 +78,14 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
     return managed_cellular_pref_handler_->GetSmdpAddressFromIccid(iccid);
   }
 
+  void AddApnMigratedIccid(const std::string& iccid) {
+    managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
+  }
+
+  bool ContainsApnMigratedIccid(const std::string& iccid) {
+    return managed_cellular_pref_handler_->ContainsApnMigratedIccid(iccid);
+  }
+
   int NumObserverEvents() { return observer_.change_count(); }
 
  private:
@@ -95,16 +104,35 @@ TEST_F(ManagedCellularPrefHandlerTest, AddRemoveIccidSmdpPair) {
 
   // Add a pair of ICCID - SMDP address pair to pref and verify that the correct
   // value can be retrieved.
-  AddIccidSmdpPair(kIccid, kSmdpAddress);
+  AddIccidSmdpPair(kIccid1, kSmdpAddress);
   EXPECT_EQ(1, NumObserverEvents());
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid);
+  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid1);
   EXPECT_TRUE(smdp_address);
   EXPECT_EQ(kSmdpAddress, *smdp_address);
-  EXPECT_FALSE(GetSmdpAddressFromIccid("00000000000"));
-  RemovePairForIccid(kIccid);
+  EXPECT_FALSE(GetSmdpAddressFromIccid(kIccid2));
+  RemovePairForIccid(kIccid1);
   EXPECT_EQ(2, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid);
+  smdp_address = GetSmdpAddressFromIccid(kIccid1);
   EXPECT_FALSE(smdp_address);
+}
+
+TEST_F(ManagedCellularPrefHandlerTest, AddApnMigratedIccid) {
+  Init();
+  SetDevicePrefs();
+
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
+
+  // Add APN migrated ICCIDs to pref and verify that the prefs store these
+  // values.
+  AddApnMigratedIccid(kIccid1);
+  EXPECT_EQ(1, NumObserverEvents());
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid2));
+
+  AddApnMigratedIccid(kIccid2);
+  EXPECT_EQ(2, NumObserverEvents());
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
+  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid2));
 }
 
 TEST_F(ManagedCellularPrefHandlerTest, NoDevicePrefSet) {
@@ -113,12 +141,19 @@ TEST_F(ManagedCellularPrefHandlerTest, NoDevicePrefSet) {
 
   // Verify that when there's no device prefs, no SMDP address can be
   // retrieved.
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid);
+  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid1);
   EXPECT_FALSE(smdp_address);
-  AddIccidSmdpPair(kIccid, kSmdpAddress);
+  AddIccidSmdpPair(kIccid1, kSmdpAddress);
   EXPECT_EQ(0, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid);
+  smdp_address = GetSmdpAddressFromIccid(kIccid1);
   EXPECT_FALSE(smdp_address);
+
+  // Verify that when there's no device prefs, no APN migrated ICCIDs can be
+  // retrieved.
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
+  AddApnMigratedIccid(kIccid1);
+  EXPECT_EQ(0, NumObserverEvents());
+  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
 }
 
 }  // namespace ash

@@ -1149,6 +1149,10 @@ const char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 // value of the pref is `true`. Controlled by RecoveryFactorBehavior policy.
 const char kRecoveryFactorBehavior[] = "ash.recovery.recovery_factor_behavior";
 
+// Pref which stores ICCIDs of cellular networks that have been migrated to the
+// APN Revamp feature.
+const char kApnMigratedIccids[] = "ash.cellular.apn_migrated_iccids";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

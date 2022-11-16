@@ -16,6 +16,7 @@ namespace ash {
 void ManagedCellularPrefHandler::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kManagedCellularIccidSmdpPair);
+  registry->RegisterDictionaryPref(prefs::kApnMigratedIccids);
 }
 
 ManagedCellularPrefHandler::ManagedCellularPrefHandler() = default;
@@ -94,6 +95,38 @@ const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
   const base::Value::Dict& iccid_smdp_pairs =
       device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
   return iccid_smdp_pairs.FindString(iccid);
+}
+
+void ManagedCellularPrefHandler::AddApnMigratedIccid(const std::string& iccid) {
+  if (!device_prefs_) {
+    NET_LOG(ERROR) << "Device pref not available yet.";
+    return;
+  }
+  if (ContainsApnMigratedIccid(iccid)) {
+    NET_LOG(ERROR)
+        << "AddApnMigratedIccid: Called with already migrated network, iccid: "
+        << iccid;
+    return;
+  }
+
+  NET_LOG(EVENT)
+      << "AddApnMigratedIccid: Adding migrated network to device pref, iccid: "
+      << iccid;
+  ScopedDictPrefUpdate update(device_prefs_, prefs::kApnMigratedIccids);
+  update->SetByDottedPath(iccid, true);
+  network_state_handler_->SyncStubCellularNetworks();
+  NotifyManagedCellularPrefChanged();
+}
+
+bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(
+    const std::string& iccid) const {
+  if (!device_prefs_) {
+    NET_LOG(ERROR) << "Device pref not available yet.";
+    return false;
+  }
+  const base::Value::Dict& apn_migrated_iccids =
+      device_prefs_->GetDict(prefs::kApnMigratedIccids);
+  return apn_migrated_iccids.FindBool(iccid).value_or(false);
 }
 
 }  // namespace ash
