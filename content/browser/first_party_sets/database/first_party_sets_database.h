@@ -76,8 +76,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
 
   // Stores the overall First-Party Sets for the given `browser_context_id` into
   // database in one transaction.
-  // TODO(crbug.com/1219656): Currently only stores public sets. We should also
-  // store policy configurations and manual set in this method.
   [[nodiscard]] bool PersistSets(
       const std::string& browser_context_id,
       const base::Version& public_sets_version,
@@ -121,11 +119,9 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const std::string& browser_context_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsDatabaseTest,
-                           SetPublicSets_InvalidVersion);
-
   // Stores the public First-Party Sets into database, and keeps track of the
-  // the sets version used by `browser_context_id`. Returns true on success.
+  // the sets version used by `browser_context_id`. `sets_version` must be
+  // valid. Returns true on success.
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
                                    const base::Version& sets_version,
                                    const net::GlobalFirstPartySets& sets);

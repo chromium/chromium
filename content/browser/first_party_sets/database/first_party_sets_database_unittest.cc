@@ -397,6 +397,91 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   EXPECT_FALSE(s_manual.Step());
 }
 
+// Verify public sets are not persisted with invalid version, and manual sets
+// and context config are still persisted.
+TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
+  const std::string browser_context_id = "b";
+  const std::string site = "https://site.test";
+  const std::string primary = "https://primary.test";
+
+  const std::string manual_site = "https://aaa.test";
+  const std::string manual_primary = "https://bbb.test";
+
+  const std::string primary_site = "https://example.test";
+  const std::string site_member1 = "https://member1.test";
+  const std::string site_member2 = "https://member2.test";
+
+  net::GlobalFirstPartySets global_sets(
+      /*entries=*/{{net::SchemefulSite(GURL(site)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {net::SchemefulSite(GURL(primary)),
+                    net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                            net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
+
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
+      {net::SchemefulSite(GURL(manual_site)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
+                               net::SiteType::kAssociated, absl::nullopt)},
+      {net::SchemefulSite(GURL(manual_primary)),
+       net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
+                               net::SiteType::kPrimary, absl::nullopt)}};
+  global_sets.ApplyManuallySpecifiedSet(manual_sets);
+
+  net::FirstPartySetsContextConfig config(
+      {{net::SchemefulSite(GURL(site_member1)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  EXPECT_TRUE(db()->PersistSets(browser_context_id, base::Version(),
+                                global_sets, config));
+  CloseDatabase();
+
+  sql::Database db;
+  EXPECT_TRUE(db.Open(db_path()));
+  EXPECT_EQ(0u, CountPublicSetsEntries(&db));
+  EXPECT_EQ(2u, CountManualSetsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
+
+  // ============ Verify persisting context config
+  const char kSelectConfigSql[] =
+      "SELECT browser_context_id,site,primary_site FROM policy_configurations";
+  sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member1, s_config.ColumnString(1));
+  EXPECT_EQ(primary_site, s_config.ColumnString(2));
+
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member2, s_config.ColumnString(1));
+  EXPECT_EQ("", s_config.ColumnString(2));
+
+  EXPECT_FALSE(s_config.Step());
+
+  // ============ Verify persisting manual sets
+  const char kSelectManualSql[] =
+      "SELECT site,primary_site,site_type FROM manual_sets";
+  sql::Statement s_manual(db.GetUniqueStatement(kSelectManualSql));
+  EXPECT_TRUE(s_manual.Step());
+  EXPECT_EQ(manual_site, s_manual.ColumnString(0));
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(1));
+  EXPECT_EQ(1, s_manual.ColumnInt(2));
+
+  EXPECT_TRUE(s_manual.Step());
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(0));
+  EXPECT_EQ(manual_primary, s_manual.ColumnString(1));
+  EXPECT_EQ(0, s_manual.ColumnInt(2));
+
+  EXPECT_FALSE(s_manual.Step());
+}
+
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
                                                GetCurrentVersionSqlFilePath()));
@@ -637,30 +722,6 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   ASSERT_EQ(0, s.ColumnInt(3));
 
   EXPECT_FALSE(s.Step());
-}
-
-TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_InvalidVersion) {
-  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(),
-                                               GetCurrentVersionSqlFilePath()));
-
-  // Verify data in the pre-existing DB.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(db_path()));
-    ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    ASSERT_EQ(2u, CountPublicSetsEntries(&db));
-  }
-  const std::string browser_context_id = "b";
-  const net::GlobalFirstPartySets input;
-  const base::Version invalid_version;
-
-  OpenDatabase();
-  // Trigger the lazy-initialization.
-  EXPECT_FALSE(db()->PersistSets(browser_context_id, invalid_version, input,
-                                 net::FirstPartySetsContextConfig()));
-  // Verify that it's `SetPublicSets()` that failed.
-  EXPECT_FALSE(db()->SetPublicSets(browser_context_id, invalid_version, input));
-  CloseDatabase();
 }
 
 TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {
@@ -906,6 +967,50 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
                   {net::SchemefulSite(GURL("https://example.test"))},
                   net::FirstPartySetsContextConfig()),
               IsEmpty());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPublicSets) {
+  const std::string browser_context_id = "b";
+  const net::SchemefulSite site(GURL("https://site.test"));
+  const net::SchemefulSite primary(GURL("https://primary.test"));
+  const net::SchemefulSite manual_site(GURL("https://aaa.test"));
+  const net::SchemefulSite manual_primary(GURL("https://bbb.test"));
+
+  net::GlobalFirstPartySets global_sets(
+      /*entries=*/{{site,
+                    net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {primary,
+                    net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
+
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
+      {manual_site,
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated,
+                               absl::nullopt)},
+      {manual_primary,
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
+                               absl::nullopt)}};
+  global_sets.ApplyManuallySpecifiedSet(manual_sets);
+
+  OpenDatabase();
+  // Trigger the lazy-initialization and insert data with a invalid version, so
+  // that public sets will not be persisted.
+  ASSERT_TRUE(db()->PersistSets(browser_context_id, base::Version(),
+                                global_sets,
+                                net::FirstPartySetsContextConfig()));
+  EXPECT_THAT(
+      db()->GetGlobalSets(browser_context_id)
+          .FindEntries({manual_site, manual_primary},
+                       net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(manual_site,
+               net::FirstPartySetEntry(
+                   manual_primary, net::SiteType::kAssociated, absl::nullopt)),
+          Pair(manual_primary,
+               net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
+                                       absl::nullopt))));
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
