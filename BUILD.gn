@@ -958,6 +958,7 @@ if (is_win) {
       "//chrome/updater/win:updater_zip",
       "//components/policy:pack_policy_templates",
       "//components/zucchini",
+      "//components/zucchini:zucchini64",
       "//courgette",
       "//third_party/hyphenation-patterns",
       "//tools/metrics:metrics_metadata",
