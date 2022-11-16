@@ -10,10 +10,6 @@
 
 #include "base/values.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -40,7 +36,7 @@ class GuestViewManagerDelegate {
   // Dispatches the event with |name| with the provided |args| to the embedder
   // of the given |guest| with |instance_id| for routing.
   virtual void DispatchEvent(const std::string& event_name,
-                             std::unique_ptr<base::DictionaryValue> args,
+                             base::Value::Dict args,
                              GuestViewBase* guest,
                              int instance_id) {}
 

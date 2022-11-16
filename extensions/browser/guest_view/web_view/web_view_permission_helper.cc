@@ -286,9 +286,9 @@ int WebViewPermissionHelper::RequestPermission(
   int request_id = next_permission_request_id_++;
   pending_permission_requests_[request_id] = PermissionResponseInfo(
       std::move(callback), permission_type, allowed_by_default);
-  std::unique_ptr<base::DictionaryValue> args(new base::DictionaryValue());
-  args->SetKey(webview::kRequestInfo, request_info.Clone());
-  args->SetIntKey(webview::kRequestId, request_id);
+  base::Value::Dict args;
+  args.Set(webview::kRequestInfo, request_info.Clone());
+  args.Set(webview::kRequestId, request_id);
   switch (permission_type) {
     case WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW: {
       web_view_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
@@ -301,8 +301,7 @@ int WebViewPermissionHelper::RequestPermission(
       break;
     }
     default: {
-      args->SetStringKey(webview::kPermission,
-                         PermissionTypeToString(permission_type));
+      args.Set(webview::kPermission, PermissionTypeToString(permission_type));
       web_view_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
           webview::kEventPermissionRequest, std::move(args)));
       break;

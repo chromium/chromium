@@ -216,11 +216,11 @@ void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
     return;
 
   // Dispatch the onResize event.
-  auto args = std::make_unique<base::DictionaryValue>();
-  args->SetInteger(kOldWidth, old_size.width());
-  args->SetInteger(kOldHeight, old_size.height());
-  args->SetInteger(kNewWidth, new_size.width());
-  args->SetInteger(kNewHeight, new_size.height());
+  base::Value::Dict args;
+  args.Set(kOldWidth, old_size.width());
+  args.Set(kOldHeight, old_size.height());
+  args.Set(kNewWidth, new_size.width());
+  args.Set(kNewHeight, new_size.height());
   DispatchEventToGuestProxy(
       std::make_unique<GuestViewEvent>(kEventResize, std::move(args)));
 }

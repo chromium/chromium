@@ -184,7 +184,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // Dispatches the event with |name| with the provided |args| to the embedder
   // of the given |guest| with |instance_id| for routing.
   void DispatchEvent(const std::string& event_name,
-                     std::unique_ptr<base::DictionaryValue> args,
+                     base::Value::Dict args,
                      GuestViewBase* guest,
                      int instance_id);
 

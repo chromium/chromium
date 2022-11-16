@@ -54,14 +54,14 @@ void ExtensionsGuestViewManagerDelegate::OnGuestAdded(
 
 void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     const std::string& event_name,
-    std::unique_ptr<base::DictionaryValue> args,
+    base::Value::Dict args,
     GuestViewBase* guest,
     int instance_id) {
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
   info->has_instance_id = true;
   info->instance_id = instance_id;
   base::Value::List event_args;
-  event_args.Append(std::move(*args));
+  event_args.Append(std::move(args));
 
   // GetEventHistogramValue maps guest view event names to their histogram
   // value. It needs to be like this because the guest view component doesn't

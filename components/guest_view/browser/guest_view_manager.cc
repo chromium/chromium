@@ -456,11 +456,10 @@ bool GuestViewManager::IsGuestAvailableToContext(GuestViewBase* guest) {
   return delegate_->IsGuestAvailableToContext(guest);
 }
 
-void GuestViewManager::DispatchEvent(
-    const std::string& event_name,
-    std::unique_ptr<base::DictionaryValue> args,
-    GuestViewBase* guest,
-    int instance_id) {
+void GuestViewManager::DispatchEvent(const std::string& event_name,
+                                     base::Value::Dict args,
+                                     GuestViewBase* guest,
+                                     int instance_id) {
   // TODO(fsamuel): GuestViewManager should probably do something more useful
   // here like log an error if the event could not be dispatched.
   delegate_->DispatchEvent(event_name, std::move(args), guest, instance_id);

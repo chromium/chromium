@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "extensions/browser/api/execute_code_function.h"
 #include "extensions/browser/api/web_contents_capture_client.h"
 #include "extensions/browser/extension_function.h"
@@ -17,7 +18,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
 namespace base {
-class DictionaryValue;
 class TaskRunner;
 }
 
@@ -357,7 +357,7 @@ class WebViewInternalFindFunction : public WebViewInternalExtensionFunction {
       delete;
 
   // Used by WebViewInternalFindHelper to Respond().
-  void ForwardResponse(const base::DictionaryValue& results);
+  void ForwardResponse(base::Value::Dict results);
 
  protected:
   ~WebViewInternalFindFunction() override;

@@ -781,9 +781,8 @@ WebViewInternalFindFunction::WebViewInternalFindFunction() {
 WebViewInternalFindFunction::~WebViewInternalFindFunction() {
 }
 
-void WebViewInternalFindFunction::ForwardResponse(
-    const base::DictionaryValue& results) {
-  Respond(OneArgument(results.Clone()));
+void WebViewInternalFindFunction::ForwardResponse(base::Value::Dict results) {
+  Respond(OneArgument(base::Value(std::move(results))));
 }
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {

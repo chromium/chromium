@@ -109,9 +109,9 @@ void ExtensionOptionsGuest::DidInitialize(
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {
-  std::unique_ptr<base::DictionaryValue> args(new base::DictionaryValue());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
-      api::extension_options_internal::OnLoad::kEventName, std::move(args)));
+      api::extension_options_internal::OnLoad::kEventName,
+      base::Value::Dict()));
 }
 
 const char* ExtensionOptionsGuest::GetAPINamespace() const {
@@ -133,8 +133,7 @@ void ExtensionOptionsGuest::OnPreferredSizeChanged(const gfx::Size& pref_size) {
   options.height = PhysicalPixelsToLogicalPixels(pref_size.height());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       api::extension_options_internal::OnPreferredSizeChanged::kEventName,
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(base::Value(options.ToValue())))));
+      options.ToValue()));
 }
 
 void ExtensionOptionsGuest::AddNewContents(
@@ -181,7 +180,7 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       api::extension_options_internal::OnClose::kEventName,
-      base::WrapUnique(new base::DictionaryValue())));
+      base::Value::Dict()));
 }
 
 bool ExtensionOptionsGuest::HandleContextMenu(

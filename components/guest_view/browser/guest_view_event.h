@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace guest_view {
 
@@ -22,10 +23,6 @@ class GuestViewEvent {
  public:
   GuestViewEvent(const std::string& name, base::Value::Dict args);
 
-  // Deprecated. Prefer the ctor above.
-  GuestViewEvent(const std::string& name,
-                 std::unique_ptr<base::DictionaryValue> args);
-
   GuestViewEvent(const GuestViewEvent&) = delete;
   GuestViewEvent& operator=(const GuestViewEvent&) = delete;
 
@@ -37,7 +34,7 @@ class GuestViewEvent {
 
 private:
   const std::string name_;
-  std::unique_ptr<base::DictionaryValue> args_;
+  absl::optional<base::Value::Dict> args_;
 };
 
 }  // namespace guest_view
